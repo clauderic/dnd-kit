@@ -1,4 +1,4 @@
-import {getMaxValueIndex} from '../../utilities';
+import {getMaxValueIndex} from '../getValueIndex';
 
 import {CollisionDetection} from './types';
 

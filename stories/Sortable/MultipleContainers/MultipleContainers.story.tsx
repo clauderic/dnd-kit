@@ -3,12 +3,14 @@ import {createPortal} from 'react-dom';
 import {
   ActivationConstraint,
   closestRect,
+  rectIntersection,
   DraggableContext,
   DraggableClone,
   getElementCoordinates,
   Modifiers,
   useDroppable,
   UniqueIdentifier,
+  CollisionDetection,
 } from '@dropshift/core';
 import {
   SortableContainer,
@@ -82,6 +84,7 @@ interface Props {
   activationConstraint?: ActivationConstraint;
   adjustScale?: boolean;
   animateItemInsertion?: boolean;
+  collisionDetection?: CollisionDetection;
   Container?: any;
   getItemStyles?(args: {
     value: UniqueIdentifier;
@@ -98,15 +101,34 @@ interface Props {
   items?: Items;
   handle?: boolean;
   renderItem?: any;
+  renderTrashDroppable?: boolean;
   strategy?: SortingStrategy;
   translateModifiers?: Modifiers;
 }
+
+const TRASH_DROPPABLE_ID = 'trash';
+
+const customCollisionDetectionStrategy: CollisionDetection = (
+  clientRects,
+  clientRect
+) => {
+  const trashRect = clientRects.filter(([id]) => id === TRASH_DROPPABLE_ID);
+
+  if (rectIntersection(trashRect, clientRect)) {
+    return TRASH_DROPPABLE_ID;
+  }
+
+  const otherRects = clientRects.filter(([id]) => id !== TRASH_DROPPABLE_ID);
+
+  return closestRect(otherRects, clientRect);
+};
 
 function Sortable({
   activationConstraint,
   adjustScale = false,
   animateItemInsertion = true,
   itemCount = 3,
+  collisionDetection = closestRect,
   Container = DroppableContainer,
   handle = false,
   items: parentItems,
@@ -116,6 +138,7 @@ function Sortable({
   translateModifiers,
   renderItem,
   strategy = verticalListSortingStrategy,
+  renderTrashDroppable = false,
 }: Props) {
   const [items, setItems] = useState<Items>(
     () =>
@@ -123,6 +146,7 @@ function Sortable({
         A: createRange(itemCount, (index) => `A${index}`),
         B: createRange(itemCount, (index) => `B${index}`),
         C: createRange(itemCount, (index) => `C${index}`),
+        [TRASH_DROPPABLE_ID]: [],
       }
   );
   const [clonedItems, setClonedItems] = useState<Items | null>(null);
@@ -170,7 +194,7 @@ function Sortable({
   return (
     <DraggableContext
       sensors={sensors}
-      collisionDetection={closestRect}
+      collisionDetection={collisionDetection}
       onDragStart={({active}) => {
         setActiveId(active.id);
         setClonedItems(items);
@@ -227,12 +251,27 @@ function Sortable({
         }
       }}
       onDragEnd={({over}) => {
-        if (!over || !activeId) {
+        if (!activeId) {
+          return;
+        }
+
+        const activeContainer = activeContainerRef.current;
+
+        if (!over || !activeContainer) {
+          setActiveId(null);
+          return;
+        }
+
+        if (over.id === TRASH_DROPPABLE_ID) {
+          setItems((items) => ({
+            ...items,
+            [TRASH_DROPPABLE_ID]: [],
+          }));
+          setActiveId(null);
           return;
         }
 
         const overContainer = findContainer(over.id);
-        const activeContainer = activeContainerRef.current;
 
         if (activeContainer && overContainer) {
           const activeIndex = items[activeContainer].indexOf(activeId);
@@ -264,37 +303,39 @@ function Sortable({
       }}
       translateModifiers={translateModifiers}
     >
-      {Object.keys(items).map((containerId) => (
-        <SortableContainer
-          id={containerId}
-          items={items[containerId]}
-          key={containerId}
-        >
-          <Container
+      {Object.keys(items)
+        .filter((key) => key !== TRASH_DROPPABLE_ID)
+        .map((containerId) => (
+          <SortableContainer
             id={containerId}
             items={items[containerId]}
-            getStyle={getContainerStyle}
+            key={containerId}
           >
-            {items[containerId].map((value, index) => {
-              return (
-                <SortableItem
-                  key={value}
-                  id={value}
-                  index={index}
-                  handle={handle}
-                  strategy={strategy}
-                  animate={animateItemInsertion}
-                  style={getItemStyles}
-                  wrapperStyle={wrapperStyle}
-                  renderItem={renderItem}
-                  containerId={containerId}
-                  getIndex={getIndex}
-                />
-              );
-            })}
-          </Container>
-        </SortableContainer>
-      ))}
+            <Container
+              id={containerId}
+              items={items[containerId]}
+              getStyle={getContainerStyle}
+            >
+              {items[containerId].map((value, index) => {
+                return (
+                  <SortableItem
+                    key={value}
+                    id={value}
+                    index={index}
+                    handle={handle}
+                    strategy={strategy}
+                    animate={animateItemInsertion}
+                    style={getItemStyles}
+                    wrapperStyle={wrapperStyle}
+                    renderItem={renderItem}
+                    containerId={containerId}
+                    getIndex={getIndex}
+                  />
+                );
+              })}
+            </Container>
+          </SortableContainer>
+        ))}
       {createPortal(
         <DraggableClone adjustScale={adjustScale}>
           {activeId ? (
@@ -318,7 +359,36 @@ function Sortable({
         </DraggableClone>,
         document.body
       )}
+      {renderTrashDroppable && activeId ? <Trash /> : null}
     </DraggableContext>
+  );
+}
+
+function Trash() {
+  const {setNodeRef, isOver} = useDroppable({
+    id: TRASH_DROPPABLE_ID,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'fixed',
+        left: '50%',
+        marginLeft: -150,
+        bottom: 20,
+        width: 300,
+        height: 60,
+        borderRadius: 5,
+        border: '1px solid',
+        borderColor: isOver ? 'red' : '#DDD',
+      }}
+    >
+      Drop here to delete
+    </div>
   );
 }
 
@@ -429,6 +499,13 @@ export const ManyItems = () => (
       maxHeight: '80vh',
       overflowY: 'auto',
     })}
+  />
+);
+
+export const TrashableItems = () => (
+  <Sortable
+    collisionDetection={customCollisionDetectionStrategy}
+    renderTrashDroppable
   />
 );
 

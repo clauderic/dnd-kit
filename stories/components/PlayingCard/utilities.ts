@@ -27,22 +27,20 @@ export function getDeckOfCards() {
   return deck;
 }
 
-export function shuffle(deck) {
-  // for 1000 turns
-  // switch the values of two random cards
+export function shuffle(items: any[]) {
   for (var i = 0; i < 1000; i++) {
-    var location1 = Math.floor(Math.random() * deck.length);
-    var location2 = Math.floor(Math.random() * deck.length);
-    var tmp = deck[location1];
+    var location1 = Math.floor(Math.random() * items.length);
+    var location2 = Math.floor(Math.random() * items.length);
+    var tmp = items[location1];
 
-    deck[location1] = deck[location2];
-    deck[location2] = tmp;
+    items[location1] = items[location2];
+    items[location2] = tmp;
   }
 
-  return deck;
+  return items;
 }
 
-export function getSuitColor(value) {
+export function getSuitColor(value: string) {
   if (value.includes('♥') || value.includes('♦')) {
     return '#f44336';
   }

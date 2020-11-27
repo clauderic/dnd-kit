@@ -1,5 +1,5 @@
 import {Coordinates, PositionalClientRect} from '../../types';
-import {getMinValueIndex} from '../../utilities';
+import {getMinValueIndex} from '../getValueIndex';
 
 import {CollisionDetection} from './types';
 

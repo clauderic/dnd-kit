@@ -6,7 +6,7 @@ import {
   UniqueIdentifier,
 } from '@dropshift/core';
 
-import {useUniqueId} from '../hooks';
+import {useUniqueId} from '../hooks/utilities';
 
 type PositionalClientRectMap = ReturnType<
   typeof useDraggableContext

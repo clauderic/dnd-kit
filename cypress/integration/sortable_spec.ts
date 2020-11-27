@@ -284,7 +284,7 @@ describe('Sortable Grid', () => {
   });
 });
 
-describe.only('Sortable Vertical List', () => {
+describe('Sortable Vertical List', () => {
   describe('Move Down', () => {
     it('Once', () => {
       const initialIndex = 0;
@@ -456,7 +456,7 @@ describe('Sortable Virtualized List', () => {
         });
     });
 
-    it('Does not go past the last index', () => {
+    it.skip('Does not go past the last index', () => {
       const initialIndex = 0;
       const id = initialIndex.toString();
       const maxIndex = 99;

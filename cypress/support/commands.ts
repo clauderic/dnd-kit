@@ -134,7 +134,7 @@ Cypress.Commands.add(
 
     cy.wrap(subject, {log: false})
       .focus({log: false})
-      .type(Keys.Space, {log: false})
+      .type(Keys.Space, {force: true, log: false})
       .closest('body')
       .type(arrowKey.repeat(times), {force: true})
       .type(Keys.Space, {log: false, force: true});

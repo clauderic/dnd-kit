@@ -1,5 +1,5 @@
 name: 'Chromatic'
-on: push
+on: [push]
 
 jobs:
   test:
