@@ -1,0 +1,35 @@
+{
+  "name": "@dropshift/core",
+  "version": "0.0.1",
+  "description": "Dropshift is a lightweight React library for building performant and accessible drag and drop experiences",
+  "author": "Claudéric Demers",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/claudric/dropshift.git",
+    "directory": "packages/core"
+  },
+  "scripts": {
+    "start": "tsdx watch --tsconfig tsconfig.build.json --verbose --noClean",
+    "build": "tsdx build --tsconfig tsconfig.build.json",
+    "test": "tsdx test",
+    "lint": "tsdx lint",
+    "prepublish": "npm run build"
+  },
+  "main": "dist/index.js",
+  "module": "dist/react.esm.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "README.md",
+    "dist"
+  ],
+  "peerDependencies": {
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0"
+  },
+  "dependencies": {
+    "tslib": "^2.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

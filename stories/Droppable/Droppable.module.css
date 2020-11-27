@@ -1,0 +1,16 @@
+.DroppableContaner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 300px;
+  height: 300px;
+  align-self: center;
+  border-radius: 3px;
+  background-color: #fefefe;
+  border: 2px solid #eee;
+
+  &.over {
+    border-color: #4c9ffe;
+  }
+}

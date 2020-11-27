@@ -1,0 +1,6 @@
+{
+  "$schema": "https://on.cypress.io/cypress.schema.json",
+  "supportFile": "cypress/support/index.ts",
+  "projectId": "fq87vf",
+  "baseUrl": "http://localhost:6006/"
+}

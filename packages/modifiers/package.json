@@ -1,0 +1,28 @@
+{
+  "name": "@dropshift/modifiers",
+  "version": "0.0.1",
+  "description": "Translate modifier presets for use with `@dropshift` packages.",
+  "author": "Claudéric Demers",
+  "scripts": {
+    "start": "tsdx watch --tsconfig tsconfig.build.json --verbose --noClean",
+    "build": "tsdx build --tsconfig tsconfig.build.json",
+    "test": "tsdx test",
+    "lint": "tsdx lint",
+    "prepublish": "npm run build"
+  },
+  "main": "dist/index.js",
+  "module": "dist/modifiers.esm.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "README.md",
+    "dist"
+  ],
+  "dependencies": {
+    "@dropshift/core": "^0.0.1",
+    "@dropshift/utilities": "^0.0.1",
+    "tslib": "^2.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

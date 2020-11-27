@@ -1,0 +1,17 @@
+.List {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 300px;
+  grid-gap: 10px;
+  padding: 20px;
+  margin: 10px;
+  border-radius: 5px;
+  min-height: 200px;
+  transition: background-color 350ms ease;
+
+  &.horizontal {
+    width: 100%;
+    flex-direction: row;
+  }
+}
