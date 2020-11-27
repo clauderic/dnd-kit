@@ -94,47 +94,40 @@ export class KeyboardSensor implements SensorInstance {
             newCoordinates,
             currentCoordinates
           );
-
-          const maxCoordinates =
-            scrollingContainer === document.scrollingElement
-              ? {
-                  left: 0,
-                  right: window.innerWidth,
-                  width: window.innerWidth,
-                  top: 0,
-                  bottom: window.innerHeight,
-                  height: window.innerHeight,
-                }
-              : scrollingContainer.getBoundingClientRect();
+          const {
+            isTop,
+            isRight,
+            isLeft,
+            isBottom,
+            scrollElementRect,
+            maxScroll,
+            minScroll,
+          } = getScrollPosition(scrollingContainer);
 
           const clampedCoordinates = {
             x: Math.min(
               direction === KeyCode.Right
-                ? maxCoordinates.right - maxCoordinates.width / 2
-                : maxCoordinates.right,
+                ? scrollElementRect.right - scrollElementRect.width / 2
+                : scrollElementRect.right,
               Math.max(
                 direction === KeyCode.Right
-                  ? maxCoordinates.left
-                  : maxCoordinates.left + maxCoordinates.width / 2,
+                  ? scrollElementRect.left
+                  : scrollElementRect.left + scrollElementRect.width / 2,
                 newCoordinates.x
               )
             ),
             y: Math.min(
               direction === KeyCode.Down
-                ? maxCoordinates.bottom - maxCoordinates.height / 2
-                : maxCoordinates.bottom,
+                ? scrollElementRect.bottom - scrollElementRect.height / 2
+                : scrollElementRect.bottom,
               Math.max(
                 direction === KeyCode.Down
-                  ? maxCoordinates.top
-                  : maxCoordinates.top + maxCoordinates.height / 2,
+                  ? scrollElementRect.top
+                  : scrollElementRect.top + scrollElementRect.height / 2,
                 newCoordinates.y
               )
             ),
           };
-
-          const {isTop, isRight, isLeft, isBottom} = getScrollPosition(
-            scrollingContainer
-          );
 
           const canScrollX =
             (direction === KeyCode.Right && !isRight) ||
@@ -144,7 +137,15 @@ export class KeyboardSensor implements SensorInstance {
             (direction === KeyCode.Up && !isTop);
 
           if (canScrollX && clampedCoordinates.x !== newCoordinates.x) {
-            if (scrollingContainer.scrollLeft + coordinatesDelta.x > 0) {
+            const canFullyScrollToNewCoordinates =
+              (direction === KeyCode.Right &&
+                scrollingContainer.scrollLeft + coordinatesDelta.x <=
+                  maxScroll.x) ||
+              (direction === KeyCode.Left &&
+                scrollingContainer.scrollLeft + coordinatesDelta.x >=
+                  minScroll.x);
+
+            if (canFullyScrollToNewCoordinates) {
               // We don't need to update coordinates, the scroll adjustment alone will trigger
               // logic to auto-detect the new container we are over
               scrollingContainer.scrollBy({
@@ -156,11 +157,19 @@ export class KeyboardSensor implements SensorInstance {
 
             scrollDelta.x = scrollingContainer.scrollLeft;
             scrollingContainer.scrollTo({
-              left: 0,
+              left: direction === KeyCode.Right ? maxScroll.x : minScroll.x,
               behavior: scrollBehavior,
             });
           } else if (canScrollY && clampedCoordinates.y !== newCoordinates.y) {
-            if (scrollingContainer.scrollTop + coordinatesDelta.y > 0) {
+            const canFullyScrollToNewCoordinates =
+              (direction === KeyCode.Down &&
+                scrollingContainer.scrollTop + coordinatesDelta.y <=
+                  maxScroll.y) ||
+              (direction === KeyCode.Up &&
+                scrollingContainer.scrollTop + coordinatesDelta.y >=
+                  minScroll.y);
+
+            if (canFullyScrollToNewCoordinates) {
               // We don't need to update coordinates, the scroll adjustment alone will trigger
               // logic to auto-detect the new container we are over
               scrollingContainer.scrollBy({
@@ -170,9 +179,13 @@ export class KeyboardSensor implements SensorInstance {
               return;
             }
 
-            scrollDelta.y = scrollingContainer.scrollTop;
-            scrollingContainer.scrollTo({
-              top: 0,
+            scrollDelta.y =
+              direction === KeyCode.Down
+                ? scrollingContainer.scrollTop - maxScroll.y
+                : scrollingContainer.scrollTop - minScroll.y;
+
+            scrollingContainer.scrollBy({
+              top: -scrollDelta.y,
               behavior: scrollBehavior,
             });
           }

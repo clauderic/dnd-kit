@@ -1,0 +1,5 @@
+.VirtualList {
+  > div {
+    overflow: hidden;
+  }
+}

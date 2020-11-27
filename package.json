@@ -38,7 +38,7 @@
     "css-loader": "^2.0.0",
     "chromatic": "^5.4.0",
     "classnames": "^2.2.6",
-    "cypress": "^5.2.0",
+    "cypress": "^5.6.0",
     "lerna": "^3.15.0",
     "react": "^16.13.1",
     "postcss": "^8.1.10",

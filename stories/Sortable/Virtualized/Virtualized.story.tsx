@@ -10,6 +10,8 @@ import {
 } from '@dropshift/sortable';
 import {closestRect, DraggableContext, DraggableClone} from '@dropshift/core';
 
+import styles from './Virtualized.module.css';
+
 import {createRange} from '../../utilities';
 import {SortableItem, Props} from '../Sortable';
 import {Item} from '../../components';
@@ -62,9 +64,7 @@ function Sortable({
         <VirtualList
           width={500}
           height={600}
-          style={{
-            overflowX: 'hidden',
-          }}
+          className={styles.VirtualList}
           itemCount={items.length}
           itemSize={64}
           renderItem={({index, style}) => {

@@ -3,8 +3,6 @@ import {useIsomorphicEffect, useNodeRef} from '@dropshift/utilities';
 
 import {Context, Events, Data} from '../../store';
 import {PositionalClientRect} from '../../types';
-// import {useScrollingParent} from '../utilities';
-// import {getElementCoordinates} from '../../utilities';
 
 export interface UseDroppableArguments {
   id: string;
@@ -21,13 +19,7 @@ export function useDroppable({
 }: UseDroppableArguments) {
   const {dispatch, over} = useContext(Context);
   const clientRect = useRef<PositionalClientRect | null>(null);
-  // const handleNodeChange = useCallback((node: HTMLElement | null) => {
-  //   clientRect.current = node ? getElementCoordinates(node) : null;
-  // }, []);
-  const [nodeRef, setNodeRef] = useNodeRef({
-    // onChange: handleNodeChange,
-  });
-  // const scrollingParent = useScrollingParent(nodeRef.current);
+  const [nodeRef, setNodeRef] = useNodeRef();
   const dataRef = useRef(data);
 
   useIsomorphicEffect(() => {
@@ -35,12 +27,6 @@ export function useDroppable({
       dataRef.current = data;
     }
   }, [data]);
-
-  // useLayoutEffect(() => {
-  //   clientRect.current = nodeRef.current
-  //     ? getElementCoordinates(nodeRef.current)
-  //     : null;
-  // }, [nodeRef, scrollingParent]);
 
   useEffect(() => {
     if (!disabled) {
