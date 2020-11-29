@@ -1,7 +1,7 @@
 {
-  "name": "@dropshift/modifiers",
+  "name": "@dnd-kit/modifiers",
   "version": "0.0.1",
-  "description": "Translate modifier presets for use with `@dropshift` packages.",
+  "description": "Translate modifier presets for use with `@dnd-kit` packages.",
   "author": "Claudéric Demers",
   "scripts": {
     "start": "tsdx watch --tsconfig tsconfig.build.json --verbose --noClean",
@@ -18,8 +18,8 @@
     "dist"
   ],
   "dependencies": {
-    "@dropshift/core": "^0.0.1",
-    "@dropshift/utilities": "^0.0.1",
+    "@dnd-kit/core": "^0.0.1",
+    "@dnd-kit/utilities": "^0.0.1",
     "tslib": "^2.0.0"
   },
   "publishConfig": {

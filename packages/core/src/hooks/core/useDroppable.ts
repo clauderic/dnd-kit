@@ -1,5 +1,5 @@
 import {useContext, useEffect, useRef} from 'react';
-import {useIsomorphicEffect, useNodeRef} from '@dropshift/utilities';
+import {useIsomorphicEffect, useNodeRef} from '@dnd-kit/utilities';
 
 import {Context, Events, Data} from '../../store';
 import {PositionalClientRect} from '../../types';

@@ -7,13 +7,16 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import {createPortal} from 'react-dom';
 import {
   add as getAdjustedCoordinates,
+  canUseDOM,
+  Transform,
+  useCallbackRef,
   useIsomorphicEffect,
   useNodeRef,
-  useCallbackRef,
-  Transform,
-} from '@dropshift/utilities';
+  useUniqueId,
+} from '@dnd-kit/utilities';
 
 import {
   Context,
@@ -35,6 +38,7 @@ import {
   useCombineActivators,
   useScrollingParent,
   useScrollCoordinates,
+  useAnnouncement,
   SyntheticListener,
 } from '../../hooks/utilities';
 import {useDrag} from '../../hooks/core/useDrag';
@@ -58,6 +62,14 @@ import type {
   DroppableContainers,
 } from '../../store/types';
 import {UniqueIdentifier} from '../../types';
+import {
+  Announcements,
+  announcements as defaultAnnouncements,
+  screenReaderInstructions as defaultScreenReaderInstructions,
+  ScreenReaderInstructions,
+  HiddenText,
+  LiveRegion,
+} from '../Accessibility';
 
 export interface DragStartEvent {
   active: NonNullable<Active>;
@@ -91,15 +103,17 @@ export interface DragEndEvent {
 
 interface Props {
   autoScroll?: boolean;
-  children: React.ReactNode;
+  announcements?: Announcements;
+  children?: React.ReactNode;
   collisionDetection?: CollisionDetection;
+  screenReaderInstructions?: ScreenReaderInstructions;
   sensors?: SensorDescriptor<any>[];
   translateModifiers?: Modifiers;
-  onDragStart(event: DragStartEvent): void;
+  onDragStart?(event: DragStartEvent): void;
   onDragMove?(event: DragMoveEvent): void;
   onDragOver?(event: DragOverEvent): void;
-  onDragEnd(event: DragEndEvent): void;
-  onDragCancel(): void;
+  onDragEnd?(event: DragEndEvent): void;
+  onDragCancel?(): void;
 }
 
 type Active = Parameters<typeof reducer>[0]['active'];
@@ -128,11 +142,12 @@ export const ActiveDraggableContext = createContext<Transform>({
   scaleY: 1,
 });
 
-export function DraggableContext({
+export function DndContext({
   autoScroll = true,
   children,
   sensors = defaultSensors,
   collisionDetection = rectIntersection,
+  screenReaderInstructions = defaultScreenReaderInstructions,
   translateModifiers,
   ...props
 }: Props) {
@@ -143,6 +158,9 @@ export function DraggableContext({
   const [activeSensor, setActiveSensor] = useState<SensorInstance | null>(null);
   const [activatorEvent, setActivatorEvent] = useState<Event | null>(null);
   const latestProps = useRef(props);
+  const {announce, announcements} = useAnnouncement();
+  const liveRegionId = useUniqueId(`DndLiveRegion`);
+  const draggableDescribedById = useUniqueId(`DndDescribedBy`);
 
   useIsomorphicEffect(
     () => {
@@ -303,21 +321,47 @@ export function DraggableContext({
             return;
           }
 
-          const {onDragStart} = latestProps.current;
+          const {
+            announcements = defaultAnnouncements,
+            onDragStart,
+          } = latestProps.current;
 
           onStart(initialCoordinates);
           dispatch({
             type: Events.SetActiveElement,
             ...activeRef.current,
           });
-          onDragStart({active: activeRef.current});
+
+          const announcement = announcements.onDragStart(activeRef.current.id);
+
+          if (announcement) {
+            announce(announcement);
+          }
+
+          if (onDragStart) {
+            onDragStart({active: activeRef.current});
+          }
         },
         onMove,
         onEnd() {
-          const {onDragEnd} = latestProps.current;
+          const {
+            announcements = defaultAnnouncements,
+            onDragEnd,
+          } = latestProps.current;
           const {overId, windowScrollAdjustedTranslate} = tracked.current;
 
-          activeRef.current = null;
+          if (activeRef.current) {
+            const announcement = announcements.onDragEnd(
+              activeRef.current.id,
+              overId ?? undefined
+            );
+
+            if (announcement) {
+              announce(announcement);
+            }
+
+            activeRef.current = null;
+          }
 
           dispatch({
             type: Events.UnsetActiveElement,
@@ -326,19 +370,35 @@ export function DraggableContext({
           setActivatorEvent(null);
 
           onEnd();
-          onDragEnd({
-            delta: windowScrollAdjustedTranslate,
-            over: overId
-              ? {
-                  id: overId,
-                }
-              : null,
-          });
+
+          if (onDragEnd) {
+            onDragEnd({
+              delta: windowScrollAdjustedTranslate,
+              over: overId
+                ? {
+                    id: overId,
+                  }
+                : null,
+            });
+          }
         },
         onCancel() {
-          const {onDragCancel} = latestProps.current;
+          const {
+            announcements = defaultAnnouncements,
+            onDragCancel,
+          } = latestProps.current;
 
-          activeRef.current = null;
+          if (activeRef.current) {
+            const announcement = announcements.onDragCancel(
+              activeRef.current.id
+            );
+
+            if (announcement) {
+              announce(announcement);
+            }
+
+            activeRef.current = null;
+          }
 
           dispatch({
             type: Events.UnsetActiveElement,
@@ -346,7 +406,10 @@ export function DraggableContext({
           setActiveSensor(null);
           setActivatorEvent(null);
           onEnd();
-          onDragCancel();
+
+          if (onDragCancel) {
+            onDragCancel();
+          }
         },
       });
 
@@ -428,19 +491,33 @@ export function DraggableContext({
       return;
     }
 
-    const {onDragOver} = latestProps.current;
+    const {
+      announcements = defaultAnnouncements,
+      onDragOver,
+    } = latestProps.current;
     const {translateAdjustedClientRect} = tracked.current;
 
-    if (!onDragOver || !translateAdjustedClientRect) {
+    if (!translateAdjustedClientRect) {
       return;
     }
 
-    onDragOver({
-      active: activeRef.current,
-      draggingRect: translateAdjustedClientRect,
-      over,
-    });
-  }, [over]);
+    const announcement = announcements.onDragOver(
+      activeRef.current.id,
+      over?.id
+    );
+
+    if (announcement) {
+      announce(announcement);
+    }
+
+    if (onDragOver) {
+      onDragOver({
+        active: activeRef.current,
+        draggingRect: translateAdjustedClientRect,
+        over,
+      });
+    }
+  }, [announce, over]);
 
   useIsomorphicEffect(() => {
     tracked.current = {
@@ -476,12 +553,15 @@ export function DraggableContext({
     over,
   ]);
 
-  const contextValue: DraggableContextType = useMemo(() => {
-    return {
+  const contextValue = useMemo(() => {
+    const memoizedContext: DraggableContextType = {
       active,
       activeRect: activeNodeRect,
       activatorEvent,
       activators,
+      ariaDescribedById: {
+        draggable: draggableDescribedById,
+      },
       clientRects,
       cloneNode: {
         nodeRef: cloneNodeRef,
@@ -492,10 +572,11 @@ export function DraggableContext({
       droppableContainers,
       over,
       recomputeClientRects,
-      scrollingContainer,
       scrollingContainerRect,
       willRecomputeClientRects,
     };
+
+    return memoizedContext;
   }, [
     active,
     activeNodeRect,
@@ -505,10 +586,10 @@ export function DraggableContext({
     cloneNodeClientRect,
     cloneNodeRef,
     dispatch,
+    draggableDescribedById,
     droppableContainers,
     over,
     recomputeClientRects,
-    scrollingContainer,
     scrollingContainerRect,
     setCloneNodeRef,
     willRecomputeClientRects,
@@ -521,10 +602,24 @@ export function DraggableContext({
   });
 
   return (
-    <Context.Provider value={contextValue}>
-      <ActiveDraggableContext.Provider value={transform}>
-        {children}
-      </ActiveDraggableContext.Provider>
-    </Context.Provider>
+    <>
+      <Context.Provider value={contextValue}>
+        <ActiveDraggableContext.Provider value={transform}>
+          {children}
+        </ActiveDraggableContext.Provider>
+      </Context.Provider>
+      {canUseDOM
+        ? createPortal(
+            <>
+              <HiddenText
+                id={draggableDescribedById}
+                value={screenReaderInstructions.draggable}
+              />
+              <LiveRegion id={liveRegionId} announcements={announcements} />
+            </>,
+            document.body
+          )
+        : null}
+    </>
   );
 }

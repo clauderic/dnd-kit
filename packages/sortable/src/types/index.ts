@@ -1,5 +1,5 @@
-import type {PositionalClientRect} from '@dropshift/core';
-import type {Transform} from '@dropshift/utilities';
+import type {PositionalClientRect} from '@dnd-kit/core';
+import type {Transform} from '@dnd-kit/utilities';
 
 export type SortingStrategy = (args: {
   clientRects: PositionalClientRect[];

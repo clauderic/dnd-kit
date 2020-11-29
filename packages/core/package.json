@@ -1,11 +1,11 @@
 {
-  "name": "@dropshift/core",
+  "name": "@dnd-kit/core",
   "version": "0.0.1",
-  "description": "Dropshift is a lightweight React library for building performant and accessible drag and drop experiences",
+  "description": "dnd kit – a lightweight React library for building performant and accessible drag and drop experiences",
   "author": "Claudéric Demers",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/claudric/dropshift.git",
+    "url": "git+https://github.com/claudric/dnd-kit.git",
     "directory": "packages/core"
   },
   "scripts": {

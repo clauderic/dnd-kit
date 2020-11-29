@@ -6,6 +6,8 @@
     "**/.cache": true,
   },
   "files.exclude": {
+    "**/dist": true,
+    "**/node_modules": true,
     "**/.git": true,
     "**/.cache": true,
     "**/.DS_Store": true

@@ -1,4 +1,4 @@
-import type {Transform} from '@dropshift/utilities';
+import type {Transform} from '@dnd-kit/utilities';
 
 export type Modifier = ({
   transform,

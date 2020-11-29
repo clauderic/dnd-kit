@@ -1,5 +1,5 @@
 import {create} from '@storybook/theming/create';
-import {default as brandImage} from './dropshift-bold.svg';
+import {default as brandImage} from './dnd-kit.svg';
 
 export default create({
   base: 'light',

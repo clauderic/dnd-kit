@@ -1,5 +1,5 @@
 import {useState, useCallback} from 'react';
-import {useOnValueChange} from '@dropshift/utilities';
+import {useOnValueChange} from '@dnd-kit/utilities';
 
 import {defaultCoordinates, getScrollCoordinates} from '../../utilities';
 import type {ScrollCoordinates} from '../../types';

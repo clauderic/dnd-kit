@@ -46,6 +46,9 @@ export interface DraggableContextType {
   activatorEvent: Event | null;
   active: Active | null;
   activeRect: PositionalClientRect | null;
+  ariaDescribedById: {
+    draggable: UniqueIdentifier;
+  };
   clientRects: PositionalClientRectMap;
   cloneNode: {
     nodeRef: React.MutableRefObject<HTMLElement | null>;

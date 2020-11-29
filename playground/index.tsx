@@ -4,66 +4,22 @@ import {useMemo, useState} from 'react';
 import * as ReactDOM from 'react-dom';
 
 import {
-  defaultCoordinates,
-  DraggableContext,
-  KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
-  Translate,
+  DndContext,
   useDraggable,
   useDroppable,
-  useSensor,
   UniqueIdentifier,
-  rectIntersection,
-} from '@dropshift/core';
-import {CSS} from '@dropshift/utilities';
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {CSS} from '@dnd-kit/utilities';
 
 const Playground = () => {
   const containers = ['A', 'B', 'C'];
-  const [{translate}, setTranslate] = useState<{
-    initialTranslate: Translate;
-    translate: Translate;
-  }>({initialTranslate: defaultCoordinates, translate: defaultCoordinates});
   const [parent, setParent] = useState<UniqueIdentifier | null>(null);
-  const mouseSensor = useSensor(MouseSensor, {});
-  const touchSensor = useSensor(TouchSensor, {});
-  const keyboardSensor = useSensor(KeyboardSensor, {});
-  const sensors = useMemo(() => [mouseSensor, touchSensor, keyboardSensor], [
-    mouseSensor,
-    touchSensor,
-    keyboardSensor,
-  ]);
 
-  const item = <Draggable translate={translate} />;
+  const item = <Draggable />;
 
   return (
-    <DraggableContext
-      sensors={sensors}
-      collisionDetection={rectIntersection}
-      onDragStart={() => {}}
-      onDragMove={({delta}) => {
-        setTranslate(({initialTranslate}) => ({
-          initialTranslate,
-          translate: {
-            x: initialTranslate.x + delta.x,
-            y: initialTranslate.y + delta.y,
-          },
-        }));
-      }}
-      onDragEnd={({over}) => {
-        setParent(over ? over.id : null);
-        setTranslate(() => ({
-          translate: defaultCoordinates,
-          initialTranslate: defaultCoordinates,
-        }));
-      }}
-      onDragCancel={() => {
-        setTranslate(({initialTranslate}) => ({
-          translate: initialTranslate,
-          initialTranslate: defaultCoordinates,
-        }));
-      }}
-    >
+    <DndContext onDragEnd={handleDragEnd}>
       {parent === null ? item : null}
 
       <div style={{display: 'flex'}}>
@@ -73,16 +29,18 @@ const Playground = () => {
           </Droppable>
         ))}
       </div>
-    </DraggableContext>
+    </DndContext>
   );
+
+  function handleDragEnd(event: DragEndEvent) {
+    const {over} = event;
+
+    setParent(over ? over.id : null);
+  }
 };
 
-interface DraggableProps {
-  translate: Translate;
-}
-
-function Draggable({translate}: DraggableProps) {
-  const {isDragging, setNodeRef, listeners} = useDraggable({
+function Draggable() {
+  const {isDragging, transform, setNodeRef, listeners} = useDraggable({
     id: 'draggable-item',
   });
 
@@ -90,11 +48,7 @@ function Draggable({translate}: DraggableProps) {
     <button
       ref={setNodeRef}
       style={{
-        transform: CSS.Transform.toString({
-          ...translate,
-          scaleX: 1,
-          scaleY: 1,
-        }),
+        transform: CSS.Translate.toString(transform),
         boxShadow: isDragging
           ? '-1px 0 15px 0 rgba(34, 33, 81, 0.01), 0px 15px 15px 0 rgba(34, 33, 81, 0.25)'
           : undefined,

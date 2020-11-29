@@ -1,1 +1,1 @@
-# @dropshift/core
+# @dnd-kit/core

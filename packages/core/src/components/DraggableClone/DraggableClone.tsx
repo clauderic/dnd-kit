@@ -1,6 +1,6 @@
 import React, {forwardRef, useContext} from 'react';
 
-import {CSS} from '@dropshift/utilities';
+import {CSS} from '@dnd-kit/utilities';
 
 import {Context} from '../../store';
 import {getEventCoordinates} from '../../utilities';
@@ -9,7 +9,7 @@ import {
   Modifiers,
   restrictToWindowEdges,
 } from '../../modifiers';
-import {ActiveDraggableContext} from '../DraggableContext';
+import {ActiveDraggableContext} from '../DndContext';
 
 type TransitionGetter = (
   activatorEvent: Event | null
@@ -35,7 +35,6 @@ export const DraggableClone = React.memo(
   ({
     adjustScale,
     children,
-    style: inlineStyles,
     transition = defaultTransition,
     translateModifiers,
     wrapperElement,
@@ -96,7 +95,6 @@ export const DraggableClone = React.memo(
             typeof transition === 'function'
               ? transition(activatorEvent)
               : transition,
-          ...inlineStyles,
         }
       : undefined;
 

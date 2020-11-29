@@ -1,4 +1,4 @@
-import type {PositionalClientRect} from '@dropshift/core';
+import type {PositionalClientRect} from '@dnd-kit/core';
 import type {SortingStrategy} from '../types';
 
 // TO-DO: We should be calculating scale transformation

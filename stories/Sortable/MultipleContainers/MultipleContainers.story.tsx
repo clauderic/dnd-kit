@@ -4,14 +4,14 @@ import {
   ActivationConstraint,
   closestRect,
   rectIntersection,
-  DraggableContext,
+  DndContext,
   DraggableClone,
   getElementCoordinates,
   Modifiers,
   useDroppable,
   UniqueIdentifier,
   CollisionDetection,
-} from '@dropshift/core';
+} from '@dnd-kit/core';
 import {
   SortableContainer,
   useSortableElement,
@@ -20,7 +20,7 @@ import {
   clientRectSortingStrategy,
   verticalListSortingStrategy,
   SortingStrategy,
-} from '@dropshift/sortable';
+} from '@dnd-kit/sortable';
 
 import {
   Item,
@@ -192,7 +192,7 @@ function Sortable({
   );
 
   return (
-    <DraggableContext
+    <DndContext
       sensors={sensors}
       collisionDetection={collisionDetection}
       onDragStart={({active}) => {
@@ -360,7 +360,7 @@ function Sortable({
         document.body
       )}
       {renderTrashDroppable && activeId ? <Trash /> : null}
-    </DraggableContext>
+    </DndContext>
   );
 }
 
@@ -420,7 +420,6 @@ function SortableItem({
   const {
     clientRect,
     node,
-    inlineStyles,
     setNodeRef,
     listeners,
     isDragging,
@@ -478,7 +477,6 @@ function SortableItem({
         value: id,
         isDragging,
         isSorting,
-        inlineStyles,
         overIndex: over ? getIndex(over.id) : overIndex,
         containerId,
       })}

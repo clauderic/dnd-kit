@@ -1,5 +1,5 @@
-# @dropshift/react
+# @dnd-kit/react
 
-[![Stable release](https://img.shields.io/npm/v/@dropshift/react.svg)](https://npm.im/@dropshift/react)
+[![Stable release](https://img.shields.io/npm/v/@dnd-kit/react.svg)](https://npm.im/@dnd-kit/react)
 
-Official React package for @dropshift
+Official React package for @dnd-kit

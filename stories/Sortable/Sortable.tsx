@@ -8,15 +8,15 @@ import {
   SortableContainer,
   SortingStrategy,
   verticalListSortingStrategy,
-} from '@dropshift/sortable';
+} from '@dnd-kit/sortable';
 import {
   ActivationConstraint,
   DraggableClone,
-  DraggableContext,
+  DndContext,
   closestRect,
   UniqueIdentifier,
   Modifiers,
-} from '@dropshift/core';
+} from '@dnd-kit/core';
 
 import {createRange} from '../utilities';
 import {Item, List} from '../components';
@@ -95,7 +95,7 @@ export function Sortable({
   );
 
   return (
-    <DraggableContext
+    <DndContext
       sensors={sensors}
       collisionDetection={closestRect}
       onDragStart={({active}) => {
@@ -165,7 +165,7 @@ export function Sortable({
             document.body
           )
         : null}
-    </DraggableContext>
+    </DndContext>
   );
 }
 
@@ -201,12 +201,12 @@ export function SortableItem({
   wrapperStyle,
 }: SortableItemProps) {
   const {
-    inlineStyles,
-    setNodeRef,
-    listeners,
+    attributes,
     isDragging,
     isSorting,
+    listeners,
     overIndex,
+    setNodeRef,
     transform,
   } = useSortableElement({
     id,
@@ -229,7 +229,6 @@ export function SortableItem({
         id,
         isDragging,
         isSorting,
-        inlineStyles,
         overIndex,
       })}
       wrapperStyle={wrapperStyle({index, isDragging, id})}
@@ -238,6 +237,7 @@ export function SortableItem({
       data-index={index}
       data-id={id}
       clone={!useClone && isDragging}
+      {...attributes}
     />
   );
 }

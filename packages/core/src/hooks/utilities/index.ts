@@ -4,4 +4,10 @@ export {useClientRects} from './useClientRects';
 export {useCombineActivators} from './useCombineActivators';
 export {useScrollCoordinates} from './useScrollCoordinates';
 export {useScrollingParent} from './useScrollingParent';
-export * from './useSyntheticListeners';
+export {
+  useSyntheticListeners,
+  SyntheticListener,
+  SyntheticListeners,
+  SyntheticListenerMap,
+} from './useSyntheticListeners';
+export {useAnnouncement} from './useAnnouncement';

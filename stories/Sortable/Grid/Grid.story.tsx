@@ -1,7 +1,7 @@
 import React from 'react';
 
-import {restrictToWindowEdges} from '@dropshift/core';
-import {clientRectSortingStrategy} from '@dropshift/sortable';
+import {restrictToWindowEdges} from '@dnd-kit/core';
+import {clientRectSortingStrategy} from '@dnd-kit/sortable';
 
 import {Sortable, Props as SortableProps} from '../Sortable';
 import {GridContainer} from '../../components';

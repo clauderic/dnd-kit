@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useRef} from 'react';
-import {useInterval} from '@dropshift/utilities';
+import {useInterval} from '@dnd-kit/utilities';
 
 import {
   getScrollDirectionAndSpeed,

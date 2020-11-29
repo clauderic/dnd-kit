@@ -1,12 +1,15 @@
 export {
-  __internal__ActiveDraggableContext,
-  DraggableContext,
+  DndContext,
   DraggableClone,
+  DragEndEvent,
+  DragMoveEvent,
+  DragOverEvent,
+  DragStartEvent,
 } from './components';
 export {
   useDraggable,
   UseDraggableArguments,
-  useDraggableContext,
+  useDndContext,
   useDroppable,
   UseDroppableArguments,
   DraggableSyntheticListeners,

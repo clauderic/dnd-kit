@@ -1,1 +1,1 @@
-# @dropshift/utilities
+# @dnd-kit/utilities

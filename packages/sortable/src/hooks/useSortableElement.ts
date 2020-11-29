@@ -1,32 +1,15 @@
-import React, {createContext, useContext, useMemo} from 'react';
+import {useContext, useMemo} from 'react';
 
-import {
-  __internal__ActiveDraggableContext as ActiveDraggableContext,
-  useDraggable,
-  useDroppable,
-  UseDraggableArguments,
-} from '@dropshift/core';
-import {CSS} from '@dropshift/utilities';
+import {useDraggable, useDroppable, UseDraggableArguments} from '@dnd-kit/core';
 
 import {SortableContext} from '../components';
 import type {SortingStrategy} from '../types';
 
 export interface Arguments extends UseDraggableArguments {
-  transition?: React.CSSProperties['transition'];
   strategy: SortingStrategy;
 }
 
-const defaultArguments: Partial<Arguments> = {
-  transition: 'transform 250ms ease',
-};
-
-const NullContext = createContext<any>(null);
-
-export function useSortableElement(args: Arguments) {
-  const {disabled, id, strategy, transition} = {
-    ...defaultArguments,
-    ...args,
-  };
+export function useSortableElement({disabled, id, strategy}: Arguments) {
   const {
     items,
     containerId,
@@ -39,10 +22,12 @@ export function useSortableElement(args: Arguments) {
   const {
     active,
     activeRect,
+    attributes,
     setNodeRef: setDraggableRef,
     listeners,
     isDragging,
     over,
+    transform,
   } = useDraggable({
     id,
     disabled,
@@ -59,33 +44,21 @@ export function useSortableElement(args: Arguments) {
     data,
   });
   const isSorting = Boolean(active);
-
-  const shouldTransformDragSource = !useClone && isDragging;
-  const transform = useContext(
-    shouldTransformDragSource ? ActiveDraggableContext : NullContext
-  );
-
-  const finalTransform =
-    isValidIndex(activeIndex) && isValidIndex(overIndex) && !disableInlineStyles
-      ? transform ??
-        strategy({clientRects, activeRect, activeIndex, overIndex, index})
-      : null;
-
-  // Transitions and transforms can interfere with ClientRect measurements
-  // We momentarily disable inline styles while ClientRects are being recomputed
-  const inlineStyles = disableInlineStyles
-    ? undefined
-    : {
-        transform:
-          isSorting && finalTransform
-            ? CSS.Transform.toString(finalTransform)
-            : undefined,
-        transition: isSorting ? transition : undefined,
-      };
+  const displaceItem =
+    isSorting &&
+    isValidIndex(activeIndex) &&
+    isValidIndex(overIndex) &&
+    !disableInlineStyles;
+  const shouldDisplaceDragSource = !useClone && isDragging;
+  const dragSourceDisplacement = shouldDisplaceDragSource ? transform : null;
+  const finalTransform = displaceItem
+    ? dragSourceDisplacement ??
+      strategy({clientRects, activeRect, activeIndex, overIndex, index})
+    : null;
 
   return {
+    attributes,
     clientRect,
-    inlineStyles,
     isSorting,
     isDragging,
     listeners,

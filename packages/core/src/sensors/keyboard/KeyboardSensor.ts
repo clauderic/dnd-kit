@@ -1,7 +1,7 @@
 import {
   add as getAdjustedCoordinates,
   subtract as getCoordinatesDelta,
-} from '@dropshift/utilities';
+} from '@dnd-kit/utilities';
 
 import {Listeners} from '../utilities';
 import type {SensorInstance, SensorProps, SensorOptions} from '../types';
@@ -9,7 +9,11 @@ import type {Coordinates} from '../../types';
 
 import {CoordinatesGetter, KeyCode, KeyCodes} from './types';
 import {defaultKeyCodes, defaultCoordinatesGetter} from './defaults';
-import {getElementCoordinates, getScrollPosition} from '../../utilities';
+import {
+  defaultCoordinates,
+  getElementCoordinates,
+  getScrollPosition,
+} from '../../utilities';
 
 export interface KeyboardSensorOptions extends SensorOptions {
   keyCodes?: KeyCodes;
@@ -21,42 +25,41 @@ export type KeyboardSensorProps = SensorProps<KeyboardSensorOptions>;
 
 export class KeyboardSensor implements SensorInstance {
   public autoScrollEnabled = false;
-  private initialCoordinates: Coordinates;
-  private currentCoordinates: Coordinates;
+  private coordinates: Coordinates = defaultCoordinates;
   private listeners: Listeners;
 
   constructor(private props: KeyboardSensorProps) {
-    const {event, active} = props;
+    const {event} = props;
 
+    this.props = props;
+    this.listeners = new Listeners(event.target);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+
+    this.attach();
+  }
+
+  private attach() {
+    this.handleStart();
+
+    setTimeout(() => this.listeners.add('keydown', this.handleKeyDown));
+  }
+
+  private handleStart() {
+    const {active, onStart} = this.props;
     const activeRect = getElementCoordinates(active.node.current);
     const coordinates = {
       x: activeRect.left,
       y: activeRect.top,
     };
 
-    this.props = props;
-    this.listeners = new Listeners(event.target);
-    this.initialCoordinates = coordinates;
-    this.currentCoordinates = coordinates;
-    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.coordinates = coordinates;
 
-    this.handleStart();
-  }
-
-  private handleStart() {
-    const {initialCoordinates} = this;
-    const {onStart} = this.props;
-
-    if (initialCoordinates) {
-      onStart(initialCoordinates);
-
-      setTimeout(() => this.listeners.add('keydown', this.handleKeyDown));
-    }
+    onStart(coordinates);
   }
 
   private handleKeyDown(event: Event) {
     if (event instanceof KeyboardEvent) {
-      const {currentCoordinates} = this;
+      const {coordinates} = this;
       const {active, context, options} = this.props;
       const {
         keyCodes = defaultKeyCodes,
@@ -78,7 +81,7 @@ export class KeyboardSensor implements SensorInstance {
       const newCoordinates = getNextCoordinates(event, {
         active,
         context: context.current,
-        currentCoordinates,
+        currentCoordinates: coordinates,
       });
 
       if (newCoordinates) {
@@ -92,7 +95,7 @@ export class KeyboardSensor implements SensorInstance {
           const direction = event.code;
           const coordinatesDelta = getCoordinatesDelta(
             newCoordinates,
-            currentCoordinates
+            coordinates
           );
           const {
             isTop,
@@ -204,14 +207,14 @@ export class KeyboardSensor implements SensorInstance {
 
     event.preventDefault();
     onMove(coordinates);
-    this.currentCoordinates = coordinates;
+    this.coordinates = coordinates;
   }
 
   private handleEnd(event: Event) {
     const {onEnd} = this.props;
 
     event.preventDefault();
-    this.teardown();
+    this.detach();
     onEnd();
   }
 
@@ -219,11 +222,11 @@ export class KeyboardSensor implements SensorInstance {
     const {onCancel} = this.props;
 
     event.preventDefault();
-    this.teardown();
+    this.detach();
     onCancel();
   }
 
-  private teardown() {
+  private detach() {
     this.listeners.removeAll();
   }
 

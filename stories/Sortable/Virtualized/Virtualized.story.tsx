@@ -7,8 +7,8 @@ import {
   useSortableSensors,
   SortableContainer,
   verticalListSortingStrategy,
-} from '@dropshift/sortable';
-import {closestRect, DraggableContext, DraggableClone} from '@dropshift/core';
+} from '@dnd-kit/sortable';
+import {closestRect, DndContext, DraggableClone} from '@dnd-kit/core';
 
 import styles from './Virtualized.module.css';
 
@@ -41,7 +41,7 @@ function Sortable({
   const activeIndex = activeId ? getIndex(activeId) : -1;
 
   return (
-    <DraggableContext
+    <DndContext
       sensors={sensors}
       collisionDetection={closestRect}
       onDragStart={({active}) => {
@@ -108,7 +108,7 @@ function Sortable({
         </DraggableClone>,
         document.body
       )}
-    </DraggableContext>
+    </DndContext>
   );
 }
 

@@ -1,6 +1,6 @@
 import {useContext} from 'react';
 import {Context} from '../../store';
 
-export function useDraggableContext() {
+export function useDndContext() {
   return useContext(Context);
 }

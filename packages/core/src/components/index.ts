@@ -1,6 +1,9 @@
 export {
-  ActiveDraggableContext as __internal__ActiveDraggableContext,
-  DraggableContext,
+  DndContext,
+  DragEndEvent,
+  DragOverEvent,
+  DragMoveEvent,
+  DragStartEvent,
   SensorContext,
-} from './DraggableContext/DraggableContext';
+} from './DndContext';
 export {DraggableClone} from './DraggableClone';

@@ -6,7 +6,7 @@ import {Item, GridContainer} from '../components';
 import {
   closestRect,
   rectIntersection,
-  DraggableContext,
+  DndContext,
   useDraggable,
   useDroppable,
   useSensor,
@@ -16,8 +16,8 @@ import {
   Translate,
   UniqueIdentifier,
   CollisionDetection as CollisionDetectionType,
-} from '@dropshift/core';
-import {CSS} from '@dropshift/utilities';
+} from '@dnd-kit/core';
+import {CSS} from '@dnd-kit/utilities';
 
 import styles from './Droppable.module.css';
 
@@ -78,7 +78,7 @@ function DroppableStory({
   );
 
   return (
-    <DraggableContext
+    <DndContext
       sensors={sensors}
       collisionDetection={collisionDetection}
       onDragStart={() => {}}
@@ -113,7 +113,7 @@ function DroppableStory({
           </Droppable>
         ))}
       </GridContainer>
-    </DraggableContext>
+    </DndContext>
   );
 }
 

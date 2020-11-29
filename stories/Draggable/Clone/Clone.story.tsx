@@ -2,7 +2,7 @@ import React, {useMemo, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {
   ActivationConstraint,
-  DraggableContext,
+  DndContext,
   DraggableClone,
   Modifiers,
   MouseSensor,
@@ -12,12 +12,12 @@ import {
   useSensor,
   useDraggable,
   UniqueIdentifier,
-} from '@dropshift/core';
+} from '@dnd-kit/core';
 import {
   restrictToHorizontalAxis,
   restrictToVerticalAxis,
-} from '@dropshift/modifiers';
-import {CSS} from '@dropshift/utilities';
+} from '@dnd-kit/modifiers';
+import {CSS} from '@dnd-kit/utilities';
 
 import {Item, List} from '../../components';
 
@@ -60,7 +60,7 @@ function Clone({
   ]);
 
   return (
-    <DraggableContext
+    <DndContext
       sensors={sensors}
       translateModifiers={translateModifiers}
       onDragStart={({active}) => {
@@ -108,7 +108,7 @@ function Clone({
         </DraggableClone>,
         document.body
       )}
-    </DraggableContext>
+    </DndContext>
   );
 }
 

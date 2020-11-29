@@ -1,1 +1,1 @@
-# @dropshift/modifiers
+# @dnd-kit/modifiers

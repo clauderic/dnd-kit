@@ -1,6 +1,6 @@
 import type {Coordinates} from '../../types';
 import type {Active} from '../../store';
-import type {SensorContext} from '../../components/DraggableContext/DraggableContext';
+import type {SensorContext} from '../../components/DndContext';
 
 export enum KeyCode {
   Space = 'Space',

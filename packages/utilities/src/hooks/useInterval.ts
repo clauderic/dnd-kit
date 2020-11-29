@@ -14,5 +14,5 @@ export function useInterval() {
     }
   }, []);
 
-  return [set, clear] as [typeof set, typeof clear]; // TO-DO: Not sure why this is necessary
+  return [set, clear] as const;
 }

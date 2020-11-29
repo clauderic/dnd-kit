@@ -10,7 +10,7 @@ import {
   SensorDescriptor,
   SensorOptions,
   PointerSensorOptions,
-} from '@dropshift/core';
+} from '@dnd-kit/core';
 
 import {getNextKeyboardCoordinates} from '../sensors';
 import {SortingStrategy} from '../types';

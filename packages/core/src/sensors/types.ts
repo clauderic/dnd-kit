@@ -1,7 +1,7 @@
 import type {MutableRefObject} from 'react';
 import type {Coordinates, SyntheticEventName} from '../types';
 import type {Active} from '../store/types';
-import type {SensorContext} from '../components/DraggableContext/DraggableContext';
+import type {SensorContext} from '../components/DndContext/DndContext';
 
 export enum Response {
   Start = 'start',

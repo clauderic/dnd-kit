@@ -13,6 +13,9 @@ export const Context = createContext<DraggableContextType>({
   active: null,
   activeRect: null,
   activators: [],
+  ariaDescribedById: {
+    draggable: '',
+  },
   clientRects: new Map(),
   cloneNode: {
     nodeRef: {

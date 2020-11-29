@@ -1,6 +1,6 @@
 import React from 'react';
-import {horizontalListSortingStrategy} from '@dropshift/sortable';
-import {restrictToHorizontalAxis} from '@dropshift/modifiers';
+import {horizontalListSortingStrategy} from '@dnd-kit/sortable';
+import {restrictToHorizontalAxis} from '@dnd-kit/modifiers';
 
 import {createRange} from '../../utilities';
 import {List} from '../../components';

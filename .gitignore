@@ -14,10 +14,10 @@ dist
 /storybook-static
 
 # testing
+coverage
 /coverage
 /cypress/screenshots
 /cypress/videos
-
 
 #logs
 *.log

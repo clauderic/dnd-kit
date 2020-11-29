@@ -6,10 +6,10 @@
     "baseUrl": ".",
     "typeRoots": ["./node_modules/@types", "./types"],
     "paths": {
-      "@dropshift/core": ["packages/core/src"],
-      "@dropshift/sortable": ["packages/sortable/src"],
-      "@dropshift/modifiers": ["packages/modifiers/src"],
-      "@dropshift/utilities": ["packages/utilities/src"],
+      "@dnd-kit/core": ["packages/core/src"],
+      "@dnd-kit/sortable": ["packages/sortable/src"],
+      "@dnd-kit/modifiers": ["packages/modifiers/src"],
+      "@dnd-kit/utilities": ["packages/utilities/src"],
       "$test/*": ["test/*"]
     }
   }

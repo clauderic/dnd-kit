@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 
-import {restrictToWindowEdges} from '@dropshift/core';
-import {verticalListSortingStrategy} from '@dropshift/sortable';
-import {restrictToVerticalAxis} from '@dropshift/modifiers';
+import {restrictToWindowEdges} from '@dnd-kit/core';
+import {verticalListSortingStrategy} from '@dnd-kit/sortable';
+import {restrictToVerticalAxis} from '@dnd-kit/modifiers';
 
 import {createRange} from '../../utilities';
 import {Sortable, Props as SortableProps} from '../Sortable';

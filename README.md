@@ -1,19 +1,28 @@
-<p align="center"><img alt="Dropshift – Drag it, shift it, drop it like it's hot." width="520" alt="Logo" src="https://user-images.githubusercontent.com/1416436/100264020-3f265a80-2f1c-11eb-89c8-b28b82aaef3e.png"></p>
+<p align="center"><img alt="dnd kit – Drag it, move it, drop it like it's hot." width="520" src=".github/dnd-kit-hero.png"></p>
 
 ## Packages contained in this repository
 
-- `@dropshift/core`
-- `@dropshift/sortable`
-- `@dropshift/modifiers`
-- `@dropshift/utilities`
+- `@dnd-kit/core`
+- `@dnd-kit/sortable`
+- `@dnd-kit/modifiers`
+- `@dnd-kit/utilities`
+
+## Running storybook
+
+```sh
+yarn start:storybook
+```
+
+Runs the storybook
+Open [http://localhost:6006](http://localhost:6006) to view it in the browser.
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/1416436/100043238-fb780780-2dda-11eb-9621-806db8e26d9e.gif" />
 </p>
 
-## Working in the `@dropshift` repository
+## Working in the `@dnd-kit` repository
 
-You'll need to install all the dependencies in the root directory. Since the `@dropshift` is a monorepo that uses Lerna and Yarn Workspaces, npm CLI is not supported (only yarn).
+You'll need to install all the dependencies in the root directory. Since the `@dnd-kit` is a monorepo that uses Lerna and Yarn Workspaces, npm CLI is not supported (only yarn).
 
 ```sh
 yarn install
@@ -30,15 +39,6 @@ yarn start
 ```
 
 This builds each package to `<packages>/<package>/dist` and runs the project in watch mode so any edits you save inside `<packages>/<package>/src` cause a rebuild to `<packages>/<package>/dist`. The results will stream to to the terminal.
-
-## Running storybook
-
-```sh
-yarn start:storybook
-```
-
-Runs the storybook
-Open [http://localhost:6006](http://localhost:6006) to view it in the browser.
 
 ### Working with the playground
 

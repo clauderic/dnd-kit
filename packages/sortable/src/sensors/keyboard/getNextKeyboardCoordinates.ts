@@ -4,8 +4,8 @@ import {
   KeyCode,
   PositionalClientRectEntry,
   CoordinatesGetter,
-} from '@dropshift/core';
-import {subtract as getCoordinatesDelta} from '@dropshift/utilities';
+} from '@dnd-kit/core';
+import {subtract as getCoordinatesDelta} from '@dnd-kit/utilities';
 
 import {clientRectSortingStrategy} from '../../strategies';
 import {SortingStrategy} from '../../types';

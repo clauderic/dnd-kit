@@ -1,3 +1,3 @@
 export * from './useDraggable';
-export {useDraggableContext} from './useDraggableContext';
+export {useDndContext} from './useDndContext';
 export * from './useDroppable';

@@ -1,5 +1,5 @@
-# @dropshift/modifiers
+# @dnd-kit/modifiers
 
-[![Stable release](https://img.shields.io/npm/v/@dropshift/modifiers.svg)](https://npm.im/@dropshift/sortable)
+[![Stable release](https://img.shields.io/npm/v/@dnd-kit/modifiers.svg)](https://npm.im/@dnd-kit/sortable)
 
-Modifier presets for use with `@dropshift` packages.
+Modifier presets for use with `@dnd-kit` packages.

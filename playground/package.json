@@ -1,5 +1,5 @@
 {
-  "name": "@dropshift/playground",
+  "name": "@dnd-kit/playground",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -11,10 +11,10 @@
     "react-app-polyfill": "^1.0.0"
   },
   "alias": {
-    "@dropshift/core": "../packages/core",
-    "@dropshift/modifiers": "../packages/modifiers",
-    "@dropshift/sortable": "../packages/sortable",
-    "@dropshift/utilities": "../packages/utilities",
+    "@dnd-kit/core": "../packages/core",
+    "@dnd-kit/modifiers": "../packages/modifiers",
+    "@dnd-kit/sortable": "../packages/sortable",
+    "@dnd-kit/utilities": "../packages/utilities",
     "react": "../node_modules/react",
     "react-dom": "../node_modules/react-dom/profiling",
     "scheduler/tracing": "../node_modules/scheduler/tracing-profiling"

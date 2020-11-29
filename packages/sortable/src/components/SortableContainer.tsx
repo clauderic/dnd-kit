@@ -1,16 +1,13 @@
 import React, {useEffect, useMemo, useRef} from 'react';
 
 import {
-  useDraggableContext,
+  useDndContext,
   PositionalClientRect,
   UniqueIdentifier,
-} from '@dropshift/core';
+} from '@dnd-kit/core';
+import {useUniqueId} from '@dnd-kit/utilities';
 
-import {useUniqueId} from '../hooks/utilities';
-
-type PositionalClientRectMap = ReturnType<
-  typeof useDraggableContext
->['clientRects'];
+type PositionalClientRectMap = ReturnType<typeof useDndContext>['clientRects'];
 
 interface Props {
   children: React.ReactNode;
@@ -45,7 +42,7 @@ export function SortableContainer({children, id, items}: Props) {
     clientRects,
     cloneNode,
     over,
-  } = useDraggableContext();
+  } = useDndContext();
   const containerId = useUniqueId(ID_PREFIX, id);
   const useClone = cloneNode.clientRect !== null;
   const activeIndex = active ? items.indexOf(active.id) : -1;

@@ -1,4 +1,4 @@
-import {subtract as getCoordinatesDelta} from '@dropshift/utilities';
+import {subtract as getCoordinatesDelta} from '@dnd-kit/utilities';
 
 import {Listeners} from '../utilities';
 
@@ -53,20 +53,31 @@ export class PointerSensor implements SensorInstance {
   private timeoutId: NodeJS.Timeout | null = null;
   private listeners: Listeners;
 
-  constructor(private props: PointerSensorProps, events: PointerEventHandlers) {
-    const {
-      event,
-      options: {activationConstraint},
-    } = props;
-
-    this.listeners = new Listeners(event.target);
+  constructor(
+    private props: PointerSensorProps,
+    private events: PointerEventHandlers
+  ) {
+    const {event} = props;
 
     this.props = props;
+    this.events = events;
+    this.listeners = new Listeners(event.target);
     this.initialCoordinates = getEventCoordinates(event);
     this.handleStart = this.handleStart.bind(this);
     this.handleMove = this.handleMove.bind(this);
     this.handleEnd = this.handleEnd.bind(this);
     this.handleKeydown = this.handleKeydown.bind(this);
+
+    this.attach();
+  }
+
+  private attach() {
+    const {
+      events,
+      props: {
+        options: {activationConstraint},
+      },
+    } = this;
 
     this.listeners.add(events.move.name, this.handleMove, {
       passive: false,
@@ -89,6 +100,15 @@ export class PointerSensor implements SensorInstance {
     }
 
     this.handleStart();
+  }
+
+  private detach() {
+    this.listeners.removeAll();
+
+    if (this.timeoutId !== null) {
+      clearTimeout(this.timeoutId);
+      this.timeoutId = null;
+    }
   }
 
   private handleStart() {
@@ -142,29 +162,20 @@ export class PointerSensor implements SensorInstance {
   private handleEnd() {
     const {onEnd} = this.props;
 
-    this.teardown();
+    this.detach();
     onEnd();
   }
 
   private handleCancel() {
     const {onCancel} = this.props;
 
-    this.teardown();
+    this.detach();
     onCancel();
   }
 
   private handleKeydown(event: Event) {
     if (event instanceof KeyboardEvent && event.code === KeyCode.Esc) {
       this.handleCancel();
-    }
-  }
-
-  private teardown() {
-    this.listeners.removeAll();
-
-    if (this.timeoutId !== null) {
-      clearTimeout(this.timeoutId);
-      this.timeoutId = null;
     }
   }
 }

@@ -3,7 +3,7 @@ import React, {useMemo, useState} from 'react';
 import {Item, Grid} from '../../components';
 
 import {
-  DraggableContext,
+  DndContext,
   useDraggable,
   useSensor,
   MouseSensor,
@@ -13,13 +13,13 @@ import {
   restrictToWindowEdges,
   ActivationConstraint,
   Modifiers,
-} from '@dropshift/core';
-import {CSS} from '@dropshift/utilities';
+} from '@dnd-kit/core';
+import {CSS} from '@dnd-kit/utilities';
 import {
   createSnapModifier,
   restrictToHorizontalAxis,
   restrictToVerticalAxis,
-} from '@dropshift/modifiers';
+} from '@dnd-kit/modifiers';
 
 export default {
   title: 'Core|Draggable/Basic',
@@ -69,7 +69,7 @@ export function DraggableStory({
   ]);
 
   return (
-    <DraggableContext
+    <DndContext
       sensors={sensors}
       onDragStart={() => {}}
       onDragMove={({delta}) => {
@@ -110,7 +110,7 @@ export function DraggableStory({
           }),
         }}
       />
-    </DraggableContext>
+    </DndContext>
   );
 }
 
@@ -121,8 +121,8 @@ interface DraggableItemProps {
 }
 
 function DraggableItem({value, handle, style}: DraggableItemProps) {
-  const {setNodeRef, isDragging, listeners} = useDraggable({
-    id: 'draggable-item',
+  const {attributes, isDragging, listeners, setNodeRef} = useDraggable({
+    id: '1',
   });
 
   return (
@@ -133,6 +133,7 @@ function DraggableItem({value, handle, style}: DraggableItemProps) {
       wrapperStyle={style}
       handle={handle}
       listeners={listeners}
+      {...attributes}
     />
   );
 }

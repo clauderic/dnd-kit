@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import classNames from 'classnames';
-import {DraggableSyntheticListeners} from '@dropshift/core';
-import {Transform} from '@dropshift/utilities';
+import {DraggableSyntheticListeners} from '@dnd-kit/core';
+import {Transform} from '@dnd-kit/utilities';
 
 import {Handle} from './components';
 
@@ -28,7 +28,7 @@ export interface Props {
     index: number | undefined;
     fadeIn: boolean;
     listeners: DraggableSyntheticListeners;
-    ref: React.Ref<HTMLDivElement>;
+    ref: React.Ref<HTMLLIElement>;
     style: React.CSSProperties | undefined;
     transform: Props['transform'];
     value: Props['value'];
@@ -36,7 +36,7 @@ export interface Props {
 }
 
 export const Item = React.memo(
-  React.forwardRef<HTMLDivElement, Props>(
+  React.forwardRef<HTMLLIElement, Props>(
     (
       {
         clone,
@@ -83,7 +83,7 @@ export const Item = React.memo(
           value,
         })
       ) : (
-        <div
+        <li
           className={classNames(
             styles.Wrapper,
             fadeIn && styles.fadeIn,
@@ -127,7 +127,7 @@ export const Item = React.memo(
             {value}
             {handle ? <Handle {...listeners} /> : null}
           </div>
-        </div>
+        </li>
       );
     }
   )

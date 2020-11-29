@@ -1,4 +1,4 @@
-import type {Modifier} from '@dropshift/core';
+import type {Modifier} from '@dnd-kit/core';
 
 export const restrictToScrollContainerRect: Modifier = ({
   transform,
