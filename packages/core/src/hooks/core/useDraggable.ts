@@ -8,7 +8,6 @@ import {useSyntheticListeners, SyntheticListenerMap} from '../utilities';
 export interface UseDraggableArguments {
   id: string;
   disabled?: boolean;
-  ariaRole?: string;
   ariaRoleDescription?: string;
 }
 
@@ -19,7 +18,6 @@ const NullContext = createContext<any>(null);
 export function useDraggable({
   id,
   disabled = false,
-  ariaRole = 'button',
   ariaRoleDescription = 'draggable',
 }: UseDraggableArguments) {
   const {
@@ -41,7 +39,7 @@ export function useDraggable({
     active,
     activeRect,
     attributes: {
-      'aria-role': ariaRole,
+      role: 'button',
       'aria-pressed': isDragging ? true : undefined,
       'aria-roledescription': ariaRoleDescription,
       'aria-describedby': ariaDescribedById.draggable,
