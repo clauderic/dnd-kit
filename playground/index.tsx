@@ -40,7 +40,13 @@ const Playground = () => {
 };
 
 function Draggable() {
-  const {isDragging, transform, setNodeRef, listeners} = useDraggable({
+  const {
+    attributes,
+    isDragging,
+    transform,
+    setNodeRef,
+    listeners,
+  } = useDraggable({
     id: 'draggable-item',
   });
 
@@ -53,6 +59,7 @@ function Draggable() {
           ? '-1px 0 15px 0 rgba(34, 33, 81, 0.01), 0px 15px 15px 0 rgba(34, 33, 81, 0.25)'
           : undefined,
       }}
+      {...attributes}
       {...listeners}
     >
       Drag me
