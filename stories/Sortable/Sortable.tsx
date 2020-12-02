@@ -75,6 +75,11 @@ export function Sortable({
         activationConstraint,
       },
     },
+    touch: {
+      options: {
+        activationConstraint,
+      },
+    },
     keyboard: {
       options: {
         // For automated Cypress integration tests, we don't need the smooth animation
