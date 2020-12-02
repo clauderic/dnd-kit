@@ -36,6 +36,8 @@ const defaultCoordinates = {
   y: 0,
 };
 
+const husseinsDragMe = "Huss's draggable" ;
+
 interface Props {
   activationConstraint?: ActivationConstraint;
   handle?: boolean;
@@ -47,7 +49,7 @@ interface Props {
 export function DraggableStory({
   activationConstraint,
   handle,
-  value = 'Drag me',
+  value = husseinsDragMe,
   translateModifiers,
   style,
 }: Props) {
