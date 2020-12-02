@@ -3,6 +3,7 @@ export * from './coordinates';
 
 export {getAdjustedClientRect} from './getAdjustedClientRect';
 export {getMinValueIndex, getMaxValueIndex} from './getValueIndex';
+export {getOwnerDocument} from './getOwnerDocument';
 export {getScrollDirectionAndSpeed} from './getScrollDirectionAndSpeed';
 export {getScrollingParent} from './getScrollingParent';
 export {getScrollPosition} from './getScrollPosition';

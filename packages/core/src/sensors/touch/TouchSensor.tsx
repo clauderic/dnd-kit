@@ -6,6 +6,7 @@ import {
   PointerEventHandlers,
   PointerSensorOptions,
 } from '../pointer';
+import {getOwnerDocument} from '../../utilities';
 
 const events: PointerEventHandlers = {
   move: {name: 'touchmove'},
@@ -16,7 +17,13 @@ export interface TouchSensorOptions extends PointerSensorOptions {}
 
 export class TouchSensor extends PointerSensor {
   constructor(props: PointerSensorProps) {
-    super(props, events);
+    const {
+      event: {target},
+    } = props;
+    const listenerTarget =
+      target instanceof HTMLElement ? target : getOwnerDocument(target);
+
+    super(props, events, listenerTarget);
   }
 
   static activators = [

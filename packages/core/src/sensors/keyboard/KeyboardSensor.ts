@@ -12,6 +12,7 @@ import {defaultKeyCodes, defaultCoordinatesGetter} from './defaults';
 import {
   defaultCoordinates,
   getElementCoordinates,
+  getOwnerDocument,
   getScrollPosition,
 } from '../../utilities';
 
@@ -29,10 +30,12 @@ export class KeyboardSensor implements SensorInstance {
   private listeners: Listeners;
 
   constructor(private props: KeyboardSensorProps) {
-    const {event} = props;
+    const {
+      event: {target},
+    } = props;
 
     this.props = props;
-    this.listeners = new Listeners(event.target);
+    this.listeners = new Listeners(getOwnerDocument(target));
     this.handleKeyDown = this.handleKeyDown.bind(this);
 
     this.attach();
