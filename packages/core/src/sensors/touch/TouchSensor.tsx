@@ -23,6 +23,12 @@ export class TouchSensor extends PointerSensor {
     {
       eventName: 'onTouchStart' as const,
       handler: ({nativeEvent}: React.TouchEvent) => {
+        const {touches} = nativeEvent;
+
+        if (touches.length > 1) {
+          return false;
+        }
+
         nativeEvent.preventDefault();
 
         if (nativeEvent.target instanceof HTMLElement) {
