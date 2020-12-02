@@ -10,4 +10,3 @@ export {
   SyntheticListeners,
   SyntheticListenerMap,
 } from './useSyntheticListeners';
-export {useAnnouncement} from './useAnnouncement';

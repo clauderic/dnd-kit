@@ -6,7 +6,7 @@ interface Arguments {
 }
 
 const defaultArguments: Arguments = {
-  timeout: 5e3, // 5 seconds
+  timeout: 1e3, // 1 second
 };
 
 export function useAnnouncement({timeout} = defaultArguments) {
@@ -32,7 +32,7 @@ export function useAnnouncement({timeout} = defaultArguments) {
     [timeout]
   );
   const announcementMapRef = useLatest(announcementMap);
-  const announcements = useMemo(() => Array.from(announcementMap.values()), [
+  const announcements = useMemo(() => Array.from(announcementMap.entries()), [
     announcementMap,
   ]);
 
