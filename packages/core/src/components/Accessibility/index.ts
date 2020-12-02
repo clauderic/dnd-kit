@@ -1,8 +1,3 @@
-export {HiddenText} from './HiddenText';
-export {LiveRegion} from './LiveRegion';
-export {
-  announcements,
-  Announcements,
-  screenReaderInstructions,
-  ScreenReaderInstructions,
-} from './defaults';
+export {Accessibility, AccessibilityRef} from './Accessibility';
+export {announcements, screenReaderInstructions} from './defaults';
+export {Announcements, ScreenReaderInstructions} from './types';

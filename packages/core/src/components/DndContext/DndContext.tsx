@@ -1,4 +1,5 @@
 import React, {
+  memo,
   createContext,
   useCallback,
   useEffect,
@@ -7,10 +8,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {createPortal} from 'react-dom';
+
 import {
   add as getAdjustedCoordinates,
-  canUseDOM,
   Transform,
   useCallbackRef,
   useIsomorphicEffect,
@@ -38,7 +38,6 @@ import {
   useCombineActivators,
   useScrollingParent,
   useScrollCoordinates,
-  useAnnouncement,
   SyntheticListener,
 } from '../../hooks/utilities';
 import {useDrag} from '../../hooks/core/useDrag';
@@ -55,6 +54,7 @@ import {
   rectIntersection,
   getAdjustedClientRect,
   defaultCoordinates,
+  noop,
 } from '../../utilities';
 import {applyModifiers, Modifiers} from '../../modifiers';
 import type {
@@ -63,12 +63,12 @@ import type {
 } from '../../store/types';
 import {UniqueIdentifier} from '../../types';
 import {
+  Accessibility,
+  AccessibilityRef,
   Announcements,
   announcements as defaultAnnouncements,
   screenReaderInstructions as defaultScreenReaderInstructions,
   ScreenReaderInstructions,
-  HiddenText,
-  LiveRegion,
 } from '../Accessibility';
 
 export interface DragStartEvent {
@@ -142,7 +142,7 @@ export const ActiveDraggableContext = createContext<Transform>({
   scaleY: 1,
 });
 
-export function DndContext({
+export const DndContext = memo(function DndContext({
   autoScroll = true,
   children,
   sensors = defaultSensors,
@@ -158,9 +158,10 @@ export function DndContext({
   const [activeSensor, setActiveSensor] = useState<SensorInstance | null>(null);
   const [activatorEvent, setActivatorEvent] = useState<Event | null>(null);
   const latestProps = useRef(props);
-  const {announce, announcements} = useAnnouncement();
-  const liveRegionId = useUniqueId(`DndLiveRegion`);
   const draggableDescribedById = useUniqueId(`DndDescribedBy`);
+  const accessibilityRef = useRef<AccessibilityRef>({
+    announce: noop,
+  });
 
   useIsomorphicEffect(
     () => {
@@ -279,7 +280,6 @@ export function DndContext({
       : null;
 
   const overRect = overId ? clientRects.get(overId) : null;
-
   const over = useMemo(
     () =>
       overId && overRect
@@ -335,7 +335,7 @@ export function DndContext({
           const announcement = announcements.onDragStart(activeRef.current.id);
 
           if (announcement) {
-            announce(announcement);
+            accessibilityRef.current.announce(announcement);
           }
 
           if (onDragStart) {
@@ -357,7 +357,7 @@ export function DndContext({
             );
 
             if (announcement) {
-              announce(announcement);
+              accessibilityRef.current.announce(announcement);
             }
 
             activeRef.current = null;
@@ -394,7 +394,7 @@ export function DndContext({
             );
 
             if (announcement) {
-              announce(announcement);
+              accessibilityRef.current.announce(announcement);
             }
 
             activeRef.current = null;
@@ -507,7 +507,7 @@ export function DndContext({
     );
 
     if (announcement) {
-      announce(announcement);
+      accessibilityRef.current.announce(announcement);
     }
 
     if (onDragOver) {
@@ -517,7 +517,7 @@ export function DndContext({
         over,
       });
     }
-  }, [announce, over]);
+  }, [over]);
 
   useIsomorphicEffect(() => {
     tracked.current = {
@@ -608,18 +608,11 @@ export function DndContext({
           {children}
         </ActiveDraggableContext.Provider>
       </Context.Provider>
-      {canUseDOM
-        ? createPortal(
-            <>
-              <HiddenText
-                id={draggableDescribedById}
-                value={screenReaderInstructions.draggable}
-              />
-              <LiveRegion id={liveRegionId} announcements={announcements} />
-            </>,
-            document.body
-          )
-        : null}
+      <Accessibility
+        ref={accessibilityRef}
+        hiddenTextDescribedById={draggableDescribedById}
+        screenReaderInstructions={screenReaderInstructions}
+      />
     </>
   );
-}
+});

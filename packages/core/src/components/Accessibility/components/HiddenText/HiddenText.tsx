@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {UniqueIdentifier} from '../../../types';
+import {UniqueIdentifier} from '../../../../types';
 
 interface Props {
   id: UniqueIdentifier;

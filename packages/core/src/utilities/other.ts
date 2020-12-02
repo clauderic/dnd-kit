@@ -1,1 +1,1 @@
-export function noop() {}
+export function noop(..._args: any) {}

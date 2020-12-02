@@ -1,10 +1,10 @@
 import React from 'react';
 
-import {UniqueIdentifier} from '../../../types';
+import {UniqueIdentifier} from '../../../../types';
 
 export interface Props {
   id: UniqueIdentifier;
-  announcements: string[];
+  announcements: [NodeJS.Timeout, string][];
 }
 
 // Hide element visually but keep it readable by screen readers
@@ -29,8 +29,8 @@ export function LiveRegion({id, announcements}: Props) {
       aria-relevant="additions"
       aria-atomic
     >
-      {announcements.map((announcement, index) => (
-        <span key={index}>{announcement}</span>
+      {announcements.map(([id, announcement]) => (
+        <span key={id.toString()}>{announcement}</span>
       ))}
     </div>
   );
