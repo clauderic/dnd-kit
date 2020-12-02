@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {
   ActivationConstraint,
-  closestRect,
+  closestCorners,
   rectIntersection,
   DndContext,
   DraggableClone,
@@ -56,12 +56,10 @@ function DroppableContainer({
   }) => React.CSSProperties;
   Component: React.FunctionComponent<any>;
 }) {
-  const hasItems = React.Children.count(children) > 0;
   const {over, isOver, setNodeRef} = useDroppable({
     id,
-    disabled: hasItems,
   });
-  const isOverContainer = isOver && over ? items.includes(over.id) : false;
+  const isOverContainer = isOver || (over ? items.includes(over.id) : false);
 
   return (
     <Component ref={setNodeRef} style={getStyle({isOverContainer})}>
@@ -75,7 +73,10 @@ const defaultContainerStyle = ({
 }: {
   isOverContainer: boolean;
 }) => ({
-  backgroundColor: isOverContainer ? '#F4F4F4' : '#FAFAFA',
+  marginTop: 40,
+  backgroundColor: isOverContainer
+    ? 'rgb(235,235,235,1)'
+    : 'rgba(246,246,246,1)',
 });
 
 type Items = Record<string, string[]>;
@@ -101,34 +102,19 @@ interface Props {
   items?: Items;
   handle?: boolean;
   renderItem?: any;
-  renderTrashDroppable?: boolean;
   strategy?: SortingStrategy;
   translateModifiers?: Modifiers;
+  trashable?: boolean;
 }
 
-const TRASH_DROPPABLE_ID = 'trash';
-
-const customCollisionDetectionStrategy: CollisionDetection = (
-  clientRects,
-  clientRect
-) => {
-  const trashRect = clientRects.filter(([id]) => id === TRASH_DROPPABLE_ID);
-
-  if (rectIntersection(trashRect, clientRect)) {
-    return TRASH_DROPPABLE_ID;
-  }
-
-  const otherRects = clientRects.filter(([id]) => id !== TRASH_DROPPABLE_ID);
-
-  return closestRect(otherRects, clientRect);
-};
+const VOID_ID = 'void';
 
 function Sortable({
   activationConstraint,
   adjustScale = false,
   animateItemInsertion = true,
   itemCount = 3,
-  collisionDetection = closestRect,
+  collisionDetection = closestCorners,
   Container = DroppableContainer,
   handle = false,
   items: parentItems,
@@ -138,7 +124,7 @@ function Sortable({
   translateModifiers,
   renderItem,
   strategy = verticalListSortingStrategy,
-  renderTrashDroppable = false,
+  trashable = false,
 }: Props) {
   const [items, setItems] = useState<Items>(
     () =>
@@ -146,7 +132,7 @@ function Sortable({
         A: createRange(itemCount, (index) => `A${index}`),
         B: createRange(itemCount, (index) => `B${index}`),
         C: createRange(itemCount, (index) => `C${index}`),
-        [TRASH_DROPPABLE_ID]: [],
+        [VOID_ID]: [],
       }
   );
   const [clonedItems, setClonedItems] = useState<Items | null>(null);
@@ -188,6 +174,7 @@ function Sortable({
         setItems(parentItems);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     parentItems ? Object.values(parentItems) : []
   );
 
@@ -202,36 +189,45 @@ function Sortable({
         activeContainerRef.current = findContainer(active.id);
       }}
       onDragOver={({over, draggingRect}) => {
-        if (!over) {
+        if (!activeId) {
           return;
         }
 
-        const overContainer = findContainer(over.id);
+        const overId = over?.id || VOID_ID;
+        const overContainer = findContainer(overId);
         const activeContainer = activeContainerRef.current;
 
-        if (!overContainer || !activeContainer || !activeId) {
+        if (!overContainer || !activeContainer) {
           return;
         }
 
         if (activeContainer !== overContainer) {
-          activeContainerRef.current = overContainer;
-
           setItems((items) => {
+            activeContainerRef.current = overContainer;
+
             const activeItems = items[activeContainer];
             const overItems = items[overContainer];
+            const overIndex = overItems.indexOf(overId);
             const activeIndex = activeItems.indexOf(activeId);
-            const overIndex = overItems.indexOf(over.id);
-            const isBelowLastItem =
-              overIndex === overItems.length - 1 &&
-              draggingRect.top >
-                over.clientRect.bottom - over.clientRect.height / 2;
 
-            const modifier = isBelowLastItem ? 1 : 0;
-            const newIndex =
-              overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
+            let newIndex: number;
+
+            if (overId in items) {
+              newIndex = overItems.length + 1;
+            } else {
+              const isBelowLastItem =
+                over &&
+                overIndex === overItems.length - 1 &&
+                draggingRect.top >
+                  over.clientRect.bottom - over.clientRect.height / 2;
+
+              const modifier = isBelowLastItem ? 1 : 0;
+
+              newIndex =
+                overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
+            }
 
             // TO-DO: Determine the new index based on whether the active rect is above / below the new item's rect?
-
             return {
               ...items,
               [activeContainer]: [
@@ -257,25 +253,27 @@ function Sortable({
 
         const activeContainer = activeContainerRef.current;
 
-        if (!over || !activeContainer) {
+        if (!activeContainer) {
           setActiveId(null);
           return;
         }
 
-        if (over.id === TRASH_DROPPABLE_ID) {
+        const overId = over?.id || VOID_ID;
+
+        if (overId === VOID_ID) {
           setItems((items) => ({
-            ...items,
-            [TRASH_DROPPABLE_ID]: [],
+            ...(trashable && over?.id === VOID_ID ? items : clonedItems),
+            [VOID_ID]: [],
           }));
           setActiveId(null);
           return;
         }
 
-        const overContainer = findContainer(over.id);
+        const overContainer = findContainer(overId);
 
         if (activeContainer && overContainer) {
           const activeIndex = items[activeContainer].indexOf(activeId);
-          const overIndex = items[overContainer].indexOf(over.id);
+          const overIndex = items[overContainer].indexOf(overId);
 
           if (activeIndex !== overIndex) {
             setItems((items) => ({
@@ -303,39 +301,41 @@ function Sortable({
       }}
       translateModifiers={translateModifiers}
     >
-      {Object.keys(items)
-        .filter((key) => key !== TRASH_DROPPABLE_ID)
-        .map((containerId) => (
-          <SortableContainer
-            id={containerId}
-            items={items[containerId]}
-            key={containerId}
-          >
-            <Container
+      <div style={{display: 'flex'}}>
+        {Object.keys(items)
+          .filter((key) => key !== VOID_ID)
+          .map((containerId) => (
+            <SortableContainer
               id={containerId}
               items={items[containerId]}
-              getStyle={getContainerStyle}
+              key={containerId}
             >
-              {items[containerId].map((value, index) => {
-                return (
-                  <SortableItem
-                    key={value}
-                    id={value}
-                    index={index}
-                    handle={handle}
-                    strategy={strategy}
-                    animate={animateItemInsertion}
-                    style={getItemStyles}
-                    wrapperStyle={wrapperStyle}
-                    renderItem={renderItem}
-                    containerId={containerId}
-                    getIndex={getIndex}
-                  />
-                );
-              })}
-            </Container>
-          </SortableContainer>
-        ))}
+              <Container
+                id={containerId}
+                items={items[containerId]}
+                getStyle={getContainerStyle}
+              >
+                {items[containerId].map((value, index) => {
+                  return (
+                    <SortableItem
+                      key={value}
+                      id={value}
+                      index={index}
+                      handle={handle}
+                      strategy={strategy}
+                      animate={animateItemInsertion}
+                      style={getItemStyles}
+                      wrapperStyle={wrapperStyle}
+                      renderItem={renderItem}
+                      containerId={containerId}
+                      getIndex={getIndex}
+                    />
+                  );
+                })}
+              </Container>
+            </SortableContainer>
+          ))}
+      </div>
       {createPortal(
         <DraggableClone adjustScale={adjustScale}>
           {activeId ? (
@@ -359,14 +359,14 @@ function Sortable({
         </DraggableClone>,
         document.body
       )}
-      {renderTrashDroppable && activeId ? <Trash /> : null}
+      {trashable && activeId ? <Trash /> : null}
     </DndContext>
   );
 }
 
 function Trash() {
   const {setNodeRef, isOver} = useDroppable({
-    id: TRASH_DROPPABLE_ID,
+    id: VOID_ID,
   });
 
   return (
@@ -435,32 +435,36 @@ function SortableItem({
   const prevIndex = useRef(index);
   const mountedWhileDragging = isDragging && !mounted;
 
-  useEffect(() => {
-    if (animate && node.current && isSorting && index !== prevIndex.current) {
-      const top = clientRect.current?.offsetTop;
-      const newTop = getElementCoordinates(node.current).offsetTop;
+  useEffect(
+    () => {
+      if (animate && node.current && isSorting && index !== prevIndex.current) {
+        const top = clientRect.current?.offsetTop;
+        const newTop = getElementCoordinates(node.current).offsetTop;
 
-      if (top != null && top !== newTop) {
-        node.current?.animate(
-          [
+        if (top != null && top !== newTop) {
+          node.current?.animate(
+            [
+              {
+                transform: `translate3d(0, ${top - newTop}px, 0)`,
+              },
+              {transform: 'translate3d(0, 0, 0)'},
+            ],
             {
-              transform: `translate3d(0, ${top - newTop}px, 0)`,
-            },
-            {transform: 'translate3d(0, 0, 0)'},
-          ],
-          {
-            easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
-            iterations: 1,
-            duration: 250,
-          }
-        );
+              easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+              iterations: 1,
+              duration: 250,
+            }
+          );
+        }
       }
-    }
 
-    if (index !== prevIndex.current) {
-      prevIndex.current = index;
-    }
-  }, [animate, index, isSorting]);
+      if (index !== prevIndex.current) {
+        prevIndex.current = index;
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [animate, index, isSorting]
+  );
 
   return (
     <Item
@@ -500,11 +504,23 @@ export const ManyItems = () => (
   />
 );
 
+const customCollisionDetectionStrategy: CollisionDetection = (
+  clientRects,
+  clientRect
+) => {
+  const voidRects = clientRects.filter(([id]) => id === VOID_ID);
+  const intersectingVoidRect = rectIntersection(voidRects, clientRect);
+
+  if (intersectingVoidRect) {
+    return intersectingVoidRect;
+  }
+
+  const otherRects = clientRects.filter(([id]) => id !== VOID_ID);
+  return closestCorners(otherRects, clientRect);
+};
+
 export const TrashableItems = () => (
-  <Sortable
-    collisionDetection={customCollisionDetectionStrategy}
-    renderTrashDroppable
-  />
+  <Sortable collisionDetection={customCollisionDetectionStrategy} trashable />
 );
 
 export const Grid = () => (
@@ -644,7 +660,7 @@ function useMountStatus() {
   useEffect(() => {
     const timeout = setTimeout(() => setIsMounted(true), 500);
 
-    () => clearTimeout(timeout);
+    return () => clearTimeout(timeout);
   }, []);
 
   return isMounted;

@@ -17,6 +17,22 @@ export function reducer(state: State, action: Action): State {
       };
     }
 
+    case Events.SetDroppableDisabled: {
+      const {id, disabled} = action;
+      const element = state.droppableContainers[id];
+
+      return {
+        ...state,
+        droppableContainers: {
+          ...state.droppableContainers,
+          [id]: {
+            ...element,
+            disabled,
+          },
+        },
+      };
+    }
+
     case Events.UnregisterDroppable: {
       const {id} = action;
 

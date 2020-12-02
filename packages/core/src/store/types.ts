@@ -3,7 +3,6 @@ import React from 'react';
 import type {PositionalClientRect, UniqueIdentifier} from '../types';
 import type {SyntheticListeners} from '../hooks/utilities';
 import type {Action} from './actions';
-import {CollisionDetection} from '../utilities';
 
 export interface DraggableElement {
   node: React.MutableRefObject<HTMLElement | null>;
@@ -16,11 +15,11 @@ export interface DraggableElement {
 export type Data = Record<string, any>;
 
 export interface DroppableContainer {
-  node: React.MutableRefObject<HTMLElement | null>;
-  collisionDetection?: CollisionDetection;
-  clientRect: React.MutableRefObject<PositionalClientRect | null>;
-  data: React.MutableRefObject<Data>;
   id: UniqueIdentifier;
+  node: React.MutableRefObject<HTMLElement | null>;
+  clientRect: React.MutableRefObject<PositionalClientRect | null>;
+  disabled: boolean;
+  data: React.MutableRefObject<Data>;
 }
 
 export type DroppableContainers = Record<UniqueIdentifier, DroppableContainer>;

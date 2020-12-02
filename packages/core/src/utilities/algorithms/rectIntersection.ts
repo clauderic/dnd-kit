@@ -1,3 +1,4 @@
+import {PositionalClientRect} from '../../types';
 import {getMaxValueIndex} from '../getValueIndex';
 
 import {CollisionDetection} from './types';
@@ -5,16 +6,31 @@ import {CollisionDetection} from './types';
 /**
  * Returns the intersecting rectangle area between two rectangles
  */
-function intersectingRectArea(rect1: ClientRect, rect2: ClientRect): number {
-  const left = Math.max(rect1.left, rect2.left);
-  const top = Math.max(rect1.top, rect2.top);
-  const right = Math.min(rect1.left + rect1.width, rect2.left + rect2.width);
-  const bottom = Math.min(rect1.top + rect1.height, rect2.top + rect2.height);
+function getIntersectionRatio(
+  entry: PositionalClientRect,
+  target: PositionalClientRect
+): number {
+  const top = Math.max(target.top, entry.offsetTop);
+  const left = Math.max(target.left, entry.offsetLeft);
+  const right = Math.min(
+    target.left + target.width,
+    entry.offsetLeft + entry.width
+  );
+  const bottom = Math.min(
+    target.top + target.height,
+    entry.offsetTop + entry.height
+  );
   const width = right - left;
   const height = bottom - top;
 
   if (left < right && top < bottom) {
-    return width * height;
+    const targetArea = target.width * target.height;
+    const entryArea = entry.width * entry.height;
+    const intersectionArea = width * height;
+    const intersectionRatio =
+      intersectionArea / (targetArea + entryArea - intersectionArea);
+
+    return Number(intersectionRatio.toFixed(4));
   }
 
   // Rectangles do not overlap, or overlap has an area of zero (edge/corner overlap)
@@ -25,9 +41,9 @@ function intersectingRectArea(rect1: ClientRect, rect2: ClientRect): number {
  * Returns the rectangle that has the greatest intersection area with a given
  * rectangle in an array of rectangles.
  */
-export const rectIntersection: CollisionDetection = (rects, rect) => {
-  const intersections = rects.map(([_, clientRect]) =>
-    intersectingRectArea(clientRect, rect)
+export const rectIntersection: CollisionDetection = (entries, target) => {
+  const intersections = entries.map(([_, entry]) =>
+    getIntersectionRatio(entry, target)
   );
 
   const maxValueIndex = getMaxValueIndex(intersections);
@@ -36,5 +52,5 @@ export const rectIntersection: CollisionDetection = (rects, rect) => {
     return null;
   }
 
-  return rects[maxValueIndex] ? rects[maxValueIndex][0] : null;
+  return entries[maxValueIndex] ? entries[maxValueIndex][0] : null;
 };

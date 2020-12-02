@@ -78,19 +78,21 @@ export interface DragStartEvent {
 export interface DragMoveEvent {
   active: NonNullable<Active>;
   delta: Translate;
-  draggingRect: ClientRect;
+  draggingRect: PositionalClientRect;
+  clientRects: PositionalClientRectMap;
   over: {
     id: UniqueIdentifier;
-    clientRect: ClientRect;
+    clientRect: PositionalClientRect;
   } | null;
 }
 
 export interface DragOverEvent {
   active: NonNullable<Active>;
-  draggingRect: ClientRect;
+  draggingRect: PositionalClientRect;
+  clientRects: PositionalClientRectMap;
   over: {
     id: UniqueIdentifier;
-    clientRect: ClientRect;
+    clientRect: PositionalClientRect;
   } | null;
 }
 
@@ -183,7 +185,7 @@ export const DndContext = memo(function DndContext({
     clientRects: PositionalClientRectMap | null;
     overId: UniqueIdentifier | null;
     windowScrollAdjustedTranslate: Coordinates;
-    translateAdjustedClientRect: ClientRect | null;
+    translateAdjustedClientRect: PositionalClientRect | null;
   }>({
     clientRects: null,
     overId: null,
@@ -271,13 +273,16 @@ export const DndContext = memo(function DndContext({
       )
     : null;
 
-  const overId =
-    clientRects && finalAdjustedClientRect
-      ? collisionDetection(
-          Array.from(clientRects.entries()),
-          finalAdjustedClientRect
-        )
-      : null;
+  const overId = willRecomputeClientRects
+    ? tracked.current.overId
+    : clientRects && finalAdjustedClientRect
+    ? collisionDetection(
+        Array.from(clientRects.entries()),
+        finalAdjustedClientRect
+      )
+    : null;
+
+  console.log(overId);
 
   const overRect = overId ? clientRects.get(overId) : null;
   const over = useMemo(
@@ -472,6 +477,7 @@ export const DndContext = memo(function DndContext({
     onDragMove({
       active: activeRef.current,
       draggingRect: translateAdjustedClientRect,
+      clientRects,
       delta: {
         x: windowScrollAdjustedTranslate.x,
         y: windowScrollAdjustedTranslate.y,
@@ -497,7 +503,7 @@ export const DndContext = memo(function DndContext({
     } = latestProps.current;
     const {translateAdjustedClientRect} = tracked.current;
 
-    if (!translateAdjustedClientRect) {
+    if (!translateAdjustedClientRect || !tracked.current.clientRects) {
       return;
     }
 
@@ -513,6 +519,7 @@ export const DndContext = memo(function DndContext({
     if (onDragOver) {
       onDragOver({
         active: activeRef.current,
+        clientRects: tracked.current.clientRects,
         draggingRect: translateAdjustedClientRect,
         over,
       });
