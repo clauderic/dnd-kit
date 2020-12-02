@@ -2,7 +2,7 @@ import {subtract as getCoordinatesDelta} from '@dnd-kit/utilities';
 
 import {Listeners} from '../utilities';
 
-import {getEventCoordinates} from '../../utilities';
+import {getEventCoordinates, getOwnerDocument} from '../../utilities';
 import type {SensorInstance, SensorProps, SensorOptions} from '../types';
 import type {Coordinates} from '../../types';
 import {KeyCode} from '../keyboard';
@@ -55,13 +55,16 @@ export class PointerSensor implements SensorInstance {
 
   constructor(
     private props: PointerSensorProps,
-    private events: PointerEventHandlers
+    private events: PointerEventHandlers,
+    listenerTarget: HTMLElement | Document = getOwnerDocument(
+      props.event.target
+    )
   ) {
     const {event} = props;
 
     this.props = props;
     this.events = events;
-    this.listeners = new Listeners(event.target);
+    this.listeners = new Listeners(listenerTarget);
     this.initialCoordinates = getEventCoordinates(event);
     this.handleStart = this.handleStart.bind(this);
     this.handleMove = this.handleMove.bind(this);
