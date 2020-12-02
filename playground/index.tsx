@@ -12,6 +12,7 @@ import {
 } from '@dnd-kit/core';
 import {CSS} from '@dnd-kit/utilities';
 
+
 const Playground = () => {
   const containers = ['A', 'B', 'C'];
   const [parent, setParent] = useState<UniqueIdentifier | null>(null);
@@ -94,4 +95,71 @@ function Droppable({id, children}: DroppableProps) {
   );
 }
 
-ReactDOM.render(<Playground />, document.getElementById('root'));
+const CASE_SIZE = 60;
+const PIECE_SIZE = CASE_SIZE - 20;
+const BOARD_SIZE = 8;
+
+interface PieceProps{
+  isOdd: boolean
+  id: number;
+}
+function generateBoard(size = BOARD_SIZE*BOARD_SIZE) {
+  const board: PieceProps[] = [];
+
+  let isOdd = false;
+
+  for (let i = 1; i <= size ; i++)  {
+    if(i % BOARD_SIZE != 1) {
+      isOdd = !isOdd
+    }
+    board.push({isOdd, id: i})
+  }
+
+  return board;
+}
+
+const CheckersGame = () => {
+  const board = generateBoard();
+
+  return (
+    <DndContext>
+      <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', maxWidth: CASE_SIZE * BOARD_SIZE}}>
+        {board.map( ({id, isOdd}, index) => 
+          <Case key={id} id={index} odd={isOdd}>
+            <Piece id={id} />
+          </Case>
+        )}
+      </div>
+    </DndContext>
+  )
+}
+
+const Case = ({odd=false, id, children}: any) => {
+  const {setNodeRef} = useDroppable({
+    id
+  });
+
+  const backgroundColor = odd ? 'black' : 'white';
+
+  return <div ref={setNodeRef} style={{display: 'flex', alignItems: 'center', justifyContent: 'center', height: CASE_SIZE, width: CASE_SIZE, backgroundColor}}>
+    {children}
+  </div>
+}
+
+const Piece = ({odd=false, id}: any) => {
+  const {attributes, listeners, setNodeRef, transform} = useDraggable({
+    id
+  });
+
+  const backgroundColor = odd ? '#4c4cff' : '#ff4c4c';
+  const style = {
+    transform: CSS.Translate.toString(transform),
+  };
+
+  return <div {...listeners} {...attributes}
+    ref={setNodeRef}
+    style={{width: PIECE_SIZE, height: PIECE_SIZE, backgroundColor, borderRadius: PIECE_SIZE/2, ...style}}
+    />
+}
+
+ReactDOM.render(<CheckersGame />, document.getElementById('root'));
