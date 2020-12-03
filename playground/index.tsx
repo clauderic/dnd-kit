@@ -135,7 +135,7 @@ function generatePieces(board: BoardCaseProps[][]) {
     for (let y = 0; y < BOARD_SIZE ; y++)  {
       const boardCase = board[x][y];
       if(boardCase.odd && piecesRows.includes(x)) {
-        const odd = x >= BOARD_SIZE/2;
+        const odd = x <= BOARD_SIZE/2;
         pieces[x][y] = {odd, id: x + "-" + y, position: {x, y}}
       }
     }
@@ -148,6 +148,30 @@ const CheckersGame = () => {
   const [board] = useState(generateBoard)
   const [pieces, setPieces] = useState(() => generatePieces(board))
   const [movingPiece, setMovingPiece] = useState<PieceProps|null>(null)
+  const [isOddTurn, setIsOddTurn] = useState(true)
+
+
+  function checkCanMove(
+      isOddTurn: boolean, 
+      isOddPiece: boolean,
+      movingPiece: PieceProps, 
+      moveToX:number,
+      moveToY:number,
+    ) {
+      const {x: moveFromX, y: moveFromY} = movingPiece.position!
+      
+      const dx = moveToX - moveFromX;
+      const dy = moveToY - moveFromY;
+
+      if (isOddTurn && isOddPiece) {
+        return dx > 0 && dy != 0;
+      } else if (!isOddTurn && !isOddPiece) {
+        return dx < 0 && dy != 0;
+      } 
+
+      return false;
+  }
+
 
   const handleDragEnd = React.useCallback(function handleDragEnd(event: DragEndEvent) {
     if(!movingPiece?.position || !event.over?.id) {
@@ -159,6 +183,14 @@ const CheckersGame = () => {
 
     // debugger;
     if(event.over) {
+      setMovingPiece(null)
+
+      const canMovePiece = checkCanMove(isOddTurn, movingPiece.odd, movingPiece, droppCaseX, droppCaseY);
+      
+      if(!canMovePiece) {
+        return;
+      }
+
       const newPiece: PieceProps = {...movingPiece, position: {x: droppCaseX, y: droppCaseY}}
 
       const newPieces = pieces.map(row => row.slice());
@@ -166,10 +198,10 @@ const CheckersGame = () => {
       newPieces[droppCaseX][droppCaseY] = newPiece;
 
       setPieces(newPieces)
-      setMovingPiece(null)
+      setIsOddTurn( turn => !turn )
     }
   },
-    [board, movingPiece, pieces, setPieces],
+    [board, setIsOddTurn, movingPiece, pieces, setPieces],
   )
 
   const handleDragStart = React.useCallback(function handleDragStart(event: DragStartEvent) {
@@ -194,9 +226,10 @@ const CheckersGame = () => {
 
   return (
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+      <h1>{isOddTurn ? "Blue" : "Red"}'s Turn</h1>
+
       <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', maxWidth: CASE_SIZE * BOARD_SIZE}}>
         {board.map( (row, x) => row.map( (rowCase, y) => {
-
           const piece = pieces[x][y];
           const pieceMarkup = piece != null?
               <Piece {...piece} /> 
@@ -214,8 +247,6 @@ const CheckersGame = () => {
       </div>
     </DndContext>
   )
-
-  
 
 }
 
@@ -258,3 +289,23 @@ const Piece = ({odd, id}: PieceProps) => {
 }
 
 ReactDOM.render(<CheckersGame />, document.getElementById('root'));
+
+
+
+
+
+
+
+
+// function canMovePiece(piece, toX, toY) {
+//   const [x, y] = piece
+//   const dx = toX - x
+//   const dy = toY - y
+//   if(dx<0 || dy<0) return false
+//   if(dx==1 && dy==1 && //check if enemy player's piece is not there)
+// 	return true
+//   else if(dx==2 && dy==2 && //check if enemy's piece is on {x+1,y+1})
+// 	// remove enemies's piece 
+// 	return true
+//   return false
+// }
