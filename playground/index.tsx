@@ -9,6 +9,7 @@ import {
   useDroppable,
   UniqueIdentifier,
   DragEndEvent,
+  DragStartEvent,
 } from '@dnd-kit/core';
 import {CSS} from '@dnd-kit/utilities';
 
@@ -117,7 +118,7 @@ function generateBoard() {
 
 function generatePieces(board: BoardCaseProps[]) {
   const size = BOARD_SIZE*BOARD_SIZE;
-  const pieces: (PieceProps|null)[] = [];
+  const pieces: (PieceProps)[] = [];
 
   const piecesRows = [
     0,
@@ -136,8 +137,6 @@ function generatePieces(board: BoardCaseProps[]) {
       const odd = i >= size/2;
 
       pieces.push({odd, id: String(i), position: i})
-    } else {
-      pieces.push(null)
     }
   }
 
@@ -146,13 +145,14 @@ function generatePieces(board: BoardCaseProps[]) {
 
 const CheckersGame = () => {
   const [board] = useState(generateBoard)
-  const [pieces] = useState(() => generatePieces(board))
+  const [pieces, setPieces] = useState(() => generatePieces(board))
+  const [movingPieceId, setMovingPieceId] = useState<String>()
 
   return (
-    <DndContext>
+    <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', maxWidth: CASE_SIZE * BOARD_SIZE}}>
         {board.map( (boardCase, index) => {
-          const piece = pieces[index];
+          const piece = pieces.find(x => x.position == index);
           const pieceMarkup = piece && piece.position === index ?
               <Piece {...piece} /> 
               : null;
@@ -167,12 +167,24 @@ const CheckersGame = () => {
     </DndContext>
   )
 
-  // function handleDragEnd(event: DragEndEvent) {
-  //   if(event?.over?.id != null) {
-  //     const droppedId = event?.over?.id;
-  //     const piece = board.find(({id}) => id === Number(droppedId))
-  //   }
-  // }
+  function handleDragStart(event: DragStartEvent) {
+    if(event.active.id) {
+      setMovingPieceId(event.active.id);
+    }
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const newCaseIndex = event.over?.id != null ? Number(event.over.id) - 1 : null;
+    const movingPiece = pieces.find(x => x.id == movingPieceId);
+
+    if(event.over && newCaseIndex != null && movingPiece != null) {
+      const newPiece = {...movingPiece, position: newCaseIndex}
+
+      const newPieces = pieces.filter(x => x.id !== movingPieceId ).concat(newPiece)
+
+      setPieces(newPieces)
+    }
+  }
 }
 
 interface BoardCaseProps {
@@ -198,8 +210,8 @@ interface PieceProps {
   position?: number;
 }
 const Piece = ({odd, id}: PieceProps) => {
-  const {attributes, listeners, setNodeRef, transform} = useDraggable({
-    id
+  const {attributes, listeners, setNodeRef, transform, } = useDraggable({
+    id,
   });
 
   const backgroundColor = odd ? '#4c4cff' : '#ff4c4c';
@@ -208,8 +220,8 @@ const Piece = ({odd, id}: PieceProps) => {
   };
 
   return <div {...listeners} {...attributes}
-    ref={setNodeRef}
-    style={{width: PIECE_SIZE, height: PIECE_SIZE, backgroundColor, borderRadius: PIECE_SIZE/2, ...style}}
+      ref={setNodeRef}
+      style={{width: PIECE_SIZE, height: PIECE_SIZE, backgroundColor, borderRadius: PIECE_SIZE/2, ...style}}
     />
 }
 
