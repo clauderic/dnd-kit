@@ -99,43 +99,89 @@ const CASE_SIZE = 60;
 const PIECE_SIZE = CASE_SIZE - 20;
 const BOARD_SIZE = 8;
 
-interface PieceProps{
-  isOdd: boolean
-  id: number;
-}
-function generateBoard(size = BOARD_SIZE*BOARD_SIZE) {
-  const board: PieceProps[] = [];
 
-  let isOdd = false;
+function generateBoard() {
+  const size = BOARD_SIZE*BOARD_SIZE;
+  const board: BoardCaseProps[] = [];
+
+  let odd = false;
 
   for (let i = 1; i <= size ; i++)  {
     if(i % BOARD_SIZE != 1) {
-      isOdd = !isOdd
+      odd = !odd
     }
-    board.push({isOdd, id: i})
+    board.push({odd, id: String(i)})
   }
-
   return board;
 }
 
+function generatePieces(board: BoardCaseProps[]) {
+  const size = BOARD_SIZE*BOARD_SIZE;
+  const pieces: (PieceProps|null)[] = [];
+
+  const piecesRows = [
+    0,
+    1,
+    2,
+    BOARD_SIZE-3,
+    BOARD_SIZE-2,
+    BOARD_SIZE-1,
+  ]
+
+  for (let i = 0; i < size ; i++)  {
+    const boardPiece = board[i];
+    // use i+1 to calculate mod starting at 1, not 0;
+    const rowNumber = Math.floor(i/BOARD_SIZE) % BOARD_SIZE;
+    if(boardPiece.odd && piecesRows.includes(rowNumber)) {
+      const odd = i >= size/2;
+
+      pieces.push({odd, id: String(i), position: i})
+    } else {
+      pieces.push(null)
+    }
+  }
+
+  return pieces;
+}
+
 const CheckersGame = () => {
-  const board = generateBoard();
+  const [board] = useState(generateBoard)
+  const [pieces] = useState(() => generatePieces(board))
 
   return (
     <DndContext>
       <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', maxWidth: CASE_SIZE * BOARD_SIZE}}>
-        {board.map( ({id, isOdd}, index) => 
-          <Case key={id} id={index} odd={isOdd}>
-            <Piece id={id} />
-          </Case>
-        )}
+        {board.map( (boardCase, index) => {
+          const piece = pieces[index];
+          const pieceMarkup = piece && piece.position === index ?
+              <Piece {...piece} /> 
+              : null;
+
+          return (
+            <BoardCase key={boardCase.id} {...boardCase}>
+            {pieceMarkup}
+            </BoardCase> 
+          )
+        })}
       </div>
     </DndContext>
   )
+
+  // function handleDragEnd(event: DragEndEvent) {
+  //   if(event?.over?.id != null) {
+  //     const droppedId = event?.over?.id;
+  //     const piece = board.find(({id}) => id === Number(droppedId))
+  //   }
+  // }
 }
 
-const Case = ({odd=false, id, children}: any) => {
-  const {setNodeRef} = useDroppable({
+interface BoardCaseProps {
+  odd: boolean
+  id: string;
+  children?: React.ReactElement | null;
+}
+const BoardCase = ({odd, id, children}: BoardCaseProps) => {
+  const {setNodeRef, } = useDroppable({
     id
   });
 
@@ -146,7 +192,12 @@ const Case = ({odd=false, id, children}: any) => {
   </div>
 }
 
-const Piece = ({odd=false, id}: any) => {
+interface PieceProps {
+  odd: boolean;
+  id: string;
+  position?: number;
+}
+const Piece = ({odd, id}: PieceProps) => {
   const {attributes, listeners, setNodeRef, transform} = useDraggable({
     id
   });
