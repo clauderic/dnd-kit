@@ -30,7 +30,7 @@ interface Props {
   handle?: boolean;
   translateModifiers?: Modifiers;
   cloneTranslateModifiers?: Modifiers;
-  style?: React.CSSProperties;
+  snapshot?: boolean;
   value?: string;
 }
 
@@ -39,6 +39,7 @@ function Clone({
   translateModifiers,
   cloneTranslateModifiers,
   handle,
+  snapshot,
   value = 'Drag me',
 }: Props) {
   const [active, setActive] = useState<{id: UniqueIdentifier} | null>(null);
@@ -86,23 +87,20 @@ function Clone({
         }));
       }}
     >
-      <List>
-        <DraggableItem
-          value={value}
-          index={0}
-          handle={handle}
-          wrapperStyle={{
-            transform: CSS.Transform.toString({
-              ...translate,
-              scaleX: 1,
-              scaleY: 1,
-            }),
-          }}
-        />
-      </List>
+      <div
+        style={{
+          transform: CSS.Transform.toString({
+            ...translate,
+            scaleX: 1,
+            scaleY: 1,
+          }),
+        }}
+      >
+        <DraggableItem value={value} index={0} handle={handle} />
+      </div>
       {createPortal(
         <DraggableClone translateModifiers={cloneTranslateModifiers}>
-          {active ? (
+          {active && !snapshot ? (
             <DraggableItem value={value} index={0} handle={handle} clone />
           ) : null}
         </DraggableClone>,
@@ -144,6 +142,8 @@ function DraggableItem({
 }
 
 export const WithClone = () => <Clone />;
+export const WithSnapshotClone = () => <Clone snapshot />;
+
 export const DragHandle = () => (
   <Clone value="Drag me with the handle" handle />
 );

@@ -1,4 +1,4 @@
-import React, {forwardRef, useContext} from 'react';
+import React, {forwardRef, useContext, useEffect, useRef} from 'react';
 
 import {CSS} from '@dnd-kit/utilities';
 
@@ -101,6 +101,7 @@ export const DraggableClone = React.memo(
     return (
       <Clone
         ref={cloneNode.setRef}
+        node={active?.node.current}
         attributes={
           isDragging
             ? {
@@ -118,38 +119,55 @@ export const DraggableClone = React.memo(
   }
 );
 
-const Clone = forwardRef(
-  (
-    {
-      attributes,
-      children,
-      isDragging,
-      wrapperElement = 'div',
-    }: {
-      attributes?: {
-        style: React.CSSProperties | undefined;
-        className: string | undefined;
-      };
-      children: React.ReactNode | null;
-      isDragging: boolean;
-      wrapperElement: Props['wrapperElement'];
-    },
-    ref
-  ) => {
+interface CloneProps {
+  attributes?: {
+    style: React.CSSProperties | undefined;
+    className: string | undefined;
+  };
+  children: React.ReactNode | null;
+  isDragging: boolean;
+  node: HTMLElement | undefined;
+  wrapperElement: Props['wrapperElement'];
+}
+
+const Clone = forwardRef<HTMLDivElement, CloneProps>(
+  ({attributes, children, isDragging, node, wrapperElement = 'div'}, ref) => {
+    const htmlSnapshot = useRef<string | null>(null);
     const shouldRender = isDragging;
+
+    useEffect(() => {
+      htmlSnapshot.current = node ? node.outerHTML : null;
+    }, [node]);
 
     if (!shouldRender) {
       return null;
     }
 
-    return React.createElement(
-      wrapperElement,
-      {
-        ...attributes,
-        ref,
-      },
-      children
-    );
+    if (children) {
+      return React.createElement(
+        wrapperElement,
+        {
+          ...attributes,
+          ref,
+        },
+        children
+      );
+    }
+
+    if (htmlSnapshot.current) {
+      return (
+        <div
+          {...attributes}
+          ref={ref}
+          dangerouslySetInnerHTML={{
+            __html: htmlSnapshot.current,
+          }}
+        />
+      );
+    }
+
+    // No children and no HTML snapshot, nothing to render
+    return null;
   }
 );
 
