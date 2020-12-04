@@ -51,11 +51,9 @@ Cypress.Commands.add(
     cy.wrap(subject, {log: false})
       .then((subject) => {
         const initialRect = subject.get(0).getBoundingClientRect();
-        const windowScroll = getDocumentScroll();
-
-        return [subject, initialRect, windowScroll] as const;
+        return [subject, initialRect] as const;
       })
-      .then(([subject, initialRect, initialWindowScroll]) => {
+      .then(([subject, initialRect]) => {
         cy.wrap(subject)
           .trigger('mousedown', {force: true})
           .wait(options?.delay || 0, {log: Boolean(options?.delay)})
@@ -77,19 +75,10 @@ Cypress.Commands.add(
           .trigger('mouseup', {force: true})
           .then((subject: any) => {
             const finalRect = subject.get(0).getBoundingClientRect();
-            const windowScroll = getDocumentScroll();
-            const windowScrollDelta = {
-              x: windowScroll.x - initialWindowScroll.x,
-              y: windowScroll.y - initialWindowScroll.y,
-            };
 
             const delta = {
-              x: Math.round(
-                finalRect.left - initialRect.left - windowScrollDelta.x
-              ),
-              y: Math.round(
-                finalRect.top - initialRect.top - windowScrollDelta.y
-              ),
+              x: Math.round(finalRect.left - initialRect.left),
+              y: Math.round(finalRect.top - initialRect.top),
             };
 
             return [subject, {initialRect, finalRect, delta}] as const;
@@ -127,17 +116,26 @@ Cypress.Commands.add(
   (subject, times: number, direction: string) => {
     const arrowKey = `{${direction}arrow}`;
 
-    Cypress.log({
-      $el: subject,
-      name: 'Move',
-    });
-
     cy.wrap(subject, {log: false})
-      .focus({log: false})
-      .type(Keys.Space, {force: true, log: false})
-      .closest('body')
-      .type(arrowKey.repeat(times), {force: true})
-      .type(Keys.Space, {log: false, force: true});
+      .then((subject) => {
+        const initialRect = subject.get(0).getBoundingClientRect();
+        return [subject, initialRect] as const;
+      })
+      .then(([subject, initialRect]) => {
+        cy.wrap(subject)
+          .focus({log: true})
+          .type(Keys.Space, {force: true, log: false})
+          .type(arrowKey.repeat(times), {force: true})
+          .type(Keys.Space, {log: true, force: true})
+          .then((subject: any) => {
+            const finalRect = subject.get(0).getBoundingClientRect();
+            const delta = {
+              x: Math.round(finalRect.left - initialRect.left),
+              y: Math.round(finalRect.top - initialRect.top),
+            };
+            return [subject, {initialRect, finalRect, delta}] as const;
+          });
+      });
   }
 );
 

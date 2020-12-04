@@ -36,9 +36,21 @@ declare namespace Cypress {
     >;
 
     /**
-     * Move a sortable element in a given direction
+     * Move a draggable element in a given direction.
      */
-    keyboardMoveBy(amount: number, direction: string): Chainable<Element>;
+    keyboardMoveBy(
+      amount: number,
+      direction: string
+    ): Chainable<
+      [
+        Element,
+        {
+          initialRect: ClientRect;
+          finalRect: ClientRect;
+          delta: {x: number; y: number};
+        }
+      ]
+    >;
 
     /**
      * Find a draggable element node by id
