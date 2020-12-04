@@ -1,0 +1,88 @@
+
+  $box-shadow-border: 0 0 0 calc(1px / var(--scale-x, 1)) rgba(63, 63, 68, 0.05);
+  $box-shadow-raised: 1px 2px calc(8px / var(--scale-x, 1)) 0 rgba(34, 33, 81, 0.25);
+  $raised-transform:  
+    translate3d(var(--translate-x, 0), var(--translate-y, 0), 0)
+    scaleX(calc(var(--scale-x, 1) * 1.01)) scaleY(calc(var(--scale-y, 1) * 1.01)));
+
+.SelectedItem:after {
+  $selected-icon-color: #aaa;
+
+  content: '\2713';
+  color: $selected-icon-color;
+  border: 2px solid $selected-icon-color;
+  border-radius: 100%;
+  font-size: 13px;
+  line-height: 13px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 16px;
+  width: 16px;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+}
+
+.SelectedItem, .DroppedItem {
+  > div {
+    box-shadow: $box-shadow-border, $box-shadow-raised;
+    transform: $raised-transform;
+  }
+}
+
+.DragOverlayContainer {
+  display: flex;
+  flex-direction: column;
+
+  > li {
+    opacity: 0.95;
+
+    &:not(:first-child) {
+      margin-top: -25px;
+      width: 100%;
+    }
+
+    &:nth-child(2) {
+      margin-left: 5px;
+      opacity: 0.9;
+      z-index: 5;
+    }
+
+    &:nth-child(3) {
+      margin-left: 10px;
+      opacity: 0.85;
+      z-index: 4;
+    }
+
+    &:nth-child(4) {
+      margin-left: 15px;
+      opacity: 0.65;
+      z-index: 3;
+    }
+
+    &:nth-child(5) {
+      margin-left: 20px;
+      opacity: 0.3;
+      z-index: 2;
+    }
+  }
+
+  .Badge {
+    position: absolute;
+    top: -10px;
+    left: -20px;
+    display: inline-block;
+    border: 2px solid #fff;
+    border-radius: 20px;
+    background: rgb(47, 121, 66);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.33);
+    padding: 2px 5px;
+    width: auto;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    z-index: 1000;
+  }
+}
