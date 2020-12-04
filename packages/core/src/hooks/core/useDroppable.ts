@@ -28,30 +28,40 @@ export function useDroppable({
     }
   }, [data]);
 
-  useEffect(() => {
-    if (!disabled) {
+  useIsomorphicEffect(
+    () => {
       dispatch({
         type: Events.RegisterDroppable,
         element: {
           id,
+          disabled,
           node: nodeRef,
           clientRect,
           data: dataRef,
         },
       });
-    } else {
-      dispatch({
-        type: Events.UnregisterDroppable,
-        id,
-      });
-    }
 
-    return () =>
+      return () =>
+        dispatch({
+          type: Events.UnregisterDroppable,
+          id,
+        });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [id]
+  );
+
+  useEffect(
+    () => {
       dispatch({
-        type: Events.UnregisterDroppable,
+        type: Events.SetDroppableDisabled,
         id,
+        disabled,
       });
-  }, [id, clientRect, nodeRef, disabled, dispatch]);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [disabled]
+  );
 
   return {
     clientRect,

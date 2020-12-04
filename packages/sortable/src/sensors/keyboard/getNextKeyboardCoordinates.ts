@@ -1,5 +1,5 @@
 import {
-  closestRect,
+  closestCenter,
   defaultCoordinates,
   KeyCode,
   PositionalClientRectEntry,
@@ -72,7 +72,7 @@ export const getNextKeyboardCoordinates = (
       }
     });
 
-    const closestId = closestRect(clientRects, {
+    const closestId = closestCenter(clientRects, {
       ...overRect,
       top: overRect.offsetTop,
       left: overRect.offsetLeft,

@@ -60,7 +60,7 @@ export const VariableSizes = () => (
     {...props}
     itemCount={14}
     getItemStyles={({index}) => {
-      if (index === 0 || index == 9) {
+      if (index === 0 || index === 9) {
         return {
           fontSize: '2rem',
           padding: '36px 40px',
@@ -70,7 +70,7 @@ export const VariableSizes = () => (
       return {};
     }}
     wrapperStyle={({index}) => {
-      if (index === 0 || index == 9) {
+      if (index === 0 || index === 9) {
         return {
           height: 288,
           gridRowStart: 'span 2',

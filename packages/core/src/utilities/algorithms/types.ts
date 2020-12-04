@@ -5,6 +5,6 @@ import {
 } from '../../types';
 
 export type CollisionDetection = (
-  clientRects: PositionalClientRectEntry[],
-  clientRect: PositionalClientRect
+  entries: PositionalClientRectEntry[],
+  target: PositionalClientRect
 ) => UniqueIdentifier | null;

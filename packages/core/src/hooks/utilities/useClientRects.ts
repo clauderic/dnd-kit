@@ -1,7 +1,8 @@
-import {useCallback, useMemo, useState, useRef, useEffect} from 'react';
+import {useCallback, useState, useRef} from 'react';
 
 import {getElementCoordinates} from '../../utilities';
 import {DroppableContainers, PositionalClientRectMap} from '../../store/types';
+import {useIsomorphicEffect} from '@dnd-kit/utilities';
 
 function getClientRects(
   containers: DroppableContainers | null
@@ -9,7 +10,11 @@ function getClientRects(
   const clientRects: PositionalClientRectMap = new Map();
 
   if (containers) {
-    for (let {id, clientRect} of Object.values(containers)) {
+    for (let {id, clientRect, disabled} of Object.values(containers)) {
+      if (disabled) {
+        continue;
+      }
+
       if (clientRect.current == null) {
         continue;
       }
@@ -28,10 +33,8 @@ export function useClientRects(
   const [willRecomputeClientRects, setWillRecomputeClientRects] = useState(
     false
   );
-  const clientRects = useMemo(
-    () => getClientRects(containers),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [containers, willRecomputeClientRects]
+  const [clientRects, setClientRects] = useState<PositionalClientRectMap>(() =>
+    getClientRects(disabled ? null : containers)
   );
   const containersRef = useRef(containers);
 
@@ -39,7 +42,7 @@ export function useClientRects(
     setWillRecomputeClientRects(true);
   }, []);
 
-  useEffect(() => {
+  useIsomorphicEffect(() => {
     if (containersRef.current !== containers) {
       containersRef.current = containers;
     }
@@ -53,7 +56,9 @@ export function useClientRects(
     }
   }, [disabled, containers]);
 
-  useEffect(() => {
+  useIsomorphicEffect(() => {
+    const containers = containersRef.current;
+
     if (willRecomputeClientRects) {
       if (containers) {
         for (let container of Object.values(containers)) {
@@ -61,11 +66,14 @@ export function useClientRects(
             ? getElementCoordinates(container.node.current)
             : null;
         }
-      }
 
-      setWillRecomputeClientRects(false);
+        const clientRects = getClientRects(containers);
+
+        setClientRects(clientRects);
+        setWillRecomputeClientRects(false);
+      }
     }
-  }, [containers, willRecomputeClientRects]);
+  }, [willRecomputeClientRects]);
 
   return {clientRects, recomputeClientRects, willRecomputeClientRects};
 }

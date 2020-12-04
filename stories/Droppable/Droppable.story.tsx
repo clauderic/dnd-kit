@@ -4,7 +4,8 @@ import classNames from 'classnames';
 import {Item, GridContainer} from '../components';
 
 import {
-  closestRect,
+  closestCenter,
+  closestCorners,
   rectIntersection,
   DndContext,
   useDraggable,
@@ -117,7 +118,7 @@ function DroppableStory({
   );
 }
 
-interface Draggable {
+interface DraggableProps {
   value: React.ReactNode;
   handle?: boolean;
   style?: React.CSSProperties;
@@ -141,7 +142,7 @@ function Droppable({children, id}: DroppableProps) {
   );
 }
 
-function Draggable({value, handle, style}: Draggable) {
+function Draggable({value, handle, style}: DraggableProps) {
   const {isDragging, setNodeRef, listeners} = useDraggable({
     id: 'draggable-item',
   });
@@ -171,7 +172,7 @@ export const CollisionDetection = () => {
 
   return (
     <>
-    <DroppableStory
+      <DroppableStory
         collisionDetection={algorithm}
         containers={['A', 'B', 'C']}
       />
@@ -199,16 +200,26 @@ export const CollisionDetection = () => {
         <label>
           <input
             type="radio"
-            value="rectCollision"
-            checked={algorithm === closestRect}
+            value="closestCenter"
+            checked={algorithm === closestCenter}
             onClick={() =>
-              setCollisionDetectionAlgorithm({algorithm: closestRect})
+              setCollisionDetectionAlgorithm({algorithm: closestCenter})
             }
           />
-          Closest Rect
+          Closest Center
+        </label>
+        <label>
+          <input
+            type="radio"
+            value="closestCorners"
+            checked={algorithm === closestCorners}
+            onClick={() =>
+              setCollisionDetectionAlgorithm({algorithm: closestCorners})
+            }
+          />
+          Closest Corners
         </label>
       </div>
-      
     </>
   );
 };

@@ -5,6 +5,7 @@ import {DroppableContainer} from './types';
 
 export enum Events {
   RegisterDroppable = 'registerDroppable',
+  SetDroppableDisabled = 'setDroppableDisabled',
   UnregisterDroppable = 'unregisterDroppable',
   SetActiveElement = 'setActiveElement',
   SetNewIndex = 'setNewIndex',
@@ -15,6 +16,11 @@ export type Action =
   | {
       type: Events.RegisterDroppable;
       element: DroppableContainer;
+    }
+  | {
+      type: Events.SetDroppableDisabled;
+      id: UniqueIdentifier;
+      disabled: boolean;
     }
   | {
       type: Events.UnregisterDroppable;

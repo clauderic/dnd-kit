@@ -8,7 +8,7 @@ import {
   SortableContainer,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import {closestRect, DndContext, DraggableClone} from '@dnd-kit/core';
+import {closestCenter, DndContext, DraggableClone} from '@dnd-kit/core';
 
 import styles from './Virtualized.module.css';
 
@@ -43,7 +43,7 @@ function Sortable({
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestRect}
+      collisionDetection={closestCenter}
       onDragStart={({active}) => {
         setActiveId(active.id);
       }}

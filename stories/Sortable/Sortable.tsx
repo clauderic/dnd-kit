@@ -13,7 +13,7 @@ import {
   ActivationConstraint,
   DraggableClone,
   DndContext,
-  closestRect,
+  closestCenter,
   UniqueIdentifier,
   Modifiers,
 } from '@dnd-kit/core';
@@ -96,13 +96,14 @@ export function Sortable({
         setItems(parentItems);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     parentItems ? [...parentItems] : []
   );
 
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestRect}
+      collisionDetection={closestCenter}
       onDragStart={({active}) => {
         if (!active) {
           return;
