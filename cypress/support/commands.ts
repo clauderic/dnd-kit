@@ -10,16 +10,44 @@
 //
 //
 
-function getDocumentScroll() {
-  if (document.scrollingElement) {
-    const {scrollTop, scrollLeft} = document.scrollingElement;
+import {curryRight} from 'cypress/types/lodash/index';
 
+const Keys = {
+  Space: ' ',
+};
+
+enum Directions {
+  Down = 'down',
+  Left = 'left',
+  Right = 'right',
+  Up = 'up',
+}
+
+function translateDirectionToMove(direction: string, magnitude: number) {
+  if (direction === Directions.Down) {
     return {
-      x: scrollTop,
-      y: scrollLeft,
+      x: 0,
+      y: magnitude,
     };
   }
-
+  if (direction === Directions.Left) {
+    return {
+      x: -magnitude,
+      y: 0,
+    };
+  }
+  if (direction === Directions.Right) {
+    return {
+      x: magnitude,
+      y: 0,
+    };
+  }
+  if (direction === Directions.Up) {
+    return {
+      x: 0,
+      y: -magnitude,
+    };
+  }
   return {
     x: 0,
     y: 0,
@@ -87,6 +115,51 @@ Cypress.Commands.add(
   }
 );
 
+Cypress.Commands.add(
+  'mouseMoveInDirection',
+  {
+    prevSubject: 'element',
+  },
+  (subject, magnitude: number, direction: string) => {
+    const {x, y} = translateDirectionToMove(direction, magnitude);
+    cy.wrap(subject, {log: false})
+      .then((subject) => {
+        const initialRect = subject.get(0).getBoundingClientRect();
+        return [subject, initialRect] as const;
+      })
+      .then(([subject, initialRect]) => {
+        cy.wrap(subject)
+          .trigger('mousedown', {force: true})
+          .trigger('mousemove', {
+            force: true,
+            clientX: Math.floor(
+              initialRect.left + initialRect.width / 2 + x / 2
+            ),
+            clientY: Math.floor(
+              initialRect.top + initialRect.height / 2 + y / 2
+            ),
+          })
+          .trigger('mousemove', {
+            force: true,
+            clientX: Math.floor(initialRect.left + initialRect.width / 2 + x),
+            clientY: Math.floor(initialRect.top + initialRect.height / 2 + y),
+          })
+          .wait(100)
+          .trigger('mouseup', {force: true})
+          .then((subject: any) => {
+            const finalRect = subject.get(0).getBoundingClientRect();
+
+            const delta = {
+              x: Math.round(finalRect.left - initialRect.left),
+              y: Math.round(finalRect.top - initialRect.top),
+            };
+
+            return [subject, {initialRect, finalRect, delta}] as const;
+          });
+      });
+  }
+);
+
 Cypress.Commands.add('findItemById', (id) => {
   return cy.get(`[data-id="${id}"]`);
 });
@@ -103,10 +176,6 @@ Cypress.Commands.add('getIndexForItem', (id) => {
 Cypress.Commands.add('visitStory', (id) => {
   return cy.visit(`/iframe.html?id=${id}`, {log: false});
 });
-
-const Keys = {
-  Space: ' ',
-};
 
 Cypress.Commands.add(
   'keyboardMoveBy',
