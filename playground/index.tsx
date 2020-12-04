@@ -144,33 +144,69 @@ function generatePieces(board: BoardCaseProps[][]) {
   return pieces;
 }
 
+interface CanMoveProps {
+  canMove: boolean;
+  toRemove?: PieceProps;
+}
+
 const CheckersGame = () => {
   const [board] = useState(generateBoard)
   const [pieces, setPieces] = useState(() => generatePieces(board))
   const [movingPiece, setMovingPiece] = useState<PieceProps|null>(null)
   const [isOddTurn, setIsOddTurn] = useState(true)
+  const [oddScore, setOddScore] = useState(0)
+  const [evenScore, setEvenScore] = useState(0)
 
+  console.log({pieces})
 
-  function checkCanMove(
+  
+
+  const checkCanMove = React.useCallback(function (
       isOddTurn: boolean, 
       isOddPiece: boolean,
       movingPiece: PieceProps, 
       moveToX:number,
       moveToY:number,
-    ) {
+    ): CanMoveProps {
       const {x: moveFromX, y: moveFromY} = movingPiece.position!
       
       const dx = moveToX - moveFromX;
       const dy = moveToY - moveFromY;
 
       if (isOddTurn && isOddPiece) {
-        return dx > 0 && dy != 0;
+        if(Math.abs(dx) == 2 && Math.abs(dy) == 2) {
+          const potentialEnemyPieceCoordinates = {x: moveFromX +dx/2, y: moveFromY +dy/2};
+          const potentialEnemyPiece = pieces[potentialEnemyPieceCoordinates.x][potentialEnemyPieceCoordinates.y]
+          console.log({potentialEnemyPiece})
+
+          if(potentialEnemyPiece == null || potentialEnemyPiece.odd){
+            return {canMove: false};
+          } else {
+            return {canMove: true, toRemove: potentialEnemyPiece};
+          }
+        }
+
+        const canMove = (dx == 1 || dx == 2) && (Math.abs(dx) == Math.abs(dy));
+        return {canMove};
       } else if (!isOddTurn && !isOddPiece) {
-        return dx < 0 && dy != 0;
+        if(Math.abs(dx) == 2 && Math.abs(dy) == 2) {
+          const potentialEnemyPieceCoordinates = {x: moveFromX +dx/2, y: moveFromY +dy/2};
+          const potentialEnemyPiece = pieces[potentialEnemyPieceCoordinates.x][potentialEnemyPieceCoordinates.y]
+          console.log({potentialEnemyPiece})
+
+          if(potentialEnemyPiece == null || !potentialEnemyPiece.odd){
+            return {canMove: false};
+          } else {
+            return {canMove: true, toRemove: potentialEnemyPiece};
+          }
+        }
+
+        const canMove = (dx == -1 || dx == -2) && (Math.abs(dx) == Math.abs(dy));
+        return {canMove};
       } 
 
-      return false;
-  }
+      return {canMove: false};
+  },[setPieces, pieces, board, setOddScore])
 
 
   const handleDragEnd = React.useCallback(function handleDragEnd(event: DragEndEvent) {
@@ -185,23 +221,32 @@ const CheckersGame = () => {
     if(event.over) {
       setMovingPiece(null)
 
-      const canMovePiece = checkCanMove(isOddTurn, movingPiece.odd, movingPiece, droppCaseX, droppCaseY);
+      const {canMove, toRemove} = checkCanMove(isOddTurn, movingPiece.odd, movingPiece, droppCaseX, droppCaseY);
       
-      if(!canMovePiece) {
+      if(!canMove) {
         return;
       }
-
       const newPiece: PieceProps = {...movingPiece, position: {x: droppCaseX, y: droppCaseY}}
-
+      // Clone pieces
       const newPieces = pieces.map(row => row.slice());
+      // Place new 
       delete newPieces[movingPieceX][movingPieceY];
       newPieces[droppCaseX][droppCaseY] = newPiece;
+      // Remove enemy
+      if(toRemove?.position) {
+        delete newPieces[toRemove.position?.x][toRemove.position?.y];
+        if(toRemove.odd){
+          setEvenScore(score => score + 1);
+        } else {
+          setOddScore(score => score + 1);
+        }
+      }
 
       setPieces(newPieces)
       setIsOddTurn( turn => !turn )
     }
   },
-    [board, setIsOddTurn, movingPiece, pieces, setPieces],
+    [board, setIsOddTurn, movingPiece, pieces, setPieces, checkCanMove],
   )
 
   const handleDragStart = React.useCallback(function handleDragStart(event: DragStartEvent) {
@@ -227,17 +272,17 @@ const CheckersGame = () => {
   return (
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <h1>{isOddTurn ? "Blue" : "Red"}'s Turn</h1>
+      <p>Red's score: {oddScore}</p>
+      <p>Red's score: {evenScore}</p>
       <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', maxWidth: CASE_SIZE * BOARD_SIZE}}>
         {board.map( 
           (row, x) => 
             row.map( (rowCase, y) => {
               const piece = pieces[x][y];
               const disabled = piece?.odd && !isOddTurn || !piece?.odd && isOddTurn;
-
               const pieceMarkup = piece != null?
                   <Piece  {...piece} disabled={disabled}/> 
                   : null;
-
               return (
                 <BoardCase key={rowCase.id} {...rowCase}>
                   {pieceMarkup}
@@ -274,21 +319,28 @@ interface PieceProps {
   position?: {x: number, y: number};
   disabled: boolean,
 }
-const Piece = ({odd, id, disabled}: PieceProps) => {
+const Piece = ({odd, id, disabled, position}: PieceProps) => {
   const {attributes, listeners, setNodeRef, transform, } = useDraggable({
     id,
     disabled,
   });
 
   const backgroundColor = odd ? '#4c4cff' : '#ff4c4c';
+  const opacity= disabled ? .5 : 1;
+
   const style = {
     transform: CSS.Translate.toString(transform),
+    width: PIECE_SIZE, opacity, height: PIECE_SIZE, backgroundColor, borderRadius: PIECE_SIZE/2,
   };
 
   return <div {...listeners} {...attributes}
       ref={setNodeRef}
-      style={{width: PIECE_SIZE, height: PIECE_SIZE, backgroundColor, borderRadius: PIECE_SIZE/2, ...style}}
-    />
+      style={style}>
+        <p style={{color: 'purple', fontWeight: 'bold'}}>{position?.x}, {position?.y}</p>
+      </div>
 }
 
 ReactDOM.render(<CheckersGame />, document.getElementById('root'));
+
+
+// Make white boxes not droppable 
