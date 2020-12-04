@@ -1,9 +1,9 @@
 import {CoordinatesGetter, KeyCode, KeyCodes} from './types';
 
 export const defaultKeyCodes: KeyCodes = {
-  start: [KeyCode.Space, KeyCode.Enter],
+  start: [KeyCode.Space],
   cancel: [KeyCode.Esc],
-  end: [KeyCode.Space, KeyCode.Enter],
+  end: [KeyCode.Space],
 };
 
 export const defaultCoordinatesGetter: CoordinatesGetter = (
