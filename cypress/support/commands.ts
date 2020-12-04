@@ -10,16 +10,42 @@
 //
 //
 
-function getDocumentScroll() {
-  if (document.scrollingElement) {
-    const {scrollTop, scrollLeft} = document.scrollingElement;
+const Keys = {
+  Space: ' ',
+};
 
+enum Directions {
+  Down = 'down',
+  Left = 'left',
+  Right = 'right',
+  Up = 'up',
+}
+
+function translateDirectionToMove(direction: string, magnitude: number) {
+  if (direction === Directions.Down) {
     return {
-      x: scrollTop,
-      y: scrollLeft,
+      x: 0,
+      y: magnitude,
     };
   }
-
+  if (direction === Directions.Left) {
+    return {
+      x: -magnitude,
+      y: 0,
+    };
+  }
+  if (direction === Directions.Right) {
+    return {
+      x: magnitude,
+      y: 0,
+    };
+  }
+  if (direction === Directions.Up) {
+    return {
+      x: 0,
+      y: -magnitude,
+    };
+  }
   return {
     x: 0,
     y: 0,
@@ -51,11 +77,9 @@ Cypress.Commands.add(
     cy.wrap(subject, {log: false})
       .then((subject) => {
         const initialRect = subject.get(0).getBoundingClientRect();
-        const windowScroll = getDocumentScroll();
-
-        return [subject, initialRect, windowScroll] as const;
+        return [subject, initialRect] as const;
       })
-      .then(([subject, initialRect, initialWindowScroll]) => {
+      .then(([subject, initialRect]) => {
         cy.wrap(subject)
           .trigger('mousedown', {force: true})
           .wait(options?.delay || 0, {log: Boolean(options?.delay)})
@@ -77,19 +101,55 @@ Cypress.Commands.add(
           .trigger('mouseup', {force: true})
           .then((subject: any) => {
             const finalRect = subject.get(0).getBoundingClientRect();
-            const windowScroll = getDocumentScroll();
-            const windowScrollDelta = {
-              x: windowScroll.x - initialWindowScroll.x,
-              y: windowScroll.y - initialWindowScroll.y,
-            };
 
             const delta = {
-              x: Math.round(
-                finalRect.left - initialRect.left - windowScrollDelta.x
-              ),
-              y: Math.round(
-                finalRect.top - initialRect.top - windowScrollDelta.y
-              ),
+              x: Math.round(finalRect.left - initialRect.left),
+              y: Math.round(finalRect.top - initialRect.top),
+            };
+
+            return [subject, {initialRect, finalRect, delta}] as const;
+          });
+      });
+  }
+);
+
+Cypress.Commands.add(
+  'mouseMoveInDirection',
+  {
+    prevSubject: 'element',
+  },
+  (subject, magnitude: number, direction: string) => {
+    const {x, y} = translateDirectionToMove(direction, magnitude);
+    cy.wrap(subject, {log: false})
+      .then((subject) => {
+        const initialRect = subject.get(0).getBoundingClientRect();
+        return [subject, initialRect] as const;
+      })
+      .then(([subject, initialRect]) => {
+        cy.wrap(subject)
+          .trigger('mousedown', {force: true})
+          .trigger('mousemove', {
+            force: true,
+            clientX: Math.floor(
+              initialRect.left + initialRect.width / 2 + x / 2
+            ),
+            clientY: Math.floor(
+              initialRect.top + initialRect.height / 2 + y / 2
+            ),
+          })
+          .trigger('mousemove', {
+            force: true,
+            clientX: Math.floor(initialRect.left + initialRect.width / 2 + x),
+            clientY: Math.floor(initialRect.top + initialRect.height / 2 + y),
+          })
+          .wait(100)
+          .trigger('mouseup', {force: true})
+          .then((subject: any) => {
+            const finalRect = subject.get(0).getBoundingClientRect();
+
+            const delta = {
+              x: Math.round(finalRect.left - initialRect.left),
+              y: Math.round(finalRect.top - initialRect.top),
             };
 
             return [subject, {initialRect, finalRect, delta}] as const;
@@ -115,10 +175,6 @@ Cypress.Commands.add('visitStory', (id) => {
   return cy.visit(`/iframe.html?id=${id}`, {log: false});
 });
 
-const Keys = {
-  Space: ' ',
-};
-
 Cypress.Commands.add(
   'keyboardMoveBy',
   {
@@ -127,17 +183,26 @@ Cypress.Commands.add(
   (subject, times: number, direction: string) => {
     const arrowKey = `{${direction}arrow}`;
 
-    Cypress.log({
-      $el: subject,
-      name: 'Move',
-    });
-
     cy.wrap(subject, {log: false})
-      .focus({log: false})
-      .type(Keys.Space, {force: true, log: false})
-      .closest('body')
-      .type(arrowKey.repeat(times), {force: true})
-      .type(Keys.Space, {log: false, force: true});
+      .then((subject) => {
+        const initialRect = subject.get(0).getBoundingClientRect();
+        return [subject, initialRect] as const;
+      })
+      .then(([subject, initialRect]) => {
+        cy.wrap(subject)
+          .focus({log: true})
+          .type(Keys.Space, {force: true, log: false})
+          .type(arrowKey.repeat(times), {force: true})
+          .type(Keys.Space, {log: true, force: true})
+          .then((subject: any) => {
+            const finalRect = subject.get(0).getBoundingClientRect();
+            const delta = {
+              x: Math.round(finalRect.left - initialRect.left),
+              y: Math.round(finalRect.top - initialRect.top),
+            };
+            return [subject, {initialRect, finalRect, delta}] as const;
+          });
+      });
   }
 );
 
