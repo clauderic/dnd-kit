@@ -232,8 +232,10 @@ const CheckersGame = () => {
           (row, x) => 
             row.map( (rowCase, y) => {
               const piece = pieces[x][y];
+              const disabled = piece?.odd && !isOddTurn || !piece?.odd && isOddTurn;
+
               const pieceMarkup = piece != null?
-                  <Piece  {...piece} disabled={piece.odd && !isOddTurn}/> 
+                  <Piece  {...piece} disabled={disabled}/> 
                   : null;
 
               return (
