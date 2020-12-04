@@ -8,7 +8,7 @@ export function Handle(props: Props) {
   return (
     <div
       className={styles.Handle}
-      tabIndex={1}
+      tabIndex={0}
       data-cypress="draggable-handle"
       {...props}
     >

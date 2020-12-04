@@ -171,6 +171,10 @@ export const CollisionDetection = () => {
 
   return (
     <>
+    <DroppableStory
+        collisionDetection={algorithm}
+        containers={['A', 'B', 'C']}
+      />
       <div
         style={{
           position: 'absolute',
@@ -204,10 +208,7 @@ export const CollisionDetection = () => {
           Closest Rect
         </label>
       </div>
-      <DroppableStory
-        collisionDetection={algorithm}
-        containers={['A', 'B', 'C']}
-      />
+      
     </>
   );
 };
