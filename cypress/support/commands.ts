@@ -10,8 +10,6 @@
 //
 //
 
-import {curryRight} from 'cypress/types/lodash/index';
-
 const Keys = {
   Space: ' ',
 };
