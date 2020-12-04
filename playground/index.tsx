@@ -136,7 +136,7 @@ function generatePieces(board: BoardCaseProps[][]) {
       const boardCase = board[x][y];
       if(boardCase.odd && piecesRows.includes(x)) {
         const odd = x <= BOARD_SIZE/2;
-        pieces[x][y] = {odd, id: x + "-" + y, position: {x, y}}
+        pieces[x][y] = {odd, id: x + "-" + y, position: {x, y}, disabled: false}
       }
     }
   }
@@ -227,23 +227,22 @@ const CheckersGame = () => {
   return (
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <h1>{isOddTurn ? "Blue" : "Red"}'s Turn</h1>
-
       <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', maxWidth: CASE_SIZE * BOARD_SIZE}}>
-        {board.map( (row, x) => row.map( (rowCase, y) => {
-          const piece = pieces[x][y];
-          const pieceMarkup = piece != null?
-              <Piece {...piece} /> 
-              : null;
+        {board.map( 
+          (row, x) => 
+            row.map( (rowCase, y) => {
+              const piece = pieces[x][y];
+              const pieceMarkup = piece != null?
+                  <Piece  {...piece} disabled={piece.odd && !isOddTurn}/> 
+                  : null;
 
-          return (
-            <BoardCase key={rowCase.id} {...rowCase}>
-              {pieceMarkup}
-            </BoardCase> 
-          )
-        })
-        
-        )
-      }
+              return (
+                <BoardCase key={rowCase.id} {...rowCase}>
+                  {pieceMarkup}
+                </BoardCase> 
+              )
+            })
+          )}
       </div>
     </DndContext>
   )
@@ -271,10 +270,12 @@ interface PieceProps {
   odd: boolean;
   id: string;
   position?: {x: number, y: number};
+  disabled: boolean,
 }
-const Piece = ({odd, id}: PieceProps) => {
+const Piece = ({odd, id, disabled}: PieceProps) => {
   const {attributes, listeners, setNodeRef, transform, } = useDraggable({
     id,
+    disabled,
   });
 
   const backgroundColor = odd ? '#4c4cff' : '#ff4c4c';
@@ -289,23 +290,3 @@ const Piece = ({odd, id}: PieceProps) => {
 }
 
 ReactDOM.render(<CheckersGame />, document.getElementById('root'));
-
-
-
-
-
-
-
-
-// function canMovePiece(piece, toX, toY) {
-//   const [x, y] = piece
-//   const dx = toX - x
-//   const dy = toY - y
-//   if(dx<0 || dy<0) return false
-//   if(dx==1 && dy==1 && //check if enemy player's piece is not there)
-// 	return true
-//   else if(dx==2 && dy==2 && //check if enemy's piece is on {x+1,y+1})
-// 	// remove enemies's piece 
-// 	return true
-//   return false
-// }
