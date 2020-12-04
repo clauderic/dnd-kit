@@ -51,10 +51,11 @@ import {
 } from '../../sensors';
 import {
   CollisionDetection,
-  rectIntersection,
-  getAdjustedClientRect,
   defaultCoordinates,
+  getAdjustedClientRect,
+  isDocumentScrollingElement,
   noop,
+  rectIntersection,
 } from '../../utilities';
 import {applyModifiers, Modifiers} from '../../modifiers';
 import type {
@@ -199,13 +200,14 @@ export const DndContext = memo(function DndContext({
       : null;
   const scrollingContainer = useScrollingParent(overNode);
   const scrollingContainerRect = useClientRect(scrollingContainer);
-  const isWindowScrollContainer =
-    scrollingContainer === document.scrollingElement;
+  const scrollingElementIsDocument = isDocumentScrollingElement(
+    scrollingContainer
+  );
   const containerScroll = useScrollCoordinates(
     // If the container is the document.scrollingElement, we don't
     // need to calculate the container scrollDelta since it will be
     // the same as the windowScrollDelta
-    isWindowScrollContainer ? null : scrollingContainer
+    scrollingElementIsDocument ? null : scrollingContainer
   );
   const windowScroll = useScrollCoordinates(
     active && document.scrollingElement
@@ -252,7 +254,7 @@ export const DndContext = memo(function DndContext({
 
   // We also need to account for the scroll of the container
   const containerScrollAdjustment =
-    scrollingContainer && !isWindowScrollContainer
+    scrollingContainer && !scrollingElementIsDocument
       ? containerScroll.current
       : defaultCoordinates;
 
