@@ -346,11 +346,11 @@ function DraggablePiece({children, id}: DraggableProps) {
 
 const Piece = ({odd, disabled, clone, id}: PieceProps) => {
   const backgroundColor = odd ? '#4c4cff' : '#ff4c4c';
-  const opacity= disabled ? .5 : 1;
+  const opacity= disabled || clone ? .5 : 1;
 
   const style = {
     // transform: CSS.Translate.toString(transform),
-    width: PIECE_SIZE, opacity, height: PIECE_SIZE, backgroundColor: clone ? 'grey' :backgroundColor, borderRadius: PIECE_SIZE/2,
+    width: PIECE_SIZE, opacity, height: PIECE_SIZE, backgroundColor, borderRadius: PIECE_SIZE/2,
   };
 
   return <button aria-describedby={`piece id ${id}`} aria-roledescription="You have selected a piece" style={style}>
