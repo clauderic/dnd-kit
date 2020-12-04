@@ -20,7 +20,10 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: Install dependencies and build
-        run: yarn
+        uses: bahmutov/npm-install@v1
+
+      - name: Prepublish
+        run: yarn prepublish
 
       - name: Test
         run: yarn test --ci --coverage --maxWorkers=2
