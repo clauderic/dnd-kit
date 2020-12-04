@@ -217,8 +217,10 @@ const CheckersGame = () => {
     const {x: movingPieceX, y: movingPieceY} = movingPiece.position;
     const [droppCaseX, droppCaseY] = event.over.id.split("-").map(Number)
 
+    const potentialExistingPiece = pieces[droppCaseX][droppCaseY]
+
     // debugger;
-    if(event.over) {
+    if(event.over && !potentialExistingPiece) {
       setMovingPiece(null)
 
       const {canMove, toRemove} = checkCanMove(isOddTurn, movingPiece.odd, movingPiece, droppCaseX, droppCaseY);
