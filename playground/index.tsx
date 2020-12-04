@@ -10,6 +10,7 @@ import {
   UniqueIdentifier,
   DragEndEvent,
   DragStartEvent,
+  DraggableClone,
 } from '@dnd-kit/core';
 import {CSS} from '@dnd-kit/utilities';
 
@@ -157,10 +158,6 @@ const CheckersGame = () => {
   const [oddScore, setOddScore] = useState(0)
   const [evenScore, setEvenScore] = useState(0)
 
-  console.log({pieces})
-
-  
-
   const checkCanMove = React.useCallback(function (
       isOddTurn: boolean, 
       isOddPiece: boolean,
@@ -274,7 +271,7 @@ const CheckersGame = () => {
   return (
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <h1>{isOddTurn ? "Blue" : "Red"}'s Turn</h1>
-      <p>Red's score: {oddScore}</p>
+      <p>Blue's score: {oddScore}</p>
       <p>Red's score: {evenScore}</p>
       <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', maxWidth: CASE_SIZE * BOARD_SIZE}}>
         {board.map( 
@@ -282,9 +279,15 @@ const CheckersGame = () => {
             row.map( (rowCase, y) => {
               const piece = pieces[x][y];
               const disabled = piece?.odd && !isOddTurn || !piece?.odd && isOddTurn;
-              const pieceMarkup = piece != null?
-                  <Piece  {...piece} disabled={disabled}/> 
-                  : null;
+
+              if(!piece) return <BoardCase key={rowCase.id} {...rowCase}/>
+
+              const pieceMarkup = disabled 
+                  ? <Piece {...piece} disabled /> 
+                  : <DraggablePiece id={piece.id}>
+                      <Piece {...piece} />
+                    </DraggablePiece>
+              
               return (
                 <BoardCase key={rowCase.id} {...rowCase}>
                   {pieceMarkup}
@@ -293,6 +296,11 @@ const CheckersGame = () => {
             })
           )}
       </div>
+      <DraggableClone>
+        {movingPiece == null ? null : <Piece  odd={movingPiece.odd} clone id={"clone"}/>}
+      </DraggableClone>
+
+
     </DndContext>
   )
 
@@ -301,11 +309,11 @@ const CheckersGame = () => {
 interface BoardCaseProps {
   odd: boolean
   id: string;
-  children?: React.ReactElement | null;
+  children?: (React.ReactElement | null);
 }
 const BoardCase = ({odd, id, children}: BoardCaseProps) => {
   const {setNodeRef, } = useDroppable({
-    id
+    id,
   });
 
   const backgroundColor = odd ? 'black' : 'white';
@@ -316,30 +324,38 @@ const BoardCase = ({odd, id, children}: BoardCaseProps) => {
 }
 
 interface PieceProps {
-  odd: boolean;
   id: string;
+  odd: boolean;
+  clone?: boolean;
   position?: {x: number, y: number};
-  disabled: boolean,
+  disabled?: boolean;
 }
-const Piece = ({odd, id, disabled, position}: PieceProps) => {
-  const {attributes, listeners, setNodeRef, transform, } = useDraggable({
+
+interface DraggableProps {
+  id: string;
+  children: React.ReactNode;
+}
+
+function DraggablePiece({children, id}: DraggableProps) {
+  const {attributes, listeners, setNodeRef} = useDraggable({
     id,
-    disabled,
   });
 
+  return <div ref={setNodeRef} tabIndex={0} {...attributes} {...listeners}>{children}</div>
+}
+
+const Piece = ({odd, disabled, clone, id}: PieceProps) => {
   const backgroundColor = odd ? '#4c4cff' : '#ff4c4c';
   const opacity= disabled ? .5 : 1;
 
   const style = {
-    transform: CSS.Translate.toString(transform),
-    width: PIECE_SIZE, opacity, height: PIECE_SIZE, backgroundColor, borderRadius: PIECE_SIZE/2,
+    // transform: CSS.Translate.toString(transform),
+    width: PIECE_SIZE, opacity, height: PIECE_SIZE, backgroundColor: clone ? 'grey' :backgroundColor, borderRadius: PIECE_SIZE/2,
   };
 
-  return <div {...listeners} {...attributes}
-      ref={setNodeRef}
-      style={style}>
-        <p style={{color: 'purple', fontWeight: 'bold'}}>{position?.x}, {position?.y}</p>
-      </div>
+  return <button aria-describedby={`piece id ${id}`} aria-roledescription="You have selected a piece" style={style}>
+        {/* <p style={{color: 'purple', fontWeight: 'bold'}}>{position?.x}, {position?.y}</p> */}
+      </button>
 }
 
 ReactDOM.render(<CheckersGame />, document.getElementById('root'));
