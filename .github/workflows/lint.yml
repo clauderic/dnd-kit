@@ -14,7 +14,7 @@ jobs:
         with:
           version: 12.x
 
-      - name: Install deps and build (with cache)
+      - name: Install dependencies and build (with cache)
         uses: bahmutov/npm-install@v1
 
       - name: Lint

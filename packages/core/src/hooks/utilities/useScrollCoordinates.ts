@@ -1,5 +1,5 @@
 import {useState, useCallback} from 'react';
-import {useOnValueChange} from '@dnd-kit/utilities';
+import {canUseDOM, useOnValueChange} from '@dnd-kit/utilities';
 
 import {defaultCoordinates, getScrollCoordinates} from '../../utilities';
 import type {ScrollCoordinates} from '../../types';
@@ -14,11 +14,11 @@ export function useScrollCoordinates(
   element: Element | null
 ): ScrollCoordinates {
   const [scrollCoordinates, setScrollCoordinates] = useState(defaultState);
-  const scrollingElement = getScrollingElement(element);
+  const scrollingElement = getScrollableElement(element);
 
   // TO-DO: Should probably throttle this
   const handleScroll = useCallback((event: Event) => {
-    const scrollingElement = getScrollingElement(event.target);
+    const scrollingElement = getScrollableElement(event.target);
 
     if (!scrollingElement) {
       return;
@@ -66,7 +66,11 @@ export function useScrollCoordinates(
   return scrollCoordinates;
 }
 
-function getScrollingElement(element: EventTarget | null) {
+function getScrollableElement(element: EventTarget | null) {
+  if (!canUseDOM) {
+    return null;
+  }
+
   if (element === document.scrollingElement || element instanceof Document) {
     return window;
   }

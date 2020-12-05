@@ -8,5 +8,6 @@ export {getScrollDirectionAndSpeed} from './getScrollDirectionAndSpeed';
 export {getScrollingParent} from './getScrollingParent';
 export {getScrollPosition} from './getScrollPosition';
 export {isMouseEvent, isTouchEvent} from './eventType';
+export {isDocumentScrollingElement} from './scrollingElement';
 export {omit} from './omit';
 export {noop} from './other';

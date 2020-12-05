@@ -1,13 +1,17 @@
 export function getScrollingParent(node: Node | null): Element | null {
+  if (!node || !(node instanceof HTMLElement) || node instanceof SVGElement) {
+    return null;
+  }
+
   if (node instanceof Document) {
     return document.scrollingElement;
-  } else if (!(node instanceof HTMLElement) || node instanceof SVGElement) {
-    return null;
-  } else if (isScrollable(node)) {
-    return node;
-  } else {
-    return getScrollingParent(node.parentNode);
   }
+
+  if (isScrollable(node)) {
+    return node;
+  }
+
+  return getScrollingParent(node.parentNode);
 }
 
 function isScrollable(node: HTMLElement): boolean {

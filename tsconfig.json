@@ -7,8 +7,8 @@
     "typeRoots": ["./node_modules/@types", "./types"],
     "paths": {
       "@dnd-kit/core": ["packages/core/src"],
-      "@dnd-kit/sortable": ["packages/sortable/src"],
       "@dnd-kit/modifiers": ["packages/modifiers/src"],
+      "@dnd-kit/sortable": ["packages/sortable/src"],
       "@dnd-kit/utilities": ["packages/utilities/src"],
       "$test/*": ["test/*"]
     }
