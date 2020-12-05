@@ -19,6 +19,7 @@
   ],
   "dependencies": {
     "@dnd-kit/core": "^0.0.1",
+    "@dnd-kit/utilities": "^0.0.1",
     "tslib": "^2.0.0"
   },
   "publishConfig": {

@@ -27,7 +27,8 @@
     "react-dom": "^16.8.0"
   },
   "dependencies": {
-    "tslib": "^2.0.0"
+    "tslib": "^2.0.0",
+    "@dnd-kit/utilities": "^0.0.1"
   },
   "publishConfig": {
     "access": "public"
