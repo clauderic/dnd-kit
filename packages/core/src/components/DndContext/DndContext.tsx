@@ -46,6 +46,7 @@ import {
   KeyboardSensor,
   MouseSensor,
   TouchSensor,
+  Sensor,
   SensorDescriptor,
   SensorHandler,
 } from '../../sensors';
@@ -102,6 +103,12 @@ export interface DragEndEvent {
   over: {
     id: UniqueIdentifier;
   } | null;
+}
+
+interface DndEvent extends Event {
+  dndKit?: {
+    capturedBy: Sensor<any>;
+  };
 }
 
 interface Props {
@@ -429,11 +436,17 @@ export const DndContext = memo(function DndContext({
       sensor: SensorDescriptor<any>
     ): SyntheticListener['handler'] => {
       return (event, active) => {
-        if (activeRef.current !== null) {
+        const nativeEvent = event.nativeEvent as DndEvent;
+
+        if (activeRef.current !== null || nativeEvent.dndKit) {
           return;
         }
 
         if (handler(event, sensor.options) === true) {
+          nativeEvent.dndKit = {
+            capturedBy: sensor.sensor,
+          };
+
           if (active.node.current == null) {
             throw new Error('Active node is null');
           }
