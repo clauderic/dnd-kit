@@ -2,7 +2,7 @@ import {useContext, useMemo} from 'react';
 
 import {useDraggable, useDroppable, UseDraggableArguments} from '@dnd-kit/core';
 
-import {SortableContext} from '../components';
+import {Context} from '../components';
 import type {SortingStrategy} from '../types';
 
 export interface Arguments extends UseDraggableArguments {
@@ -18,7 +18,8 @@ export function useSortableElement({disabled, id, strategy}: Arguments) {
     overIndex,
     disableInlineStyles,
     useClone,
-  } = useContext(SortableContext);
+  } = useContext(Context);
+
   const {
     active,
     activeRect,

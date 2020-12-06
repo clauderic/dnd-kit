@@ -13,7 +13,7 @@ import {
   CollisionDetection,
 } from '@dnd-kit/core';
 import {
-  SortableContainer,
+  SortableContext,
   useSortableElement,
   arrayMove,
   useSortableSensors,
@@ -305,7 +305,7 @@ function Sortable({
         {Object.keys(items)
           .filter((key) => key !== VOID_ID)
           .map((containerId) => (
-            <SortableContainer
+            <SortableContext
               id={containerId}
               items={items[containerId]}
               key={containerId}
@@ -333,7 +333,7 @@ function Sortable({
                   );
                 })}
               </Container>
-            </SortableContainer>
+            </SortableContext>
           ))}
       </div>
       {createPortal(

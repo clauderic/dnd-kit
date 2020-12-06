@@ -5,7 +5,7 @@ import VirtualList from 'react-tiny-virtual-list';
 import {
   arrayMove,
   useSortableSensors,
-  SortableContainer,
+  SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import {closestCenter, DndContext, DraggableClone} from '@dnd-kit/core';
@@ -60,7 +60,7 @@ function Sortable({
       onDragCancel={() => setActiveId(null)}
       translateModifiers={translateModifiers}
     >
-      <SortableContainer id="virtualized" items={items}>
+      <SortableContext id="virtualized" items={items}>
         <VirtualList
           width={500}
           height={600}
@@ -87,7 +87,7 @@ function Sortable({
             );
           }}
         />
-      </SortableContainer>
+      </SortableContext>
       {createPortal(
         <DraggableClone adjustScale={adjustScale}>
           {activeId ? (

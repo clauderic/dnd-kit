@@ -10,6 +10,7 @@ export {
   useDraggable,
   UseDraggableArguments,
   useDndContext,
+  UseDndContextReturnValue,
   useDroppable,
   UseDroppableArguments,
   DraggableSyntheticListeners,

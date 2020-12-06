@@ -7,7 +7,7 @@ import {
 } from '@dnd-kit/core';
 import {useUniqueId} from '@dnd-kit/utilities';
 
-type PositionalClientRectMap = ReturnType<typeof useDndContext>['clientRects'];
+import {getSortedRects} from '../utilities';
 
 interface Props {
   children: React.ReactNode;
@@ -15,7 +15,7 @@ interface Props {
   id?: string;
 }
 
-const ID_PREFIX = 'SortableContainer';
+const ID_PREFIX = 'Sortable';
 
 export const Context = React.createContext<{
   containerId: string;
@@ -35,7 +35,7 @@ export const Context = React.createContext<{
   useClone: false,
 });
 
-export function SortableContainer({children, id, items}: Props) {
+export function SortableContext({children, id, items}: Props) {
   const {
     active,
     willRecomputeClientRects,
@@ -48,7 +48,7 @@ export function SortableContainer({children, id, items}: Props) {
   const activeIndex = active ? items.indexOf(active.id) : -1;
   const overIndex = over ? items.indexOf(over.id) : -1;
   const previousItemsRef = useRef(items);
-  const sortedClientRects = useMemo(() => getItemRects(items, clientRects), [
+  const sortedClientRects = useMemo(() => getSortedRects(items, clientRects), [
     items,
     clientRects,
   ]);
@@ -82,19 +82,4 @@ export function SortableContainer({children, id, items}: Props) {
   ]);
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;
-}
-
-function getItemRects(
-  items: Props['items'],
-  clientRects: PositionalClientRectMap
-) {
-  return items.reduce<PositionalClientRect[]>((accumulator, id) => {
-    const clientRect = clientRects.get(id);
-
-    if (clientRect) {
-      accumulator.push(clientRect);
-    }
-
-    return accumulator;
-  }, []);
 }

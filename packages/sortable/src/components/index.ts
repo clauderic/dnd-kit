@@ -1,4 +1,1 @@
-export {
-  SortableContainer,
-  Context as SortableContext,
-} from './SortableContainer';
+export {SortableContext, Context} from './SortableContext';

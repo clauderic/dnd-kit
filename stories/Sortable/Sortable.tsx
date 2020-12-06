@@ -5,7 +5,7 @@ import {
   arrayMove,
   useSortableElement,
   useSortableSensors,
-  SortableContainer,
+  SortableContext,
   SortingStrategy,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
@@ -125,7 +125,7 @@ export function Sortable({
       onDragCancel={() => setActiveId(null)}
       translateModifiers={translateModifiers}
     >
-      <SortableContainer id="container" items={items}>
+      <SortableContext id="container" items={items}>
         <Container>
           {items.map((value, index) => (
             <SortableItem
@@ -142,7 +142,7 @@ export function Sortable({
             />
           ))}
         </Container>
-      </SortableContainer>
+      </SortableContext>
       {useClone
         ? createPortal(
             <DraggableClone adjustScale={adjustScale}>

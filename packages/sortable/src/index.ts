@@ -1,4 +1,4 @@
-export {SortableContainer} from './components';
+export {SortableContext} from './components';
 export {useSortableElement, useSortableSensors} from './hooks';
 export {
   clientRectSortingStrategy,
