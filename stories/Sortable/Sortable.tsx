@@ -16,6 +16,8 @@ import {
   closestCenter,
   UniqueIdentifier,
   Modifiers,
+  announcements as defaultAnnouncements,
+  Announcements,
 } from '@dnd-kit/core';
 
 import {createRange} from '../utilities';
@@ -68,6 +70,30 @@ export function Sortable({
       parentItems ?? createRange<string>(itemCount, (index) => index.toString())
   );
   const [activeId, setActiveId] = useState<string | null>(null);
+    
+  const announcements: Announcements = {
+    ...defaultAnnouncements,
+    onDragStart(id) {
+      return `Picked up draggable item ${id}. Draggable item ${id} is in position ${getIndex(id)} of ${itemCount}`;
+    },
+    onDragOver(id, overId) {
+      if (overId && overId != id) {
+        return `Draggable item ${id} was moved into position ${getIndex(overId)} of ${itemCount}`;
+      }
+      if (!overId){
+      return `Draggable item ${id} is no longer over a droppable area.`;
+      }
+      else return;
+    },
+    onDragEnd(id, overId) {
+      if (overId) {
+        return `Draggable item was dropped at position ${getIndex(overId)} of ${itemCount}`;
+      }
+
+      return `Draggable item ${id} was dropped.`;
+    },
+  };
+
   const sensors = useSortableSensors({
     strategy,
     mouse: {
@@ -102,6 +128,7 @@ export function Sortable({
 
   return (
     <DndContext
+      announcements={announcements}
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragStart={({active}) => {
@@ -119,7 +146,6 @@ export function Sortable({
             setItems((items) => arrayMove(items, activeIndex, overIndex));
           }
         }
-
         setActiveId(null);
       }}
       onDragCancel={() => setActiveId(null)}

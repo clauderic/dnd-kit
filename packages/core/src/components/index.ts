@@ -1,4 +1,8 @@
 export {
+  announcements,
+  Announcements,
+} from './Accessibility';
+export {
   DndContext,
   DragEndEvent,
   DragOverEvent,
