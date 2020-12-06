@@ -284,8 +284,6 @@ export const DndContext = memo(function DndContext({
       )
     : null;
 
-  console.log(overId);
-
   const overRect = overId ? clientRects.get(overId) : null;
   const over = useMemo(
     () =>
