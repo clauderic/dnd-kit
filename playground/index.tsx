@@ -145,6 +145,24 @@ function generatePieces(board: BoardCaseProps[][]) {
   return pieces;
 }
 
+function checkEnd(pieces: (PieceProps | undefined)[][]): {oddWon: boolean, evenWon: boolean} {
+  const result = {oddWon: true, evenWon: true};
+
+  for (let x = 0; x < BOARD_SIZE ; x++)  {
+    for (let y = 0; y < BOARD_SIZE ; y++)  {
+      const piece = pieces[x][y];
+      if (!piece) continue;
+      if(piece.odd) {
+        result.oddWon = false;
+      } else {
+        result.evenWon = false;
+      }
+    }
+  }
+
+  return result;
+}
+
 interface CanMoveProps {
   canMove: boolean;
   toRemove?: PieceProps;
@@ -157,6 +175,8 @@ const CheckersGame = () => {
   const [isOddTurn, setIsOddTurn] = useState(true)
   const [oddScore, setOddScore] = useState(0)
   const [evenScore, setEvenScore] = useState(0)
+
+  const {evenWon, oddWon} = useMemo(() => checkEnd(pieces), [pieces]);
 
   const checkCanMove = React.useCallback(function (
       isOddTurn: boolean, 
@@ -268,11 +288,20 @@ const CheckersGame = () => {
     }
   }, [board, movingPiece, pieces, setMovingPiece])
 
+
+  const gameEndMarkup = evenWon || oddWon ?
+  <div>
+    <h2>{oddWon ? "Red" : "Blue"} Won !</h2>
+    <button onClick={handleRestart}>Start Over</button>
+  </div>
+  : null;
+
   return (
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <h1>{isOddTurn ? "Blue" : "Red"}'s Turn</h1>
       <p>Blue's score: {oddScore}</p>
       <p>Red's score: {evenScore}</p>
+      {gameEndMarkup}
       <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', maxWidth: CASE_SIZE * BOARD_SIZE}}>
         {board.map( 
           (row, x) => 
@@ -299,10 +328,14 @@ const CheckersGame = () => {
       <DraggableClone>
         {movingPiece == null ? null : <Piece  odd={movingPiece.odd} clone id={"clone"}/>}
       </DraggableClone>
-
-
     </DndContext>
   )
+
+  function handleRestart(){
+    setPieces(generatePieces(board));
+    setOddScore(0)
+    setEvenScore(0)
+  }
 
 }
 
