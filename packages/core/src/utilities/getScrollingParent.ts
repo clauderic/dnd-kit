@@ -1,10 +1,14 @@
 export function getScrollingParent(node: Node | null): Element | null {
-  if (!node || !(node instanceof HTMLElement) || node instanceof SVGElement) {
+  if (!node) {
     return null;
   }
 
   if (node instanceof Document) {
     return document.scrollingElement;
+  }
+
+  if (!(node instanceof HTMLElement) || node instanceof SVGElement) {
+    return null;
   }
 
   if (isScrollable(node)) {

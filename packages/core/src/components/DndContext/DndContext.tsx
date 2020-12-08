@@ -205,7 +205,7 @@ export const DndContext = memo(function DndContext({
     trackedId && droppableContainers[trackedId]
       ? droppableContainers[trackedId].node.current
       : null;
-  const scrollingContainer = useScrollingParent(overNode);
+  const scrollingContainer = useScrollingParent(overNode ?? activeNode);
   const scrollingContainerRect = useClientRect(scrollingContainer);
   const scrollingElementIsDocument = isDocumentScrollingElement(
     scrollingContainer
