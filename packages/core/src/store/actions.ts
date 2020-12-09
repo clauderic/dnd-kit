@@ -1,40 +1,39 @@
-import React from 'react';
+import type {MutableRefObject} from 'react';
+import type {Coordinates, UniqueIdentifier} from '../types';
+import type {DroppableContainer} from './types';
 
-import {UniqueIdentifier} from '../types';
-import {DroppableContainer} from './types';
-
-export enum Events {
+export enum Action {
+  DragStart = 'dragStart',
+  DragMove = 'dragMove',
+  DragEnd = 'dragEnd',
+  DragCancel = 'dragCancel',
   RegisterDroppable = 'registerDroppable',
   SetDroppableDisabled = 'setDroppableDisabled',
   UnregisterDroppable = 'unregisterDroppable',
-  SetActiveElement = 'setActiveElement',
-  SetNewIndex = 'setNewIndex',
-  UnsetActiveElement = 'unsetActiveElement',
 }
 
-export type Action =
+export type Actions =
   | {
-      type: Events.RegisterDroppable;
+      type: Action.DragStart;
+      active: {
+        id: UniqueIdentifier;
+        node: MutableRefObject<HTMLElement>;
+      };
+      initialCoordinates: Coordinates;
+    }
+  | {type: Action.DragMove; coordinates: Coordinates}
+  | {type: Action.DragEnd}
+  | {type: Action.DragCancel}
+  | {
+      type: Action.RegisterDroppable;
       element: DroppableContainer;
     }
   | {
-      type: Events.SetDroppableDisabled;
+      type: Action.SetDroppableDisabled;
       id: UniqueIdentifier;
       disabled: boolean;
     }
   | {
-      type: Events.UnregisterDroppable;
+      type: Action.UnregisterDroppable;
       id: UniqueIdentifier;
-    }
-  | {
-      type: Events.SetActiveElement;
-      id: UniqueIdentifier;
-      node: React.MutableRefObject<HTMLElement>;
-    }
-  | {
-      type: Events.UnsetActiveElement;
-    }
-  | {
-      type: Events.SetNewIndex;
-      newIndex: number;
     };

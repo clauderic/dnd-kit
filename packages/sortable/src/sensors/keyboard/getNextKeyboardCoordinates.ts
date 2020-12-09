@@ -1,7 +1,7 @@
 import {
   closestCenter,
   defaultCoordinates,
-  KeyCode,
+  KeyboardCode,
   PositionalClientRectEntry,
   CoordinatesGetter,
 } from '@dnd-kit/core';
@@ -11,10 +11,10 @@ import {clientRectSortingStrategy} from '../../strategies';
 import {SortingStrategy} from '../../types';
 
 const directions: string[] = [
-  KeyCode.Down,
-  KeyCode.Right,
-  KeyCode.Up,
-  KeyCode.Left,
+  KeyboardCode.Down,
+  KeyboardCode.Right,
+  KeyboardCode.Up,
+  KeyboardCode.Left,
 ];
 
 export const getNextKeyboardCoordinates = (
@@ -49,22 +49,22 @@ export const getNextKeyboardCoordinates = (
 
     clientRectsMap.forEach((clientRect, id) => {
       switch (event.code) {
-        case KeyCode.Down:
+        case KeyboardCode.Down:
           if (overRect.offsetTop + overRect.height <= clientRect.offsetTop) {
             clientRects.push([id, clientRect]);
           }
           break;
-        case KeyCode.Up:
+        case KeyboardCode.Up:
           if (overRect.offsetTop >= clientRect.offsetTop + clientRect.height) {
             clientRects.push([id, clientRect]);
           }
           break;
-        case KeyCode.Left:
+        case KeyboardCode.Left:
           if (overRect.offsetLeft >= clientRect.offsetLeft + clientRect.width) {
             clientRects.push([id, clientRect]);
           }
           break;
-        case KeyCode.Right:
+        case KeyboardCode.Right:
           if (overRect.offsetLeft + overRect.width <= clientRect.offsetLeft) {
             clientRects.push([id, clientRect]);
           }

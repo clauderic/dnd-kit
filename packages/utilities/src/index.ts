@@ -1,5 +1,6 @@
 export {
   useCallbackRef,
+  useCombinedRefs,
   useIsomorphicEffect,
   useLatest,
   useNodeRef,

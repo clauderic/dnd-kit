@@ -8,16 +8,19 @@ import {
 import {useUniqueId} from '@dnd-kit/utilities';
 
 import {getSortedRects} from '../utilities';
+import {SortingStrategy} from '../types';
+import {clientRectSortingStrategy} from '../strategies';
 
 interface Props {
   children: React.ReactNode;
   items: UniqueIdentifier[];
+  strategy: SortingStrategy;
   id?: string;
 }
 
 const ID_PREFIX = 'Sortable';
 
-export const Context = React.createContext<{
+interface ContextDescriptor {
   containerId: string;
   items: UniqueIdentifier[];
   overIndex: number;
@@ -25,7 +28,10 @@ export const Context = React.createContext<{
   clientRects: PositionalClientRect[];
   disableInlineStyles: boolean;
   useClone: boolean;
-}>({
+  strategy: SortingStrategy;
+}
+
+export const Context = React.createContext<ContextDescriptor>({
   containerId: ID_PREFIX,
   items: [],
   overIndex: -1,
@@ -33,9 +39,15 @@ export const Context = React.createContext<{
   clientRects: [],
   disableInlineStyles: false,
   useClone: false,
+  strategy: clientRectSortingStrategy,
 });
 
-export function SortableContext({children, id, items}: Props) {
+export function SortableContext({
+  children,
+  id,
+  items,
+  strategy = clientRectSortingStrategy,
+}: Props) {
   const {
     active,
     willRecomputeClientRects,
@@ -61,8 +73,8 @@ export function SortableContext({children, id, items}: Props) {
     previousItemsRef.current = items;
   }, [items]);
 
-  const contextValue = useMemo(() => {
-    return {
+  const contextValue = useMemo(
+    (): ContextDescriptor => ({
       containerId,
       activeIndex,
       clientRects: sortedClientRects,
@@ -70,16 +82,19 @@ export function SortableContext({children, id, items}: Props) {
       items,
       overIndex,
       useClone,
-    };
-  }, [
-    containerId,
-    disableInlineStyles,
-    items,
-    activeIndex,
-    overIndex,
-    sortedClientRects,
-    useClone,
-  ]);
+      strategy,
+    }),
+    [
+      containerId,
+      disableInlineStyles,
+      items,
+      activeIndex,
+      overIndex,
+      sortedClientRects,
+      useClone,
+      strategy,
+    ]
+  );
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;
 }

@@ -1,9 +1,7 @@
 import React from 'react';
 
-import {UniqueIdentifier} from '../../../../types';
-
 interface Props {
-  id: UniqueIdentifier;
+  id: string;
   value: string;
 }
 

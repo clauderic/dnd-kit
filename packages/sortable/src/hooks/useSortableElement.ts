@@ -1,15 +1,20 @@
 import {useContext, useMemo} from 'react';
 
 import {useDraggable, useDroppable, UseDraggableArguments} from '@dnd-kit/core';
+import {useCombinedRefs} from '@dnd-kit/utilities';
 
 import {Context} from '../components';
 import type {SortingStrategy} from '../types';
 
 export interface Arguments extends UseDraggableArguments {
-  strategy: SortingStrategy;
+  strategy?: SortingStrategy;
 }
 
-export function useSortableElement({disabled, id, strategy}: Arguments) {
+export function useSortableElement({
+  disabled,
+  id,
+  strategy: localStrategy,
+}: Arguments) {
   const {
     items,
     containerId,
@@ -18,6 +23,7 @@ export function useSortableElement({disabled, id, strategy}: Arguments) {
     overIndex,
     disableInlineStyles,
     useClone,
+    strategy: globalStrategy,
   } = useContext(Context);
 
   const {
@@ -33,7 +39,6 @@ export function useSortableElement({disabled, id, strategy}: Arguments) {
     id,
     disabled,
   });
-
   const index = items.indexOf(id);
   const data = useMemo(() => ({containerId, index, items}), [
     containerId,
@@ -44,6 +49,7 @@ export function useSortableElement({disabled, id, strategy}: Arguments) {
     id,
     data,
   });
+  const setNodeRef = useCombinedRefs(setDroppableRef, setDraggableRef);
   const isSorting = Boolean(active);
   const displaceItem =
     isSorting &&
@@ -52,6 +58,7 @@ export function useSortableElement({disabled, id, strategy}: Arguments) {
     !disableInlineStyles;
   const shouldDisplaceDragSource = !useClone && isDragging;
   const dragSourceDisplacement = shouldDisplaceDragSource ? transform : null;
+  const strategy = localStrategy ?? globalStrategy;
   const finalTransform = displaceItem
     ? dragSourceDisplacement ??
       strategy({clientRects, activeRect, activeIndex, overIndex, index})
@@ -66,10 +73,7 @@ export function useSortableElement({disabled, id, strategy}: Arguments) {
     node,
     overIndex,
     over,
-    setNodeRef: (node: HTMLElement | null) => {
-      setDraggableRef(node);
-      setDroppableRef(node);
-    },
+    setNodeRef,
     transform: finalTransform,
   };
 }

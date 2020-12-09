@@ -1,38 +1,29 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import {useLatest} from '@dnd-kit/utilities';
 
-interface Arguments {
-  timeout: number;
-}
+const timeout = 1e3; // 1 second
 
-const defaultArguments: Arguments = {
-  timeout: 1e3, // 1 second
-};
-
-export function useAnnouncement({timeout} = defaultArguments) {
+export function useAnnouncement() {
   const [announcementMap, setAnnouncements] = useState(
     new Map<NodeJS.Timeout, string>()
   );
-  const announce = useCallback(
-    (announcement: string) => {
-      setAnnouncements((announcements) => {
-        const timeoutId = setTimeout(() => {
-          setAnnouncements((announcements) => {
-            announcements.delete(timeoutId);
+  const announce = useCallback((announcement: string) => {
+    setAnnouncements((announcements) => {
+      const timeoutId = setTimeout(() => {
+        setAnnouncements((announcements) => {
+          announcements.delete(timeoutId);
 
-            return new Map(announcements);
-          });
-        }, timeout);
+          return new Map(announcements);
+        });
+      }, timeout);
 
-        announcements.set(timeoutId, announcement);
+      announcements.set(timeoutId, announcement);
 
-        return new Map(announcements);
-      });
-    },
-    [timeout]
-  );
+      return new Map(announcements);
+    });
+  }, []);
   const announcementMapRef = useLatest(announcementMap);
-  const announcements = useMemo(() => Array.from(announcementMap.entries()), [
+  const entries = useMemo(() => Array.from(announcementMap.entries()), [
     announcementMap,
   ]);
 
@@ -50,5 +41,5 @@ export function useAnnouncement({timeout} = defaultArguments) {
     []
   );
 
-  return {announce, announcements} as const;
+  return {announce, entries} as const;
 }

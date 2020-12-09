@@ -20,8 +20,9 @@ import {
 
 import {
   Context,
+  State,
   DraggableContextType,
-  Events,
+  Action,
   initialState,
   reducer,
 } from '../../store';
@@ -40,7 +41,6 @@ import {
   useScrollCoordinates,
   SyntheticListener,
 } from '../../hooks/utilities';
-import {useDrag} from '../../hooks/core/useDrag';
 import {
   SensorInstance,
   KeyboardSensor,
@@ -51,11 +51,11 @@ import {
   SensorHandler,
 } from '../../sensors';
 import {
+  adjustScale,
   CollisionDetection,
   defaultCoordinates,
   getAdjustedClientRect,
   isDocumentScrollingElement,
-  noop,
   rectIntersection,
 } from '../../utilities';
 import {applyModifiers, Modifiers} from '../../modifiers';
@@ -66,9 +66,7 @@ import type {
 import {UniqueIdentifier} from '../../types';
 import {
   Accessibility,
-  AccessibilityRef,
   Announcements,
-  announcements as defaultAnnouncements,
   screenReaderInstructions as defaultScreenReaderInstructions,
   ScreenReaderInstructions,
 } from '../Accessibility';
@@ -126,7 +124,7 @@ interface Props {
   onDragCancel?(): void;
 }
 
-type Active = Parameters<typeof reducer>[0]['active'];
+type Active = State['draggable']['active'];
 
 export type SensorContext = {
   activeRect: PositionalClientRect | null;
@@ -154,6 +152,7 @@ export const ActiveDraggableContext = createContext<Transform>({
 
 export const DndContext = memo(function DndContext({
   autoScroll = true,
+  announcements,
   children,
   sensors = defaultSensors,
   collisionDetection = rectIntersection,
@@ -163,23 +162,15 @@ export const DndContext = memo(function DndContext({
 }: Props) {
   const store = useReducer(reducer, initialState);
   const [state, dispatch] = store;
-  const {active, droppableContainers} = state;
+  const {
+    draggable: {active, translate, lastEvent},
+    droppable: {containers: droppableContainers},
+  } = state;
   const activeRef = useRef<Active>(null);
   const [activeSensor, setActiveSensor] = useState<SensorInstance | null>(null);
   const [activatorEvent, setActivatorEvent] = useState<Event | null>(null);
   const latestProps = useRef(props);
   const draggableDescribedById = useUniqueId(`DndDescribedBy`);
-  const accessibilityRef = useRef<AccessibilityRef>({
-    announce: noop,
-  });
-
-  useIsomorphicEffect(
-    () => {
-      latestProps.current = props;
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    Object.values(props)
-  );
 
   const {
     clientRects,
@@ -200,11 +191,7 @@ export const DndContext = memo(function DndContext({
     windowScrollAdjustedTranslate: defaultCoordinates,
     translateAdjustedClientRect: null,
   });
-  const trackedId = tracked.current.overId;
-  const overNode =
-    trackedId && droppableContainers[trackedId]
-      ? droppableContainers[trackedId].node.current
-      : null;
+  const overNode = getNode(tracked.current.overId, droppableContainers);
   const scrollingContainer = useScrollingParent(overNode ?? activeNode);
   const scrollingContainerRect = useClientRect(scrollingContainer);
   const scrollingElementIsDocument = isDocumentScrollingElement(
@@ -222,11 +209,7 @@ export const DndContext = memo(function DndContext({
 
   const [cloneNodeRef, setCloneNodeRef] = useNodeRef();
   const cloneNodeClientRect = useClientRect(cloneNodeRef.current);
-  const draggingRect = cloneNodeClientRect || activeNodeRect;
-  const {
-    handlers: {onStart, onMove, onEnd},
-    state: {translate},
-  } = useDrag();
+  const draggingRect = cloneNodeClientRect ?? activeNodeRect;
 
   const sensorContext = useRef<SensorContext>({
     activeRect: draggingRect,
@@ -290,8 +273,7 @@ export const DndContext = memo(function DndContext({
         finalAdjustedClientRect
       )
     : null;
-
-  const overRect = overId ? clientRects.get(overId) : null;
+  const overRect = getClientRect(overId, clientRects);
   const over = useMemo(
     () =>
       overId && overRect
@@ -303,13 +285,15 @@ export const DndContext = memo(function DndContext({
     [overId, overRect]
   );
 
-  const transform = {
-    ...modifiedTranslate,
-    scaleX:
-      overRect && activeNodeRect ? overRect.width / activeNodeRect.width : 1,
-    scaleY:
-      overRect && activeNodeRect ? overRect.height / activeNodeRect.height : 1,
-  };
+  const transform = adjustScale(modifiedTranslate, overRect, activeNodeRect);
+
+  useIsomorphicEffect(
+    () => {
+      latestProps.current = props;
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    Object.values(props)
+  );
 
   const instantiateSensor = useCallbackRef(
     (
@@ -327,61 +311,42 @@ export const DndContext = memo(function DndContext({
         // Sensors need to be instantiated with refs for arguments that change over time
         // otherwise they are frozen in time with the stale arguments
         context: sensorContext,
-
-        onStart: (initialCoordinates: Coordinates) => {
+        onStart: (initialCoordinates) => {
           if (!activeRef.current) {
             return;
           }
 
-          const {
-            announcements = defaultAnnouncements,
-            onDragStart,
-          } = latestProps.current;
+          const {onDragStart} = latestProps.current;
 
-          onStart(initialCoordinates);
           dispatch({
-            type: Events.SetActiveElement,
-            ...activeRef.current,
+            type: Action.DragStart,
+            initialCoordinates,
+            active: activeRef.current,
           });
-
-          const announcement = announcements.onDragStart(activeRef.current.id);
-
-          if (announcement) {
-            accessibilityRef.current.announce(announcement);
-          }
 
           if (onDragStart) {
             onDragStart({active: activeRef.current});
           }
         },
-        onMove,
+        onMove(coordinates) {
+          dispatch({
+            type: Action.DragMove,
+            coordinates,
+          });
+        },
         onEnd() {
-          const {
-            announcements = defaultAnnouncements,
-            onDragEnd,
-          } = latestProps.current;
+          const {onDragEnd} = latestProps.current;
           const {overId, windowScrollAdjustedTranslate} = tracked.current;
 
           if (activeRef.current) {
-            const announcement = announcements.onDragEnd(
-              activeRef.current.id,
-              overId ?? undefined
-            );
-
-            if (announcement) {
-              accessibilityRef.current.announce(announcement);
-            }
-
             activeRef.current = null;
           }
 
           dispatch({
-            type: Events.UnsetActiveElement,
+            type: Action.DragEnd,
           });
           setActiveSensor(null);
           setActivatorEvent(null);
-
-          onEnd();
 
           if (onDragEnd) {
             onDragEnd({
@@ -395,29 +360,17 @@ export const DndContext = memo(function DndContext({
           }
         },
         onCancel() {
-          const {
-            announcements = defaultAnnouncements,
-            onDragCancel,
-          } = latestProps.current;
+          const {onDragCancel} = latestProps.current;
 
           if (activeRef.current) {
-            const announcement = announcements.onDragCancel(
-              activeRef.current.id
-            );
-
-            if (announcement) {
-              accessibilityRef.current.announce(announcement);
-            }
-
             activeRef.current = null;
           }
 
           dispatch({
-            type: Events.UnsetActiveElement,
+            type: Action.DragCancel,
           });
           setActiveSensor(null);
           setActivatorEvent(null);
-          onEnd();
 
           if (onDragCancel) {
             onDragCancel();
@@ -485,7 +438,7 @@ export const DndContext = memo(function DndContext({
     if (!onDragMove || !clientRects || !translateAdjustedClientRect) {
       return;
     }
-    const overRect = overId ? clientRects.get(overId) : null;
+    const overRect = getClientRect(overId, clientRects);
 
     onDragMove({
       active: activeRef.current,
@@ -510,23 +463,11 @@ export const DndContext = memo(function DndContext({
       return;
     }
 
-    const {
-      announcements = defaultAnnouncements,
-      onDragOver,
-    } = latestProps.current;
+    const {onDragOver} = latestProps.current;
     const {translateAdjustedClientRect} = tracked.current;
 
     if (!translateAdjustedClientRect || !tracked.current.clientRects) {
       return;
-    }
-
-    const announcement = announcements.onDragOver(
-      activeRef.current.id,
-      over?.id
-    );
-
-    if (announcement) {
-      accessibilityRef.current.announce(announcement);
     }
 
     if (onDragOver) {
@@ -573,6 +514,12 @@ export const DndContext = memo(function DndContext({
     over,
   ]);
 
+  useAutoScroller({
+    scrollingContainer,
+    adjustedClientRect: translateAdjustedClientRect,
+    disabled: !autoScroll || !activeSensor?.autoScrollEnabled,
+  });
+
   const contextValue = useMemo(() => {
     const memoizedContext: DraggableContextType = {
       active,
@@ -615,12 +562,6 @@ export const DndContext = memo(function DndContext({
     willRecomputeClientRects,
   ]);
 
-  useAutoScroller({
-    scrollingContainer,
-    adjustedClientRect: translateAdjustedClientRect,
-    disabled: !autoScroll || !activeSensor?.autoScrollEnabled,
-  });
-
   return (
     <>
       <Context.Provider value={contextValue}>
@@ -629,10 +570,27 @@ export const DndContext = memo(function DndContext({
         </ActiveDraggableContext.Provider>
       </Context.Provider>
       <Accessibility
-        ref={accessibilityRef}
+        announcements={announcements}
+        activeId={active?.id ?? null}
+        overId={overId}
+        lastEvent={lastEvent}
         hiddenTextDescribedById={draggableDescribedById}
         screenReaderInstructions={screenReaderInstructions}
       />
     </>
   );
 });
+
+function getNode(
+  id: UniqueIdentifier | null,
+  droppableContainers: DroppableContainers
+): HTMLElement | null {
+  return id ? droppableContainers[id]?.node.current : null;
+}
+
+function getClientRect(
+  id: UniqueIdentifier | null,
+  clientRects: PositionalClientRectMap
+): PositionalClientRect | null {
+  return id ? clientRects.get(id) ?? null : null;
+}

@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {
-  ActivationConstraint,
+  PointerActivationConstraint,
   closestCorners,
   rectIntersection,
   DndContext,
@@ -82,7 +82,7 @@ const defaultContainerStyle = ({
 type Items = Record<string, string[]>;
 
 interface Props {
-  activationConstraint?: ActivationConstraint;
+  activationConstraint?: PointerActivationConstraint;
   adjustScale?: boolean;
   animateItemInsertion?: boolean;
   collisionDetection?: CollisionDetection;

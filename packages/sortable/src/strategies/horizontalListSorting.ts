@@ -1,3 +1,4 @@
+import type {PositionalClientRect} from '@dnd-kit/core';
 import type {SortingStrategy} from '../types';
 
 // TO-DO: We should be calculating scale transformation
@@ -61,7 +62,7 @@ export const horizontalListSortingStrategy: SortingStrategy = ({
 };
 
 function getItemGap(
-  clientRects: ClientRect[],
+  clientRects: PositionalClientRect[],
   index: number,
   activeIndex: number
 ) {
@@ -75,11 +76,11 @@ function getItemGap(
 
   if (activeIndex < index) {
     return previousRect
-      ? currentRect.left - previousRect.right
-      : nextRect.left - currentRect.right;
+      ? currentRect.offsetLeft - (previousRect.offsetLeft + previousRect.width)
+      : nextRect.offsetLeft - (currentRect.offsetLeft + currentRect.width);
   }
 
   return nextRect
-    ? nextRect.left - currentRect.right
-    : currentRect.left - previousRect.right;
+    ? nextRect.offsetLeft - (currentRect.offsetLeft + currentRect.width)
+    : currentRect.offsetLeft - (previousRect.offsetLeft + previousRect.width);
 }

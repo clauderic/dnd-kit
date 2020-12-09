@@ -1,6 +1,21 @@
-export * from './algorithms';
-export * from './coordinates';
+export {
+  closestCenter,
+  closestCorners,
+  rectCollision,
+  rectIntersection,
+  CollisionDetection,
+} from './algorithms';
 
+export {
+  defaultCoordinates,
+  distanceBetween,
+  getCoordinatesFromClientRect,
+  getEventCoordinates,
+  getElementCoordinates,
+  getScrollCoordinates,
+} from './coordinates';
+
+export {adjustScale} from './adjustScale';
 export {getAdjustedClientRect} from './getAdjustedClientRect';
 export {getMinValueIndex, getMaxValueIndex} from './getValueIndex';
 export {getOwnerDocument} from './getOwnerDocument';

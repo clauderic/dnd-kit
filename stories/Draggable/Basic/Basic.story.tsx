@@ -11,7 +11,7 @@ import {
   KeyboardSensor,
   Translate,
   restrictToWindowEdges,
-  ActivationConstraint,
+  PointerActivationConstraint,
   Modifiers,
 } from '@dnd-kit/core';
 import {CSS} from '@dnd-kit/utilities';
@@ -37,7 +37,7 @@ const defaultCoordinates = {
 };
 
 interface Props {
-  activationConstraint?: ActivationConstraint;
+  activationConstraint?: PointerActivationConstraint;
   handle?: boolean;
   translateModifiers?: Modifiers;
   style?: React.CSSProperties;

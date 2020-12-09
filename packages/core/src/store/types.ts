@@ -1,8 +1,12 @@
 import React from 'react';
 
-import type {PositionalClientRect, UniqueIdentifier} from '../types';
+import type {
+  Coordinates,
+  PositionalClientRect,
+  UniqueIdentifier,
+} from '../types';
 import type {SyntheticListeners} from '../hooks/utilities';
-import type {Action} from './actions';
+import type {Action, Actions} from './actions';
 
 export interface DraggableElement {
   node: React.MutableRefObject<HTMLElement | null>;
@@ -35,12 +39,19 @@ export interface Active {
 }
 
 export interface State {
-  active: Active | null;
-  droppableContainers: DroppableContainers;
+  droppable: {
+    containers: DroppableContainers;
+  };
+  draggable: {
+    active: Active | null;
+    initialCoordinates: Coordinates;
+    translate: Coordinates;
+    lastEvent: Action.DragStart | Action.DragEnd | Action.DragCancel | null;
+  };
 }
 
 export interface DraggableContextType {
-  dispatch: React.Dispatch<Action>;
+  dispatch: React.Dispatch<Actions>;
   activators: SyntheticListeners;
   activatorEvent: Event | null;
   active: Active | null;

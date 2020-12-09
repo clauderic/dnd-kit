@@ -1,12 +1,7 @@
 import {createContext} from 'react';
 
 import {noop} from '../utilities/other';
-import {State, DraggableContextType} from './types';
-
-export const initialState: State = {
-  active: null,
-  droppableContainers: {},
-};
+import {DraggableContextType} from './types';
 
 export const Context = createContext<DraggableContextType>({
   activatorEvent: null,

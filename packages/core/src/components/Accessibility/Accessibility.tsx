@@ -1,42 +1,85 @@
-import React, {forwardRef, useImperativeHandle} from 'react';
+import React, {useRef, useEffect} from 'react';
 import {createPortal} from 'react-dom';
 import {canUseDOM, useUniqueId} from '@dnd-kit/utilities';
 
 import {HiddenText, LiveRegion} from './components';
 import {useAnnouncement} from './hooks';
-import {ScreenReaderInstructions} from './types';
+import {Announcements, ScreenReaderInstructions} from './types';
+import {defaultAnnouncements} from './defaults';
 import {UniqueIdentifier} from '../../types';
+import {Action, State} from '../../store';
 
 interface Props {
+  announcements?: Announcements;
+  activeId: UniqueIdentifier | null;
+  overId: UniqueIdentifier | null;
+  lastEvent: State['draggable']['lastEvent'];
   screenReaderInstructions: ScreenReaderInstructions;
   hiddenTextDescribedById: UniqueIdentifier;
 }
 
-export interface AccessibilityRef {
-  announce: ReturnType<typeof useAnnouncement>['announce'];
+export function Accessibility({
+  announcements = defaultAnnouncements,
+  activeId,
+  overId,
+  lastEvent,
+  hiddenTextDescribedById,
+  screenReaderInstructions,
+}: Props) {
+  const {announce, entries} = useAnnouncement();
+  const tracked = useRef({
+    activeId,
+    overId,
+  });
+  const liveRegionId = useUniqueId(`DndLiveRegion`);
+
+  useEffect(() => {
+    const {
+      activeId: previousActiveId,
+      overId: previousOverId,
+    } = tracked.current;
+    let announcement: string | undefined;
+
+    if (!previousActiveId && activeId) {
+      announcement = announcements.onDragStart(activeId);
+    } else if (!activeId && previousActiveId) {
+      if (lastEvent === Action.DragEnd) {
+        announcement = announcements.onDragEnd(
+          previousActiveId,
+          previousOverId ?? undefined
+        );
+      } else if (lastEvent === Action.DragCancel) {
+        announcement = announcements.onDragCancel(previousActiveId);
+      }
+    } else if (activeId && previousActiveId && overId !== previousOverId) {
+      announcement = announcements.onDragOver(activeId, overId ?? undefined);
+    }
+
+    if (announcement) {
+      announce(announcement);
+    }
+
+    if (
+      tracked.current.overId !== overId ||
+      tracked.current.activeId !== activeId
+    ) {
+      tracked.current = {
+        activeId,
+        overId,
+      };
+    }
+  }, [announcements, announce, activeId, overId, lastEvent]);
+
+  return canUseDOM
+    ? createPortal(
+        <>
+          <HiddenText
+            id={hiddenTextDescribedById}
+            value={screenReaderInstructions.draggable}
+          />
+          <LiveRegion id={liveRegionId} entries={entries} />
+        </>,
+        document.body
+      )
+    : null;
 }
-
-export const Accessibility = forwardRef<AccessibilityRef, Props>(
-  function Accessibility(props, ref) {
-    const {hiddenTextDescribedById, screenReaderInstructions} = props;
-    const {announce, announcements} = useAnnouncement();
-    const liveRegionId = useUniqueId(`DndLiveRegion`);
-
-    useImperativeHandle(ref, () => ({
-      announce,
-    }));
-
-    return canUseDOM
-      ? createPortal(
-          <>
-            <HiddenText
-              id={hiddenTextDescribedById}
-              value={screenReaderInstructions.draggable}
-            />
-            <LiveRegion id={liveRegionId} announcements={announcements} />
-          </>,
-          document.body
-        )
-      : null;
-  }
-);

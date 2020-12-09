@@ -10,7 +10,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import {
-  ActivationConstraint,
+  PointerActivationConstraint,
   DraggableClone,
   DndContext,
   closestCenter,
@@ -22,7 +22,7 @@ import {createRange} from '../utilities';
 import {Item, List} from '../components';
 
 export interface Props {
-  activationConstraint?: ActivationConstraint;
+  activationConstraint?: PointerActivationConstraint;
   adjustScale?: boolean;
   Container?: any; // TO-DO: Fix me
   strategy?: SortingStrategy;
@@ -125,14 +125,13 @@ export function Sortable({
       onDragCancel={() => setActiveId(null)}
       translateModifiers={translateModifiers}
     >
-      <SortableContext id="container" items={items}>
+      <SortableContext id="container" items={items} strategy={strategy}>
         <Container>
           {items.map((value, index) => (
             <SortableItem
               key={value}
               id={value}
               handle={handle}
-              strategy={strategy}
               index={index}
               style={getItemStyles}
               wrapperStyle={wrapperStyle}
@@ -180,7 +179,6 @@ interface SortableItemProps {
   id: string;
   index: number;
   handle: boolean;
-  strategy: any;
   useClone?: boolean;
   style(values: any): React.CSSProperties;
   renderItem?(args: any): React.ReactElement;
@@ -200,7 +198,6 @@ export function SortableItem({
   id,
   index,
   handle,
-  strategy,
   style,
   renderItem,
   useClone,
@@ -217,7 +214,6 @@ export function SortableItem({
   } = useSortableElement({
     id,
     disabled,
-    strategy,
   });
 
   return (

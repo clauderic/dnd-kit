@@ -73,9 +73,9 @@ export const VariableWidths = () => {
   return (
     <Sortable
       {...props}
-      wrapperStyle={({index}) => {
+      wrapperStyle={({id}) => {
         return {
-          width: randomWidths[index],
+          width: randomWidths[Number(id)],
         };
       }}
     />
@@ -98,7 +98,7 @@ export const MarginBetweenItems = () => {
   return (
     <Sortable
       {...props}
-      getItemStyles={({index}) => {
+      wrapperStyle={({index}) => {
         return {
           ...baseStyles,
           marginRight: getMargin(index),

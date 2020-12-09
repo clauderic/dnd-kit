@@ -8,7 +8,7 @@ export const screenReaderInstructions: ScreenReaderInstructions = {
   `,
 };
 
-export const announcements: Announcements = {
+export const defaultAnnouncements: Announcements = {
   onDragStart(id) {
     return `Picked up draggable item ${id}.`;
   },

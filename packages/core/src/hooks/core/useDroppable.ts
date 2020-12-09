@@ -1,7 +1,7 @@
 import {useContext, useEffect, useRef} from 'react';
 import {useIsomorphicEffect, useNodeRef} from '@dnd-kit/utilities';
 
-import {Context, Events, Data} from '../../store';
+import {Context, Action, Data} from '../../store';
 import {PositionalClientRect} from '../../types';
 
 export interface UseDroppableArguments {
@@ -31,7 +31,7 @@ export function useDroppable({
   useIsomorphicEffect(
     () => {
       dispatch({
-        type: Events.RegisterDroppable,
+        type: Action.RegisterDroppable,
         element: {
           id,
           disabled,
@@ -43,7 +43,7 @@ export function useDroppable({
 
       return () =>
         dispatch({
-          type: Events.UnregisterDroppable,
+          type: Action.UnregisterDroppable,
           id,
         });
     },
@@ -54,7 +54,7 @@ export function useDroppable({
   useEffect(
     () => {
       dispatch({
-        type: Events.SetDroppableDisabled,
+        type: Action.SetDroppableDisabled,
         id,
         disabled,
       });

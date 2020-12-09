@@ -13,10 +13,11 @@ import {
 } from '@dnd-kit/core';
 
 import {getNextKeyboardCoordinates} from '../sensors';
-import {SortingStrategy} from '../types';
+import {clientRectSortingStrategy} from '../strategies';
+import type {SortingStrategy} from '../types';
 
 interface Arguments {
-  strategy: SortingStrategy;
+  strategy?: SortingStrategy;
   mouse?: {
     options?: MouseSensorOptions;
     disabled?: boolean;
@@ -42,7 +43,7 @@ function useCombineSensors(
 }
 
 export function useSortableSensors({
-  strategy,
+  strategy = clientRectSortingStrategy,
   mouse,
   touch,
   keyboard,

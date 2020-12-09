@@ -1,4 +1,4 @@
-export {Events} from './actions';
-export {Context, initialState} from './context';
-export {reducer} from './reducer';
+export {Action} from './actions';
+export {Context} from './context';
+export {reducer, initialState} from './reducer';
 export * from './types';

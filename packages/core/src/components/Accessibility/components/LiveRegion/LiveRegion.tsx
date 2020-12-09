@@ -1,10 +1,8 @@
 import React from 'react';
 
-import {UniqueIdentifier} from '../../../../types';
-
 export interface Props {
-  id: UniqueIdentifier;
-  announcements: [NodeJS.Timeout, string][];
+  id: string;
+  entries: [NodeJS.Timeout, string][];
 }
 
 // Hide element visually but keep it readable by screen readers
@@ -20,7 +18,7 @@ const visuallyHidden: React.CSSProperties = {
   clipPath: 'inset(100%)',
 };
 
-export function LiveRegion({id, announcements}: Props) {
+export function LiveRegion({id, entries}: Props) {
   return (
     <div
       id={id}
@@ -29,8 +27,8 @@ export function LiveRegion({id, announcements}: Props) {
       aria-relevant="additions"
       aria-atomic
     >
-      {announcements.map(([id, announcement]) => (
-        <span key={id.toString()}>{announcement}</span>
+      {entries.map(([id, entry]) => (
+        <span key={id.toString()}>{entry}</span>
       ))}
     </div>
   );

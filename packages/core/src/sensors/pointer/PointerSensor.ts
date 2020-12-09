@@ -5,7 +5,7 @@ import {Listeners} from '../utilities';
 import {getEventCoordinates, getOwnerDocument} from '../../utilities';
 import type {SensorInstance, SensorProps, SensorOptions} from '../types';
 import type {Coordinates} from '../../types';
-import {KeyCode} from '../keyboard';
+import {KeyboardCode} from '../keyboard';
 
 interface DistanceConstraint {
   distance: number;
@@ -26,22 +26,22 @@ export interface PointerEventHandlers {
   end: EventDescriptor;
 }
 
-export type ActivationConstraint = DistanceConstraint | DelayConstraint;
+export type PointerActivationConstraint = DistanceConstraint | DelayConstraint;
 
 function isDistanceConstraint(
-  constraint: ActivationConstraint
+  constraint: PointerActivationConstraint
 ): constraint is DistanceConstraint {
   return Boolean(constraint && 'distance' in constraint);
 }
 
 function isDelayConstraint(
-  constraint: ActivationConstraint
+  constraint: PointerActivationConstraint
 ): constraint is DelayConstraint {
   return Boolean(constraint && 'delay' in constraint);
 }
 
 export interface PointerSensorOptions extends SensorOptions {
-  activationConstraint?: ActivationConstraint;
+  activationConstraint?: PointerActivationConstraint;
 }
 
 export type PointerSensorProps = SensorProps<PointerSensorOptions>;
@@ -177,7 +177,7 @@ export class PointerSensor implements SensorInstance {
   }
 
   private handleKeydown(event: Event) {
-    if (event instanceof KeyboardEvent && event.code === KeyCode.Esc) {
+    if (event instanceof KeyboardEvent && event.code === KeyboardCode.Esc) {
       this.handleCancel();
     }
   }

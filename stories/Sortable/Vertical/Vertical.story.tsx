@@ -80,9 +80,9 @@ export const VariableHeights = () => {
   return (
     <Sortable
       {...props}
-      wrapperStyle={({index}) => {
+      wrapperStyle={({id}) => {
         return {
-          height: randomHeights[index],
+          height: randomHeights[Number(id)],
         };
       }}
     />

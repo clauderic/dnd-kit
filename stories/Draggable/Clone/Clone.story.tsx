@@ -1,7 +1,7 @@
 import React, {useMemo, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {
-  ActivationConstraint,
+  PointerActivationConstraint,
   DndContext,
   DraggableClone,
   Modifiers,
@@ -26,7 +26,7 @@ export default {
 };
 
 interface Props {
-  activationConstraint?: ActivationConstraint;
+  activationConstraint?: PointerActivationConstraint;
   handle?: boolean;
   translateModifiers?: Modifiers;
   cloneTranslateModifiers?: Modifiers;

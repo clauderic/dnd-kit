@@ -7,8 +7,8 @@ import {Listeners} from '../utilities';
 import type {SensorInstance, SensorProps, SensorOptions} from '../types';
 import type {Coordinates} from '../../types';
 
-import {CoordinatesGetter, KeyCode, KeyCodes} from './types';
-import {defaultKeyCodes, defaultCoordinatesGetter} from './defaults';
+import {CoordinatesGetter, KeyboardCode, KeyboardCodes} from './types';
+import {defaultKeyboardCodes, defaultCoordinatesGetter} from './defaults';
 import {
   defaultCoordinates,
   getElementCoordinates,
@@ -17,7 +17,7 @@ import {
 } from '../../utilities';
 
 export interface KeyboardSensorOptions extends SensorOptions {
-  keyCodes?: KeyCodes;
+  keyboardCodes?: KeyboardCodes;
   getNextCoordinates?: CoordinatesGetter;
   scrollBehavior?: ScrollBehavior;
 }
@@ -65,18 +65,18 @@ export class KeyboardSensor implements SensorInstance {
       const {coordinates} = this;
       const {active, context, options} = this.props;
       const {
-        keyCodes = defaultKeyCodes,
+        keyboardCodes = defaultKeyboardCodes,
         getNextCoordinates = defaultCoordinatesGetter,
         scrollBehavior = 'smooth',
       } = options;
       const {code} = event;
 
-      if (keyCodes.end.includes(code)) {
+      if (keyboardCodes.end.includes(code)) {
         this.handleEnd(event);
         return;
       }
 
-      if (keyCodes.cancel.includes(code)) {
+      if (keyboardCodes.cancel.includes(code)) {
         this.handleCancel(event);
         return;
       }
@@ -112,22 +112,22 @@ export class KeyboardSensor implements SensorInstance {
 
           const clampedCoordinates = {
             x: Math.min(
-              direction === KeyCode.Right
+              direction === KeyboardCode.Right
                 ? scrollElementRect.right - scrollElementRect.width / 2
                 : scrollElementRect.right,
               Math.max(
-                direction === KeyCode.Right
+                direction === KeyboardCode.Right
                   ? scrollElementRect.left
                   : scrollElementRect.left + scrollElementRect.width / 2,
                 newCoordinates.x
               )
             ),
             y: Math.min(
-              direction === KeyCode.Down
+              direction === KeyboardCode.Down
                 ? scrollElementRect.bottom - scrollElementRect.height / 2
                 : scrollElementRect.bottom,
               Math.max(
-                direction === KeyCode.Down
+                direction === KeyboardCode.Down
                   ? scrollElementRect.top
                   : scrollElementRect.top + scrollElementRect.height / 2,
                 newCoordinates.y
@@ -136,18 +136,18 @@ export class KeyboardSensor implements SensorInstance {
           };
 
           const canScrollX =
-            (direction === KeyCode.Right && !isRight) ||
-            (direction === KeyCode.Left && !isLeft);
+            (direction === KeyboardCode.Right && !isRight) ||
+            (direction === KeyboardCode.Left && !isLeft);
           const canScrollY =
-            (direction === KeyCode.Down && !isBottom) ||
-            (direction === KeyCode.Up && !isTop);
+            (direction === KeyboardCode.Down && !isBottom) ||
+            (direction === KeyboardCode.Up && !isTop);
 
           if (canScrollX && clampedCoordinates.x !== newCoordinates.x) {
             const canFullyScrollToNewCoordinates =
-              (direction === KeyCode.Right &&
+              (direction === KeyboardCode.Right &&
                 scrollingContainer.scrollLeft + coordinatesDelta.x <=
                   maxScroll.x) ||
-              (direction === KeyCode.Left &&
+              (direction === KeyboardCode.Left &&
                 scrollingContainer.scrollLeft + coordinatesDelta.x >=
                   minScroll.x);
 
@@ -163,15 +163,16 @@ export class KeyboardSensor implements SensorInstance {
 
             scrollDelta.x = scrollingContainer.scrollLeft;
             scrollingContainer.scrollTo({
-              left: direction === KeyCode.Right ? maxScroll.x : minScroll.x,
+              left:
+                direction === KeyboardCode.Right ? maxScroll.x : minScroll.x,
               behavior: scrollBehavior,
             });
           } else if (canScrollY && clampedCoordinates.y !== newCoordinates.y) {
             const canFullyScrollToNewCoordinates =
-              (direction === KeyCode.Down &&
+              (direction === KeyboardCode.Down &&
                 scrollingContainer.scrollTop + coordinatesDelta.y <=
                   maxScroll.y) ||
-              (direction === KeyCode.Up &&
+              (direction === KeyboardCode.Up &&
                 scrollingContainer.scrollTop + coordinatesDelta.y >=
                   minScroll.y);
 
@@ -186,7 +187,7 @@ export class KeyboardSensor implements SensorInstance {
             }
 
             scrollDelta.y =
-              direction === KeyCode.Down
+              direction === KeyboardCode.Down
                 ? scrollingContainer.scrollTop - maxScroll.y
                 : scrollingContainer.scrollTop - minScroll.y;
 
@@ -238,11 +239,11 @@ export class KeyboardSensor implements SensorInstance {
       eventName: 'onKeyDown' as const,
       handler: (
         event: React.KeyboardEvent,
-        {keyCodes = defaultKeyCodes}: KeyboardSensorOptions
+        {keyboardCodes = defaultKeyboardCodes}: KeyboardSensorOptions
       ) => {
         const {code} = event.nativeEvent;
 
-        if (keyCodes.start.includes(code)) {
+        if (keyboardCodes.start.includes(code)) {
           event.preventDefault();
 
           return true;

@@ -2,7 +2,7 @@ import type {Coordinates} from '../../types';
 import type {Active} from '../../store';
 import type {SensorContext} from '../../components/DndContext';
 
-export enum KeyCode {
+export enum KeyboardCode {
   Space = 'Space',
   Down = 'ArrowDown',
   Right = 'ArrowRight',
@@ -12,7 +12,7 @@ export enum KeyCode {
   Enter = 'Enter',
 }
 
-export type KeyCodes = {
+export type KeyboardCodes = {
   start: KeyboardEvent['code'][];
   cancel: KeyboardEvent['code'][];
   end: KeyboardEvent['code'][];

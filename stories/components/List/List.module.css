@@ -1,6 +1,6 @@
 .List {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-auto-rows: max-content;
   box-sizing: border-box;
   width: 300px;
   grid-gap: 10px;
@@ -12,6 +12,6 @@
 
   &.horizontal {
     width: 100%;
-    flex-direction: row;
+    grid-auto-flow: column;
   }
 }
