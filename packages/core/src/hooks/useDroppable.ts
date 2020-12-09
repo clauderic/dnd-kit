@@ -1,8 +1,8 @@
 import {useContext, useEffect, useRef} from 'react';
 import {useIsomorphicEffect, useNodeRef} from '@dnd-kit/utilities';
 
-import {Context, Action, Data} from '../../store';
-import {PositionalClientRect} from '../../types';
+import {Context, Action, Data} from '../store';
+import type {PositionalClientRect} from '../types';
 
 export interface UseDroppableArguments {
   id: string;

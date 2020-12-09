@@ -1,9 +1,9 @@
 import {createContext, useContext} from 'react';
 import {Transform, useNodeRef} from '@dnd-kit/utilities';
 
-import {Context} from '../../store';
-import {ActiveDraggableContext} from '../../components/DndContext';
-import {useSyntheticListeners, SyntheticListenerMap} from '../utilities';
+import {Context} from '../store';
+import {ActiveDraggableContext} from '../components/DndContext';
+import {useSyntheticListeners, SyntheticListenerMap} from './utilities';
 
 export interface UseDraggableArguments {
   id: string;

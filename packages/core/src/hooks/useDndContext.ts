@@ -1,5 +1,5 @@
 import {ContextType, useContext} from 'react';
-import {Context} from '../../store';
+import {Context} from '../store';
 
 export function useDndContext() {
   return useContext(Context);
