@@ -23,6 +23,7 @@ export function useDraggable({
   const {
     active,
     activeRect,
+    activatorEvent,
     ariaDescribedById,
     clientRects,
     activators,
@@ -38,6 +39,7 @@ export function useDraggable({
   return {
     active,
     activeRect,
+    activatorEvent,
     attributes: {
       role: 'button',
       'aria-pressed': isDragging ? true : undefined,

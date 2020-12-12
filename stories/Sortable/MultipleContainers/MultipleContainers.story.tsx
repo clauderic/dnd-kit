@@ -14,7 +14,7 @@ import {
 } from '@dnd-kit/core';
 import {
   SortableContext,
-  useSortableElement,
+  useSortable,
   arrayMove,
   useSortableSensors,
   clientRectSortingStrategy,
@@ -427,7 +427,7 @@ function SortableItem({
     over,
     overIndex,
     transform,
-  } = useSortableElement({
+  } = useSortable({
     id,
     strategy,
   });

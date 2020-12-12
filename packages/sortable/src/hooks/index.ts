@@ -1,2 +1,2 @@
-export {useSortableElement} from './useSortableElement';
+export {useSortable} from './useSortable';
 export {useSortableSensors} from './useSortableSensors';

@@ -10,7 +10,7 @@ export interface Arguments extends UseDraggableArguments {
   strategy?: SortingStrategy;
 }
 
-export function useSortableElement({
+export function useSortable({
   disabled,
   id,
   strategy: localStrategy,
@@ -29,6 +29,7 @@ export function useSortableElement({
   const {
     active,
     activeRect,
+    activatorEvent,
     attributes,
     setNodeRef: setDraggableRef,
     listeners,
@@ -66,6 +67,7 @@ export function useSortableElement({
 
   return {
     attributes,
+    activatorEvent,
     clientRect,
     isSorting,
     isDragging,

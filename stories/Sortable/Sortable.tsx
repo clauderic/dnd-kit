@@ -3,7 +3,7 @@ import {createPortal} from 'react-dom';
 
 import {
   arrayMove,
-  useSortableElement,
+  useSortable,
   useSortableSensors,
   SortableContext,
   SortingStrategy,
@@ -211,7 +211,7 @@ export function SortableItem({
     overIndex,
     setNodeRef,
     transform,
-  } = useSortableElement({
+  } = useSortable({
     id,
     disabled,
   });
