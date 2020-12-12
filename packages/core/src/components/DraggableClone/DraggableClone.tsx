@@ -1,8 +1,15 @@
-import React, {forwardRef, useContext, useMemo} from 'react';
+import React, {
+  forwardRef,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
-import {CSS} from '@dnd-kit/utilities';
+import {CSS, Transform} from '@dnd-kit/utilities';
 
-import {Context} from '../../store';
+import {Context, DraggableNodes} from '../../store';
 import {getEventCoordinates, getElementCoordinates} from '../../utilities';
 import {
   applyModifiers,
@@ -10,6 +17,7 @@ import {
   restrictToWindowEdges,
 } from '../../modifiers';
 import {ActiveDraggableContext} from '../DndContext';
+import {UniqueIdentifier} from '../../types';
 
 type TransitionGetter = (
   activatorEvent: Event | null
@@ -18,6 +26,7 @@ type TransitionGetter = (
 export interface Props {
   children?: React.ReactNode;
   className?: string;
+  dropAnimation?: boolean;
   wrapperElement?: keyof JSX.IntrinsicElements;
   transition?: string | TransitionGetter;
   translateModifiers?: Modifiers;
@@ -35,6 +44,7 @@ export const DraggableClone = React.memo(
   ({
     adjustScale,
     children,
+    // dropAnimation = true,
     transition = defaultTransition,
     translateModifiers,
     wrapperElement,
@@ -47,12 +57,13 @@ export const DraggableClone = React.memo(
       cloneNode,
       scrollingContainerRect,
     } = useContext(Context);
+
     const activeRect = useMemo(() => {
       if (!active) {
         return null;
       }
 
-      const node = draggableNodes[active].current;
+      const node = draggableNodes[active]?.current;
       return node ? getElementCoordinates(node) : null;
     }, [active, draggableNodes]);
     const transform = useContext(ActiveDraggableContext);
@@ -75,7 +86,6 @@ export const DraggableClone = React.memo(
     const style: React.CSSProperties | undefined = activeRect
       ? {
           position: 'fixed',
-
           width: activeRect.width,
           height: activeRect.height,
           top: activeRect.top,
@@ -109,42 +119,138 @@ export const DraggableClone = React.memo(
     return (
       <Clone
         ref={cloneNode.setRef}
+        node={cloneNode.nodeRef.current}
+        active={active}
+        draggableNodes={draggableNodes}
         attributes={
           isDragging
             ? {
                 style,
+                children,
                 className,
+                transform: modifiedTransform,
               }
             : undefined
         }
-        isDragging={isDragging}
         wrapperElement={wrapperElement}
-      >
-        {children}
-      </Clone>
+      />
     );
   }
 );
 
+interface CloneProps {
+  active: UniqueIdentifier | null;
+  attributes?: {
+    className: string | undefined;
+    children: React.ReactNode | null;
+    style: React.CSSProperties | undefined;
+    transform: Transform;
+  };
+  // children: React.ReactNode | null;
+  draggableNodes: DraggableNodes;
+  node: HTMLElement | null;
+  wrapperElement: Props['wrapperElement'];
+}
+
 const Clone = forwardRef(
   (
     {
+      active,
       attributes,
-      children,
-      isDragging,
+      draggableNodes,
+      node,
       wrapperElement = 'div',
-    }: {
-      attributes?: {
-        style: React.CSSProperties | undefined;
-        className: string | undefined;
-      };
-      children: React.ReactNode | null;
-      isDragging: boolean;
-      wrapperElement: Props['wrapperElement'];
-    },
+    }: CloneProps,
     ref
   ) => {
-    const shouldRender = isDragging;
+    const [dropAnimationComplete, setDropAnimationComplete] = useState(false);
+    const attributesSnapshot = useRef(attributes);
+    const prevActive = useRef(active);
+    const derivedAttributes = attributes ?? attributesSnapshot.current;
+    const {children, ...otherAttributes} = derivedAttributes ?? {};
+    const shouldRender = children && !dropAnimationComplete;
+
+    useEffect(() => {
+      if (prevActive.current && !active && node) {
+        const activeId = prevActive.current;
+        const transformSnapshot = attributesSnapshot.current?.transform;
+        const shouldPerformDropAnimation = transformSnapshot
+          ? Math.abs(transformSnapshot.x) || Math.abs(transformSnapshot.y)
+          : false;
+
+        if (shouldPerformDropAnimation && transformSnapshot) {
+          requestAnimationFrame(() => {
+            const activeNode = draggableNodes[activeId]?.current;
+
+            if (activeNode) {
+              const fromNode =
+                node.children.length > 1 ? node : node.children[0];
+              const from = fromNode.getBoundingClientRect();
+              const to = activeNode.getBoundingClientRect();
+              const delta = {
+                x: from.x - to.x,
+                y: from.y - to.y,
+              };
+
+              if (Math.abs(delta.x) || Math.abs(delta.y)) {
+                const scaleDelta = {
+                  scaleX: (to.width * transformSnapshot.scaleX) / from.width,
+                  scaleY: (to.height * transformSnapshot.scaleY) / from.height,
+                };
+                const finalTransform = CSS.Transform.toString({
+                  x: transformSnapshot.x - delta.x,
+                  y: transformSnapshot.y - delta.y,
+                  ...scaleDelta,
+                });
+
+                node
+                  .animate(
+                    [
+                      {
+                        transform: CSS.Transform.toString(transformSnapshot),
+                      },
+                      {
+                        transformOrigin: '0 0',
+                        transform: finalTransform,
+                      },
+                    ],
+                    {
+                      iterations: 1,
+                      easing: 'ease',
+                      duration: 250,
+                    }
+                  )
+                  .finished.then(cleanup);
+                return;
+              }
+            }
+
+            cleanup();
+          });
+        } else {
+          cleanup();
+        }
+      }
+
+      if (prevActive.current !== active) {
+        prevActive.current = active;
+      }
+
+      if (active && attributesSnapshot.current !== attributes) {
+        attributesSnapshot.current = attributes;
+      }
+
+      function cleanup() {
+        setDropAnimationComplete(true);
+        attributesSnapshot.current = undefined;
+      }
+    }, [draggableNodes, attributes, children, node, active]);
+
+    useEffect(() => {
+      if (dropAnimationComplete) {
+        setDropAnimationComplete(false);
+      }
+    }, [dropAnimationComplete]);
 
     if (!shouldRender) {
       return null;
@@ -153,7 +259,7 @@ const Clone = forwardRef(
     return React.createElement(
       wrapperElement,
       {
-        ...attributes,
+        ...otherAttributes,
         ref,
       },
       children

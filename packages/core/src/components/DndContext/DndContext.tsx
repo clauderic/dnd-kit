@@ -161,7 +161,7 @@ export const DndContext = memo(function DndContext({
   } = useClientRects(droppableContainers, activeRef.current === null);
 
   const activeNode = useMemo(
-    () => (active ? draggableNodes[active].current : null),
+    () => (active ? draggableNodes[active]?.current ?? null : null),
     [active, draggableNodes]
   );
   const activeNodeRect = useClientRect(activeNode);
