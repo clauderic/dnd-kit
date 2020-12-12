@@ -45,6 +45,7 @@ export {
   PointerSensorProps,
   Response as SensorResponse,
   Sensor,
+  SensorContext,
   SensorDescriptor,
   SensorHandler,
   SensorInstance,

@@ -4,7 +4,6 @@ export {
   DragOverEvent,
   DragMoveEvent,
   DragStartEvent,
-  SensorContext,
 } from './DndContext';
 export {DraggableClone} from './DraggableClone';
 export {

@@ -5,5 +5,4 @@ export {
   DragMoveEvent,
   DragOverEvent,
   DragEndEvent,
-  SensorContext,
 } from './DndContext';
