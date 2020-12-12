@@ -1,5 +1,6 @@
+import {getOwnerDocument} from '../../utilities';
 import {
-  PointerSensor,
+  AbstractPointerSensor,
   PointerEventHandlers,
   PointerSensorOptions,
   PointerSensorProps,
@@ -16,9 +17,9 @@ enum MouseButton {
 
 export interface MouseSensorOptions extends PointerSensorOptions {}
 
-export class MouseSensor extends PointerSensor {
+export class MouseSensor extends AbstractPointerSensor {
   constructor(props: PointerSensorProps) {
-    super(props, events);
+    super(props, events, getOwnerDocument(props.event.target));
   }
 
   static activators = [

@@ -42,13 +42,12 @@ import {
   SyntheticListener,
 } from '../../hooks/utilities';
 import {
-  SensorInstance,
   KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
+  PointerSensor,
   Sensor,
   SensorDescriptor,
   SensorHandler,
+  SensorInstance,
 } from '../../sensors';
 import {
   adjustScale,
@@ -139,9 +138,8 @@ export type SensorContext = {
 };
 
 const defaultSensors = [
+  {sensor: PointerSensor, options: {}},
   {sensor: KeyboardSensor, options: {}},
-  {sensor: MouseSensor, options: {}},
-  {sensor: TouchSensor, options: {}},
 ];
 
 export const ActiveDraggableContext = createContext<Transform>({

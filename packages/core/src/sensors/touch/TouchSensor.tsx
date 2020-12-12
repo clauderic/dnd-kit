@@ -1,12 +1,11 @@
 import React from 'react';
 
 import {
-  PointerSensor,
+  AbstractPointerSensor,
   PointerSensorProps,
   PointerEventHandlers,
   PointerSensorOptions,
 } from '../pointer';
-import {getOwnerDocument} from '../../utilities';
 
 const events: PointerEventHandlers = {
   move: {name: 'touchmove'},
@@ -15,15 +14,9 @@ const events: PointerEventHandlers = {
 
 export interface TouchSensorOptions extends PointerSensorOptions {}
 
-export class TouchSensor extends PointerSensor {
+export class TouchSensor extends AbstractPointerSensor {
   constructor(props: PointerSensorProps) {
-    const {
-      event: {target},
-    } = props;
-    const listenerTarget =
-      target instanceof HTMLElement ? target : getOwnerDocument(target);
-
-    super(props, events, listenerTarget);
+    super(props, events);
   }
 
   static activators = [
