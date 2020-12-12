@@ -57,7 +57,7 @@ export function SortableContext({
   } = useDndContext();
   const containerId = useUniqueId(ID_PREFIX, id);
   const useClone = cloneNode.clientRect !== null;
-  const activeIndex = active ? items.indexOf(active.id) : -1;
+  const activeIndex = active ? items.indexOf(active) : -1;
   const overIndex = over ? items.indexOf(over.id) : -1;
   const previousItemsRef = useRef(items);
   const sortedClientRects = useMemo(

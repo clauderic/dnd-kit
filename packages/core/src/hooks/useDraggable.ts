@@ -30,12 +30,12 @@ export function useDraggable({
     activators,
     over,
   } = useContext(Context);
-  const isDragging = Boolean(active?.id === id);
+  const isDragging = Boolean(active === id);
   const transform: Transform | null = useContext(
     isDragging ? ActiveDraggableContext : NullContext
   );
   const [node, setNodeRef] = useNodeRef();
-  const listeners = useSyntheticListeners(activators, id, node);
+  const listeners = useSyntheticListeners(activators, id);
 
   useEffect(
     () => {

@@ -1,4 +1,3 @@
-import type {MutableRefObject} from 'react';
 import type {Coordinates, UniqueIdentifier} from '../types';
 import type {DroppableContainer} from './types';
 
@@ -15,10 +14,7 @@ export enum Action {
 export type Actions =
   | {
       type: Action.DragStart;
-      active: {
-        id: UniqueIdentifier;
-        node: MutableRefObject<HTMLElement>;
-      };
+      active: UniqueIdentifier;
       initialCoordinates: Coordinates;
     }
   | {type: Action.DragMove; coordinates: Coordinates}

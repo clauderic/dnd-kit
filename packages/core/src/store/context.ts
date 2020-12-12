@@ -6,6 +6,7 @@ import {DndContextDescriptor} from './types';
 export const Context = createContext<DndContextDescriptor>({
   activatorEvent: null,
   active: null,
+  activeNode: null,
   activeRect: null,
   activators: [],
   ariaDescribedById: {

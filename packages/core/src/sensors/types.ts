@@ -1,7 +1,16 @@
 import type {MutableRefObject} from 'react';
-import type {Coordinates, SyntheticEventName} from '../types';
-import type {Active} from '../store/types';
-import type {SensorContext} from '../components/DndContext/DndContext';
+import type {
+  DraggableNode,
+  DroppableContainers,
+  PositionalClientRectMap,
+} from '../store';
+import type {
+  Coordinates,
+  PositionalClientRect,
+  ScrollCoordinates,
+  SyntheticEventName,
+  UniqueIdentifier,
+} from '../types';
 
 export enum Response {
   Start = 'start',
@@ -9,10 +18,23 @@ export enum Response {
   End = 'end',
 }
 
+export type SensorContext = {
+  activeRect: PositionalClientRect | null;
+  containerScroll: ScrollCoordinates;
+  droppableClientRects: PositionalClientRectMap;
+  droppableContainers: DroppableContainers;
+  over: {
+    id: string;
+  } | null;
+  scrollingContainer: Element | null;
+  windowScroll: ScrollCoordinates;
+};
+
 export type SensorOptions = {};
 
 export interface SensorProps<T> {
-  active: Active;
+  active: UniqueIdentifier;
+  activeNode: DraggableNode;
   event: Event;
   context: MutableRefObject<SensorContext>;
   options: T;
@@ -42,5 +64,5 @@ export type Sensors = Sensor<any>[];
 
 export type SensorHandler = (
   event: React.SyntheticEvent,
-  active: Active
+  active: UniqueIdentifier
 ) => boolean | void;

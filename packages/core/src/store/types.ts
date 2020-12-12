@@ -37,17 +37,12 @@ export type PositionalClientRectMap = Map<
   PositionalClientRect
 >;
 
-export interface Active {
-  node: React.MutableRefObject<HTMLElement>;
-  id: UniqueIdentifier;
-}
-
 export interface State {
   droppable: {
     containers: DroppableContainers;
   };
   draggable: {
-    active: Active | null;
+    active: UniqueIdentifier | null;
     initialCoordinates: Coordinates;
     lastEvent: Action.DragStart | Action.DragEnd | Action.DragCancel | null;
     nodes: DraggableNodes;
@@ -59,7 +54,8 @@ export interface DndContextDescriptor {
   dispatch: React.Dispatch<Actions>;
   activators: SyntheticListeners;
   activatorEvent: Event | null;
-  active: Active | null;
+  active: UniqueIdentifier | null;
+  activeNode: DraggableNode | null;
   activeRect: PositionalClientRect | null;
   ariaDescribedById: {
     draggable: UniqueIdentifier;

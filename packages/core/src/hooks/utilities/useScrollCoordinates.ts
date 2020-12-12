@@ -1,5 +1,5 @@
-import {useState, useCallback} from 'react';
-import {canUseDOM, useOnValueChange} from '@dnd-kit/utilities';
+import {useState, useCallback, useRef, useEffect} from 'react';
+import {canUseDOM} from '@dnd-kit/utilities';
 
 import {defaultCoordinates, getScrollCoordinates} from '../../utilities';
 import type {ScrollCoordinates} from '../../types';
@@ -15,6 +15,7 @@ export function useScrollCoordinates(
 ): ScrollCoordinates {
   const [scrollCoordinates, setScrollCoordinates] = useState(defaultState);
   const scrollingElement = getScrollableElement(element);
+  const prevScrollingElement = useRef(scrollingElement);
 
   // TO-DO: Should probably throttle this
   const handleScroll = useCallback((event: Event) => {
@@ -40,28 +41,34 @@ export function useScrollCoordinates(
     });
   }, []);
 
-  useOnValueChange(scrollingElement, (currentElement, previousElement) => {
-    previousElement?.removeEventListener('scroll', handleScroll);
+  useEffect(() => {
+    const previousElement = prevScrollingElement.current;
 
-    if (currentElement) {
-      const scrollCoordinates = getScrollCoordinates(currentElement);
+    if (scrollingElement !== previousElement) {
+      previousElement?.removeEventListener('scroll', handleScroll);
 
-      currentElement.addEventListener('scroll', handleScroll);
+      if (scrollingElement) {
+        const scrollCoordinates = getScrollCoordinates(scrollingElement);
 
-      setScrollCoordinates({
-        initial: scrollCoordinates,
-        current: scrollCoordinates,
-        delta: defaultCoordinates,
-      });
-    } else {
-      setScrollCoordinates(defaultState);
+        scrollingElement.addEventListener('scroll', handleScroll);
+
+        setScrollCoordinates({
+          initial: scrollCoordinates,
+          current: scrollCoordinates,
+          delta: defaultCoordinates,
+        });
+      } else {
+        setScrollCoordinates(defaultState);
+      }
+
+      prevScrollingElement.current = scrollingElement;
     }
 
     return () => {
-      currentElement?.removeEventListener('scroll', handleScroll);
+      scrollingElement?.removeEventListener('scroll', handleScroll);
       previousElement?.removeEventListener('scroll', handleScroll);
     };
-  });
+  }, [handleScroll, scrollingElement]);
 
   return scrollCoordinates;
 }

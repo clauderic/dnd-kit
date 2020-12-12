@@ -26,6 +26,7 @@ export type {
   Activators,
   Response,
   Sensor,
+  SensorContext,
   SensorHandler,
   SensorInstance,
   SensorOptions,

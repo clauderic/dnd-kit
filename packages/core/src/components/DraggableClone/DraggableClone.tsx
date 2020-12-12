@@ -1,9 +1,9 @@
-import React, {forwardRef, useContext} from 'react';
+import React, {forwardRef, useContext, useMemo} from 'react';
 
 import {CSS} from '@dnd-kit/utilities';
 
 import {Context} from '../../store';
-import {getEventCoordinates} from '../../utilities';
+import {getEventCoordinates, getElementCoordinates} from '../../utilities';
 import {
   applyModifiers,
   Modifiers,
@@ -42,11 +42,19 @@ export const DraggableClone = React.memo(
   }: Props) => {
     const {
       active,
-      activeRect,
+      draggableNodes,
       activatorEvent,
       cloneNode,
       scrollingContainerRect,
     } = useContext(Context);
+    const activeRect = useMemo(() => {
+      if (!active) {
+        return null;
+      }
+
+      const node = draggableNodes[active].current;
+      return node ? getElementCoordinates(node) : null;
+    }, [active, draggableNodes]);
     const transform = useContext(ActiveDraggableContext);
     const modifiedTransform = applyModifiers(
       [

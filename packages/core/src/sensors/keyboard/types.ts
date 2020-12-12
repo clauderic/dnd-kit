@@ -1,6 +1,5 @@
-import type {Coordinates} from '../../types';
-import type {Active} from '../../store';
-import type {SensorContext} from '../../components/DndContext';
+import type {Coordinates, UniqueIdentifier} from '../../types';
+import type {SensorContext} from '../types';
 
 export enum KeyboardCode {
   Space = 'Space',
@@ -21,7 +20,7 @@ export type KeyboardCodes = {
 export type CoordinatesGetter = (
   event: KeyboardEvent,
   args: {
-    active: Active;
+    active: UniqueIdentifier;
     currentCoordinates: Coordinates;
     context: SensorContext;
   }

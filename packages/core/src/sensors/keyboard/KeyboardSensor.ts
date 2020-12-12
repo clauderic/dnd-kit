@@ -48,8 +48,13 @@ export class KeyboardSensor implements SensorInstance {
   }
 
   private handleStart() {
-    const {active, onStart} = this.props;
-    const activeRect = getElementCoordinates(active.node.current);
+    const {activeNode, onStart} = this.props;
+
+    if (!activeNode.current) {
+      throw new Error('Active draggable node is undefined');
+    }
+
+    const activeRect = getElementCoordinates(activeNode.current);
     const coordinates = {
       x: activeRect.left,
       y: activeRect.top,

@@ -8,11 +8,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
-
 import {
   add as getAdjustedCoordinates,
   Transform,
-  useCallbackRef,
   useIsomorphicEffect,
   useNodeRef,
   useUniqueId,
@@ -20,18 +18,12 @@ import {
 
 import {
   Context,
-  State,
   DndContextDescriptor,
   Action,
   initialState,
   reducer,
 } from '../../store';
-import type {
-  Coordinates,
-  PositionalClientRect,
-  ScrollCoordinates,
-  Translate,
-} from '../../types';
+import type {Coordinates, PositionalClientRect, Translate} from '../../types';
 import {
   useAutoScroller,
   useClientRect,
@@ -45,6 +37,7 @@ import {
   KeyboardSensor,
   PointerSensor,
   Sensor,
+  SensorContext,
   SensorDescriptor,
   SensorHandler,
   SensorInstance,
@@ -70,12 +63,16 @@ import {
   ScreenReaderInstructions,
 } from '../Accessibility';
 
+interface Active {
+  id: UniqueIdentifier;
+}
+
 export interface DragStartEvent {
-  active: NonNullable<Active>;
+  active: Active;
 }
 
 export interface DragMoveEvent {
-  active: NonNullable<Active>;
+  active: Active;
   delta: Translate;
   draggingRect: PositionalClientRect;
   droppableClientRects: PositionalClientRectMap;
@@ -86,7 +83,7 @@ export interface DragMoveEvent {
 }
 
 export interface DragOverEvent {
-  active: NonNullable<Active>;
+  active: Active;
   draggingRect: PositionalClientRect;
   droppableClientRects: PositionalClientRectMap;
   over: {
@@ -96,6 +93,7 @@ export interface DragOverEvent {
 }
 
 export interface DragEndEvent {
+  active: Active;
   delta: Translate;
   over: {
     id: UniqueIdentifier;
@@ -120,22 +118,8 @@ interface Props {
   onDragMove?(event: DragMoveEvent): void;
   onDragOver?(event: DragOverEvent): void;
   onDragEnd?(event: DragEndEvent): void;
-  onDragCancel?(): void;
+  onDragCancel?(event: DragEndEvent): void;
 }
-
-type Active = State['draggable']['active'];
-
-export type SensorContext = {
-  activeRect: PositionalClientRect | null;
-  containerScroll: ScrollCoordinates;
-  droppableClientRects: PositionalClientRectMap;
-  droppableContainers: DroppableContainers;
-  over: {
-    id: string;
-  } | null;
-  scrollingContainer: Element | null;
-  windowScroll: ScrollCoordinates;
-};
 
 const defaultSensors = [
   {sensor: PointerSensor, options: {}},
@@ -164,7 +148,7 @@ export const DndContext = memo(function DndContext({
     draggable: {active, lastEvent, nodes: draggableNodes, translate},
     droppable: {containers: droppableContainers},
   } = state;
-  const activeRef = useRef<Active>(null);
+  const activeRef = useRef<UniqueIdentifier | null>(null);
   const [activeSensor, setActiveSensor] = useState<SensorInstance | null>(null);
   const [activatorEvent, setActivatorEvent] = useState<Event | null>(null);
   const latestProps = useRef(props);
@@ -176,7 +160,10 @@ export const DndContext = memo(function DndContext({
     willRecomputeClientRects,
   } = useClientRects(droppableContainers, activeRef.current === null);
 
-  const activeNode = active?.node.current || null;
+  const activeNode = useMemo(
+    () => (active ? draggableNodes[active].current : null),
+    [active, draggableNodes]
+  );
   const activeNodeRect = useClientRect(activeNode);
   const tracked = useRef<{
     droppableClientRects: PositionalClientRectMap | null;
@@ -202,7 +189,7 @@ export const DndContext = memo(function DndContext({
     scrollingElementIsDocument ? null : scrollingContainer
   );
   const windowScroll = useScrollCoordinates(
-    active && document.scrollingElement
+    active ? document.scrollingElement : null
   );
 
   const [cloneNodeRef, setCloneNodeRef] = useNodeRef();
@@ -294,7 +281,7 @@ export const DndContext = memo(function DndContext({
     Object.values(props)
   );
 
-  const instantiateSensor = useCallbackRef(
+  const instantiateSensor = useCallback(
     (
       event: React.SyntheticEvent,
       {sensor: Sensor, options}: SensorDescriptor<any>
@@ -305,6 +292,7 @@ export const DndContext = memo(function DndContext({
 
       const sensorInstance = new Sensor({
         active: activeRef.current,
+        activeNode: draggableNodes[activeRef.current],
         event: event.nativeEvent,
         options,
         // Sensors need to be instantiated with refs for arguments that change over time
@@ -324,7 +312,7 @@ export const DndContext = memo(function DndContext({
           });
 
           if (onDragStart) {
-            onDragStart({active: activeRef.current});
+            onDragStart({active: {id: activeRef.current}});
           }
         },
         onMove(coordinates) {
@@ -333,22 +321,35 @@ export const DndContext = memo(function DndContext({
             coordinates,
           });
         },
-        onEnd() {
-          const {onDragEnd} = latestProps.current;
-          const {overId, windowScrollAdjustedTranslate} = tracked.current;
+        onEnd: createHandler(Action.DragEnd),
+        onCancel: createHandler(Action.DragCancel),
+      });
 
-          if (activeRef.current) {
+      setActiveSensor(sensorInstance);
+      setActivatorEvent(event.nativeEvent);
+
+      function createHandler(type: Action.DragEnd | Action.DragCancel) {
+        return function handler() {
+          const {overId, windowScrollAdjustedTranslate} = tracked.current;
+          const props = latestProps.current;
+          const activeId = activeRef.current;
+
+          if (activeId) {
             activeRef.current = null;
           }
 
-          dispatch({
-            type: Action.DragEnd,
-          });
+          dispatch({type});
           setActiveSensor(null);
           setActivatorEvent(null);
 
-          if (onDragEnd) {
-            onDragEnd({
+          const handler =
+            type === Action.DragEnd ? props.onDragEnd : props.onDragCancel;
+
+          if (handler && activeId) {
+            handler({
+              active: {
+                id: activeId,
+              },
               delta: windowScrollAdjustedTranslate,
               over: overId
                 ? {
@@ -357,29 +358,10 @@ export const DndContext = memo(function DndContext({
                 : null,
             });
           }
-        },
-        onCancel() {
-          const {onDragCancel} = latestProps.current;
-
-          if (activeRef.current) {
-            activeRef.current = null;
-          }
-
-          dispatch({
-            type: Action.DragCancel,
-          });
-          setActiveSensor(null);
-          setActivatorEvent(null);
-
-          if (onDragCancel) {
-            onDragCancel();
-          }
-        },
-      });
-
-      setActiveSensor(sensorInstance);
-      setActivatorEvent(event.nativeEvent);
-    }
+        };
+      }
+    },
+    [dispatch, draggableNodes]
   );
 
   const bindActivatorToSensorInstantiator = useCallback(
@@ -399,12 +381,7 @@ export const DndContext = memo(function DndContext({
             capturedBy: sensor.sensor,
           };
 
-          if (active.node.current == null) {
-            throw new Error('Active node is null');
-          }
-
-          // TODO: This should not be needed
-          activeRef.current = active as NonNullable<Active>;
+          activeRef.current = active;
           instantiateSensor(event, sensor);
         }
       };
@@ -427,7 +404,9 @@ export const DndContext = memo(function DndContext({
   }, [active, recomputeClientRects]);
 
   useEffect(() => {
-    if (!activeRef.current) {
+    const activeId = activeRef.current;
+
+    if (!activeId) {
       return;
     }
 
@@ -444,7 +423,9 @@ export const DndContext = memo(function DndContext({
     const overRect = getClientRect(overId, droppableClientRects);
 
     onDragMove({
-      active: activeRef.current,
+      active: {
+        id: activeId,
+      },
       draggingRect: translateAdjustedClientRect,
       droppableClientRects,
       delta: {
@@ -462,7 +443,9 @@ export const DndContext = memo(function DndContext({
   }, [windowScrollAdjustedTranslate.x, windowScrollAdjustedTranslate.y]);
 
   useEffect(() => {
-    if (!activeRef.current) {
+    const activeId = activeRef.current;
+
+    if (!activeId) {
       return;
     }
 
@@ -475,7 +458,9 @@ export const DndContext = memo(function DndContext({
 
     if (onDragOver) {
       onDragOver({
-        active: activeRef.current,
+        active: {
+          id: activeId,
+        },
         droppableClientRects: tracked.current.droppableClientRects,
         draggingRect: translateAdjustedClientRect,
         over,
@@ -526,13 +511,13 @@ export const DndContext = memo(function DndContext({
   const contextValue = useMemo(() => {
     const memoizedContext: DndContextDescriptor = {
       active,
+      activeNode: active ? draggableNodes[active] : null,
       activeRect: activeNodeRect,
       activatorEvent,
       activators,
       ariaDescribedById: {
         draggable: draggableDescribedById,
       },
-      droppableClientRects,
       cloneNode: {
         nodeRef: cloneNodeRef,
         clientRect: cloneNodeClientRect,
@@ -541,6 +526,7 @@ export const DndContext = memo(function DndContext({
       dispatch,
       draggableNodes,
       droppableContainers,
+      droppableClientRects,
       over,
       recomputeClientRects,
       scrollingContainerRect,
@@ -576,7 +562,7 @@ export const DndContext = memo(function DndContext({
       </Context.Provider>
       <Accessibility
         announcements={announcements}
-        activeId={active?.id ?? null}
+        activeId={active}
         overId={overId}
         lastEvent={lastEvent}
         hiddenTextDescribedById={draggableDescribedById}

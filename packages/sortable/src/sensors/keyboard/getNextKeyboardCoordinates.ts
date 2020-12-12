@@ -85,7 +85,7 @@ export const getNextKeyboardCoordinates = (
         // We always want to try to get the latest rect for the active node
         // but for virtualized lists, we may need to fallback to the old cached
         // activeRect since the item may have unmounted out of the viewport
-        const activeRect = clientRectsMap.get(active.id) ?? fallbackActiveRect;
+        const activeRect = clientRectsMap.get(active) ?? fallbackActiveRect;
 
         if (activeRect) {
           const adjustment =
