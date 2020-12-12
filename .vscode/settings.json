@@ -10,6 +10,8 @@
     "**/node_modules": true,
     "**/.git": true,
     "**/.cache": true,
-    "**/.DS_Store": true
+    "**/.DS_Store": true,
+    "**/coverage": true,
+    "**/storybook-static": true
   }
 }
