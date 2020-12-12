@@ -186,7 +186,7 @@ export const DndContext = memo(function DndContext({
     windowScrollAdjustedTranslate: Coordinates;
     translateAdjustedClientRect: PositionalClientRect | null;
   }>({
-    clientRects: null,
+    clientRects,
     overId: null,
     windowScrollAdjustedTranslate: defaultCoordinates,
     translateAdjustedClientRect: null,

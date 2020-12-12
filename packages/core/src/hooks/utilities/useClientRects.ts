@@ -48,7 +48,7 @@ export function useClientRects(
     }
 
     if (disabled) {
-      return;
+      return setClientRects(getClientRects(null));
     }
 
     if (containers) {
