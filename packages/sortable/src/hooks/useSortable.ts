@@ -57,7 +57,7 @@ export function useSortable({
     isValidIndex(activeIndex) &&
     isValidIndex(overIndex) &&
     !disableInlineStyles;
-  const shouldDisplaceDragSource = !useClone && isDragging;
+  const shouldDisplaceDragSource = !useClone && isDragging && displaceItem;
   const dragSourceDisplacement = shouldDisplaceDragSource ? transform : null;
   const strategy = localStrategy ?? globalStrategy;
   const finalTransform = displaceItem
