@@ -1,9 +1,9 @@
 import {createContext} from 'react';
 
 import {noop} from '../utilities/other';
-import {DraggableContextType} from './types';
+import {DndContextDescriptor} from './types';
 
-export const Context = createContext<DraggableContextType>({
+export const Context = createContext<DndContextDescriptor>({
   activatorEvent: null,
   active: null,
   activeRect: null,
@@ -11,7 +11,6 @@ export const Context = createContext<DraggableContextType>({
   ariaDescribedById: {
     draggable: '',
   },
-  clientRects: new Map(),
   cloneNode: {
     nodeRef: {
       current: null,
@@ -20,6 +19,8 @@ export const Context = createContext<DraggableContextType>({
     setRef: noop,
   },
   dispatch: noop,
+  draggableNodes: {},
+  droppableClientRects: new Map(),
   droppableContainers: {},
   over: null,
   scrollingContainerRect: null,

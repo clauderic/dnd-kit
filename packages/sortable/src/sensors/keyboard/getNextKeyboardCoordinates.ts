@@ -25,7 +25,7 @@ export const getNextKeyboardCoordinates = (
     active,
     context: {
       activeRect: fallbackActiveRect,
-      clientRects: clientRectsMap,
+      droppableClientRects: clientRectsMap,
       containerScroll,
       windowScroll,
       over,

@@ -50,20 +50,20 @@ export function SortableContext({
 }: Props) {
   const {
     active,
-    willRecomputeClientRects,
-    clientRects,
     cloneNode,
+    droppableClientRects,
     over,
+    willRecomputeClientRects,
   } = useDndContext();
   const containerId = useUniqueId(ID_PREFIX, id);
   const useClone = cloneNode.clientRect !== null;
   const activeIndex = active ? items.indexOf(active.id) : -1;
   const overIndex = over ? items.indexOf(over.id) : -1;
   const previousItemsRef = useRef(items);
-  const sortedClientRects = useMemo(() => getSortedRects(items, clientRects), [
-    items,
-    clientRects,
-  ]);
+  const sortedClientRects = useMemo(
+    () => getSortedRects(items, droppableClientRects),
+    [items, droppableClientRects]
+  );
   const disableInlineStyles =
     willRecomputeClientRects ||
     (overIndex !== -1 && activeIndex === -1) ||

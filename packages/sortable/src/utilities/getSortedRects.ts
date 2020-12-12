@@ -6,7 +6,7 @@ import type {
 
 export function getSortedRects(
   items: UniqueIdentifier[],
-  clientRects: UseDndContextReturnValue['clientRects']
+  clientRects: UseDndContextReturnValue['droppableClientRects']
 ) {
   return items.reduce<PositionalClientRect[]>((accumulator, id) => {
     const clientRect = clientRects.get(id);

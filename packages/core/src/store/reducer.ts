@@ -1,13 +1,14 @@
 import {omit} from '../utilities';
 import {Action, Actions} from './actions';
-import {State} from './types';
+import type {State} from './types';
 
 export const initialState: State = {
   draggable: {
     active: null,
     initialCoordinates: {x: 0, y: 0},
-    translate: {x: 0, y: 0},
     lastEvent: null,
+    nodes: {},
+    translate: {x: 0, y: 0},
   },
   droppable: {
     containers: {},

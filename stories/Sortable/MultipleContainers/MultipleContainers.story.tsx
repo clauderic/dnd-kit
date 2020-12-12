@@ -306,9 +306,10 @@ function Sortable({
           .filter((key) => key !== VOID_ID)
           .map((containerId) => (
             <SortableContext
+              key={containerId}
               id={containerId}
               items={items[containerId]}
-              key={containerId}
+              strategy={strategy}
             >
               <Container
                 id={containerId}
@@ -322,7 +323,6 @@ function Sortable({
                       id={value}
                       index={index}
                       handle={handle}
-                      strategy={strategy}
                       animate={animateItemInsertion}
                       style={getItemStyles}
                       wrapperStyle={wrapperStyle}
@@ -398,7 +398,6 @@ interface SortableItemProps {
   id: string;
   index: number;
   handle: boolean;
-  strategy: any;
   style(args: any): React.CSSProperties;
   getIndex(id: string): number;
   renderItem(): React.ReactElement;
@@ -410,7 +409,6 @@ function SortableItem({
   id,
   index,
   handle,
-  strategy,
   renderItem,
   style,
   containerId,
@@ -429,7 +427,6 @@ function SortableItem({
     transform,
   } = useSortable({
     id,
-    strategy,
   });
   const mounted = useMountStatus();
   const prevIndex = useRef(index);

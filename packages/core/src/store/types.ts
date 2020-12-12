@@ -9,7 +9,7 @@ import type {SyntheticListeners} from '../hooks/utilities';
 import type {Action, Actions} from './actions';
 
 export interface DraggableElement {
-  node: React.MutableRefObject<HTMLElement | null>;
+  node: DraggableNode;
   id: UniqueIdentifier;
   index: number;
   collection: string;
@@ -25,6 +25,10 @@ export interface DroppableContainer {
   disabled: boolean;
   data: React.MutableRefObject<Data>;
 }
+
+export type DraggableNode = React.MutableRefObject<HTMLElement | null>;
+
+export type DraggableNodes = Record<UniqueIdentifier, DraggableNode>;
 
 export type DroppableContainers = Record<UniqueIdentifier, DroppableContainer>;
 
@@ -45,12 +49,13 @@ export interface State {
   draggable: {
     active: Active | null;
     initialCoordinates: Coordinates;
-    translate: Coordinates;
     lastEvent: Action.DragStart | Action.DragEnd | Action.DragCancel | null;
+    nodes: DraggableNodes;
+    translate: Coordinates;
   };
 }
 
-export interface DraggableContextType {
+export interface DndContextDescriptor {
   dispatch: React.Dispatch<Actions>;
   activators: SyntheticListeners;
   activatorEvent: Event | null;
@@ -59,13 +64,14 @@ export interface DraggableContextType {
   ariaDescribedById: {
     draggable: UniqueIdentifier;
   };
-  clientRects: PositionalClientRectMap;
   cloneNode: {
     nodeRef: React.MutableRefObject<HTMLElement | null>;
     clientRect: PositionalClientRect | null;
     setRef: (element: HTMLElement | null) => void;
   };
+  draggableNodes: DraggableNodes;
   droppableContainers: DroppableContainers;
+  droppableClientRects: PositionalClientRectMap;
   over: {
     id: UniqueIdentifier;
     clientRect: PositionalClientRect;

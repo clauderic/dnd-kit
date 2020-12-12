@@ -1,4 +1,4 @@
-import {createContext, useContext} from 'react';
+import {createContext, useContext, useEffect} from 'react';
 import {Transform, useNodeRef} from '@dnd-kit/utilities';
 
 import {Context} from '../store';
@@ -25,7 +25,8 @@ export function useDraggable({
     activeRect,
     activatorEvent,
     ariaDescribedById,
-    clientRects,
+    draggableNodes,
+    droppableClientRects,
     activators,
     over,
   } = useContext(Context);
@@ -35,6 +36,18 @@ export function useDraggable({
   );
   const [node, setNodeRef] = useNodeRef();
   const listeners = useSyntheticListeners(activators, id, node);
+
+  useEffect(
+    () => {
+      draggableNodes[id] = node;
+
+      return () => {
+        delete draggableNodes[id];
+      };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [draggableNodes, id]
+  );
 
   return {
     active,
@@ -46,7 +59,7 @@ export function useDraggable({
       'aria-roledescription': ariaRoleDescription,
       'aria-describedby': ariaDescribedById.draggable,
     },
-    clientRects,
+    droppableClientRects,
     isDragging,
     listeners: disabled ? undefined : listeners,
     node,
