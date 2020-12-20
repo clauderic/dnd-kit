@@ -2,7 +2,7 @@
   display: grid;
   grid-auto-rows: max-content;
   box-sizing: border-box;
-  width: 300px;
+  min-width: 350px;
   grid-gap: 10px;
   padding: 20px;
   margin: 10px;

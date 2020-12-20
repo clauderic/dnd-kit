@@ -1,4 +1,4 @@
-export {clientRectSortingStrategy} from './clientRectSorting';
 export {horizontalListSortingStrategy} from './horizontalListSorting';
-export {swapClientRectStrategy} from './swapClientRect';
+export {rectSortingStrategy} from './rectSorting';
+export {rectSwappingStrategy} from './rectSwapping';
 export {verticalListSortingStrategy} from './verticalListSorting';

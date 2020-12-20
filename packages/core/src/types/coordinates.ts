@@ -7,15 +7,23 @@ export type Coordinates = {
 
 export type Translate = Coordinates;
 
-export interface PositionalClientRect extends ClientRect {
+export interface LayoutRect {
+  width: number;
+  height: number;
   offsetLeft: number;
   offsetTop: number;
 }
 
-export type PositionalClientRectEntry = [
-  UniqueIdentifier,
-  PositionalClientRect
-];
+export interface ViewRect extends LayoutRect {
+  top: number;
+  left: number;
+  right: number;
+  bottom: number;
+}
+
+export interface ClientRect extends ViewRect {}
+
+export type LayoutRectEntry = [UniqueIdentifier, LayoutRect];
 
 export interface ScrollCoordinates {
   initial: Coordinates;

@@ -1,9 +1,8 @@
 import React, {useRef, useEffect} from 'react';
 import {createPortal} from 'react-dom';
 import {canUseDOM, useUniqueId} from '@dnd-kit/utilities';
+import {HiddenText, LiveRegion, useAnnouncement} from '@dnd-kit/accessibility';
 
-import {HiddenText, LiveRegion} from './components';
-import {useAnnouncement} from './hooks';
 import {Announcements, ScreenReaderInstructions} from './types';
 import {defaultAnnouncements} from './defaults';
 import {UniqueIdentifier} from '../../types';

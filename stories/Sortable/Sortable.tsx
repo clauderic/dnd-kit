@@ -1,30 +1,37 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {createPortal} from 'react-dom';
 
 import {
-  arrayMove,
-  useSortable,
-  useSortableSensors,
-  SortableContext,
-  SortingStrategy,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import {
   PointerActivationConstraint,
-  DraggableClone,
+  DragOverlay,
   DndContext,
   closestCenter,
   UniqueIdentifier,
   Modifiers,
+  CollisionDetection,
+  useSensor,
+  MouseSensor,
+  TouchSensor,
+  KeyboardSensor,
+  useCombineSensors,
 } from '@dnd-kit/core';
+import {
+  arrayMove,
+  useSortable,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  SortingStrategy,
+  rectSortingStrategy,
+} from '@dnd-kit/sortable';
 
 import {createRange} from '../utilities';
-import {Item, List} from '../components';
+import {Item, List, Wrapper} from '../components';
 
 export interface Props {
   activationConstraint?: PointerActivationConstraint;
   adjustScale?: boolean;
-  Container?: any; // TO-DO: Fix me
+  collisionDetection?: CollisionDetection;
+  Container?: any; // To-do: Fix me
   strategy?: SortingStrategy;
   itemCount?: number;
   items?: string[];
@@ -34,7 +41,7 @@ export interface Props {
     id: UniqueIdentifier;
     index: number;
     isSorting: boolean;
-    isClone: boolean;
+    isDragOverlay: boolean;
     overIndex: number;
     isDragging: boolean;
   }): React.CSSProperties;
@@ -44,66 +51,50 @@ export interface Props {
     id: string;
   }): React.CSSProperties;
   isDisabled?(id: UniqueIdentifier): boolean;
-  translateModifiers?: Modifiers;
-  useClone?: boolean;
+  modifiers?: Modifiers;
+  useDragOverlay?: boolean;
 }
 
 export function Sortable({
   activationConstraint,
   adjustScale = false,
   Container = List,
-  strategy = verticalListSortingStrategy,
+  collisionDetection = closestCenter,
+  strategy = rectSortingStrategy,
   itemCount = 16,
-  items: parentItems,
+  items: initialItems,
   renderItem,
   handle = false,
   getItemStyles = () => ({}),
   wrapperStyle = () => ({}),
   isDisabled = () => false,
-  translateModifiers,
-  useClone = true,
+  modifiers,
+  useDragOverlay = true,
 }: Props) {
   const [items, setItems] = useState<string[]>(
     () =>
-      parentItems ?? createRange<string>(itemCount, (index) => index.toString())
+      initialItems ??
+      createRange<string>(itemCount, (index) => index.toString())
   );
   const [activeId, setActiveId] = useState<string | null>(null);
-  const sensors = useSortableSensors({
-    strategy,
-    mouse: {
-      options: {
-        activationConstraint,
-      },
-    },
-    touch: {
-      options: {
-        activationConstraint,
-      },
-    },
-    keyboard: {
-      options: {
-        // For automated Cypress integration tests, we don't need the smooth animation
-        scrollBehavior: 'Cypress' in window ? 'auto' : 'smooth',
-      },
-    },
-  });
+  const sensors = useCombineSensors(
+    useSensor(MouseSensor, {
+      activationConstraint,
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint,
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
   const getIndex = items.indexOf.bind(items);
   const activeIndex = activeId ? getIndex(activeId) : -1;
-
-  useEffect(
-    () => {
-      if (parentItems) {
-        setItems(parentItems);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    parentItems ? [...parentItems] : []
-  );
 
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCenter}
+      collisionDetection={collisionDetection}
       onDragStart={({active}) => {
         if (!active) {
           return;
@@ -111,40 +102,41 @@ export function Sortable({
 
         setActiveId(active.id);
       }}
-      onDragMove={() => {}}
       onDragEnd={({over}) => {
+        setActiveId(null);
+
         if (over) {
           const overIndex = getIndex(over.id);
           if (activeIndex !== overIndex) {
             setItems((items) => arrayMove(items, activeIndex, overIndex));
           }
         }
-
-        setActiveId(null);
       }}
       onDragCancel={() => setActiveId(null)}
-      translateModifiers={translateModifiers}
+      modifiers={modifiers}
     >
-      <SortableContext id="container" items={items} strategy={strategy}>
-        <Container>
-          {items.map((value, index) => (
-            <SortableItem
-              key={value}
-              id={value}
-              handle={handle}
-              index={index}
-              style={getItemStyles}
-              wrapperStyle={wrapperStyle}
-              disabled={isDisabled(value)}
-              renderItem={renderItem}
-              useClone={useClone}
-            />
-          ))}
-        </Container>
-      </SortableContext>
-      {useClone
+      <Wrapper center>
+        <SortableContext items={items} strategy={strategy}>
+          <Container>
+            {items.map((value, index) => (
+              <SortableItem
+                key={value}
+                id={value}
+                handle={handle}
+                index={index}
+                style={getItemStyles}
+                wrapperStyle={wrapperStyle}
+                disabled={isDisabled(value)}
+                renderItem={renderItem}
+                useDragOverlay={useDragOverlay}
+              />
+            ))}
+          </Container>
+        </SortableContext>
+      </Wrapper>
+      {useDragOverlay
         ? createPortal(
-            <DraggableClone adjustScale={adjustScale}>
+            <DragOverlay adjustScale={adjustScale}>
               {activeId ? (
                 <Item
                   value={items[activeIndex]}
@@ -161,12 +153,12 @@ export function Sortable({
                     isSorting: activeId !== null,
                     isDragging: true,
                     overIndex: -1,
-                    isClone: true,
+                    isDragOverlay: true,
                   })}
-                  clone
+                  dragOverlay
                 />
               ) : null}
-            </DraggableClone>,
+            </DragOverlay>,
             document.body
           )
         : null}
@@ -179,7 +171,7 @@ interface SortableItemProps {
   id: string;
   index: number;
   handle: boolean;
-  useClone?: boolean;
+  useDragOverlay?: boolean;
   style(values: any): React.CSSProperties;
   renderItem?(args: any): React.ReactElement;
   wrapperStyle({
@@ -200,7 +192,7 @@ export function SortableItem({
   handle,
   style,
   renderItem,
-  useClone,
+  useDragOverlay,
   wrapperStyle,
 }: SortableItemProps) {
   const {
@@ -211,6 +203,7 @@ export function SortableItem({
     overIndex,
     setNodeRef,
     transform,
+    transition,
   } = useSortable({
     id,
     disabled,
@@ -233,12 +226,13 @@ export function SortableItem({
         isSorting,
         overIndex,
       })}
-      wrapperStyle={wrapperStyle({index, isDragging, id})}
       transform={transform}
+      transition={!useDragOverlay && isDragging ? 'none' : transition}
+      wrapperStyle={wrapperStyle({index, isDragging, id})}
       listeners={listeners}
       data-index={index}
       data-id={id}
-      clone={!useClone && isDragging}
+      dragOverlay={!useDragOverlay && isDragging}
       {...attributes}
     />
   );

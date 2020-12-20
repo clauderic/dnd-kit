@@ -8,7 +8,7 @@ export type {
   DraggableNodes,
   DroppableContainer,
   DroppableContainers,
-  PositionalClientRectMap,
-  State,
   DndContextDescriptor,
+  LayoutRectMap,
+  State,
 } from './types';

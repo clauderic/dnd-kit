@@ -26,11 +26,7 @@ module.exports = {
             loader: 'postcss-loader',
             options: {
               postcssOptions: {
-                plugins: [
-                  // 'postcss-preset-env',
-                  'postcss-simple-vars',
-                  'postcss-nested',
-                ],
+                plugins: ['postcss-simple-vars', 'postcss-nested'],
               },
             },
           },

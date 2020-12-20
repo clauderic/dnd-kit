@@ -1,7 +1,6 @@
-import React, {forwardRef, useRef, useEffect, useLayoutEffect} from 'react';
+import React, {forwardRef, useRef, useEffect} from 'react';
 import classNames from 'classnames';
 
-import {combineRefs} from '../../utilities';
 import {getSuitColor} from './utilities';
 
 import styles from './PlayingCard.module.css';
@@ -13,6 +12,7 @@ export interface Props {
     x: number;
     y: number;
   } | null;
+  transition: string;
   fadeIn: boolean;
   style?: React.CSSProperties;
   isPickedUp?: boolean;
@@ -33,39 +33,13 @@ export const PlayingCard = forwardRef<HTMLDivElement, Props>(
       style,
       index,
       transform,
+      transition,
       ...props
     },
     ref
   ) => {
-    const nodeRef = useRef<HTMLDivElement>();
+    const nodeRef = useRef<HTMLDivElement | null>(null);
     const prevDragging = useRef(Boolean(isDragging));
-    const top = (index ?? 0) * 40;
-    const prevTop = useRef<number | null>(null);
-
-    useLayoutEffect(() => {
-      if (!isSorting) {
-        return;
-      }
-
-      if (prevTop.current !== null) {
-        nodeRef.current?.animate(
-          [
-            {
-              transform: `translate3d(0, ${
-                prevTop.current - top
-              }px, 0) ${baseTransform}`,
-            },
-            {transform: `translate3d(0, 0, 0) ${baseTransform} `},
-          ],
-          {
-            ...baseAnimation,
-            duration: 400,
-          }
-        );
-      }
-
-      prevTop.current = top;
-    }, [top, isSorting]);
 
     useEffect(() => {
       if (!isDragging && prevDragging.current) {
@@ -88,8 +62,10 @@ export const PlayingCard = forwardRef<HTMLDivElement, Props>(
             '--translate-y': transform ? `${transform.y}px` : undefined,
             '--index': index,
             zIndex: style?.zIndex,
+            transition,
           } as React.CSSProperties
         }
+        ref={ref}
       >
         <div
           className={classNames(
@@ -104,11 +80,10 @@ export const PlayingCard = forwardRef<HTMLDivElement, Props>(
               ...style,
               '--scale': isPickedUp ? 1.075 : undefined,
               color: getSuitColor(value),
-              top,
               zIndex: undefined,
             } as React.CSSProperties
           }
-          ref={combineRefs(ref, nodeRef)}
+          ref={nodeRef}
           tabIndex={0}
           {...props}
         >

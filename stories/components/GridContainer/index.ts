@@ -1,1 +1,1 @@
-export {GridContainer, Props} from './GridContainer';
+export {GridContainer} from './GridContainer';

@@ -1,7 +1,7 @@
-import {PositionalClientRect} from '../../types';
-import {getMinValueIndex} from '../getValueIndex';
+import {getMinValueIndex} from '../other';
 import {distanceBetween} from '../coordinates';
-import {CollisionDetection} from './types';
+import type {LayoutRect} from '../../types';
+import type {CollisionDetection} from './types';
 
 /**
  * Returns the coordinates of the corners of a given rectangle:
@@ -9,7 +9,7 @@ import {CollisionDetection} from './types';
  */
 
 function cornersOfRectangle(
-  rect: PositionalClientRect,
+  rect: LayoutRect,
   left = rect.offsetLeft,
   top = rect.offsetTop
 ) {

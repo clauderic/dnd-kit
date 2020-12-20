@@ -22,11 +22,11 @@ export function useDraggable({
 }: UseDraggableArguments) {
   const {
     active,
-    activeRect,
+    activeNodeRect,
     activatorEvent,
     ariaDescribedById,
     draggableNodes,
-    droppableClientRects,
+    droppableLayoutRectsMap,
     activators,
     over,
   } = useContext(Context);
@@ -51,7 +51,7 @@ export function useDraggable({
 
   return {
     active,
-    activeRect,
+    activeNodeRect,
     activatorEvent,
     attributes: {
       role: 'button',
@@ -59,7 +59,7 @@ export function useDraggable({
       'aria-roledescription': ariaRoleDescription,
       'aria-describedby': ariaDescribedById.draggable,
     },
-    droppableClientRects,
+    droppableLayoutRectsMap,
     isDragging,
     listeners: disabled ? undefined : listeners,
     node,

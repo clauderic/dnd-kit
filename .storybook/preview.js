@@ -11,16 +11,19 @@ addDecorator((storyFn) => (
           -webkit-font-smoothing: antialiased;
         }
         body {
-          margin: 0;
+          padding: 0 !important;
         }
       `}
     </style>
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500&display=swap"
+      rel="stylesheet"
+    />
     <main
       style={{
-        display: 'flex',
+        position: 'relative',
         minHeight: '100vh',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
         outline: 'none',
       }}
       tabIndex={-1}

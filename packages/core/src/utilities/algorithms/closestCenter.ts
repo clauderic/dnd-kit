@@ -1,13 +1,13 @@
-import {Coordinates, PositionalClientRect} from '../../types';
-import {getMinValueIndex} from '../getValueIndex';
+import {getMinValueIndex} from '../other';
 import {distanceBetween} from '../coordinates';
-import {CollisionDetection} from './types';
+import type {Coordinates, LayoutRect} from '../../types';
+import type {CollisionDetection} from './types';
 
 /**
  * Returns the coordinates of the center of a given ClientRect
  */
 function centerOfRectangle(
-  rect: PositionalClientRect,
+  rect: LayoutRect,
   left = rect.offsetLeft,
   top = rect.offsetTop
 ): Coordinates {
@@ -23,8 +23,8 @@ function centerOfRectangle(
  */
 export const closestCenter: CollisionDetection = (rects, rect) => {
   const centerRect = centerOfRectangle(rect, rect.left, rect.top);
-  const distances = rects.map(([_, clientRect]) =>
-    distanceBetween(centerOfRectangle(clientRect), centerRect)
+  const distances = rects.map(([_, rect]) =>
+    distanceBetween(centerOfRectangle(rect), centerRect)
   );
 
   const minValueIndex = getMinValueIndex(distances);

@@ -1,18 +1,15 @@
 import {useCallback, useEffect, useRef} from 'react';
 import {useInterval} from '@dnd-kit/utilities';
 
-import {
-  getScrollDirectionAndSpeed,
-  defaultCoordinates,
-  getElementCoordinates,
-} from '../../utilities';
-import {Coordinates, Direction, PositionalClientRect} from '../../types';
+import {getScrollDirectionAndSpeed, defaultCoordinates} from '../../utilities';
+import type {Coordinates, Direction, ViewRect} from '../../types';
 
 interface Arguments {
-  scrollingContainer: Element | null;
-  adjustedClientRect: PositionalClientRect | null;
-  interval?: number;
   disabled: boolean;
+  draggingRect: ViewRect | null;
+  interval?: number;
+  scrollableAncestors: Element[];
+  scrollableAncestorRects: ViewRect[];
 }
 
 interface ScrollDirection {
@@ -21,68 +18,72 @@ interface ScrollDirection {
 }
 
 export function useAutoScroller({
-  adjustedClientRect,
   disabled,
+  draggingRect,
   interval = 5,
-  scrollingContainer,
+  scrollableAncestors,
+  scrollableAncestorRects,
 }: Arguments) {
   const [setAutoScrollInterval, clearAutoScrollInterval] = useInterval();
-  const scrollingContainerRect = useRef<PositionalClientRect | null>(null);
   const scrollSpeed = useRef<Coordinates>({
     x: 1,
     y: 1,
   });
   const scrollDirection = useRef<ScrollDirection>(defaultCoordinates);
+  const scrollContainerRef = useRef<Element | null>(null);
   const autoScroll = useCallback(() => {
-    if (!scrollingContainer) {
+    const scrollContainer = scrollContainerRef.current;
+
+    if (!scrollContainer) {
       return;
     }
 
-    window.requestAnimationFrame(() => {
-      const scrollLeft = scrollSpeed.current.x * scrollDirection.current.x;
-      const scrollTop = scrollSpeed.current.y * scrollDirection.current.y;
+    const scrollLeft = scrollSpeed.current.x * scrollDirection.current.x;
+    const scrollTop = scrollSpeed.current.y * scrollDirection.current.y;
 
-      scrollingContainer.scrollBy(scrollLeft, scrollTop);
-    });
-  }, [scrollingContainer]);
+    scrollContainer.scrollBy(scrollLeft, scrollTop);
+  }, []);
 
   useEffect(() => {
-    scrollingContainerRect.current = scrollingContainer
-      ? getElementCoordinates(scrollingContainer as HTMLElement)
-      : null;
-  }, [scrollingContainer]);
-
-  useEffect(() => {
-    if (
-      disabled ||
-      !scrollingContainer ||
-      !scrollingContainerRect.current ||
-      !adjustedClientRect
-    ) {
+    if (disabled || !scrollableAncestors.length || !draggingRect) {
       clearAutoScrollInterval();
       return;
     }
 
-    const {direction, speed} = getScrollDirectionAndSpeed(
-      scrollingContainer,
-      scrollingContainerRect.current,
-      adjustedClientRect
-    );
-    scrollSpeed.current = speed;
-    scrollDirection.current = direction;
+    for (const scrollContainer of scrollableAncestors) {
+      const index = scrollableAncestors.indexOf(scrollContainer);
+      const scrolllContainerRect = scrollableAncestorRects[index];
 
-    clearAutoScrollInterval();
+      if (!scrolllContainerRect) {
+        continue;
+      }
 
-    if (speed.x > 0 || speed.y > 0) {
-      setAutoScrollInterval(autoScroll, interval);
+      const {direction, speed} = getScrollDirectionAndSpeed(
+        scrollContainer,
+        scrolllContainerRect,
+        draggingRect
+      );
+
+      scrollSpeed.current = speed;
+      scrollDirection.current = direction;
+
+      clearAutoScrollInterval();
+
+      if (speed.x > 0 || speed.y > 0) {
+        scrollContainerRef.current = scrollContainer;
+        setAutoScrollInterval(autoScroll, interval);
+
+        break;
+      }
     }
   }, [
     autoScroll,
-    adjustedClientRect,
+    draggingRect,
     clearAutoScrollInterval,
     disabled,
     setAutoScrollInterval,
-    scrollingContainer,
+    scrollableAncestors,
+    scrollableAncestorRects,
     interval,
   ]);
 }

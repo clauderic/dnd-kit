@@ -1,0 +1,51 @@
+.Droppable {
+  position: relative;
+  padding-top: 80px;
+  text-align: center;
+  border-radius: 10px;
+  width: 340px;
+  height: 340px;
+  box-sizing: border-box;
+  background-color: #fff;
+  box-shadow: inset rgba(201, 211, 219, 0.5) 0 0 0 2px,
+    rgba(255, 255, 255, 0) 0 0 0 1px, rgba(201, 211, 219, 0.25) 20px 14px 24px;
+  transition: box-shadow 250ms ease;
+
+  > svg {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 200px;
+    transform: translate3d(-50%, -50%, 0);
+    opacity: 0.8;
+    transition: opacity 300ms ease, transform 200ms ease;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  &.dragging {
+    > svg {
+      opacity: 0.8;
+    }
+  }
+
+  &.over {
+    box-shadow: inset #1eb99d 0 0 0 3px, rgba(201, 211, 219, 0.5) 20px 14px 24px;
+
+    > svg {
+      opacity: 1;
+    }
+
+    &.dropped {
+      box-shadow: inset rgba(201, 211, 219, 0.7) 0 0 0 3px,
+        rgba(201, 211, 219, 0.5) 20px 14px 24px;
+    }
+  }
+
+  &.dropped {
+    > svg {
+      opacity: 0.2;
+      transform: translate3d(-50%, 100%, 0) scale(0.8);
+    }
+  }
+}

@@ -1,15 +1,11 @@
-import {PositionalClientRect} from '../../types';
-import {getMaxValueIndex} from '../getValueIndex';
-
-import {CollisionDetection} from './types';
+import {getMaxValueIndex} from '../other';
+import type {LayoutRect, ViewRect} from '../../types';
+import type {CollisionDetection} from './types';
 
 /**
  * Returns the intersecting rectangle area between two rectangles
  */
-function getIntersectionRatio(
-  entry: PositionalClientRect,
-  target: PositionalClientRect
-): number {
+function getIntersectionRatio(entry: LayoutRect, target: ViewRect): number {
   const top = Math.max(target.top, entry.offsetTop);
   const left = Math.max(target.left, entry.offsetLeft);
   const right = Math.min(

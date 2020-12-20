@@ -1,4 +1,6 @@
-export {useSensor, SensorDescriptor} from './useSensor';
+export {useSensor} from './useSensor';
+
+export {useCombineSensors} from './useCombineSensors';
 
 export {
   PointerSensor,
@@ -13,7 +15,7 @@ export {MouseSensor, MouseSensorOptions} from './mouse';
 export {TouchSensor, TouchSensorOptions} from './touch';
 
 export {
-  CoordinatesGetter,
+  KeyboardCoordinateGetter,
   KeyboardSensor,
   KeyboardSensorOptions,
   KeyboardSensorProps,
@@ -24,12 +26,13 @@ export {
 export type {
   Activator,
   Activators,
-  Response,
+  Response as SensorResponse,
   Sensor,
+  Sensors,
+  SensorDescriptor,
   SensorContext,
   SensorHandler,
   SensorInstance,
   SensorOptions,
   SensorProps,
-  Sensors,
 } from './types';

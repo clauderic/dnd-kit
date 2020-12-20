@@ -17,7 +17,7 @@ export type KeyboardCodes = {
   end: KeyboardEvent['code'][];
 };
 
-export type CoordinatesGetter = (
+export type KeyboardCoordinateGetter = (
   event: KeyboardEvent,
   args: {
     active: UniqueIdentifier;

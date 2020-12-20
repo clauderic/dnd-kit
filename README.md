@@ -1,9 +1,9 @@
-<p align="center"><img alt="dnd kit – Drag it, move it, drop it like it's hot." width="520" src=".github/assets/dnd-kit-hero.png"></p>
+<p align="center"><img alt="dnd kit – There's a new kit on the block." width="520" src=".github/assets/dnd-kit-hero.png"></p>
 
 ## Features
 
 - **Built for React:** exposes hooks such as `useDraggable` and `useDroppable`, and won't require you to re-architect your app or create additional wrapper DOM nodes.
-- **Feature packed:** customizable collision detection algorithms, multiple activators, draggable clone, drag handles, auto-scrolling, constraints, and so much more.
+- **Feature packed:** customizable collision detection algorithms, multiple activators, drag overlay, drag handles, auto-scrolling, constraints, and so much more.
 - **Supports a wide range of use cases:** vertical lists, horizontal lists, grids, multiple containers, nested contexts, variable sized list and grids, transformed items, virtualized lists.
 - **Zero dependencies and modular:** the core of the library weighs only 10kb. It's built around built-in React state management and context, which keeps it lean.
 - **Built-in support for multiple input methods:** Mouse, touch and keyboard sensors.
@@ -57,7 +57,7 @@ The main **tradeoff** with not using the HTML5 Drag and drop API is that you won
 
 **dnd kit** lets you build drag and drop interfaces without having to mutate the DOM every time an item needs to shift position.
 
-This is possible because **dnd kit** lazily calculates and stores the initial positions and client rects of your droppable containers when a drag operation is initiated. These positions are passed down to your components that use `useDraggable` and `useDroppable` so that you can compute the new positions of your items while a drag operation is underway, and move them to their new positions using performant CSS properties that do not trigger a repaint such as `translate3d` and `scale`. For an example of how this can be achieved, check out the implementation of the sorting strategies that are exposed by the [`@dnd-kit/sortable`](presets/sortable.md) library.
+This is possible because **dnd kit** lazily calculates and stores the initial positions and layout of your droppable containers when a drag operation is initiated. These positions are passed down to your components that use `useDraggable` and `useDroppable` so that you can compute the new positions of your items while a drag operation is underway, and move them to their new positions using performant CSS properties that do not trigger a repaint such as `translate3d` and `scale`. For an example of how this can be achieved, check out the implementation of the sorting strategies that are exposed by the [`@dnd-kit/sortable`](presets/sortable.md) library.
 
 This isn't to say that you can't shift the position of the items in the DOM while dragging, this is something that **is supported** and sometimes inevitable. In some cases, it won't be possible to know in advance what the new position and layout of the item until you move it in the DOM. Just know that these kind of mutations to the DOM while dragging are much more expensive and will cause a repaint, so if possible, prefer computing the new positions using `translate3d` and `scale`.
 
@@ -67,9 +67,10 @@ This isn't to say that you can't shift the position of the items in the DOM whil
 
 # Working in the `@dnd-kit` repository
 
-## Packages contained in this repository
+## Packages contained within this repository
 
 - `@dnd-kit/core`
+- `@dnd-kit/accessibility`
 - `@dnd-kit/sortable`
 - `@dnd-kit/modifiers`
 - `@dnd-kit/utilities`

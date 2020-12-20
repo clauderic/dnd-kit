@@ -2,6 +2,10 @@ playground:
   - playground/*
   - playground/**/*
 
+accessibility:
+  - packages/accessibility/*
+  - packages/accessibility/**/*
+
 core:
   - packages/core/*
   - packages/core/**/*

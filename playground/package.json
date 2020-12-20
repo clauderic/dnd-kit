@@ -12,6 +12,7 @@
   },
   "alias": {
     "@dnd-kit/core": "../packages/core",
+    "@dnd-kit/accesssibility": "../packages/accesssibility",
     "@dnd-kit/modifiers": "../packages/modifiers",
     "@dnd-kit/sortable": "../packages/sortable",
     "@dnd-kit/utilities": "../packages/utilities",

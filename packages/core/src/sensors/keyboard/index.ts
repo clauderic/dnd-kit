@@ -3,5 +3,5 @@ export {
   KeyboardSensorOptions,
   KeyboardSensorProps,
 } from './KeyboardSensor';
-export type {CoordinatesGetter, KeyboardCodes} from './types';
+export type {KeyboardCoordinateGetter, KeyboardCodes} from './types';
 export {KeyboardCode} from './types';

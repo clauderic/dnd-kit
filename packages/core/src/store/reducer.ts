@@ -72,6 +72,10 @@ export function reducer(state: State, action: Actions): State {
       const {id, disabled} = action;
       const element = state.droppable.containers[id];
 
+      if (!element) {
+        return state;
+      }
+
       return {
         ...state,
         droppable: {

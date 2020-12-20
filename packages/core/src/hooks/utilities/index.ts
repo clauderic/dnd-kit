@@ -1,12 +1,18 @@
 export {useAutoScroller} from './useAutoScroller';
-export {useClientRect} from './useClientRect';
-export {useClientRects} from './useClientRects';
+export {useCachedNode} from './useCachedNode';
 export {useCombineActivators} from './useCombineActivators';
-export {useScrollCoordinates} from './useScrollCoordinates';
-export {useScrollingParent} from './useScrollingParent';
+export {useLayoutRectMap} from './useLayoutRectMap';
+export {useScrollOffsets} from './useScrollOffsets';
+export {useScrollableAncestors} from './useScrollableAncestors';
 export {
   useSyntheticListeners,
   SyntheticListener,
   SyntheticListeners,
   SyntheticListenerMap,
 } from './useSyntheticListeners';
+export {
+  useLayoutRect,
+  useClientRect,
+  useClientRects,
+  useViewRect,
+} from './useRect';

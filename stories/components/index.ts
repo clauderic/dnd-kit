@@ -1,7 +1,11 @@
 export {Button} from './Button';
-export {Item, Props as ItemProps} from './Item';
+export {Axis, Draggable} from './Draggable';
+export {Droppable} from './Droppable';
+export {Item} from './Item';
 export {FloatingControls} from './FloatingControls';
 export {Grid} from './Grid';
-export {GridContainer, Props as GridContainerProps} from './GridContainer';
-export {List, Props as ListProps} from './List';
+export {GridContainer} from './GridContainer';
+export {List} from './List';
+export {OverflowWrapper} from './OverflowWrapper';
 export {PlayingCard, shuffle, getDeckOfCards} from './PlayingCard';
+export {Wrapper} from './Wrapper';

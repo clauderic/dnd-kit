@@ -1,7 +1,6 @@
 export {
   closestCenter,
   closestCorners,
-  rectCollision,
   rectIntersection,
   CollisionDetection,
 } from './algorithms';
@@ -9,20 +8,31 @@ export {
 export {
   defaultCoordinates,
   distanceBetween,
-  getCoordinatesFromClientRect,
   getEventCoordinates,
-  getElementCoordinates,
-  getScrollCoordinates,
+  getRelativeTransformOrigin,
 } from './coordinates';
 
-export {adjustScale} from './adjustScale';
-export {getAdjustedClientRect} from './getAdjustedClientRect';
-export {getMinValueIndex, getMaxValueIndex} from './getValueIndex';
-export {getOwnerDocument} from './getOwnerDocument';
-export {getScrollDirectionAndSpeed} from './getScrollDirectionAndSpeed';
-export {getScrollingParent} from './getScrollingParent';
-export {getScrollPosition} from './getScrollPosition';
-export {isMouseEvent, isTouchEvent} from './eventType';
-export {isDocumentScrollingElement} from './scrollingElement';
-export {omit} from './omit';
-export {noop} from './other';
+export {
+  adjustScale,
+  getAdjustedRect,
+  getRectDelta,
+  getElementLayout,
+  getBoundingClientRect,
+  getViewRect,
+} from './rect';
+
+export {getOwnerDocument} from './document';
+
+export {isMouseEvent, isTouchEvent} from './event';
+
+export {getMinValueIndex, getMaxValueIndex, omit, noop} from './other';
+
+export {
+  getScrollableAncestors,
+  getScrollableElement,
+  getScrollCoordinates,
+  getScrollDirectionAndSpeed,
+  getScrollOffsets,
+  getScrollPosition,
+  isDocumentScrollingElement,
+} from './scroll';

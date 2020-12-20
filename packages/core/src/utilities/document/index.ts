@@ -1,0 +1,1 @@
+export {getOwnerDocument} from './getOwnerDocument';

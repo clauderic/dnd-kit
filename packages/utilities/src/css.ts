@@ -5,6 +5,12 @@ export type Transform = {
   scaleY: number;
 };
 
+export interface Transition {
+  property: string;
+  easing: string;
+  duration: number;
+}
+
 export const CSS = Object.freeze({
   Translate: {
     toString(transform: Transform | null) {
@@ -40,6 +46,11 @@ export const CSS = Object.freeze({
         CSS.Translate.toString(transform),
         CSS.Scale.toString(transform),
       ].join(' ');
+    },
+  },
+  Transition: {
+    toString({property, duration, easing}: Transition) {
+      return `${property} ${duration}ms ${easing}`;
     },
   },
 });

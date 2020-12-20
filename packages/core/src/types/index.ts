@@ -1,7 +1,9 @@
 export type {
   Coordinates,
-  PositionalClientRect,
-  PositionalClientRectEntry,
+  ClientRect,
+  LayoutRect,
+  ViewRect,
+  LayoutRectEntry,
   Translate,
   ScrollCoordinates,
 } from './coordinates';

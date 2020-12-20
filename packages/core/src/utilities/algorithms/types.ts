@@ -1,10 +1,6 @@
-import type {
-  PositionalClientRectEntry,
-  PositionalClientRect,
-  UniqueIdentifier,
-} from '../../types';
+import type {LayoutRectEntry, ViewRect, UniqueIdentifier} from '../../types';
 
 export type CollisionDetection = (
-  entries: PositionalClientRectEntry[],
-  target: PositionalClientRect
+  entries: LayoutRectEntry[],
+  target: ViewRect
 ) => UniqueIdentifier | null;
