@@ -1,33 +1,30 @@
-import type {PositionalClientRect} from '@dnd-kit/core';
+import type {LayoutRect} from '@dnd-kit/core';
 import type {SortingStrategy} from '../types';
 
-// TO-DO: We should be calculating scale transformation
+// To-do: We should be calculating scale transformation
 const defaultScale = {
   scaleX: 1,
   scaleY: 1,
 };
 
 export const verticalListSortingStrategy: SortingStrategy = ({
-  clientRects,
   activeIndex,
-  activeRect: fallbackActiveRect,
-  overIndex,
+  activeNodeRect: fallbackActiveRect,
   index,
+  layoutRects,
+  overIndex,
 }) => {
-  // We always want to try to get the latest rect for the active index
-  // but for virtualized lists, we may need to fall back to the old cached
-  // activeRect since the item may have unmounted out of the viewport
-  const activeRect = clientRects[activeIndex] ?? fallbackActiveRect;
+  const activeNodeRect = layoutRects[activeIndex] ?? fallbackActiveRect;
 
-  if (!activeRect) {
-    return;
+  if (!activeNodeRect) {
+    return null;
   }
 
   if (index === activeIndex) {
-    const overIndexRect = clientRects[overIndex];
+    const overIndexRect = layoutRects[overIndex];
 
     if (!overIndexRect) {
-      return;
+      return null;
     }
 
     return {
@@ -36,18 +33,18 @@ export const verticalListSortingStrategy: SortingStrategy = ({
         activeIndex < overIndex
           ? overIndexRect.offsetTop +
             overIndexRect.height -
-            (activeRect.offsetTop + activeRect.height)
-          : overIndexRect.offsetTop - activeRect.offsetTop,
+            (activeNodeRect.offsetTop + activeNodeRect.height)
+          : overIndexRect.offsetTop - activeNodeRect.offsetTop,
       ...defaultScale,
     };
   }
 
-  const itemGap = getItemGap(clientRects, index, activeIndex);
+  const itemGap = getItemGap(layoutRects, index, activeIndex);
 
   if (index > activeIndex && index <= overIndex) {
     return {
       x: 0,
-      y: -activeRect.height - itemGap,
+      y: -activeNodeRect.height - itemGap,
       ...defaultScale,
     };
   }
@@ -55,7 +52,7 @@ export const verticalListSortingStrategy: SortingStrategy = ({
   if (index < activeIndex && index >= overIndex) {
     return {
       x: 0,
-      y: activeRect.height + itemGap,
+      y: activeNodeRect.height + itemGap,
       ...defaultScale,
     };
   }
@@ -68,13 +65,13 @@ export const verticalListSortingStrategy: SortingStrategy = ({
 };
 
 function getItemGap(
-  clientRects: PositionalClientRect[],
+  layoutRects: LayoutRect[],
   index: number,
   activeIndex: number
 ) {
-  const currentRect = clientRects[index];
-  const previousRect = clientRects[index - 1];
-  const nextRect = clientRects[index + 1];
+  const currentRect = layoutRects[index];
+  const previousRect = layoutRects[index - 1];
+  const nextRect = layoutRects[index + 1];
 
   if (!currentRect) {
     return 0;

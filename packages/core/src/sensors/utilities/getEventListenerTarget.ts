@@ -1,4 +1,4 @@
-import {getOwnerDocument} from '../../utilities/getOwnerDocument';
+import {getOwnerDocument} from '../../utilities';
 
 export function getEventListenerTarget(
   element: EventTarget | null

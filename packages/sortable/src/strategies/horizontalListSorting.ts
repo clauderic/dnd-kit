@@ -1,38 +1,41 @@
-import type {PositionalClientRect} from '@dnd-kit/core';
+import type {LayoutRect} from '@dnd-kit/core';
 import type {SortingStrategy} from '../types';
 
-// TO-DO: We should be calculating scale transformation
+// To-do: We should be calculating scale transformation
 const defaultScale = {
   scaleX: 1,
   scaleY: 1,
 };
 
 export const horizontalListSortingStrategy: SortingStrategy = ({
-  clientRects,
+  layoutRects,
+  activeNodeRect: fallbackActiveRect,
   activeIndex,
   overIndex,
   index,
 }) => {
-  const activeRect = clientRects[activeIndex];
+  const activeNodeRect = layoutRects[activeIndex] ?? fallbackActiveRect;
 
-  if (!activeRect) {
-    return;
+  if (!activeNodeRect) {
+    return null;
   }
 
-  const itemGap = getItemGap(clientRects, index, activeIndex);
+  const itemGap = getItemGap(layoutRects, index, activeIndex);
 
   if (index === activeIndex) {
-    const newIndexRect = clientRects[overIndex];
+    const newIndexRect = layoutRects[overIndex];
 
     if (!newIndexRect) {
-      return;
+      return null;
     }
 
     return {
       x:
         activeIndex < overIndex
-          ? newIndexRect.right - activeRect.right
-          : newIndexRect.left - activeRect.left,
+          ? newIndexRect.offsetLeft +
+            newIndexRect.width -
+            (activeNodeRect.offsetLeft + activeNodeRect.width)
+          : newIndexRect.offsetLeft - activeNodeRect.offsetLeft,
       y: 0,
       ...defaultScale,
     };
@@ -40,7 +43,7 @@ export const horizontalListSortingStrategy: SortingStrategy = ({
 
   if (index > activeIndex && index <= overIndex) {
     return {
-      x: -activeRect.width - itemGap,
+      x: -activeNodeRect.width - itemGap,
       y: 0,
       ...defaultScale,
     };
@@ -48,7 +51,7 @@ export const horizontalListSortingStrategy: SortingStrategy = ({
 
   if (index < activeIndex && index >= overIndex) {
     return {
-      x: activeRect.width + itemGap,
+      x: activeNodeRect.width + itemGap,
       y: 0,
       ...defaultScale,
     };
@@ -62,13 +65,13 @@ export const horizontalListSortingStrategy: SortingStrategy = ({
 };
 
 function getItemGap(
-  clientRects: PositionalClientRect[],
+  layoutRects: LayoutRect[],
   index: number,
   activeIndex: number
 ) {
-  const currentRect = clientRects[index];
-  const previousRect = clientRects[index - 1];
-  const nextRect = clientRects[index + 1];
+  const currentRect = layoutRects[index];
+  const previousRect = layoutRects[index - 1];
+  const nextRect = layoutRects[index + 1];
 
   if (!previousRect && !nextRect) {
     return 0;

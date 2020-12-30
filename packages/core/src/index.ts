@@ -1,11 +1,12 @@
 export {
+  Announcements,
   DndContext,
-  DraggableClone,
+  DragOverlay,
   DragEndEvent,
   DragMoveEvent,
   DragOverEvent,
   DragStartEvent,
-  Announcements,
+  DropAnimation,
   defaultAnnouncements,
   ScreenReaderInstructions,
 } from './components';
@@ -20,18 +21,13 @@ export {
   DraggableSyntheticListeners,
 } from './hooks';
 
-export {
-  applyModifiers,
-  Modifier,
-  Modifiers,
-  restrictToWindowEdges,
-} from './modifiers';
+export {applyModifiers, Modifier, Modifiers} from './modifiers';
 
 export {
   Activator,
   Activators,
   PointerActivationConstraint,
-  CoordinatesGetter,
+  KeyboardCoordinateGetter,
   KeyboardSensor,
   KeyboardSensorOptions,
   KeyboardSensorProps,
@@ -43,7 +39,6 @@ export {
   PointerEventHandlers,
   PointerSensorOptions,
   PointerSensorProps,
-  Response as SensorResponse,
   Sensor,
   SensorContext,
   SensorDescriptor,
@@ -51,25 +46,30 @@ export {
   SensorInstance,
   SensorOptions,
   SensorProps,
+  SensorResponse,
   Sensors,
   TouchSensor,
   TouchSensorOptions,
+  useCombineSensors,
   useSensor,
 } from './sensors';
 
-export {
-  PositionalClientRectEntry,
-  PositionalClientRect,
+export type {DndContextDescriptor} from './store';
+
+export type {
+  LayoutRect,
+  LayoutRectEntry,
   Translate,
   UniqueIdentifier,
+  ViewRect,
 } from './types';
 
 export {
   defaultCoordinates,
-  getElementCoordinates,
+  getBoundingClientRect,
+  getScrollOffsets,
   closestCenter,
   closestCorners,
-  rectCollision,
   rectIntersection,
   CollisionDetection,
 } from './utilities';

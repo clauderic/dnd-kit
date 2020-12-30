@@ -1,4 +1,4 @@
-import {getEventListenerTarget} from '../utilities';
+import {getOwnerDocument} from '../../utilities';
 
 import {
   AbstractPointerSensor,
@@ -14,23 +14,18 @@ const events: PointerEventHandlers = {
 export class PointerSensor extends AbstractPointerSensor {
   constructor(props: PointerSensorProps) {
     const {event} = props;
-    const listenerTarget = getEventListenerTarget(event.target);
+    // Pointer events stop firing if the target is unmounted while dragging
+    // Therefore we attach listeners to the owner document instead
+    const listenerTarget = getOwnerDocument(event.target);
 
     super(props, events, listenerTarget);
-
-    if (
-      event instanceof PointerEvent &&
-      listenerTarget instanceof HTMLElement
-    ) {
-      listenerTarget.setPointerCapture(event.pointerId);
-    }
   }
 
   static activators = [
     {
       eventName: 'onPointerDown' as const,
       handler: ({nativeEvent}: React.PointerEvent) => {
-        if (!nativeEvent.isPrimary) {
+        if (!nativeEvent.isPrimary || nativeEvent.button !== 0) {
           return false;
         }
 

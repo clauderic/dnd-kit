@@ -4,6 +4,7 @@ $focused-outline-color: #4c9ffe;
   display: flex;
   width: 12px;
   padding: 5px;
+  padding-left: 15px;
   align-items: center;
   flex: 0 0 auto;
   margin-left: auto;

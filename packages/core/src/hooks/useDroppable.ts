@@ -1,8 +1,8 @@
 import {useContext, useEffect, useRef} from 'react';
-import {useIsomorphicEffect, useNodeRef} from '@dnd-kit/utilities';
+import {useIsomorphicLayoutEffect, useNodeRef} from '@dnd-kit/utilities';
 
 import {Context, Action, Data} from '../store';
-import type {PositionalClientRect} from '../types';
+import type {LayoutRect} from '../types';
 
 export interface UseDroppableArguments {
   id: string;
@@ -18,17 +18,17 @@ export function useDroppable({
   id,
 }: UseDroppableArguments) {
   const {dispatch, over} = useContext(Context);
-  const clientRect = useRef<PositionalClientRect | null>(null);
+  const rect = useRef<LayoutRect | null>(null);
   const [nodeRef, setNodeRef] = useNodeRef();
   const dataRef = useRef(data);
 
-  useIsomorphicEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (dataRef.current !== data) {
       dataRef.current = data;
     }
   }, [data]);
 
-  useIsomorphicEffect(
+  useIsomorphicLayoutEffect(
     () => {
       dispatch({
         type: Action.RegisterDroppable,
@@ -36,7 +36,7 @@ export function useDroppable({
           id,
           disabled,
           node: nodeRef,
-          clientRect,
+          rect,
           data: dataRef,
         },
       });
@@ -64,7 +64,7 @@ export function useDroppable({
   );
 
   return {
-    clientRect,
+    rect,
     isOver: over?.id === id,
     node: nodeRef,
     over,

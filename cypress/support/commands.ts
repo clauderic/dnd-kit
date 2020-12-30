@@ -75,6 +75,7 @@ Cypress.Commands.add(
           })
           .wait(100)
           .trigger('mouseup', {force: true})
+          .wait(250)
           .then((subject: any) => {
             const finalRect = subject.get(0).getBoundingClientRect();
             const windowScroll = getDocumentScroll();

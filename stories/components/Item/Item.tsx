@@ -8,7 +8,7 @@ import {Handle} from './components';
 import styles from './Item.module.css';
 
 export interface Props {
-  clone?: boolean;
+  dragOverlay?: boolean;
   disabled?: boolean;
   dragging?: boolean;
   handle?: boolean;
@@ -19,18 +19,20 @@ export interface Props {
   listeners?: DraggableSyntheticListeners;
   sorting?: boolean;
   style?: React.CSSProperties;
+  transition?: string;
   wrapperStyle?: React.CSSProperties;
   value: React.ReactNode;
   renderItem?(args: {
-    clone: boolean;
+    dragOverlay: boolean;
     dragging: boolean;
     sorting: boolean;
     index: number | undefined;
     fadeIn: boolean;
     listeners: DraggableSyntheticListeners;
-    ref: React.Ref<HTMLLIElement>;
+    ref: React.Ref<HTMLElement>;
     style: React.CSSProperties | undefined;
     transform: Props['transform'];
+    transition: Props['transition'];
     value: Props['value'];
   }): React.ReactElement;
 }
@@ -39,7 +41,7 @@ export const Item = React.memo(
   React.forwardRef<HTMLLIElement, Props>(
     (
       {
-        clone,
+        dragOverlay,
         dragging,
         disabled,
         fadeIn,
@@ -50,6 +52,7 @@ export const Item = React.memo(
         renderItem,
         sorting,
         style,
+        transition,
         transform,
         value,
         wrapperStyle,
@@ -58,7 +61,7 @@ export const Item = React.memo(
       ref
     ) => {
       useEffect(() => {
-        if (!clone) {
+        if (!dragOverlay) {
           return;
         }
 
@@ -67,11 +70,11 @@ export const Item = React.memo(
         return () => {
           document.body.style.cursor = '';
         };
-      }, [clone]);
+      }, [dragOverlay]);
 
       return renderItem ? (
         renderItem({
-          clone: Boolean(clone),
+          dragOverlay: Boolean(dragOverlay),
           dragging: Boolean(dragging),
           sorting: Boolean(sorting),
           index,
@@ -80,6 +83,7 @@ export const Item = React.memo(
           ref,
           style,
           transform,
+          transition,
           value,
         })
       ) : (
@@ -88,11 +92,12 @@ export const Item = React.memo(
             styles.Wrapper,
             fadeIn && styles.fadeIn,
             sorting && styles.sorting,
-            clone && styles.clone
+            dragOverlay && styles.dragOverlay
           )}
           style={
             {
               ...wrapperStyle,
+              transition,
               '--translate-x': transform
                 ? `${Math.round(transform.x)}px`
                 : undefined,
@@ -115,7 +120,7 @@ export const Item = React.memo(
               styles.Item,
               dragging && styles.dragging,
               handle && styles.withHandle,
-              clone && styles.clone,
+              dragOverlay && styles.dragOverlay,
               disabled && styles.disabled
             )}
             tabIndex={!handle ? 0 : undefined}

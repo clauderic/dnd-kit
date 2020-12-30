@@ -2,7 +2,9 @@ import React from 'react';
 
 import type {
   Coordinates,
-  PositionalClientRect,
+  ViewRect,
+  ClientRect,
+  LayoutRect,
   UniqueIdentifier,
 } from '../types';
 import type {SyntheticListeners} from '../hooks/utilities';
@@ -21,21 +23,24 @@ export type Data = Record<string, any>;
 export interface DroppableContainer {
   id: UniqueIdentifier;
   node: React.MutableRefObject<HTMLElement | null>;
-  clientRect: React.MutableRefObject<PositionalClientRect | null>;
+  rect: React.MutableRefObject<LayoutRect | null>;
   disabled: boolean;
   data: React.MutableRefObject<Data>;
 }
 
 export type DraggableNode = React.MutableRefObject<HTMLElement | null>;
 
-export type DraggableNodes = Record<UniqueIdentifier, DraggableNode>;
-
-export type DroppableContainers = Record<UniqueIdentifier, DroppableContainer>;
-
-export type PositionalClientRectMap = Map<
+export type DraggableNodes = Record<
   UniqueIdentifier,
-  PositionalClientRect
+  DraggableNode | undefined
 >;
+
+export type DroppableContainers = Record<
+  UniqueIdentifier,
+  DroppableContainer | undefined
+>;
+
+export type LayoutRectMap = Map<UniqueIdentifier, LayoutRect>;
 
 export interface State {
   droppable: {
@@ -55,24 +60,28 @@ export interface DndContextDescriptor {
   activators: SyntheticListeners;
   activatorEvent: Event | null;
   active: UniqueIdentifier | null;
-  activeNode: DraggableNode | null;
-  activeRect: PositionalClientRect | null;
+  activeNode: HTMLElement | null;
+  activeNodeRect: ViewRect | null;
+  activeNodeClientRect: ClientRect | null;
   ariaDescribedById: {
     draggable: UniqueIdentifier;
   };
-  cloneNode: {
+  overlayNode: {
     nodeRef: React.MutableRefObject<HTMLElement | null>;
-    clientRect: PositionalClientRect | null;
+    rect: ViewRect | null;
     setRef: (element: HTMLElement | null) => void;
   };
+  containerNodeRect: ViewRect | null;
   draggableNodes: DraggableNodes;
   droppableContainers: DroppableContainers;
-  droppableClientRects: PositionalClientRectMap;
+  droppableLayoutRectsMap: LayoutRectMap;
   over: {
     id: UniqueIdentifier;
-    clientRect: PositionalClientRect;
+    rect: LayoutRect;
   } | null;
-  scrollingContainerRect: PositionalClientRect | null;
-  recomputeClientRects(): void;
-  willRecomputeClientRects: boolean;
+  scrollableAncestors: Element[];
+  scrollableAncestorRects: ViewRect[];
+  recomputeLayouts(): void;
+  willRecomputeLayouts: boolean;
+  windowRect: ClientRect | null;
 }

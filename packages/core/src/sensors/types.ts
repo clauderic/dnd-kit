@@ -1,15 +1,10 @@
 import type {MutableRefObject} from 'react';
-import type {
-  DraggableNode,
-  DroppableContainers,
-  PositionalClientRectMap,
-} from '../store';
+import type {DraggableNode, DroppableContainers, LayoutRectMap} from '../store';
 import type {
   Coordinates,
-  PositionalClientRect,
-  ScrollCoordinates,
   SyntheticEventName,
   UniqueIdentifier,
+  ViewRect,
 } from '../types';
 
 export enum Response {
@@ -19,15 +14,13 @@ export enum Response {
 }
 
 export type SensorContext = {
-  activeRect: PositionalClientRect | null;
-  containerScroll: ScrollCoordinates;
-  droppableClientRects: PositionalClientRectMap;
+  activeNodeRect: ViewRect | null;
+  droppableLayoutRectsMap: LayoutRectMap;
   droppableContainers: DroppableContainers;
   over: {
     id: string;
   } | null;
-  scrollingContainer: Element | null;
-  windowScroll: ScrollCoordinates;
+  scrollableAncestors: Element[];
 };
 
 export type SensorOptions = {};
@@ -61,6 +54,11 @@ export interface Sensor<T extends Object> {
 }
 
 export type Sensors = Sensor<any>[];
+
+export type SensorDescriptor<T> = {
+  sensor: Sensor<T>;
+  options: T;
+};
 
 export type SensorHandler = (
   event: React.SyntheticEvent,

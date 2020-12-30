@@ -39,11 +39,7 @@ $focused-outline-color: #4c9ffe;
     animation: fadeIn 500ms ease;
   }
 
-  &.sorting:not(.clone) {
-    transition: transform 300ms cubic-bezier(0.25, 1, 0.5, 1);
-  }
-
-  &.clone {
+  &.dragOverlay {
     --scale: 1.05;
     --box-shadow: $box-shadow;
     --box-shadow-picked-up: $box-shadow-border,
@@ -74,12 +70,13 @@ $focused-outline-color: #4c9ffe;
   color: $text-color;
   font-weight: $font-weight;
   font-size: 1rem;
+  white-space: nowrap;
 
   user-select: none;
   transform: scale(var(--scale, 1));
   transition: box-shadow 200ms cubic-bezier(0.18, 0.67, 0.6, 1.22);
 
-  &:hover:not(.disabled, .clone) {
+  &:hover:not(.disabled, .dragOverlay) {
     box-shadow: $box-shadow-border, 0 5px 10px 0 rgba(34, 33, 81, 0.15);
   }
 
@@ -91,7 +88,7 @@ $focused-outline-color: #4c9ffe;
     cursor: grab;
   }
 
-  &.dragging:not(.clone) {
+  &.dragging:not(.dragOverlay) {
     opacity: var(--dragging-opacity, 0.5);
     z-index: 0;
 
@@ -109,7 +106,7 @@ $focused-outline-color: #4c9ffe;
     cursor: not-allowed;
   }
 
-  &.clone {
+  &.dragOverlay {
     cursor: inherit;
     /* box-shadow: 0 0px 6px 2px $focused-outline-color; */
     animation: pop 200ms cubic-bezier(0.18, 0.67, 0.6, 1.22);

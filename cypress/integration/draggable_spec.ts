@@ -6,7 +6,7 @@ describe('Draggable', () => {
       const deltaX = 100;
       const deltaY = 150;
 
-      cy.visitStory('core-draggable-basic--simple-example')
+      cy.visitStory('core-draggable-hooks-usedraggable--basic-setup')
         .findFirstDraggableItem()
         .mouseMoveBy(deltaX, deltaY)
         .then(([subject, {delta}]) => {
@@ -34,7 +34,7 @@ describe('Draggable', () => {
 
   describe('Drag handle', () => {
     it('Does nothing when clicking on the item rather than the handle', () => {
-      cy.visitStory('core-draggable-basic--drag-handle')
+      cy.visitStory('core-draggable-hooks-usedraggable--drag-handle')
         .findFirstDraggableItem()
         .mouseMoveBy(100, 100)
         .then(([subject, {delta}]) => {
@@ -49,7 +49,7 @@ describe('Draggable', () => {
       const deltaX = 100;
       const deltaY = 150;
 
-      cy.visitStory('core-draggable-basic--drag-handle')
+      cy.visitStory('core-draggable-hooks-usedraggable--drag-handle')
         .findFirstDraggableItem()
         .findDraggableHandle()
         .mouseMoveBy(deltaX, deltaY)
@@ -81,7 +81,7 @@ describe('Draggable', () => {
       const deltaX = 100;
       const deltaY = 150;
 
-      cy.visitStory('core-draggable-basic--horizontal-axis')
+      cy.visitStory('core-draggable-hooks-usedraggable--horizontal-axis')
         .findFirstDraggableItem()
         .mouseMoveBy(deltaX, deltaY)
         .then(([subject, {delta}]) => {
@@ -112,7 +112,7 @@ describe('Draggable', () => {
       const deltaX = 100;
       const deltaY = 150;
 
-      cy.visitStory('core-draggable-basic--vertical-axis')
+      cy.visitStory('core-draggable-hooks-usedraggable--vertical-axis')
         .findFirstDraggableItem()
         .mouseMoveBy(deltaX, deltaY)
         .then(([subject, {delta}]) => {
@@ -144,7 +144,7 @@ describe('Draggable', () => {
       const deltaY = 150;
       const delay = 250;
 
-      cy.visitStory('core-draggable-basic--press-delay')
+      cy.visitStory('core-draggable-hooks-usedraggable--press-delay')
         .findFirstDraggableItem()
         .mouseMoveBy(deltaX, deltaY, {delay})
         .then(([subject, {delta}]) => {
@@ -174,7 +174,7 @@ describe('Draggable', () => {
       const deltaY = 150;
       const delay = 100;
 
-      cy.visitStory('core-draggable-basic--press-delay')
+      cy.visitStory('core-draggable-hooks-usedraggable--press-delay')
         .findFirstDraggableItem()
         .mouseMoveBy(deltaX, deltaY, {delay})
         .then(([subject, {delta}]) => {
@@ -190,7 +190,7 @@ describe('Draggable', () => {
       const deltaX = 100;
       const deltaY = 150;
 
-      cy.visitStory('core-draggable-basic--minimum-distance')
+      cy.visitStory('core-draggable-hooks-usedraggable--minimum-distance')
         .findFirstDraggableItem()
         .mouseMoveBy(deltaX, deltaY)
         .then(([subject, {delta}]) => {
@@ -205,7 +205,7 @@ describe('Draggable', () => {
       const deltaX = 5;
       const deltaY = 5;
 
-      cy.visitStory('core-draggable-basic--minimum-distance')
+      cy.visitStory('core-draggable-hooks-usedraggable--minimum-distance')
         .findFirstDraggableItem()
         .mouseMoveBy(deltaX, deltaY)
         .then(([subject, {delta}]) => {

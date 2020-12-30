@@ -1,1 +1,1 @@
-export {getNextKeyboardCoordinates} from './getNextKeyboardCoordinates';
+export {sortableKeyboardCoordinates} from './sortableKeyboardCoordinates';

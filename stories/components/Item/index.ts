@@ -1,1 +1,1 @@
-export {Item, Props} from './Item';
+export {Item} from './Item';

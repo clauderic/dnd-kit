@@ -1,5 +1,5 @@
 import {Coordinates} from '../../types';
-import {isMouseEvent, isTouchEvent} from '../eventType';
+import {isMouseEvent, isTouchEvent} from '../event';
 
 /**
  * Returns the normalized x and y coordinates for mouse and touch events.

@@ -2,7 +2,7 @@ import {subtract as getCoordinatesDelta} from '@dnd-kit/utilities';
 
 import {getEventListenerTarget, Listeners} from '../utilities';
 
-import {getEventCoordinates} from '../../utilities';
+import {getEventCoordinates, getOwnerDocument} from '../../utilities';
 import {KeyboardCode} from '../keyboard';
 import type {SensorInstance, SensorProps, SensorOptions} from '../types';
 import type {Coordinates} from '../../types';
@@ -46,12 +46,17 @@ export interface PointerSensorOptions extends SensorOptions {
 
 export type PointerSensorProps = SensorProps<PointerSensorOptions>;
 
+enum EventName {
+  Keydown = 'keydown',
+}
+
 export class AbstractPointerSensor implements SensorInstance {
   public autoScrollEnabled = true;
   private activated: boolean = false;
   private initialCoordinates: Coordinates;
   private timeoutId: NodeJS.Timeout | null = null;
   private listeners: Listeners;
+  private ownerDocument: Document;
 
   constructor(
     private props: PointerSensorProps,
@@ -62,6 +67,7 @@ export class AbstractPointerSensor implements SensorInstance {
 
     this.props = props;
     this.events = events;
+    this.ownerDocument = getOwnerDocument(event.target);
     this.listeners = new Listeners(listenerTarget);
     this.initialCoordinates = getEventCoordinates(event);
     this.handleStart = this.handleStart.bind(this);
@@ -84,7 +90,10 @@ export class AbstractPointerSensor implements SensorInstance {
       passive: false,
     });
     this.listeners.add(events.end.name, this.handleEnd);
-    this.listeners.add('keydown', this.handleKeydown);
+
+    this.ownerDocument.addEventListener(EventName.Keydown, this.handleKeydown, {
+      passive: true,
+    });
 
     if (activationConstraint) {
       if (isDistanceConstraint(activationConstraint)) {
@@ -105,6 +114,10 @@ export class AbstractPointerSensor implements SensorInstance {
 
   private detach() {
     this.listeners.removeAll();
+    this.ownerDocument.removeEventListener(
+      EventName.Keydown,
+      this.handleKeydown
+    );
 
     if (this.timeoutId !== null) {
       clearTimeout(this.timeoutId);
@@ -174,8 +187,8 @@ export class AbstractPointerSensor implements SensorInstance {
     onCancel();
   }
 
-  private handleKeydown(event: Event) {
-    if (event instanceof KeyboardEvent && event.code === KeyboardCode.Esc) {
+  private handleKeydown(event: KeyboardEvent) {
+    if (event.code === KeyboardCode.Esc) {
       this.handleCancel();
     }
   }

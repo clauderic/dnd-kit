@@ -39,23 +39,19 @@ $box-shadow: 1px 1px 0 1px #f9f9fb, -1px 0 28px 0 rgba(34, 33, 81, 0.01),
 
 .Wrapper {
   transform: translate3d(0, var(--translate-y, 0), 0);
-
-  &.sorting {
-    transition: transform 250ms ease;
-  }
 }
 
 .PlayingCard {
   display: flex;
-  position: absolute;
   width: 200px;
   height: 300px;
+  margin-bottom: -260px;
   background-color: #fff;
   box-shadow: $box-shadow;
   transform-style: 'preserve-3d';
   border-radius: 24px;
   font-size: 25;
-  font-family: 'Card Characters';
+  font-family: 'Roboto Slab', Helvetica, sans-serif;
   user-select: none;
   transform-origin: 0 0;
   transform: scale(var(--scale, 1)) translate3d(var(--translate-x, 0), 0, 0)
@@ -91,7 +87,6 @@ $box-shadow: 1px 1px 0 1px #f9f9fb, -1px 0 28px 0 rgba(34, 33, 81, 0.01),
     transition: box-shadow 250ms ease;
     box-shadow: 1px 1px 0 1px #f9f9fb, -1px 0 28px 0 rgba(34, 33, 81, 0.01),
       54px 54px 28px -10px rgba(34, 33, 81, 0.15);
-    transform-origin: 190% 65%;
   }
 }
 

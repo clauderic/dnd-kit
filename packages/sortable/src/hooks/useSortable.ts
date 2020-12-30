@@ -1,34 +1,49 @@
-import {useContext, useMemo} from 'react';
-
+import {useContext, useEffect, useMemo, useRef} from 'react';
 import {useDraggable, useDroppable, UseDraggableArguments} from '@dnd-kit/core';
-import {useCombinedRefs} from '@dnd-kit/utilities';
+import {CSS, Transition, useCombinedRefs} from '@dnd-kit/utilities';
 
 import {Context} from '../components';
 import type {SortingStrategy} from '../types';
+import {arrayMove, isValidIndex} from '../utilities';
+import {useDerivedTransform} from './utilities';
 
 export interface Arguments extends UseDraggableArguments {
   strategy?: SortingStrategy;
+  transition?: SortableTransition | null;
 }
+
+type SortableTransition = Pick<Transition, 'easing' | 'duration'>;
+
+export const defaultTransition: SortableTransition = {
+  duration: 200,
+  easing: 'ease',
+};
+const property = 'transform';
+const disabledTransition = CSS.Transition.toString({
+  property,
+  duration: 0,
+  easing: 'linear',
+});
 
 export function useSortable({
   disabled,
   id,
   strategy: localStrategy,
+  transition: sortingTransition = defaultTransition,
 }: Arguments) {
   const {
     items,
     containerId,
     activeIndex,
-    clientRects,
+    disableTransforms,
+    sortedLayoutRects,
     overIndex,
-    disableInlineStyles,
-    useClone,
+    useDragOverlay,
     strategy: globalStrategy,
   } = useContext(Context);
-
   const {
     active,
-    activeRect,
+    activeNodeRect,
     activatorEvent,
     attributes,
     setNodeRef: setDraggableRef,
@@ -46,7 +61,7 @@ export function useSortable({
     index,
     items,
   ]);
-  const {clientRect, node, setNodeRef: setDroppableRef} = useDroppable({
+  const {rect, node, setNodeRef: setDroppableRef} = useDroppable({
     id,
     data,
   });
@@ -54,21 +69,52 @@ export function useSortable({
   const isSorting = Boolean(active);
   const displaceItem =
     isSorting &&
+    !disableTransforms &&
     isValidIndex(activeIndex) &&
-    isValidIndex(overIndex) &&
-    !disableInlineStyles;
-  const shouldDisplaceDragSource = !useClone && isDragging && displaceItem;
-  const dragSourceDisplacement = shouldDisplaceDragSource ? transform : null;
+    isValidIndex(overIndex);
+  const shouldDisplaceDragSource = !useDragOverlay && isDragging;
+  const dragSourceDisplacement =
+    shouldDisplaceDragSource && displaceItem ? transform : null;
   const strategy = localStrategy ?? globalStrategy;
   const finalTransform = displaceItem
     ? dragSourceDisplacement ??
-      strategy({clientRects, activeRect, activeIndex, overIndex, index})
+      strategy({
+        layoutRects: sortedLayoutRects,
+        activeNodeRect,
+        activeIndex,
+        overIndex,
+        index,
+      })
     : null;
+
+  const newIndex =
+    isValidIndex(activeIndex) && isValidIndex(overIndex)
+      ? arrayMove(items, activeIndex, overIndex).indexOf(id)
+      : index;
+  const prevNewIndex = useRef(newIndex);
+  const transition =
+    !sortingTransition || (!isSorting && index === prevNewIndex.current)
+      ? null
+      : sortingTransition;
+
+  const derivedTransform = useDerivedTransform({
+    disabled: transition === null,
+    index,
+    node,
+    rect,
+  });
+
+  useEffect(() => {
+    if (isSorting) {
+      prevNewIndex.current = newIndex;
+    }
+  }, [isSorting, newIndex]);
 
   return {
     attributes,
     activatorEvent,
-    clientRect,
+    rect,
+    index,
     isSorting,
     isDragging,
     listeners,
@@ -76,10 +122,16 @@ export function useSortable({
     overIndex,
     over,
     setNodeRef,
-    transform: finalTransform,
+    setDroppableRef,
+    setDraggableRef,
+    transform: derivedTransform ?? finalTransform,
+    transition: derivedTransform
+      ? disabledTransition
+      : transition === null || shouldDisplaceDragSource
+      ? undefined
+      : CSS.Transition.toString({
+          ...transition,
+          property,
+        }),
   };
-}
-
-function isValidIndex(index: number | null): index is number {
-  return index !== null && index >= 0;
 }

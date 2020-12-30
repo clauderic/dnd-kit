@@ -1,4 +1,4 @@
-import {CoordinatesGetter, KeyboardCode, KeyboardCodes} from './types';
+import {KeyboardCoordinateGetter, KeyboardCode, KeyboardCodes} from './types';
 
 export const defaultKeyboardCodes: KeyboardCodes = {
   start: [KeyboardCode.Space, KeyboardCode.Enter],
@@ -6,7 +6,7 @@ export const defaultKeyboardCodes: KeyboardCodes = {
   end: [KeyboardCode.Space, KeyboardCode.Enter],
 };
 
-export const defaultCoordinatesGetter: CoordinatesGetter = (
+export const defaultKeyboardCoordinateGetter: KeyboardCoordinateGetter = (
   event,
   {currentCoordinates}
 ) => {

@@ -1,21 +1,17 @@
 import {useMemo} from 'react';
 
-import {Sensor} from './types';
+import {Sensor, SensorDescriptor, SensorOptions} from './types';
 
-export type SensorDescriptor<T> = {
-  sensor: Sensor<T>;
-  options: T;
-};
-
-export function useSensor<T>(
+export function useSensor<T extends SensorOptions>(
   sensor: Sensor<T>,
-  options: T
+  options?: T
 ): SensorDescriptor<T> {
   return useMemo(
     () => ({
       sensor,
-      options,
+      options: options ?? ({} as T),
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [sensor, options]
   );
 }

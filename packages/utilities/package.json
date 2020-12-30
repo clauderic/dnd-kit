@@ -11,7 +11,7 @@
     "prepublish": "npm run build"
   },
   "main": "dist/index.js",
-  "module": "dist/utils.esm.js",
+  "module": "dist/utilities.esm.js",
   "typings": "dist/index.d.ts",
   "files": [
     "README.md",

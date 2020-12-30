@@ -16,7 +16,7 @@
     "prepublish": "npm run build"
   },
   "main": "dist/index.js",
-  "module": "dist/react.esm.js",
+  "module": "dist/core.esm.js",
   "typings": "dist/index.d.ts",
   "files": [
     "README.md",
@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "tslib": "^2.0.0",
+    "@dnd-kit/accessibility": "^0.0.1",
     "@dnd-kit/utilities": "^0.0.1"
   },
   "publishConfig": {
