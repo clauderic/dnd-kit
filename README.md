@@ -25,7 +25,7 @@ Use the `<DragOverlay>` component to render a draggable overlay that is removed 
 
 Check out our quick start guide to learn how get started:
 
-![](.github/assets/robot-illustration-concepts.svg)
+![Playful illustration of draggable and droppable concepts](.github/assets/robot-illustration-concepts.svg)
 
 ### Extensibility
 
@@ -91,9 +91,7 @@ yarn start:storybook
 Runs the storybook
 Open [http://localhost:6006](http://localhost:6006) to view it in the browser.
 
-<p align="center">
-<img src="https://user-images.githubusercontent.com/1416436/100043238-fb780780-2dda-11eb-9621-806db8e26d9e.gif" />
-</p>
+![Screenshot of Storybook running locally](.github/assets/storybook-screenshot.png)
 
 ## Development workflow
 
