@@ -21,7 +21,7 @@ The sortable preset exposes two main concepts: `SortableContext` and the `useSor
 - The SortableContext provides information via context that is consumed by the `useSortable` hook.
 - The useSortable hook is an abstraction that composes the `useDroppable` and `useDraggable` hooks.
 
-![The useSortable hook is an abstraction that composes the useDroppable and useDraggable hooks](/.github/assets/use-sortable.svg)
+![The useSortable hook is an abstraction that composes the useDroppable and useDraggable hooks](/.github/assets/use-sortable.png)
 
 ## Usage
 
