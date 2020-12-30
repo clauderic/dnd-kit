@@ -25,7 +25,9 @@ Use the `<DragOverlay>` component to render a draggable overlay that is removed 
 
 Check out our quick start guide to learn how get started:
 
-![Playful illustration of draggable and droppable concepts](.github/assets/robot-illustration-concepts.svg)
+<p align="center">
+<img alt="Playful illustration of draggable and droppable concepts" src=".github/assets/robot-illustration-concepts.svg" width="80%" />
+</p>
 
 ### Extensibility
 
