@@ -3,20 +3,27 @@
 ## Features
 
 - **Built for React:** exposes hooks such as `useDraggable` and `useDroppable`, and won't require you to re-architect your app or create additional wrapper DOM nodes.
-- **Feature packed:** customizable collision detection algorithms, multiple activators, drag overlay, drag handles, auto-scrolling, constraints, and so much more.
+- **Feature packed:** customizable collision detection algorithms, multiple activators, draggable overlay, drag handles, auto-scrolling, constraints, and so much more.
 - **Supports a wide range of use cases:** vertical lists, horizontal lists, grids, multiple containers, nested contexts, variable sized list and grids, transformed items, virtualized lists.
-- **Zero dependencies and modular:** the core of the library weighs only 10kb. It's built around built-in React state management and context, which keeps it lean.
-- **Built-in support for multiple input methods:** Mouse, touch and keyboard sensors.
-- **Fully customizable & extensible:** Customize every little detail, animations, transitions, behaviours, styles. Build your own sensors, collision detection algorithms, customize key bindings and so much more.
-- **Accessibility:** keyboard support, sensible default aria attributes, customizable voiceover instructions and live regions built-in.
-- **Performance:** It was built with performance and silky smooth animations in mind.
-- **Presets:** Need to build a sortable interface? Check out `@dnd-kit/sortable`, which is a thin layer built on top of `@dnd-kit/core`. Preset for multiple container sortable lists \(Kanban\) coming soon.
+- **Zero dependencies and modular:** the core of the library weighs around 10kb minified and has no external dependencies. It's built around built-in React state management and context, which keeps the library lean.
+- **Built-in support for multiple input methods:** Pointer, mouse, touch and keyboard sensors.
+- **Fully customizable & extensible:** Customize every detail: animations, transitions, behaviours, styles. Build your own sensors, collision detection algorithms, customize key bindings and so much more.
+- **Accessibility:** Keyboard support, sensible default aria attributes, customizable screen reader instructions and live regions built-in.
+- **Performance:** It was built with performance in mind in order to support silky smooth animations.
+- **Presets:** Need to build a sortable interface? Check out `@dnd-kit/sortable`, which is a thin layer built on top of `@dnd-kit/core`. More presets coming in the future.
 
-### Powerfully simple
+The core library of **dnd kit** exposes two main concepts:
 
-**dnd kit** is powerful and packed with features, and built with the hope of being the last drag and drop library you'll ever need, whether you're building a simple draggable interface element or a complex application built around drag and drop interactions .
+- Draggable elements
+- Droppable areas
 
-At its core, **dnd kit** exposes two main concepts: [Draggable](api-documentation/draggable/) items and [Droppable](api-documentation/droppable.md) containers. Transform your existing components using the `useDraggable` and `useDroppable` hooks. Manage events and customize the behaviour of your application using the [`<DndContext>`](api-documentation/context-provider/) provider. Check out our [quick start guide](guides/getting-started.md) to learn how get started with **dnd kit**.
+Augment your existing components using the `useDraggable` and `useDroppable` hooks, or combine both to create components that can both be dragged and dropped over.
+
+Handle events and customize the behaviour of your draggable elements and droppable areas using the `<DndContext>` provider. Configure sensors to handle different input methods.
+
+Use the `<DragOverlay>` component to render a draggable overlay that is removed from the normal document flow and is positioned relative to the viewport.
+
+Check out our quick start guide to learn how get started:
 
 ![](.github/assets/robot-illustration-concepts.svg)
 
@@ -24,13 +31,13 @@ At its core, **dnd kit** exposes two main concepts: [Draggable](api-documentatio
 
 Extensibility is at the core of **dnd kit**. It was built is built to be lean and extensible. It ships with the features we believe most people will want most of the time, and provides extension points to build the rest on top of `@dnd-kit/core`.
 
-A prime example of the level of extensibility of **dnd kit** is the[ Sortable preset](presets/sortable.md), which is built using the extension points that are exposed by `@dnd-kit/core`.
+A prime example of the level of extensibility of **dnd kit** is the [Sortable preset](packages/sortable/README.md), which is built using the extension points that are exposed by `@dnd-kit/core`.
 
 The primary extension points of **dnd kit** are:
 
-- [Sensors](api-documentation/sensors/)
-- [Modifiers](api-documentation/modifiers.md)
-- [Constraints](api-documentation/constraints.md)
+- Sensors
+- Modifiers
+- Constraints
 - Custom collision detection algorithms
 
 ### Accessibility
@@ -41,7 +48,7 @@ Building accessible drag and drop interfaces is hard; **dnd kit** has a number o
 - Customizable **live region updates** to provide screen reader announcements in real-time of what is currently happening with draggable and droppable elements.
 - Sensible defaults for **`aria` attributes** that should be passed to draggable items
 
-Check out our [Accessibility guide](guides/accessibility.md) to learn more about how you can help provide a better experience for screen readers.
+Check out our [Accessibility guide](https://docs.dndkit.com/guides/accessibility) to learn more about how you can help provide a better experience for screen readers.
 
 ### Architecture
 
