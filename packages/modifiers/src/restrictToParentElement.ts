@@ -1,7 +1,7 @@
 import type {Modifier} from '@dnd-kit/core';
 import {restrictToBoundingRect} from './utilities';
 
-export const restrictToContainer: Modifier = ({
+export const restrictToParentElement: Modifier = ({
   transform,
   activeNodeRect,
   containerNodeRect,
