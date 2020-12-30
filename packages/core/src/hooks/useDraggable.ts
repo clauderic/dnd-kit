@@ -8,17 +8,23 @@ import {useSyntheticListeners, SyntheticListenerMap} from './utilities';
 export interface UseDraggableArguments {
   id: string;
   disabled?: boolean;
-  ariaRoleDescription?: string;
+  attributes?: {
+    role?: string;
+    roleDescription?: string;
+    tabIndex?: number;
+  };
 }
 
 export type DraggableSyntheticListeners = SyntheticListenerMap | undefined;
 
 const NullContext = createContext<any>(null);
 
+const defaultRole = 'button';
+
 export function useDraggable({
   id,
   disabled = false,
-  ariaRoleDescription = 'draggable',
+  attributes,
 }: UseDraggableArguments) {
   const {
     active,
@@ -30,6 +36,8 @@ export function useDraggable({
     activators,
     over,
   } = useContext(Context);
+  const {role = defaultRole, roleDescription = 'draggable', tabIndex = 0} =
+    attributes ?? {};
   const isDragging = Boolean(active === id);
   const transform: Transform | null = useContext(
     isDragging ? ActiveDraggableContext : NullContext
@@ -54,9 +62,10 @@ export function useDraggable({
     activeNodeRect,
     activatorEvent,
     attributes: {
-      role: 'button',
-      'aria-pressed': isDragging ? true : undefined,
-      'aria-roledescription': ariaRoleDescription,
+      role,
+      tabIndex,
+      'aria-pressed': isDragging && role === defaultRole ? true : undefined,
+      'aria-roledescription': roleDescription,
       'aria-describedby': ariaDescribedById.draggable,
     },
     droppableLayoutRectsMap,

@@ -28,6 +28,7 @@ const disabledTransition = CSS.Transition.toString({
 export function useSortable({
   disabled,
   id,
+  attributes: userDefinedAttributes,
   strategy: localStrategy,
   transition: sortingTransition = defaultTransition,
 }: Arguments) {
@@ -53,6 +54,7 @@ export function useSortable({
     transform,
   } = useDraggable({
     id,
+    attributes: userDefinedAttributes,
     disabled,
   });
   const index = items.indexOf(id);
