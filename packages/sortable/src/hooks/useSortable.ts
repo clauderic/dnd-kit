@@ -25,6 +25,10 @@ const disabledTransition = CSS.Transition.toString({
   easing: 'linear',
 });
 
+const defaultAttributes: Arguments['attributes'] = {
+  role: 'sortable',
+};
+
 export function useSortable({
   disabled,
   id,
@@ -54,7 +58,10 @@ export function useSortable({
     transform,
   } = useDraggable({
     id,
-    attributes: userDefinedAttributes,
+    attributes: {
+      ...defaultAttributes,
+      ...userDefinedAttributes,
+    },
     disabled,
   });
   const index = items.indexOf(id);
