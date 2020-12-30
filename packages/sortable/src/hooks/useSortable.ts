@@ -47,7 +47,7 @@ export function useSortable({
     activeNodeRect,
     activatorEvent,
     attributes,
-    setNodeRef: setDraggableRef,
+    setNodeRef: setDraggableNodeRef,
     listeners,
     isDragging,
     over,
@@ -63,11 +63,11 @@ export function useSortable({
     index,
     items,
   ]);
-  const {rect, node, setNodeRef: setDroppableRef} = useDroppable({
+  const {rect, node, setNodeRef: setDroppableNodeRef} = useDroppable({
     id,
     data,
   });
-  const setNodeRef = useCombinedRefs(setDroppableRef, setDraggableRef);
+  const setNodeRef = useCombinedRefs(setDroppableNodeRef, setDraggableNodeRef);
   const isSorting = Boolean(active);
   const displaceItem =
     isSorting &&
@@ -124,8 +124,8 @@ export function useSortable({
     overIndex,
     over,
     setNodeRef,
-    setDroppableRef,
-    setDraggableRef,
+    setDroppableNodeRef,
+    setDraggableNodeRef,
     transform: derivedTransform ?? finalTransform,
     transition: derivedTransform
       ? disabledTransition
