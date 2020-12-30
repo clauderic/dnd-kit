@@ -11,7 +11,7 @@ import {
   PointerSensor,
   useDroppable,
   UniqueIdentifier,
-  useCombineSensors,
+  useSensors,
   useSensor,
 } from '@dnd-kit/core';
 import {
@@ -141,7 +141,7 @@ function Sortable({
   );
   const [dragOverlaydItems, setClonedItems] = useState<Items | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const sensors = useCombineSensors(
+  const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,

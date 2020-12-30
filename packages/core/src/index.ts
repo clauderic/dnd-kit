@@ -50,7 +50,7 @@ export {
   Sensors,
   TouchSensor,
   TouchSensorOptions,
-  useCombineSensors,
+  useSensors,
   useSensor,
 } from './sensors';
 

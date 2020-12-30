@@ -1,6 +1,6 @@
 export {useSensor} from './useSensor';
 
-export {useCombineSensors} from './useCombineSensors';
+export {useSensors} from './useSensors';
 
 export {
   PointerSensor,

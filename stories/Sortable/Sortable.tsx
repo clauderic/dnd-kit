@@ -13,7 +13,7 @@ import {
   MouseSensor,
   TouchSensor,
   KeyboardSensor,
-  useCombineSensors,
+  useSensors,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -77,7 +77,7 @@ export function Sortable({
       createRange<string>(itemCount, (index) => index.toString())
   );
   const [activeId, setActiveId] = useState<string | null>(null);
-  const sensors = useCombineSensors(
+  const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint,
     }),

@@ -1,7 +1,7 @@
 import {useMemo} from 'react';
 import {SensorDescriptor, SensorOptions} from './types';
 
-export function useCombineSensors(
+export function useSensors(
   ...sensors: SensorDescriptor<any>[]
 ): SensorDescriptor<SensorOptions>[] {
   return useMemo(

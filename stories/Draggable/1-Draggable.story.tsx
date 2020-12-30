@@ -9,7 +9,7 @@ import {
   Translate,
   PointerActivationConstraint,
   Modifiers,
-  useCombineSensors,
+  useSensors,
 } from '@dnd-kit/core';
 import {
   createSnapModifier,
@@ -57,7 +57,7 @@ function DraggableStory({
     activationConstraint,
   });
   const keyboardSensor = useSensor(KeyboardSensor, {});
-  const sensors = useCombineSensors(mouseSensor, touchSensor, keyboardSensor);
+  const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
 
   return (
     <DndContext

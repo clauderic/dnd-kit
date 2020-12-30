@@ -9,7 +9,7 @@ import {
   PointerSensor,
   KeyboardSensor,
   useSensor,
-  useCombineSensors,
+  useSensors,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -40,7 +40,7 @@ function Sortable({
     createRange<string>(itemCount, (index) => index.toString())
   );
   const [activeId, setActiveId] = useState<string | null>(null);
-  const sensors = useCombineSensors(
+  const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
