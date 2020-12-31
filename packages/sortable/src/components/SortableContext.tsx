@@ -52,7 +52,7 @@ export function SortableContext({
     willRecomputeLayouts,
   } = useDndContext();
   const containerId = useUniqueId(ID_PREFIX, id);
-  const useDragOverlay = overlayNode.rect !== null;
+  const useDragOverlay = Boolean(overlayNode.rect !== null);
   const activeIndex = active ? items.indexOf(active) : -1;
   const isSorting = activeIndex !== -1;
   const overIndex = over ? items.indexOf(over.id) : -1;

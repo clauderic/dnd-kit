@@ -129,7 +129,7 @@ export const DragOverlay = React.memo(
       transform: attributesSnapshot.current?.transform,
     });
     const shouldRender = Boolean(
-      children || (dropAnimation && !dropAnimationComplete)
+      finalChildren && (children || (dropAnimation && !dropAnimationComplete))
     );
 
     useEffect(() => {

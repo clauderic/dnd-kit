@@ -95,7 +95,6 @@ export function useSortable({
         index,
       })
     : null;
-
   const newIndex =
     isValidIndex(activeIndex) && isValidIndex(overIndex)
       ? arrayMove(items, activeIndex, overIndex).indexOf(id)
