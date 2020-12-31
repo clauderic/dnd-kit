@@ -1,5 +1,6 @@
 import {useEffect, useRef, useState} from 'react';
 import {getBoundingClientRect, LayoutRect} from '@dnd-kit/core';
+import type {Transform} from '@dnd-kit/utilities';
 
 interface Arguments {
   rect: React.MutableRefObject<LayoutRect | null>;
@@ -13,7 +14,9 @@ interface Arguments {
  * we need to temporarily disable the transforms
  */
 export function useDerivedTransform({rect, disabled, index, node}: Arguments) {
-  const [derivedTransform, setDerivedtransform] = useState<any>(null);
+  const [derivedTransform, setDerivedtransform] = useState<Transform | null>(
+    null
+  );
   const prevIndex = useRef(index);
 
   useEffect(() => {
