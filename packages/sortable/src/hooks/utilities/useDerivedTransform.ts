@@ -10,7 +10,7 @@ interface Arguments {
 
 /*
  * When the index of an item changes while sorting,
- * we need to temporarily disablee the transforms
+ * we need to temporarily disable the transforms
  */
 export function useDerivedTransform({rect, disabled, index, node}: Arguments) {
   const [derivedTransform, setDerivedtransform] = useState<any>(null);

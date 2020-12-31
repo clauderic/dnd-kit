@@ -74,7 +74,7 @@ export interface DndContextDescriptor {
   containerNodeRect: ViewRect | null;
   draggableNodes: DraggableNodes;
   droppableContainers: DroppableContainers;
-  droppableLayoutRectsMap: LayoutRectMap;
+  droppableRects: LayoutRectMap;
   over: {
     id: UniqueIdentifier;
     rect: LayoutRect;

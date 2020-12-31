@@ -19,6 +19,7 @@ export {
   getElementLayout,
   getBoundingClientRect,
   getViewRect,
+  isViewRect,
 } from './rect';
 
 export {getOwnerDocument} from './document';

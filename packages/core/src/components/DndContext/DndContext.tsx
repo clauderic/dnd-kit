@@ -80,7 +80,7 @@ export interface DragMoveEvent {
   active: Active;
   delta: Translate;
   draggingRect: ViewRect;
-  droppableLayoutRectsMap: LayoutRectMap;
+  droppableRects: LayoutRectMap;
   over: {
     id: UniqueIdentifier;
     rect: LayoutRect;
@@ -90,7 +90,7 @@ export interface DragMoveEvent {
 export interface DragOverEvent {
   active: Active;
   draggingRect: ViewRect;
-  droppableLayoutRectsMap: LayoutRectMap;
+  droppableRects: LayoutRectMap;
   over: {
     id: UniqueIdentifier;
     rect: LayoutRect;
@@ -162,7 +162,7 @@ export const DndContext = memo(function DndContext({
   const draggableDescribedById = useUniqueId(`DndDescribedBy`);
 
   const {
-    layoutRectMap: droppableLayoutRectsMap,
+    layoutRectMap: droppableRects,
     recomputeLayouts,
     willRecomputeLayouts,
   } = useLayoutRectMap(droppableContainers, active === null);
@@ -177,16 +177,16 @@ export const DndContext = memo(function DndContext({
   const nodeRectDelta = getRectDelta(activeNodeRect, initialActiveNodeRect);
   const tracked = useRef<{
     active: UniqueIdentifier | null;
-    droppableLayoutRectsMap: LayoutRectMap;
+    droppableRects: LayoutRectMap;
     overId: UniqueIdentifier | null;
     scrollAdjustedTransalte: Coordinates;
-    translateAdjustedRect: ViewRect | null;
+    translatedRect: ViewRect | null;
   }>({
     active,
-    droppableLayoutRectsMap,
+    droppableRects,
     overId: null,
     scrollAdjustedTransalte: defaultCoordinates,
-    translateAdjustedRect: null,
+    translatedRect: null,
   });
   const overNode = getDroppableNode(
     tracked.current.overId,
@@ -229,22 +229,19 @@ export const DndContext = memo(function DndContext({
 
   const scrollAdjustedTransalte = add(modifiedTranslate, scrolllAdjustment);
 
-  const translateAdjustedRect = activeNodeRect
+  const translatedRect = activeNodeRect
     ? getAdjustedRect(activeNodeRect, modifiedTranslate)
     : null;
 
-  const collisionRect = translateAdjustedRect
-    ? getAdjustedRect(translateAdjustedRect, scrolllAdjustment)
+  const collisionRect = translatedRect
+    ? getAdjustedRect(translatedRect, scrolllAdjustment)
     : null;
 
   const overId =
     active && collisionRect
-      ? collisionDetection(
-          Array.from(droppableLayoutRectsMap.entries()),
-          collisionRect
-        )
+      ? collisionDetection(Array.from(droppableRects.entries()), collisionRect)
       : null;
-  const overNodeRect = getLayoutRect(overId, droppableLayoutRectsMap);
+  const overNodeRect = getLayoutRect(overId, droppableRects);
   const over = useMemo(
     () =>
       overId && overNodeRect
@@ -263,11 +260,13 @@ export const DndContext = memo(function DndContext({
   );
 
   const sensorContext = useRef<SensorContext>({
-    activeNodeRect: collisionRect,
-    droppableLayoutRectsMap,
+    activeNode,
+    collisionRect,
+    droppableRects,
     droppableContainers,
-    scrollableAncestors,
     over,
+    scrollableAncestors,
+    translatedRect,
   });
 
   const instantiateSensor = useCallback(
@@ -424,23 +423,19 @@ export const DndContext = memo(function DndContext({
     }
 
     const {onDragMove} = latestProps.current;
-    const {
-      overId,
-      droppableLayoutRectsMap,
-      translateAdjustedRect,
-    } = tracked.current;
+    const {overId, droppableRects, translatedRect} = tracked.current;
 
-    if (!onDragMove || !translateAdjustedRect) {
+    if (!onDragMove || !translatedRect) {
       return;
     }
-    const overNodeRect = getLayoutRect(overId, droppableLayoutRectsMap);
+    const overNodeRect = getLayoutRect(overId, droppableRects);
 
     onDragMove({
       active: {
         id: activeId,
       },
-      draggingRect: translateAdjustedRect,
-      droppableLayoutRectsMap,
+      draggingRect: translatedRect,
+      droppableRects,
       delta: {
         x: scrollAdjustedTransalte.x,
         y: scrollAdjustedTransalte.y,
@@ -460,25 +455,21 @@ export const DndContext = memo(function DndContext({
       return;
     }
 
-    const {
-      active,
-      droppableLayoutRectsMap,
-      translateAdjustedRect,
-    } = tracked.current;
+    const {active, droppableRects, translatedRect} = tracked.current;
 
-    if (!active || !translateAdjustedRect) {
+    if (!active || !translatedRect) {
       return;
     }
 
     const {onDragOver} = latestProps.current;
-    const overNodeRect = getLayoutRect(overId, droppableLayoutRectsMap);
+    const overNodeRect = getLayoutRect(overId, droppableRects);
 
     onDragOver?.({
       active: {
         id: active,
       },
-      droppableLayoutRectsMap: tracked.current.droppableLayoutRectsMap,
-      draggingRect: translateAdjustedRect,
+      droppableRects: tracked.current.droppableRects,
+      draggingRect: translatedRect,
       over:
         overId && overNodeRect
           ? {
@@ -492,37 +483,35 @@ export const DndContext = memo(function DndContext({
   useEffect(() => {
     tracked.current = {
       active,
-      droppableLayoutRectsMap,
+      droppableRects,
       overId,
-      translateAdjustedRect,
+      translatedRect,
       scrollAdjustedTransalte,
     };
-  }, [
-    active,
-    droppableLayoutRectsMap,
-    overId,
-    translateAdjustedRect,
-    scrollAdjustedTransalte,
-  ]);
+  }, [active, droppableRects, overId, translatedRect, scrollAdjustedTransalte]);
 
   useIsomorphicLayoutEffect(() => {
     sensorContext.current = {
-      activeNodeRect: collisionRect,
-      droppableLayoutRectsMap,
+      activeNode,
+      collisionRect,
+      droppableRects,
       droppableContainers,
-      scrollableAncestors,
       over,
+      scrollableAncestors,
+      translatedRect,
     };
   }, [
-    droppableLayoutRectsMap,
+    activeNode,
     collisionRect,
+    droppableRects,
     droppableContainers,
     over,
     scrollableAncestors,
+    translatedRect,
   ]);
 
   useAutoScroller({
-    draggingRect: translateAdjustedRect,
+    draggingRect: translatedRect,
     disabled: !autoScroll || !activeSensor?.autoScrollEnabled,
     scrollableAncestors,
     scrollableAncestorRects,
@@ -548,7 +537,7 @@ export const DndContext = memo(function DndContext({
       dispatch,
       draggableNodes,
       droppableContainers,
-      droppableLayoutRectsMap,
+      droppableRects,
       over,
       recomputeLayouts,
       scrollableAncestors,
@@ -572,7 +561,7 @@ export const DndContext = memo(function DndContext({
     draggableNodes,
     draggableDescribedById,
     droppableContainers,
-    droppableLayoutRectsMap,
+    droppableRects,
     over,
     recomputeLayouts,
     scrollableAncestors,

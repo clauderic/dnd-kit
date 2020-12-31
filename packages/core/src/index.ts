@@ -58,7 +58,7 @@ export type {DndContextDescriptor} from './store';
 
 export type {
   LayoutRect,
-  LayoutRectEntry,
+  RectEntry,
   Translate,
   UniqueIdentifier,
   ViewRect,
@@ -67,7 +67,7 @@ export type {
 export {
   defaultCoordinates,
   getBoundingClientRect,
-  getScrollOffsets,
+  getViewRect,
   closestCenter,
   closestCorners,
   rectIntersection,

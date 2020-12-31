@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useRef} from 'react';
 import {useDndContext, LayoutRect, UniqueIdentifier} from '@dnd-kit/core';
 import {useIsomorphicLayoutEffect, useUniqueId} from '@dnd-kit/utilities';
 
-import {getSortedLayoutRects} from '../utilities';
+import {getSortedRects} from '../utilities';
 import {SortingStrategy} from '../types';
 import {rectSortingStrategy} from '../strategies';
 
@@ -22,7 +22,7 @@ interface ContextDescriptor {
   items: UniqueIdentifier[];
   overIndex: number;
   useDragOverlay: boolean;
-  sortedLayoutRects: LayoutRect[];
+  sortedRects: LayoutRect[];
   strategy: SortingStrategy;
 }
 
@@ -33,7 +33,7 @@ export const Context = React.createContext<ContextDescriptor>({
   items: [],
   overIndex: -1,
   useDragOverlay: false,
-  sortedLayoutRects: [],
+  sortedRects: [],
   strategy: rectSortingStrategy,
 });
 
@@ -46,7 +46,7 @@ export function SortableContext({
   const {
     active,
     overlayNode,
-    droppableLayoutRectsMap,
+    droppableRects,
     over,
     recomputeLayouts,
     willRecomputeLayouts,
@@ -57,10 +57,7 @@ export function SortableContext({
   const isSorting = activeIndex !== -1;
   const overIndex = over ? items.indexOf(over.id) : -1;
   const previousItemsRef = useRef(items);
-  const sortedLayoutRects = getSortedLayoutRects(
-    items,
-    droppableLayoutRectsMap
-  );
+  const sortedRects = getSortedRects(items, droppableRects);
   const itemsHaveChanged = !isEqual(items, previousItemsRef.current);
   const disableTransforms =
     (overIndex !== -1 && activeIndex === -1) || itemsHaveChanged;
@@ -84,7 +81,7 @@ export function SortableContext({
       items,
       overIndex,
       useDragOverlay,
-      sortedLayoutRects,
+      sortedRects,
       strategy,
     }),
     [
@@ -93,7 +90,7 @@ export function SortableContext({
       disableTransforms,
       items,
       overIndex,
-      sortedLayoutRects,
+      sortedRects,
       useDragOverlay,
       strategy,
     ]

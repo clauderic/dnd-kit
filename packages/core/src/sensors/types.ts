@@ -14,13 +14,15 @@ export enum Response {
 }
 
 export type SensorContext = {
-  activeNodeRect: ViewRect | null;
-  droppableLayoutRectsMap: LayoutRectMap;
+  activeNode: HTMLElement | null;
+  collisionRect: ViewRect | null;
+  droppableRects: LayoutRectMap;
   droppableContainers: DroppableContainers;
   over: {
     id: string;
   } | null;
   scrollableAncestors: Element[];
+  translatedRect: ViewRect | null;
 };
 
 export type SensorOptions = {};

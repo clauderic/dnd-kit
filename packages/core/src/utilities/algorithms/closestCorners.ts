@@ -1,5 +1,6 @@
 import {getMinValueIndex} from '../other';
 import {distanceBetween} from '../coordinates';
+import {isViewRect} from '../rect';
 import type {LayoutRect} from '../../types';
 import type {CollisionDetection} from './types';
 
@@ -41,7 +42,11 @@ export const closestCorners: CollisionDetection = (entries, target) => {
   const corners = cornersOfRectangle(target, target.left, target.top);
 
   const distances = entries.map(([_, entry]) => {
-    const entryCorners = cornersOfRectangle(entry);
+    const entryCorners = cornersOfRectangle(
+      entry,
+      isViewRect(entry) ? entry.left : undefined,
+      isViewRect(entry) ? entry.top : undefined
+    );
     const distances = corners.reduce((accumulator, corner, index) => {
       return accumulator + distanceBetween(entryCorners[index], corner);
     }, 0);

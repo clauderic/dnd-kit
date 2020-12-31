@@ -3,7 +3,7 @@ export type {
   ClientRect,
   LayoutRect,
   ViewRect,
-  LayoutRectEntry,
+  RectEntry,
   Translate,
   ScrollCoordinates,
 } from './coordinates';

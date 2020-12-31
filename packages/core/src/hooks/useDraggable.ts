@@ -32,7 +32,7 @@ export function useDraggable({
     activatorEvent,
     ariaDescribedById,
     draggableNodes,
-    droppableLayoutRectsMap,
+    droppableRects,
     activators,
     over,
   } = useContext(Context);
@@ -68,7 +68,7 @@ export function useDraggable({
       'aria-roledescription': roleDescription,
       'aria-describedby': ariaDescribedById.draggable,
     },
-    droppableLayoutRectsMap,
+    droppableRects,
     isDragging,
     listeners: disabled ? undefined : listeners,
     node,

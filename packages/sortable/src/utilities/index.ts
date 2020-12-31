@@ -1,3 +1,3 @@
 export {arrayMove} from './arrayMove';
-export {getSortedLayoutRects} from './getSortedLayoutRects';
+export {getSortedRects} from './getSortedRects';
 export {isValidIndex} from './isValidIndex';

@@ -41,7 +41,7 @@ export function useSortable({
     containerId,
     activeIndex,
     disableTransforms,
-    sortedLayoutRects,
+    sortedRects,
     overIndex,
     useDragOverlay,
     strategy: globalStrategy,
@@ -88,7 +88,7 @@ export function useSortable({
   const finalTransform = displaceItem
     ? dragSourceDisplacement ??
       strategy({
-        layoutRects: sortedLayoutRects,
+        layoutRects: sortedRects,
         activeNodeRect,
         activeIndex,
         overIndex,

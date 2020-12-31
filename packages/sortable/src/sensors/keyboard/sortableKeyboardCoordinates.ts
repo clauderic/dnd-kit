@@ -1,8 +1,8 @@
 import {
   closestCorners,
-  getScrollOffsets,
+  getViewRect,
   KeyboardCode,
-  LayoutRectEntry,
+  RectEntry,
   KeyboardCoordinateGetter,
 } from '@dnd-kit/core';
 import {subtract as getCoordinatesDelta} from '@dnd-kit/utilities';
@@ -16,55 +16,61 @@ const directions: string[] = [
 
 export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
   event,
-  {context: {activeNodeRect, droppableLayoutRectsMap, scrollableAncestors}}
+  {context: {translatedRect, droppableContainers}}
 ) => {
   if (directions.includes(event.code)) {
     event.preventDefault();
 
-    if (!activeNodeRect) {
-      throw new Error('Active element does not have an associated rect');
+    if (!translatedRect) {
+      return;
     }
 
-    const layoutRects: LayoutRectEntry[] = [];
+    const layoutRects: RectEntry[] = [];
 
-    droppableLayoutRectsMap.forEach((rect, id) => {
+    Object.entries(droppableContainers).forEach(([id, container]) => {
+      const node = container?.node.current;
+
+      if (!node) {
+        return;
+      }
+
+      const rect = getViewRect(node);
+
       switch (event.code) {
         case KeyboardCode.Down:
-          if (activeNodeRect.top + activeNodeRect.height <= rect.offsetTop) {
+          if (translatedRect.top + translatedRect.height <= rect.top) {
             layoutRects.push([id, rect]);
           }
           break;
         case KeyboardCode.Up:
-          if (activeNodeRect.top >= rect.offsetTop + rect.height) {
+          if (translatedRect.top >= rect.top + rect.height) {
             layoutRects.push([id, rect]);
           }
           break;
         case KeyboardCode.Left:
-          if (activeNodeRect.left >= rect.offsetLeft + rect.width) {
+          if (translatedRect.left >= rect.left + rect.width) {
             layoutRects.push([id, rect]);
           }
           break;
         case KeyboardCode.Right:
-          if (activeNodeRect.left + activeNodeRect.width <= rect.offsetLeft) {
+          if (translatedRect.left + translatedRect.width <= rect.left) {
             layoutRects.push([id, rect]);
           }
           break;
       }
     });
 
-    const closestId = closestCorners(layoutRects, activeNodeRect);
+    const closestId = closestCorners(layoutRects, translatedRect);
 
     if (closestId) {
-      const newRect = droppableLayoutRectsMap.get(closestId);
+      const newNode = droppableContainers[closestId]?.node.current;
 
-      if (newRect) {
-        const newCoordinates = getCoordinatesDelta(
-          {
-            x: newRect.offsetLeft - (activeNodeRect.width - newRect.width),
-            y: newRect.offsetTop - (activeNodeRect.height - newRect.height),
-          },
-          getScrollOffsets(scrollableAncestors)
-        );
+      if (newNode) {
+        const newRect = getViewRect(newNode);
+        const newCoordinates = getCoordinatesDelta({
+          x: newRect.left - (translatedRect.width - newRect.width),
+          y: newRect.top - (translatedRect.height - newRect.height),
+        });
 
         return newCoordinates;
       }
