@@ -456,7 +456,7 @@ describe('Sortable Virtualized List', () => {
         });
     });
 
-    it.skip('Does not go past the last index', () => {
+    it('Does not go past the last index', () => {
       const initialIndex = 0;
       const id = initialIndex.toString();
       const maxIndex = 99;
@@ -514,8 +514,7 @@ describe('Sortable Virtualized List', () => {
   });
 
   describe('Stress test', () => {
-    // Skipped because of a bug in Cypress
-    it.skip('Multiple actions in both directions', () => {
+    it('Multiple actions in both directions', () => {
       const initialIndex = 10;
       const id = initialIndex.toString();
       const delta = 10;

@@ -137,7 +137,7 @@ Cypress.Commands.add(
       .focus({log: false})
       .type(Keys.Space, {force: true, log: false})
       .closest('body')
-      .type(arrowKey.repeat(times), {force: true})
+      .type(arrowKey.repeat(times), {delay: 150, force: true})
       .type(Keys.Space, {log: false, force: true});
   }
 );
