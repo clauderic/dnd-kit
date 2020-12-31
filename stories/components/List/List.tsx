@@ -15,10 +15,12 @@ export const List = forwardRef<HTMLUListElement, Props>(
     return (
       <ul
         ref={ref}
-        style={{
-          ...style,
-          gridTemplateColumns: `repeat(${columns}, 1fr)`,
-        }}
+        style={
+          {
+            ...style,
+            '--columns': columns,
+          } as React.CSSProperties
+        }
         className={classNames(styles.List, horizontal && styles.horizontal)}
       >
         {children}

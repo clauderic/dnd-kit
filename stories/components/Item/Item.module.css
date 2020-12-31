@@ -50,6 +50,7 @@ $focused-outline-color: #4c9ffe;
 }
 
 .Item {
+  position: relative;
   display: flex;
   flex-grow: 1;
   align-items: center;
@@ -113,5 +114,19 @@ $focused-outline-color: #4c9ffe;
     transform: scale(var(--scale));
     box-shadow: var(--box-shadow-picked-up);
     opacity: 1;
+  }
+
+  &.color:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0;
+    height: 100%;
+    width: 3px;
+    display: block;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    background-color: var(--color);
   }
 }
