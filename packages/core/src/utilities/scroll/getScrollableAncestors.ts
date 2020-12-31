@@ -1,6 +1,6 @@
 import {isScrollable} from './isScrollable';
 
-export function getScrollableAncestors(node: Node | null): Element[] {
+export function getScrollableAncestors(element: Node | null): Element[] {
   const scrollParents: Element[] = [];
 
   function findScrollableAncestors(node: Node | null): Element[] {
@@ -25,5 +25,5 @@ export function getScrollableAncestors(node: Node | null): Element[] {
     return findScrollableAncestors(node.parentNode);
   }
 
-  return findScrollableAncestors(node);
+  return element ? findScrollableAncestors(element.parentNode) : scrollParents;
 }
