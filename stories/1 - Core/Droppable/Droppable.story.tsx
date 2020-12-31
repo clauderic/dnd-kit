@@ -11,7 +11,7 @@ import {
   Modifiers,
 } from '@dnd-kit/core';
 
-import {Draggable, Droppable, GridContainer, Wrapper} from '../components';
+import {Draggable, Droppable, GridContainer, Wrapper} from '../../components';
 
 export default {
   title: 'Core/Droppable/useDroppable',

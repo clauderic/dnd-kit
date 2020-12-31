@@ -26,8 +26,8 @@ import {
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
 
-import {createRange} from '../utilities';
-import {Item, List, Wrapper} from '../components';
+import {createRange} from '../../utilities';
+import {Item, List, Wrapper} from '../../components';
 
 export interface Props {
   activationConstraint?: PointerActivationConstraint;

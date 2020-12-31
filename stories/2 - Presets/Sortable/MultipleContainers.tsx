@@ -3,7 +3,6 @@ import {createPortal} from 'react-dom';
 import {
   closestCorners,
   CollisionDetection,
-  rectIntersection,
   DndContext,
   DragOverlay,
   KeyboardSensor,
@@ -19,22 +18,13 @@ import {
   useSortable,
   arrayMove,
   sortableKeyboardCoordinates,
-  rectSortingStrategy,
   verticalListSortingStrategy,
   SortingStrategy,
 } from '@dnd-kit/sortable';
 
-import {
-  Item,
-  List,
-  Button,
-  FloatingControls,
-  PlayingCard,
-  getDeckOfCards,
-  shuffle,
-} from '../components';
+import {Item, List} from '../../components';
 
-import {createRange} from '../utilities';
+import {createRange} from '../../utilities';
 
 export default {
   title: 'Presets/Sortable/Multiple Containers',
@@ -73,7 +63,7 @@ function DroppableContainer({
   );
 }
 
-const defaultContainerStyle = ({
+export const defaultContainerStyle = ({
   isOverContainer,
 }: {
   isOverContainer: boolean;
@@ -111,15 +101,15 @@ interface Props {
   vertical?: boolean;
 }
 
-const VOID_ID = 'void';
+export const VOID_ID = 'void';
 
-function Sortable({
+export function MultipleContainers({
   adjustScale = false,
   itemCount = 3,
   collisionDetection = closestCorners,
   columns,
   handle = false,
-  items: parentItems,
+  items: initialItems,
   getItemStyles = () => ({}),
   getContainerStyle = defaultContainerStyle,
   wrapperStyle = () => ({}),
@@ -131,7 +121,7 @@ function Sortable({
 }: Props) {
   const [items, setItems] = useState<Items>(
     () =>
-      parentItems ?? {
+      initialItems ?? {
         A: createRange(itemCount, (index) => `A${index}`),
         B: createRange(itemCount, (index) => `B${index}`),
         C: createRange(itemCount, (index) => `C${index}`),
@@ -166,16 +156,6 @@ function Sortable({
 
     return index;
   };
-
-  useEffect(
-    () => {
-      if (parentItems) {
-        setItems(parentItems);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    parentItems ? Object.values(parentItems) : []
-  );
 
   return (
     <DndContext
@@ -355,6 +335,21 @@ function Sortable({
   );
 }
 
+function getColor(id: string) {
+  switch (id[0]) {
+    case 'A':
+      return '#7193f1';
+    case 'B':
+      return '#ffda6c';
+    case 'C':
+      return '#00bcd4';
+    case 'D':
+      return '#ef769f';
+  }
+
+  return undefined;
+}
+
 function Trash() {
   const {setNodeRef, isOver} = useDroppable({
     id: VOID_ID,
@@ -445,196 +440,6 @@ function SortableItem({
     />
   );
 }
-
-function getColor(id: string) {
-  switch (id[0]) {
-    case 'A':
-      return '#7193f1';
-    case 'B':
-      return '#ffda6c';
-    case 'C':
-      return '#00bcd4';
-    case 'D':
-      return '#ef769f';
-  }
-
-  return undefined;
-}
-
-export const BasicSetup = () => <Sortable />;
-
-export const ManyItems = () => (
-  <Sortable
-    itemCount={15}
-    getContainerStyle={(args) => ({
-      ...defaultContainerStyle(args),
-      maxHeight: '80vh',
-      overflowY: 'auto',
-    })}
-  />
-);
-
-export const Vertical = () => <Sortable itemCount={5} vertical />;
-
-const customCollisionDetectionStrategy: CollisionDetection = (rects, rect) => {
-  const voidRects = rects.filter(([id]) => id === VOID_ID);
-  const intersectingVoidRect = rectIntersection(voidRects, rect);
-
-  if (intersectingVoidRect) {
-    return intersectingVoidRect;
-  }
-
-  const otherRects = rects.filter(([id]) => id !== VOID_ID);
-  return closestCorners(otherRects, rect);
-};
-
-export const TrashableItems = () => (
-  <Sortable collisionDetection={customCollisionDetectionStrategy} trashable />
-);
-
-export const Grid = () => (
-  <Sortable
-    columns={2}
-    strategy={rectSortingStrategy}
-    wrapperStyle={() => ({
-      width: 150,
-      height: 150,
-    })}
-  />
-);
-
-export const VerticalGrid = () => (
-  <Sortable
-    columns={2}
-    itemCount={5}
-    strategy={rectSortingStrategy}
-    wrapperStyle={() => ({
-      width: 150,
-      height: 150,
-    })}
-    vertical
-  />
-);
-
-function stringifyDeck(
-  deck: {
-    value: string;
-    suit: string;
-  }[],
-  prefix: string
-) {
-  return deck.map(({suit, value}) => `${prefix}-${value}${suit}`);
-}
-
-export const TransformedItems = () => {
-  const [isMounted, setIsMounted] = useState(false);
-  const [decks, setDecks] = useState(() => {
-    const deck = getDeckOfCards();
-    const deckA = deck.slice(0, 13);
-    const deckB = deck.slice(13, 26);
-    const deckC = deck.slice(26, 39);
-    const deckD = deck.slice(39, 52);
-
-    return {
-      A: stringifyDeck(deckA, 'A'),
-      B: stringifyDeck(deckB, 'B'),
-      C: stringifyDeck(deckC, 'C'),
-      D: stringifyDeck(deckD, 'D'),
-    };
-  });
-
-  useEffect(() => {
-    setTimeout(() => setIsMounted(true), 2500);
-  }, []);
-
-  return (
-    <>
-      <style>
-        {`
-          main {
-            top: 100px;
-            left: 140px;
-          }
-
-          ul {
-            position: relative;
-            margin-left: 50px;
-            margin-right: 50px;
-          }
-        `}
-      </style>
-      <FloatingControls>
-        <Button
-          onClick={() =>
-            setDecks(({A, B, C, D}) => ({
-              A: shuffle(A.slice()),
-              B: shuffle(B.slice()),
-              C: shuffle(C.slice()),
-              D: shuffle(D.slice()),
-            }))
-          }
-        >
-          Shuffle cards
-        </Button>
-      </FloatingControls>
-      <Sortable
-        strategy={rectSortingStrategy}
-        items={decks}
-        renderItem={({
-          value,
-          dragOverlay,
-          dragging,
-          sorting,
-          index,
-          listeners,
-          ref,
-          style,
-          transform,
-          transition,
-          fadeIn,
-        }: any) => (
-          <PlayingCard
-            value={value.substring(2, value.length)}
-            isDragging={dragging}
-            isPickedUp={dragOverlay}
-            isSorting={sorting}
-            ref={ref}
-            style={style}
-            index={index}
-            transform={transform}
-            transition={transition}
-            mountAnimation={!dragOverlay && !isMounted}
-            fadeIn={fadeIn}
-            {...listeners}
-          />
-        )}
-        getContainerStyle={() => ({
-          position: 'relative',
-          flexShrink: 0,
-          width: 330,
-          margin: '20px 20px',
-        })}
-        getItemStyles={({
-          index,
-          overIndex,
-          isDragging,
-          containerId,
-          isDragOverlay,
-        }) => {
-          const deck = decks[containerId as keyof typeof decks] || [];
-
-          return {
-            zIndex: isDragOverlay
-              ? undefined
-              : isDragging
-              ? deck.length - overIndex
-              : deck.length - index,
-          };
-        }}
-      />
-    </>
-  );
-};
 
 function useMountStatus() {
   const [isMounted, setIsMounted] = useState(false);

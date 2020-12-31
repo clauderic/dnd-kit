@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 
 import {restrictToWindowEdges} from '@dnd-kit/modifiers';
 import {verticalListSortingStrategy} from '@dnd-kit/sortable';
@@ -7,9 +7,8 @@ import {
   restrictToFirstScrollableAncestor,
 } from '@dnd-kit/modifiers';
 
-import {createRange} from '../utilities';
+import {createRange} from '../../utilities';
 import {Sortable, Props as SortableProps} from './Sortable';
-import {PlayingCard, getDeckOfCards} from '../components';
 
 export default {
   title: 'Presets/Sortable/Vertical',
@@ -141,49 +140,5 @@ export const RerenderBeforeSorting = () => {
         };
       }}
     />
-  );
-};
-
-export const TransformedItems = () => {
-  const [deck] = useState(getDeckOfCards);
-
-  return (
-    <>
-      <div style={{position: 'relative', marginTop: 50}}>
-        <Sortable
-          {...props}
-          items={deck.map(({suit, value}) => `${value}${suit}`)}
-          renderItem={({
-            dragging,
-            value,
-            dragOverlay,
-            listeners,
-            ref,
-            style,
-            index,
-            sorting,
-            transform,
-            transition,
-          }: any) => (
-            <PlayingCard
-              value={value}
-              isDragging={dragging}
-              isPickedUp={dragOverlay}
-              isSorting={sorting}
-              ref={ref}
-              style={style}
-              index={index}
-              transform={transform}
-              transition={transition}
-              {...listeners}
-            />
-          )}
-          getItemStyles={({index, overIndex, isDragging, isDragOverlay}) => ({
-            zIndex: isDragging ? deck.length - overIndex : deck.length - index,
-            opacity: isDragging && !isDragOverlay ? 0.3 : undefined,
-          })}
-        />
-      </div>
-    </>
   );
 };

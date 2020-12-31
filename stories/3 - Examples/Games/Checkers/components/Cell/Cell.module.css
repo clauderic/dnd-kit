@@ -1,0 +1,24 @@
+.Cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--size);
+  width: var(--size);
+  padding: 8px;
+}
+
+.odd {
+  background-color: #eef3f7;
+}
+
+.even {
+  background-color: #fff;
+}
+
+.highlight {
+  background-color: #b7fbd3;
+}
+
+.highlight.over {
+  background-color: #7ef3af;
+}

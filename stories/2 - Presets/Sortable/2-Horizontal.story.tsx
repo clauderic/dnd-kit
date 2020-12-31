@@ -2,8 +2,8 @@ import React from 'react';
 import {horizontalListSortingStrategy} from '@dnd-kit/sortable';
 import {restrictToHorizontalAxis} from '@dnd-kit/modifiers';
 
-import {createRange} from '../utilities';
-import {List} from '../components';
+import {createRange} from '../../utilities';
+import {List} from '../../components';
 import {Sortable, Props as SortableProps} from './Sortable';
 
 export default {

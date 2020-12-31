@@ -4,7 +4,7 @@ import {restrictToWindowEdges} from '@dnd-kit/modifiers';
 import {rectSortingStrategy} from '@dnd-kit/sortable';
 
 import {Sortable, Props as SortableProps} from './Sortable';
-import {GridContainer} from '../components';
+import {GridContainer} from '../../components';
 
 export default {
   title: 'Presets/Sortable/Grid',

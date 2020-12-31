@@ -14,7 +14,7 @@ import {
   restrictToWindowEdges,
 } from '@dnd-kit/modifiers';
 
-import {Axis, Draggable, Wrapper} from '../components';
+import {Axis, Draggable, Wrapper} from '../../components';
 
 export default {
   title: `Core/Draggable/Components/\u003CDragOverlay\u003E`,

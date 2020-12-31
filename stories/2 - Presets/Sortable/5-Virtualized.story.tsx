@@ -20,9 +20,9 @@ import {
 
 import styles from './Virtualized.module.css';
 
-import {createRange} from '../utilities';
+import {createRange} from '../../utilities';
 import {SortableItem, Props} from './Sortable';
-import {Item, Wrapper} from '../components';
+import {Item, Wrapper} from '../../components';
 
 export default {
   title: 'Presets/Sortable/Virtualized',

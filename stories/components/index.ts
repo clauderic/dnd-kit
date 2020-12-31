@@ -7,5 +7,4 @@ export {Grid} from './Grid';
 export {GridContainer} from './GridContainer';
 export {List} from './List';
 export {OverflowWrapper} from './OverflowWrapper';
-export {PlayingCard, shuffle, getDeckOfCards} from './PlayingCard';
 export {Wrapper} from './Wrapper';

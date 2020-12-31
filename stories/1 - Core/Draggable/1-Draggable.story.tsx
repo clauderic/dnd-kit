@@ -18,7 +18,13 @@ import {
   restrictToWindowEdges,
 } from '@dnd-kit/modifiers';
 
-import {Axis, Draggable, Grid, OverflowWrapper, Wrapper} from '../components';
+import {
+  Axis,
+  Draggable,
+  Grid,
+  OverflowWrapper,
+  Wrapper,
+} from '../../components';
 
 export default {
   title: 'Core/Draggable/Hooks/useDraggable',
