@@ -5,7 +5,7 @@ import {getRelativeTransformOrigin} from '../../utilities';
 import {applyModifiers, Modifiers} from '../../modifiers';
 import {ActiveDraggableContext} from '../DndContext';
 import {useDndContext} from '../../hooks';
-import {useDropAnimation, DropAnimation} from './hooks';
+import {useDerivedTransform, useDropAnimation, DropAnimation} from './hooks';
 
 type TransitionGetter = (
   activatorEvent: Event | null
@@ -26,11 +26,7 @@ export interface Props {
 const defaultTransition: TransitionGetter = (activatorEvent) => {
   const isKeyboardActivator = activatorEvent instanceof KeyboardEvent;
 
-  return isKeyboardActivator
-    ? ['transform', 'top', 'left']
-        .map((property) => `${property} 250ms ease`)
-        .join(',')
-    : undefined;
+  return isKeyboardActivator ? 'transform 250ms ease' : undefined;
 };
 
 const defaultDropAnimation: DropAnimation = {
@@ -72,11 +68,17 @@ export const DragOverlay = React.memo(
       scrollableAncestorRects,
       windowRect,
     });
+    const derivedTransform = useDerivedTransform(
+      modifiedTransform,
+      activeNodeRect,
+      overlayNode.nodeRef.current
+    );
     const isDragging = active !== null;
+    const intermediateTransform = derivedTransform ?? modifiedTransform;
     const finalTransform = adjustScale
-      ? modifiedTransform
+      ? intermediateTransform
       : {
-          ...modifiedTransform,
+          ...intermediateTransform,
           scaleX: 1,
           scaleY: 1,
         };
@@ -96,10 +98,11 @@ export const DragOverlay = React.memo(
                   activeNodeRect
                 )
               : undefined,
-          transition:
-            typeof transition === 'function'
-              ? transition(activatorEvent)
-              : transition,
+          transition: derivedTransform
+            ? undefined
+            : typeof transition === 'function'
+            ? transition(activatorEvent)
+            : transition,
         }
       : undefined;
     const attributes = isDragging
