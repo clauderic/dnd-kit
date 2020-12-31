@@ -12,6 +12,10 @@ import {
   VOID_ID,
 } from './MultipleContainers';
 
+export default {
+  title: 'Presets/Sortable/Multiple Containers',
+};
+
 export const BasicSetup = () => <MultipleContainers />;
 
 export const ManyItems = () => (
