@@ -2,17 +2,19 @@ import React, {useState} from 'react';
 import {createPortal} from 'react-dom';
 
 import {
-  PointerActivationConstraint,
+  Announcements,
+  closestCenter,
+  CollisionDetection,
   DragOverlay,
   DndContext,
-  closestCenter,
-  UniqueIdentifier,
-  Modifiers,
-  CollisionDetection,
-  useSensor,
-  MouseSensor,
-  TouchSensor,
   KeyboardSensor,
+  Modifiers,
+  MouseSensor,
+  PointerActivationConstraint,
+  ScreenReaderInstructions,
+  TouchSensor,
+  UniqueIdentifier,
+  useSensor,
   useSensors,
 } from '@dnd-kit/core';
 import {
@@ -55,6 +57,14 @@ export interface Props {
   useDragOverlay?: boolean;
 }
 
+const screenReaderInstructions: ScreenReaderInstructions = {
+  draggable: `
+    To pick up a sortable item, press the space bar.
+    While sorting, use the arrow keys to move the item.
+    Press space again to drop the item in its new position, or press escape to cancel.
+  `,
+};
+
 export function Sortable({
   activationConstraint,
   adjustScale = false,
@@ -89,10 +99,42 @@ export function Sortable({
     })
   );
   const getIndex = items.indexOf.bind(items);
+  const getPosition = (id: string) => getIndex(id) + 1;
   const activeIndex = activeId ? getIndex(activeId) : -1;
+
+  const announcements: Announcements = {
+    onDragStart(id) {
+      return `Picked up sortable item ${id}. Sortable item ${id} is in position ${getPosition(
+        id
+      )} of ${items.length}`;
+    },
+    onDragOver(id, overId) {
+      if (overId) {
+        return `Sortable item ${id} was moved into position ${getPosition(
+          overId
+        )} of ${items.length}`;
+      }
+
+      return;
+    },
+    onDragEnd(id, overId) {
+      if (overId) {
+        return `Sortable item ${id} was dropped at position ${getPosition(
+          overId
+        )} of ${items.length}`;
+      }
+
+      return;
+    },
+    onDragCancel(id) {
+      return `Dragging was cancelled. Sortable item ${id} was dropped.`;
+    },
+  };
 
   return (
     <DndContext
+      announcements={announcements}
+      screenReaderInstructions={screenReaderInstructions}
       sensors={sensors}
       collisionDetection={collisionDetection}
       onDragStart={({active}) => {

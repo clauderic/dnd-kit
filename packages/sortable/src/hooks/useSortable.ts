@@ -26,7 +26,7 @@ const disabledTransition = CSS.Transition.toString({
 });
 
 const defaultAttributes: Arguments['attributes'] = {
-  role: 'sortable',
+  roleDescription: 'sortable',
 };
 
 export function useSortable({
