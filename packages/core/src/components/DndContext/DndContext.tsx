@@ -366,7 +366,13 @@ export const DndContext = memo(function DndContext({
       return (event, active) => {
         const nativeEvent = event.nativeEvent as DndEvent;
 
-        if (activeRef.current !== null || nativeEvent.dndKit) {
+        if (
+          // No active draggable
+          activeRef.current !== null ||
+          // Event has already been captured
+          nativeEvent.dndKit ||
+          nativeEvent.defaultPrevented
+        ) {
           return;
         }
 
