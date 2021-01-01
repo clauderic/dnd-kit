@@ -86,14 +86,10 @@ export class AbstractPointerSensor implements SensorInstance {
       },
     } = this;
 
-    this.listeners.add(events.move.name, this.handleMove, {
-      passive: false,
-    });
+    this.listeners.add(events.move.name, this.handleMove, false);
     this.listeners.add(events.end.name, this.handleEnd);
 
-    this.ownerDocument.addEventListener(EventName.Keydown, this.handleKeydown, {
-      passive: true,
-    });
+    this.ownerDocument.addEventListener(EventName.Keydown, this.handleKeydown);
 
     if (activationConstraint) {
       if (isDistanceConstraint(activationConstraint)) {
@@ -168,6 +164,10 @@ export class AbstractPointerSensor implements SensorInstance {
 
         return;
       }
+    }
+
+    if (event.cancelable) {
+      event.preventDefault();
     }
 
     onMove(coordinates);

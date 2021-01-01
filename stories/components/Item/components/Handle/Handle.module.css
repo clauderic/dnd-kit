@@ -8,6 +8,7 @@ $focused-outline-color: #4c9ffe;
   align-items: center;
   flex: 0 0 auto;
   margin-left: auto;
+  touch-action: none;
   cursor: var(--cursor, grab);
 
   svg {

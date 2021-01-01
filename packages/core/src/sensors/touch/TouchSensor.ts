@@ -29,10 +29,8 @@ export class TouchSensor extends AbstractPointerSensor {
           return false;
         }
 
-        nativeEvent.preventDefault();
-
-        if (nativeEvent.target instanceof HTMLElement) {
-          nativeEvent.target.focus();
+        if (nativeEvent.cancelable) {
+          nativeEvent.preventDefault();
         }
 
         return true;

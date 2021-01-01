@@ -9,7 +9,7 @@ export class Listeners {
   public add(
     eventName: string,
     handler: EventListenerOrEventListenerObject,
-    options?: AddEventListenerOptions
+    options?: AddEventListenerOptions | false
   ) {
     this.target.addEventListener(eventName, handler, options);
     this.listeners.push({eventName, handler});

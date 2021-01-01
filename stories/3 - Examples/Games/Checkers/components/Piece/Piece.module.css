@@ -12,7 +12,8 @@
   background-color: var(--color);
   border: 3px solid var(--border-color);
   box-shadow: var(--box-shadow);
-  cursor: url('/grab.svg'), grab;
+  touch-action: none;
+  cursor: grab;
 
   &:focus {
     box-shadow: var(--box-shadow), 0 0 10px 2px #4c9ffe;
@@ -37,7 +38,7 @@
 .clone {
   animation: pop 250ms cubic-bezier(0.18, 0.67, 0.6, 1.22) forwards;
   transform-origin: 0 0;
-  cursor: url('/grabbing.svg'), grabbing;
+  cursor: grabbing;
   box-shadow: var(--box-shadow), -1px 0 15px 0 rgba(34, 33, 81, 0.01),
     0px 15px 15px 0 rgba(34, 33, 81, 0.25);
 }

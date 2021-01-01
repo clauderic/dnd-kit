@@ -91,6 +91,8 @@ export const DragOverlay = React.memo(
           left: activeNodeRect.left,
           zIndex,
           transform: CSS.Transform.toString(finalTransform),
+          touchAction: 'none',
+          pointerEvents: 'none',
           transformOrigin:
             adjustScale && activatorEvent
               ? getRelativeTransformOrigin(
