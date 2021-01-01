@@ -1,5 +1,4 @@
-import {useCallback, useEffect, useMemo, useState} from 'react';
-import {useLatest} from '@dnd-kit/utilities';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
 const timeout = 1e3; // 1 second
 
@@ -22,24 +21,24 @@ export function useAnnouncement() {
       return new Map(announcements);
     });
   }, []);
-  const announcementMapRef = useLatest(announcementMap);
+  const announcementMapRef = useRef(announcementMap);
   const entries = useMemo(() => Array.from(announcementMap.entries()), [
     announcementMap,
   ]);
 
-  useEffect(
-    () => {
-      return () => {
-        // Clean up any queued `setTimeout` calls on unmount
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        announcementMapRef.current.forEach((_, key) => {
-          clearTimeout(key);
-        });
-      };
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
+  useEffect(() => {
+    announcementMapRef.current = announcementMap;
+  }, [announcementMap]);
+
+  useEffect(() => {
+    return () => {
+      // Clean up any queued `setTimeout` calls on unmount
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      announcementMapRef.current.forEach((_, key) => {
+        clearTimeout(key);
+      });
+    };
+  }, []);
 
   return {announce, entries} as const;
 }
