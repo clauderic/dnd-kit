@@ -1,4 +1,4 @@
-import React, {forwardRef, useRef, useEffect} from 'react';
+import React, {forwardRef} from 'react';
 import classNames from 'classnames';
 
 import {getSuitColor} from './utilities';
@@ -38,22 +38,6 @@ export const PlayingCard = forwardRef<HTMLDivElement, Props>(
     },
     ref
   ) => {
-    const nodeRef = useRef<HTMLDivElement | null>(null);
-    const prevDragging = useRef(Boolean(isDragging));
-
-    useEffect(() => {
-      if (!isDragging && prevDragging.current) {
-        nodeRef.current?.animate(
-          dropAnimation.keyframes,
-          dropAnimation.options
-        );
-      }
-
-      if (prevDragging.current !== isDragging) {
-        prevDragging.current = isDragging;
-      }
-    }, [isDragging]);
-
     return (
       <div
         className={classNames(styles.Wrapper, transform && styles.sorting)}
@@ -65,7 +49,6 @@ export const PlayingCard = forwardRef<HTMLDivElement, Props>(
             transition,
           } as React.CSSProperties
         }
-        ref={ref}
       >
         <div
           className={classNames(
@@ -83,7 +66,7 @@ export const PlayingCard = forwardRef<HTMLDivElement, Props>(
               zIndex: undefined,
             } as React.CSSProperties
           }
-          ref={nodeRef}
+          ref={ref}
           tabIndex={0}
           {...props}
         >
@@ -95,25 +78,3 @@ export const PlayingCard = forwardRef<HTMLDivElement, Props>(
     );
   }
 );
-
-const baseTransform = 'rotateX(60deg) rotateZ(33deg)';
-const baseAnimation = {
-  iterations: 1,
-  easing: 'ease',
-};
-const dropAnimation = {
-  keyframes: [
-    {
-      transform: `${baseTransform} translate3d(15px, 5px, 0)`,
-      opacity: 0.7,
-    },
-    {
-      transform: `${baseTransform} translate3d(0, 0, 0)`,
-      opacity: 1,
-    },
-  ],
-  options: {
-    ...baseAnimation,
-    duration: 600,
-  },
-};

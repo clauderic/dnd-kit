@@ -17,7 +17,7 @@ export const SingleDeck = () => {
 
   return (
     <>
-      <div style={{position: 'relative', marginTop: 50}}>
+      <div style={{position: 'relative', marginTop: 50, paddingBottom: 250}}>
         <Sortable
           strategy={verticalListSortingStrategy}
           items={deck.map(({suit, value}) => `${value}${suit}`)}

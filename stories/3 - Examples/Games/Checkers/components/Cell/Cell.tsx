@@ -14,15 +14,7 @@ export interface Props {
   y: number;
 }
 
-export function Cell({
-  children,
-  validDropLocation,
-  id,
-  odd,
-  size = 50,
-  x,
-  y,
-}: Props) {
+export function Cell({children, validDropLocation, id, odd, x, y}: Props) {
   const {isOver, setNodeRef} = useDroppable({
     id,
   });
@@ -38,11 +30,6 @@ export function Cell({
       )}
       data-x={x}
       data-y={y}
-      style={
-        {
-          '--size': `${size}px`,
-        } as React.CSSProperties
-      }
     >
       {children}
     </div>

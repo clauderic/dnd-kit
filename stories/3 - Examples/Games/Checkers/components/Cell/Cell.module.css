@@ -1,9 +1,17 @@
 .Cell {
+  --size: calc(4vw);
+  --min-size: 30px;
+  --max-size: calc(8vh);
+
   display: flex;
   align-items: center;
   justify-content: center;
-  height: var(--size);
   width: var(--size);
+  max-width: var(--max-size);
+  min-width: var(--min-size);
+  height: var(--size);
+  max-height: var(--max-size);
+  min-height: var(--min-size);
   padding: 8px;
 }
 
