@@ -1,5 +1,17 @@
 # @dnd-kit/modifiers
 
+## 1.0.0
+
+### Major Changes
+
+- [`2912350`](https://github.com/clauderic/dnd-kit/commit/2912350c5008c2b0edda3bae30b5075a852dea63) Thanks [@clauderic](https://github.com/clauderic)! - Initial public release.
+
+### Patch Changes
+
+- Updated dependencies [[`2912350`](https://github.com/clauderic/dnd-kit/commit/2912350c5008c2b0edda3bae30b5075a852dea63)]:
+  - @dnd-kit/core@1.0.0
+  - @dnd-kit/utilities@1.0.0
+
 ## 0.1.0
 
 ### Minor Changes
