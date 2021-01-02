@@ -1,1 +1,1 @@
-# @dnd-kit/core
+# @dnd-kit/accessibility

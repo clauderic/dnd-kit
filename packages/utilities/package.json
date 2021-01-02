@@ -15,6 +15,7 @@
   "typings": "dist/index.d.ts",
   "files": [
     "README.md",
+    "CHANGELOG.md",
     "dist"
   ],
   "dependencies": {

@@ -20,15 +20,14 @@
   "typings": "dist/index.d.ts",
   "files": [
     "README.md",
+    "CHANGELOG.md",
     "dist"
   ],
   "peerDependencies": {
-    "react": "^16.8.0",
-    "react-dom": "^16.8.0"
+    "react": ">=16.8.0"
   },
   "dependencies": {
-    "tslib": "^2.0.0",
-    "@dnd-kit/utilities": "^0.0.1"
+    "tslib": "^2.0.0"
   },
   "publishConfig": {
     "access": "public"

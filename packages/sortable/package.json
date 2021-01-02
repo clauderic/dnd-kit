@@ -15,12 +15,16 @@
   "typings": "dist/index.d.ts",
   "files": [
     "README.md",
+    "CHANGELOG.md",
     "dist"
   ],
   "dependencies": {
     "@dnd-kit/core": "^0.0.1",
     "@dnd-kit/utilities": "^0.0.1",
     "tslib": "^2.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
   },
   "publishConfig": {
     "access": "public"
