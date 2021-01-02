@@ -84,7 +84,7 @@ export function Sortable({
   const [items, setItems] = useState<string[]>(
     () =>
       initialItems ??
-      createRange<string>(itemCount, (index) => index.toString())
+      createRange<string>(itemCount, (index) => (index + 1).toString())
   );
   const [activeId, setActiveId] = useState<string | null>(null);
   const sensors = useSensors(

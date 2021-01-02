@@ -122,10 +122,10 @@ export function MultipleContainers({
   const [items, setItems] = useState<Items>(
     () =>
       initialItems ?? {
-        A: createRange(itemCount, (index) => `A${index}`),
-        B: createRange(itemCount, (index) => `B${index}`),
-        C: createRange(itemCount, (index) => `C${index}`),
-        D: createRange(itemCount, (index) => `D${index}`),
+        A: createRange(itemCount, (index) => `A${index + 1}`),
+        B: createRange(itemCount, (index) => `B${index + 1}`),
+        C: createRange(itemCount, (index) => `C${index + 1}`),
+        D: createRange(itemCount, (index) => `D${index + 1}`),
         [VOID_ID]: [],
       }
   );
