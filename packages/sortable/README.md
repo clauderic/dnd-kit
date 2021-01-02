@@ -25,4 +25,4 @@ The sortable preset exposes two main concepts: `SortableContext` and the `useSor
 
 ## Usage
 
-Visit [docs.dndkit.com](https://docs.dndkit.com) to learn how to use the Sortable preset.
+Visit [docs.dndkit.com](https://docs.dndkit.com/presets/sortable) to learn how to use the Sortable preset.

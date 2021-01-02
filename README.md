@@ -1,8 +1,11 @@
 <p align="center">
-  <img alt="dnd kit – There's a new kit on the block." width="520" src=".github/assets/dnd-kit-hero.png">
+  <a href="https://dndkit.com">
+    <img alt="dnd kit – There's a new kit on the block." width="520" src=".github/assets/dnd-kit-hero.png">
+  </a>
 </p>
 
 ## Overview
+
 <p align="left">
 <a href="#"><img src="https://img.shields.io/badge/build-passing-brightgreen" alt="Build status" /></a>
 <a href="https://www.npmjs.com/package/@dnd-kit/core"><img src="https://img.shields.io/npm/v/@dnd-kit/core.svg" alt="Stable Release" /></a>
@@ -10,7 +13,7 @@
 <a href="./LICENSE"><img allt="MIT License" src="https://badgen.now.sh/badge/license/MIT"/></a>
 </p>
 
-- **Built for React:** exposes hooks such as `useDraggable` and `useDroppable`, and won't require you to re-architect your app or create additional wrapper DOM nodes.
+- **Built for React:** exposes hooks such as [`useDraggable`](https://docs.dndkit.com/api-documentation/draggable) and [`useDroppable`](https://docs.dndkit.com/api-documentation/droppable), and won't require you to re-architect your app or create additional wrapper DOM nodes.
 - **Feature packed:** customizable collision detection algorithms, multiple activators, draggable overlay, drag handles, auto-scrolling, constraints, and so much more.
 - **Supports a wide range of use cases:** vertical lists, horizontal lists, grids, multiple containers, nested contexts, variable sized list and grids, transformed items, virtualized lists.
 - **Zero dependencies and modular:** the core of the library weighs around 10kb minified and has no external dependencies. It's built around built-in React state management and context, which keeps the library lean.
@@ -20,10 +23,14 @@
 - **Performance:** It was built with performance in mind in order to support silky smooth animations.
 - **Presets:** Need to build a sortable interface? Check out `@dnd-kit/sortable`, which is a thin layer built on top of `@dnd-kit/core`. More presets coming in the future.
 
+<p align="center">
+<img alt="Playful illustration of draggable and droppable concepts" src=".github/assets/robot-illustration-concepts.svg" width="80%" />
+</p>
+
 The core library of **dnd kit** exposes two main concepts:
 
-- Draggable elements
-- Droppable areas
+- [Draggable elements](https://docs.dndkit.com/api-documentation/draggable)
+- [Droppable areas](https://docs.dndkit.com/api-documentation/droppable)
 
 Augment your existing components using the `useDraggable` and `useDroppable` hooks, or combine both to create components that can both be dragged and dropped over.
 
@@ -33,15 +40,11 @@ Use the `<DragOverlay>` component to render a draggable overlay that is removed 
 
 Check out our [quick start guide](https://docs.dnd-kit.com) to learn how get started.
 
-<p align="center">
-<img alt="Playful illustration of draggable and droppable concepts" src=".github/assets/robot-illustration-concepts.svg" width="80%" />
-</p>
-
 ### Extensibility
 
 Extensibility is at the core of **dnd kit**. It was built is built to be lean and extensible. It ships with the features we believe most people will want most of the time, and provides extension points to build the rest on top of `@dnd-kit/core`.
 
-A prime example of the level of extensibility of **dnd kit** is the [Sortable preset](packages/sortable/README.md), which is built using the extension points that are exposed by `@dnd-kit/core`.
+A prime example of the level of extensibility of **dnd kit** is the [Sortable preset](https://docs.dndkit.com/presets/sortable), which is built using the extension points that are exposed by `@dnd-kit/core`.
 
 The primary extension points of **dnd kit** are:
 
