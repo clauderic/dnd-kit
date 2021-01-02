@@ -1,6 +1,14 @@
-<p align="center"><img alt="dnd kit – There's a new kit on the block." width="520" src=".github/assets/dnd-kit-hero.png"></p>
+<p align="center">
+  <img alt="dnd kit – There's a new kit on the block." width="520" src=".github/assets/dnd-kit-hero.png">
+</p>
 
-## Features
+## Overview
+<p align="left">
+<a href="#"><img src="https://img.shields.io/badge/build-passing-brightgreen" alt="Build status" /></a>
+<a href="https://www.npmjs.com/package/@dnd-kit/core"><img src="https://img.shields.io/npm/v/@dnd-kit/core.svg" alt="Stable Release" /></a>
+<a href="https://bundlephobia.com/result?p=@dnd-kit/core"><img alt="gzip size" src="https://badgen.net/bundlephobia/minzip/@dnd-kit/core?label=gzip%20size&color=green"/></a>
+<a href="./LICENSE"><img allt="MIT License" src="https://badgen.now.sh/badge/license/MIT"/></a>
+</p>
 
 - **Built for React:** exposes hooks such as `useDraggable` and `useDroppable`, and won't require you to re-architect your app or create additional wrapper DOM nodes.
 - **Feature packed:** customizable collision detection algorithms, multiple activators, draggable overlay, drag handles, auto-scrolling, constraints, and so much more.
