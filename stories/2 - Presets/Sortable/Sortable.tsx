@@ -127,7 +127,7 @@ export function Sortable({
       return;
     },
     onDragCancel(id) {
-      return `Dragging was cancelled. Sortable item ${id} was dropped.`;
+      return `Sorting was cancelled. Sortable item ${id} was dropped.`;
     },
   };
 
