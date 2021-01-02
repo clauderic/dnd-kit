@@ -37,7 +37,7 @@ function Sortable({
   modifiers,
 }: Props) {
   const [items, setItems] = useState(() =>
-    createRange<string>(itemCount, (index) => index.toString())
+    createRange<string>(itemCount, (index) => `${index + 1}`)
   );
   const [activeId, setActiveId] = useState<string | null>(null);
   const sensors = useSensors(

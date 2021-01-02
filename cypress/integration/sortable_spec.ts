@@ -1,10 +1,14 @@
 /// <reference path="../support/index.d.ts" />
 
+function getIdForIndex(index: number) {
+  return `${index + 1}`;
+}
+
 describe('Sortable Grid', () => {
   describe('Move Right', () => {
     it('Once', () => {
       const initialIndex = 0;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const delta = 1;
 
       cy.visitStory('presets-sortable-grid--basic-setup')
@@ -22,7 +26,7 @@ describe('Sortable Grid', () => {
 
     it('Two consecutive sort actions', () => {
       const initialIndex = 0;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const delta = 2;
 
       cy.visitStory('presets-sortable-grid--basic-setup')
@@ -46,7 +50,7 @@ describe('Sortable Grid', () => {
 
     it('Does not go past the last index', () => {
       const initialIndex = 15;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const maxIndex = 15;
       const delta = maxIndex + 1;
 
@@ -69,7 +73,7 @@ describe('Sortable Grid', () => {
 
     it('Once', () => {
       const initialIndex = 0;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const delta = 1;
 
       cy.visitStory('presets-sortable-grid--basic-setup')
@@ -87,7 +91,7 @@ describe('Sortable Grid', () => {
 
     it('Two consecutive sort actions', () => {
       const initialIndex = 0;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const delta = 1;
 
       cy.visitStory('presets-sortable-grid--basic-setup')
@@ -111,7 +115,7 @@ describe('Sortable Grid', () => {
 
     it('Does not go past the last index', () => {
       const initialIndex = 15;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const maxIndex = 15;
       const delta = maxIndex + 1;
 
@@ -134,7 +138,7 @@ describe('Sortable Grid', () => {
 
     it('Once', () => {
       const initialIndex = 5;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const delta = 1;
 
       cy.visitStory('presets-sortable-grid--basic-setup')
@@ -152,7 +156,7 @@ describe('Sortable Grid', () => {
 
     it('Two consecutive sort actions', () => {
       const initialIndex = 15;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const delta = 1;
 
       cy.visitStory('presets-sortable-grid--basic-setup')
@@ -178,7 +182,7 @@ describe('Sortable Grid', () => {
 
     it('Does not go past the first index', () => {
       const initialIndex = 0;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const minIndex = 0;
       const delta = 1;
 
@@ -199,7 +203,7 @@ describe('Sortable Grid', () => {
   describe('Move Left', () => {
     it('Once', () => {
       const initialIndex = 6;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const delta = 1;
 
       cy.visitStory('presets-sortable-grid--basic-setup')
@@ -217,7 +221,7 @@ describe('Sortable Grid', () => {
 
     it('Two consecutive sort actions', () => {
       const initialIndex = 4;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const delta = 2;
 
       cy.visitStory('presets-sortable-grid--basic-setup')
@@ -241,7 +245,7 @@ describe('Sortable Grid', () => {
 
     it('Does not go below index zero', () => {
       const initialIndex = 0;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
 
       cy.visitStory('presets-sortable-grid--basic-setup')
         .getIndexForItem(id)
@@ -260,7 +264,7 @@ describe('Sortable Grid', () => {
   describe('Stress test', () => {
     it('Multiple actions in both directions', () => {
       const initialIndex = 7;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const delta = 2;
 
       cy.visitStory('presets-sortable-grid--basic-setup')
@@ -288,7 +292,7 @@ describe('Sortable Vertical List', () => {
   describe('Move Down', () => {
     it('Once', () => {
       const initialIndex = 0;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const delta = 1;
 
       cy.visitStory('presets-sortable-vertical--basic-setup')
@@ -306,7 +310,7 @@ describe('Sortable Vertical List', () => {
 
     it('Two consecutive sort actions', () => {
       const initialIndex = 0;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const delta = 2;
 
       cy.visitStory('presets-sortable-vertical--basic-setup')
@@ -330,7 +334,7 @@ describe('Sortable Vertical List', () => {
 
     it('Does not go past the last index', () => {
       const initialIndex = 0;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const maxIndex = 49;
       const delta = maxIndex + 1;
 
@@ -351,7 +355,7 @@ describe('Sortable Vertical List', () => {
   describe('Move Up', () => {
     it('Once', () => {
       const initialIndex = 5;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const delta = 1;
 
       cy.visitStory('presets-sortable-vertical--basic-setup')
@@ -369,7 +373,7 @@ describe('Sortable Vertical List', () => {
 
     it('Does not go below index zero', () => {
       const initialIndex = 0;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
 
       cy.visitStory('presets-sortable-vertical--basic-setup')
         .getIndexForItem(id)
@@ -388,7 +392,7 @@ describe('Sortable Vertical List', () => {
   describe('Stress test', () => {
     it('Multiple actions in both directions', () => {
       const initialIndex = 5;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const delta = 4;
 
       cy.visitStory('presets-sortable-vertical--basic-setup')
@@ -416,7 +420,7 @@ describe('Sortable Virtualized List', () => {
   describe('Move Down', () => {
     it('Once', () => {
       const initialIndex = 0;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const delta = 1;
 
       cy.visitStory('presets-sortable-virtualized--basic-setup')
@@ -434,7 +438,7 @@ describe('Sortable Virtualized List', () => {
 
     it('Two consecutive sort actions', () => {
       const initialIndex = 0;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const delta = 2;
 
       cy.visitStory('presets-sortable-virtualized--basic-setup')
@@ -458,7 +462,7 @@ describe('Sortable Virtualized List', () => {
 
     it('Does not go past the last index', () => {
       const initialIndex = 0;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const maxIndex = 99;
       const delta = maxIndex + 1;
 
@@ -479,7 +483,7 @@ describe('Sortable Virtualized List', () => {
   describe('Move Up', () => {
     it('Once', () => {
       const initialIndex = 1;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const delta = 1;
 
       cy.visitStory('presets-sortable-virtualized--basic-setup')
@@ -497,7 +501,7 @@ describe('Sortable Virtualized List', () => {
 
     it('Does not go below index zero', () => {
       const initialIndex = 0;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
 
       cy.visitStory('presets-sortable-virtualized--basic-setup')
         .getIndexForItem(id)
@@ -516,7 +520,7 @@ describe('Sortable Virtualized List', () => {
   describe('Stress test', () => {
     it('Multiple actions in both directions', () => {
       const initialIndex = 10;
-      const id = initialIndex.toString();
+      const id = getIdForIndex(initialIndex);
       const delta = 10;
 
       cy.visitStory('presets-sortable-virtualized--basic-setup')
