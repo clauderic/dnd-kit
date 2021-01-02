@@ -1,6 +1,6 @@
 {
   "name": "@dnd-kit/sortable",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Official sortable preset and sensors for dnd kit",
   "author": "Claudéric Demers",
   "scripts": {
@@ -19,8 +19,8 @@
     "dist"
   ],
   "dependencies": {
-    "@dnd-kit/core": "^0.0.1",
-    "@dnd-kit/utilities": "^0.0.1",
+    "@dnd-kit/core": "^0.1.0",
+    "@dnd-kit/utilities": "^0.1.0",
     "tslib": "^2.0.0"
   },
   "peerDependencies": {
