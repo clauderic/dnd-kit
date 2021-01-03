@@ -7,7 +7,7 @@
 ## Overview
 
 <p align="left">
-<a href="#"><img src="https://img.shields.io/badge/build-passing-brightgreen" alt="Build status" /></a>
+<a href="https://github.com/clauderic/dnd-kit/actions"><img src="https://badgen.net/github/checks/clauderic/dnd-kit" alt="Build status" /></a>
 <a href="https://www.npmjs.com/package/@dnd-kit/core"><img src="https://img.shields.io/npm/v/@dnd-kit/core.svg" alt="Stable Release" /></a>
 <a href="https://bundlephobia.com/result?p=@dnd-kit/core"><img alt="gzip size" src="https://badgen.net/bundlephobia/minzip/@dnd-kit/core?label=gzip%20size&color=green"/></a>
 <a href="./LICENSE"><img allt="MIT License" src="https://badgen.now.sh/badge/license/MIT"/></a>
