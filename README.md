@@ -38,7 +38,7 @@ Handle events and customize the behaviour of your draggable elements and droppab
 
 Use the `<DragOverlay>` component to render a draggable overlay that is removed from the normal document flow and is positioned relative to the viewport.
 
-Check out our [quick start guide](https://docs.dnd-kit.com) to learn how get started.
+Check out our [quick start guide](https://docs.dndkit.com/introduction/getting-started) to learn how get started.
 
 ### Extensibility
 
