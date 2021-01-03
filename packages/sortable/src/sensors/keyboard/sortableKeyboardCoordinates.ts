@@ -28,6 +28,10 @@ export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
     const layoutRects: RectEntry[] = [];
 
     Object.entries(droppableContainers).forEach(([id, container]) => {
+      if (container?.disabled) {
+        return;
+      }
+
       const node = container?.node.current;
 
       if (!node) {
