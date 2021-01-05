@@ -23,6 +23,10 @@
 - **Performance:** It was built with performance in mind in order to support silky smooth animations.
 - **Presets:** Need to build a sortable interface? Check out `@dnd-kit/sortable`, which is a thin layer built on top of `@dnd-kit/core`. More presets coming in the future.
 
+<p align="center">
+<img alt="Playful illustration of draggable and droppable concepts" src=".github/assets/concepts-illustration.svg" width="75%" />
+</p>
+
 The core library of **dnd kit** exposes two main concepts:
 
 - [Draggable elements](https://docs.dndkit.com/api-documentation/draggable)
