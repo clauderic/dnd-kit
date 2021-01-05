@@ -5,7 +5,7 @@
   "author": "Claudéric Demers",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/claudric/dnd-kit.git",
+    "url": "git+https://github.com/clauderic/dnd-kit.git",
     "directory": "packages/core"
   },
   "scripts": {
