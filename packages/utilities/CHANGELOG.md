@@ -1,5 +1,11 @@
 # @dnd-kit/utilities
 
+## 1.0.1
+
+### Patch Changes
+
+- [`0b343c7`](https://github.com/clauderic/dnd-kit/commit/0b343c7e88a68351f8a39f643e9f26b8e046ef48) [#52](https://github.com/clauderic/dnd-kit/pull/52) Thanks [@clauderic](https://github.com/clauderic)! - Add repository entry to package.json files
+
 ## 1.0.0
 
 ### Major Changes

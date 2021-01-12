@@ -1,5 +1,11 @@
 # @dnd-kit/accessibility
 
+## 1.0.1
+
+### Patch Changes
+
+- [`310bbd6`](https://github.com/clauderic/dnd-kit/commit/310bbd6370e85f8fb16cad149e6254600a5beb3a) [#37](https://github.com/clauderic/dnd-kit/pull/37) Thanks [@nickpresta](https://github.com/nickpresta)! - Fix typo in package.json repository URL
+
 ## 1.0.0
 
 ### Major Changes

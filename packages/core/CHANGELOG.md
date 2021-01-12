@@ -1,5 +1,17 @@
 # @dnd-kit/core
 
+## 1.0.1
+
+### Patch Changes
+
+- [`5194696`](https://github.com/clauderic/dnd-kit/commit/5194696b4b91f26379cd3e6c11b2d66c92d32c5b) [#51](https://github.com/clauderic/dnd-kit/pull/51) Thanks [@clauderic](https://github.com/clauderic)! - Fix issue with reducer initial state variable causing collisions due to variable references all pointing to the original initial state variable.
+
+- [`310bbd6`](https://github.com/clauderic/dnd-kit/commit/310bbd6370e85f8fb16cad149e6254600a5beb3a) [#37](https://github.com/clauderic/dnd-kit/pull/37) Thanks [@nickpresta](https://github.com/nickpresta)! - Fix typo in package.json repository URL
+
+- Updated dependencies [[`0b343c7`](https://github.com/clauderic/dnd-kit/commit/0b343c7e88a68351f8a39f643e9f26b8e046ef48), [`310bbd6`](https://github.com/clauderic/dnd-kit/commit/310bbd6370e85f8fb16cad149e6254600a5beb3a)]:
+  - @dnd-kit/utilities@1.0.1
+  - @dnd-kit/accessibility@1.0.1
+
 ## 1.0.0
 
 ### Major Changes
