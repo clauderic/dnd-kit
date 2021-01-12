@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "Internal utilities to bee shared between `@dnd-kit` packages",
   "author": "Claudéric Demers",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/clauderic/dnd-kit.git",
+    "directory": "packages/utilities"
+  },
   "scripts": {
     "start": "tsdx watch --tsconfig tsconfig.build.json --verbose --noClean",
     "build": "tsdx build --tsconfig tsconfig.build.json",
