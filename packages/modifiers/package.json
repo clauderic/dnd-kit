@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "Translate modifier presets for use with `@dnd-kit` packages.",
   "author": "Claudéric Demers",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/clauderic/dnd-kit.git",
+    "directory": "packages/modifiers"
+  },
   "scripts": {
     "start": "tsdx watch --tsconfig tsconfig.build.json --verbose --noClean",
     "build": "tsdx build --tsconfig tsconfig.build.json",
