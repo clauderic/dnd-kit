@@ -17,10 +17,10 @@ import {
 } from '@dnd-kit/utilities';
 
 import {
+  Action,
   Context,
   DndContextDescriptor,
-  Action,
-  initialState,
+  getInitialState,
   reducer,
 } from '../../store';
 import type {Coordinates, ViewRect, LayoutRect, Translate} from '../../types';
@@ -149,7 +149,7 @@ export const DndContext = memo(function DndContext({
   modifiers,
   ...props
 }: Props) {
-  const store = useReducer(reducer, initialState);
+  const store = useReducer(reducer, undefined, getInitialState);
   const [state, dispatch] = store;
   const {
     draggable: {active, lastEvent, nodes: draggableNodes, translate},

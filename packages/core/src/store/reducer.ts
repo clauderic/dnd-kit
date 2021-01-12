@@ -2,18 +2,20 @@ import {omit} from '../utilities';
 import {Action, Actions} from './actions';
 import type {State} from './types';
 
-export const initialState: State = {
-  draggable: {
-    active: null,
-    initialCoordinates: {x: 0, y: 0},
-    lastEvent: null,
-    nodes: {},
-    translate: {x: 0, y: 0},
-  },
-  droppable: {
-    containers: {},
-  },
-};
+export function getInitialState(): State {
+  return {
+    draggable: {
+      active: null,
+      initialCoordinates: {x: 0, y: 0},
+      lastEvent: null,
+      nodes: {},
+      translate: {x: 0, y: 0},
+    },
+    droppable: {
+      containers: {},
+    },
+  };
+}
 
 export function reducer(state: State, action: Actions): State {
   switch (action.type) {
@@ -21,7 +23,7 @@ export function reducer(state: State, action: Actions): State {
       return {
         ...state,
         draggable: {
-          ...initialState.draggable,
+          ...state.draggable,
           initialCoordinates: action.initialCoordinates,
           active: action.active,
           lastEvent: Action.DragStart,
@@ -47,7 +49,10 @@ export function reducer(state: State, action: Actions): State {
       return {
         ...state,
         draggable: {
-          ...initialState.draggable,
+          ...state.draggable,
+          active: null,
+          initialCoordinates: {x: 0, y: 0},
+          translate: {x: 0, y: 0},
           lastEvent: action.type,
         },
       };
