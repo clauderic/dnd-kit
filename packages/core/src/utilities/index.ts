@@ -6,6 +6,7 @@ export {
 } from './algorithms';
 
 export {
+  centerOfRectangle,
   defaultCoordinates,
   distanceBetween,
   getEventCoordinates,
