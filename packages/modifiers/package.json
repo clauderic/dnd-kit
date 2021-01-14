@@ -3,6 +3,7 @@
   "version": "1.0.1",
   "description": "Translate modifier presets for use with `@dnd-kit` packages.",
   "author": "Claudéric Demers",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/clauderic/dnd-kit.git",
@@ -21,6 +22,7 @@
   "files": [
     "README.md",
     "CHANGELOG.md",
+    "LICENSE",
     "dist"
   ],
   "dependencies": {

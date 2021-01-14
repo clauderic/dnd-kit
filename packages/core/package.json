@@ -3,6 +3,7 @@
   "version": "1.0.1",
   "description": "dnd kit – a lightweight React library for building performant and accessible drag and drop experiences",
   "author": "Claudéric Demers",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/clauderic/dnd-kit.git",
@@ -21,6 +22,7 @@
   "files": [
     "README.md",
     "CHANGELOG.md",
+    "LICENSE",
     "dist"
   ],
   "peerDependencies": {
