@@ -1,5 +1,5 @@
 import type {Transform} from '@dnd-kit/utilities';
-import type {ClientRect, ViewRect} from '../types';
+import type {ClientRect, UniqueIdentifier, ViewRect} from '../types';
 
 export type Modifier = (args: {
   transform: Transform;
@@ -10,6 +10,8 @@ export type Modifier = (args: {
   scrollableAncestors: Element[];
   scrollableAncestorRects: ViewRect[];
   windowRect: ClientRect | null;
+  active: UniqueIdentifier | null;
+  overId: UniqueIdentifier | null;
 }) => Transform;
 
 export type Modifiers = Modifier[];

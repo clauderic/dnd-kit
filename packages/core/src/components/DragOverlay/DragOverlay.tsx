@@ -56,6 +56,7 @@ export const DragOverlay = React.memo(
       scrollableAncestors,
       scrollableAncestorRects,
       windowRect,
+      over,
     } = useDndContext();
     const transform = useContext(ActiveDraggableContext);
     const modifiedTransform = applyModifiers(modifiers, {
@@ -67,6 +68,8 @@ export const DragOverlay = React.memo(
       scrollableAncestors,
       scrollableAncestorRects,
       windowRect,
+      active,
+      overId: over && over.id,
     });
     const derivedTransform = useDerivedTransform(
       modifiedTransform,

@@ -223,6 +223,8 @@ export const DndContext = memo(function DndContext({
     scrollableAncestors,
     scrollableAncestorRects,
     windowRect,
+    active,
+    overId: tracked.current.overId,
   });
 
   const scrolllAdjustment = useScrollOffsets(scrollableAncestors);
