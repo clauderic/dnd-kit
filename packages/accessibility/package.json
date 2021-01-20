@@ -3,6 +3,7 @@
   "version": "1.0.1",
   "description": "A generic toolkit to help with accessibility",
   "author": "Claudéric Demers",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/clauderic/dnd-kit.git",
