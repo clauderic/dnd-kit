@@ -1,4 +1,4 @@
-import {createContext, useContext, useEffect} from 'react';
+import {createContext, useContext, useEffect, useMemo} from 'react';
 import {Transform, useNodeRef} from '@dnd-kit/utilities';
 
 import {Context} from '../store';
@@ -57,17 +57,22 @@ export function useDraggable({
     [draggableNodes, id]
   );
 
-  return {
-    active,
-    activeNodeRect,
-    activatorEvent,
-    attributes: {
+  const memoizedAttributes = useMemo(
+    () => ({
       role,
       tabIndex,
       'aria-pressed': isDragging && role === defaultRole ? true : undefined,
       'aria-roledescription': roleDescription,
       'aria-describedby': ariaDescribedById.draggable,
-    },
+    }),
+    [role, tabIndex, isDragging, roleDescription, ariaDescribedById.draggable]
+  );
+
+  return {
+    active,
+    activeNodeRect,
+    activatorEvent,
+    attributes: memoizedAttributes,
     droppableRects,
     isDragging,
     listeners: disabled ? undefined : listeners,
