@@ -57,7 +57,7 @@ export function useDraggable({
     [draggableNodes, id]
   );
 
-  const providedAttributes = useMemo(
+  const memoizedAttributes = useMemo(
     () => ({
       role,
       tabIndex,
@@ -72,7 +72,7 @@ export function useDraggable({
     active,
     activeNodeRect,
     activatorEvent,
-    attributes: providedAttributes,
+    attributes: memoizedAttributes,
     droppableRects,
     isDragging,
     listeners: disabled ? undefined : listeners,
