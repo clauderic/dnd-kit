@@ -57,17 +57,22 @@ export function useDraggable({
     [draggableNodes, id]
   );
 
-  return {
-    active,
-    activeNodeRect,
-    activatorEvent,
-    attributes: {
+  const providedAttributes = useMemo(
+    () => ({
       role,
       tabIndex,
       'aria-pressed': isDragging && role === defaultRole ? true : undefined,
       'aria-roledescription': roleDescription,
       'aria-describedby': ariaDescribedById.draggable,
-    },
+    }),
+    [role, tabIndex, isDragging, roleDescription, ariaDescribedById.draggable]
+  );
+
+  return {
+    active,
+    activeNodeRect,
+    activatorEvent,
+    attributes: providedAttributes,
     droppableRects,
     isDragging,
     listeners: disabled ? undefined : listeners,
