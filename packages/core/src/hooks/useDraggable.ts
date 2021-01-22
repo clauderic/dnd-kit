@@ -1,4 +1,4 @@
-import {createContext, useContext, useEffect} from 'react';
+import {createContext, useContext, useEffect, useMemo} from 'react';
 import {Transform, useNodeRef} from '@dnd-kit/utilities';
 
 import {Context} from '../store';
