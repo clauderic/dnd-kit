@@ -66,11 +66,6 @@ export interface DndContextDescriptor {
   ariaDescribedById: {
     draggable: UniqueIdentifier;
   };
-  overlayNode: {
-    nodeRef: React.MutableRefObject<HTMLElement | null>;
-    rect: ViewRect | null;
-    setRef: (element: HTMLElement | null) => void;
-  };
   containerNodeRect: ViewRect | null;
   draggableNodes: DraggableNodes;
   droppableContainers: DroppableContainers;
@@ -79,6 +74,11 @@ export interface DndContextDescriptor {
     id: UniqueIdentifier;
     rect: LayoutRect;
   } | null;
+  overlayNode: {
+    nodeRef: React.MutableRefObject<HTMLElement | null>;
+    rect: ViewRect | null;
+    setRef: (element: HTMLElement | null) => void;
+  };
   scrollableAncestors: Element[];
   scrollableAncestorRects: ViewRect[];
   recomputeLayouts(): void;

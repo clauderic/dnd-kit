@@ -1,0 +1,60 @@
+.TreeItem {
+  list-style: none;
+  box-sizing: border-box;
+  padding-left: var(--spacing);
+
+  .Wrapper {
+    --vertical-padding: 20px;
+
+    position: relative;
+
+    display: flex;
+    padding: var(--vertical-padding) 20px;
+    background-color: #fff;
+    border: 1px solid #dedede;
+    margin-bottom: -1px;
+    color: #222;
+    box-sizing: border-box;
+  }
+
+  &.clone {
+    display: inline-block;
+    pointer-events: none;
+    padding: 5px;
+    padding-left: calc(var(--spacing) + 5px);
+
+    .Wrapper {
+      --vertical-padding: 15px;
+
+      min-width: 100px;
+      border-radius: 3px;
+      box-shadow: 0px 15px 15px 0 rgba(34, 33, 81, 0.1);
+    }
+  }
+
+  &.ghost {
+    opacity: 0.5;
+
+    .Wrapper {
+      > * {
+        box-shadow: none;
+      }
+    }
+  }
+
+  .Count {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #2389ff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #fff;
+  }
+}

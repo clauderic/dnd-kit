@@ -119,6 +119,7 @@ export function useSortable({
   }, [isSorting, newIndex]);
 
   return {
+    active,
     attributes,
     activatorEvent,
     rect,

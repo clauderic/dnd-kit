@@ -1,0 +1,26 @@
+$focused-outline-color: #4c9ffe;
+
+.Handle {
+  display: flex;
+  width: 12px;
+  padding: 10px;
+  margin: -10px;
+  margin-right: 10px;
+  align-items: center;
+  touch-action: none;
+  cursor: var(--cursor, grab);
+
+  svg {
+    flex: 0 0 auto;
+    margin: auto;
+    width: 100%;
+    overflow: visible;
+    fill: #919eab;
+  }
+
+  &:focus {
+    outline: none;
+    border-radius: 0.5px;
+    box-shadow: 0 0 0 2px #fff, 0 0px 3px 4px $focused-outline-color;
+  }
+}
