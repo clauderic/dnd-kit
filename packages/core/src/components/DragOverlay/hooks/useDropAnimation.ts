@@ -83,28 +83,28 @@ export function useDropAnimation({
             const originalOpacity = finalNode.style.opacity;
 
             finalNode.style.opacity = '0';
-            node
-              .animate(
-                [
-                  {
-                    transform: CSS.Transform.toString(transform),
-                  },
-                  {
-                    transform: finalTransform,
-                  },
-                ],
+            const nodeAnimation = node.animate(
+              [
                 {
-                  easing,
-                  duration,
-                }
-              )
-              .finished.then(() => {
-                setDropAnimationComplete(true);
+                  transform: CSS.Transform.toString(transform),
+                },
+                {
+                  transform: finalTransform,
+                },
+              ],
+              {
+                easing,
+                duration,
+              }
+            );
 
-                if (finalNode) {
-                  finalNode.style.opacity = originalOpacity;
-                }
-              });
+            nodeAnimation.onfinish = () => {
+              setDropAnimationComplete(true);
+
+              if (finalNode) {
+                finalNode.style.opacity = originalOpacity;
+              }
+            };
             return;
           }
         }
