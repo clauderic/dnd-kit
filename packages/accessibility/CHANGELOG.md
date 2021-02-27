@@ -1,5 +1,11 @@
 # @dnd-kit/accessibility
 
+## 1.0.2
+
+### Patch Changes
+
+- [`423610c`](https://github.com/clauderic/dnd-kit/commit/423610ca48c5e5ca95545fdb5c5cfcfbd3d233ba) [#56](https://github.com/clauderic/dnd-kit/pull/56) Thanks [@clauderic](https://github.com/clauderic)! - Add MIT license to package.json and distributed files
+
 ## 1.0.1
 
 ### Patch Changes
