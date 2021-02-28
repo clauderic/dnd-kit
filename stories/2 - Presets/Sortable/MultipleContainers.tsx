@@ -99,6 +99,7 @@ interface Props {
   modifiers?: Modifiers;
   trashable?: boolean;
   vertical?: boolean;
+  confirmDrop?: (overId: string) => boolean;
 }
 
 export const VOID_ID = 'void';
@@ -118,6 +119,7 @@ export function MultipleContainers({
   strategy = verticalListSortingStrategy,
   trashable = false,
   vertical = false,
+  confirmDrop,
 }: Props) {
   const [items, setItems] = useState<Items>(
     () =>
@@ -155,6 +157,17 @@ export function MultipleContainers({
     const index = items[container].indexOf(id);
 
     return index;
+  };
+
+  const onDragCancel = () => {
+    if (dragOverlaydItems) {
+      // Reset items to their original state in case items have been
+      // Dragged across containrs
+      setItems(dragOverlaydItems);
+    }
+
+    setActiveId(null);
+    setClonedItems(null);
   };
 
   return (
@@ -224,6 +237,14 @@ export function MultipleContainers({
 
         const overId = over?.id || VOID_ID;
 
+        if (confirmDrop) {
+          const confirmed = confirmDrop(overId);
+          if (!confirmed) {
+            onDragCancel();
+            return;
+          }
+        }
+
         if (overId === VOID_ID) {
           setItems((items) => ({
             ...(trashable && over?.id === VOID_ID ? items : dragOverlaydItems),
@@ -253,16 +274,7 @@ export function MultipleContainers({
 
         setActiveId(null);
       }}
-      onDragCancel={() => {
-        if (dragOverlaydItems) {
-          // Reset items to their original state in case items have been
-          // Dragged across containrs
-          setItems(dragOverlaydItems);
-        }
-
-        setActiveId(null);
-        setClonedItems(null);
-      }}
+      onDragCancel={onDragCancel}
       modifiers={modifiers}
     >
       <div
