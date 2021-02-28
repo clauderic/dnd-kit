@@ -167,6 +167,7 @@ export function MultipleContainers({
       }}
       onDragOver={({active, over, draggingRect}) => {
         const overId = over?.id;
+
         if (!overId) {
           return;
         }
