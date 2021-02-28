@@ -43,12 +43,29 @@ const customCollisionDetectionStrategy: CollisionDetection = (rects, rect) => {
   return closestCorners(otherRects, rect);
 };
 
-export const TrashableItems = () => (
+const confirmDrop = (overId: string) => {
+  if (overId !== VOID_ID) {
+    return true;
+  }
+
+  return window.confirm('Are you sure you want to delete this item?');
+};
+
+export const TrashableItems = ({confirm}: {confirm: boolean}) => (
   <MultipleContainers
     collisionDetection={customCollisionDetectionStrategy}
+    confirmDrop={confirm ? confirmDrop : undefined}
     trashable
   />
 );
+
+TrashableItems.argTypes = {
+  confirm: {
+    name: 'Request user confirmation before deletion',
+    defaultValue: false,
+    control: {type: 'boolean'},
+  },
+};
 
 export const Grid = () => (
   <MultipleContainers
