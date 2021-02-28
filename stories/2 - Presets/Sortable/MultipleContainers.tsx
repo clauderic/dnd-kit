@@ -131,7 +131,7 @@ export function MultipleContainers({
         [VOID_ID]: [],
       }
   );
-  const [dragOverlaydItems, setClonedItems] = useState<Items | null>(null);
+  const [clonedItems, setClonedItems] = useState<Items | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -160,10 +160,10 @@ export function MultipleContainers({
   };
 
   const onDragCancel = () => {
-    if (dragOverlaydItems) {
+    if (clonedItems) {
       // Reset items to their original state in case items have been
       // Dragged across containrs
-      setItems(dragOverlaydItems);
+      setItems(clonedItems);
     }
 
     setActiveId(null);
@@ -247,7 +247,7 @@ export function MultipleContainers({
 
         if (overId === VOID_ID) {
           setItems((items) => ({
-            ...(trashable && over?.id === VOID_ID ? items : dragOverlaydItems),
+            ...(trashable && over?.id === VOID_ID ? items : clonedItems),
             [VOID_ID]: [],
           }));
           setActiveId(null);
