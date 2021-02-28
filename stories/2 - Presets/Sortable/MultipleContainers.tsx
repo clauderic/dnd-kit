@@ -166,7 +166,11 @@ export function MultipleContainers({
         setClonedItems(items);
       }}
       onDragOver={({active, over, draggingRect}) => {
-        const overId = over?.id || VOID_ID;
+        const overId = over?.id;
+        if (!overId) {
+          return;
+        }
+
         const overContainer = findContainer(overId);
         const activeContainer = findContainer(active.id);
 
