@@ -31,6 +31,7 @@ export class KeyboardSensor implements SensorInstance {
   public autoScrollEnabled = false;
   private coordinates: Coordinates = defaultCoordinates;
   private listeners: Listeners;
+  private windowListeners: Listeners;
 
   constructor(private props: KeyboardSensorProps) {
     const {
@@ -39,7 +40,9 @@ export class KeyboardSensor implements SensorInstance {
 
     this.props = props;
     this.listeners = new Listeners(getOwnerDocument(target));
+    this.windowListeners = new Listeners(window);
     this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
 
     this.attach();
   }
@@ -47,7 +50,10 @@ export class KeyboardSensor implements SensorInstance {
   private attach() {
     this.handleStart();
 
-    setTimeout(() => this.listeners.add('keydown', this.handleKeyDown));
+    setTimeout(() => {
+      this.listeners.add('keydown', this.handleKeyDown);
+      this.windowListeners.add('resize', this.handleCancel);
+    });
   }
 
   private handleStart() {
@@ -242,6 +248,7 @@ export class KeyboardSensor implements SensorInstance {
 
   private detach() {
     this.listeners.removeAll();
+    this.windowListeners.removeAll();
   }
 
   static activators = [
