@@ -16,6 +16,7 @@ import {
   defaultCoordinates,
   getBoundingClientRect,
   getOwnerDocument,
+  getWindow,
   getScrollPosition,
 } from '../../utilities';
 
@@ -40,7 +41,7 @@ export class KeyboardSensor implements SensorInstance {
 
     this.props = props;
     this.listeners = new Listeners(getOwnerDocument(target));
-    this.windowListeners = new Listeners(window);
+    this.windowListeners = new Listeners(getWindow(target));
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
 

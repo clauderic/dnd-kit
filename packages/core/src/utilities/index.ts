@@ -22,7 +22,7 @@ export {
   isViewRect,
 } from './rect';
 
-export {getOwnerDocument} from './document';
+export {getOwnerDocument, getWindow} from './document';
 
 export {isMouseEvent, isTouchEvent} from './event';
 
