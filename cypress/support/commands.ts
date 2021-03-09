@@ -68,6 +68,7 @@ Cypress.Commands.add(
               initialRect.top + initialRect.height / 2 + y / 2
             ),
           })
+          .wait(60)
           .trigger('mousemove', {
             force: true,
             clientX: Math.floor(initialRect.left + initialRect.width / 2 + x),
