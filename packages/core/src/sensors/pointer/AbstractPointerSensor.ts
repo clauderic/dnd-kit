@@ -2,7 +2,11 @@ import {subtract as getCoordinatesDelta} from '@dnd-kit/utilities';
 
 import {getEventListenerTarget, Listeners} from '../utilities';
 
-import {getEventCoordinates, getOwnerDocument} from '../../utilities';
+import {
+  getEventCoordinates,
+  getOwnerDocument,
+  rAFDebounce,
+} from '../../utilities';
 import {KeyboardCode} from '../keyboard';
 import type {SensorInstance, SensorProps, SensorOptions} from '../types';
 import type {Coordinates} from '../../types';
@@ -57,7 +61,6 @@ export class AbstractPointerSensor implements SensorInstance {
   private timeoutId: NodeJS.Timeout | null = null;
   private listeners: Listeners;
   private ownerDocument: Document;
-  private lastMouseMoveHandler: number | null;
 
   constructor(
     private props: PointerSensorProps,
@@ -71,7 +74,6 @@ export class AbstractPointerSensor implements SensorInstance {
     this.ownerDocument = getOwnerDocument(event.target);
     this.listeners = new Listeners(listenerTarget);
     this.initialCoordinates = getEventCoordinates(event);
-    this.lastMouseMoveHandler = null;
     this.handleStart = this.handleStart.bind(this);
     this.handleMove = this.handleMove.bind(this);
     this.handleEnd = this.handleEnd.bind(this);
@@ -88,19 +90,7 @@ export class AbstractPointerSensor implements SensorInstance {
       },
     } = this;
 
-    this.listeners.add(
-      events.move.name,
-      (event: Event) => {
-        if (this.lastMouseMoveHandler) {
-          cancelAnimationFrame(this.lastMouseMoveHandler);
-        }
-        this.lastMouseMoveHandler = requestAnimationFrame(() => {
-          this.handleMove(event);
-          this.lastMouseMoveHandler = null;
-        });
-      },
-      false
-    );
+    this.listeners.add(events.move.name, rAFDebounce(this.handleMove), false);
     this.listeners.add(events.end.name, this.handleEnd);
 
     this.ownerDocument.addEventListener(EventName.Keydown, this.handleKeydown);

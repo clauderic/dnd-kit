@@ -26,7 +26,13 @@ export {getOwnerDocument} from './document';
 
 export {isMouseEvent, isTouchEvent} from './event';
 
-export {getMinValueIndex, getMaxValueIndex, omit, noop} from './other';
+export {
+  getMinValueIndex,
+  getMaxValueIndex,
+  omit,
+  noop,
+  rAFDebounce,
+} from './other';
 
 export {
   getScrollableAncestors,
