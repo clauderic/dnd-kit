@@ -325,8 +325,8 @@ export const DndContext = memo(function DndContext({
 
       function createHandler(type: Action.DragEnd | Action.DragCancel) {
         return async function handler() {
-          const props = latestProps.current;
           const {overId, scrollAdjustedTransalte} = tracked.current;
+          const props = latestProps.current;
           const activeId = activeRef.current;
 
           if (activeId) {
