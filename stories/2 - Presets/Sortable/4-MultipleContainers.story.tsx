@@ -56,10 +56,8 @@ export const TrashableItems = ({confirm}: {confirm: boolean}) => {
     }
 
     setActiveId(active.id);
-    const confirmed: boolean = await new Promise((resolve) => {
-      resolveRef.current = (value: boolean) => {
-        resolve(value);
-      };
+    const confirmed = await new Promise<boolean>((resolve) => {
+      resolveRef.current = resolve;
     });
     setActiveId(null);
 
