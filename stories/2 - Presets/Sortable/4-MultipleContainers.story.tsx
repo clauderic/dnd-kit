@@ -50,22 +50,20 @@ export const TrashableItems = ({confirm}: {confirm: boolean}) => {
   const [showConfirm, setShowConfirm] = React.useState(false);
   const resolveRef = React.useRef<(value: boolean) => void>();
 
-  function confirmDrop({over}: DragEndEvent) {
-    return (async function confirmDrop() {
-      if (over?.id !== VOID_ID) {
-        return true;
-      }
+  async function confirmDrop({over}: DragEndEvent) {
+    if (over?.id !== VOID_ID) {
+      return true;
+    }
 
-      setShowConfirm(true);
-      const confirmed: boolean = await new Promise((resolve) => {
-        resolveRef.current = (value: boolean) => {
-          resolve(value);
-        };
-      });
-      setShowConfirm(false);
+    setShowConfirm(true);
+    const confirmed: boolean = await new Promise((resolve) => {
+      resolveRef.current = (value: boolean) => {
+        resolve(value);
+      };
+    });
+    setShowConfirm(false);
 
-      return confirmed;
-    })();
+    return confirmed;
   }
 
   return (
