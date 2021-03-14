@@ -125,6 +125,7 @@ interface Props {
   onDragMove?(event: DragMoveEvent): void;
   onDragOver?(event: DragOverEvent): void;
   onDragEnd?(event: DragEndEvent): void;
+  onDragEndConfirm?: (event: DragEndEvent) => Promise<boolean>;
   onDragCancel?(event: DragCancelEvent): void;
 }
 
@@ -323,13 +324,31 @@ export const DndContext = memo(function DndContext({
       setActivatorEvent(event.nativeEvent);
 
       function createHandler(type: Action.DragEnd | Action.DragCancel) {
-        return function handler() {
-          const {overId, scrollAdjustedTransalte} = tracked.current;
+        return async function handler() {
           const props = latestProps.current;
+          const {overId, scrollAdjustedTransalte} = tracked.current;
           const activeId = activeRef.current;
 
           if (activeId) {
             activeRef.current = null;
+          }
+
+          if (props.onDragEndConfirm && activeId) {
+            const confirmed = await props.onDragEndConfirm({
+              active: {
+                id: activeId,
+              },
+              delta: scrollAdjustedTransalte,
+              over: overId
+                ? {
+                    id: overId,
+                  }
+                : null,
+            });
+
+            if (!confirmed) {
+              type = Action.DragCancel;
+            }
           }
 
           dispatch({type});

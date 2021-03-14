@@ -2,6 +2,7 @@ import React from 'react';
 import {
   closestCorners,
   CollisionDetection,
+  DragEndEvent,
   rectIntersection,
 } from '@dnd-kit/core';
 import {rectSortingStrategy} from '@dnd-kit/sortable';
@@ -11,6 +12,8 @@ import {
   defaultContainerStyle,
   VOID_ID,
 } from './MultipleContainers';
+
+import {ConfirmModal} from '../../components';
 
 export default {
   title: 'Presets/Sortable/Multiple Containers',
@@ -43,21 +46,46 @@ const customCollisionDetectionStrategy: CollisionDetection = (rects, rect) => {
   return closestCorners(otherRects, rect);
 };
 
-const confirmDrop = (overId: string) => {
-  if (overId !== VOID_ID) {
-    return true;
+export const TrashableItems = ({confirm}: {confirm: boolean}) => {
+  const [showConfirm, setShowConfirm] = React.useState(false);
+  const resolveRef = React.useRef<(value: boolean) => void>();
+
+  function confirmDrop({over}: DragEndEvent) {
+    return (async function confirmDrop() {
+      if (over?.id !== VOID_ID) {
+        return true;
+      }
+
+      setShowConfirm(true);
+      const confirmed: boolean = await new Promise((resolve) => {
+        resolveRef.current = (value: boolean) => {
+          resolve(value);
+        };
+      });
+      setShowConfirm(false);
+
+      return confirmed;
+    })();
   }
 
-  return window.confirm('Are you sure you want to delete this item?');
+  return (
+    <>
+      <MultipleContainers
+        collisionDetection={customCollisionDetectionStrategy}
+        confirmDrop={confirm ? confirmDrop : undefined}
+        trashable
+      />
+      {showConfirm && (
+        <ConfirmModal
+          onConfirm={() => resolveRef.current?.(true)}
+          onDeny={() => resolveRef.current?.(false)}
+        >
+          Are you sure you want to delete this item?
+        </ConfirmModal>
+      )}
+    </>
+  );
 };
-
-export const TrashableItems = ({confirm}: {confirm: boolean}) => (
-  <MultipleContainers
-    collisionDetection={customCollisionDetectionStrategy}
-    confirmDrop={confirm ? confirmDrop : undefined}
-    trashable
-  />
-);
 
 TrashableItems.argTypes = {
   confirm: {

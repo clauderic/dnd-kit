@@ -12,6 +12,7 @@ import {
   UniqueIdentifier,
   useSensors,
   useSensor,
+  DragEndEvent,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -99,7 +100,7 @@ interface Props {
   modifiers?: Modifiers;
   trashable?: boolean;
   vertical?: boolean;
-  confirmDrop?: (overId: string) => boolean;
+  confirmDrop?: (event: DragEndEvent) => Promise<boolean>;
 }
 
 export const VOID_ID = 'void';
@@ -242,14 +243,6 @@ export function MultipleContainers({
 
         const overId = over?.id || VOID_ID;
 
-        if (confirmDrop) {
-          const confirmed = confirmDrop(overId);
-          if (!confirmed) {
-            onDragCancel();
-            return;
-          }
-        }
-
         if (overId === VOID_ID) {
           setItems((items) => ({
             ...(trashable && over?.id === VOID_ID ? items : clonedItems),
@@ -279,6 +272,7 @@ export function MultipleContainers({
 
         setActiveId(null);
       }}
+      onDragEndConfirm={confirmDrop}
       onDragCancel={onDragCancel}
       modifiers={modifiers}
     >
