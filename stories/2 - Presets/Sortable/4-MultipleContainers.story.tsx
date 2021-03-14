@@ -47,21 +47,21 @@ const customCollisionDetectionStrategy: CollisionDetection = (rects, rect) => {
 };
 
 export const TrashableItems = ({confirm}: {confirm: boolean}) => {
-  const [showConfirm, setShowConfirm] = React.useState(false);
+  const [activeId, setActiveId] = React.useState<string | null>(null);
   const resolveRef = React.useRef<(value: boolean) => void>();
 
-  async function confirmDrop({over}: DragEndEvent) {
+  async function confirmDrop({active, over}: DragEndEvent) {
     if (over?.id !== VOID_ID) {
       return true;
     }
 
-    setShowConfirm(true);
+    setActiveId(active.id);
     const confirmed: boolean = await new Promise((resolve) => {
       resolveRef.current = (value: boolean) => {
         resolve(value);
       };
     });
-    setShowConfirm(false);
+    setActiveId(null);
 
     return confirmed;
   }
@@ -73,12 +73,12 @@ export const TrashableItems = ({confirm}: {confirm: boolean}) => {
         confirmDrop={confirm ? confirmDrop : undefined}
         trashable
       />
-      {showConfirm && (
+      {activeId && (
         <ConfirmModal
           onConfirm={() => resolveRef.current?.(true)}
           onDeny={() => resolveRef.current?.(false)}
         >
-          Are you sure you want to delete this item?
+          Are you sure you want to delete "{activeId}"?
         </ConfirmModal>
       )}
     </>
