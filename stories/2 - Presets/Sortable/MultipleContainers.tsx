@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {
+  CanDropHandler,
   closestCorners,
   CollisionDetection,
   DndContext,
@@ -12,7 +13,6 @@ import {
   UniqueIdentifier,
   useSensors,
   useSensor,
-  DragEndEvent,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -100,7 +100,7 @@ interface Props {
   modifiers?: Modifiers;
   trashable?: boolean;
   vertical?: boolean;
-  confirmDrop?: (event: DragEndEvent) => Promise<boolean>;
+  canDrop?: CanDropHandler;
 }
 
 export const VOID_ID = 'void';
@@ -120,7 +120,7 @@ export function MultipleContainers({
   strategy = verticalListSortingStrategy,
   trashable = false,
   vertical = false,
-  confirmDrop,
+  canDrop,
 }: Props) {
   const [items, setItems] = useState<Items>(
     () =>
@@ -272,7 +272,7 @@ export function MultipleContainers({
 
         setActiveId(null);
       }}
-      onDragEndConfirm={confirmDrop}
+      canDrop={canDrop}
       onDragCancel={onDragCancel}
       modifiers={modifiers}
     >

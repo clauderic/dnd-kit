@@ -106,6 +106,10 @@ export interface DragEndEvent {
 }
 
 export type DragCancelEvent = DragEndEvent;
+export type CanDropArguments = DragEndEvent;
+export type CanDropHandler = (
+  args: CanDropArguments
+) => boolean | Promise<boolean>;
 
 interface DndEvent extends Event {
   dndKit?: {
@@ -125,8 +129,8 @@ interface Props {
   onDragMove?(event: DragMoveEvent): void;
   onDragOver?(event: DragOverEvent): void;
   onDragEnd?(event: DragEndEvent): void;
-  onDragEndConfirm?: (event: DragEndEvent) => Promise<boolean>;
   onDragCancel?(event: DragCancelEvent): void;
+  canDrop?: CanDropHandler;
 }
 
 const defaultSensors = [
@@ -325,28 +329,33 @@ export const DndContext = memo(function DndContext({
 
       function createHandler(type: Action.DragEnd | Action.DragCancel) {
         return async function handler() {
+          const activeId = activeRef.current;
+          if (!activeId) {
+            return;
+          }
+          activeRef.current = null;
+
           const {overId, scrollAdjustedTransalte} = tracked.current;
           const props = latestProps.current;
-          const activeId = activeRef.current;
+          const handlerArgs: DragEndEvent = {
+            active: {
+              id: activeId,
+            },
+            delta: scrollAdjustedTransalte,
+            over: overId
+              ? {
+                  id: overId,
+                }
+              : null,
+          };
 
-          if (activeId) {
-            activeRef.current = null;
-          }
+          if (props.canDrop && type === Action.DragEnd) {
+            let canDrop = props.canDrop(handlerArgs);
+            if (canDrop instanceof Promise) {
+              canDrop = await canDrop;
+            }
 
-          if (props.onDragEndConfirm && activeId) {
-            const confirmed = await props.onDragEndConfirm({
-              active: {
-                id: activeId,
-              },
-              delta: scrollAdjustedTransalte,
-              over: overId
-                ? {
-                    id: overId,
-                  }
-                : null,
-            });
-
-            if (!confirmed) {
+            if (!canDrop) {
               type = Action.DragCancel;
             }
           }
@@ -359,17 +368,7 @@ export const DndContext = memo(function DndContext({
             type === Action.DragEnd ? props.onDragEnd : props.onDragCancel;
 
           if (activeId) {
-            handler?.({
-              active: {
-                id: activeId,
-              },
-              delta: scrollAdjustedTransalte,
-              over: overId
-                ? {
-                    id: overId,
-                  }
-                : null,
-            });
+            handler?.(handlerArgs);
           }
         };
       }

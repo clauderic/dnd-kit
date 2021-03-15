@@ -4,6 +4,7 @@ export {
   ScreenReaderInstructions,
 } from './Accessibility';
 export {
+  CanDropHandler,
   DndContext,
   DragEndEvent,
   DragOverEvent,

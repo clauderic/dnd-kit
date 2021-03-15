@@ -1,8 +1,8 @@
 import React from 'react';
 import {
+  CanDropHandler,
   closestCorners,
   CollisionDetection,
-  DragEndEvent,
   rectIntersection,
 } from '@dnd-kit/core';
 import {rectSortingStrategy} from '@dnd-kit/sortable';
@@ -46,11 +46,11 @@ const customCollisionDetectionStrategy: CollisionDetection = (rects, rect) => {
   return closestCorners(otherRects, rect);
 };
 
-export const TrashableItems = ({confirm}: {confirm: boolean}) => {
+export const TrashableItems = ({confirmDrop}: {confirmDrop: boolean}) => {
   const [activeId, setActiveId] = React.useState<string | null>(null);
   const resolveRef = React.useRef<(value: boolean) => void>();
 
-  async function confirmDrop({active, over}: DragEndEvent) {
+  const canDropHandler: CanDropHandler = async ({active, over}) => {
     if (over?.id !== VOID_ID) {
       return true;
     }
@@ -62,13 +62,13 @@ export const TrashableItems = ({confirm}: {confirm: boolean}) => {
     setActiveId(null);
 
     return confirmed;
-  }
+  };
 
   return (
     <>
       <MultipleContainers
         collisionDetection={customCollisionDetectionStrategy}
-        confirmDrop={confirm ? confirmDrop : undefined}
+        canDrop={confirmDrop ? canDropHandler : undefined}
         trashable
       />
       {activeId && (
@@ -84,7 +84,7 @@ export const TrashableItems = ({confirm}: {confirm: boolean}) => {
 };
 
 TrashableItems.argTypes = {
-  confirm: {
+  confirmDrop: {
     name: 'Request user confirmation before deletion',
     defaultValue: false,
     control: {type: 'boolean'},

@@ -1,5 +1,6 @@
 export {
   ActiveDraggableContext,
+  CanDropHandler,
   DndContext,
   DragStartEvent,
   DragMoveEvent,
