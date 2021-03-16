@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {
-  CancelDrop,
   closestCorners,
   CollisionDetection,
   DndContext,
@@ -79,7 +78,6 @@ type Items = Record<string, string[]>;
 
 interface Props {
   adjustScale?: boolean;
-  cancelDrop?: CancelDrop;
   collisionDetection?: CollisionDetection;
   columns?: number;
   getItemStyles?(args: {
@@ -101,6 +99,7 @@ interface Props {
   modifiers?: Modifiers;
   trashable?: boolean;
   vertical?: boolean;
+  confirmDrop?: (overId: string) => boolean;
 }
 
 export const VOID_ID = 'void';
@@ -108,7 +107,6 @@ export const VOID_ID = 'void';
 export function MultipleContainers({
   adjustScale = false,
   itemCount = 3,
-  cancelDrop,
   collisionDetection = closestCorners,
   columns,
   handle = false,
@@ -121,6 +119,7 @@ export function MultipleContainers({
   strategy = verticalListSortingStrategy,
   trashable = false,
   vertical = false,
+  confirmDrop,
 }: Props) {
   const [items, setItems] = useState<Items>(
     () =>
@@ -243,6 +242,14 @@ export function MultipleContainers({
 
         const overId = over?.id || VOID_ID;
 
+        if (confirmDrop) {
+          const confirmed = confirmDrop(overId);
+          if (!confirmed) {
+            onDragCancel();
+            return;
+          }
+        }
+
         if (overId === VOID_ID) {
           setItems((items) => ({
             ...(trashable && over?.id === VOID_ID ? items : clonedItems),
@@ -272,7 +279,6 @@ export function MultipleContainers({
 
         setActiveId(null);
       }}
-      cancelDrop={cancelDrop}
       onDragCancel={onDragCancel}
       modifiers={modifiers}
     >

@@ -105,13 +105,7 @@ export interface DragEndEvent {
   } | null;
 }
 
-export interface DragCancelEvent extends DragEndEvent {}
-
-export interface CancelDropArguments extends DragEndEvent {}
-
-export type CancelDrop = (
-  args: CancelDropArguments
-) => boolean | Promise<boolean>;
+export type DragCancelEvent = DragEndEvent;
 
 interface DndEvent extends Event {
   dndKit?: {
@@ -122,7 +116,6 @@ interface DndEvent extends Event {
 interface Props {
   autoScroll?: boolean;
   announcements?: Announcements;
-  cancelDrop?: CancelDrop;
   children?: React.ReactNode;
   collisionDetection?: CollisionDetection;
   screenReaderInstructions?: ScreenReaderInstructions;
@@ -330,46 +323,34 @@ export const DndContext = memo(function DndContext({
       setActivatorEvent(event.nativeEvent);
 
       function createHandler(type: Action.DragEnd | Action.DragCancel) {
-        return async function handler() {
+        return function handler() {
+          const {overId, scrollAdjustedTransalte} = tracked.current;
+          const props = latestProps.current;
           const activeId = activeRef.current;
 
-          if (!activeId) {
-            return;
-          }
-
-          const {overId, scrollAdjustedTransalte} = tracked.current;
-          const {cancelDrop} = latestProps.current;
-          const handlerArgs: DragEndEvent = {
-            active: {
-              id: activeId,
-            },
-            delta: scrollAdjustedTransalte,
-            over: overId
-              ? {
-                  id: overId,
-                }
-              : null,
-          };
-
-          activeRef.current = null;
-
-          if (type === Action.DragEnd && typeof cancelDrop === 'function') {
-            const shouldCancel = await Promise.resolve(cancelDrop(handlerArgs));
-
-            if (shouldCancel) {
-              type = Action.DragCancel;
-            }
+          if (activeId) {
+            activeRef.current = null;
           }
 
           dispatch({type});
           setActiveSensor(null);
           setActivatorEvent(null);
 
-          const {onDragCancel, onDragEnd} = latestProps.current;
-          const handler = type === Action.DragEnd ? onDragEnd : onDragCancel;
+          const handler =
+            type === Action.DragEnd ? props.onDragEnd : props.onDragCancel;
 
           if (activeId) {
-            handler?.(handlerArgs);
+            handler?.({
+              active: {
+                id: activeId,
+              },
+              delta: scrollAdjustedTransalte,
+              over: overId
+                ? {
+                    id: overId,
+                  }
+                : null,
+            });
           }
         };
       }
