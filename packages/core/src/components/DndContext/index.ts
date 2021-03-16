@@ -1,5 +1,6 @@
 export {
   ActiveDraggableContext,
+  CancelDrop,
   DndContext,
   DragStartEvent,
   DragMoveEvent,
