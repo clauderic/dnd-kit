@@ -1,6 +1,6 @@
 export {
   Announcements,
-  CanDropHandler,
+  CancelDrop,
   DndContext,
   DragOverlay,
   DragEndEvent,

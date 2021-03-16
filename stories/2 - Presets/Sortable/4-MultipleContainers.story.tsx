@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  CanDropHandler,
+  CancelDrop,
   closestCorners,
   CollisionDetection,
   rectIntersection,
@@ -50,25 +50,27 @@ export const TrashableItems = ({confirmDrop}: {confirmDrop: boolean}) => {
   const [activeId, setActiveId] = React.useState<string | null>(null);
   const resolveRef = React.useRef<(value: boolean) => void>();
 
-  const canDropHandler: CanDropHandler = async ({active, over}) => {
+  const cancelDrop: CancelDrop = async ({active, over}) => {
     if (over?.id !== VOID_ID) {
       return true;
     }
 
     setActiveId(active.id);
+
     const confirmed = await new Promise<boolean>((resolve) => {
       resolveRef.current = resolve;
     });
+
     setActiveId(null);
 
-    return confirmed;
+    return confirmed === false;
   };
 
   return (
     <>
       <MultipleContainers
         collisionDetection={customCollisionDetectionStrategy}
-        canDrop={confirmDrop ? canDropHandler : undefined}
+        cancelDrop={confirmDrop ? cancelDrop : undefined}
         trashable
       />
       {activeId && (

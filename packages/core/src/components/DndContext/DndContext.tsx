@@ -105,10 +105,12 @@ export interface DragEndEvent {
   } | null;
 }
 
-export type DragCancelEvent = DragEndEvent;
-export type CanDropArguments = DragEndEvent;
-export type CanDropHandler = (
-  args: CanDropArguments
+export interface DragCancelEvent extends DragEndEvent {}
+
+export interface CancelDropArguments extends DragEndEvent {}
+
+export type CancelDrop = (
+  args: CancelDropArguments
 ) => boolean | Promise<boolean>;
 
 interface DndEvent extends Event {
@@ -120,6 +122,7 @@ interface DndEvent extends Event {
 interface Props {
   autoScroll?: boolean;
   announcements?: Announcements;
+  cancelDrop?: CancelDrop;
   children?: React.ReactNode;
   collisionDetection?: CollisionDetection;
   screenReaderInstructions?: ScreenReaderInstructions;
@@ -130,7 +133,6 @@ interface Props {
   onDragOver?(event: DragOverEvent): void;
   onDragEnd?(event: DragEndEvent): void;
   onDragCancel?(event: DragCancelEvent): void;
-  canDrop?: CanDropHandler;
 }
 
 const defaultSensors = [
@@ -330,13 +332,13 @@ export const DndContext = memo(function DndContext({
       function createHandler(type: Action.DragEnd | Action.DragCancel) {
         return async function handler() {
           const activeId = activeRef.current;
+
           if (!activeId) {
             return;
           }
-          activeRef.current = null;
 
           const {overId, scrollAdjustedTransalte} = tracked.current;
-          const props = latestProps.current;
+          const {cancelDrop} = latestProps.current;
           const handlerArgs: DragEndEvent = {
             active: {
               id: activeId,
@@ -349,13 +351,12 @@ export const DndContext = memo(function DndContext({
               : null,
           };
 
-          if (props.canDrop && type === Action.DragEnd) {
-            let canDrop = props.canDrop(handlerArgs);
-            if (canDrop instanceof Promise) {
-              canDrop = await canDrop;
-            }
+          activeRef.current = null;
 
-            if (!canDrop) {
+          if (type === Action.DragEnd && typeof cancelDrop === 'function') {
+            const shouldCancel = await Promise.resolve(cancelDrop(handlerArgs));
+
+            if (shouldCancel) {
               type = Action.DragCancel;
             }
           }
@@ -364,8 +365,8 @@ export const DndContext = memo(function DndContext({
           setActiveSensor(null);
           setActivatorEvent(null);
 
-          const handler =
-            type === Action.DragEnd ? props.onDragEnd : props.onDragCancel;
+          const {onDragCancel, onDragEnd} = latestProps.current;
+          const handler = type === Action.DragEnd ? onDragEnd : onDragCancel;
 
           if (activeId) {
             handler?.(handlerArgs);
