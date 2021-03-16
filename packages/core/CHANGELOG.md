@@ -1,5 +1,13 @@
 # @dnd-kit/core
 
+## 1.1.0
+
+### Minor Changes
+
+- [`ac674e8`](https://github.com/clauderic/dnd-kit/commit/ac674e8e9f9e041af96034675a075cb9aa357927) [#135](https://github.com/clauderic/dnd-kit/pull/135) Thanks [@clauderic](https://github.com/clauderic)! - Added `dragCancel` prop to DndContext. The `dragCancel` prop can be used to cancel a drag operation on drop. The prop accepts a function that returns a boolean, or a promise returning a boolean once resolved. Return `false` to cancel the drop.
+
+- [`208f68e`](https://github.com/clauderic/dnd-kit/commit/208f68e251c1b81a624f810f40e7c8d4f36f102d) [#111](https://github.com/clauderic/dnd-kit/pull/111) Thanks [@ranbena](https://github.com/ranbena)! - Keyboard sensor now cancels dragging on window resize
+
 ## 1.0.2
 
 ### Patch Changes
