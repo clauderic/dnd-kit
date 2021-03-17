@@ -40,11 +40,12 @@ function isDelayConstraint(
   return Boolean(constraint && 'delay' in constraint);
 }
 
-export interface PointerSensorOptions extends SensorOptions {
+export interface AbstractPointerSensorOptions extends SensorOptions {
   activationConstraint?: PointerActivationConstraint;
+  onActivation?({event}: {event: Event}): void;
 }
 
-export type PointerSensorProps = SensorProps<PointerSensorOptions>;
+export type AbstractPointerSensorProps = SensorProps<AbstractPointerSensorOptions>;
 
 enum EventName {
   Keydown = 'keydown',
@@ -59,7 +60,7 @@ export class AbstractPointerSensor implements SensorInstance {
   private ownerDocument: Document;
 
   constructor(
-    private props: PointerSensorProps,
+    private props: AbstractPointerSensorProps,
     private events: PointerEventHandlers,
     listenerTarget = getEventListenerTarget(props.event.target)
   ) {

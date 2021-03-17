@@ -2,8 +2,12 @@ export {
   AbstractPointerSensor,
   PointerActivationConstraint,
   PointerEventHandlers,
-  PointerSensorOptions,
-  PointerSensorProps,
+  AbstractPointerSensorOptions,
+  AbstractPointerSensorProps,
 } from './AbstractPointerSensor';
 
-export {PointerSensor} from './PointerSensor';
+export {
+  PointerSensor,
+  PointerSensorOptions,
+  PointerSensorProps,
+} from './PointerSensor';

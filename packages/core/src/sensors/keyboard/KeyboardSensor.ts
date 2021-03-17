@@ -24,6 +24,7 @@ export interface KeyboardSensorOptions extends SensorOptions {
   keyboardCodes?: KeyboardCodes;
   coordinateGetter?: KeyboardCoordinateGetter;
   scrollBehavior?: ScrollBehavior;
+  onActivation?({event}: {event: KeyboardEvent}): void;
 }
 
 export type KeyboardSensorProps = SensorProps<KeyboardSensorOptions>;
@@ -257,12 +258,17 @@ export class KeyboardSensor implements SensorInstance {
       eventName: 'onKeyDown' as const,
       handler: (
         event: React.KeyboardEvent,
-        {keyboardCodes = defaultKeyboardCodes}: KeyboardSensorOptions
+        {
+          keyboardCodes = defaultKeyboardCodes,
+          onActivation,
+        }: KeyboardSensorOptions
       ) => {
         const {code} = event.nativeEvent;
 
         if (keyboardCodes.start.includes(code)) {
           event.preventDefault();
+
+          onActivation?.({event: event.nativeEvent});
 
           return true;
         }

@@ -1,1 +1,1 @@
-export {MouseSensor, MouseSensorOptions} from './MouseSensor';
+export {MouseSensor, MouseSensorOptions, MouseSensorProps} from './MouseSensor';
