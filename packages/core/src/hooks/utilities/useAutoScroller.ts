@@ -68,18 +68,22 @@ export function useAutoScroller({
         pointerCoordinates
       );
 
-      scrollSpeed.current = speed;
-      scrollDirection.current = direction;
-
-      clearAutoScrollInterval();
-
       if (speed.x > 0 || speed.y > 0) {
+        clearAutoScrollInterval();
+
         scrollContainerRef.current = scrollContainer;
         setAutoScrollInterval(autoScroll, interval);
 
-        break;
+        scrollSpeed.current = speed;
+        scrollDirection.current = direction;
+
+        return;
       }
     }
+
+    scrollSpeed.current = {x: 0, y: 0};
+    scrollDirection.current = {x: 0, y: 0};
+    clearAutoScrollInterval();
   }, [
     autoScroll,
     clearAutoScrollInterval,
