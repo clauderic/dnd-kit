@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useRef} from 'react';
+import {useCallback, useEffect, useMemo, useRef} from 'react';
 import {useInterval} from '@dnd-kit/utilities';
 
 import {getScrollDirectionAndSpeed, defaultCoordinates} from '../../utilities';
@@ -43,6 +43,10 @@ export function useAutoScroller({
 
     scrollContainer.scrollBy(scrollLeft, scrollTop);
   }, []);
+  const reversedScrollAncestors = useMemo(
+    () => [...scrollableAncestors].reverse(),
+    [scrollableAncestors]
+  );
 
   useEffect(() => {
     if (disabled || !scrollableAncestors.length || !pointerCoordinates) {
@@ -50,7 +54,7 @@ export function useAutoScroller({
       return;
     }
 
-    for (const scrollContainer of scrollableAncestors) {
+    for (const scrollContainer of reversedScrollAncestors) {
       const index = scrollableAncestors.indexOf(scrollContainer);
       const scrolllContainerRect = scrollableAncestorRects[index];
 
@@ -84,6 +88,7 @@ export function useAutoScroller({
     pointerCoordinates,
     setAutoScrollInterval,
     scrollableAncestors,
+    reversedScrollAncestors,
     scrollableAncestorRects,
   ]);
 }
