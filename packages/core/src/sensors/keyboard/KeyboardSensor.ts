@@ -110,9 +110,8 @@ export class KeyboardSensor implements SensorInstance {
           y: 0,
         };
         const {scrollableAncestors} = context.current;
-        const scrollContainer = scrollableAncestors[0];
 
-        if (scrollContainer) {
+        for (const scrollContainer of scrollableAncestors) {
           const direction = event.code;
           const coordinatesDelta = getCoordinatesDelta(
             newCoordinates,
@@ -187,6 +186,7 @@ export class KeyboardSensor implements SensorInstance {
               left: -scrollDelta.x,
               behavior: scrollBehavior,
             });
+            break;
           } else if (canScrollY && clampedCoordinates.y !== newCoordinates.y) {
             const canFullyScrollToNewCoordinates =
               (direction === KeyboardCode.Down &&
@@ -214,6 +214,8 @@ export class KeyboardSensor implements SensorInstance {
               top: -scrollDelta.y,
               behavior: scrollBehavior,
             });
+
+            break;
           }
         }
 
