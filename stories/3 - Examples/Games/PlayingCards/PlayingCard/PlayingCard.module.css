@@ -30,7 +30,7 @@ $box-shadow: 1px 1px 0 1px #f9f9fb, -1px 0 28px 0 rgba(34, 33, 81, 0.01),
     --translate-x: 5px;
   }
 
-  &:focus {
+  &:focus-visible {
     --translate-x: 5px;
     outline: none;
     box-shadow: 0 0 0 2px #4c9ffe, $box-shadow;

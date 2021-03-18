@@ -63,6 +63,7 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
           aria-label="Draggable"
           data-cypress="draggable-item"
           {...(handle ? {} : listeners)}
+          tabIndex={handle ? -1 : undefined}
         >
           {axis === Axis.Vertical
             ? draggableVertical

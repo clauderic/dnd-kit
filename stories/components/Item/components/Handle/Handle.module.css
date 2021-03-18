@@ -3,13 +3,20 @@ $focused-outline-color: #4c9ffe;
 .Handle {
   display: flex;
   width: 12px;
-  padding: 5px;
-  padding-left: 15px;
+  padding: 15px 10px;
   align-items: center;
+  justify-content: center;
   flex: 0 0 auto;
+  margin: -15px -10px;
   margin-left: auto;
   touch-action: none;
   cursor: var(--cursor, grab);
+  border-radius: 5px;
+  outline: none;
+
+  &:hover {
+    background-color: var(--handle-background, rgba(0, 0, 0, 0.05));
+  }
 
   svg {
     flex: 0 0 auto;
@@ -20,9 +27,9 @@ $focused-outline-color: #4c9ffe;
     fill: #919eab;
   }
 
-  &:focus {
+  &:focus-visible {
     outline: none;
-    border-radius: 0.5px;
-    box-shadow: 0 0 0 2px #fff, 0 0px 3px 4px $focused-outline-color;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0),
+      0 0px 3px 2px $focused-outline-color;
   }
 }
