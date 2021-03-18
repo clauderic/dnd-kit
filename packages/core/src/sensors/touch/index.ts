@@ -1,1 +1,1 @@
-export {TouchSensor, TouchSensorOptions} from './TouchSensor';
+export {TouchSensor, TouchSensorOptions, TouchSensorProps} from './TouchSensor';

@@ -3,6 +3,9 @@ export {useSensor} from './useSensor';
 export {useSensors} from './useSensors';
 
 export {
+  AbstractPointerSensor,
+  AbstractPointerSensorOptions,
+  AbstractPointerSensorProps,
   PointerSensor,
   PointerActivationConstraint,
   PointerEventHandlers,
@@ -10,9 +13,9 @@ export {
   PointerSensorProps,
 } from './pointer';
 
-export {MouseSensor, MouseSensorOptions} from './mouse';
+export {MouseSensor, MouseSensorOptions, MouseSensorProps} from './mouse';
 
-export {TouchSensor, TouchSensorOptions} from './touch';
+export {TouchSensor, TouchSensorOptions, TouchSensorProps} from './touch';
 
 export {
   KeyboardCoordinateGetter,

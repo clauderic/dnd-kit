@@ -1,9 +1,9 @@
 import {getOwnerDocument} from '../../utilities';
+import type {SensorProps} from '../types';
 import {
   AbstractPointerSensor,
   PointerEventHandlers,
-  PointerSensorOptions,
-  PointerSensorProps,
+  AbstractPointerSensorOptions,
 } from '../pointer';
 
 const events: PointerEventHandlers = {
@@ -15,22 +15,27 @@ enum MouseButton {
   RightClick = 2,
 }
 
-export interface MouseSensorOptions extends PointerSensorOptions {}
+export interface MouseSensorOptions extends AbstractPointerSensorOptions {}
+
+export type MouseSensorProps = SensorProps<MouseSensorOptions>;
 
 export class MouseSensor extends AbstractPointerSensor {
-  constructor(props: PointerSensorProps) {
+  constructor(props: MouseSensorProps) {
     super(props, events, getOwnerDocument(props.event.target));
   }
 
   static activators = [
     {
       eventName: 'onMouseDown' as const,
-      handler: ({nativeEvent}: React.MouseEvent) => {
-        if (nativeEvent.button === MouseButton.RightClick) {
+      handler: (
+        {nativeEvent: event}: React.MouseEvent,
+        {onActivation}: MouseSensorOptions
+      ) => {
+        if (event.button === MouseButton.RightClick) {
           return false;
         }
 
-        nativeEvent.preventDefault();
+        onActivation?.({event});
 
         return true;
       },

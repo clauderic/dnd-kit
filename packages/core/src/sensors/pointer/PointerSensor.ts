@@ -1,8 +1,9 @@
 import {getOwnerDocument} from '../../utilities';
 
+import type {SensorProps} from '../types';
 import {
   AbstractPointerSensor,
-  PointerSensorProps,
+  AbstractPointerSensorOptions,
   PointerEventHandlers,
 } from './AbstractPointerSensor';
 
@@ -10,6 +11,10 @@ const events: PointerEventHandlers = {
   move: {name: 'pointermove'},
   end: {name: 'pointerup'},
 };
+
+export interface PointerSensorOptions extends AbstractPointerSensorOptions {}
+
+export type PointerSensorProps = SensorProps<PointerSensorOptions>;
 
 export class PointerSensor extends AbstractPointerSensor {
   constructor(props: PointerSensorProps) {
@@ -24,12 +29,15 @@ export class PointerSensor extends AbstractPointerSensor {
   static activators = [
     {
       eventName: 'onPointerDown' as const,
-      handler: ({nativeEvent}: React.PointerEvent) => {
-        if (!nativeEvent.isPrimary || nativeEvent.button !== 0) {
+      handler: (
+        {nativeEvent: event}: React.PointerEvent,
+        {onActivation}: PointerSensorOptions
+      ) => {
+        if (!event.isPrimary || event.button !== 0) {
           return false;
         }
 
-        nativeEvent.preventDefault();
+        onActivation?.({event});
 
         return true;
       },
