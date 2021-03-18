@@ -52,6 +52,7 @@ import {
   defaultCoordinates,
   getAdjustedRect,
   getRectDelta,
+  getEventCoordinates,
   rectIntersection,
 } from '../../utilities';
 import {applyModifiers, Modifiers} from '../../modifiers';
@@ -183,6 +184,9 @@ export const DndContext = memo(function DndContext({
     getDraggableNode(active, draggableNodes),
     active
   );
+  const activationCoordinates = activatorEvent
+    ? getEventCoordinates(activatorEvent)
+    : null;
   const activeNodeRect = useViewRect(activeNode);
   const activeNodeClientRect = useClientRect(activeNode);
   const initialActiveNodeRectRef = useRef<ViewRect | null>(null);
@@ -237,6 +241,10 @@ export const DndContext = memo(function DndContext({
     scrollableAncestorRects,
     windowRect,
   });
+
+  const pointerCoordinates = activationCoordinates
+    ? add(activationCoordinates, translate)
+    : null;
 
   const scrolllAdjustment = useScrollOffsets(scrollableAncestors);
 
@@ -534,7 +542,7 @@ export const DndContext = memo(function DndContext({
   ]);
 
   useAutoScroller({
-    draggingRect: translatedRect,
+    pointerCoordinates,
     disabled: !autoScroll || !activeSensor?.autoScrollEnabled,
     scrollableAncestors,
     scrollableAncestorRects,

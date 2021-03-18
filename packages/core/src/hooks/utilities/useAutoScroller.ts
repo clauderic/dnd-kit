@@ -6,7 +6,7 @@ import type {Coordinates, Direction, ViewRect} from '../../types';
 
 interface Arguments {
   disabled: boolean;
-  draggingRect: ViewRect | null;
+  pointerCoordinates: Coordinates | null;
   interval?: number;
   scrollableAncestors: Element[];
   scrollableAncestorRects: ViewRect[];
@@ -19,8 +19,8 @@ interface ScrollDirection {
 
 export function useAutoScroller({
   disabled,
-  draggingRect,
   interval = 5,
+  pointerCoordinates,
   scrollableAncestors,
   scrollableAncestorRects,
 }: Arguments) {
@@ -45,7 +45,7 @@ export function useAutoScroller({
   }, []);
 
   useEffect(() => {
-    if (disabled || !scrollableAncestors.length || !draggingRect) {
+    if (disabled || !scrollableAncestors.length || !pointerCoordinates) {
       clearAutoScrollInterval();
       return;
     }
@@ -61,7 +61,7 @@ export function useAutoScroller({
       const {direction, speed} = getScrollDirectionAndSpeed(
         scrollContainer,
         scrolllContainerRect,
-        draggingRect
+        pointerCoordinates
       );
 
       scrollSpeed.current = speed;
@@ -78,12 +78,12 @@ export function useAutoScroller({
     }
   }, [
     autoScroll,
-    draggingRect,
     clearAutoScrollInterval,
     disabled,
+    interval,
+    pointerCoordinates,
     setAutoScrollInterval,
     scrollableAncestors,
     scrollableAncestorRects,
-    interval,
   ]);
 }
