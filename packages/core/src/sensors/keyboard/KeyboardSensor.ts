@@ -18,6 +18,7 @@ import {
   getOwnerDocument,
   getWindow,
   getScrollPosition,
+  getScrollElementRect,
 } from '../../utilities';
 
 export interface KeyboardSensorOptions extends SensorOptions {
@@ -122,10 +123,10 @@ export class KeyboardSensor implements SensorInstance {
             isRight,
             isLeft,
             isBottom,
-            scrollElementRect,
             maxScroll,
             minScroll,
           } = getScrollPosition(scrollContainer);
+          const scrollElementRect = getScrollElementRect(scrollContainer);
 
           const clampedCoordinates = {
             x: Math.min(
