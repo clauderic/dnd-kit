@@ -1,0 +1,52 @@
+.Page {
+  position: relative;
+  width: 150px;
+  height: 200px;
+  list-style: none;
+  background-color: rgb(250, 255, 255);
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgba(63, 63, 68, 0.05),
+    0 1px 3px 0 rgba(34, 33, 81, 0.15);
+  outline: none;
+
+  &:focus-visible:not(.active) {
+    box-shadow: 0 0 0 2px #4c9ffe;
+  }
+
+  &.active {
+    background-color: rgba(230, 230, 230);
+
+    .PageNumber {
+      opacity: 0.5;
+    }
+  }
+
+  &.clone {
+    transform: translate3d(10px, 10px, 0) scale(1.025);
+    box-shadow: 0 0 0 1px rgba(63, 63, 68, 0.05),
+      0 1px 6px 0 rgba(34, 33, 81, 0.3);
+  }
+
+  &.over {
+    &:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: -9px;
+      width: 2px;
+      background-color: #4c9ffe;
+    }
+  }
+}
+
+.PageNumber {
+  position: absolute;
+  display: block;
+  text-align: center;
+  left: 0;
+  right: 0;
+  bottom: -30px;
+  color: rgba(0, 0, 0, 0.5);
+  user-select: none;
+}

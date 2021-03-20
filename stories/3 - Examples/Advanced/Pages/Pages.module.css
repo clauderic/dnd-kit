@@ -1,0 +1,5 @@
+.Pages {
+  display: grid;
+  grid-auto-flow: column;
+  grid-gap: 1rem;
+}
