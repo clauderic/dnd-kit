@@ -1,6 +1,7 @@
 export {useAutoScroller} from './useAutoScroller';
 export {useCachedNode} from './useCachedNode';
 export {useCombineActivators} from './useCombineActivators';
+export {useFindElementFromPoint} from './useFindElementFromPoint';
 export {useLayoutRectMap} from './useLayoutRectMap';
 export {useScrollOffsets} from './useScrollOffsets';
 export {useScrollableAncestors} from './useScrollableAncestors';

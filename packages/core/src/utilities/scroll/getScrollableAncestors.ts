@@ -25,5 +25,5 @@ export function getScrollableAncestors(element: Node | null): Element[] {
     return findScrollableAncestors(node.parentNode);
   }
 
-  return element ? findScrollableAncestors(element.parentNode) : scrollParents;
+  return element ? findScrollableAncestors(element) : scrollParents;
 }

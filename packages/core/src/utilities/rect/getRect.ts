@@ -78,7 +78,7 @@ export function getBoundingClientRect(
 
 export function getViewRect(element: HTMLElement): ViewRect {
   const {width, height, offsetTop, offsetLeft} = getElementLayout(element);
-  const scrollableAncestors = getScrollableAncestors(element);
+  const scrollableAncestors = getScrollableAncestors(element.parentNode);
   const scrollOffsets = getScrollOffsets(scrollableAncestors);
 
   const top = offsetTop - scrollOffsets.y;
