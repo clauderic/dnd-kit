@@ -2,6 +2,7 @@
   position: relative;
   width: 150px;
   height: 200px;
+  margin-bottom: 40px;
   list-style: none;
   background-color: rgb(250, 255, 255);
   border-radius: 3px;
@@ -33,31 +34,67 @@
       &:after {
         content: '';
         position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 2px;
         background-color: #4c9ffe;
       }
     }
   }
 
-  &.insertBefore {
-    &:after {
-      left: -9px;
+  &:not(.vertical) {
+    &.insertBefore,
+    &.insertAfter {
+      &:after {
+        top: 0;
+        bottom: 0;
+        width: 2px;
+      }
+    }
+    &.insertBefore {
+      &:after {
+        left: -9px;
+      }
+
+      &.clone {
+        transform: translate3d(-85px, 10px, 0) scale(1.025);
+      }
     }
 
-    &.clone {
-      transform: translate3d(-85px, 10px, 0) scale(1.025);
+    &.insertAfter {
+      &:after {
+        right: -9px;
+      }
+
+      &.clone {
+        transform: translate3d(85px, 10px, 0) scale(1.025);
+      }
     }
   }
+  &.vertical {
+    &.insertBefore,
+    &.insertAfter {
+      &:after {
+        left: 0;
+        right: 0;
+        height: 2px;
+      }
+    }
+    &.insertBefore {
+      &:after {
+        top: -15px;
+      }
 
-  &.insertAfter {
-    &:after {
-      right: -9px;
+      &.clone {
+        transform: translate3d(100px, -125px, 0) scale(1.025);
+      }
     }
 
-    &.clone {
-      transform: translate3d(85px, 10px, 0) scale(1.025);
+    &.insertAfter {
+      &:after {
+        bottom: -40px;
+      }
+
+      &.clone {
+        transform: translate3d(100px, 125px, 0) scale(1.025);
+      }
     }
   }
 }

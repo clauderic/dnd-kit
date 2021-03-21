@@ -1,5 +1,13 @@
 .Pages {
   display: grid;
-  grid-auto-flow: column;
-  grid-gap: 1rem;
+  gap: 1rem;
+
+  &.horizontal {
+    grid-auto-flow: column;
+  }
+
+  &.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 150px);
+  }
 }

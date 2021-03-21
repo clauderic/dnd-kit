@@ -16,17 +16,22 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
+import classNames from 'classnames';
 
 import {createRange} from '../../../utilities';
 
-import {Page, Position} from './Page';
+import {Page, Layout, Position} from './Page';
 import type {Props as PageProps} from './Page';
 import styles from './Pages.module.css';
 
-export function Pages() {
+interface Props {
+  layout: Layout;
+}
+
+export function Pages({layout}: Props) {
   const [activeId, setActiveId] = useState(null);
   const [items, setItems] = useState(() =>
-    createRange<string>(100, (index) => `${index + 1}`)
+    createRange<string>(50, (index) => `${index + 1}`)
   );
   const activeIndex = items.indexOf(activeId);
   const sensors = useSensors(
@@ -43,14 +48,21 @@ export function Pages() {
       collisionDetection={closestCenter}
     >
       <SortableContext items={items}>
-        <ul className={styles.Pages}>
+        <ul className={classNames(styles.Pages, styles[layout])}>
           {items.map((id) => (
-            <SortablePage id={id} key={id} activeIndex={activeIndex} />
+            <SortablePage
+              id={id}
+              key={id}
+              layout={layout}
+              activeIndex={activeIndex}
+            />
           ))}
         </ul>
       </SortableContext>
       <DragOverlay>
-        {activeId ? <PageOverlay id={activeId} items={items} /> : null}
+        {activeId ? (
+          <PageOverlay id={activeId} layout={layout} items={items} />
+        ) : null}
       </DragOverlay>
     </DndContext>
   );
