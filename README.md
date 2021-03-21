@@ -23,9 +23,19 @@
 - **Performance:** It was built with performance in mind in order to support silky smooth animations.
 - **Presets:** Need to build a sortable interface? Check out `@dnd-kit/sortable`, which is a thin layer built on top of `@dnd-kit/core`. More presets coming in the future.
 
+## Documentation
+To learn how to get started with **dnd kit**, visit the official documentation website. You'll find in-depth API documentation, tips and guides to help you build drag and drop interfaces. 
+<p>
+<a href="https://docs.dndkit.com">
+<img alt="View documntation" src=".github/assets/documentation.svg" width="200" />
+</a>
+</p>
 <p align="center">
 <img alt="Playful illustration of draggable and droppable concepts" src=".github/assets/concepts-illustration.svg" width="75%" />
 </p>
+
+
+## Key concepts
 
 The core library of **dnd kit** exposes two main concepts:
 
@@ -85,9 +95,9 @@ This isn't to say that you can't shift the position of the items in the DOM whil
 
 **dnd kit** also uses [SyntheticEvent listeners](https://reactjs.org/docs/events.html) for the activator events of all sensors, which leads to improved performance over manually adding event listeners to each individual draggable node.
 
-# Working in the `@dnd-kit` repository
+## Working in the `@dnd-kit` repository
 
-## Packages contained within this repository
+### Packages contained within this repository
 
 - `@dnd-kit/core`
 - `@dnd-kit/accessibility`
@@ -95,18 +105,7 @@ This isn't to say that you can't shift the position of the items in the DOM whil
 - `@dnd-kit/modifiers`
 - `@dnd-kit/utilities`
 
-## Running storybook
-
-```sh
-yarn start:storybook
-```
-
-Runs the storybook
-Open [http://localhost:6006](http://localhost:6006) to view it in the browser.
-
-![Screenshot of Storybook running locally](.github/assets/storybook-screenshot.png)
-
-## Development workflow
+### Installing dependencies
 
 You'll need to install all the dependencies in the root directory. Since the `@dnd-kit` is a monorepo that uses Lerna and Yarn Workspaces, npm CLI is not supported (only yarn).
 
@@ -116,15 +115,26 @@ yarn install
 
 This will install all dependencies in each project, build them, and symlink them via Lerna
 
-## Development workflow
+### Development workflow
 
-In one terminal, run tsdx watch in parallel:
+In one terminal, run `yarn start` in parallel:
 
 ```sh
 yarn start
 ```
 
 This builds each package to `<packages>/<package>/dist` and runs the project in watch mode so any edits you save inside `<packages>/<package>/src` cause a rebuild to `<packages>/<package>/dist`. The results will stream to to the terminal.
+
+### Running storybook
+
+```sh
+yarn start:storybook
+```
+
+Runs the storybook
+Open [http://localhost:6006](http://localhost:6006) to view it in the browser.
+
+![Screenshot of Storybook running locally](.github/assets/storybook-screenshot.png)
 
 ### Working with the playground
 
