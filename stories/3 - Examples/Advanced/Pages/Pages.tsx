@@ -31,7 +31,7 @@ interface Props {
 export function Pages({layout}: Props) {
   const [activeId, setActiveId] = useState(null);
   const [items, setItems] = useState(() =>
-    createRange<string>(50, (index) => `${index + 1}`)
+    createRange<string>(20, (index) => `${index + 1}`)
   );
   const activeIndex = items.indexOf(activeId);
   const sensors = useSensors(
@@ -49,9 +49,10 @@ export function Pages({layout}: Props) {
     >
       <SortableContext items={items}>
         <ul className={classNames(styles.Pages, styles[layout])}>
-          {items.map((id) => (
+          {items.map((id, index) => (
             <SortablePage
               id={id}
+              index={index + 1}
               key={id}
               layout={layout}
               activeIndex={activeIndex}
@@ -90,10 +91,14 @@ export function Pages({layout}: Props) {
   }
 }
 
-function PageOverlay({id, items, ...props}: PageProps & {items: string[]}) {
-  const {activatorEvent, active, over} = useDndContext();
+function PageOverlay({
+  id,
+  items,
+  ...props
+}: Omit<PageProps, 'index'> & {items: string[]}) {
+  const {activatorEvent, over} = useDndContext();
   const isKeyboardSorting = activatorEvent instanceof KeyboardEvent;
-  const activeIndex = items.indexOf(active);
+  const activeIndex = items.indexOf(id);
   const overIndex = items.indexOf(over?.id);
 
   return (

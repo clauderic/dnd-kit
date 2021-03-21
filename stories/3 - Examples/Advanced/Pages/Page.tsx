@@ -19,11 +19,12 @@ export interface Props extends HTMLAttributes<HTMLLIElement> {
   clone?: boolean;
   insertPosition?: Position;
   id: string;
+  index?: number;
   layout: Layout;
 }
 
 export const Page = forwardRef<HTMLLIElement, Props>(function Page(
-  {id, active, clone, insertPosition, layout, ...props},
+  {id, index, active, clone, insertPosition, layout, ...props},
   ref
 ) {
   return (
@@ -37,9 +38,12 @@ export const Page = forwardRef<HTMLLIElement, Props>(function Page(
         insertPosition === Position.After && styles.insertAfter,
         layout === Layout.Vertical && styles.vertical
       )}
+      data-id={id}
       {...props}
     >
-      <span className={styles.PageNumber}>{id}</span>
+      {index != null ? (
+        <span className={styles.PageNumber}>{index}</span>
+      ) : null}
     </li>
   );
 });
