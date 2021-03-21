@@ -27,15 +27,37 @@
       0 1px 6px 0 rgba(34, 33, 81, 0.3);
   }
 
-  &.over {
-    &:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      bottom: 0;
+  &.insertBefore,
+  &.insertAfter {
+    &:not(.active, .clone) {
+      &:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: #4c9ffe;
+      }
+    }
+  }
+
+  &.insertBefore {
+    &:after {
       left: -9px;
-      width: 2px;
-      background-color: #4c9ffe;
+    }
+
+    &.clone {
+      transform: translate3d(-85px, 10px, 0) scale(1.025);
+    }
+  }
+
+  &.insertAfter {
+    &:after {
+      right: -9px;
+    }
+
+    &.clone {
+      transform: translate3d(85px, 10px, 0) scale(1.025);
     }
   }
 }

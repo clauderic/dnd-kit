@@ -8,6 +8,7 @@ import {
   useSensors,
   PointerSensor,
   KeyboardSensor,
+  useDndContext,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -18,7 +19,7 @@ import {
 
 import {createRange} from '../../../utilities';
 
-import {Page} from './Page';
+import {Page, Position} from './Page';
 import type {Props as PageProps} from './Page';
 import styles from './Pages.module.css';
 
@@ -27,6 +28,7 @@ export function Pages() {
   const [items, setItems] = useState(() =>
     createRange<string>(100, (index) => `${index + 1}`)
   );
+  const activeIndex = items.indexOf(activeId);
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {coordinateGetter: sortableKeyboardCoordinates})
@@ -43,12 +45,12 @@ export function Pages() {
       <SortableContext items={items}>
         <ul className={styles.Pages}>
           {items.map((id) => (
-            <SortablePage id={id} key={id} />
+            <SortablePage id={id} key={id} activeIndex={activeIndex} />
           ))}
         </ul>
       </SortableContext>
       <DragOverlay>
-        {activeId ? <Page id={activeId} clone /> : null}
+        {activeId ? <PageOverlay id={activeId} items={items} /> : null}
       </DragOverlay>
     </DndContext>
   );
@@ -64,10 +66,11 @@ export function Pages() {
   function handleDragEnd({over}) {
     if (over) {
       const overIndex = items.indexOf(over.id);
-      const activeIndex = items.indexOf(activeId);
 
       if (activeIndex !== overIndex) {
-        setItems((items) => arrayMove(items, activeIndex, overIndex));
+        const newIndex = overIndex;
+
+        setItems((items) => arrayMove(items, activeIndex, newIndex));
       }
     }
 
@@ -75,8 +78,41 @@ export function Pages() {
   }
 }
 
-function SortablePage({id, ...props}: PageProps) {
-  const {attributes, listeners, isDragging, over, setNodeRef} = useSortable({
+function PageOverlay({id, items, ...props}: PageProps & {items: string[]}) {
+  const {activatorEvent, active, over} = useDndContext();
+  const isKeyboardSorting = activatorEvent instanceof KeyboardEvent;
+  const activeIndex = items.indexOf(active);
+  const overIndex = items.indexOf(over?.id);
+
+  return (
+    <Page
+      id={id}
+      {...props}
+      clone
+      insertPosition={
+        isKeyboardSorting && overIndex !== activeIndex
+          ? overIndex > activeIndex
+            ? Position.After
+            : Position.Before
+          : undefined
+      }
+    />
+  );
+}
+
+function SortablePage({
+  id,
+  activeIndex,
+  ...props
+}: PageProps & {activeIndex: number}) {
+  const {
+    attributes,
+    listeners,
+    index,
+    isDragging,
+    over,
+    setNodeRef,
+  } = useSortable({
     id,
   });
 
@@ -85,7 +121,13 @@ function SortablePage({id, ...props}: PageProps) {
       ref={setNodeRef}
       id={id}
       active={isDragging}
-      over={over?.id === id}
+      insertPosition={
+        over?.id === id
+          ? index > activeIndex
+            ? Position.After
+            : Position.Before
+          : undefined
+      }
       {...props}
       {...attributes}
       {...listeners}
