@@ -16,6 +16,7 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
+import {CSS} from '@dnd-kit/utilities';
 import classNames from 'classnames';
 
 import {createRange} from '../../../utilities';
@@ -127,10 +128,14 @@ function SortablePage({
     listeners,
     index,
     isDragging,
+    isSorting,
     over,
     setNodeRef,
+    transform,
+    transition,
   } = useSortable({
     id,
+    shouldPerformLayoutAnimation: () => true,
   });
 
   return (
@@ -138,6 +143,10 @@ function SortablePage({
       ref={setNodeRef}
       id={id}
       active={isDragging}
+      style={{
+        transition,
+        transform: isSorting ? undefined : CSS.Translate.toString(transform),
+      }}
       insertPosition={
         over?.id === id
           ? index > activeIndex
