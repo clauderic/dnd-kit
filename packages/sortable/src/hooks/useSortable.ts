@@ -9,8 +9,34 @@ import {useDerivedTransform} from './utilities';
 
 export interface Arguments extends UseDraggableArguments {
   strategy?: SortingStrategy;
+  shouldPerformLayoutAnimation?: ShouldPerformLayoutAnimation;
   transition?: SortableTransition | null;
 }
+
+export type ShouldPerformLayoutAnimation = (args: {
+  isSorting: boolean;
+  id: Arguments['id'];
+  index: number;
+  newIndex: number;
+  transition: Arguments['transition'];
+}) => boolean;
+
+export const defaultShouldPerformLayoutAnimation: ShouldPerformLayoutAnimation = ({
+  isSorting,
+  index,
+  newIndex,
+  transition,
+}) => {
+  if (!transition) {
+    return false;
+  }
+
+  if (isSorting) {
+    return true;
+  }
+
+  return newIndex !== index;
+};
 
 type SortableTransition = Pick<Transition, 'easing' | 'duration'>;
 
@@ -34,7 +60,8 @@ export function useSortable({
   id,
   attributes: userDefinedAttributes,
   strategy: localStrategy,
-  transition: sortingTransition = defaultTransition,
+  shouldPerformLayoutAnimation = defaultShouldPerformLayoutAnimation,
+  transition = defaultTransition,
 }: Arguments) {
   const {
     items,
@@ -100,10 +127,14 @@ export function useSortable({
       ? arrayMove(items, activeIndex, overIndex).indexOf(id)
       : index;
   const prevNewIndex = useRef(newIndex);
-  const transition =
-    !sortingTransition || (!isSorting && index === prevNewIndex.current)
-      ? null
-      : sortingTransition;
+  const performLayoutAnimation = shouldPerformLayoutAnimation({
+    isSorting,
+    id,
+    index,
+    newIndex: prevNewIndex.current,
+    transition,
+  });
+  const finalTransition = performLayoutAnimation ? transition : null;
 
   const derivedTransform = useDerivedTransform({
     disabled: transition === null,
@@ -135,10 +166,10 @@ export function useSortable({
     transform: derivedTransform ?? finalTransform,
     transition: derivedTransform
       ? disabledTransition
-      : transition === null || shouldDisplaceDragSource
+      : finalTransition === null || shouldDisplaceDragSource
       ? undefined
       : CSS.Transition.toString({
-          ...transition,
+          ...finalTransition,
           property,
         }),
   };
