@@ -56,6 +56,9 @@ function DraggableStory({
     initialTranslate: Translate;
     translate: Translate;
   }>({initialTranslate: defaultCoordinates, translate: defaultCoordinates});
+  const [initialWindowScroll, setInitialWindowScroll] = useState(
+    defaultCoordinates
+  );
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint,
   });
@@ -68,13 +71,18 @@ function DraggableStory({
   return (
     <DndContext
       sensors={sensors}
-      onDragStart={() => {}}
+      onDragStart={() => {
+        setInitialWindowScroll({
+          x: window.scrollX,
+          y: window.scrollY,
+        });
+      }}
       onDragMove={({delta}) => {
         setTranslate(({initialTranslate}) => ({
           initialTranslate,
           translate: {
-            x: initialTranslate.x + delta.x,
-            y: initialTranslate.y + delta.y,
+            x: initialTranslate.x + delta.x - initialWindowScroll.x,
+            y: initialTranslate.y + delta.y - initialWindowScroll.y,
           },
         }));
       }}
@@ -85,12 +93,14 @@ function DraggableStory({
             initialTranslate: translate,
           };
         });
+        setInitialWindowScroll(defaultCoordinates);
       }}
       onDragCancel={() => {
         setTranslate(({initialTranslate}) => ({
           translate: initialTranslate,
           initialTranslate,
         }));
+        setInitialWindowScroll(defaultCoordinates);
       }}
       modifiers={modifiers}
     >
