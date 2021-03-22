@@ -133,6 +133,7 @@ interface Props {
   onDragOver?(event: DragOverEvent): void;
   onDragEnd?(event: DragEndEvent): void;
   onDragCancel?(event: DragCancelEvent): void;
+  shouldMeasureLayouts?: ShouldMeasureLayouts;
 }
 
 const defaultSensors = [
@@ -146,6 +147,13 @@ export const ActiveDraggableContext = createContext<Transform>({
   scaleY: 1,
 });
 
+type ShouldMeasureLayouts = (args: {
+  active: UniqueIdentifier | null;
+}) => boolean;
+
+const defaultShouldMeasureLayouts: ShouldMeasureLayouts = ({active}) =>
+  active != null;
+
 export const DndContext = memo(function DndContext({
   autoScroll = true,
   announcements,
@@ -154,6 +162,7 @@ export const DndContext = memo(function DndContext({
   collisionDetection = rectIntersection,
   screenReaderInstructions = defaultScreenReaderInstructions,
   modifiers,
+  shouldMeasureLayouts = defaultShouldMeasureLayouts,
   ...props
 }: Props) {
   const store = useReducer(reducer, undefined, getInitialState);
@@ -167,12 +176,12 @@ export const DndContext = memo(function DndContext({
   const [activatorEvent, setActivatorEvent] = useState<Event | null>(null);
   const latestProps = useRef(props);
   const draggableDescribedById = useUniqueId(`DndDescribedBy`);
-
+  const measureLayouts = shouldMeasureLayouts({active});
   const {
     layoutRectMap: droppableRects,
     recomputeLayouts,
     willRecomputeLayouts,
-  } = useLayoutRectMap(droppableContainers, active === null);
+  } = useLayoutRectMap(droppableContainers, !measureLayouts);
   const activeNode = useCachedNode(
     getDraggableNode(active, draggableNodes),
     active
@@ -422,13 +431,10 @@ export const DndContext = memo(function DndContext({
   );
 
   useIsomorphicLayoutEffect(() => {
-    if (!active) {
-      return;
+    if (measureLayouts) {
+      requestAnimationFrame(() => recomputeLayouts());
     }
-
-    // Recompute rects right after dragging has begun in case they have changed
-    recomputeLayouts();
-  }, [active, recomputeLayouts]);
+  }, [active, measureLayouts, recomputeLayouts]);
 
   useEffect(() => {
     if (!active) {
