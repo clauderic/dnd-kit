@@ -150,18 +150,25 @@
   display: flex;
   visibility: hidden;
   position: absolute;
-  bottom: 4px;
-  right: 4px;
-  width: 30px;
-  height: 30px;
+  top: 5px;
+  right: 5px;
+  width: 20px;
+  height: 20px;
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.3);
-  border-radius: 4px;
+  border-radius: 50%;
+  appearance: none;
+  border: none;
+  outline: none;
   cursor: pointer;
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  &:active {
+    background-color: rgba(255, 70, 70, 0.9);
   }
 
   svg {
@@ -179,7 +186,7 @@
   color: rgba(0, 0, 0, 0.5);
   user-select: none;
   animation: fadeIn 1000ms ease;
-  pointer-events: none;
+  user-select: none;
 }
 
 @keyframes fadeIn {
