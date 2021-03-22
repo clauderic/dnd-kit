@@ -11,6 +11,7 @@
     0 1px 3px 0 rgba(34, 33, 81, 0.15);
   outline: none;
   touch-action: none;
+  cursor: grab;
 
   &:focus-visible:not(.active) {
     box-shadow: 0 0 0 2px #4c9ffe;
@@ -29,6 +30,13 @@
     transform: translate3d(10px, 10px, 0) scale(1.025);
     box-shadow: 0 0 0 1px rgba(63, 63, 68, 0.05),
       0 1px 6px 0 rgba(34, 33, 81, 0.3);
+    cursor: grabbing;
+  }
+
+  &:hover {
+    .Remove {
+      visibility: visible;
+    }
   }
 
   &.insertBefore,
@@ -138,6 +146,29 @@
   }
 }
 
+.Remove {
+  display: flex;
+  visibility: hidden;
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  svg {
+    fill: #fff;
+  }
+}
+
 .PageNumber {
   position: absolute;
   display: block;
@@ -148,6 +179,7 @@
   color: rgba(0, 0, 0, 0.5);
   user-select: none;
   animation: fadeIn 1000ms ease;
+  pointer-events: none;
 }
 
 @keyframes fadeIn {

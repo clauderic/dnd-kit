@@ -36,7 +36,9 @@ export function Pages({layout}: Props) {
   );
   const activeIndex = items.indexOf(activeId);
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {distance: 1},
+    }),
     useSensor(KeyboardSensor, {coordinateGetter: sortableKeyboardCoordinates})
   );
 
@@ -47,6 +49,7 @@ export function Pages({layout}: Props) {
       onDragCancel={handleDragCancel}
       sensors={sensors}
       collisionDetection={closestCenter}
+      shouldMeasureLayouts={always}
     >
       <SortableContext items={items}>
         <ul className={classNames(styles.Pages, styles[layout])}>
@@ -57,6 +60,9 @@ export function Pages({layout}: Props) {
               key={id}
               layout={layout}
               activeIndex={activeIndex}
+              onRemove={() =>
+                setItems((items) => items.filter((itemId) => itemId !== id))
+              }
             />
           ))}
         </ul>
@@ -135,7 +141,7 @@ function SortablePage({
     transition,
   } = useSortable({
     id,
-    shouldPerformLayoutAnimation: () => true,
+    shouldPerformLayoutAnimation: always,
   });
 
   return (
@@ -159,4 +165,8 @@ function SortablePage({
       {...listeners}
     />
   );
+}
+
+function always() {
+  return true;
 }
