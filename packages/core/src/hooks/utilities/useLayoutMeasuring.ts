@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
-import {useLazyMemo, useIsomorphicLayoutEffect} from '@dnd-kit/utilities';
+import {useLazyMemo} from '@dnd-kit/utilities';
 
 import {getElementLayout} from '../../utilities';
 import type {DroppableContainers, LayoutRectMap} from '../../store/types';
@@ -11,8 +11,9 @@ interface Arguments {
 }
 
 export enum LayoutMeasuringStrategy {
-  Always = 'always',
-  WhileDragging = 'while-dragging',
+  Always,
+  BeforeDragging,
+  WhileDragging,
 }
 
 export enum LayoutMeasuringFrequency {
@@ -33,15 +34,12 @@ export function useLayoutMeasuring(
   const [willRecomputeLayouts, setWillRecomputeLayouts] = useState(false);
   const {frequency, strategy} = getLayoutMeasuring(config);
   const containersRef = useRef(containers);
-  const recomputeLayouts = useCallback(() => {
-    setWillRecomputeLayouts(true);
-  }, []);
+  const recomputeLayouts = useCallback(() => setWillRecomputeLayouts(true), []);
   const recomputeLayoutsTimeoutId = useRef<NodeJS.Timeout | null>(null);
-  const disabled =
-    strategy === LayoutMeasuringStrategy.Always ? false : !dragging;
+  const disabled = isDisabled();
   const layoutRectMap = useLazyMemo<LayoutRectMap>(
     (previousValue) => {
-      if (disabled) {
+      if (disabled && !dragging) {
         return defaultValue;
       }
 
@@ -66,7 +64,7 @@ export function useLayoutMeasuring(
 
       return previousValue;
     },
-    [containers, disabled, willRecomputeLayouts]
+    [containers, dragging, disabled, willRecomputeLayouts]
   );
 
   useEffect(() => {
@@ -79,13 +77,13 @@ export function useLayoutMeasuring(
     }
   }, [willRecomputeLayouts]);
 
-  useIsomorphicLayoutEffect(
+  useEffect(
     function recompute() {
       if (disabled) {
         return;
       }
 
-      requestAnimationFrame(() => recomputeLayouts());
+      requestAnimationFrame(recomputeLayouts);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [dragging, disabled]
@@ -110,7 +108,22 @@ export function useLayoutMeasuring(
     [frequency, disabled, recomputeLayouts, ...dependencies]
   );
 
-  return {layoutRectMap, recomputeLayouts, willRecomputeLayouts};
+  return {
+    layoutRectMap,
+    recomputeLayouts,
+    willRecomputeLayouts,
+  };
+
+  function isDisabled() {
+    switch (strategy) {
+      case LayoutMeasuringStrategy.Always:
+        return false;
+      case LayoutMeasuringStrategy.BeforeDragging:
+        return dragging;
+      default:
+        return !dragging;
+    }
+  }
 }
 
 function createLayoutRectMap(
