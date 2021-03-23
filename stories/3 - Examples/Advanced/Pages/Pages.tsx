@@ -146,7 +146,7 @@ function SortablePage({
     transition,
   } = useSortable({
     id,
-    shouldPerformLayoutAnimation: always,
+    animateLayoutChanges: always,
   });
 
   return (

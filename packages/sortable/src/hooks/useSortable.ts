@@ -1,66 +1,32 @@
 import {useContext, useEffect, useMemo, useRef} from 'react';
 import {useDraggable, useDroppable, UseDraggableArguments} from '@dnd-kit/core';
-import {CSS, Transition, useCombinedRefs} from '@dnd-kit/utilities';
+import {CSS, useCombinedRefs} from '@dnd-kit/utilities';
 
 import {Context} from '../components';
 import type {SortingStrategy} from '../types';
 import {arrayMove, isValidIndex} from '../utilities';
+import {
+  defaultAnimateLayoutChanges,
+  defaultAttributes,
+  defaultTransition,
+  disabledTransition,
+  transitionProperty,
+} from './defaults';
+import type {AnimateLayoutChanges, SortableTransition} from './types';
 import {useDerivedTransform} from './utilities';
 
 export interface Arguments extends UseDraggableArguments {
+  animateLayoutChanges?: AnimateLayoutChanges;
   strategy?: SortingStrategy;
-  shouldPerformLayoutAnimation?: ShouldPerformLayoutAnimation;
   transition?: SortableTransition | null;
 }
 
-export type ShouldPerformLayoutAnimation = (args: {
-  isSorting: boolean;
-  id: Arguments['id'];
-  index: number;
-  newIndex: number;
-  transition: Arguments['transition'];
-}) => boolean;
-
-export const defaultShouldPerformLayoutAnimation: ShouldPerformLayoutAnimation = ({
-  isSorting,
-  index,
-  newIndex,
-  transition,
-}) => {
-  if (!transition) {
-    return false;
-  }
-
-  if (isSorting) {
-    return true;
-  }
-
-  return newIndex !== index;
-};
-
-type SortableTransition = Pick<Transition, 'easing' | 'duration'>;
-
-export const defaultTransition: SortableTransition = {
-  duration: 200,
-  easing: 'ease',
-};
-const property = 'transform';
-const disabledTransition = CSS.Transition.toString({
-  property,
-  duration: 0,
-  easing: 'linear',
-});
-
-const defaultAttributes: Arguments['attributes'] = {
-  roleDescription: 'sortable',
-};
-
 export function useSortable({
+  animateLayoutChanges = defaultAnimateLayoutChanges,
+  attributes: userDefinedAttributes,
   disabled,
   id,
-  attributes: userDefinedAttributes,
   strategy: localStrategy,
-  shouldPerformLayoutAnimation = defaultShouldPerformLayoutAnimation,
   transition = defaultTransition,
 }: Arguments) {
   const {
@@ -127,15 +93,14 @@ export function useSortable({
       ? arrayMove(items, activeIndex, overIndex).indexOf(id)
       : index;
   const prevNewIndex = useRef(newIndex);
-  const performLayoutAnimation = shouldPerformLayoutAnimation({
+  const shouldAnimateLayoutChanges = animateLayoutChanges({
     isSorting,
     id,
     index,
+    items,
     newIndex: prevNewIndex.current,
     transition,
   });
-  const finalTransition = performLayoutAnimation ? transition : null;
-
   const derivedTransform = useDerivedTransform({
     disabled: transition === null,
     index,
@@ -164,13 +129,26 @@ export function useSortable({
     setDroppableNodeRef,
     setDraggableNodeRef,
     transform: derivedTransform ?? finalTransform,
-    transition: derivedTransform
-      ? disabledTransition
-      : finalTransition === null || shouldDisplaceDragSource
-      ? undefined
-      : CSS.Transition.toString({
-          ...finalTransition,
-          property,
-        }),
+    transition: getTransition(),
   };
+
+  function getTransition() {
+    if (derivedTransform) {
+      // Temporarily disable transitions for a single frame to set up derived transforms
+      return disabledTransition;
+    }
+
+    if (
+      shouldDisplaceDragSource ||
+      !shouldAnimateLayoutChanges ||
+      !transition
+    ) {
+      return null;
+    }
+
+    return CSS.Transition.toString({
+      ...transition,
+      property: transitionProperty,
+    });
+  }
 }
