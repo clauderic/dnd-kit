@@ -1,14 +1,19 @@
 export {
-  Announcements,
-  CancelDrop,
   DndContext,
   DragOverlay,
+  defaultAnnouncements,
+  LayoutMeasuringFrequency,
+  LayoutMeasuringStrategy,
+} from './components';
+export type {
+  Announcements,
+  CancelDrop,
   DragEndEvent,
   DragMoveEvent,
   DragOverEvent,
   DragStartEvent,
   DropAnimation,
-  defaultAnnouncements,
+  LayoutMeasuring,
   ScreenReaderInstructions,
 } from './components';
 

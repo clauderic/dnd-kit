@@ -9,6 +9,7 @@ import {
   PointerSensor,
   KeyboardSensor,
   useDndContext,
+  LayoutMeasuringStrategy,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -28,6 +29,10 @@ import styles from './Pages.module.css';
 interface Props {
   layout: Layout;
 }
+
+const layoutMeasuring = {
+  strategy: LayoutMeasuringStrategy.Always,
+};
 
 export function Pages({layout}: Props) {
   const [activeId, setActiveId] = useState(null);
@@ -49,7 +54,7 @@ export function Pages({layout}: Props) {
       onDragCancel={handleDragCancel}
       sensors={sensors}
       collisionDetection={closestCenter}
-      shouldMeasureLayouts={always}
+      layoutMeasuring={layoutMeasuring}
     >
       <SortableContext items={items}>
         <ul className={classNames(styles.Pages, styles[layout])}>
