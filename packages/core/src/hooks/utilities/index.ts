@@ -1,7 +1,12 @@
 export {useAutoScroller} from './useAutoScroller';
 export {useCachedNode} from './useCachedNode';
 export {useCombineActivators} from './useCombineActivators';
-export {useLayoutRectMap} from './useLayoutRectMap';
+export {
+  useLayoutMeasuring,
+  LayoutMeasuringFrequency,
+  LayoutMeasuringStrategy,
+} from './useLayoutMeasuring';
+export type {LayoutMeasuring} from './useLayoutMeasuring';
 export {useScrollOffsets} from './useScrollOffsets';
 export {useScrollableAncestors} from './useScrollableAncestors';
 export {

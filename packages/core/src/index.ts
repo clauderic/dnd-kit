@@ -1,10 +1,4 @@
-export {
-  DndContext,
-  DragOverlay,
-  defaultAnnouncements,
-  LayoutMeasuringFrequency,
-  LayoutMeasuringStrategy,
-} from './components';
+export {DndContext, DragOverlay, defaultAnnouncements} from './components';
 export type {
   Announcements,
   CancelDrop,
@@ -13,39 +7,50 @@ export type {
   DragOverEvent,
   DragStartEvent,
   DropAnimation,
-  LayoutMeasuring,
   ScreenReaderInstructions,
 } from './components';
 
 export {
+  LayoutMeasuringFrequency,
+  LayoutMeasuringStrategy,
   useDraggable,
-  UseDraggableArguments,
   useDndContext,
-  UseDndContextReturnValue,
   useDroppable,
-  UseDroppableArguments,
+} from './hooks';
+export type {
   DraggableSyntheticListeners,
+  LayoutMeasuring,
+  UseDndContextReturnValue,
+  UseDraggableArguments,
+  UseDroppableArguments,
 } from './hooks';
 
-export {applyModifiers, Modifier, Modifiers} from './modifiers';
+export {applyModifiers} from './modifiers';
+export type {Modifier, Modifiers} from './modifiers';
 
 export {
+  KeyboardSensor,
+  KeyboardCode,
+  MouseSensor,
+  PointerSensor,
+  Sensor,
+  Sensors,
+  TouchSensor,
+  useSensors,
+  useSensor,
+} from './sensors';
+export type {
   Activator,
   Activators,
   PointerActivationConstraint,
+  KeyboardCodes,
   KeyboardCoordinateGetter,
-  KeyboardSensor,
   KeyboardSensorOptions,
   KeyboardSensorProps,
-  KeyboardCode,
-  KeyboardCodes,
-  MouseSensor,
   MouseSensorOptions,
-  PointerSensor,
   PointerEventHandlers,
   PointerSensorOptions,
   PointerSensorProps,
-  Sensor,
   SensorContext,
   SensorDescriptor,
   SensorHandler,
@@ -53,11 +58,7 @@ export {
   SensorOptions,
   SensorProps,
   SensorResponse,
-  Sensors,
-  TouchSensor,
   TouchSensorOptions,
-  useSensors,
-  useSensor,
 } from './sensors';
 
 export type {DndContextDescriptor} from './store';
@@ -77,5 +78,5 @@ export {
   closestCenter,
   closestCorners,
   rectIntersection,
-  CollisionDetection,
 } from './utilities';
+export type {CollisionDetection} from './utilities';

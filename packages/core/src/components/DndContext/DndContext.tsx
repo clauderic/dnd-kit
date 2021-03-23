@@ -25,16 +25,17 @@ import {
 } from '../../store';
 import type {Coordinates, ViewRect, LayoutRect, Translate} from '../../types';
 import {
+  LayoutMeasuring,
+  SyntheticListener,
   useAutoScroller,
   useCachedNode,
   useCombineActivators,
-  useLayoutRectMap,
+  useLayoutMeasuring,
   useScrollableAncestors,
   useClientRect,
   useClientRects,
   useScrollOffsets,
   useViewRect,
-  SyntheticListener,
 } from '../../hooks/utilities';
 import {
   KeyboardSensor,
@@ -147,32 +148,13 @@ export const ActiveDraggableContext = createContext<Transform>({
   scaleY: 1,
 });
 
-export enum LayoutMeasuringStrategy {
-  Always = 'always',
-  WhileDragging = 'while-dragging',
-}
-
-export enum LayoutMeasuringFrequency {
-  Optimized = 'optimized',
-}
-
-export interface LayoutMeasuring {
-  strategy: LayoutMeasuringStrategy;
-  frequency: LayoutMeasuringFrequency | number;
-}
-
-const defaultLayoutMeasuring: LayoutMeasuring = {
-  strategy: LayoutMeasuringStrategy.WhileDragging,
-  frequency: LayoutMeasuringFrequency.Optimized,
-};
-
 export const DndContext = memo(function DndContext({
   autoScroll = true,
   announcements,
   children,
   sensors = defaultSensors,
   collisionDetection = rectIntersection,
-  layoutMeasuring: customLayoutMeasuring,
+  layoutMeasuring,
   modifiers,
   screenReaderInstructions = defaultScreenReaderInstructions,
   ...props
@@ -188,21 +170,15 @@ export const DndContext = memo(function DndContext({
   const [activatorEvent, setActivatorEvent] = useState<Event | null>(null);
   const latestProps = useRef(props);
   const draggableDescribedById = useUniqueId(`DndDescribedBy`);
-  const layoutMeasuring = customLayoutMeasuring
-    ? {
-        ...defaultLayoutMeasuring,
-        ...customLayoutMeasuring,
-      }
-    : defaultLayoutMeasuring;
-  const {frequency} = layoutMeasuring;
-  const layoutMeasuringEnabled = shouldMeasureLayouts(layoutMeasuring, {
-    active,
-  });
   const {
     layoutRectMap: droppableRects,
     recomputeLayouts,
     willRecomputeLayouts,
-  } = useLayoutRectMap(droppableContainers, !layoutMeasuringEnabled);
+  } = useLayoutMeasuring(droppableContainers, {
+    dragging: active != null,
+    dependencies: [translate.x, translate.y],
+    config: layoutMeasuring,
+  });
   const activeNode = useCachedNode(
     getDraggableNode(active, draggableNodes),
     active
@@ -451,16 +427,6 @@ export const DndContext = memo(function DndContext({
     Object.values(props)
   );
 
-  useIsomorphicLayoutEffect(
-    () => {
-      if (layoutMeasuringEnabled) {
-        requestAnimationFrame(() => recomputeLayouts());
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [active, layoutMeasuringEnabled, recomputeLayouts]
-  );
-
   useEffect(() => {
     if (!active) {
       initialActiveNodeRectRef.current = null;
@@ -506,32 +472,6 @@ export const DndContext = memo(function DndContext({
           : null,
     });
   }, [scrollAdjustedTransalte.x, scrollAdjustedTransalte.y]);
-
-  const recomputeLayoutsTimeoutId = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(
-    function forceRecomputeLayouts() {
-      if (
-        !layoutMeasuringEnabled ||
-        typeof frequency !== 'number' ||
-        recomputeLayoutsTimeoutId.current !== null
-      ) {
-        return;
-      }
-
-      recomputeLayoutsTimeoutId.current = setTimeout(() => {
-        recomputeLayouts();
-        recomputeLayoutsTimeoutId.current = null;
-      }, frequency);
-    },
-    [
-      frequency,
-      layoutMeasuringEnabled,
-      recomputeLayouts,
-      scrollAdjustedTransalte.x,
-      scrollAdjustedTransalte.y,
-    ]
-  );
 
   useEffect(() => {
     if (!activeRef.current) {
@@ -692,15 +632,4 @@ function getLayoutRect(
   layoutRectMap: LayoutRectMap
 ): LayoutRect | null {
   return id ? layoutRectMap.get(id) ?? null : null;
-}
-
-function shouldMeasureLayouts(
-  {strategy}: LayoutMeasuring,
-  {active}: {active: UniqueIdentifier | null}
-) {
-  if (strategy === LayoutMeasuringStrategy.Always) {
-    return true;
-  }
-
-  return active != null;
 }
