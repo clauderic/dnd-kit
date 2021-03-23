@@ -1,0 +1,1 @@
+export {trashIcon} from './trash';

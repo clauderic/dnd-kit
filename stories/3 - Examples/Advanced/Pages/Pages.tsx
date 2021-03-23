@@ -41,9 +41,7 @@ export function Pages({layout}: Props) {
   );
   const activeIndex = items.indexOf(activeId);
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {distance: 1},
-    }),
+    useSensor(PointerSensor),
     useSensor(KeyboardSensor, {coordinateGetter: sortableKeyboardCoordinates})
   );
 
