@@ -1,6 +1,6 @@
 {
   "name": "@dnd-kit/modifiers",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Translate modifier presets for use with `@dnd-kit` packages.",
   "author": "Claudéric Demers",
   "license": "MIT",
