@@ -9,6 +9,7 @@
   button {
     display: flex;
     align-items: center;
+    justify-content: center;
     margin: 0 auto;
     min-height: 54px;
     flex-shrink: 1;
@@ -28,6 +29,10 @@
     button {
       touch-action: none;
       cursor: grab;
+
+      &:focus-visible:not(.active &) {
+        box-shadow: 0 0 0 3px #4c9ffe;
+      }
     }
   }
 
@@ -37,6 +42,10 @@
 
       > svg {
         margin-right: 5px;
+      }
+
+      > button {
+        margin-right: -10px;
       }
     }
   }
