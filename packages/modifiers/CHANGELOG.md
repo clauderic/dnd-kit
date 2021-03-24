@@ -1,5 +1,14 @@
 # @dnd-kit/modifiers
 
+## 1.0.4
+
+### Patch Changes
+
+- [`6a5c8a1`](https://github.com/clauderic/dnd-kit/commit/6a5c8a13bf19742efa65b20f16666f00ffaae1b1) [#154](https://github.com/clauderic/dnd-kit/pull/154) Thanks [@clauderic](https://github.com/clauderic)! - Update implementation of FirstArgument
+
+- Updated dependencies [[`6a5c8a1`](https://github.com/clauderic/dnd-kit/commit/6a5c8a13bf19742efa65b20f16666f00ffaae1b1)]:
+  - @dnd-kit/utilities@1.0.3
+
 ## 1.0.3
 
 ### Patch Changes
