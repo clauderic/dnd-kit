@@ -35,7 +35,7 @@ import {
   useClientRects,
   useScrollOffsets,
   useViewRect,
-  ScrollAncestorSortingFn,
+  ScrollOrder,
   SyntheticListener,
 } from '../../hooks/utilities';
 import {
@@ -126,8 +126,8 @@ interface Props {
   autoScroll?:
     | boolean
     | {
+        scrollOrder?: ScrollOrder;
         enabled: boolean;
-        sortScrollableAncestors?: ScrollAncestorSortingFn;
       };
   announcements?: Announcements;
   cancelDrop?: CancelDrop;
@@ -555,10 +555,7 @@ export const DndContext = memo(function DndContext({
       !activeSensor?.autoScrollEnabled,
     scrollableAncestors,
     scrollableAncestorRects,
-    sortScrollableAncestors:
-      typeof autoScroll === 'object'
-        ? autoScroll.sortScrollableAncestors
-        : undefined,
+    order: typeof autoScroll === 'object' ? autoScroll.scrollOrder : undefined,
   });
 
   const contextValue = useMemo(() => {

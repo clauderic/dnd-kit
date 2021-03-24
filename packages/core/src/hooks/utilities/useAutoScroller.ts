@@ -12,7 +12,12 @@ interface Arguments {
   interval?: number;
   scrollableAncestors: Element[];
   scrollableAncestorRects: ViewRect[];
-  sortScrollableAncestors?: ScrollAncestorSortingFn;
+  order?: ScrollOrder;
+}
+
+export enum ScrollOrder {
+  TreeOrder,
+  ReversedTreeOrder,
 }
 
 interface ScrollDirection {
@@ -23,7 +28,7 @@ interface ScrollDirection {
 export function useAutoScroller({
   disabled,
   interval = 5,
-  sortScrollableAncestors = defaultScrollableAncestorSorting,
+  order = ScrollOrder.ReversedTreeOrder,
   pointerCoordinates,
   scrollableAncestors,
   scrollableAncestorRects,
@@ -48,8 +53,11 @@ export function useAutoScroller({
     scrollContainer.scrollBy(scrollLeft, scrollTop);
   }, []);
   const sortedScrollableAncestors = useMemo(
-    () => sortScrollableAncestors(scrollableAncestors),
-    [sortScrollableAncestors, scrollableAncestors]
+    () =>
+      order === ScrollOrder.ReversedTreeOrder
+        ? [...scrollableAncestors].reverse()
+        : scrollableAncestors,
+    [order, scrollableAncestors]
   );
 
   useEffect(() => {
@@ -99,8 +107,4 @@ export function useAutoScroller({
     sortedScrollableAncestors,
     scrollableAncestorRects,
   ]);
-}
-
-function defaultScrollableAncestorSorting(ancestors: Element[]): Element[] {
-  return [...ancestors].reverse();
 }

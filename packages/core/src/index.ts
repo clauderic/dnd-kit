@@ -20,6 +20,7 @@ export {
 export type {
   DraggableSyntheticListeners,
   LayoutMeasuring,
+  ScrollOrder,
   UseDndContextReturnValue,
   UseDraggableArguments,
   UseDroppableArguments,

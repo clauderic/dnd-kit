@@ -1,4 +1,4 @@
-export {useAutoScroller, ScrollAncestorSortingFn} from './useAutoScroller';
+export {useAutoScroller, ScrollOrder} from './useAutoScroller';
 export {useCachedNode} from './useCachedNode';
 export {useCombineActivators} from './useCombineActivators';
 export {
