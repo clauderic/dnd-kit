@@ -25,16 +25,17 @@ import {
 } from '../../store';
 import type {Coordinates, ViewRect, LayoutRect, Translate} from '../../types';
 import {
+  LayoutMeasuring,
+  SyntheticListener,
   useAutoScroller,
   useCachedNode,
   useCombineActivators,
-  useLayoutRectMap,
+  useLayoutMeasuring,
   useScrollableAncestors,
   useClientRect,
   useClientRects,
   useScrollOffsets,
   useViewRect,
-  SyntheticListener,
 } from '../../hooks/utilities';
 import {
   KeyboardSensor,
@@ -125,9 +126,10 @@ interface Props {
   cancelDrop?: CancelDrop;
   children?: React.ReactNode;
   collisionDetection?: CollisionDetection;
+  layoutMeasuring?: Partial<LayoutMeasuring>;
+  modifiers?: Modifiers;
   screenReaderInstructions?: ScreenReaderInstructions;
   sensors?: SensorDescriptor<any>[];
-  modifiers?: Modifiers;
   onDragStart?(event: DragStartEvent): void;
   onDragMove?(event: DragMoveEvent): void;
   onDragOver?(event: DragOverEvent): void;
@@ -152,8 +154,9 @@ export const DndContext = memo(function DndContext({
   children,
   sensors = defaultSensors,
   collisionDetection = rectIntersection,
-  screenReaderInstructions = defaultScreenReaderInstructions,
+  layoutMeasuring,
   modifiers,
+  screenReaderInstructions = defaultScreenReaderInstructions,
   ...props
 }: Props) {
   const store = useReducer(reducer, undefined, getInitialState);
@@ -167,12 +170,15 @@ export const DndContext = memo(function DndContext({
   const [activatorEvent, setActivatorEvent] = useState<Event | null>(null);
   const latestProps = useRef(props);
   const draggableDescribedById = useUniqueId(`DndDescribedBy`);
-
   const {
     layoutRectMap: droppableRects,
     recomputeLayouts,
     willRecomputeLayouts,
-  } = useLayoutRectMap(droppableContainers, active === null);
+  } = useLayoutMeasuring(droppableContainers, {
+    dragging: active != null,
+    dependencies: [translate.x, translate.y],
+    config: layoutMeasuring,
+  });
   const activeNode = useCachedNode(
     getDraggableNode(active, draggableNodes),
     active
@@ -421,15 +427,6 @@ export const DndContext = memo(function DndContext({
     Object.values(props)
   );
 
-  useIsomorphicLayoutEffect(() => {
-    if (!active) {
-      return;
-    }
-
-    // Recompute rects right after dragging has begun in case they have changed
-    recomputeLayouts();
-  }, [active, recomputeLayouts]);
-
   useEffect(() => {
     if (!active) {
       initialActiveNodeRectRef.current = null;
@@ -453,6 +450,7 @@ export const DndContext = memo(function DndContext({
     if (!onDragMove || !translatedRect) {
       return;
     }
+
     const overNodeRect = getLayoutRect(overId, droppableRects);
 
     onDragMove({

@@ -125,4 +125,23 @@ $focused-outline-color: #4c9ffe;
     border-bottom-left-radius: 3px;
     background-color: var(--color);
   }
+
+  &:hover {
+    .Remove {
+      visibility: visible;
+    }
+  }
+}
+
+.Remove {
+  visibility: hidden;
+}
+
+.Actions {
+  display: flex;
+  align-self: flex-start;
+  margin-top: -12px;
+  margin-left: auto;
+  margin-bottom: -15px;
+  margin-right: -10px;
 }

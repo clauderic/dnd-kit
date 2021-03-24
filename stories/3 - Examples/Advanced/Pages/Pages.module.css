@@ -1,9 +1,12 @@
 .Pages {
   display: grid;
   gap: 1rem;
+  padding: 1rem;
+  margin: 0;
 
   &.horizontal {
     grid-auto-flow: column;
+    grid-auto-columns: max-content;
   }
 
   &.grid {

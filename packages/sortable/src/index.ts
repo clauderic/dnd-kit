@@ -1,5 +1,6 @@
 export {SortableContext, SortableContextProps} from './components';
-export {useSortable} from './hooks';
+export {useSortable, defaultAnimateLayoutChanges} from './hooks';
+export type {UseSortableArguments, AnimateLayoutChanges} from './hooks';
 export {
   horizontalListSortingStrategy,
   rectSortingStrategy,

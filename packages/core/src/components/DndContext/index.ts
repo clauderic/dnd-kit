@@ -1,7 +1,6 @@
-export {
-  ActiveDraggableContext,
+export {ActiveDraggableContext, DndContext} from './DndContext';
+export type {
   CancelDrop,
-  DndContext,
   DragStartEvent,
   DragMoveEvent,
   DragOverEvent,

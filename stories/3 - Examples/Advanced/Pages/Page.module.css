@@ -1,40 +1,43 @@
-.Page {
+.Wrapper {
   position: relative;
-  width: 150px;
-  height: 200px;
-  margin-bottom: 40px;
   list-style: none;
-  background-color: rgb(250, 255, 255);
-  background-size: cover;
-  border-radius: 3px;
-  box-shadow: 0 0 0 1px rgba(63, 63, 68, 0.05),
-    0 1px 3px 0 rgba(34, 33, 81, 0.15);
-  outline: none;
-  touch-action: none;
-
-  &:focus-visible:not(.active) {
-    box-shadow: 0 0 0 2px #4c9ffe;
-  }
+  width: 150px;
+  margin-bottom: 0.5rem;
 
   &.active {
-    background-image: none !important;
-    background-color: rgba(230, 230, 230);
+    .Page {
+      background-image: none !important;
+      background-color: rgba(230, 230, 230);
+    }
 
     .PageNumber {
-      opacity: 0.5;
+      opacity: 0.3;
     }
   }
 
   &.clone {
-    transform: translate3d(10px, 10px, 0) scale(1.025);
-    box-shadow: 0 0 0 1px rgba(63, 63, 68, 0.05),
-      0 1px 6px 0 rgba(34, 33, 81, 0.3);
+    margin-top: 10px;
+    margin-left: 10px;
+
+    .Page {
+      transform: scale(1.025);
+      animation: pop 150ms cubic-bezier(0.18, 0.67, 0.6, 1.22);
+      box-shadow: 0 0 0 1px rgba(63, 63, 68, 0.05),
+        0 1px 6px 0 rgba(34, 33, 81, 0.3);
+      cursor: grabbing;
+    }
   }
 
-  &.insertBefore,
-  &.insertAfter {
-    &:not(.active, .clone) {
-      &:after {
+  &:hover {
+    .Remove {
+      visibility: visible;
+    }
+  }
+
+  &:not(.active, .clone) {
+    &.insertBefore,
+    &.insertAfter {
+      .Page:after {
         content: '';
         position: absolute;
         background-color: #4c9ffe;
@@ -45,60 +48,75 @@
   &:not(.vertical) {
     &.insertBefore,
     &.insertAfter {
-      &:after {
+      .Page:after {
         top: 0;
         bottom: 0;
         width: 2px;
       }
     }
     &.insertBefore {
-      &:after {
+      &.clone {
+        margin-left: -75px;
+      }
+      .Page:after {
         left: -9px;
       }
-
-      &.clone {
-        transform: translate3d(-85px, 10px, 0) scale(1.025);
-      }
     }
-
     &.insertAfter {
-      &:after {
-        right: -9px;
-      }
-
       &.clone {
-        transform: translate3d(85px, 10px, 0) scale(1.025);
+        margin-left: 75px;
+      }
+      .Page:after {
+        right: -9px;
       }
     }
   }
   &.vertical {
     &.insertBefore,
     &.insertAfter {
-      &:after {
+      .Page:after {
         left: 0;
         right: 0;
         height: 2px;
       }
     }
     &.insertBefore {
-      &:after {
+      &.clone {
+        margin-top: -125px;
+      }
+      .Page:after {
         top: -15px;
       }
-
-      &.clone {
-        transform: translate3d(100px, -125px, 0) scale(1.025);
-      }
     }
-
     &.insertAfter {
-      &:after {
-        bottom: -40px;
-      }
-
       &.clone {
-        transform: translate3d(100px, 125px, 0) scale(1.025);
+        margin-bottom: 125px;
+      }
+      .Page:after {
+        bottom: -45px;
       }
     }
+  }
+}
+
+.Page {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 200px;
+  background-color: rgb(250, 255, 255);
+  background-size: cover;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgba(63, 63, 68, 0.05),
+    0 1px 3px 0 rgba(34, 33, 81, 0.15);
+  outline: none;
+  appearance: none;
+  border: none;
+  touch-action: none;
+  cursor: grab;
+
+  &:focus-visible:not(.active &) {
+    box-shadow: 0 0 0 2px #4c9ffe;
   }
 
   &[data-id='1'] {
@@ -138,16 +156,44 @@
   }
 }
 
-.PageNumber {
+.Remove {
+  display: flex;
+  visibility: hidden;
   position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  appearance: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  &:active {
+    background-color: rgba(255, 70, 70, 0.9);
+  }
+
+  svg {
+    fill: #fff;
+  }
+}
+
+.PageNumber {
   display: block;
+  margin-top: 1rem;
   text-align: center;
-  left: 0;
-  right: 0;
-  bottom: -30px;
   color: rgba(0, 0, 0, 0.5);
   user-select: none;
   animation: fadeIn 1000ms ease;
+  user-select: none;
 }
 
 @keyframes fadeIn {
@@ -156,5 +202,14 @@
   }
   100% {
     opacity: 1;
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: translate3d(-10px, -10px, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0) scale(1.025);
   }
 }

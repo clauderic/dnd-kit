@@ -1,7 +1,11 @@
 import React from 'react';
-
+import {LayoutMeasuringStrategy} from '@dnd-kit/core';
 import {restrictToWindowEdges} from '@dnd-kit/modifiers';
-import {verticalListSortingStrategy} from '@dnd-kit/sortable';
+import {
+  AnimateLayoutChanges,
+  defaultAnimateLayoutChanges,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import {
   restrictToVerticalAxis,
   restrictToFirstScrollableAncestor,
@@ -139,6 +143,23 @@ export const RerenderBeforeSorting = () => {
           height: isDragging ? 80 : undefined,
         };
       }}
+    />
+  );
+};
+
+export const RemovableItems = () => {
+  const animateLayoutChanges: AnimateLayoutChanges = (args) =>
+    args.isSorting || args.wasSorting
+      ? defaultAnimateLayoutChanges(args)
+      : true;
+
+  return (
+    <Sortable
+      {...props}
+      animateLayoutChanges={animateLayoutChanges}
+      layoutMeasuring={{strategy: LayoutMeasuringStrategy.Always}}
+      removable
+      handle
     />
   );
 };

@@ -3,9 +3,9 @@ export {
   defaultAnnouncements,
   ScreenReaderInstructions,
 } from './Accessibility';
-export {
+export {DndContext} from './DndContext';
+export type {
   CancelDrop,
-  DndContext,
   DragEndEvent,
   DragOverEvent,
   DragMoveEvent,

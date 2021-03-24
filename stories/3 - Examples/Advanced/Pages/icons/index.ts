@@ -1,0 +1,1 @@
+export {removeIcon} from './remove';

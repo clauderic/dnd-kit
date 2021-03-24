@@ -9,6 +9,7 @@ import {
   PointerSensor,
   KeyboardSensor,
   useDndContext,
+  LayoutMeasuringStrategy,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -16,6 +17,7 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
+import {CSS} from '@dnd-kit/utilities';
 import classNames from 'classnames';
 
 import {createRange} from '../../../utilities';
@@ -27,6 +29,10 @@ import styles from './Pages.module.css';
 interface Props {
   layout: Layout;
 }
+
+const layoutMeasuring = {
+  strategy: LayoutMeasuringStrategy.Always,
+};
 
 export function Pages({layout}: Props) {
   const [activeId, setActiveId] = useState(null);
@@ -46,6 +52,7 @@ export function Pages({layout}: Props) {
       onDragCancel={handleDragCancel}
       sensors={sensors}
       collisionDetection={closestCenter}
+      layoutMeasuring={layoutMeasuring}
     >
       <SortableContext items={items}>
         <ul className={classNames(styles.Pages, styles[layout])}>
@@ -56,6 +63,9 @@ export function Pages({layout}: Props) {
               key={id}
               layout={layout}
               activeIndex={activeIndex}
+              onRemove={() =>
+                setItems((items) => items.filter((itemId) => itemId !== id))
+              }
             />
           ))}
         </ul>
@@ -127,10 +137,14 @@ function SortablePage({
     listeners,
     index,
     isDragging,
+    isSorting,
     over,
     setNodeRef,
+    transform,
+    transition,
   } = useSortable({
     id,
+    animateLayoutChanges: always,
   });
 
   return (
@@ -138,6 +152,10 @@ function SortablePage({
       ref={setNodeRef}
       id={id}
       active={isDragging}
+      style={{
+        transition,
+        transform: isSorting ? undefined : CSS.Translate.toString(transform),
+      }}
       insertPosition={
         over?.id === id
           ? index > activeIndex
@@ -150,4 +168,8 @@ function SortablePage({
       {...listeners}
     />
   );
+}
+
+function always() {
+  return true;
 }

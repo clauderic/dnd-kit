@@ -1,5 +1,10 @@
 import React from 'react';
-import {horizontalListSortingStrategy} from '@dnd-kit/sortable';
+import {LayoutMeasuringStrategy} from '@dnd-kit/core';
+import {
+  AnimateLayoutChanges,
+  defaultAnimateLayoutChanges,
+  horizontalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import {restrictToHorizontalAxis} from '@dnd-kit/modifiers';
 
 import {createRange} from '../../utilities';
@@ -104,6 +109,23 @@ export const MarginBetweenItems = () => {
           marginRight: getMargin(index),
         };
       }}
+    />
+  );
+};
+
+export const RemovableItems = () => {
+  const animateLayoutChanges: AnimateLayoutChanges = (args) =>
+    args.isSorting || args.wasSorting
+      ? defaultAnimateLayoutChanges(args)
+      : true;
+
+  return (
+    <Sortable
+      {...props}
+      animateLayoutChanges={animateLayoutChanges}
+      layoutMeasuring={{strategy: LayoutMeasuringStrategy.Always}}
+      removable
+      handle
     />
   );
 };
