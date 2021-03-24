@@ -1,5 +1,11 @@
 # @dnd-kit/modifiers
 
+## 1.0.3
+
+### Patch Changes
+
+- [`75bebf5`](https://github.com/clauderic/dnd-kit/commit/75bebf53cf59ae5cd530bf658f11a48be6f64d7d) [#152](https://github.com/clauderic/dnd-kit/pull/152) Thanks [@clauderic](https://github.com/clauderic)! - Update dependencies of @dnd-kit/core to ^1.2.0
+
 ## 1.0.2
 
 ### Patch Changes
