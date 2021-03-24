@@ -34,17 +34,7 @@ export function useDropAnimation({
   const [dropAnimationComplete, setDropAnimationComplete] = useState(false);
 
   useEffect(() => {
-    const shouldPerformDropAnimation = transform
-      ? Boolean(Math.abs(transform.x) || Math.abs(transform.y))
-      : false;
-
-    if (
-      !animate ||
-      !activeId ||
-      !easing ||
-      !duration ||
-      !shouldPerformDropAnimation
-    ) {
+    if (!animate || !activeId || !easing || !duration) {
       if (animate) {
         setDropAnimationComplete(true);
       }
