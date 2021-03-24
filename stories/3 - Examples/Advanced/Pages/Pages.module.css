@@ -6,6 +6,7 @@
 
   &.horizontal {
     grid-auto-flow: column;
+    grid-auto-columns: max-content;
   }
 
   &.grid {

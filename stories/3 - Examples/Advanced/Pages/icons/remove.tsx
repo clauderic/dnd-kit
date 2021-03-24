@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const trashIcon = (
+export const removeIcon = (
   <svg
     width="10"
     height="10"

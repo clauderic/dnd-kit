@@ -1,7 +1,7 @@
 import React, {forwardRef, HTMLAttributes} from 'react';
 import classNames from 'classnames';
 
-import {trashIcon} from './icons';
+import {removeIcon} from './icons';
 import styles from './Page.module.css';
 
 export enum Position {
@@ -44,7 +44,7 @@ export const Page = forwardRef<HTMLButtonElement, Props>(function Page(
       <button ref={ref} className={styles.Page} data-id={id} {...props} />
       {onRemove ? (
         <button className={styles.Remove} onClick={onRemove}>
-          {trashIcon}
+          {removeIcon}
         </button>
       ) : null}
       {index != null ? (

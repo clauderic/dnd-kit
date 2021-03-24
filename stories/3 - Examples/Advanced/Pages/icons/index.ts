@@ -1,1 +1,1 @@
-export {trashIcon} from './trash';
+export {removeIcon} from './remove';

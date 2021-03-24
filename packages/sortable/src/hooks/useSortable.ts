@@ -38,6 +38,7 @@ export function useSortable({
     overIndex,
     useDragOverlay,
     strategy: globalStrategy,
+    wasSorting,
   } = useContext(Context);
   const {
     active,
@@ -94,15 +95,18 @@ export function useSortable({
       : index;
   const prevNewIndex = useRef(newIndex);
   const shouldAnimateLayoutChanges = animateLayoutChanges({
+    active,
+    isDragging,
     isSorting,
     id,
     index,
     items,
     newIndex: prevNewIndex.current,
     transition,
+    wasSorting,
   });
   const derivedTransform = useDerivedTransform({
-    disabled: transition === null,
+    disabled: !shouldAnimateLayoutChanges,
     index,
     node,
     rect,
@@ -138,17 +142,17 @@ export function useSortable({
       return disabledTransition;
     }
 
-    if (
-      shouldDisplaceDragSource ||
-      !shouldAnimateLayoutChanges ||
-      !transition
-    ) {
+    if (shouldDisplaceDragSource || !transition) {
       return null;
     }
 
-    return CSS.Transition.toString({
-      ...transition,
-      property: transitionProperty,
-    });
+    if (isSorting || shouldAnimateLayoutChanges) {
+      return CSS.Transition.toString({
+        ...transition,
+        property: transitionProperty,
+      });
+    }
+
+    return null;
   }
 }

@@ -41,7 +41,7 @@ export function useDerivedTransform({rect, disabled, index, node}: Arguments) {
     if (index !== prevIndex.current) {
       prevIndex.current = index;
     }
-  }, [rect, disabled, index, node]);
+  }, [disabled, index, node, rect]);
 
   useEffect(() => {
     if (derivedTransform) {

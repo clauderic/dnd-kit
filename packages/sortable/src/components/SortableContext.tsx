@@ -24,6 +24,7 @@ interface ContextDescriptor {
   useDragOverlay: boolean;
   sortedRects: LayoutRect[];
   strategy: SortingStrategy;
+  wasSorting: boolean;
 }
 
 export const Context = React.createContext<ContextDescriptor>({
@@ -35,6 +36,7 @@ export const Context = React.createContext<ContextDescriptor>({
   useDragOverlay: false,
   sortedRects: [],
   strategy: rectSortingStrategy,
+  wasSorting: false,
 });
 
 export function SortableContext({
@@ -55,6 +57,8 @@ export function SortableContext({
   const useDragOverlay = Boolean(overlayNode.rect !== null);
   const activeIndex = active ? items.indexOf(active) : -1;
   const isSorting = activeIndex !== -1;
+  const prevSorting = useRef(isSorting);
+  const wasSorting = !isSorting && prevSorting.current === true;
   const overIndex = over ? items.indexOf(over.id) : -1;
   const previousItemsRef = useRef(items);
   const sortedRects = getSortedRects(items, droppableRects);
@@ -73,6 +77,16 @@ export function SortableContext({
     previousItemsRef.current = items;
   }, [items]);
 
+  useEffect(() => {
+    if (isSorting) {
+      prevSorting.current = isSorting;
+    } else {
+      requestAnimationFrame(() => {
+        prevSorting.current = isSorting;
+      });
+    }
+  }, [isSorting]);
+
   const contextValue = useMemo(
     (): ContextDescriptor => ({
       activeIndex,
@@ -83,6 +97,7 @@ export function SortableContext({
       useDragOverlay,
       sortedRects,
       strategy,
+      wasSorting,
     }),
     [
       activeIndex,
@@ -93,6 +108,7 @@ export function SortableContext({
       sortedRects,
       useDragOverlay,
       strategy,
+      wasSorting,
     ]
   );
 
