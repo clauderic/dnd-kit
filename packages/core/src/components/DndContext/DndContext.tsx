@@ -25,8 +25,6 @@ import {
 } from '../../store';
 import type {Coordinates, ViewRect, LayoutRect, Translate} from '../../types';
 import {
-  CanScroll,
-  LayoutMeasuring,
   useAutoScroller,
   useCachedNode,
   useCombineActivators,
@@ -36,7 +34,10 @@ import {
   useClientRects,
   useScrollOffsets,
   useViewRect,
-  ScrollOrder,
+} from '../../hooks/utilities';
+import type {
+  AutoScrollOptions,
+  LayoutMeasuring,
   SyntheticListener,
 } from '../../hooks/utilities';
 import {
@@ -124,13 +125,7 @@ interface DndEvent extends Event {
 }
 
 interface Props {
-  autoScroll?:
-    | boolean
-    | {
-        canScroll?: CanScroll;
-        scrollOrder?: ScrollOrder;
-        enabled?: boolean;
-      };
+  autoScroll?: boolean | AutoScrollOptions;
   announcements?: Announcements;
   cancelDrop?: CancelDrop;
   children?: React.ReactNode;
@@ -551,6 +546,7 @@ export const DndContext = memo(function DndContext({
 
   useAutoScroller({
     ...getAutoScrollerOptions(),
+    draggingRect: translatedRect,
     pointerCoordinates,
     scrollableAncestors,
     scrollableAncestorRects,

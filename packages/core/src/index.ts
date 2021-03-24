@@ -18,6 +18,7 @@ export {
   useDroppable,
 } from './hooks';
 export type {
+  AutoScrollOptions,
   DraggableSyntheticListeners,
   LayoutMeasuring,
   ScrollOrder,

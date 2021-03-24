@@ -10,4 +10,4 @@ export {
   LayoutMeasuringFrequency,
   ScrollOrder,
 } from './utilities';
-export type {LayoutMeasuring} from './utilities';
+export type {AutoScrollOptions, LayoutMeasuring} from './utilities';

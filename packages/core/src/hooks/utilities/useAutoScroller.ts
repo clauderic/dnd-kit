@@ -6,11 +6,27 @@ import type {Coordinates, Direction, ViewRect} from '../../types';
 
 export type ScrollAncestorSortingFn = (ancestors: Element[]) => Element[];
 
-interface Arguments {
+export enum AutoScrollActivator {
+  Pointer,
+  DraggableRect,
+}
+
+export interface Options {
+  acceleration?: number;
+  activator?: AutoScrollActivator;
   canScroll?: CanScroll;
-  enabled: boolean;
+  enabled?: boolean;
   interval?: number;
-  order?: ScrollOrder;
+  scrollOrder?: ScrollOrder;
+  threshold?: {
+    x: number;
+    y: number;
+  };
+}
+
+interface Arguments extends Options {
+  draggingRect: ViewRect | null;
+  enabled: boolean;
   pointerCoordinates: Coordinates | null;
   scrollableAncestors: Element[];
   scrollableAncestorRects: ViewRect[];
@@ -29,19 +45,40 @@ interface ScrollDirection {
 }
 
 export function useAutoScroller({
+  acceleration,
+  activator = AutoScrollActivator.Pointer,
   canScroll,
+  draggingRect,
   enabled,
   interval = 5,
-  order = ScrollOrder.ReversedTreeOrder,
+  scrollOrder = ScrollOrder.ReversedTreeOrder,
   pointerCoordinates,
   scrollableAncestors,
   scrollableAncestorRects,
+  threshold,
 }: Arguments) {
   const [setAutoScrollInterval, clearAutoScrollInterval] = useInterval();
   const scrollSpeed = useRef<Coordinates>({
     x: 1,
     y: 1,
   });
+  const rect = useMemo(() => {
+    switch (activator) {
+      case AutoScrollActivator.Pointer:
+        return pointerCoordinates
+          ? {
+              top: pointerCoordinates.y,
+              bottom: pointerCoordinates.y,
+              left: pointerCoordinates.x,
+              right: pointerCoordinates.x,
+            }
+          : null;
+      case AutoScrollActivator.DraggableRect:
+        return draggingRect;
+    }
+
+    return null;
+  }, [activator, draggingRect, pointerCoordinates]);
   const scrollDirection = useRef<ScrollDirection>(defaultCoordinates);
   const scrollContainerRef = useRef<Element | null>(null);
   const autoScroll = useCallback(() => {
@@ -58,62 +95,72 @@ export function useAutoScroller({
   }, []);
   const sortedScrollableAncestors = useMemo(
     () =>
-      order === ScrollOrder.ReversedTreeOrder
+      scrollOrder === ScrollOrder.ReversedTreeOrder
         ? [...scrollableAncestors].reverse()
         : scrollableAncestors,
-    [order, scrollableAncestors]
+    [scrollOrder, scrollableAncestors]
   );
 
-  useEffect(() => {
-    if (!enabled || !scrollableAncestors.length || !pointerCoordinates) {
-      clearAutoScrollInterval();
-      return;
-    }
-
-    for (const scrollContainer of sortedScrollableAncestors) {
-      if (canScroll?.(scrollContainer) === false) {
-        continue;
-      }
-
-      const index = scrollableAncestors.indexOf(scrollContainer);
-      const scrolllContainerRect = scrollableAncestorRects[index];
-
-      if (!scrolllContainerRect) {
-        continue;
-      }
-
-      const {direction, speed} = getScrollDirectionAndSpeed(
-        scrollContainer,
-        scrolllContainerRect,
-        pointerCoordinates
-      );
-
-      if (speed.x > 0 || speed.y > 0) {
+  useEffect(
+    () => {
+      if (!enabled || !scrollableAncestors.length || !rect) {
         clearAutoScrollInterval();
-
-        scrollContainerRef.current = scrollContainer;
-        setAutoScrollInterval(autoScroll, interval);
-
-        scrollSpeed.current = speed;
-        scrollDirection.current = direction;
-
         return;
       }
-    }
 
-    scrollSpeed.current = {x: 0, y: 0};
-    scrollDirection.current = {x: 0, y: 0};
-    clearAutoScrollInterval();
-  }, [
-    autoScroll,
-    canScroll,
-    clearAutoScrollInterval,
-    enabled,
-    interval,
-    pointerCoordinates,
-    setAutoScrollInterval,
-    scrollableAncestors,
-    sortedScrollableAncestors,
-    scrollableAncestorRects,
-  ]);
+      for (const scrollContainer of sortedScrollableAncestors) {
+        if (canScroll?.(scrollContainer) === false) {
+          continue;
+        }
+
+        const index = scrollableAncestors.indexOf(scrollContainer);
+        const scrolllContainerRect = scrollableAncestorRects[index];
+
+        if (!scrolllContainerRect) {
+          continue;
+        }
+
+        const {direction, speed} = getScrollDirectionAndSpeed(
+          scrollContainer,
+          scrolllContainerRect,
+          rect,
+          acceleration,
+          threshold
+        );
+
+        if (speed.x > 0 || speed.y > 0) {
+          clearAutoScrollInterval();
+
+          scrollContainerRef.current = scrollContainer;
+          setAutoScrollInterval(autoScroll, interval);
+
+          scrollSpeed.current = speed;
+          scrollDirection.current = direction;
+
+          return;
+        }
+      }
+
+      scrollSpeed.current = {x: 0, y: 0};
+      scrollDirection.current = {x: 0, y: 0};
+      clearAutoScrollInterval();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      acceleration,
+      autoScroll,
+      canScroll,
+      clearAutoScrollInterval,
+      enabled,
+      interval,
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      JSON.stringify(rect),
+      setAutoScrollInterval,
+      scrollableAncestors,
+      sortedScrollableAncestors,
+      scrollableAncestorRects,
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      JSON.stringify(threshold),
+    ]
+  );
 }
