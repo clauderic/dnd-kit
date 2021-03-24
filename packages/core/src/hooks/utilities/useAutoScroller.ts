@@ -7,13 +7,16 @@ import type {Coordinates, Direction, ViewRect} from '../../types';
 export type ScrollAncestorSortingFn = (ancestors: Element[]) => Element[];
 
 interface Arguments {
-  disabled: boolean;
-  pointerCoordinates: Coordinates | null;
+  canScroll?: CanScroll;
+  enabled: boolean;
   interval?: number;
+  order?: ScrollOrder;
+  pointerCoordinates: Coordinates | null;
   scrollableAncestors: Element[];
   scrollableAncestorRects: ViewRect[];
-  order?: ScrollOrder;
 }
+
+export type CanScroll = (element: Element) => boolean;
 
 export enum ScrollOrder {
   TreeOrder,
@@ -26,7 +29,8 @@ interface ScrollDirection {
 }
 
 export function useAutoScroller({
-  disabled,
+  canScroll,
+  enabled,
   interval = 5,
   order = ScrollOrder.ReversedTreeOrder,
   pointerCoordinates,
@@ -61,12 +65,16 @@ export function useAutoScroller({
   );
 
   useEffect(() => {
-    if (disabled || !scrollableAncestors.length || !pointerCoordinates) {
+    if (!enabled || !scrollableAncestors.length || !pointerCoordinates) {
       clearAutoScrollInterval();
       return;
     }
 
     for (const scrollContainer of sortedScrollableAncestors) {
+      if (canScroll?.(scrollContainer) === false) {
+        continue;
+      }
+
       const index = scrollableAncestors.indexOf(scrollContainer);
       const scrolllContainerRect = scrollableAncestorRects[index];
 
@@ -98,8 +106,9 @@ export function useAutoScroller({
     clearAutoScrollInterval();
   }, [
     autoScroll,
+    canScroll,
     clearAutoScrollInterval,
-    disabled,
+    enabled,
     interval,
     pointerCoordinates,
     setAutoScrollInterval,

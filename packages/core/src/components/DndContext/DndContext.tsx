@@ -25,6 +25,7 @@ import {
 } from '../../store';
 import type {Coordinates, ViewRect, LayoutRect, Translate} from '../../types';
 import {
+  CanScroll,
   LayoutMeasuring,
   useAutoScroller,
   useCachedNode,
@@ -126,8 +127,9 @@ interface Props {
   autoScroll?:
     | boolean
     | {
+        canScroll?: CanScroll;
         scrollOrder?: ScrollOrder;
-        enabled: boolean;
+        enabled?: boolean;
       };
   announcements?: Announcements;
   cancelDrop?: CancelDrop;
@@ -548,14 +550,10 @@ export const DndContext = memo(function DndContext({
   ]);
 
   useAutoScroller({
+    ...getAutoScrollerOptions(),
     pointerCoordinates,
-    disabled:
-      !autoScroll ||
-      (typeof autoScroll === 'object' && !autoScroll.enabled) ||
-      !activeSensor?.autoScrollEnabled,
     scrollableAncestors,
     scrollableAncestorRects,
-    order: typeof autoScroll === 'object' ? autoScroll.scrollOrder : undefined,
   });
 
   const contextValue = useMemo(() => {
@@ -629,6 +627,22 @@ export const DndContext = memo(function DndContext({
       />
     </>
   );
+
+  function getAutoScrollerOptions() {
+    const enabled =
+      autoScroll === true ||
+      (typeof autoScroll === 'object' && autoScroll.enabled === true) ||
+      activeSensor?.autoScrollEnabled !== false;
+
+    if (typeof autoScroll === 'object') {
+      return {
+        ...autoScroll,
+        enabled,
+      };
+    }
+
+    return {enabled};
+  }
 });
 
 function getDroppableNode(
