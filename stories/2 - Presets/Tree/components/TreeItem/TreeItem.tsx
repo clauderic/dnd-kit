@@ -12,9 +12,10 @@ export interface Props extends HTMLAttributes<HTMLLIElement> {
   handleProps?: any;
   step: number;
   value: string;
+  wrapperRef?(node: HTMLLIElement): void;
 }
 
-export const TreeItem = forwardRef<HTMLLIElement, Props>(
+export const TreeItem = forwardRef<HTMLDivElement, Props>(
   (
     {
       childCount,
@@ -25,6 +26,7 @@ export const TreeItem = forwardRef<HTMLLIElement, Props>(
       step,
       style,
       value,
+      wrapperRef,
       ...props
     },
     ref
@@ -32,20 +34,20 @@ export const TreeItem = forwardRef<HTMLLIElement, Props>(
     return (
       <li
         className={classNames(
-          styles.TreeItem,
+          styles.Wrapper,
           clone && styles.clone,
           ghost && styles.ghost
         )}
-        ref={ref}
+        ref={wrapperRef}
         style={
           {
-            '--spacing': `${step * depth}px`,
             ...style,
+            '--spacing': `${step * depth}px`,
           } as React.CSSProperties
         }
         {...props}
       >
-        <div className={styles.Wrapper}>
+        <div className={styles.TreeItem} ref={ref}>
           <Handle {...handleProps} />
           {value}
           {clone && childCount ? (

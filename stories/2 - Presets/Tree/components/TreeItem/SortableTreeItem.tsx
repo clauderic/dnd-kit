@@ -14,19 +14,21 @@ export function SortableTreeItem({id, items, depth, ...props}: Props) {
     isDragging,
     attributes,
     listeners,
-    setNodeRef,
+    setDraggableNodeRef,
+    setDroppableNodeRef,
     transform,
     transition,
   } = useSortable({id});
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
     transition,
   };
 
   return (
     <TreeItem
-      ref={setNodeRef}
+      ref={setDraggableNodeRef}
+      wrapperRef={setDroppableNodeRef}
       style={style}
       depth={depth}
       ghost={isDragging}

@@ -119,7 +119,7 @@ export const sortableTreeKeyboardCoordinates: (
         );
 
         const newCoordinates = getCoordinatesDelta({
-          x: newRect.left + (depth - activeItem.depth) * step,
+          x: newRect.left + depth * step,
           y: newRect.top - (translatedRect.height - newRect.height),
         });
 

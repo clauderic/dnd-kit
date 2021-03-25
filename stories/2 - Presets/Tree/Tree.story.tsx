@@ -1,4 +1,5 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
+import {createPortal} from 'react-dom';
 import {
   DndContext,
   closestCenter,
@@ -134,19 +135,22 @@ function SortableTree() {
               step={STEP}
             />
           ))}
-          <DragOverlay>
-            {activeId ? (
-              <TreeItem
-                depth={activeItem.depth}
-                clone
-                childCount={
-                  activeItem.children ? activeItem.children.length : 0
-                }
-                value={activeId}
-                step={STEP}
-              />
-            ) : null}
-          </DragOverlay>
+          {createPortal(
+            <DragOverlay>
+              {activeId ? (
+                <TreeItem
+                  depth={activeItem.depth}
+                  clone
+                  childCount={
+                    activeItem.children ? activeItem.children.length : 0
+                  }
+                  value={activeId}
+                  step={STEP}
+                />
+              ) : null}
+            </DragOverlay>,
+            document.body
+          )}
         </SortableContext>
       </DndContext>
     </div>
