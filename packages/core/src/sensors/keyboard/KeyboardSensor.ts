@@ -18,6 +18,7 @@ import {
   getOwnerDocument,
   getWindow,
   getScrollPosition,
+  getScrollElementRect,
 } from '../../utilities';
 
 export interface KeyboardSensorOptions extends SensorOptions {
@@ -109,9 +110,8 @@ export class KeyboardSensor implements SensorInstance {
           y: 0,
         };
         const {scrollableAncestors} = context.current;
-        const scrollContainer = scrollableAncestors[0];
 
-        if (scrollContainer) {
+        for (const scrollContainer of scrollableAncestors) {
           const direction = event.code;
           const coordinatesDelta = getCoordinatesDelta(
             newCoordinates,
@@ -122,10 +122,10 @@ export class KeyboardSensor implements SensorInstance {
             isRight,
             isLeft,
             isBottom,
-            scrollElementRect,
             maxScroll,
             minScroll,
           } = getScrollPosition(scrollContainer);
+          const scrollElementRect = getScrollElementRect(scrollContainer);
 
           const clampedCoordinates = {
             x: Math.min(
@@ -186,6 +186,7 @@ export class KeyboardSensor implements SensorInstance {
               left: -scrollDelta.x,
               behavior: scrollBehavior,
             });
+            break;
           } else if (canScrollY && clampedCoordinates.y !== newCoordinates.y) {
             const canFullyScrollToNewCoordinates =
               (direction === KeyboardCode.Down &&
@@ -213,6 +214,8 @@ export class KeyboardSensor implements SensorInstance {
               top: -scrollDelta.y,
               behavior: scrollBehavior,
             });
+
+            break;
           }
         }
 

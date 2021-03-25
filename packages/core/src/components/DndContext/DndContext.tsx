@@ -25,8 +25,6 @@ import {
 } from '../../store';
 import type {Coordinates, ViewRect, LayoutRect, Translate} from '../../types';
 import {
-  LayoutMeasuring,
-  SyntheticListener,
   useAutoScroller,
   useCachedNode,
   useCombineActivators,
@@ -36,6 +34,11 @@ import {
   useClientRects,
   useScrollOffsets,
   useViewRect,
+} from '../../hooks/utilities';
+import type {
+  AutoScrollOptions,
+  LayoutMeasuring,
+  SyntheticListener,
 } from '../../hooks/utilities';
 import {
   KeyboardSensor,
@@ -52,6 +55,7 @@ import {
   defaultCoordinates,
   getAdjustedRect,
   getRectDelta,
+  getEventCoordinates,
   rectIntersection,
 } from '../../utilities';
 import {applyModifiers, Modifiers} from '../../modifiers';
@@ -121,7 +125,7 @@ interface DndEvent extends Event {
 }
 
 interface Props {
-  autoScroll?: boolean;
+  autoScroll?: boolean | AutoScrollOptions;
   announcements?: Announcements;
   cancelDrop?: CancelDrop;
   children?: React.ReactNode;
@@ -183,6 +187,9 @@ export const DndContext = memo(function DndContext({
     getDraggableNode(active, draggableNodes),
     active
   );
+  const activationCoordinates = activatorEvent
+    ? getEventCoordinates(activatorEvent)
+    : null;
   const activeNodeRect = useViewRect(activeNode);
   const activeNodeClientRect = useClientRect(activeNode);
   const initialActiveNodeRectRef = useRef<ViewRect | null>(null);
@@ -237,6 +244,10 @@ export const DndContext = memo(function DndContext({
     scrollableAncestorRects,
     windowRect,
   });
+
+  const pointerCoordinates = activationCoordinates
+    ? add(activationCoordinates, translate)
+    : null;
 
   const scrolllAdjustment = useScrollOffsets(scrollableAncestors);
 
@@ -534,8 +545,9 @@ export const DndContext = memo(function DndContext({
   ]);
 
   useAutoScroller({
+    ...getAutoScrollerOptions(),
     draggingRect: translatedRect,
-    disabled: !autoScroll || !activeSensor?.autoScrollEnabled,
+    pointerCoordinates,
     scrollableAncestors,
     scrollableAncestorRects,
   });
@@ -611,6 +623,22 @@ export const DndContext = memo(function DndContext({
       />
     </>
   );
+
+  function getAutoScrollerOptions() {
+    const enabled =
+      autoScroll === true ||
+      (typeof autoScroll === 'object' && autoScroll.enabled === true) ||
+      activeSensor?.autoScrollEnabled !== false;
+
+    if (typeof autoScroll === 'object') {
+      return {
+        ...autoScroll,
+        enabled,
+      };
+    }
+
+    return {enabled};
+  }
 });
 
 function getDroppableNode(

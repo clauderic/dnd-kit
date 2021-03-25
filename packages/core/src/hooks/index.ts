@@ -5,5 +5,9 @@ export {
 } from './useDraggable';
 export {useDndContext, UseDndContextReturnValue} from './useDndContext';
 export {useDroppable, UseDroppableArguments} from './useDroppable';
-export {LayoutMeasuringStrategy, LayoutMeasuringFrequency} from './utilities';
-export type {LayoutMeasuring} from './utilities';
+export {
+  LayoutMeasuringStrategy,
+  LayoutMeasuringFrequency,
+  TraversalOrder,
+} from './utilities';
+export type {AutoScrollOptions, LayoutMeasuring} from './utilities';

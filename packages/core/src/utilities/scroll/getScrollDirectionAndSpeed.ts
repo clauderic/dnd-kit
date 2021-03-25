@@ -2,11 +2,19 @@ import {Direction, ViewRect} from '../../types';
 import {getScrollPosition} from './getScrollPosition';
 import {isDocumentScrollingElement} from './documentScrollingElement';
 
+interface Rect extends Pick<ViewRect, 'top' | 'left' | 'right' | 'bottom'> {}
+
+const defaultThreshold = {
+  x: 0.2,
+  y: 0.2,
+};
+
 export function getScrollDirectionAndSpeed(
   scrollContainer: Element,
   scrollContainerRect: ViewRect,
-  rect: ViewRect,
-  acceleration = 10
+  {top, left, right, bottom}: Rect,
+  acceleration = 10,
+  thresholdPercentage = defaultThreshold
 ) {
   const {clientHeight, clientWidth} = scrollContainer;
   const finalScrollContainerRect = isDocumentScrollingElement(scrollContainer)
@@ -15,10 +23,12 @@ export function getScrollDirectionAndSpeed(
         left: 0,
         right: clientWidth,
         bottom: clientHeight,
+        width: clientWidth,
+        height: clientHeight,
       }
     : scrollContainerRect;
   const {isTop, isBottom, isLeft, isRight} = getScrollPosition(scrollContainer);
-  const {width, height, left, top, bottom, right} = rect;
+
   const direction = {
     x: 0,
     y: 0,
@@ -27,33 +37,55 @@ export function getScrollDirectionAndSpeed(
     x: 0,
     y: 0,
   };
+  const threshold = {
+    height: finalScrollContainerRect.height * thresholdPercentage.y,
+    width: finalScrollContainerRect.width * thresholdPercentage.x,
+  };
 
-  if (!isTop && top <= finalScrollContainerRect.top + height) {
+  if (!isTop && top <= finalScrollContainerRect.top + threshold.height) {
     // Scroll Up
     direction.y = Direction.Backward;
     speed.y =
       acceleration *
-      Math.abs((top - height - finalScrollContainerRect.top) / height);
-  } else if (!isBottom && bottom >= finalScrollContainerRect.bottom - height) {
+      Math.abs(
+        (threshold.height - (finalScrollContainerRect.top + top)) /
+          threshold.height
+      );
+  } else if (
+    !isBottom &&
+    bottom >= finalScrollContainerRect.bottom - threshold.height
+  ) {
     // Scroll Down
     direction.y = Direction.Forward;
     speed.y =
       acceleration *
-      Math.abs((finalScrollContainerRect.bottom - height - bottom) / height);
+      Math.abs(
+        (threshold.height - (finalScrollContainerRect.bottom - bottom)) /
+          threshold.height
+      );
   }
 
-  if (!isRight && right >= finalScrollContainerRect.right - width) {
+  if (!isRight && right >= finalScrollContainerRect.right - threshold.width) {
     // Scroll Right
     direction.x = Direction.Forward;
     speed.x =
       acceleration *
-      Math.abs((finalScrollContainerRect.right - width - right) / width);
-  } else if (!isLeft && left <= finalScrollContainerRect.left + width) {
+      Math.abs(
+        (threshold.width - (finalScrollContainerRect.right - right)) /
+          threshold.width
+      );
+  } else if (
+    !isLeft &&
+    left <= finalScrollContainerRect.left + threshold.width
+  ) {
     // Scroll Left
     direction.x = Direction.Backward;
     speed.x =
       acceleration *
-      Math.abs((left - width - finalScrollContainerRect.left) / width);
+      Math.abs(
+        (threshold.width - (finalScrollContainerRect.left + left)) /
+          threshold.width
+      );
   }
 
   return {

@@ -13,11 +13,13 @@ export type {
 export {
   LayoutMeasuringFrequency,
   LayoutMeasuringStrategy,
+  TraversalOrder,
   useDraggable,
   useDndContext,
   useDroppable,
 } from './hooks';
 export type {
+  AutoScrollOptions,
   DraggableSyntheticListeners,
   LayoutMeasuring,
   UseDndContextReturnValue,
@@ -75,6 +77,7 @@ export {
   defaultCoordinates,
   getBoundingClientRect,
   getViewRect,
+  getScrollableAncestors,
   closestCenter,
   closestCorners,
   rectIntersection,

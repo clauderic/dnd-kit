@@ -33,6 +33,7 @@ export {
   getScrollableElement,
   getScrollCoordinates,
   getScrollDirectionAndSpeed,
+  getScrollElementRect,
   getScrollOffsets,
   getScrollPosition,
   isDocumentScrollingElement,

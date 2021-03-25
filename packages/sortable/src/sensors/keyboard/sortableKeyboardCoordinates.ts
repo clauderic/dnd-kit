@@ -1,11 +1,11 @@
 import {
   closestCorners,
   getViewRect,
+  getScrollableAncestors,
   KeyboardCode,
   RectEntry,
   KeyboardCoordinateGetter,
 } from '@dnd-kit/core';
-import {subtract as getCoordinatesDelta} from '@dnd-kit/utilities';
 
 const directions: string[] = [
   KeyboardCode.Down,
@@ -16,7 +16,7 @@ const directions: string[] = [
 
 export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
   event,
-  {context: {translatedRect, droppableContainers}}
+  {context: {droppableContainers, translatedRect, scrollableAncestors}}
 ) => {
   if (directions.includes(event.code)) {
     event.preventDefault();
@@ -70,11 +70,24 @@ export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
       const newNode = droppableContainers[closestId]?.node.current;
 
       if (newNode) {
+        const newScrollAncestors = getScrollableAncestors(newNode);
+        const hasDifferentScrollAncestors = newScrollAncestors.some(
+          (element, index) => scrollableAncestors[index] !== element
+        );
         const newRect = getViewRect(newNode);
-        const newCoordinates = getCoordinatesDelta({
-          x: newRect.left - (translatedRect.width - newRect.width),
-          y: newRect.top - (translatedRect.height - newRect.height),
-        });
+        const offset = hasDifferentScrollAncestors
+          ? {
+              x: 0,
+              y: 0,
+            }
+          : {
+              x: translatedRect.width - newRect.width,
+              y: translatedRect.height - newRect.height,
+            };
+        const newCoordinates = {
+          x: newRect.left - offset.x,
+          y: newRect.top - offset.y,
+        };
 
         return newCoordinates;
       }
