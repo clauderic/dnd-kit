@@ -8,6 +8,7 @@ export interface TreeItem {
 export type TreeItems = TreeItem[];
 
 export interface FlattenedItem extends TreeItem {
+  parentId: null | string;
   depth: number;
   index: number;
 }

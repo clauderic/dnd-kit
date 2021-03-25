@@ -8,7 +8,7 @@ import {
 import {subtract as getCoordinatesDelta} from '@dnd-kit/utilities';
 
 import type {SensorContext} from './types';
-import {getProjectedDepth} from './utilities';
+import {getProjection} from './utilities';
 
 const directions: string[] = [
   KeyboardCode.Down,
@@ -42,7 +42,7 @@ export const sortableTreeKeyboardCoordinates: (
     } = context;
 
     if (horizontal.includes(event.code)) {
-      const {depth, maxDepth, minDepth} = getProjectedDepth(
+      const {depth, maxDepth, minDepth} = getProjection(
         items,
         active,
         over.id,
@@ -110,7 +110,7 @@ export const sortableTreeKeyboardCoordinates: (
         const newRect = getViewRect(newNode);
         const newItem = items.find(({id}) => id === closestId);
         const activeItem = items.find(({id}) => id === active);
-        const {depth} = getProjectedDepth(
+        const {depth} = getProjection(
           items,
           active,
           closestId,

@@ -12,15 +12,19 @@ import {
   DragEndEvent,
   DragOverEvent,
 } from '@dnd-kit/core';
-import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable';
+import {
+  SortableContext,
+  arrayMove,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 
-import {getProjectedDepth, flattenTree} from './utilities';
-import type {SensorContext, TreeItems} from './types';
+import {getProjection, flattenTree, buildTree} from './utilities';
+import type {FlattenedItem, SensorContext, TreeItems} from './types';
 import {sortableTreeKeyboardCoordinates} from './keyboardCoordinates';
 import {TreeItem, SortableTreeItem} from './components';
 
 export default {
-  title: 'Presets/Tree/Vertical',
+  title: 'Examples/Tree/Vertical',
 };
 
 const initialItems: TreeItems = [
@@ -52,7 +56,7 @@ const initialItems: TreeItems = [
 const STEP = 50;
 
 function SortableTree() {
-  const [items] = useState(() => initialItems);
+  const [items, setItems] = useState(() => initialItems);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [offsetLeft, setOffsetLeft] = useState(0);
   const [overId, setOverId] = useState(null);
@@ -67,8 +71,8 @@ function SortableTree() {
       }),
     [activeId, items]
   );
-  const projectedDepth = activeId
-    ? getProjectedDepth(flattenedItems, activeId, overId, offsetLeft, STEP)
+  const projected = activeId
+    ? getProjection(flattenedItems, activeId, overId, offsetLeft, STEP)
     : null;
   const sensorContext: SensorContext = useRef({
     items: flattenedItems,
@@ -125,7 +129,7 @@ function SortableTree() {
               id={id}
               items={flattenedItems}
               value={id}
-              depth={id === activeId ? projectedDepth.depth : depth}
+              depth={id === activeId ? projected.depth : depth}
               childCount={children ? children.length : 0}
               step={STEP}
             />
@@ -164,11 +168,25 @@ function SortableTree() {
   }
 
   function handleDragEnd({active, over}: DragEndEvent) {
-    if (active.id !== over.id) {
-      // move node and its children to new index and depth
-    }
+    const {depth, parentId} = projected;
 
     resetState();
+
+    const clonedItems: FlattenedItem[] = JSON.parse(
+      JSON.stringify(flattenTree(items))
+    );
+    const overIndex = clonedItems.findIndex(({id}) => id === over.id);
+    const activeIndex = clonedItems.findIndex(({id}) => id === active.id);
+    const activeTreeItem = clonedItems[activeIndex];
+
+    clonedItems[activeIndex] = {...activeTreeItem, depth, parentId};
+
+    const sortedItems = arrayMove(clonedItems, activeIndex, overIndex);
+    const newItems = buildTree(sortedItems);
+
+    console.log(sortedItems, newItems);
+
+    setItems(newItems);
   }
 
   function handleDragCancel() {
