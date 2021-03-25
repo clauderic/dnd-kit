@@ -1,4 +1,4 @@
-export {useAutoScroller, ScrollOrder} from './useAutoScroller';
+export {useAutoScroller, TraversalOrder} from './useAutoScroller';
 export type {Options as AutoScrollOptions} from './useAutoScroller';
 export {useCachedNode} from './useCachedNode';
 export {useCombineActivators} from './useCombineActivators';

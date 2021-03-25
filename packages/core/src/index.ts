@@ -13,6 +13,7 @@ export type {
 export {
   LayoutMeasuringFrequency,
   LayoutMeasuringStrategy,
+  TraversalOrder,
   useDraggable,
   useDndContext,
   useDroppable,
@@ -21,7 +22,6 @@ export type {
   AutoScrollOptions,
   DraggableSyntheticListeners,
   LayoutMeasuring,
-  ScrollOrder,
   UseDndContextReturnValue,
   UseDraggableArguments,
   UseDroppableArguments,

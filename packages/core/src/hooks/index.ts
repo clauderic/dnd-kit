@@ -8,6 +8,6 @@ export {useDroppable, UseDroppableArguments} from './useDroppable';
 export {
   LayoutMeasuringStrategy,
   LayoutMeasuringFrequency,
-  ScrollOrder,
+  TraversalOrder,
 } from './utilities';
 export type {AutoScrollOptions, LayoutMeasuring} from './utilities';

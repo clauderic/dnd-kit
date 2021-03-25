@@ -17,7 +17,7 @@ export interface Options {
   canScroll?: CanScroll;
   enabled?: boolean;
   interval?: number;
-  scrollOrder?: ScrollOrder;
+  order?: TraversalOrder;
   threshold?: {
     x: number;
     y: number;
@@ -34,7 +34,7 @@ interface Arguments extends Options {
 
 export type CanScroll = (element: Element) => boolean;
 
-export enum ScrollOrder {
+export enum TraversalOrder {
   TreeOrder,
   ReversedTreeOrder,
 }
@@ -51,7 +51,7 @@ export function useAutoScroller({
   draggingRect,
   enabled,
   interval = 5,
-  scrollOrder = ScrollOrder.ReversedTreeOrder,
+  order = TraversalOrder.TreeOrder,
   pointerCoordinates,
   scrollableAncestors,
   scrollableAncestorRects,
@@ -95,10 +95,10 @@ export function useAutoScroller({
   }, []);
   const sortedScrollableAncestors = useMemo(
     () =>
-      scrollOrder === ScrollOrder.ReversedTreeOrder
+      order === TraversalOrder.TreeOrder
         ? [...scrollableAncestors].reverse()
         : scrollableAncestors,
-    [scrollOrder, scrollableAncestors]
+    [order, scrollableAncestors]
   );
 
   useEffect(
