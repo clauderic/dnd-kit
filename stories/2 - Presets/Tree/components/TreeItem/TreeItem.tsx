@@ -1,7 +1,7 @@
 import React, {forwardRef, HTMLAttributes} from 'react';
 import classNames from 'classnames';
 
-import {Handle} from '../Handle';
+import {Handle, Remove} from '../../../../components';
 import styles from './TreeItem.module.css';
 
 export interface Props extends HTMLAttributes<HTMLLIElement> {
@@ -12,6 +12,7 @@ export interface Props extends HTMLAttributes<HTMLLIElement> {
   handleProps?: any;
   step: number;
   value: string;
+  onRemove?(): void;
   wrapperRef?(node: HTMLLIElement): void;
 }
 
@@ -23,6 +24,7 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
       depth,
       ghost,
       handleProps,
+      onRemove,
       step,
       style,
       value,
@@ -49,8 +51,9 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
       >
         <div className={styles.TreeItem} ref={ref}>
           <Handle {...handleProps} />
-          {value}
-          {clone && childCount ? (
+          <span className={styles.Text}>{value}</span>
+          {!clone && !ghost && <Remove onClick={onRemove} />}
+          {clone && childCount && childCount > 1 ? (
             <span className={styles.Count}>{childCount}</span>
           ) : null}
         </div>

@@ -41,7 +41,7 @@ export const sortableTreeKeyboardCoordinates: (
       current: {items, offset},
     } = context;
 
-    if (horizontal.includes(event.code)) {
+    if (horizontal.includes(event.code) && over?.id) {
       const {depth, maxDepth, minDepth} = getProjection(
         items,
         active,
@@ -103,27 +103,30 @@ export const sortableTreeKeyboardCoordinates: (
 
     const closestId = closestCorners(layoutRects, translatedRect);
 
-    if (closestId) {
+    if (closestId && over?.id) {
       const newNode = droppableContainers[closestId]?.node.current;
 
       if (newNode) {
         const newRect = getViewRect(newNode);
         const newItem = items.find(({id}) => id === closestId);
         const activeItem = items.find(({id}) => id === active);
-        const {depth} = getProjection(
-          items,
-          active,
-          closestId,
-          (newItem.depth - activeItem.depth) * step,
-          step
-        );
 
-        const newCoordinates = getCoordinatesDelta({
-          x: newRect.left + depth * step,
-          y: newRect.top - (translatedRect.height - newRect.height),
-        });
+        if (newItem && activeItem) {
+          const {depth} = getProjection(
+            items,
+            active,
+            closestId,
+            (newItem.depth - activeItem.depth) * step,
+            step
+          );
 
-        return newCoordinates;
+          const newCoordinates = getCoordinatesDelta({
+            x: newRect.left + depth * step,
+            y: newRect.top - (translatedRect.height - newRect.height),
+          });
+
+          return newCoordinates;
+        }
       }
     }
   }
