@@ -1,5 +1,13 @@
 # @dnd-kit/core
 
+## 2.0.2
+
+### Patch Changes
+
+- [`f038174`](https://github.com/clauderic/dnd-kit/commit/f038174c2096ae287ffa6a5fab9dda09a0f76016) [#166](https://github.com/clauderic/dnd-kit/pull/166) Thanks [@shayc](https://github.com/shayc)! - AutoScrollActivator enum was being exported as a type rather than a value.
+
+- [`7422e25`](https://github.com/clauderic/dnd-kit/commit/7422e25c069fa2a28d56a57d1e7bc1f761efb971) [#165](https://github.com/clauderic/dnd-kit/pull/165) Thanks [@clauderic](https://github.com/clauderic)! - Fix regression with autoscroll disabling by sensors
+
 ## 2.0.1
 
 ### Patch Changes
