@@ -14,12 +14,15 @@ $focused-outline-color: #4c9ffe;
   outline: none;
   appearance: none;
   background-color: transparent;
+  -webkit-tap-highlight-color: transparent;
 
-  &:hover {
-    background-color: var(--action-background, rgba(0, 0, 0, 0.05));
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--action-background, rgba(0, 0, 0, 0.05));
 
-    svg {
-      fill: #6f7b88;
+      svg {
+        fill: #6f7b88;
+      }
     }
   }
 

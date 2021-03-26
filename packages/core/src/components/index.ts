@@ -1,8 +1,5 @@
-export {
-  Announcements,
-  defaultAnnouncements,
-  ScreenReaderInstructions,
-} from './Accessibility';
+export {defaultAnnouncements} from './Accessibility';
+export type {Announcements, ScreenReaderInstructions} from './Accessibility';
 export {DndContext} from './DndContext';
 export type {
   CancelDrop,
@@ -11,8 +8,5 @@ export type {
   DragMoveEvent,
   DragStartEvent,
 } from './DndContext';
-export {
-  DragOverlay,
-  Props as DragOverlayProps,
-  DropAnimation,
-} from './DragOverlay';
+export {DragOverlay, defaultDropAnimation} from './DragOverlay';
+export type {DropAnimation, Props as DragOverlayProps} from './DragOverlay';

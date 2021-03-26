@@ -52,7 +52,7 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
         <div className={styles.TreeItem} ref={ref}>
           <Handle {...handleProps} />
           <span className={styles.Text}>{value}</span>
-          {!clone && !ghost && <Remove onClick={onRemove} />}
+          {!clone && <Remove onClick={onRemove} />}
           {clone && childCount && childCount > 1 ? (
             <span className={styles.Count}>{childCount}</span>
           ) : null}

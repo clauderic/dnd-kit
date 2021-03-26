@@ -14,6 +14,8 @@ import {
   DragOverEvent,
   LayoutMeasuring,
   LayoutMeasuringStrategy,
+  DropAnimation,
+  defaultDropAnimation,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -64,6 +66,11 @@ const STEP = 50;
 
 const layoutMeasuring: Partial<LayoutMeasuring> = {
   strategy: LayoutMeasuringStrategy.BeforeDragging,
+};
+
+const dropAnimation: DropAnimation = {
+  ...defaultDropAnimation,
+  dragSourceOpacity: 0.5,
 };
 
 export function SortableTree() {
@@ -144,7 +151,7 @@ export function SortableTree() {
             />
           ))}
           {createPortal(
-            <DragOverlay>
+            <DragOverlay dropAnimation={dropAnimation}>
               {activeId && activeItem ? (
                 <TreeItem
                   depth={activeItem.depth}

@@ -1,4 +1,9 @@
-export {DndContext, DragOverlay, defaultAnnouncements} from './components';
+export {
+  DndContext,
+  DragOverlay,
+  defaultAnnouncements,
+  defaultDropAnimation,
+} from './components';
 export type {
   Announcements,
   CancelDrop,

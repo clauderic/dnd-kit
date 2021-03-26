@@ -29,9 +29,10 @@ const defaultTransition: TransitionGetter = (activatorEvent) => {
   return isKeyboardActivator ? 'transform 250ms ease' : undefined;
 };
 
-const defaultDropAnimation: DropAnimation = {
+export const defaultDropAnimation: DropAnimation = {
   duration: 250,
   easing: 'ease',
+  dragSourceOpacity: 0,
 };
 
 export const DragOverlay = React.memo(
@@ -126,6 +127,7 @@ export const DragOverlay = React.memo(
       draggableNodes,
       duration: dropAnimation?.duration,
       easing: dropAnimation?.easing,
+      dragSourceOpacity: dropAnimation?.dragSourceOpacity,
       node: overlayNode.nodeRef.current,
       transform: attributesSnapshot.current?.transform,
     });

@@ -8,6 +8,7 @@ import {getViewRect} from '../../../utilities';
 export interface DropAnimation {
   duration: number;
   easing: string;
+  dragSourceOpacity?: number;
 }
 
 interface Arguments {
@@ -17,6 +18,7 @@ interface Arguments {
   draggableNodes: DraggableNodes;
   duration: DropAnimation['duration'] | undefined;
   easing: DropAnimation['easing'] | undefined;
+  dragSourceOpacity: DropAnimation['dragSourceOpacity'] | undefined;
   node: HTMLElement | null;
   transform: Transform | undefined;
 }
@@ -28,6 +30,7 @@ export function useDropAnimation({
   draggableNodes,
   duration,
   easing,
+  dragSourceOpacity,
   node,
   transform,
 }: Arguments) {
@@ -72,7 +75,10 @@ export function useDropAnimation({
             });
             const originalOpacity = finalNode.style.opacity;
 
-            finalNode.style.opacity = '0';
+            if (dragSourceOpacity != null) {
+              finalNode.style.opacity = `${dragSourceOpacity}`;
+            }
+
             const nodeAnimation = node.animate(
               [
                 {
@@ -91,7 +97,7 @@ export function useDropAnimation({
             nodeAnimation.onfinish = () => {
               setDropAnimationComplete(true);
 
-              if (finalNode) {
+              if (finalNode && dragSourceOpacity != null) {
                 finalNode.style.opacity = originalOpacity;
               }
             };
@@ -109,6 +115,7 @@ export function useDropAnimation({
     draggableNodes,
     duration,
     easing,
+    dragSourceOpacity,
     node,
     transform,
   ]);
