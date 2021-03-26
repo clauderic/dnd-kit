@@ -10,7 +10,7 @@ export {
   LayoutMeasuringFrequency,
   TraversalOrder,
 } from './utilities';
-export type {
+export {
   AutoScrollOptions,
   AutoScrollActivator,
   LayoutMeasuring,
