@@ -6,12 +6,12 @@ export {
 export {useDndContext, UseDndContextReturnValue} from './useDndContext';
 export {useDroppable, UseDroppableArguments} from './useDroppable';
 export {
+  AutoScrollActivator,
   LayoutMeasuringStrategy,
   LayoutMeasuringFrequency,
   TraversalOrder,
 } from './utilities';
-export {
+export type {
   AutoScrollOptions,
-  AutoScrollActivator,
   LayoutMeasuring,
 } from './utilities';
