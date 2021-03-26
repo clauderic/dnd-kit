@@ -1,2 +1,3 @@
-export {DragOverlay, Props} from './DragOverlay';
+export {DragOverlay, defaultDropAnimation} from './DragOverlay';
+export type {Props} from './DragOverlay';
 export type {DropAnimation} from './hooks';
