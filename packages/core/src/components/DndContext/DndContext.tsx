@@ -625,10 +625,14 @@ export const DndContext = memo(function DndContext({
   );
 
   function getAutoScrollerOptions() {
+    const activeSensorDisablesAutoscroll =
+      activeSensor?.autoScrollEnabled === false;
+    const autoScrollGloballyDisabled =
+      typeof autoScroll === 'object'
+        ? autoScroll.enabled === false
+        : autoScroll === false;
     const enabled =
-      autoScroll === true ||
-      (typeof autoScroll === 'object' && autoScroll.enabled === true) ||
-      activeSensor?.autoScrollEnabled !== false;
+      !activeSensorDisablesAutoscroll && !autoScrollGloballyDisabled;
 
     if (typeof autoScroll === 'object') {
       return {
