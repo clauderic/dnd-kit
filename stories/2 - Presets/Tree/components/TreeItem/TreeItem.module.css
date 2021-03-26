@@ -1,0 +1,68 @@
+.Wrapper {
+  list-style: none;
+  box-sizing: border-box;
+  padding-left: var(--spacing);
+  margin-bottom: -1px;
+
+  &.clone {
+    display: inline-block;
+    pointer-events: none;
+    padding: 5px;
+
+    .TreeItem {
+      --vertical-padding: 5px;
+
+      padding-right: 24px;
+      border-radius: 4px;
+      box-shadow: 0px 15px 15px 0 rgba(34, 33, 81, 0.1);
+    }
+  }
+
+  &.ghost {
+    opacity: 0.5;
+
+    .TreeItem {
+      > * {
+        box-shadow: none;
+        background-color: transparent;
+      }
+    }
+  }
+}
+
+.TreeItem {
+  --vertical-padding: 10px;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: var(--vertical-padding) 10px;
+  background-color: #fff;
+  border: 1px solid #dedede;
+  color: #222;
+  box-sizing: border-box;
+}
+
+.Text {
+  flex-grow: 1;
+  padding-left: 0.5rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.Count {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #2389ff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+}
