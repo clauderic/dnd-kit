@@ -42,7 +42,7 @@ export const Page = forwardRef<HTMLButtonElement, Props>(function Page(
       style={style}
     >
       <button ref={ref} className={styles.Page} data-id={id} {...props} />
-      {onRemove ? (
+      {!active && onRemove ? (
         <button className={styles.Remove} onClick={onRemove}>
           {removeIcon}
         </button>

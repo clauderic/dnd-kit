@@ -2,8 +2,10 @@ import {arrayMove} from '@dnd-kit/sortable';
 
 import type {FlattenedItem, TreeItem, TreeItems} from './types';
 
-function getDragDepth(offset: number, step) {
-  return Math.round(offset / step);
+export const iOS = /iPad|iPhone|iPod/.test(navigator.platform);
+
+function getDragDepth(offset: number, indentationWidth: number) {
+  return Math.round(offset / indentationWidth);
 }
 
 export function getProjection(
@@ -11,7 +13,7 @@ export function getProjection(
   activeId: string,
   overId: string,
   dragOffset: number,
-  step: number
+  indentationWidth: number
 ) {
   const overItemIndex = items.findIndex(({id}) => id === overId);
   const activeItemIndex = items.findIndex(({id}) => id === activeId);
@@ -19,7 +21,7 @@ export function getProjection(
   const newItems = arrayMove(items, activeItemIndex, overItemIndex);
   const previousItem = newItems[overItemIndex - 1];
   const nextItem = newItems[overItemIndex + 1];
-  const dragDepth = getDragDepth(dragOffset, step);
+  const dragDepth = getDragDepth(dragOffset, indentationWidth);
   const projectedDepth = activeItem.depth + dragDepth;
   const maxDepth = getMaxDepth({
     previousItem,
@@ -153,6 +155,26 @@ export function removeItem(items: TreeItems, id: string) {
   return newItems;
 }
 
+export function setProperty<T extends keyof TreeItem>(
+  items: TreeItems,
+  id: string,
+  property: T,
+  setter: (value: TreeItem[T]) => TreeItem[T]
+) {
+  for (const item of items) {
+    if (item.id === id) {
+      item[property] = setter(item[property]);
+      continue;
+    }
+
+    if (item.children.length) {
+      item.children = setProperty(item.children, id, property, setter);
+    }
+  }
+
+  return [...items];
+}
+
 function countChildren(items: TreeItem[], count = 0): number {
   return items.reduce((acc, {children}) => {
     if (children.length) {
@@ -173,8 +195,8 @@ export function getChildCount(items: TreeItems, id: string) {
   return item ? countChildren(item.children) : 0;
 }
 
-export function removeChildrenOf(items: FlattenedItem[], id: string) {
-  const excludeParentIds = [id];
+export function removeChildrenOf(items: FlattenedItem[], ids: string[]) {
+  const excludeParentIds = [...ids];
 
   return items.filter((item) => {
     if (item.parentId && excludeParentIds.includes(item.parentId)) {

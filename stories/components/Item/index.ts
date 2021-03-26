@@ -1,2 +1,2 @@
 export {Item} from './Item';
-export {Handle, Remove} from './components';
+export {Action, Handle, Remove} from './components';

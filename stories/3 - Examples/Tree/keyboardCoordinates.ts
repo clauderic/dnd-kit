@@ -5,7 +5,6 @@ import {
   RectEntry,
   KeyboardCoordinateGetter,
 } from '@dnd-kit/core';
-import {subtract as getCoordinatesDelta} from '@dnd-kit/utilities';
 
 import type {SensorContext} from './types';
 import {getProjection} from './utilities';
@@ -21,8 +20,8 @@ const horizontal: string[] = [KeyboardCode.Left, KeyboardCode.Right];
 
 export const sortableTreeKeyboardCoordinates: (
   context: SensorContext,
-  step: number
-) => KeyboardCoordinateGetter = (context, step) => (
+  indentationWidth: number
+) => KeyboardCoordinateGetter = (context, indentationWidth) => (
   event,
   {
     active,
@@ -47,7 +46,7 @@ export const sortableTreeKeyboardCoordinates: (
         active,
         over.id,
         offset,
-        step
+        indentationWidth
       );
 
       switch (event.code) {
@@ -55,7 +54,7 @@ export const sortableTreeKeyboardCoordinates: (
           if (depth > minDepth) {
             return {
               ...currentCoordinates,
-              x: currentCoordinates.x - step,
+              x: currentCoordinates.x - indentationWidth,
             };
           }
           break;
@@ -63,7 +62,7 @@ export const sortableTreeKeyboardCoordinates: (
           if (depth < maxDepth) {
             return {
               ...currentCoordinates,
-              x: currentCoordinates.x + step,
+              x: currentCoordinates.x + indentationWidth,
             };
           }
           break;
@@ -74,27 +73,29 @@ export const sortableTreeKeyboardCoordinates: (
 
     const layoutRects: RectEntry[] = [];
 
+    const overRect = over?.id
+      ? droppableContainers[over.id]?.rect.current
+      : undefined;
+
     Object.entries(droppableContainers).forEach(([id, container]) => {
-      if (container?.disabled) {
+      if (container?.disabled || !overRect) {
         return;
       }
 
-      const node = container?.node.current;
+      const rect = container?.rect.current;
 
-      if (!node) {
+      if (!rect) {
         return;
       }
-
-      const rect = getViewRect(node);
 
       switch (event.code) {
         case KeyboardCode.Down:
-          if (translatedRect.top < rect.top) {
+          if (overRect.offsetTop < rect.offsetTop) {
             layoutRects.push([id, rect]);
           }
           break;
         case KeyboardCode.Up:
-          if (translatedRect.top > rect.top) {
+          if (overRect.offsetTop > rect.offsetTop) {
             layoutRects.push([id, rect]);
           }
           break;
@@ -105,8 +106,9 @@ export const sortableTreeKeyboardCoordinates: (
 
     if (closestId && over?.id) {
       const newNode = droppableContainers[closestId]?.node.current;
+      const activeNodeRect = droppableContainers[active]?.rect.current;
 
-      if (newNode) {
+      if (newNode && activeNodeRect) {
         const newRect = getViewRect(newNode);
         const newItem = items.find(({id}) => id === closestId);
         const activeItem = items.find(({id}) => id === active);
@@ -116,14 +118,18 @@ export const sortableTreeKeyboardCoordinates: (
             items,
             active,
             closestId,
-            (newItem.depth - activeItem.depth) * step,
-            step
+            (newItem.depth - activeItem.depth) * indentationWidth,
+            indentationWidth
           );
+          const offset =
+            newRect.offsetTop > activeNodeRect.offsetTop
+              ? Math.abs(activeNodeRect.height - newRect.height)
+              : 0;
 
-          const newCoordinates = getCoordinatesDelta({
-            x: newRect.left + depth * step,
-            y: newRect.top - (translatedRect.height - newRect.height),
-          });
+          const newCoordinates = {
+            x: newRect.left + depth * indentationWidth,
+            y: newRect.top + offset,
+          };
 
           return newCoordinates;
         }
