@@ -41,6 +41,7 @@
   border: 1px solid #dedede;
   color: #222;
   box-sizing: border-box;
+  user-select: none;
 }
 
 .Text {
