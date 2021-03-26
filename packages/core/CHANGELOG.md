@@ -1,5 +1,13 @@
 # @dnd-kit/core
 
+## 2.0.1
+
+### Patch Changes
+
+- [`a847a80`](https://github.com/clauderic/dnd-kit/commit/a847a800400a392ad4653199b6705dd687703d01) [#160](https://github.com/clauderic/dnd-kit/pull/160) Thanks [@clauderic](https://github.com/clauderic)! - Allow consumers to define drag source opacity in drop animation by setting the `dragSourceOpacity` option to a number on the `dropAnimation` prop of `DragOverlay`.
+
+- [`ea9d878`](https://github.com/clauderic/dnd-kit/commit/ea9d878e7c1bd8b46482ee4b82a39f744db027b9) [#164](https://github.com/clauderic/dnd-kit/pull/164) Thanks [@clauderic](https://github.com/clauderic)! - Export AutoScrollActivator enum for consumers.
+
 ## 2.0.0
 
 ### Major Changes
