@@ -16,6 +16,7 @@ export type {
 } from './components';
 
 export {
+  AutoScrollActivator,
   LayoutMeasuringFrequency,
   LayoutMeasuringStrategy,
   TraversalOrder,
