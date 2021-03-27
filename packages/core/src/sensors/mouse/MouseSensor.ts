@@ -1,3 +1,5 @@
+import type {MouseEvent} from 'react';
+
 import {getOwnerDocument} from '../../utilities';
 import type {SensorProps} from '../types';
 import {
@@ -28,7 +30,7 @@ export class MouseSensor extends AbstractPointerSensor {
     {
       eventName: 'onMouseDown' as const,
       handler: (
-        {nativeEvent: event}: React.MouseEvent,
+        {nativeEvent: event}: MouseEvent,
         {onActivation}: MouseSensorOptions
       ) => {
         if (event.button === MouseButton.RightClick) {

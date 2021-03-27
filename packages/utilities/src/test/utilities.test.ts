@@ -3,3 +3,5 @@ describe('@dnd-kit/utilities', () => {
     expect(true).toBe(true);
   });
 });
+
+export {};

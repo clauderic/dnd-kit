@@ -14,8 +14,8 @@ export {
 export type {LayoutMeasuring} from './useLayoutMeasuring';
 export {useScrollOffsets} from './useScrollOffsets';
 export {useScrollableAncestors} from './useScrollableAncestors';
-export {
-  useSyntheticListeners,
+export {useSyntheticListeners} from './useSyntheticListeners';
+export type {
   SyntheticListener,
   SyntheticListeners,
   SyntheticListenerMap,

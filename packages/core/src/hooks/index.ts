@@ -1,10 +1,12 @@
-export {
+export {useDraggable} from './useDraggable';
+export type {
   DraggableSyntheticListeners,
-  useDraggable,
   UseDraggableArguments,
 } from './useDraggable';
-export {useDndContext, UseDndContextReturnValue} from './useDndContext';
-export {useDroppable, UseDroppableArguments} from './useDroppable';
+export {useDndContext} from './useDndContext';
+export type {UseDndContextReturnValue} from './useDndContext';
+export {useDroppable} from './useDroppable';
+export type {UseDroppableArguments} from './useDroppable';
 export {
   AutoScrollActivator,
   LayoutMeasuringStrategy,

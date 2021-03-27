@@ -1,9 +1,5 @@
-export {
-  closestCenter,
-  closestCorners,
-  rectIntersection,
-  CollisionDetection,
-} from './algorithms';
+export {closestCenter, closestCorners, rectIntersection} from './algorithms';
+export type {CollisionDetection} from './algorithms';
 
 export {
   defaultCoordinates,

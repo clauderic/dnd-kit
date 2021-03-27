@@ -3,3 +3,5 @@ describe('@dnd-kit/core', () => {
     expect(true).toBe(true);
   });
 });
+
+export {};

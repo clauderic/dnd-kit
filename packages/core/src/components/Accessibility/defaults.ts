@@ -1,4 +1,4 @@
-import {Announcements, ScreenReaderInstructions} from './types';
+import type {Announcements, ScreenReaderInstructions} from './types';
 
 export const screenReaderInstructions: ScreenReaderInstructions = {
   draggable: `

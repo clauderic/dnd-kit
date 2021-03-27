@@ -1,4 +1,4 @@
-import React from 'react';
+import type {MutableRefObject} from 'react';
 
 import type {
   Coordinates,
@@ -22,13 +22,13 @@ export type Data = Record<string, any>;
 
 export interface DroppableContainer {
   id: UniqueIdentifier;
-  node: React.MutableRefObject<HTMLElement | null>;
-  rect: React.MutableRefObject<LayoutRect | null>;
+  node: MutableRefObject<HTMLElement | null>;
+  rect: MutableRefObject<LayoutRect | null>;
   disabled: boolean;
-  data: React.MutableRefObject<Data>;
+  data: MutableRefObject<Data>;
 }
 
-export type DraggableNode = React.MutableRefObject<HTMLElement | null>;
+export type DraggableNode = MutableRefObject<HTMLElement | null>;
 
 export type DraggableNodes = Record<
   UniqueIdentifier,
@@ -75,7 +75,7 @@ export interface DndContextDescriptor {
     rect: LayoutRect;
   } | null;
   overlayNode: {
-    nodeRef: React.MutableRefObject<HTMLElement | null>;
+    nodeRef: MutableRefObject<HTMLElement | null>;
     rect: ViewRect | null;
     setRef: (element: HTMLElement | null) => void;
   };
