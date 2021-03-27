@@ -3,6 +3,7 @@ import {MutableRefObject} from 'react';
 export interface TreeItem {
   id: string;
   children: TreeItem[];
+  collapsed?: boolean;
 }
 
 export type TreeItems = TreeItem[];

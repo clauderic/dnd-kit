@@ -72,6 +72,7 @@ export function useSortable({
   const isSorting = Boolean(active);
   const displaceItem =
     isSorting &&
+    wasSorting.current &&
     !disableTransforms &&
     isValidIndex(activeIndex) &&
     isValidIndex(overIndex);
@@ -103,7 +104,7 @@ export function useSortable({
     items,
     newIndex: prevNewIndex.current,
     transition,
-    wasSorting,
+    wasSorting: wasSorting.current,
   });
   const derivedTransform = useDerivedTransform({
     disabled: !shouldAnimateLayoutChanges,

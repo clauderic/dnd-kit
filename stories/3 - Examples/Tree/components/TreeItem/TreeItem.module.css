@@ -19,13 +19,47 @@
   }
 
   &.ghost {
-    opacity: 0.5;
+    &.indicator {
+      opacity: 1;
+      position: relative;
+      z-index: 1;
+      margin-bottom: -1px;
 
-    .TreeItem {
-      > * {
-        box-shadow: none;
-        background-color: transparent;
+      .TreeItem {
+        position: relative;
+        padding: 0;
+        height: 8px;
+        border-color: #2389ff;
+        background-color: #56a1f8;
+
+        &:before {
+          position: absolute;
+          left: -8px;
+          top: -4px;
+          display: block;
+          content: '';
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          border: 1px solid #2389ff;
+          background-color: #ffffff;
+        }
+
+        > * {
+          /* Items are hidden using height and opacity to retain focus */
+          opacity: 0;
+          height: 0;
+        }
       }
+    }
+
+    &:not(.indicator) {
+      opacity: 0.5;
+    }
+
+    .TreeItem > * {
+      box-shadow: none;
+      background-color: transparent;
     }
   }
 }
@@ -41,7 +75,6 @@
   border: 1px solid #dedede;
   color: #222;
   box-sizing: border-box;
-  user-select: none;
 }
 
 .Text {
@@ -66,4 +99,27 @@
   font-size: 0.8rem;
   font-weight: 600;
   color: #fff;
+}
+
+.disableInteraction {
+  pointer-events: none;
+}
+
+.disableSelection,
+.clone {
+  .Text,
+  .Count {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+}
+
+.Collapse {
+  svg {
+    transition: transform 250ms ease;
+  }
+
+  &.collapsed svg {
+    transform: rotate(-90deg);
+  }
 }

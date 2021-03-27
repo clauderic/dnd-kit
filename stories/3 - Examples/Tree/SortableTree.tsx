@@ -16,6 +16,7 @@ import {
   LayoutMeasuringStrategy,
   DropAnimation,
   defaultDropAnimation,
+  Modifier,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -30,6 +31,7 @@ import {
   getChildCount,
   removeItem,
   removeChildrenOf,
+  setProperty,
 } from './utilities';
 import type {FlattenedItem, SensorContext, TreeItems} from './types';
 import {sortableTreeKeyboardCoordinates} from './keyboardCoordinates';
@@ -62,10 +64,8 @@ const initialItems: TreeItems = [
   },
 ];
 
-const STEP = 50;
-
 const layoutMeasuring: Partial<LayoutMeasuring> = {
-  strategy: LayoutMeasuringStrategy.BeforeDragging,
+  strategy: LayoutMeasuringStrategy.Always,
 };
 
 const dropAnimation: DropAnimation = {
@@ -73,28 +73,54 @@ const dropAnimation: DropAnimation = {
   dragSourceOpacity: 0.5,
 };
 
-export function SortableTree() {
-  const [items, setItems] = useState(() => initialItems);
+interface Props {
+  collapsible?: boolean;
+  defaultItems?: TreeItems;
+  indentationWidth?: number;
+  indicator?: boolean;
+  removable?: boolean;
+}
+
+export function SortableTree({
+  collapsible,
+  defaultItems = initialItems,
+  indicator,
+  indentationWidth = 50,
+  removable,
+}: Props) {
+  const [items, setItems] = useState(() => defaultItems);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
   const [offsetLeft, setOffsetLeft] = useState(0);
-  const flattenedItems = useMemo(
-    () =>
-      activeId
-        ? removeChildrenOf(flattenTree(items), activeId)
-        : flattenTree(items),
-    [activeId, items]
-  );
+  const flattenedItems = useMemo(() => {
+    const flattenedTree = flattenTree(items);
+    const collapsedItems = flattenedTree.reduce<string[]>(
+      (acc, {children, collapsed, id}) =>
+        collapsed && children.length ? [...acc, id] : acc,
+      []
+    );
+
+    return removeChildrenOf(
+      flattenedTree,
+      activeId ? [activeId, ...collapsedItems] : collapsedItems
+    );
+  }, [activeId, items]);
   const projected =
     activeId && overId
-      ? getProjection(flattenedItems, activeId, overId, offsetLeft, STEP)
+      ? getProjection(
+          flattenedItems,
+          activeId,
+          overId,
+          offsetLeft,
+          indentationWidth
+        )
       : null;
   const sensorContext: SensorContext = useRef({
     items: flattenedItems,
     offset: offsetLeft,
   });
   const [coordinateGetter] = useState(() =>
-    sortableTreeKeyboardCoordinates(sensorContext, STEP)
+    sortableTreeKeyboardCoordinates(sensorContext, indentationWidth)
   );
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -118,55 +144,51 @@ export function SortableTree() {
   }, [flattenedItems, offsetLeft]);
 
   return (
-    <div
-      style={{
-        maxWidth: 600,
-        padding: 10,
-        margin: '0 auto',
-        marginTop: 100,
-      }}
+    <DndContext
+      sensors={sensors}
+      modifiers={indicator ? [adjustTranslate] : undefined}
+      collisionDetection={closestCenter}
+      layoutMeasuring={layoutMeasuring}
+      onDragStart={handleDragStart}
+      onDragMove={handleDragMove}
+      onDragOver={handleDragOver}
+      onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
     >
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        layoutMeasuring={layoutMeasuring}
-        onDragStart={handleDragStart}
-        onDragMove={handleDragMove}
-        onDragOver={handleDragOver}
-        onDragEnd={handleDragEnd}
-        onDragCancel={handleDragCancel}
-      >
-        <SortableContext
-          items={sortedIds}
-          strategy={verticalListSortingStrategy}
-        >
-          {flattenedItems.map(({id, depth}) => (
-            <SortableTreeItem
-              key={id}
-              id={id}
-              value={id}
-              depth={id === activeId && projected ? projected.depth : depth}
-              step={STEP}
-              onRemove={() => handleRemove(id)}
-            />
-          ))}
-          {createPortal(
-            <DragOverlay dropAnimation={dropAnimation}>
-              {activeId && activeItem ? (
-                <TreeItem
-                  depth={activeItem.depth}
-                  clone
-                  childCount={getChildCount(items, activeId) + 1}
-                  value={activeId}
-                  step={STEP}
-                />
-              ) : null}
-            </DragOverlay>,
-            document.body
-          )}
-        </SortableContext>
-      </DndContext>
-    </div>
+      <SortableContext items={sortedIds} strategy={verticalListSortingStrategy}>
+        {flattenedItems.map(({id, children, collapsed, depth}) => (
+          <SortableTreeItem
+            key={id}
+            id={id}
+            value={id}
+            depth={id === activeId && projected ? projected.depth : depth}
+            indentationWidth={indentationWidth}
+            indicator={indicator}
+            collapsed={Boolean(collapsed && children.length)}
+            onCollapse={
+              collapsible && children.length
+                ? () => handleCollapse(id)
+                : undefined
+            }
+            onRemove={removable ? () => handleRemove(id) : undefined}
+          />
+        ))}
+        {createPortal(
+          <DragOverlay dropAnimation={dropAnimation}>
+            {activeId && activeItem ? (
+              <TreeItem
+                depth={activeItem.depth}
+                clone
+                childCount={getChildCount(items, activeId) + 1}
+                value={activeId}
+                indentationWidth={indentationWidth}
+              />
+            ) : null}
+          </DragOverlay>,
+          document.body
+        )}
+      </SortableContext>
+    </DndContext>
   );
 
   function handleDragStart({active: {id}}: DragStartEvent) {
@@ -220,4 +242,20 @@ export function SortableTree() {
   function handleRemove(id: string) {
     setItems((items) => removeItem(items, id));
   }
+
+  function handleCollapse(id: string) {
+    setItems((items) =>
+      setProperty(items, id, 'collapsed', (value) => {
+        console.log(value);
+        return !value;
+      })
+    );
+  }
 }
+
+const adjustTranslate: Modifier = ({transform}) => {
+  return {
+    ...transform,
+    y: transform.y - 25,
+  };
+};
