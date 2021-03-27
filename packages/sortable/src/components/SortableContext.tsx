@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef} from 'react';
+import React, {MutableRefObject, useEffect, useMemo, useRef} from 'react';
 import {useDndContext, LayoutRect, UniqueIdentifier} from '@dnd-kit/core';
 import {useIsomorphicLayoutEffect, useUniqueId} from '@dnd-kit/utilities';
 
@@ -24,7 +24,7 @@ interface ContextDescriptor {
   useDragOverlay: boolean;
   sortedRects: LayoutRect[];
   strategy: SortingStrategy;
-  wasSorting: boolean;
+  wasSorting: MutableRefObject<boolean>;
 }
 
 export const Context = React.createContext<ContextDescriptor>({
@@ -36,7 +36,7 @@ export const Context = React.createContext<ContextDescriptor>({
   useDragOverlay: false,
   sortedRects: [],
   strategy: rectSortingStrategy,
-  wasSorting: false,
+  wasSorting: {current: false},
 });
 
 export function SortableContext({
@@ -57,8 +57,7 @@ export function SortableContext({
   const useDragOverlay = Boolean(overlayNode.rect !== null);
   const activeIndex = active ? items.indexOf(active) : -1;
   const isSorting = activeIndex !== -1;
-  const prevSorting = useRef(isSorting);
-  const wasSorting = !isSorting && prevSorting.current === true;
+  const wasSorting = useRef(isSorting);
   const overIndex = over ? items.indexOf(over.id) : -1;
   const previousItemsRef = useRef(items);
   const sortedRects = getSortedRects(items, droppableRects);
@@ -78,13 +77,9 @@ export function SortableContext({
   }, [items]);
 
   useEffect(() => {
-    if (isSorting) {
-      prevSorting.current = isSorting;
-    } else {
-      requestAnimationFrame(() => {
-        prevSorting.current = isSorting;
-      });
-    }
+    requestAnimationFrame(() => {
+      wasSorting.current = isSorting;
+    });
   }, [isSorting]);
 
   const contextValue = useMemo(
