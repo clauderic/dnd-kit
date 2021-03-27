@@ -3,3 +3,5 @@ describe('@dnd-kit/sortable', () => {
     expect(true).toBe(true);
   });
 });
+
+export {};

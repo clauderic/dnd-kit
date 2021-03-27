@@ -1,4 +1,4 @@
-import {Coordinates, ViewRect} from '../../types';
+import type {Coordinates, ViewRect} from '../../types';
 
 export function createRectAdjustmentFn(modifier: number) {
   return function adjustViewRect(

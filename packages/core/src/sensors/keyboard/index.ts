@@ -1,5 +1,5 @@
-export {
-  KeyboardSensor,
+export {KeyboardSensor} from './KeyboardSensor';
+export type {
   KeyboardSensorOptions,
   KeyboardSensorProps,
 } from './KeyboardSensor';

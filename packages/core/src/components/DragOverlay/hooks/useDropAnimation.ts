@@ -1,8 +1,8 @@
 import {useEffect, useState} from 'react';
 import {CSS, Transform, useIsomorphicLayoutEffect} from '@dnd-kit/utilities';
 
-import {UniqueIdentifier} from '../../../types';
-import {DraggableNodes} from '../../../store';
+import type {UniqueIdentifier} from '../../../types';
+import type {DraggableNodes} from '../../../store';
 import {getViewRect} from '../../../utilities';
 
 export interface DropAnimation {

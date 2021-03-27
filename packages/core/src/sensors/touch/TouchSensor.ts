@@ -1,4 +1,4 @@
-import React from 'react';
+import type {TouchEvent} from 'react';
 
 import {
   AbstractPointerSensor,
@@ -26,7 +26,7 @@ export class TouchSensor extends AbstractPointerSensor {
     {
       eventName: 'onTouchStart' as const,
       handler: (
-        {nativeEvent: event}: React.TouchEvent,
+        {nativeEvent: event}: TouchEvent,
         {onActivation}: TouchSensorOptions
       ) => {
         const {touches} = event;

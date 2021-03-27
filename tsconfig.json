@@ -4,6 +4,8 @@
   "compilerOptions": {
     "allowJs": false,
     "baseUrl": ".",
+    "importsNotUsedAsValues": "error",
+    "isolatedModules": true,
     "typeRoots": ["./node_modules/@types", "./types"],
     "paths": {
       "@dnd-kit/core": ["packages/core/src"],

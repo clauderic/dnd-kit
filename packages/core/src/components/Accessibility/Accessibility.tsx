@@ -3,9 +3,9 @@ import {createPortal} from 'react-dom';
 import {canUseDOM, useUniqueId} from '@dnd-kit/utilities';
 import {HiddenText, LiveRegion, useAnnouncement} from '@dnd-kit/accessibility';
 
-import {Announcements, ScreenReaderInstructions} from './types';
+import type {Announcements, ScreenReaderInstructions} from './types';
+import type {UniqueIdentifier} from '../../types';
 import {defaultAnnouncements} from './defaults';
-import {UniqueIdentifier} from '../../types';
 import {Action, State} from '../../store';
 
 interface Props {

@@ -1,4 +1,4 @@
-import {UniqueIdentifier} from '../../types';
+import type {UniqueIdentifier} from '../../types';
 
 export interface Announcements {
   onDragStart(id: UniqueIdentifier): string | undefined;

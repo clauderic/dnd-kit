@@ -1,4 +1,4 @@
-import {Coordinates} from '../../types';
+import type {Coordinates} from '../../types';
 
 export function getScrollCoordinates(
   element: Element | typeof window

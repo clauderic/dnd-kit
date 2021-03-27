@@ -1,7 +1,7 @@
 import {createContext} from 'react';
 
 import {noop} from '../utilities/other';
-import {DndContextDescriptor} from './types';
+import type {DndContextDescriptor} from './types';
 
 export const Context = createContext<DndContextDescriptor>({
   activatorEvent: null,

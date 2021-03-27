@@ -1,5 +1,6 @@
-import {getOwnerDocument} from '../../utilities';
+import type {PointerEvent} from 'react';
 
+import {getOwnerDocument} from '../../utilities';
 import type {SensorProps} from '../types';
 import {
   AbstractPointerSensor,
@@ -30,7 +31,7 @@ export class PointerSensor extends AbstractPointerSensor {
     {
       eventName: 'onPointerDown' as const,
       handler: (
-        {nativeEvent: event}: React.PointerEvent,
+        {nativeEvent: event}: PointerEvent,
         {onActivation}: PointerSensorOptions
       ) => {
         if (!event.isPrimary || event.button !== 0) {
