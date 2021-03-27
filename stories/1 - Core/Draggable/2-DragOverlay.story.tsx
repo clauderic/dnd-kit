@@ -4,6 +4,7 @@ import {
   DndContext,
   DragOverlay,
   DropAnimation,
+  defaultDropAnimation,
   Modifiers,
   useDraggable,
   Translate,
@@ -30,10 +31,15 @@ interface Props {
   style?: React.CSSProperties;
 }
 
+const defaultDropAnimationConfig: DropAnimation = {
+  ...defaultDropAnimation,
+  dragSourceOpacity: 0.5,
+};
+
 function DragOverlayExample({
   axis,
   dragOverlayModifiers,
-  dropAnimation,
+  dropAnimation = defaultDropAnimationConfig,
   handle,
   label,
   modifiers,

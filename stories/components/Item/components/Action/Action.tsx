@@ -8,9 +8,10 @@ export interface Props extends React.HTMLAttributes<HTMLButtonElement> {
     fill: string;
     background: string;
   };
+  cursor?: CSSProperties['cursor'];
 }
 
-export function Action({active, className, style, ...props}: Props) {
+export function Action({active, className, cursor, style, ...props}: Props) {
   return (
     <button
       {...props}
@@ -19,6 +20,7 @@ export function Action({active, className, style, ...props}: Props) {
       style={
         {
           ...style,
+          cursor,
           '--fill': active?.fill,
           '--background': active?.background,
         } as CSSProperties

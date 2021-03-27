@@ -10,6 +10,7 @@ import {
   KeyboardSensor,
   useDndContext,
   LayoutMeasuringStrategy,
+  DragEndEvent,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -35,11 +36,11 @@ const layoutMeasuring = {
 };
 
 export function Pages({layout}: Props) {
-  const [activeId, setActiveId] = useState(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [items, setItems] = useState(() =>
     createRange<string>(20, (index) => `${index + 1}`)
   );
-  const activeIndex = items.indexOf(activeId);
+  const activeIndex = activeId ? items.indexOf(activeId) : -1;
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {coordinateGetter: sortableKeyboardCoordinates})
@@ -86,7 +87,7 @@ export function Pages({layout}: Props) {
     setActiveId(null);
   }
 
-  function handleDragEnd({over}) {
+  function handleDragEnd({over}: DragEndEvent) {
     if (over) {
       const overIndex = items.indexOf(over.id);
 
@@ -109,7 +110,7 @@ function PageOverlay({
   const {activatorEvent, over} = useDndContext();
   const isKeyboardSorting = activatorEvent instanceof KeyboardEvent;
   const activeIndex = items.indexOf(id);
-  const overIndex = items.indexOf(over?.id);
+  const overIndex = over?.id ? items.indexOf(over?.id) : -1;
 
   return (
     <Page

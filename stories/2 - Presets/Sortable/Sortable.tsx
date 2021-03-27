@@ -7,6 +7,8 @@ import {
   CollisionDetection,
   DragOverlay,
   DndContext,
+  DropAnimation,
+  defaultDropAnimation,
   KeyboardSensor,
   Modifiers,
   MouseSensor,
@@ -37,6 +39,7 @@ export interface Props {
   adjustScale?: boolean;
   collisionDetection?: CollisionDetection;
   Container?: any; // To-do: Fix me
+  dropAnimation?: DropAnimation | null;
   itemCount?: number;
   items?: string[];
   handle?: boolean;
@@ -62,6 +65,11 @@ export interface Props {
   isDisabled?(id: UniqueIdentifier): boolean;
 }
 
+const defaultDropAnimationConfig: DropAnimation = {
+  ...defaultDropAnimation,
+  dragSourceOpacity: 0.5,
+};
+
 const screenReaderInstructions: ScreenReaderInstructions = {
   draggable: `
     To pick up a sortable item, press the space bar.
@@ -76,6 +84,7 @@ export function Sortable({
   adjustScale = false,
   Container = List,
   collisionDetection = closestCenter,
+  dropAnimation = defaultDropAnimationConfig,
   getItemStyles = () => ({}),
   handle = false,
   itemCount = 16,
@@ -191,7 +200,10 @@ export function Sortable({
       </Wrapper>
       {useDragOverlay
         ? createPortal(
-            <DragOverlay adjustScale={adjustScale}>
+            <DragOverlay
+              adjustScale={adjustScale}
+              dropAnimation={dropAnimation}
+            >
               {activeId ? (
                 <Item
                   value={items[activeIndex]}

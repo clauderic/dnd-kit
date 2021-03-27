@@ -106,6 +106,10 @@ export function Checkers() {
     [pieces]
   );
 
+  const handleDragCancel = useCallback(() => {
+    setMovingPiece(null);
+  }, []);
+
   const handleDragEnd = useCallback(
     function handleDragEnd(event: DragEndEvent) {
       if (!movingPiece?.position || !event.over?.id) {
@@ -175,7 +179,11 @@ export function Checkers() {
 
   return (
     <AnimateSharedLayout type="crossfade">
-      <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+      <DndContext
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onDragCancel={handleDragCancel}
+      >
         <div className={styles.Checkers}>
           {gameEnded ? (
             <Endgame

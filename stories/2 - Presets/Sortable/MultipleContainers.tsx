@@ -6,6 +6,8 @@ import {
   CollisionDetection,
   DndContext,
   DragOverlay,
+  DropAnimation,
+  defaultDropAnimation,
   KeyboardSensor,
   Modifiers,
   PointerSensor,
@@ -74,6 +76,11 @@ export const defaultContainerStyle = ({
     ? 'rgb(235,235,235,1)'
     : 'rgba(246,246,246,1)',
 });
+
+const dropAnimation: DropAnimation = {
+  ...defaultDropAnimation,
+  dragSourceOpacity: 0.5,
+};
 
 type Items = Record<string, string[]>;
 
@@ -318,7 +325,7 @@ export function MultipleContainers({
           ))}
       </div>
       {createPortal(
-        <DragOverlay adjustScale={adjustScale}>
+        <DragOverlay adjustScale={adjustScale} dropAnimation={dropAnimation}>
           {activeId ? (
             <Item
               value={activeId}

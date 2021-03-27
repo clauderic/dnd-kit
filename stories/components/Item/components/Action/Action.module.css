@@ -8,7 +8,7 @@ $focused-outline-color: #4c9ffe;
   justify-content: center;
   flex: 0 0 auto;
   touch-action: none;
-  cursor: var(--cursor, grab);
+  cursor: var(--cursor, pointer);
   border-radius: 5px;
   border: none;
   outline: none;
