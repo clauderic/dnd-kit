@@ -1,6 +1,11 @@
 import {subtract as getCoordinatesDelta} from '@dnd-kit/utilities';
 
-import {getEventListenerTarget, Listeners} from '../utilities';
+import {
+  getEventListenerTarget,
+  getAxisDelta,
+  Axis,
+  Listeners,
+} from '../utilities';
 
 import {getEventCoordinates, getOwnerDocument} from '../../utilities';
 import {KeyboardCode} from '../keyboard';
@@ -9,11 +14,13 @@ import type {Coordinates} from '../../types';
 
 interface DistanceConstraint {
   distance: number;
+  axis?: Axis;
 }
 
 interface DelayConstraint {
   delay: number;
   tolerance: number;
+  axis?: Axis;
 }
 
 interface EventDescriptor {
@@ -146,12 +153,12 @@ export class AbstractPointerSensor implements SensorInstance {
 
     const coordinates = getEventCoordinates(event);
     const delta = getCoordinatesDelta(initialCoordinates, coordinates);
-    const combinedDelta = Math.abs(delta.x) + Math.abs(delta.y);
+    const axisDelta = getAxisDelta(delta, activationConstraint?.axis);
 
     if (!activated && activationConstraint) {
       // Constraint validation
       if (isDelayConstraint(activationConstraint)) {
-        if (combinedDelta >= activationConstraint.tolerance) {
+        if (axisDelta >= activationConstraint.tolerance) {
           return this.handleCancel();
         }
 
@@ -159,7 +166,7 @@ export class AbstractPointerSensor implements SensorInstance {
       }
 
       if (isDistanceConstraint(activationConstraint)) {
-        if (combinedDelta >= activationConstraint.distance) {
+        if (axisDelta >= activationConstraint.distance) {
           return this.handleStart();
         }
 
