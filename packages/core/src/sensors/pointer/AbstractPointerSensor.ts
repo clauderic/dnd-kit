@@ -174,8 +174,12 @@ export class AbstractPointerSensor implements SensorInstance {
     onMove(coordinates);
   }
 
-  private handleEnd() {
+  private handleEnd(event: Event) {
     const {onEnd} = this.props;
+
+    if (event.cancelable) {
+      event.preventDefault();
+    }
 
     this.detach();
     onEnd();
