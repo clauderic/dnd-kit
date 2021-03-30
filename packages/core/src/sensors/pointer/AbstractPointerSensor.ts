@@ -2,25 +2,22 @@ import {subtract as getCoordinatesDelta} from '@dnd-kit/utilities';
 
 import {
   getEventListenerTarget,
-  getAxisDelta,
-  Axis,
+  hasExceededDistance,
   Listeners,
 } from '../utilities';
 
 import {getEventCoordinates, getOwnerDocument} from '../../utilities';
 import {KeyboardCode} from '../keyboard';
 import type {SensorInstance, SensorProps, SensorOptions} from '../types';
-import type {Coordinates} from '../../types';
+import type {Coordinates, DistanceMeasurement} from '../../types';
 
 interface DistanceConstraint {
-  distance: number;
-  axis?: Axis;
+  distance: DistanceMeasurement;
 }
 
 interface DelayConstraint {
   delay: number;
-  tolerance: number;
-  axis?: Axis;
+  tolerance: DistanceMeasurement;
 }
 
 interface EventDescriptor {
@@ -153,12 +150,11 @@ export class AbstractPointerSensor implements SensorInstance {
 
     const coordinates = getEventCoordinates(event);
     const delta = getCoordinatesDelta(initialCoordinates, coordinates);
-    const axisDelta = getAxisDelta(delta, activationConstraint?.axis);
 
     if (!activated && activationConstraint) {
       // Constraint validation
       if (isDelayConstraint(activationConstraint)) {
-        if (axisDelta >= activationConstraint.tolerance) {
+        if (hasExceededDistance(delta, activationConstraint.delay)) {
           return this.handleCancel();
         }
 
@@ -166,7 +162,7 @@ export class AbstractPointerSensor implements SensorInstance {
       }
 
       if (isDistanceConstraint(activationConstraint)) {
-        if (axisDelta >= activationConstraint.distance) {
+        if (hasExceededDistance(delta, activationConstraint.distance)) {
           return this.handleStart();
         }
 

@@ -5,6 +5,20 @@ export type Coordinates = {
   y: number;
 };
 
+type CoordinatesX = {
+  x: number;
+};
+
+type CoordinatesY = {
+  y: number;
+};
+
+export type DistanceMeasurement =
+  | number
+  | Coordinates
+  | CoordinatesX
+  | CoordinatesY;
+
 export type Translate = Coordinates;
 
 export interface LayoutRect {
