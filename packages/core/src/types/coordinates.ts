@@ -5,19 +5,12 @@ export type Coordinates = {
   y: number;
 };
 
-type CoordinatesX = {
-  x: number;
-};
-
-type CoordinatesY = {
-  y: number;
-};
 
 export type DistanceMeasurement =
   | number
   | Coordinates
-  | CoordinatesX
-  | CoordinatesY;
+  | Pick<Coordinates, 'x'>
+  | Pick<Coordinates, 'y'>;
 
 export type Translate = Coordinates;
 
