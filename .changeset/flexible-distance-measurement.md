@@ -2,7 +2,7 @@
 "@dnd-kit/core": minor
 ---
 
-Added more flexibility for the `distance` and `tolerance` activation constraints. Consumers can still provide a `number` to calculate the distance or tolerance constraints, but can now also pass in an object that adheres to the `DistanceMeasurement` interface instead. This change allows consumers to specify which axis, either `x`, `y` or both the activation distance or tolerance should be measured against.
+Added more flexibility for the `distance` and `tolerance` activation constraints. Consumers can still provide a `number` to calculate the distance or tolerance constraints, but can now also pass in an object that adheres to the `DistanceMeasurement` interface instead. This change allows consumers to specify which axis the activation distance or tolerance should be measured against, either `x`, `y` or both.
 
 ```
 type DistanceMeasurement =
