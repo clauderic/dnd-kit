@@ -5,7 +5,6 @@ export type Coordinates = {
   y: number;
 };
 
-
 export type DistanceMeasurement =
   | number
   | Coordinates
