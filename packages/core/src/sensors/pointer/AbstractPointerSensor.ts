@@ -154,7 +154,7 @@ export class AbstractPointerSensor implements SensorInstance {
     if (!activated && activationConstraint) {
       // Constraint validation
       if (isDelayConstraint(activationConstraint)) {
-        if (hasExceededDistance(delta, activationConstraint.delay)) {
+        if (hasExceededDistance(delta, activationConstraint.tolerance)) {
           return this.handleCancel();
         }
 
