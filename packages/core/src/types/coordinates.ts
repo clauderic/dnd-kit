@@ -5,6 +5,12 @@ export type Coordinates = {
   y: number;
 };
 
+export type DistanceMeasurement =
+  | number
+  | Coordinates
+  | Pick<Coordinates, 'x'>
+  | Pick<Coordinates, 'y'>;
+
 export type Translate = Coordinates;
 
 export interface LayoutRect {

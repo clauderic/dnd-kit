@@ -176,6 +176,39 @@ export const MinimumDistance = () => (
   />
 );
 
+export const MinimumDistanceX = () => (
+  <DraggableStory
+    label="I'm activated after dragging 15px on the x axis"
+    activationConstraint={{
+      distance: {x: 15},
+    }}
+  />
+);
+
+MinimumDistanceX.storyName = 'Minimum Distance – X Axis';
+
+export const MinimumDistanceY = () => (
+  <DraggableStory
+    label="I'm activated after dragging 15px on the y axis"
+    activationConstraint={{
+      distance: {y: 15},
+    }}
+  />
+);
+
+MinimumDistanceY.storyName = 'Minimum Distance – Y Axis';
+
+export const MinimumDistanceXY = () => (
+  <DraggableStory
+    label="I'm activated after dragging 15px on the x and y axis"
+    activationConstraint={{
+      distance: {x: 15, y: 15},
+    }}
+  />
+);
+
+MinimumDistanceXY.storyName = 'Minimum Distance – X&Y Axis';
+
 export const HorizontalAxis = () => (
   <DraggableStory
     label="Draggable horizontally"

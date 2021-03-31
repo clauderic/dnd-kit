@@ -1,6 +1,7 @@
 export type {
   Coordinates,
   ClientRect,
+  DistanceMeasurement,
   LayoutRect,
   ViewRect,
   RectEntry,
