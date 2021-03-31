@@ -203,8 +203,8 @@ describe('Draggable', () => {
 
     it('Activates if the mouse is moved more than the minimum distance in the x axis', () => {
       const deltaX1 = 100;
-      const deltaY1 = 0;
-      const deltaX2 = 0;
+      const deltaY1 = 5;
+      const deltaX2 = 5;
       const deltaY2 = 100;
 
       cy.visitStory('core-draggable-hooks-usedraggable--minimum-distance-x')
@@ -218,7 +218,7 @@ describe('Draggable', () => {
         })
         .mouseMoveBy(deltaX2, deltaY2)
         .then(([subject, {delta}]) => {
-          expect(delta.x).eq(deltaX2);
+          expect(delta.x).eq(0);
           expect(delta.y).eq(0);
 
           return subject;
@@ -226,10 +226,10 @@ describe('Draggable', () => {
     });
 
     it('Activates if the mouse is moved more than the minimum distance in the y axis', () => {
-      const deltaX1 = 0;
+      const deltaX1 = 5;
       const deltaY1 = 100;
       const deltaX2 = 100;
-      const deltaY2 = 0;
+      const deltaY2 = 5;
 
       cy.visitStory('core-draggable-hooks-usedraggable--minimum-distance-y')
         .findFirstDraggableItem()
@@ -243,17 +243,17 @@ describe('Draggable', () => {
         .mouseMoveBy(deltaX2, deltaY2)
         .then(([subject, {delta}]) => {
           expect(delta.x).eq(0);
-          expect(delta.y).eq(deltaY2);
+          expect(delta.y).eq(0);
 
           return subject;
         });
     });
 
-    it('Activates if the mouse is moved more than the minimum distance in the x or y axis', () => {
-      const deltaX1 = 0;
+    it('Activates if the mouse is moved more than the minimum distance in the x and y axis', () => {
+      const deltaX1 = 50;
       const deltaY1 = 100;
-      const deltaX2 = 100;
-      const deltaY2 = 0;
+      const deltaX2 = 10;
+      const deltaY2 = 100;
 
       cy.visitStory('core-draggable-hooks-usedraggable--minimum-distance-xy')
         .findFirstDraggableItem()
@@ -266,8 +266,8 @@ describe('Draggable', () => {
         })
         .mouseMoveBy(deltaX2, deltaY2)
         .then(([subject, {delta}]) => {
-          expect(delta.x).eq(deltaX2);
-          expect(delta.y).eq(deltaY2);
+          expect(delta.x).eq(0);
+          expect(delta.y).eq(0);
 
           return subject;
         });

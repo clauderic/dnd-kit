@@ -196,7 +196,7 @@ export const MinimumDistanceY = () => (
 
 export const MinimumDistanceXY = () => (
   <DraggableStory
-    label="I'm activated after dragging 15px on the x or y axis"
+    label="I'm activated after dragging 15px on the x and y axis"
     activationConstraint={{
       distance: {x: 15, y: 15},
     }}
