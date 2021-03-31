@@ -72,6 +72,7 @@ export type {
 export type {DndContextDescriptor} from './store';
 
 export type {
+  DistanceMeasurement,
   LayoutRect,
   RectEntry,
   Translate,
