@@ -201,6 +201,78 @@ describe('Draggable', () => {
         });
     });
 
+    it('Activates if the mouse is moved more than the minimum distance in the x axis', () => {
+      const deltaX1 = 100;
+      const deltaY1 = 0;
+      const deltaX2 = 0;
+      const deltaY2 = 100;
+
+      cy.visitStory('core-draggable-hooks-usedraggable--minimum-distance-x')
+        .findFirstDraggableItem()
+        .mouseMoveBy(deltaX1, deltaY1)
+        .then(([subject, {delta}]) => {
+          expect(delta.x).eq(deltaX1);
+          expect(delta.y).eq(deltaY1);
+
+          return subject;
+        })
+        .mouseMoveBy(deltaX2, deltaY2)
+        .then(([subject, {delta}]) => {
+          expect(delta.x).eq(deltaX2);
+          expect(delta.y).eq(0);
+
+          return subject;
+        });
+    });
+
+    it('Activates if the mouse is moved more than the minimum distance in the y axis', () => {
+      const deltaX1 = 0;
+      const deltaY1 = 100;
+      const deltaX2 = 100;
+      const deltaY2 = 0;
+
+      cy.visitStory('core-draggable-hooks-usedraggable--minimum-distance-y')
+        .findFirstDraggableItem()
+        .mouseMoveBy(deltaX1, deltaY1)
+        .then(([subject, {delta}]) => {
+          expect(delta.x).eq(deltaX1);
+          expect(delta.y).eq(deltaY1);
+
+          return subject;
+        })
+        .mouseMoveBy(deltaX2, deltaY2)
+        .then(([subject, {delta}]) => {
+          expect(delta.x).eq(0);
+          expect(delta.y).eq(deltaY2);
+
+          return subject;
+        });
+    });
+
+    it('Activates if the mouse is moved more than the minimum distance in the x or y axis', () => {
+      const deltaX1 = 0;
+      const deltaY1 = 100;
+      const deltaX2 = 100;
+      const deltaY2 = 0;
+
+      cy.visitStory('core-draggable-hooks-usedraggable--minimum-distance-xy')
+        .findFirstDraggableItem()
+        .mouseMoveBy(deltaX1, deltaY1)
+        .then(([subject, {delta}]) => {
+          expect(delta.x).eq(deltaX1);
+          expect(delta.y).eq(deltaY1);
+
+          return subject;
+        })
+        .mouseMoveBy(deltaX2, deltaY2)
+        .then(([subject, {delta}]) => {
+          expect(delta.x).eq(deltaX2);
+          expect(delta.y).eq(deltaY2);
+
+          return subject;
+        });
+    });
+
     it('Does not activate if the mouse is moved less than the minimum distance', () => {
       const deltaX = 5;
       const deltaY = 5;
