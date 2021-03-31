@@ -185,6 +185,8 @@ export const MinimumDistanceX = () => (
   />
 );
 
+MinimumDistanceX.storyName = 'Minimum Distance – X Axis';
+
 export const MinimumDistanceY = () => (
   <DraggableStory
     label="I'm activated after dragging 15px on the y axis"
@@ -194,6 +196,8 @@ export const MinimumDistanceY = () => (
   />
 );
 
+MinimumDistanceY.storyName = 'Minimum Distance – Y Axis';
+
 export const MinimumDistanceXY = () => (
   <DraggableStory
     label="I'm activated after dragging 15px on the x and y axis"
@@ -202,6 +206,8 @@ export const MinimumDistanceXY = () => (
     }}
   />
 );
+
+MinimumDistanceXY.storyName = 'Minimum Distance – X&Y Axis';
 
 export const HorizontalAxis = () => (
   <DraggableStory
