@@ -43,7 +43,7 @@ export const RestrictToScrollContainer = () => (
     style={{
       height: '50vh',
       width: 350,
-      margin: '0 auto',
+      margin: '200px auto 0',
       overflow: 'auto',
     }}
   >
@@ -55,7 +55,7 @@ export const ScrollContainer = () => (
   <div
     style={{
       height: '50vh',
-      margin: '0 auto',
+      margin: '200px auto 0',
       overflow: 'auto',
     }}
   >
