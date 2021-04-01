@@ -1,5 +1,11 @@
 # @dnd-kit/core
 
+## 2.1.1
+
+### Patch Changes
+
+- [`cc0a6ff`](https://github.com/clauderic/dnd-kit/commit/cc0a6ff310582ee4c02dd8320d86bf1c2d281d30) [#177](https://github.com/clauderic/dnd-kit/pull/177) Thanks [@FinestV](https://github.com/FinestV)! - fix calculations for top and left auto scroll speed
+
 ## 2.1.0
 
 ### Minor Changes
