@@ -16,6 +16,7 @@ const visuallyHidden: React.CSSProperties = {
   overflow: 'hidden',
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(100%)',
+  whiteSpace: 'nowrap',
 };
 
 export function LiveRegion({id, entries}: Props) {
@@ -23,12 +24,13 @@ export function LiveRegion({id, entries}: Props) {
     <div
       id={id}
       style={visuallyHidden}
+      role="status"
       aria-live="assertive"
       aria-relevant="additions"
       aria-atomic
     >
       {entries.map(([id, entry]) => (
-        <span key={id.toString()}>{entry}</span>
+        <React.Fragment key={id.toString()}>{entry}</React.Fragment>
       ))}
     </div>
   );
