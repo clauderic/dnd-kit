@@ -23,6 +23,7 @@ export function LiveRegion({id, entries}: Props) {
     <div
       id={id}
       style={visuallyHidden}
+      role="status"
       aria-live="assertive"
       aria-relevant="additions"
       aria-atomic
