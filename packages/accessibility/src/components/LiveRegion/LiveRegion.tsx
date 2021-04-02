@@ -16,6 +16,7 @@ const visuallyHidden: React.CSSProperties = {
   overflow: 'hidden',
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(100%)',
+  whiteSpace: 'nowrap',
 };
 
 export function LiveRegion({id, entries}: Props) {
