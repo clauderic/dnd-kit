@@ -25,7 +25,7 @@ export function Accessibility({
   hiddenTextDescribedById,
   screenReaderInstructions,
 }: Props) {
-  const {announce, entries} = useAnnouncement();
+  const {announce, announcement} = useAnnouncement();
   const tracked = useRef({
     activeId,
     overId,
@@ -76,7 +76,7 @@ export function Accessibility({
             id={hiddenTextDescribedById}
             value={screenReaderInstructions.draggable}
           />
-          <LiveRegion id={liveRegionId} entries={entries} />
+          <LiveRegion id={liveRegionId} announcement={announcement} />
         </>,
         document.body
       )
