@@ -28,7 +28,7 @@ export function LiveRegion({id, entries}: Props) {
       aria-atomic
     >
       {entries.map(([id, entry]) => (
-        <span key={id.toString()}>{entry}</span>
+        <React.Fragment key={id.toString()}>{entry}</React.Fragment>
       ))}
     </div>
   );
