@@ -1,5 +1,20 @@
 # @dnd-kit/accessibility
 
+## 2.0.0
+
+### Major Changes
+
+- [`2833337`](https://github.com/clauderic/dnd-kit/commit/2833337043719853902c3989dfcd5b55ae9ddc73) [#186](https://github.com/clauderic/dnd-kit/pull/186) Thanks [@clauderic](https://github.com/clauderic)! - Simplify `useAnnouncement` hook to only return a single `announcement` rather than `entries`. Similarly, the `LiveRegion` component now only accepts a single `announcement` rather than `entries.
+
+  - The current strategy used in the useAnnouncement hook is needlessly complex. It's not actually necessary to render multiple announcements at once within the LiveRegion component. It's sufficient to render a single announcement at a time. It's also un-necessary to clean up the announcements after they have been announced, especially now that the role="status" attribute has been added to LiveRegion, keeping the last announcement rendered means users can refer to the last status.
+
+### Patch Changes
+
+- [`c24bdb3`](https://github.com/clauderic/dnd-kit/commit/c24bdb3723f1e3e4c474439f837a19c6d48059fb) [#184](https://github.com/clauderic/dnd-kit/pull/184) Thanks [@clauderic](https://github.com/clauderic)! - Tweaked LiveRegion component:
+  - Entries are now rendered without wrapper `span` elements. Having wrapper `span` elements causes VoiceOver on macOS to try to move the VoiceOver cursor to the live region, which interferes with scrolling. This issue is not exhibited when rendering announcement entries as plain text without wrapper spans.
+  - Added the `role="status"` attribute to the LiveRegion wrapper element.
+  - Added the `white-space: no-wrap;` property to ensure that text does not wrap.
+
 ## 1.0.2
 
 ### Patch Changes
