@@ -2,7 +2,7 @@ import React from 'react';
 
 export interface Props {
   id: string;
-  entries: [NodeJS.Timeout, string][];
+  announcement: string;
 }
 
 // Hide element visually but keep it readable by screen readers
@@ -19,19 +19,16 @@ const visuallyHidden: React.CSSProperties = {
   whiteSpace: 'nowrap',
 };
 
-export function LiveRegion({id, entries}: Props) {
+export function LiveRegion({id, announcement}: Props) {
   return (
     <div
       id={id}
       style={visuallyHidden}
       role="status"
       aria-live="assertive"
-      aria-relevant="additions"
       aria-atomic
     >
-      {entries.map(([id, entry]) => (
-        <React.Fragment key={id.toString()}>{entry}</React.Fragment>
-      ))}
+      {announcement}
     </div>
   );
 }
