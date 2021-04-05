@@ -3,6 +3,7 @@ import type {DraggableNode, DroppableContainers, LayoutRectMap} from '../store';
 import type {
   Coordinates,
   SyntheticEventName,
+  Translate,
   UniqueIdentifier,
   ViewRect,
 } from '../types';
@@ -22,6 +23,7 @@ export type SensorContext = {
     id: string;
   } | null;
   scrollableAncestors: Element[];
+  scrollAdjustedTransalte: Translate | null;
   translatedRect: ViewRect | null;
 };
 

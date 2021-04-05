@@ -9,5 +9,12 @@ export type {
   ScrollCoordinates,
 } from './coordinates';
 export {Direction} from './direction';
+export type {
+  DragStartEvent,
+  DragCancelEvent,
+  DragEndEvent,
+  DragMoveEvent,
+  DragOverEvent,
+} from './events';
+export type {Active, UniqueIdentifier} from './other';
 export type {SyntheticEventName} from './react';
-export type {UniqueIdentifier} from './other';

@@ -7,10 +7,6 @@ export {
 export type {
   Announcements,
   CancelDrop,
-  DragEndEvent,
-  DragMoveEvent,
-  DragOverEvent,
-  DragStartEvent,
   DropAnimation,
   ScreenReaderInstructions,
 } from './components';
@@ -22,10 +18,12 @@ export {
   TraversalOrder,
   useDraggable,
   useDndContext,
+  useDndMonitor,
   useDroppable,
 } from './hooks';
 export type {
   AutoScrollOptions,
+  DndMonitorArguments,
   DraggableSyntheticListeners,
   LayoutMeasuring,
   UseDndContextReturnValue,
@@ -73,6 +71,10 @@ export type {DndContextDescriptor} from './store';
 
 export type {
   DistanceMeasurement,
+  DragEndEvent,
+  DragMoveEvent,
+  DragOverEvent,
+  DragStartEvent,
   LayoutRect,
   RectEntry,
   Translate,

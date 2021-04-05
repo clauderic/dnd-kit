@@ -7,7 +7,6 @@ export function getInitialState(): State {
     draggable: {
       active: null,
       initialCoordinates: {x: 0, y: 0},
-      lastEvent: null,
       nodes: {},
       translate: {x: 0, y: 0},
     },
@@ -26,7 +25,6 @@ export function reducer(state: State, action: Actions): State {
           ...state.draggable,
           initialCoordinates: action.initialCoordinates,
           active: action.active,
-          lastEvent: Action.DragStart,
         },
       };
     case Action.DragMove:
@@ -53,7 +51,6 @@ export function reducer(state: State, action: Actions): State {
           active: null,
           initialCoordinates: {x: 0, y: 0},
           translate: {x: 0, y: 0},
-          lastEvent: action.type,
         },
       };
 

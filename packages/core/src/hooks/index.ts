@@ -1,3 +1,5 @@
+export {useDndMonitor} from './monitor';
+export type {DndMonitorArguments} from './monitor';
 export {useDraggable} from './useDraggable';
 export type {
   DraggableSyntheticListeners,
