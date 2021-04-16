@@ -53,6 +53,7 @@ export const DragOverlay = React.memo(
       containerNodeRect,
       draggableNodes,
       activatorEvent,
+      over,
       overlayNode,
       scrollableAncestors,
       scrollableAncestorRects,
@@ -60,13 +61,15 @@ export const DragOverlay = React.memo(
     } = useDndContext();
     const transform = useContext(ActiveDraggableContext);
     const modifiedTransform = applyModifiers(modifiers, {
-      transform,
+      active,
       activeNodeRect: activeNodeClientRect,
-      overlayNodeRect: overlayNode.rect,
       draggingNodeRect: overlayNode.rect,
       containerNodeRect,
+      over,
+      overlayNodeRect: overlayNode.rect,
       scrollableAncestors,
       scrollableAncestorRects,
+      transform,
       windowRect,
     });
     const derivedTransform = useDerivedTransform(
@@ -119,11 +122,11 @@ export const DragOverlay = React.memo(
     const derivedAttributes = attributes ?? attributesSnapshot.current;
     const {children: finalChildren, transform: _, ...otherAttributes} =
       derivedAttributes ?? {};
-    const prevActive = useRef(active);
+    const prevActiveId = useRef(active?.id ?? null);
     const dropAnimationComplete = useDropAnimation({
-      animate: Boolean(dropAnimation && prevActive.current && !active),
+      animate: Boolean(dropAnimation && prevActiveId.current && !active),
       adjustScale,
-      activeId: prevActive.current,
+      activeId: prevActiveId.current,
       draggableNodes,
       duration: dropAnimation?.duration,
       easing: dropAnimation?.easing,
@@ -136,8 +139,8 @@ export const DragOverlay = React.memo(
     );
 
     useEffect(() => {
-      if (prevActive.current !== active) {
-        prevActive.current = active;
+      if (active?.id !== prevActiveId.current) {
+        prevActiveId.current = active?.id ?? null;
       }
 
       if (active && attributesSnapshot.current !== attributes) {

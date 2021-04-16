@@ -67,7 +67,7 @@ export type {
   TouchSensorOptions,
 } from './sensors';
 
-export type {DndContextDescriptor} from './store';
+export type {Active, DndContextDescriptor, Over} from './store';
 
 export type {
   DistanceMeasurement,

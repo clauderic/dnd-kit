@@ -55,7 +55,7 @@ export function SortableContext({
   } = useDndContext();
   const containerId = useUniqueId(ID_PREFIX, id);
   const useDragOverlay = Boolean(overlayNode.rect !== null);
-  const activeIndex = active ? items.indexOf(active) : -1;
+  const activeIndex = active ? items.indexOf(active.id) : -1;
   const isSorting = activeIndex !== -1;
   const wasSorting = useRef(isSorting);
   const overIndex = over ? items.indexOf(over.id) : -1;

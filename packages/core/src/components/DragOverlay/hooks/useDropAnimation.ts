@@ -46,7 +46,7 @@ export function useDropAnimation({
     }
 
     requestAnimationFrame(() => {
-      const finalNode = draggableNodes[activeId]?.current;
+      const finalNode = draggableNodes[activeId]?.node.current;
 
       if (transform && node && finalNode && finalNode.parentNode !== null) {
         const fromNode = node.children.length > 1 ? node : node.children[0];

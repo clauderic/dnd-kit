@@ -23,7 +23,7 @@ import {
   getInitialState,
   reducer,
 } from '../../store';
-import type {Coordinates, ViewRect, LayoutRect} from '../../types';
+import type {ViewRect} from '../../types';
 import {DndMonitorContext, DndMonitorState} from '../../hooks/monitor';
 import {
   useAutoScroller,
@@ -61,10 +61,10 @@ import {
 } from '../../utilities';
 import {applyModifiers, Modifiers} from '../../modifiers';
 import type {
-  LayoutRectMap,
-  DraggableNode,
-  DraggableNodes,
+  Active,
   DroppableContainers,
+  DroppableContainer,
+  DataRef,
 } from '../../store/types';
 import type {
   DragStartEvent,
@@ -115,6 +115,8 @@ const defaultSensors = [
   {sensor: KeyboardSensor, options: {}},
 ];
 
+const defaultData: DataRef = {current: {}};
+
 export const ActiveDraggableContext = createContext<Transform>({
   ...defaultCoordinates,
   scaleX: 1,
@@ -139,9 +141,26 @@ export const DndContext = memo(function DndContext({
     event: null,
   }));
   const {
-    draggable: {active, nodes: draggableNodes, translate},
+    draggable: {active: activeId, nodes: draggableNodes, translate},
     droppable: {containers: droppableContainers},
   } = state;
+  const node = activeId ? draggableNodes[activeId] : null;
+  const activeRects = useRef<Active['rect']['current']>({
+    initial: null,
+    translated: null,
+  });
+  const active = useMemo<Active | null>(
+    () =>
+      activeId != null
+        ? {
+            id: activeId,
+            // It's possible for the active node to unmount while dragging
+            data: node?.data ?? defaultData,
+            rect: activeRects,
+          }
+        : null,
+    [activeId, node]
+  );
   const activeRef = useRef<UniqueIdentifier | null>(null);
   const [activeSensor, setActiveSensor] = useState<SensorInstance | null>(null);
   const [activatorEvent, setActivatorEvent] = useState<Event | null>(null);
@@ -152,14 +171,11 @@ export const DndContext = memo(function DndContext({
     recomputeLayouts,
     willRecomputeLayouts,
   } = useLayoutMeasuring(droppableContainers, {
-    dragging: active != null,
+    dragging: activeId != null,
     dependencies: [translate.x, translate.y],
     config: layoutMeasuring,
   });
-  const activeNode = useCachedNode(
-    getDraggableNode(active, draggableNodes),
-    active
-  );
+  const activeNode = useCachedNode(draggableNodes, activeId);
   const activationCoordinates = activatorEvent
     ? getEventCoordinates(activatorEvent)
     : null;
@@ -168,23 +184,21 @@ export const DndContext = memo(function DndContext({
   const initialActiveNodeRectRef = useRef<ViewRect | null>(null);
   const initialActiveNodeRect = initialActiveNodeRectRef.current;
   const nodeRectDelta = getRectDelta(activeNodeRect, initialActiveNodeRect);
-  const tracked = useRef<{
-    active: UniqueIdentifier | null;
-    activeNodeRect: LayoutRect | null;
-    droppableRects: LayoutRectMap;
-    overId: UniqueIdentifier | null;
-    scrollAdjustedTransalte: Coordinates;
-    translatedRect: ViewRect | null;
-  }>({
-    active,
-    activeNodeRect,
+  const sensorContext = useRef<SensorContext>({
+    active: null,
+    activeNode,
+    collisionRect: null,
     droppableRects,
-    overId: null,
-    scrollAdjustedTransalte: defaultCoordinates,
+    draggableNodes,
+    draggingNodeRect: null,
+    droppableContainers,
+    over: null,
+    scrollableAncestors: [],
+    scrollAdjustedTransalte: null,
     translatedRect: null,
   });
   const overNode = getDroppableNode(
-    tracked.current.overId,
+    sensorContext.current.over?.id ?? null,
     droppableContainers
   );
   const windowRect = useClientRect(
@@ -194,16 +208,17 @@ export const DndContext = memo(function DndContext({
     activeNode ? activeNode.parentElement : null
   );
   const scrollableAncestors = useScrollableAncestors(
-    active ? overNode ?? activeNode : null
+    activeId ? overNode ?? activeNode : null
   );
   const scrollableAncestorRects = useClientRects(scrollableAncestors);
 
   const [overlayNodeRef, setOverlayNodeRef] = useNodeRef();
   const overlayNodeRect = useClientRect(
-    active ? overlayNodeRef.current : null,
+    activeId ? overlayNodeRef.current : null,
     willRecomputeLayouts
   );
 
+  const draggingNodeRect = overlayNodeRect ?? activeNodeClientRect;
   const modifiedTranslate = applyModifiers(modifiers, {
     transform: {
       x: translate.x - nodeRectDelta.x,
@@ -211,8 +226,10 @@ export const DndContext = memo(function DndContext({
       scaleX: 1,
       scaleY: 1,
     },
+    active,
+    over: sensorContext.current.over,
     activeNodeRect: activeNodeClientRect,
-    draggingNodeRect: overlayNodeRect ?? activeNodeClientRect,
+    draggingNodeRect,
     containerNodeRect,
     overlayNodeRect,
     scrollableAncestors,
@@ -240,34 +257,25 @@ export const DndContext = memo(function DndContext({
     active && collisionRect
       ? collisionDetection(Array.from(droppableRects.entries()), collisionRect)
       : null;
-  const overNodeRect = getLayoutRect(overId, droppableRects);
+  const overContainer = getOver(overId, droppableContainers);
   const over = useMemo(
     () =>
-      overId && overNodeRect
+      overContainer && overContainer.rect.current
         ? {
-            id: overId,
-            rect: overNodeRect,
+            id: overContainer.id,
+            rect: overContainer.rect.current,
+            data: overContainer.data,
+            disabled: overContainer.disabled,
           }
         : null,
-    [overId, overNodeRect]
+    [overContainer]
   );
 
   const transform = adjustScale(
     modifiedTranslate,
-    overNodeRect,
+    overContainer?.rect.current ?? null,
     activeNodeRect
   );
-
-  const sensorContext = useRef<SensorContext>({
-    activeNode,
-    collisionRect,
-    droppableRects,
-    droppableContainers,
-    over,
-    scrollableAncestors,
-    scrollAdjustedTransalte,
-    translatedRect,
-  });
 
   const instantiateSensor = useCallback(
     (
@@ -292,14 +300,23 @@ export const DndContext = memo(function DndContext({
         // Sensors need to be instantiated with refs for arguments that change over time
         // otherwise they are frozen in time with the stale arguments
         context: sensorContext,
-        onStart: (initialCoordinates) => {
+        onStart(initialCoordinates) {
           const id = activeRef.current;
+
           if (!id) {
             return;
           }
 
+          const node = draggableNodes[id];
+
+          if (!node) {
+            return;
+          }
+
           const {onDragStart} = latestProps.current;
-          const event: DragStartEvent = {active: {id}};
+          const event: DragStartEvent = {
+            active: {id, data: node.data, rect: activeRects},
+          };
 
           dispatch({
             type: Action.DragStart,
@@ -326,36 +343,17 @@ export const DndContext = memo(function DndContext({
         return async function handler() {
           const activeId = activeRef.current;
 
-          const {
-            activeNodeRect,
-            droppableRects,
-            overId,
-            scrollAdjustedTransalte,
-            translatedRect,
-          } = tracked.current;
+          const {active, over, scrollAdjustedTransalte} = sensorContext.current;
 
-          if (!activeId || !activeNodeRect || !translatedRect) {
+          if (!active || !scrollAdjustedTransalte) {
             return;
           }
 
           const {cancelDrop} = latestProps.current;
-          const overNodeRect = getLayoutRect(overId, droppableRects);
           const event: DragEndEvent = {
-            active: {
-              id: activeId,
-              rect: {
-                initial: activeNodeRect,
-                translated: translatedRect,
-              },
-            },
+            active: active,
             delta: scrollAdjustedTransalte,
-            over:
-              overId && overNodeRect
-                ? {
-                    id: overId,
-                    rect: overNodeRect,
-                  }
-                : null,
+            over,
           };
           activeRef.current = null;
 
@@ -440,121 +438,76 @@ export const DndContext = memo(function DndContext({
   }, [activeNodeRect, active]);
 
   useEffect(() => {
-    const activeId = activeRef.current;
     const {onDragMove} = latestProps.current;
-    const {
-      activeNodeRect,
-      overId,
-      droppableRects,
-      translatedRect,
-    } = tracked.current;
+    const {active, over} = sensorContext.current;
 
-    if (!activeId || !activeNodeRect || !translatedRect) {
+    if (!active) {
       return;
     }
 
-    const overNodeRect = getLayoutRect(overId, droppableRects);
     const event: DragMoveEvent = {
-      active: {
-        id: activeId,
-        rect: {
-          initial: activeNodeRect,
-          translated: translatedRect,
-        },
-      },
+      active,
       delta: {
         x: scrollAdjustedTransalte.x,
         y: scrollAdjustedTransalte.y,
       },
-      over:
-        overId && overNodeRect
-          ? {
-              id: overId,
-              rect: overNodeRect,
-            }
-          : null,
+      over,
     };
 
     setMonitorState({type: Action.DragMove, event});
     onDragMove?.(event);
   }, [scrollAdjustedTransalte.x, scrollAdjustedTransalte.y]);
 
-  useEffect(() => {
-    if (!activeRef.current) {
-      return;
-    }
+  useEffect(
+    () => {
+      const {active, scrollAdjustedTransalte} = sensorContext.current;
 
-    const {
-      active,
-      activeNodeRect,
-      droppableRects,
-      scrollAdjustedTransalte,
-      translatedRect,
-    } = tracked.current;
+      if (!active || !activeRef.current || !scrollAdjustedTransalte) {
+        return;
+      }
 
-    if (!active || !activeNodeRect || !translatedRect) {
-      return;
-    }
-
-    const {onDragOver} = latestProps.current;
-    const overNodeRect = getLayoutRect(overId, droppableRects);
-    const event: DragOverEvent = {
-      active: {
-        id: active,
-        rect: {
-          initial: activeNodeRect,
-          translated: translatedRect,
+      const {onDragOver} = latestProps.current;
+      const event: DragOverEvent = {
+        active,
+        delta: {
+          x: scrollAdjustedTransalte.x,
+          y: scrollAdjustedTransalte.y,
         },
-      },
-      delta: {
-        x: scrollAdjustedTransalte.x,
-        y: scrollAdjustedTransalte.y,
-      },
-      over:
-        overId && overNodeRect
-          ? {
-              id: overId,
-              rect: overNodeRect,
-            }
-          : null,
-    };
+        over,
+      };
 
-    setMonitorState({type: Action.DragOver, event});
-    onDragOver?.(event);
-  }, [overId]);
-
-  useEffect(() => {
-    tracked.current = {
-      active,
-      activeNodeRect,
-      droppableRects,
-      overId,
-      scrollAdjustedTransalte,
-      translatedRect,
-    };
-  }, [
-    active,
-    activeNodeRect,
-    droppableRects,
-    overId,
-    scrollAdjustedTransalte,
-    translatedRect,
-  ]);
+      setMonitorState({type: Action.DragOver, event});
+      onDragOver?.(event);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [over?.id]
+  );
 
   useIsomorphicLayoutEffect(() => {
     sensorContext.current = {
+      active,
       activeNode,
       collisionRect,
       droppableRects,
+      draggableNodes,
+      draggingNodeRect,
       droppableContainers,
       over,
       scrollableAncestors,
       scrollAdjustedTransalte,
       translatedRect,
     };
+
+    activeRects.current = {
+      initial: draggingNodeRect,
+      translated: translatedRect,
+    };
   }, [
+    active,
     activeNode,
     collisionRect,
+    draggableNodes,
+    draggingNodeRect,
     droppableRects,
     droppableContainers,
     over,
@@ -668,16 +621,9 @@ function getDroppableNode(
   return id ? droppableContainers[id]?.node.current ?? null : null;
 }
 
-function getDraggableNode(
+function getOver(
   id: UniqueIdentifier | null,
-  droppableContainers: DraggableNodes
-): DraggableNode | null {
+  droppableContainers: DroppableContainers
+): DroppableContainer | null {
   return id ? droppableContainers[id] ?? null : null;
-}
-
-function getLayoutRect(
-  id: UniqueIdentifier | null,
-  layoutRectMap: LayoutRectMap
-): LayoutRect | null {
-  return id ? layoutRectMap.get(id) ?? null : null;
 }
