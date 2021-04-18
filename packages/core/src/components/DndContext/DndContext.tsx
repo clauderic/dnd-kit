@@ -475,7 +475,7 @@ export const DndContext = memo(function DndContext({
           : null,
     };
 
-    setMonitorState({type: Action.DragOver, event});
+    setMonitorState({type: Action.DragMove, event});
     onDragMove?.(event);
   }, [scrollAdjustedTransalte.x, scrollAdjustedTransalte.y]);
 
@@ -519,7 +519,7 @@ export const DndContext = memo(function DndContext({
           : null,
     };
 
-    setMonitorState({type: Action.DragMove, event});
+    setMonitorState({type: Action.DragOver, event});
     onDragOver?.(event);
   }, [overId]);
 
