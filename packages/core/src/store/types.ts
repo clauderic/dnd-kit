@@ -8,7 +8,7 @@ import type {
   UniqueIdentifier,
 } from '../types';
 import type {SyntheticListeners} from '../hooks/utilities';
-import type {Action, Actions} from './actions';
+import type {Actions} from './actions';
 
 export interface DraggableElement {
   node: DraggableNode;
@@ -49,7 +49,6 @@ export interface State {
   draggable: {
     active: UniqueIdentifier | null;
     initialCoordinates: Coordinates;
-    lastEvent: Action.DragStart | Action.DragEnd | Action.DragCancel | null;
     nodes: DraggableNodes;
     translate: Coordinates;
   };

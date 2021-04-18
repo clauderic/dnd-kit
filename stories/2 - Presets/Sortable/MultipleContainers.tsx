@@ -186,7 +186,7 @@ export function MultipleContainers({
         setActiveId(active.id);
         setClonedItems(items);
       }}
-      onDragOver={({active, over, draggingRect}) => {
+      onDragOver={({active, over}) => {
         const overId = over?.id;
 
         if (!overId) {
@@ -215,7 +215,8 @@ export function MultipleContainers({
               const isBelowLastItem =
                 over &&
                 overIndex === overItems.length - 1 &&
-                draggingRect.offsetTop > over.rect.offsetTop + over.rect.height;
+                active.rect.translated.offsetTop >
+                  over.rect.offsetTop + over.rect.height;
 
               const modifier = isBelowLastItem ? 1 : 0;
 
