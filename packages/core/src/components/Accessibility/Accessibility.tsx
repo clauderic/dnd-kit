@@ -6,7 +6,7 @@ import {HiddenText, LiveRegion, useAnnouncement} from '@dnd-kit/accessibility';
 import type {Announcements, ScreenReaderInstructions} from './types';
 import type {UniqueIdentifier} from '../../types';
 import {defaultAnnouncements} from './defaults';
-import {DndMonitorArguments, useDndMonitor} from '../../hooks';
+import {DndMonitorArguments, useDndMonitor} from '../../hooks/monitor';
 
 interface Props {
   announcements?: Announcements;
