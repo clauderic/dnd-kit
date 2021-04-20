@@ -1,5 +1,20 @@
 # @dnd-kit/utilities
 
+## 2.0.0
+
+### Major Changes
+
+- [`a9d92cf`](https://github.com/clauderic/dnd-kit/commit/a9d92cf1fa35dd957e6c5915a13dfd2af134c103) [#174](https://github.com/clauderic/dnd-kit/pull/174) Thanks [@clauderic](https://github.com/clauderic)! - Distributed assets now only target modern browsers. [Browserlist](https://github.com/browserslist/browserslist) config:
+
+  ```
+  defaults
+  last 2 version
+  not IE 11
+  not dead
+  ```
+
+  If you need to support older browsers, include the appropriate polyfills in your project's build process.
+
 ## 1.0.3
 
 ### Patch Changes

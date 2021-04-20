@@ -1,5 +1,72 @@
 # @dnd-kit/sortable
 
+## 3.0.0
+
+### Major Changes
+
+- [`a9d92cf`](https://github.com/clauderic/dnd-kit/commit/a9d92cf1fa35dd957e6c5915a13dfd2af134c103) [#174](https://github.com/clauderic/dnd-kit/pull/174) Thanks [@clauderic](https://github.com/clauderic)! - Distributed assets now only target modern browsers. [Browserlist](https://github.com/browserslist/browserslist) config:
+
+  ```
+  defaults
+  last 2 version
+  not IE 11
+  not dead
+  ```
+
+  If you need to support older browsers, include the appropriate polyfills in your project's build process.
+
+### Minor Changes
+
+- [`b7355d1`](https://github.com/clauderic/dnd-kit/commit/b7355d19d9e15bb1972627bb622c2487ddec82ad) [#207](https://github.com/clauderic/dnd-kit/pull/207) Thanks [@clauderic](https://github.com/clauderic)! - The `data` argument for `useDraggable` and `useDroppable` is now exposed in event handlers and on the `active` and `over` objects.
+
+  **Example usage:**
+
+  ```tsx
+  import {DndContext, useDraggable, useDroppable} from '@dnd-kit/core';
+
+  function Draggable() {
+    const {attributes, listeners, setNodeRef, transform} = useDraggable({
+      id: 'draggable',
+      data: {
+        type: 'type1',
+      },
+    });
+
+    /* ... */
+  }
+
+  function Droppable() {
+    const {setNodeRef} = useDroppable({
+      id: 'droppable',
+      data: {
+        accepts: ['type1', 'type2'],
+      },
+    });
+
+    /* ... */
+  }
+
+  function App() {
+    return (
+      <DndContext
+        onDragEnd={({active, over}) => {
+          if (over?.data.current.accepts.includes(active.data.current.type)) {
+            // do stuff
+          }
+        }}
+      />
+    );
+  }
+  ```
+
+### Patch Changes
+
+- [`fb2db94`](https://github.com/clauderic/dnd-kit/commit/fb2db941d00d1f876a62751c6ac9d79143876598) [#212](https://github.com/clauderic/dnd-kit/pull/212) Thanks [@clauderic](https://github.com/clauderic)! - Allow consumers of `SortableContext` to provide items of shape `{id: string}[]` or `string[]`
+
+- Updated dependencies [[`b7355d1`](https://github.com/clauderic/dnd-kit/commit/b7355d19d9e15bb1972627bb622c2487ddec82ad), [`a9d92cf`](https://github.com/clauderic/dnd-kit/commit/a9d92cf1fa35dd957e6c5915a13dfd2af134c103), [`b406cb9`](https://github.com/clauderic/dnd-kit/commit/b406cb9251beef8677d05c45ec42bab7581a86dc)]:
+  - @dnd-kit/core@3.0.0
+  - @dnd-kit/utilities@2.0.0
+
 ## 2.0.1
 
 ### Patch Changes

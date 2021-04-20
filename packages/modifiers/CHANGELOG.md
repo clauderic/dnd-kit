@@ -1,5 +1,26 @@
 # @dnd-kit/modifiers
 
+## 2.0.0
+
+### Major Changes
+
+- [`a9d92cf`](https://github.com/clauderic/dnd-kit/commit/a9d92cf1fa35dd957e6c5915a13dfd2af134c103) [#174](https://github.com/clauderic/dnd-kit/pull/174) Thanks [@clauderic](https://github.com/clauderic)! - Distributed assets now only target modern browsers. [Browserlist](https://github.com/browserslist/browserslist) config:
+
+  ```
+  defaults
+  last 2 version
+  not IE 11
+  not dead
+  ```
+
+  If you need to support older browsers, include the appropriate polyfills in your project's build process.
+
+### Patch Changes
+
+- Updated dependencies [[`b7355d1`](https://github.com/clauderic/dnd-kit/commit/b7355d19d9e15bb1972627bb622c2487ddec82ad), [`a9d92cf`](https://github.com/clauderic/dnd-kit/commit/a9d92cf1fa35dd957e6c5915a13dfd2af134c103), [`b406cb9`](https://github.com/clauderic/dnd-kit/commit/b406cb9251beef8677d05c45ec42bab7581a86dc)]:
+  - @dnd-kit/core@3.0.0
+  - @dnd-kit/utilities@2.0.0
+
 ## 1.0.5
 
 ### Patch Changes

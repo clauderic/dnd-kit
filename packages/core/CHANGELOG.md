@@ -1,5 +1,96 @@
 # @dnd-kit/core
 
+## 3.0.0
+
+### Major Changes
+
+- [`a9d92cf`](https://github.com/clauderic/dnd-kit/commit/a9d92cf1fa35dd957e6c5915a13dfd2af134c103) [#174](https://github.com/clauderic/dnd-kit/pull/174) Thanks [@clauderic](https://github.com/clauderic)! - Distributed assets now only target modern browsers. [Browserlist](https://github.com/browserslist/browserslist) config:
+
+  ```
+  defaults
+  last 2 version
+  not IE 11
+  not dead
+  ```
+
+  If you need to support older browsers, include the appropriate polyfills in your project's build process.
+
+- [`b406cb9`](https://github.com/clauderic/dnd-kit/commit/b406cb9251beef8677d05c45ec42bab7581a86dc) [#187](https://github.com/clauderic/dnd-kit/pull/187) Thanks [@clauderic](https://github.com/clauderic)! - Introduced the `useDndMonitor` hook. The `useDndMonitor` hook can be used within components wrapped in a `DndContext` provider to monitor the different drag and drop events that happen for that `DndContext`.
+
+  Example usage:
+
+  ```tsx
+  import {DndContext, useDndMonitor} from '@dnd-kit/core';
+
+  function App() {
+    return (
+      <DndContext>
+        <Component />
+      </DndContext>
+    );
+  }
+
+  function Component() {
+    useDndMonitor({
+      onDragStart(event) {},
+      onDragMove(event) {},
+      onDragOver(event) {},
+      onDragEnd(event) {},
+      onDragCancel(event) {},
+    });
+  }
+  ```
+
+### Minor Changes
+
+- [`b7355d1`](https://github.com/clauderic/dnd-kit/commit/b7355d19d9e15bb1972627bb622c2487ddec82ad) [#207](https://github.com/clauderic/dnd-kit/pull/207) Thanks [@clauderic](https://github.com/clauderic)! - The `data` argument for `useDraggable` and `useDroppable` is now exposed in event handlers and on the `active` and `over` objects.
+
+  **Example usage:**
+
+  ```tsx
+  import {DndContext, useDraggable, useDroppable} from '@dnd-kit/core';
+
+  function Draggable() {
+    const {attributes, listeners, setNodeRef, transform} = useDraggable({
+      id: 'draggable',
+      data: {
+        type: 'type1',
+      },
+    });
+
+    /* ... */
+  }
+
+  function Droppable() {
+    const {setNodeRef} = useDroppable({
+      id: 'droppable',
+      data: {
+        accepts: ['type1', 'type2'],
+      },
+    });
+
+    /* ... */
+  }
+
+  function App() {
+    return (
+      <DndContext
+        onDragEnd={({active, over}) => {
+          if (over?.data.current.accepts.includes(active.data.current.type)) {
+            // do stuff
+          }
+        }}
+      />
+    );
+  }
+  ```
+
+### Patch Changes
+
+- Updated dependencies [[`a9d92cf`](https://github.com/clauderic/dnd-kit/commit/a9d92cf1fa35dd957e6c5915a13dfd2af134c103), [`b406cb9`](https://github.com/clauderic/dnd-kit/commit/b406cb9251beef8677d05c45ec42bab7581a86dc)]:
+  - @dnd-kit/accessibility@3.0.0
+  - @dnd-kit/utilities@2.0.0
+
 ## 2.1.2
 
 ### Patch Changes
