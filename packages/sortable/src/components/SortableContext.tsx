@@ -8,7 +8,7 @@ import {rectSortingStrategy} from '../strategies';
 
 export interface Props {
   children: React.ReactNode;
-  items: UniqueIdentifier[];
+  items: (UniqueIdentifier | {id: UniqueIdentifier})[];
   strategy?: SortingStrategy;
   id?: string;
 }
@@ -42,7 +42,7 @@ export const Context = React.createContext<ContextDescriptor>({
 export function SortableContext({
   children,
   id,
-  items,
+  items: userDefinedItems,
   strategy = rectSortingStrategy,
 }: Props) {
   const {
@@ -55,6 +55,13 @@ export function SortableContext({
   } = useDndContext();
   const containerId = useUniqueId(ID_PREFIX, id);
   const useDragOverlay = Boolean(overlayNode.rect !== null);
+  const items = useMemo(
+    () =>
+      userDefinedItems.map((item) =>
+        typeof item === 'string' ? item : item.id
+      ),
+    [userDefinedItems]
+  );
   const activeIndex = active ? items.indexOf(active.id) : -1;
   const isSorting = activeIndex !== -1;
   const wasSorting = useRef(isSorting);
