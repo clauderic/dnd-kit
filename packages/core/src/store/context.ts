@@ -3,7 +3,7 @@ import {createContext} from 'react';
 import {noop} from '../utilities/other';
 import type {DndContextDescriptor} from './types';
 
-export const Context = createContext<DndContextDescriptor>({
+export const defaultContext: DndContextDescriptor = {
   activatorEvent: null,
   active: null,
   activeNode: null,
@@ -31,4 +31,6 @@ export const Context = createContext<DndContextDescriptor>({
   recomputeLayouts: noop,
   windowRect: null,
   willRecomputeLayouts: false,
-});
+};
+
+export const Context = createContext<DndContextDescriptor>(defaultContext);

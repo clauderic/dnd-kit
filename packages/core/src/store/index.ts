@@ -1,5 +1,5 @@
 export {Action} from './actions';
-export {Context} from './context';
+export {Context, defaultContext} from './context';
 export {reducer, getInitialState} from './reducer';
 export type {
   Active,
