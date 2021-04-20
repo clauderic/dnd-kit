@@ -25,6 +25,7 @@ export function useSortable({
   animateLayoutChanges = defaultAnimateLayoutChanges,
   attributes: userDefinedAttributes,
   disabled,
+  data: customData,
   id,
   strategy: localStrategy,
   transition = defaultTransition,
@@ -40,6 +41,15 @@ export function useSortable({
     strategy: globalStrategy,
     wasSorting,
   } = useContext(Context);
+  const index = items.indexOf(id);
+  const data = useMemo(
+    () => ({sortable: {containerId, index, items}, ...customData}),
+    [containerId, customData, index, items]
+  );
+  const {rect, node, setNodeRef: setDroppableNodeRef} = useDroppable({
+    id,
+    data,
+  });
   const {
     active,
     activeNodeRect,
@@ -52,21 +62,12 @@ export function useSortable({
     transform,
   } = useDraggable({
     id,
+    data,
     attributes: {
       ...defaultAttributes,
       ...userDefinedAttributes,
     },
     disabled,
-  });
-  const index = items.indexOf(id);
-  const data = useMemo(() => ({containerId, index, items}), [
-    containerId,
-    index,
-    items,
-  ]);
-  const {rect, node, setNodeRef: setDroppableNodeRef} = useDroppable({
-    id,
-    data,
   });
   const setNodeRef = useCombinedRefs(setDroppableNodeRef, setDraggableNodeRef);
   const isSorting = Boolean(active);
