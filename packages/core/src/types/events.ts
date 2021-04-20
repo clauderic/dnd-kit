@@ -1,23 +1,13 @@
-import type {LayoutRect, Translate} from './coordinates';
-import type {Active, UniqueIdentifier} from './other';
+import type {Active, Over} from '../store';
+import type {Translate} from './coordinates';
 
 interface DragEvent {
-  active: Active & {
-    rect: {
-      initial: LayoutRect;
-      translated: LayoutRect;
-    };
-  };
+  active: Active;
   delta: Translate;
-  over: {
-    id: UniqueIdentifier;
-    rect: LayoutRect;
-  } | null;
+  over: Over | null;
 }
 
-export interface DragStartEvent {
-  active: Active;
-}
+export interface DragStartEvent extends Pick<DragEvent, 'active'> {}
 
 export interface DragMoveEvent extends DragEvent {}
 

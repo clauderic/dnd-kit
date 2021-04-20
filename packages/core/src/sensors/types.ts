@@ -1,7 +1,15 @@
 import type {MutableRefObject} from 'react';
-import type {DraggableNode, DroppableContainers, LayoutRectMap} from '../store';
+import type {
+  Active,
+  Over,
+  DraggableNode,
+  DraggableNodes,
+  DroppableContainers,
+  LayoutRectMap,
+} from '../store';
 import type {
   Coordinates,
+  LayoutRect,
   SyntheticEventName,
   Translate,
   UniqueIdentifier,
@@ -15,13 +23,14 @@ export enum Response {
 }
 
 export type SensorContext = {
+  active: Active | null;
   activeNode: HTMLElement | null;
   collisionRect: ViewRect | null;
+  draggableNodes: DraggableNodes;
+  draggingNodeRect: LayoutRect | null;
   droppableRects: LayoutRectMap;
   droppableContainers: DroppableContainers;
-  over: {
-    id: string;
-  } | null;
+  over: Over | null;
   scrollableAncestors: Element[];
   scrollAdjustedTransalte: Translate | null;
   translatedRect: ViewRect | null;

@@ -16,5 +16,5 @@ export type {
   DragMoveEvent,
   DragOverEvent,
 } from './events';
-export type {Active, UniqueIdentifier} from './other';
+export type {UniqueIdentifier} from './other';
 export type {SyntheticEventName} from './react';

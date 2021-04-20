@@ -215,7 +215,8 @@ export function MultipleContainers({
               const isBelowLastItem =
                 over &&
                 overIndex === overItems.length - 1 &&
-                active.rect.translated.offsetTop >
+                active.rect.current.translated &&
+                active.rect.current.translated.offsetTop >
                   over.rect.offsetTop + over.rect.height;
 
               const modifier = isBelowLastItem ? 1 : 0;

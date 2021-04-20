@@ -20,15 +20,36 @@ export interface DraggableElement {
 
 export type Data = Record<string, any>;
 
+export type DataRef = MutableRefObject<Data | undefined>;
+
 export interface DroppableContainer {
   id: UniqueIdentifier;
   node: MutableRefObject<HTMLElement | null>;
   rect: MutableRefObject<LayoutRect | null>;
   disabled: boolean;
-  data: MutableRefObject<Data>;
+  data: DataRef;
 }
 
-export type DraggableNode = MutableRefObject<HTMLElement | null>;
+export interface Active {
+  id: UniqueIdentifier;
+  data: DataRef;
+  rect: MutableRefObject<{
+    initial: LayoutRect | null;
+    translated: LayoutRect | null;
+  }>;
+}
+
+export interface Over {
+  id: UniqueIdentifier;
+  rect: LayoutRect;
+  disabled: boolean;
+  data: DataRef;
+}
+
+export type DraggableNode = {
+  node: MutableRefObject<HTMLElement | null>;
+  data: DataRef;
+};
 
 export type DraggableNodes = Record<
   UniqueIdentifier,
@@ -58,7 +79,7 @@ export interface DndContextDescriptor {
   dispatch: React.Dispatch<Actions>;
   activators: SyntheticListeners;
   activatorEvent: Event | null;
-  active: UniqueIdentifier | null;
+  active: Active | null;
   activeNode: HTMLElement | null;
   activeNodeRect: ViewRect | null;
   activeNodeClientRect: ClientRect | null;
@@ -69,10 +90,7 @@ export interface DndContextDescriptor {
   draggableNodes: DraggableNodes;
   droppableContainers: DroppableContainers;
   droppableRects: LayoutRectMap;
-  over: {
-    id: UniqueIdentifier;
-    rect: LayoutRect;
-  } | null;
+  over: Over | null;
   overlayNode: {
     nodeRef: MutableRefObject<HTMLElement | null>;
     rect: ViewRect | null;
