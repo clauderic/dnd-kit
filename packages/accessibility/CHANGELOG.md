@@ -1,5 +1,48 @@
 # @dnd-kit/accessibility
 
+## 3.0.0
+
+### Major Changes
+
+- [`a9d92cf`](https://github.com/clauderic/dnd-kit/commit/a9d92cf1fa35dd957e6c5915a13dfd2af134c103) [#174](https://github.com/clauderic/dnd-kit/pull/174) Thanks [@clauderic](https://github.com/clauderic)! - Distributed assets now only target modern browsers. [Browserlist](https://github.com/browserslist/browserslist) config:
+
+  ```
+  defaults
+  last 2 version
+  not IE 11
+  not dead
+  ```
+
+  If you need to support older browsers, include the appropriate polyfills in your project's build process.
+
+### Patch Changes
+
+- [`b406cb9`](https://github.com/clauderic/dnd-kit/commit/b406cb9251beef8677d05c45ec42bab7581a86dc) [#187](https://github.com/clauderic/dnd-kit/pull/187) Thanks [@clauderic](https://github.com/clauderic)! - Introduced the `useDndMonitor` hook. The `useDndMonitor` hook can be used within components wrapped in a `DndContext` provider to monitor the different drag and drop events that happen for that `DndContext`.
+
+  Example usage:
+
+  ```tsx
+  import {DndContext, useDndMonitor} from '@dnd-kit/core';
+
+  function App() {
+    return (
+      <DndContext>
+        <Component />
+      </DndContext>
+    );
+  }
+
+  function Component() {
+    useDndMonitor({
+      onDragStart(event) {},
+      onDragMove(event) {},
+      onDragOver(event) {},
+      onDragEnd(event) {},
+      onDragCancel(event) {},
+    });
+  }
+  ```
+
 ## 2.0.0
 
 ### Major Changes
