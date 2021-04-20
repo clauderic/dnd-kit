@@ -1,5 +1,13 @@
 # @dnd-kit/sortable
 
+## 3.0.1
+
+### Patch Changes
+
+- [`a178857`](https://github.com/clauderic/dnd-kit/commit/a1788579ee12d1c1af8244bdf6a17f3f5ba388a1) [#214](https://github.com/clauderic/dnd-kit/pull/214) Thanks [@clauderic](https://github.com/clauderic)! - Ensure that consumer defined data passed to `useSortable` is passed down to both `useDraggable` and `useDroppable`.
+
+  The `data` object that is passed to `useDraggable` and `useDroppable` within `useSortable` also contains the `sortable` property, which holds a reference to the index of the item, along with the `containerId` and the `items` of its parent `SortableContext`.
+
 ## 3.0.0
 
 ### Major Changes
