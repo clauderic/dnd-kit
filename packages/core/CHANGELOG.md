@@ -1,5 +1,11 @@
 # @dnd-kit/core
 
+## 3.0.1
+
+### Patch Changes
+
+- [`f9ec28f`](https://github.com/clauderic/dnd-kit/commit/f9ec28fed77778669f93cfecee159dba54db38b4) [#217](https://github.com/clauderic/dnd-kit/pull/217) Thanks [@clauderic](https://github.com/clauderic)! - Fixes a regression introduced with `@dnd-kit/core@3.0.0` that was causeing sensors to stop working after a drag operation where activation constraints were not met.
+
 ## 3.0.0
 
 ### Major Changes
