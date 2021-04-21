@@ -2,7 +2,7 @@ import {useContext, useEffect, useRef} from 'react';
 import {useIsomorphicLayoutEffect, useNodeRef} from '@dnd-kit/utilities';
 
 import {Context, Action, Data} from '../store';
-import type {LayoutRect} from '../types';
+import type {ViewRect} from '../types';
 import {useData} from './utilities';
 
 export interface UseDroppableArguments {
@@ -17,7 +17,7 @@ export function useDroppable({
   id,
 }: UseDroppableArguments) {
   const {active, dispatch, over} = useContext(Context);
-  const rect = useRef<LayoutRect | null>(null);
+  const rect = useRef<ViewRect | null>(null);
   const [nodeRef, setNodeRef] = useNodeRef();
   const dataRef = useData(data);
 
