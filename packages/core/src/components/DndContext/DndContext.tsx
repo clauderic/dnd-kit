@@ -341,40 +341,38 @@ export const DndContext = memo(function DndContext({
 
       function createHandler(type: Action.DragEnd | Action.DragCancel) {
         return async function handler() {
-          const activeId = activeRef.current;
-
           const {active, over, scrollAdjustedTransalte} = sensorContext.current;
+          let event: DragEndEvent | null = null;
 
-          if (!active || !scrollAdjustedTransalte) {
-            return;
-          }
+          if (active && scrollAdjustedTransalte) {
+            const {cancelDrop} = latestProps.current;
 
-          const {cancelDrop} = latestProps.current;
-          const event: DragEndEvent = {
-            active: active,
-            delta: scrollAdjustedTransalte,
-            over,
-          };
-          activeRef.current = null;
+            event = {
+              active: active,
+              delta: scrollAdjustedTransalte,
+              over,
+            };
 
-          if (type === Action.DragEnd && typeof cancelDrop === 'function') {
-            const shouldCancel = await Promise.resolve(cancelDrop(event));
+            if (type === Action.DragEnd && typeof cancelDrop === 'function') {
+              const shouldCancel = await Promise.resolve(cancelDrop(event));
 
-            if (shouldCancel) {
-              type = Action.DragCancel;
+              if (shouldCancel) {
+                type = Action.DragCancel;
+              }
             }
           }
+
+          activeRef.current = null;
 
           dispatch({type});
           setActiveSensor(null);
           setActivatorEvent(null);
 
-          const {onDragCancel, onDragEnd} = latestProps.current;
-          const handler = type === Action.DragEnd ? onDragEnd : onDragCancel;
+          if (event) {
+            const {onDragCancel, onDragEnd} = latestProps.current;
+            const handler = type === Action.DragEnd ? onDragEnd : onDragCancel;
 
-          setMonitorState({type, event});
-
-          if (activeId) {
+            setMonitorState({type, event});
             handler?.(event);
           }
         };
