@@ -4,7 +4,6 @@ import type {
   Coordinates,
   ViewRect,
   ClientRect,
-  LayoutRect,
   UniqueIdentifier,
 } from '../types';
 import type {SyntheticListeners} from '../hooks/utilities';
@@ -25,7 +24,7 @@ export type DataRef = MutableRefObject<Data | undefined>;
 export interface DroppableContainer {
   id: UniqueIdentifier;
   node: MutableRefObject<HTMLElement | null>;
-  rect: MutableRefObject<LayoutRect | null>;
+  rect: MutableRefObject<ViewRect | null>;
   disabled: boolean;
   data: DataRef;
 }
@@ -34,14 +33,14 @@ export interface Active {
   id: UniqueIdentifier;
   data: DataRef;
   rect: MutableRefObject<{
-    initial: LayoutRect | null;
-    translated: LayoutRect | null;
+    initial: ViewRect | null;
+    translated: ViewRect | null;
   }>;
 }
 
 export interface Over {
   id: UniqueIdentifier;
-  rect: LayoutRect;
+  rect: ViewRect;
   disabled: boolean;
   data: DataRef;
 }
@@ -61,7 +60,7 @@ export type DroppableContainers = Record<
   DroppableContainer | undefined
 >;
 
-export type LayoutRectMap = Map<UniqueIdentifier, LayoutRect>;
+export type ViewRectMap = Map<UniqueIdentifier, ViewRect>;
 
 export interface State {
   droppable: {
@@ -89,7 +88,7 @@ export interface DndContextDescriptor {
   containerNodeRect: ViewRect | null;
   draggableNodes: DraggableNodes;
   droppableContainers: DroppableContainers;
-  droppableRects: LayoutRectMap;
+  droppableRects: ViewRectMap;
   over: Over | null;
   overlayNode: {
     nodeRef: MutableRefObject<HTMLElement | null>;
