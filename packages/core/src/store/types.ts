@@ -34,8 +34,8 @@ export interface Active {
   id: UniqueIdentifier;
   data: DataRef;
   rect: MutableRefObject<{
-    initial: LayoutRect | null;
-    translated: LayoutRect | null;
+    initial: ViewRect | null;
+    translated: ViewRect | null;
   }>;
 }
 
