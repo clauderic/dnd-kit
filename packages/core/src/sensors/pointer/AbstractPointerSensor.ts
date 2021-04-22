@@ -44,18 +44,21 @@ function isDelayConstraint(
   return Boolean(constraint && 'delay' in constraint);
 }
 
-export interface AbstractPointerSensorOptions extends SensorOptions {
+export interface AbstractPointerSensorOptions<T> extends SensorOptions {
   activationConstraint?: PointerActivationConstraint;
-  onActivation?({event}: {event: Event}): void;
+  onActivation?({event}: {event: T}): void;
+  triggerFunction?({event}: {event: T}): boolean;
 }
 
-export type AbstractPointerSensorProps = SensorProps<AbstractPointerSensorOptions>;
+export type AbstractPointerSensorProps<T> = SensorProps<
+  AbstractPointerSensorOptions<T>
+>;
 
 enum EventName {
   Keydown = 'keydown',
 }
 
-export class AbstractPointerSensor implements SensorInstance {
+export class AbstractPointerSensor<T> implements SensorInstance {
   public autoScrollEnabled = true;
   private activated: boolean = false;
   private initialCoordinates: Coordinates;
@@ -64,11 +67,13 @@ export class AbstractPointerSensor implements SensorInstance {
   private ownerDocument: Document;
 
   constructor(
-    private props: AbstractPointerSensorProps,
+    private props: AbstractPointerSensorProps<T>,
     private events: PointerEventHandlers,
     listenerTarget = getEventListenerTarget(props.event.target)
   ) {
-    const {event} = props;
+    const {
+      event: {nativeEvent: event},
+    } = props;
 
     this.props = props;
     this.events = events;

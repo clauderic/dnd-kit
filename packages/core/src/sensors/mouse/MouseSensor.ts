@@ -17,11 +17,15 @@ enum MouseButton {
   RightClick = 2,
 }
 
-export interface MouseSensorOptions extends AbstractPointerSensorOptions {}
+const defaultTriggerFunction = ({event}: {event: MouseEvent}) =>
+  event.button !== MouseButton.RightClick;
+
+export interface MouseSensorOptions
+  extends AbstractPointerSensorOptions<MouseEvent> {}
 
 export type MouseSensorProps = SensorProps<MouseSensorOptions>;
 
-export class MouseSensor extends AbstractPointerSensor {
+export class MouseSensor extends AbstractPointerSensor<MouseEvent> {
   constructor(props: MouseSensorProps) {
     super(props, events, getOwnerDocument(props.event.target));
   }
@@ -30,16 +34,18 @@ export class MouseSensor extends AbstractPointerSensor {
     {
       eventName: 'onMouseDown' as const,
       handler: (
-        {nativeEvent: event}: MouseEvent,
-        {onActivation}: MouseSensorOptions
+        {nativeEvent: event}: React.SyntheticEvent<Element, MouseEvent>,
+        {
+          onActivation,
+          triggerFunction = defaultTriggerFunction,
+        }: MouseSensorOptions
       ) => {
-        if (event.button === MouseButton.RightClick) {
-          return false;
+        if (triggerFunction?.({event})) {
+          onActivation?.({event});
+          return true;
         }
 
-        onActivation?.({event});
-
-        return true;
+        return false;
       },
     },
   ];

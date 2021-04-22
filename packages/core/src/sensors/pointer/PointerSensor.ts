@@ -13,11 +13,15 @@ const events: PointerEventHandlers = {
   end: {name: 'pointerup'},
 };
 
-export interface PointerSensorOptions extends AbstractPointerSensorOptions {}
+const defaultTriggerFunction = ({event}: {event: PointerEvent}) =>
+  event.isPrimary && event.button === 0;
+
+export interface PointerSensorOptions
+  extends AbstractPointerSensorOptions<PointerEvent> {}
 
 export type PointerSensorProps = SensorProps<PointerSensorOptions>;
 
-export class PointerSensor extends AbstractPointerSensor {
+export class PointerSensor extends AbstractPointerSensor<PointerEvent> {
   constructor(props: PointerSensorProps) {
     const {event} = props;
     // Pointer events stop firing if the target is unmounted while dragging
@@ -31,16 +35,18 @@ export class PointerSensor extends AbstractPointerSensor {
     {
       eventName: 'onPointerDown' as const,
       handler: (
-        {nativeEvent: event}: PointerEvent,
-        {onActivation}: PointerSensorOptions
+        {nativeEvent: event}: React.SyntheticEvent<Element, PointerEvent>,
+        {
+          onActivation,
+          triggerFunction = defaultTriggerFunction,
+        }: PointerSensorOptions
       ) => {
-        if (!event.isPrimary || event.button !== 0) {
-          return false;
+        if (triggerFunction?.({event})) {
+          onActivation?.({event});
+          return true;
         }
 
-        onActivation?.({event});
-
-        return true;
+        return false;
       },
     },
   ];

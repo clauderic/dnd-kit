@@ -2,9 +2,8 @@ import type {TouchEvent} from 'react';
 
 import {
   AbstractPointerSensor,
-  PointerSensorProps,
   PointerEventHandlers,
-  PointerSensorOptions,
+  AbstractPointerSensorOptions,
 } from '../pointer';
 import type {SensorProps} from '../types';
 
@@ -13,12 +12,16 @@ const events: PointerEventHandlers = {
   end: {name: 'touchend'},
 };
 
-export interface TouchSensorOptions extends PointerSensorOptions {}
+const defaultTriggerFunction = ({event}: {event: TouchEvent}) =>
+  event.touches.length === 1;
+
+export interface TouchSensorOptions
+  extends AbstractPointerSensorOptions<TouchEvent> {}
 
 export type TouchSensorProps = SensorProps<TouchSensorOptions>;
 
-export class TouchSensor extends AbstractPointerSensor {
-  constructor(props: PointerSensorProps) {
+export class TouchSensor extends AbstractPointerSensor<TouchEvent> {
+  constructor(props: TouchSensorProps) {
     super(props, events);
   }
 
@@ -26,18 +29,18 @@ export class TouchSensor extends AbstractPointerSensor {
     {
       eventName: 'onTouchStart' as const,
       handler: (
-        {nativeEvent: event}: TouchEvent,
-        {onActivation}: TouchSensorOptions
+        {nativeEvent: event}: React.SyntheticEvent<Element, TouchEvent>,
+        {
+          onActivation,
+          triggerFunction = defaultTriggerFunction,
+        }: TouchSensorOptions
       ) => {
-        const {touches} = event;
-
-        if (touches.length > 1) {
-          return false;
+        if (triggerFunction?.({event})) {
+          onActivation?.({event});
+          return true;
         }
 
-        onActivation?.({event});
-
-        return true;
+        return false;
       },
     },
   ];

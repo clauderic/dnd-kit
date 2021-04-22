@@ -295,7 +295,7 @@ export const DndContext = memo(function DndContext({
       const sensorInstance = new Sensor({
         active: activeRef.current,
         activeNode,
-        event: event.nativeEvent,
+        event,
         options,
         // Sensors need to be instantiated with refs for arguments that change over time
         // otherwise they are frozen in time with the stale arguments
