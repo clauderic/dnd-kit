@@ -35,6 +35,7 @@ export {applyModifiers} from './modifiers';
 export type {Modifier, Modifiers} from './modifiers';
 
 export {
+  AbstractPointerSensor,
   KeyboardSensor,
   KeyboardCode,
   MouseSensor,
