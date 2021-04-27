@@ -11,6 +11,14 @@ import {
     sizeProp,
 } from './constants';
 
+// Observer
+
+// const o = new IntersectionObserver((entry, observer) => {
+
+// });
+
+// o.observe();
+
 export { DIRECTION as ScrollDirection } from './constants';
 
 export type ItemPosition = 'absolute' | 'sticky';
@@ -295,7 +303,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
         }
 
         return (
-            <div style={innerStyle}>{items}</div>
+            <div ref={this.props.ref} style={innerStyle}>{items}</div>
         );
     }
 

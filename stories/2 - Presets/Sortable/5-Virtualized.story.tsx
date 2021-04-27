@@ -26,7 +26,7 @@ import { SortableItem, Props } from './Sortable';
 import { Item, Wrapper } from '../../components';
 
 export default {
-  title: 'Presets/Sortable/Virtualized',
+  title: 'Presets/Sortable/Virtualized Multiple lists',
 };
 
 const ITEM_SIZE = 64;
