@@ -82,7 +82,12 @@ const initialItems: TreeItems = [
   },
   {
     id: 'Collections',
-    children: generateChildren(2, 0, 0),
+    children: generateChildren(3, 0, 0),
+    subListTitle: true,
+  },
+  {
+    id: 'Seasons',
+    children: generateChildren(3, 0, 0),
     subListTitle: true,
   },
   {
