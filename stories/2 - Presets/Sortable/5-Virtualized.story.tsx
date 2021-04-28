@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
+import React, {useEffect, useMemo, useState} from 'react';
+import {createPortal} from 'react-dom';
 // import VirtualList from 'react-tiny-virtual-list';
 import VirtualList from '../../utilities/virtual/main';
 
@@ -21,9 +21,9 @@ import {
 
 import styles from './Virtualized.module.css';
 
-import { createRange } from '../../utilities';
-import { SortableItem, Props } from './Sortable';
-import { Item, Wrapper } from '../../components';
+import {createRange} from '../../utilities';
+import {SortableItem, Props} from './Sortable';
+import {Item, Wrapper} from '../../components';
 
 export default {
   title: 'Presets/Sortable/Virtualized Multiple lists',
@@ -66,12 +66,16 @@ function Sortable({
   useEffect(() => {
     const abortController = new AbortController();
 
-    window.addEventListener('scroll', () => {
-      setScrollPosition(window.scrollY);
-    }, {
-      // @ts-ignore types aren't aligned yet with this spec addition
-      signal: abortController.signal
-    });
+    window.addEventListener(
+      'scroll',
+      () => {
+        setScrollPosition(window.scrollY);
+      },
+      {
+        // @ts-ignore types aren't aligned yet with this spec addition
+        signal: abortController.signal,
+      }
+    );
 
     return function cleanup() {
       abortController.abort();
@@ -82,10 +86,10 @@ function Sortable({
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
-      onDragStart={({ active }) => {
+      onDragStart={({active}) => {
         setActiveId(active.id);
       }}
-      onDragEnd={({ over }) => {
+      onDragEnd={({over}) => {
         if (over) {
           const overIndex = getIndex(over.id);
           if (activeIndex !== overIndex) {
@@ -98,9 +102,12 @@ function Sortable({
       onDragCancel={() => setActiveId(null)}
       modifiers={modifiers}
     >
-      <Wrapper center style={{
-        display: "block"
-      }}>
+      <Wrapper
+        center
+        style={{
+          display: 'block',
+        }}
+      >
         <SortableContext items={items} strategy={strategy}>
           <VirtualList
             scrollOffset={scrollPosition}
@@ -110,7 +117,7 @@ function Sortable({
             className={styles.VirtualList}
             itemCount={itemsGroups[0].length}
             itemSize={ITEM_SIZE}
-            renderItem={({ index, style }) => {
+            renderItem={({index, style}) => {
               const id = itemsGroups[0][index];
 
               return (
@@ -129,19 +136,25 @@ function Sortable({
               );
             }}
           />
-          <div style={{
-            height: 200,
-            background: "red"
-          }}>SECOND LIST TITLE</div>
+          <div
+            style={{
+              height: 200,
+              background: 'red',
+            }}
+          >
+            SECOND LIST TITLE
+          </div>
           <VirtualList
-            scrollOffset={scrollPosition - 200 - (itemsGroups[0].length * ITEM_SIZE)}
+            scrollOffset={
+              scrollPosition - 200 - itemsGroups[0].length * ITEM_SIZE
+            }
             width={500}
             height={600}
             viewportHeight={window.document.documentElement.clientHeight}
             className={styles.VirtualList}
             itemCount={itemsGroups[1].length}
             itemSize={ITEM_SIZE}
-            renderItem={({ index, style }) => {
+            renderItem={({index, style}) => {
               const id = itemsGroups[1][index];
 
               return (

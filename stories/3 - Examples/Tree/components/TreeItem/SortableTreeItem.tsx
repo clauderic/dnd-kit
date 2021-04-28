@@ -28,7 +28,7 @@ export function SortableTreeItem({id, depth, ...props}: Props) {
   });
   const style: CSSProperties = {
     transform: CSS.Translate.toString(transform),
-    transition,
+    transition:  transition ? transition : undefined,
   };
 
   return (
