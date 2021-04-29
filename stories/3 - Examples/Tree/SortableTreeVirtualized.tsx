@@ -46,14 +46,14 @@ const SEED_DATA = [
 ];
 
 type ItemData = {
-    id: string;
-    children: ItemData[]
+  id: string;
+  children: ItemData[];
 };
 
 let uuid = 1000;
 
 function getUUID() {
-    return uuid++;
+  return uuid++;
 }
 
 function generateChildren(
@@ -106,7 +106,7 @@ const initialItems: TreeItems = [
 ];
 
 function notNull<T>(v: T): v is NonNullable<T> {
-    return v !== null && v !== undefined;
+  return v !== null && v !== undefined;
 }
 
 const layoutMeasuring: Partial<LayoutMeasuring> = {
@@ -208,11 +208,13 @@ export function SortableTree({
           itemSize={64}
           itemCount={flattenedItems.length}
           overscanCount={3}
-          stickyIndices={flattenedItems.map((item, index) => item.subListTitle ? index : null).filter(notNull)}
+          stickyIndices={flattenedItems
+            .map((item, index) => (item.subListTitle ? index : null))
+            .filter(notNull)}
           renderItem={function ({index, style}) {
             const actualStyle = {
-                ...style,
-                position: "absolute"
+              ...style,
+              position: 'absolute',
             } as const;
             const {id, children, collapsed, depth} = flattenedItems[index];
 

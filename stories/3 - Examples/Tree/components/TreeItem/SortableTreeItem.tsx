@@ -10,7 +10,7 @@ interface Props extends TreeItemProps {
 }
 
 const animateLayoutChanges: AnimateLayoutChanges = ({isSorting, wasSorting}) =>
-  isSorting || wasSorting ? false : true;
+  isSorting || wasSorting ? false : false;
 
 export function SortableTreeItem({id, depth, ...props}: Props) {
   const {
@@ -25,11 +25,27 @@ export function SortableTreeItem({id, depth, ...props}: Props) {
   } = useSortable({
     id,
     animateLayoutChanges,
+    transition: {
+      easing: 'linear',
+      duration: 3000,
+    },
   });
   const style: CSSProperties = {
     transform: CSS.Translate.toString(transform),
-    transition:  transition ? transition : undefined,
+    transition: transition ? transition : undefined,
   };
+
+  React.useEffect(() => {
+    if (id !== 'About Us') {
+      return;
+    }
+
+    if (transform) {
+      console.log(id, transform, transition);
+    } else {
+      console.log(id, 'transform removed', transition);
+    }
+  }, [id, transform, transition]);
 
   return (
     <TreeItem
