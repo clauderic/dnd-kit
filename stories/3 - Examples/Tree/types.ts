@@ -4,7 +4,7 @@ export interface TreeItem {
   id: string;
   children: TreeItem[];
   collapsed?: boolean;
-  subListTitle?: boolean
+  subListTitle?: boolean;
 }
 
 export type TreeItems = TreeItem[];
@@ -13,7 +13,7 @@ export interface FlattenedItem extends TreeItem {
   parentId: null | string;
   depth: number;
   index: number;
-  subListTitle?: boolean
+  subListTitle?: boolean;
 }
 
 export type SensorContext = MutableRefObject<{

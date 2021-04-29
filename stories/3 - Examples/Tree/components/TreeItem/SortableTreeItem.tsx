@@ -10,7 +10,7 @@ interface Props extends TreeItemProps {
 }
 
 const animateLayoutChanges: AnimateLayoutChanges = ({isSorting, wasSorting}) =>
-  isSorting || wasSorting ? false : false;
+  isSorting || wasSorting ? false : true;
 
 export function SortableTreeItem({id, depth, ...props}: Props) {
   const {
