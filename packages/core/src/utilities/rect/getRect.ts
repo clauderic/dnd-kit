@@ -1,31 +1,9 @@
-import type {Coordinates, ClientRect, LayoutRect, ViewRect} from '../../types';
+import type {ClientRect, LayoutRect, ViewRect} from '../../types';
 import {getScrollableAncestors, getScrollOffsets} from '../scroll';
-import {defaultCoordinates} from '../coordinates';
-
-function getEdgeOffset(
-  node: HTMLElement | null,
-  parent: (Node & ParentNode) | null,
-  offset = defaultCoordinates
-): Coordinates {
-  if (!node || !(node instanceof HTMLElement)) {
-    return offset;
-  }
-
-  const nodeOffset = {
-    x: offset.x + node.offsetLeft,
-    y: offset.y + node.offsetTop,
-  };
-
-  if (node.offsetParent === parent) {
-    return nodeOffset;
-  }
-
-  return getEdgeOffset(node.offsetParent as HTMLElement, parent, nodeOffset);
-}
 
 export function getElementLayout(element: HTMLElement): LayoutRect {
   const {offsetWidth: width, offsetHeight: height} = element;
-  const {x: offsetLeft, y: offsetTop} = getEdgeOffset(element, null);
+  const {left: offsetLeft, top: offsetTop} = element.getBoundingClientRect();
 
   return {
     width,
