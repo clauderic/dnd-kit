@@ -1,6 +1,6 @@
 export function isScrollable(node: HTMLElement): boolean {
   const computedStyle = window.getComputedStyle(node);
-  const overflowRegex = /(auto|scroll)/;
+  const overflowRegex = /(auto|scroll|overlay)/;
   const properties = ['overflow', 'overflowX', 'overflowY'];
 
   return (
