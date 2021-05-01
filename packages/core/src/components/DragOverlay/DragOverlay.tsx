@@ -40,6 +40,7 @@ export const DragOverlay = React.memo(
     adjustScale = false,
     children,
     dropAnimation = defaultDropAnimation,
+    style: propStyle,
     transition = defaultTransition,
     modifiers,
     wrapperElement = 'div',
@@ -88,6 +89,7 @@ export const DragOverlay = React.memo(
         };
     const style: React.CSSProperties | undefined = activeNodeRect
       ? {
+          ...propStyle,
           position: 'fixed',
           width: activeNodeRect.width,
           height: activeNodeRect.height,
