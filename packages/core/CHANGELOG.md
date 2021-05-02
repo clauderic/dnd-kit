@@ -1,5 +1,13 @@
 # @dnd-kit/core
 
+## 3.0.2
+
+### Patch Changes
+
+- [`54c8778`](https://github.com/clauderic/dnd-kit/commit/54c877875cf7ec6d4367ca11ce216cc3eb6475d2) [#225](https://github.com/clauderic/dnd-kit/pull/225) Thanks [@clauderic](https://github.com/clauderic)! - Updated the `active` rects type to `ViewRect` (was previously incorrectly typed as `LayoutRect`)
+
+- [`2ee96a5`](https://github.com/clauderic/dnd-kit/commit/2ee96a5c400aae52ed3c78192097e60da8c42a8d) [#243](https://github.com/clauderic/dnd-kit/pull/243) Thanks [@py-wai](https://github.com/py-wai)! - Update regex used in isScrollable, to consider element with overflow: overlay as a scrollable element.
+
 ## 3.0.1
 
 ### Patch Changes
