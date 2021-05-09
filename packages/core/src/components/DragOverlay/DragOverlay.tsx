@@ -89,7 +89,6 @@ export const DragOverlay = React.memo(
         };
     const style: React.CSSProperties | undefined = activeNodeRect
       ? {
-          ...propStyle,
           position: 'fixed',
           width: activeNodeRect.width,
           height: activeNodeRect.height,
@@ -110,6 +109,7 @@ export const DragOverlay = React.memo(
             : typeof transition === 'function'
             ? transition(activatorEvent)
             : transition,
+          ...propStyle,
         }
       : undefined;
     const attributes = isDragging
