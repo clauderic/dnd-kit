@@ -1,0 +1,133 @@
+.Code {
+  --background-color: #232b37;
+  --border-radius: 10px;
+
+  max-width: 850px;
+  margin: 0 auto;
+  margin-top: 1rem;
+  background-color: var(--background-color);
+  border-radius: var(--border-radius);
+  color: #fff;
+  transition: box-shadow 250ms ease,
+    transform 300ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.Code pre {
+  margin: 0;
+  background: none;
+}
+
+@media (max-width: 540px) {
+  .Code {
+    margin: 0 -0.8rem;
+  }
+}
+
+.dragging {
+  box-shadow: 0 30px 60px -12px rgba(50, 50, 92, 0.3),
+    0 18px 36px -18px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 250ms ease;
+  opacity: 0.98;
+}
+
+.Circles {
+  display: flex;
+  padding: 20px;
+  touch-action: none;
+}
+
+.Circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.Circle:first-child {
+  margin-left: 0;
+  background-color: #fd5f57;
+}
+
+.Circle {
+  margin: 0 5px;
+  background-color: #febc3e;
+}
+
+.Circle:last-child {
+  margin-right: 0;
+  background-color: #30c840;
+}
+
+.Header {
+  display: flex;
+  align-items: stretch;
+  background-color: #1c222c;
+  border-top-right-radius: var(--border-radius);
+  border-top-left-radius: var(--border-radius);
+}
+
+.Spacer {
+  height: 50px;
+  flex-grow: 1;
+}
+
+.dragging .Header {
+  cursor: url('/grabbing.svg'), grabbing;
+}
+
+.Tabs {
+  display: flex;
+  overflow-x: auto;
+}
+
+.Tabs button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background-color: transparent;
+  appearance: none;
+  outline: none;
+  border: 0;
+  color: #97999e;
+  padding: 0 20px;
+  touch-action: pan-x;
+
+  cursor: url('/pointer.svg'), pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: var(--mono-font-stack);
+}
+
+.Tabs button svg {
+  margin-right: 0.5rem;
+  fill: #96999e;
+}
+
+.Tabs button:not(.selected):active {
+  cursor: url('/click.svg'), pointer;
+}
+
+.Tabs button:focus-visible {
+  position: relative;
+  z-index: 1;
+  box-shadow: inset 0 0 0 2px #4c9ffe;
+  outline: none;
+}
+
+.Tabs button.selected {
+  cursor: url('/horizontal-sort.svg'), grab;
+  color: #fff;
+  background-color: var(--background-color);
+}
+
+.Tabs button.selected svg {
+  fill: #f7df1e;
+}
+
+.Tabs .dragging button {
+  cursor: url('/grabbing.svg'), grabbing;
+}
+
+.TabContent {
+  overflow: auto;
+}

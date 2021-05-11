@@ -4,6 +4,7 @@
   "search.exclude": {
     "**/dist": true,
     "**/.cache": true,
+    "**/.next": true
   },
   "files.exclude": {
     "**/dist": true,
@@ -12,6 +13,7 @@
     "**/.cache": true,
     "**/.DS_Store": true,
     "**/coverage": true,
-    "**/storybook-static": true
+    "**/storybook-static": true,
+    "**/.next": true
   }
 }

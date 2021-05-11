@@ -1,0 +1,6 @@
+{
+  "index": "DndContext",
+  "collision-detection-algorithms": "Collision detection",
+  "usedndcontext": "useDndContext",
+  "usedndmonitor": "useDndMonitor"
+}

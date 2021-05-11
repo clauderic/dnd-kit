@@ -1,0 +1,13 @@
+.Anchor {
+  @apply flex p-2 border-l border-gray-200 text-gray-600;
+  text-decoration: none;
+}
+
+.active {
+  @apply border-l-2 text-blue-500 border-blue-500;
+  text-indent: -1px;
+}
+
+.child {
+  @apply pl-6;
+}
