@@ -2,4 +2,4 @@
 '@dnd-kit/core': patch
 ---
 
-Fixes the style prop of DragOverlay to work
+`DragOverlay` component now passes down `style` prop to the wrapper element it renders.
