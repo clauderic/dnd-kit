@@ -40,6 +40,7 @@ export const DragOverlay = React.memo(
     adjustScale = false,
     children,
     dropAnimation = defaultDropAnimation,
+    style: styleProp,
     transition = defaultTransition,
     modifiers,
     wrapperElement = 'div',
@@ -108,6 +109,7 @@ export const DragOverlay = React.memo(
             : typeof transition === 'function'
             ? transition(activatorEvent)
             : transition,
+          ...styleProp,
         }
       : undefined;
     const attributes = isDragging
