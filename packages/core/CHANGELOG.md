@@ -1,5 +1,11 @@
 # @dnd-kit/core
 
+## 3.0.3
+
+### Patch Changes
+
+- [`0ff788e`](https://github.com/clauderic/dnd-kit/commit/0ff788e78f5853bf33673881e5759fa844f69ec3) [#246](https://github.com/clauderic/dnd-kit/pull/246) Thanks [@inokawa](https://github.com/inokawa)! - `DragOverlay` component now passes down `style` prop to the wrapper element it renders.
+
 ## 3.0.2
 
 ### Patch Changes
