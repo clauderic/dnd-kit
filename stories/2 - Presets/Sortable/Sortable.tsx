@@ -240,6 +240,7 @@ interface SortableItemProps {
   index: number;
   handle: boolean;
   useDragOverlay?: boolean;
+  data?: Record<string, any>;
   onRemove?(id: string): void;
   style(values: any): React.CSSProperties;
   renderItem?(args: any): React.ReactElement;
@@ -254,11 +255,12 @@ interface SortableItemProps {
   }): React.CSSProperties;
 }
 
-export function SortableItem({
+export const SortableItem = React.memo(function SortableItem({
   disabled,
   animateLayoutChanges,
   id,
   index,
+  data,
   handle,
   onRemove,
   style,
@@ -279,6 +281,7 @@ export function SortableItem({
     animateLayoutChanges,
     id,
     disabled,
+    data,
   });
 
   return (
@@ -309,4 +312,4 @@ export function SortableItem({
       {...attributes}
     />
   );
-}
+});

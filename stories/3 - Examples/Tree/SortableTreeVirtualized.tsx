@@ -36,33 +36,79 @@ import {
 import type {FlattenedItem, SensorContext, TreeItems} from './types';
 import {sortableTreeKeyboardCoordinates} from './keyboardCoordinates';
 import {TreeItem, SortableTreeItem} from './components';
+import VirtualList from 'react-tiny-virtual-list';
+import {afterNextPaint} from '../../utilities/useTransitionalChange';
+
+const SEED_DATA = [
+  {id: 'Spring'},
+  {id: 'Summer'},
+  {id: 'Fall'},
+  {id: 'Winter'},
+];
+
+type ItemData = {
+  id: string;
+  children: ItemData[];
+};
+
+let uuid = 1000;
+
+function getUUID() {
+  return uuid++;
+}
+
+function generateChildren(
+  howManyDups: number,
+  generation: number,
+  howManyGenerations: number
+): ItemData[] {
+  return Array.from({length: howManyDups}, (_, index) => {
+    return SEED_DATA.map((entry) => {
+      return {
+        id: `${getUUID()}.gen: ${generation} - r: ${index} - ${entry.id}`,
+        children:
+          howManyGenerations > 0
+            ? generateChildren(howManyDups, ++generation, --howManyGenerations)
+            : [],
+      };
+    });
+  }).flat();
+}
 
 const initialItems: TreeItems = [
   {
     id: 'Home',
     children: [],
+    subListTitle: true,
   },
   {
     id: 'Collections',
-    children: [
-      {id: 'Spring', children: []},
-      {id: 'Summer', children: []},
-      {id: 'Fall', children: []},
-      {id: 'Winter', children: []},
-    ],
+    children: generateChildren(3, 0, 0),
+    subListTitle: true,
+  },
+  {
+    id: 'Seasons',
+    children: generateChildren(3, 0, 0),
+    subListTitle: true,
   },
   {
     id: 'About Us',
     children: [],
+    subListTitle: true,
   },
   {
     id: 'My Account',
+    subListTitle: true,
     children: [
-      {id: 'Addresses', children: []},
-      {id: 'Order History', children: []},
+      {id: 'Addresses', children: [], subListTitle: true},
+      {id: 'Order History', children: [], subListTitle: true},
     ],
   },
 ];
+
+function notNull<T>(v: T): v is NonNullable<T> {
+  return v !== null && v !== undefined;
+}
 
 const layoutMeasuring: Partial<LayoutMeasuring> = {
   strategy: LayoutMeasuringStrategy.Always,
@@ -89,6 +135,9 @@ export function SortableTree({
   removable,
 }: Props) {
   const [items, setItems] = useState(() => defaultItems);
+  const [mostRecentExpandOrCollapse, setMostRecentExpandOrCollapse] = useState<
+    string | null
+  >(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
   const [offsetLeft, setOffsetLeft] = useState(0);
@@ -143,6 +192,24 @@ export function SortableTree({
     };
   }, [flattenedItems, offsetLeft]);
 
+  const overscanValue = mostRecentExpandOrCollapse
+    ? flattenedItems.filter((i) => i.parentId === mostRecentExpandOrCollapse)
+        .length + 1
+    : 3;
+
+  React.useEffect(() => {
+    if (mostRecentExpandOrCollapse) {
+      // need to actually listen for transition end
+      setTimeout(() => {
+        setMostRecentExpandOrCollapse(null);
+      }, 450);
+    }
+  }, [mostRecentExpandOrCollapse]);
+
+  function onTransitionEnd(event: React.TransitionEvent<HTMLElement>) {
+    setMostRecentExpandOrCollapse(null);
+  }
+
   return (
     <DndContext
       sensors={sensors}
@@ -156,23 +223,38 @@ export function SortableTree({
       onDragCancel={handleDragCancel}
     >
       <SortableContext items={sortedIds} strategy={verticalListSortingStrategy}>
-        {flattenedItems.map(({id, children, collapsed, depth}) => (
-          <SortableTreeItem
-            key={id}
-            id={id}
-            value={id}
-            depth={id === activeId && projected ? projected.depth : depth}
-            indentationWidth={indentationWidth}
-            indicator={indicator}
-            collapsed={Boolean(collapsed && children.length)}
-            onCollapse={
-              collapsible && children.length
-                ? () => handleCollapse(id)
-                : undefined
-            }
-            onRemove={removable ? () => handleRemove(id) : undefined}
+        <div onTransitionEnd={onTransitionEnd}>
+          <VirtualList
+            width="100%"
+            height={400}
+            className=""
+            itemSize={64}
+            itemCount={flattenedItems.length}
+            overscanCount={overscanValue}
+            renderItem={function ({index, style}) {
+              const {id, children, collapsed, depth} = flattenedItems[index];
+
+              return (
+                <SortableTreeItem
+                  key={id}
+                  id={id}
+                  value={id}
+                  depth={id === activeId && projected ? projected.depth : depth}
+                  indentationWidth={indentationWidth}
+                  indicator={indicator}
+                  collapsed={Boolean(collapsed && children.length)}
+                  onCollapse={
+                    collapsible && children.length
+                      ? () => handleCollapse(id)
+                      : undefined
+                  }
+                  onRemove={removable ? () => handleRemove(id) : undefined}
+                  wrapperAdditionalStyles={style}
+                />
+              );
+            }}
           />
-        ))}
+        </div>
         {createPortal(
           <DragOverlay dropAnimation={dropAnimation}>
             {activeId && activeItem ? (
@@ -244,11 +326,14 @@ export function SortableTree({
   }
 
   function handleCollapse(id: string) {
-    setItems((items) =>
-      setProperty(items, id, 'collapsed', (value) => {
-        return !value;
-      })
-    );
+    setMostRecentExpandOrCollapse(id);
+    afterNextPaint(() => {
+      setItems((items) =>
+        setProperty(items, id, 'collapsed', (value) => {
+          return !value;
+        })
+      );
+    });
   }
 }
 

@@ -19,6 +19,7 @@ export interface Props extends HTMLAttributes<HTMLLIElement> {
   onCollapse?(): void;
   onRemove?(): void;
   wrapperRef?(node: HTMLLIElement): void;
+  wrapperAdditionalStyles?: React.CSSProperties;
 }
 
 export const TreeItem = forwardRef<HTMLDivElement, Props>(
@@ -39,6 +40,7 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
       style,
       value,
       wrapperRef,
+      wrapperAdditionalStyles,
       ...props
     },
     ref
@@ -57,6 +59,7 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
         style={
           {
             '--spacing': `${indentationWidth * depth}px`,
+            ...wrapperAdditionalStyles,
           } as React.CSSProperties
         }
         {...props}

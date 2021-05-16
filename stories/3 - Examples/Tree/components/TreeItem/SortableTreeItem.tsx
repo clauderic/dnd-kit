@@ -25,11 +25,27 @@ export function SortableTreeItem({id, depth, ...props}: Props) {
   } = useSortable({
     id,
     animateLayoutChanges,
+    transition: {
+      easing: 'linear',
+      duration: 300,
+    },
   });
   const style: CSSProperties = {
     transform: CSS.Translate.toString(transform),
-    transition,
+    transition: transition ? transition : undefined,
   };
+
+  // React.useEffect(() => {
+  //   if (id !== 'About Us') {
+  //     return;
+  //   }
+
+  //   if (transform) {
+  //     console.log(id, transform, transition);
+  //   } else {
+  //     console.log(id, 'transform removed', transition);
+  //   }
+  // }, [id, transform, transition]);
 
   return (
     <TreeItem

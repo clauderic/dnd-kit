@@ -220,6 +220,7 @@ export function MultipleContainers({
                   over.rect.offsetTop + over.rect.height;
 
               const modifier = isBelowLastItem ? 1 : 0;
+              // const modifier = 0;
 
               newIndex =
                 overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
@@ -307,6 +308,14 @@ export function MultipleContainers({
                 items={items[containerId]}
                 getStyle={getContainerStyle}
               >
+                <div
+                  style={{
+                    height: 100,
+                    background: 'red',
+                  }}
+                >
+                  Title: {containerId}
+                </div>
                 {items[containerId].map((value, index) => {
                   return (
                     <SortableItem
