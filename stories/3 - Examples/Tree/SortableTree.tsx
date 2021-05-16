@@ -246,7 +246,6 @@ export function SortableTree({
   function handleCollapse(id: string) {
     setItems((items) =>
       setProperty(items, id, 'collapsed', (value) => {
-        console.log(value);
         return !value;
       })
     );
