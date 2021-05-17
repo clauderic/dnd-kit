@@ -192,10 +192,15 @@ export function SortableTree({
     };
   }, [flattenedItems, offsetLeft]);
 
-  const overscanValue = mostRecentExpandOrCollapse
-    ? flattenedItems.filter((i) => i.parentId === mostRecentExpandOrCollapse)
-        .length + 1
-    : 3;
+  const overscanValue = React.useMemo(() => {
+    if (mostRecentExpandOrCollapse) {
+      return flattenedItems.filter(
+        (i) => i.parentId === mostRecentExpandOrCollapse
+      ).length;
+    }
+
+    return 3;
+  }, [flattenedItems, mostRecentExpandOrCollapse]);
 
   React.useEffect(() => {
     if (mostRecentExpandOrCollapse) {
