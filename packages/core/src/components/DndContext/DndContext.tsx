@@ -82,6 +82,7 @@ import {
 } from '../Accessibility';
 
 export interface Props {
+  id?: string;
   autoScroll?: boolean | AutoScrollOptions;
   announcements?: Announcements;
   cancelDrop?: CancelDrop;
@@ -124,6 +125,7 @@ export const ActiveDraggableContext = createContext<Transform>({
 });
 
 export const DndContext = memo(function DndContext({
+  id,
   autoScroll = true,
   announcements,
   children,
@@ -165,7 +167,7 @@ export const DndContext = memo(function DndContext({
   const [activeSensor, setActiveSensor] = useState<SensorInstance | null>(null);
   const [activatorEvent, setActivatorEvent] = useState<Event | null>(null);
   const latestProps = useRef(props);
-  const draggableDescribedById = useUniqueId(`DndDescribedBy`);
+  const draggableDescribedById = useUniqueId(`DndDescribedBy`, id);
   const {
     layoutRectMap: droppableRects,
     recomputeLayouts,
