@@ -46,6 +46,8 @@ const SEED_DATA = [
   {id: 'Winter'},
 ];
 
+const MAGIC_ADD_NUMBER = 1;
+
 type ItemData = {
   id: string;
   children: ItemData[];
@@ -127,6 +129,8 @@ interface Props {
   removable?: boolean;
 }
 
+const OVERSCAN = 0;
+
 export function SortableTree({
   collapsible,
   defaultItems = initialItems,
@@ -134,6 +138,11 @@ export function SortableTree({
   indentationWidth = 50,
   removable,
 }: Props) {
+  const itemSize = 64;
+  const listViewportHeight = 400;
+  const maxItemsFitInViewport = Math.ceil(listViewportHeight / itemSize);
+
+  const [goForIt] = React.useState(true);
   const [items, setItems] = useState(() => defaultItems);
   const [mostRecentExpandOrCollapse, setMostRecentExpandOrCollapse] = useState<
     string | null
@@ -151,9 +160,9 @@ export function SortableTree({
 
     return removeChildrenOf(
       flattenedTree,
-      activeId ? [activeId, ...collapsedItems] : collapsedItems
+      goForIt ? (activeId ? [activeId, ...collapsedItems] : collapsedItems) : []
     );
-  }, [activeId, items]);
+  }, [activeId, goForIt, items]);
   const projected =
     activeId && overId
       ? getProjection(
@@ -192,24 +201,37 @@ export function SortableTree({
     };
   }, [flattenedItems, offsetLeft]);
 
-  const overscanValue = React.useMemo(() => {
-    if (mostRecentExpandOrCollapse) {
-      return flattenedItems.filter(
-        (i) => i.parentId === mostRecentExpandOrCollapse
-      ).length;
-    }
+  let itemsToBeCollapsedOrExpandStartIndex = mostRecentExpandOrCollapse
+    ? flattenedItems.findIndex(
+        (item) => item.parentId === mostRecentExpandOrCollapse
+      )
+    : null;
+  let itemsToBeCollapsedOrExpandEndIndex = mostRecentExpandOrCollapse
+    ? flattenedItems
+        .map((i) => i.parentId)
+        .lastIndexOf(mostRecentExpandOrCollapse)
+    : null;
 
-    return 3;
-  }, [flattenedItems, mostRecentExpandOrCollapse]);
+  if (
+    itemsToBeCollapsedOrExpandStartIndex === -1 ||
+    itemsToBeCollapsedOrExpandEndIndex === -1
+  ) {
+    itemsToBeCollapsedOrExpandStartIndex = null;
+    itemsToBeCollapsedOrExpandEndIndex = null;
+  }
 
-  React.useEffect(() => {
-    if (mostRecentExpandOrCollapse) {
-      // need to actually listen for transition end
-      setTimeout(() => {
-        setMostRecentExpandOrCollapse(null);
-      }, 450);
-    }
-  }, [mostRecentExpandOrCollapse]);
+  const totalItemsToBeCollapsedOrExpand =
+    (itemsToBeCollapsedOrExpandEndIndex ?? 0) -
+    (itemsToBeCollapsedOrExpandStartIndex ?? 0);
+
+  const overscanValue =
+    React.useMemo(() => {
+      if (mostRecentExpandOrCollapse) {
+        return maxItemsFitInViewport + OVERSCAN;
+      }
+
+      return OVERSCAN;
+    }, [maxItemsFitInViewport, mostRecentExpandOrCollapse]) + MAGIC_ADD_NUMBER;
 
   function onTransitionEnd(event: React.TransitionEvent<HTMLElement>) {
     setMostRecentExpandOrCollapse(null);
@@ -231,17 +253,35 @@ export function SortableTree({
         <div onTransitionEnd={onTransitionEnd}>
           <VirtualList
             width="100%"
-            height={400}
+            height={listViewportHeight}
             className=""
-            itemSize={64}
+            itemSize={itemSize}
             itemCount={flattenedItems.length}
             overscanCount={overscanValue}
             renderItem={function ({index, style}) {
-              const {id, children, collapsed, depth} = flattenedItems[index];
+              let resolvedIndex = index;
+              if (
+                itemsToBeCollapsedOrExpandStartIndex !== null &&
+                itemsToBeCollapsedOrExpandEndIndex !== null &&
+                index >
+                  itemsToBeCollapsedOrExpandStartIndex + maxItemsFitInViewport
+              ) {
+                resolvedIndex +=
+                  totalItemsToBeCollapsedOrExpand - maxItemsFitInViewport;
+              }
+
+              // there are no additional items we can render
+              if (resolvedIndex >= flattenedItems.length) {
+                return null;
+              }
+
+              const {id, children, collapsed, parentId, depth} = flattenedItems[
+                resolvedIndex
+              ];
 
               return (
                 <SortableTreeItem
-                  key={id}
+                  key={`${parentId}${id}`}
                   id={id}
                   value={id}
                   depth={id === activeId && projected ? projected.depth : depth}

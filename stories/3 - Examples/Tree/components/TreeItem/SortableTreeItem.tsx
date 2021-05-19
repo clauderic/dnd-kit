@@ -35,18 +35,6 @@ export function SortableTreeItem({id, depth, ...props}: Props) {
     transition: transition ? transition : undefined,
   };
 
-  // React.useEffect(() => {
-  //   if (id !== 'About Us') {
-  //     return;
-  //   }
-
-  //   if (transform) {
-  //     console.log(id, transform, transition);
-  //   } else {
-  //     console.log(id, 'transform removed', transition);
-  //   }
-  // }, [id, transform, transition]);
-
   return (
     <TreeItem
       ref={setDraggableNodeRef}
