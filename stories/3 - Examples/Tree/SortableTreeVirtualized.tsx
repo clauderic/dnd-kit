@@ -46,7 +46,10 @@ const SEED_DATA = [
   {id: 'Winter'},
 ];
 
-const MAGIC_ADD_NUMBER = 1;
+/**
+ * I'm not sure where this value is missing
+ */
+const MAGIC_ADD_ONE = 1;
 
 type ItemData = {
   id: string;
@@ -231,8 +234,9 @@ export function SortableTree({
       }
 
       return OVERSCAN;
-    }, [maxItemsFitInViewport, mostRecentExpandOrCollapse]) + MAGIC_ADD_NUMBER;
+    }, [maxItemsFitInViewport, mostRecentExpandOrCollapse]) + MAGIC_ADD_ONE;
 
+  // we need more hermetic animation end detection
   function onTransitionEnd(event: React.TransitionEvent<HTMLElement>) {
     setMostRecentExpandOrCollapse(null);
   }
