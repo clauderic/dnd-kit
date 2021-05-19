@@ -1,6 +1,6 @@
-import React, {useMemo} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
-import {canUseDOM, useUniqueId} from '@dnd-kit/utilities';
+import {useUniqueId} from '@dnd-kit/utilities';
 import {HiddenText, LiveRegion, useAnnouncement} from '@dnd-kit/accessibility';
 
 import type {Announcements, ScreenReaderInstructions} from './types';
@@ -20,7 +20,15 @@ export function Accessibility({
   screenReaderInstructions,
 }: Props) {
   const {announce, announcement} = useAnnouncement();
-  const liveRegionId = useUniqueId(`DndLiveRegion`);
+  const liveRegionId = useUniqueId(`DndLiveRegion`, 'bar');
+
+  const bodyRef = useRef<HTMLElement | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    bodyRef.current = document.body;
+    setMounted(true);
+  }, []);
 
   useDndMonitor(
     useMemo<DndMonitorArguments>(
@@ -42,7 +50,7 @@ export function Accessibility({
     )
   );
 
-  return canUseDOM
+  return mounted
     ? createPortal(
         <>
           <HiddenText
