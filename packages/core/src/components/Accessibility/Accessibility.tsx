@@ -20,7 +20,7 @@ export function Accessibility({
   screenReaderInstructions,
 }: Props) {
   const {announce, announcement} = useAnnouncement();
-  const liveRegionId = useUniqueId(`DndLiveRegion`, 'bar');
+  const liveRegionId = useUniqueId(`DndLiveRegion`);
 
   const bodyRef = useRef<HTMLElement | null>(null);
   const [mounted, setMounted] = useState(false);
