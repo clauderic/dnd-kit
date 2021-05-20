@@ -22,11 +22,9 @@ export function Accessibility({
   const {announce, announcement} = useAnnouncement();
   const liveRegionId = useUniqueId(`DndLiveRegion`);
 
-  const bodyRef = useRef<HTMLElement | null>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    bodyRef.current = document.body;
     setMounted(true);
   }, []);
 
