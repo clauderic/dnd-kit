@@ -26,12 +26,12 @@
     "dist"
   ],
   "dependencies": {
-    "@dnd-kit/core": "^3.0.0",
     "@dnd-kit/utilities": "^2.0.0",
     "tslib": "^2.0.0"
   },
   "peerDependencies": {
-    "react": ">=16.8.0"
+    "react": ">=16.8.0",
+    "@dnd-kit/core": "^3.0.0"
   },
   "publishConfig": {
     "access": "public"

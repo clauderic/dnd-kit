@@ -26,9 +26,11 @@
     "dist"
   ],
   "dependencies": {
-    "@dnd-kit/core": "^3.0.0",
     "@dnd-kit/utilities": "^2.0.0",
     "tslib": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@dnd-kit/core": "^3.0.0"
   },
   "publishConfig": {
     "access": "public"
