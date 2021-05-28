@@ -95,6 +95,8 @@ export function useDropAnimation({
             );
 
             nodeAnimation.onfinish = () => {
+              node.style.display = 'none';
+
               setDropAnimationComplete(true);
 
               if (finalNode && dragSourceOpacity != null) {
