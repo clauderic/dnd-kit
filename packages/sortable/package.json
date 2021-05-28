@@ -33,6 +33,9 @@
     "react": ">=16.8.0",
     "@dnd-kit/core": "^3.0.0"
   },
+  "devDependencies": {
+    "@dnd-kit/core": "^3.0.0"
+  },
   "publishConfig": {
     "access": "public"
   }
