@@ -75,6 +75,7 @@ export type {
   DragMoveEvent,
   DragOverEvent,
   DragStartEvent,
+  DragCancelEvent,
   LayoutRect,
   RectEntry,
   Translate,
