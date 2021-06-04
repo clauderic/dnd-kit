@@ -1,6 +1,7 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {
+  Announcements,
   DndContext,
   closestCenter,
   KeyboardSensor,
@@ -143,8 +144,39 @@ export function SortableTree({
     };
   }, [flattenedItems, offsetLeft]);
 
+  const announcements: Announcements = {
+    onDragStart(id) {
+      return `Picked up ${id}.`;
+    },
+    onDragMove(id, overId) {
+      if (overId) {
+        return `${id} was nested under ${overId}.`;
+      }
+
+      return;
+    },
+    onDragOver(id, overId) {
+      if (overId) {
+        return `${id} was moved over ${overId}.`;
+      }
+
+      return;
+    },
+    onDragEnd(id, overId) {
+      if (overId) {
+        return `${id} was dropped over ${overId}`;
+      }
+
+      return;
+    },
+    onDragCancel(id) {
+      return `Dragging was cancelled. ${id} was dropped.`;
+    },
+  };
+
   return (
     <DndContext
+      announcements={announcements}
       sensors={sensors}
       modifiers={indicator ? [adjustTranslate] : undefined}
       collisionDetection={closestCenter}
