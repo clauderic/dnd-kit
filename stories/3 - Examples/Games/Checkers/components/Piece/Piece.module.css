@@ -15,7 +15,7 @@
   touch-action: none;
   cursor: grab;
 
-  &:focus {
+  &:focus-visible {
     box-shadow: var(--box-shadow), 0 0 10px 2px #4c9ffe;
   }
 }

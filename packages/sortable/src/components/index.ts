@@ -1,5 +1,2 @@
-export {
-  SortableContext,
-  Context,
-  Props as SortableContextProps,
-} from './SortableContext';
+export {SortableContext, Context} from './SortableContext';
+export type {Props as SortableContextProps} from './SortableContext';

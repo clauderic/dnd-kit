@@ -3,6 +3,7 @@ import {useIsomorphicLayoutEffect, useNodeRef} from '@dnd-kit/utilities';
 
 import {Context, Action, Data} from '../store';
 import type {LayoutRect} from '../types';
+import {useData} from './utilities';
 
 export interface UseDroppableArguments {
   id: string;
@@ -10,23 +11,15 @@ export interface UseDroppableArguments {
   data?: Data;
 }
 
-const defaultData: Data = {};
-
 export function useDroppable({
-  data = defaultData,
+  data,
   disabled = false,
   id,
 }: UseDroppableArguments) {
-  const {dispatch, over} = useContext(Context);
+  const {active, dispatch, over} = useContext(Context);
   const rect = useRef<LayoutRect | null>(null);
   const [nodeRef, setNodeRef] = useNodeRef();
-  const dataRef = useRef(data);
-
-  useIsomorphicLayoutEffect(() => {
-    if (dataRef.current !== data) {
-      dataRef.current = data;
-    }
-  }, [data]);
+  const dataRef = useData(data);
 
   useIsomorphicLayoutEffect(
     () => {
@@ -64,6 +57,7 @@ export function useDroppable({
   );
 
   return {
+    active,
     rect,
     isOver: over?.id === id,
     node: nodeRef,

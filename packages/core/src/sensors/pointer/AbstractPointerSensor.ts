@@ -1,19 +1,23 @@
 import {subtract as getCoordinatesDelta} from '@dnd-kit/utilities';
 
-import {getEventListenerTarget, Listeners} from '../utilities';
+import {
+  getEventListenerTarget,
+  hasExceededDistance,
+  Listeners,
+} from '../utilities';
 
 import {getEventCoordinates, getOwnerDocument} from '../../utilities';
 import {KeyboardCode} from '../keyboard';
 import type {SensorInstance, SensorProps, SensorOptions} from '../types';
-import type {Coordinates} from '../../types';
+import type {Coordinates, DistanceMeasurement} from '../../types';
 
 interface DistanceConstraint {
-  distance: number;
+  distance: DistanceMeasurement;
 }
 
 interface DelayConstraint {
   delay: number;
-  tolerance: number;
+  tolerance: DistanceMeasurement;
 }
 
 interface EventDescriptor {
@@ -40,11 +44,12 @@ function isDelayConstraint(
   return Boolean(constraint && 'delay' in constraint);
 }
 
-export interface PointerSensorOptions extends SensorOptions {
+export interface AbstractPointerSensorOptions extends SensorOptions {
   activationConstraint?: PointerActivationConstraint;
+  onActivation?({event}: {event: Event}): void;
 }
 
-export type PointerSensorProps = SensorProps<PointerSensorOptions>;
+export type AbstractPointerSensorProps = SensorProps<AbstractPointerSensorOptions>;
 
 enum EventName {
   Keydown = 'keydown',
@@ -59,7 +64,7 @@ export class AbstractPointerSensor implements SensorInstance {
   private ownerDocument: Document;
 
   constructor(
-    private props: PointerSensorProps,
+    private props: AbstractPointerSensorProps,
     private events: PointerEventHandlers,
     listenerTarget = getEventListenerTarget(props.event.target)
   ) {
@@ -145,12 +150,11 @@ export class AbstractPointerSensor implements SensorInstance {
 
     const coordinates = getEventCoordinates(event);
     const delta = getCoordinatesDelta(initialCoordinates, coordinates);
-    const combinedDelta = Math.abs(delta.x) + Math.abs(delta.y);
 
     if (!activated && activationConstraint) {
       // Constraint validation
       if (isDelayConstraint(activationConstraint)) {
-        if (combinedDelta >= activationConstraint.tolerance) {
+        if (hasExceededDistance(delta, activationConstraint.tolerance)) {
           return this.handleCancel();
         }
 
@@ -158,7 +162,7 @@ export class AbstractPointerSensor implements SensorInstance {
       }
 
       if (isDistanceConstraint(activationConstraint)) {
-        if (combinedDelta >= activationConstraint.distance) {
+        if (hasExceededDistance(delta, activationConstraint.distance)) {
           return this.handleStart();
         }
 

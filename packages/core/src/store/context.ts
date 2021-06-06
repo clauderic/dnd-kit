@@ -1,7 +1,7 @@
 import {createContext} from 'react';
 
 import {noop} from '../utilities/other';
-import {DndContextDescriptor} from './types';
+import type {DndContextDescriptor} from './types';
 
 export const Context = createContext<DndContextDescriptor>({
   activatorEvent: null,
@@ -13,6 +13,12 @@ export const Context = createContext<DndContextDescriptor>({
   ariaDescribedById: {
     draggable: '',
   },
+  containerNodeRect: null,
+  dispatch: noop,
+  draggableNodes: {},
+  droppableRects: new Map(),
+  droppableContainers: {},
+  over: null,
   overlayNode: {
     nodeRef: {
       current: null,
@@ -20,12 +26,6 @@ export const Context = createContext<DndContextDescriptor>({
     rect: null,
     setRef: noop,
   },
-  containerNodeRect: null,
-  dispatch: noop,
-  draggableNodes: {},
-  droppableRects: new Map(),
-  droppableContainers: {},
-  over: null,
   scrollableAncestors: [],
   scrollableAncestorRects: [],
   recomputeLayouts: noop,

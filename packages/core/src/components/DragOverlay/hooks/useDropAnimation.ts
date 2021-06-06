@@ -1,13 +1,14 @@
 import {useEffect, useState} from 'react';
 import {CSS, Transform, useIsomorphicLayoutEffect} from '@dnd-kit/utilities';
 
-import {UniqueIdentifier} from '../../../types';
-import {DraggableNodes} from '../../../store';
+import type {UniqueIdentifier} from '../../../types';
+import type {DraggableNodes} from '../../../store';
 import {getViewRect} from '../../../utilities';
 
 export interface DropAnimation {
   duration: number;
   easing: string;
+  dragSourceOpacity?: number;
 }
 
 interface Arguments {
@@ -17,6 +18,7 @@ interface Arguments {
   draggableNodes: DraggableNodes;
   duration: DropAnimation['duration'] | undefined;
   easing: DropAnimation['easing'] | undefined;
+  dragSourceOpacity: DropAnimation['dragSourceOpacity'] | undefined;
   node: HTMLElement | null;
   transform: Transform | undefined;
 }
@@ -28,23 +30,14 @@ export function useDropAnimation({
   draggableNodes,
   duration,
   easing,
+  dragSourceOpacity,
   node,
   transform,
 }: Arguments) {
   const [dropAnimationComplete, setDropAnimationComplete] = useState(false);
 
   useEffect(() => {
-    const shouldPerformDropAnimation = transform
-      ? Boolean(Math.abs(transform.x) || Math.abs(transform.y))
-      : false;
-
-    if (
-      !animate ||
-      !activeId ||
-      !easing ||
-      !duration ||
-      !shouldPerformDropAnimation
-    ) {
+    if (!animate || !activeId || !easing || !duration) {
       if (animate) {
         setDropAnimationComplete(true);
       }
@@ -53,7 +46,7 @@ export function useDropAnimation({
     }
 
     requestAnimationFrame(() => {
-      const finalNode = draggableNodes[activeId]?.current;
+      const finalNode = draggableNodes[activeId]?.node.current;
 
       if (transform && node && finalNode && finalNode.parentNode !== null) {
         const fromNode = node.children.length > 1 ? node : node.children[0];
@@ -82,29 +75,34 @@ export function useDropAnimation({
             });
             const originalOpacity = finalNode.style.opacity;
 
-            finalNode.style.opacity = '0';
-            node
-              .animate(
-                [
-                  {
-                    transform: CSS.Transform.toString(transform),
-                  },
-                  {
-                    transform: finalTransform,
-                  },
-                ],
-                {
-                  easing,
-                  duration,
-                }
-              )
-              .finished.then(() => {
-                setDropAnimationComplete(true);
+            if (dragSourceOpacity != null) {
+              finalNode.style.opacity = `${dragSourceOpacity}`;
+            }
 
-                if (finalNode) {
-                  finalNode.style.opacity = originalOpacity;
-                }
-              });
+            const nodeAnimation = node.animate(
+              [
+                {
+                  transform: CSS.Transform.toString(transform),
+                },
+                {
+                  transform: finalTransform,
+                },
+              ],
+              {
+                easing,
+                duration,
+              }
+            );
+
+            nodeAnimation.onfinish = () => {
+              node.style.display = 'none';
+
+              setDropAnimationComplete(true);
+
+              if (finalNode && dragSourceOpacity != null) {
+                finalNode.style.opacity = originalOpacity;
+              }
+            };
             return;
           }
         }
@@ -119,6 +117,7 @@ export function useDropAnimation({
     draggableNodes,
     duration,
     easing,
+    dragSourceOpacity,
     node,
     transform,
   ]);

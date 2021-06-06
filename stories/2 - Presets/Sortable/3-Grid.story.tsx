@@ -1,7 +1,11 @@
 import React from 'react';
-
+import {LayoutMeasuringStrategy} from '@dnd-kit/core';
 import {restrictToWindowEdges} from '@dnd-kit/modifiers';
-import {rectSortingStrategy} from '@dnd-kit/sortable';
+import {
+  AnimateLayoutChanges,
+  defaultAnimateLayoutChanges,
+  rectSortingStrategy,
+} from '@dnd-kit/sortable';
 
 import {Sortable, Props as SortableProps} from './Sortable';
 import {GridContainer} from '../../components';
@@ -120,3 +124,20 @@ export const MinimumDistance = () => (
     }}
   />
 );
+
+export const RemovableItems = () => {
+  const animateLayoutChanges: AnimateLayoutChanges = (args) =>
+    args.isSorting || args.wasSorting
+      ? defaultAnimateLayoutChanges(args)
+      : true;
+
+  return (
+    <Sortable
+      {...props}
+      animateLayoutChanges={animateLayoutChanges}
+      layoutMeasuring={{strategy: LayoutMeasuringStrategy.Always}}
+      removable
+      handle
+    />
+  );
+};

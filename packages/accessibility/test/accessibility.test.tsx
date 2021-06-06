@@ -3,3 +3,5 @@ describe('@dnd-kit/accessibility', () => {
     expect(true).toBe(true);
   });
 });
+
+export {};

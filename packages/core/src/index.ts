@@ -1,45 +1,62 @@
 export {
-  Announcements,
   DndContext,
   DragOverlay,
-  DragEndEvent,
-  DragMoveEvent,
-  DragOverEvent,
-  DragStartEvent,
-  DropAnimation,
   defaultAnnouncements,
+  defaultDropAnimation,
+} from './components';
+export type {
+  Announcements,
+  CancelDrop,
+  DropAnimation,
   ScreenReaderInstructions,
 } from './components';
 
 export {
+  AutoScrollActivator,
+  LayoutMeasuringFrequency,
+  LayoutMeasuringStrategy,
+  TraversalOrder,
   useDraggable,
-  UseDraggableArguments,
   useDndContext,
-  UseDndContextReturnValue,
+  useDndMonitor,
   useDroppable,
-  UseDroppableArguments,
+} from './hooks';
+export type {
+  AutoScrollOptions,
+  DndMonitorArguments,
   DraggableSyntheticListeners,
+  LayoutMeasuring,
+  UseDndContextReturnValue,
+  UseDraggableArguments,
+  UseDroppableArguments,
 } from './hooks';
 
-export {applyModifiers, Modifier, Modifiers} from './modifiers';
+export {applyModifiers} from './modifiers';
+export type {Modifier, Modifiers} from './modifiers';
 
 export {
+  KeyboardSensor,
+  KeyboardCode,
+  MouseSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensors,
+  useSensor,
+} from './sensors';
+export type {
   Activator,
   Activators,
   PointerActivationConstraint,
+  KeyboardCodes,
   KeyboardCoordinateGetter,
-  KeyboardSensor,
   KeyboardSensorOptions,
   KeyboardSensorProps,
-  KeyboardCode,
-  KeyboardCodes,
-  MouseSensor,
   MouseSensorOptions,
-  PointerSensor,
   PointerEventHandlers,
   PointerSensorOptions,
   PointerSensorProps,
   Sensor,
+  Sensors,
   SensorContext,
   SensorDescriptor,
   SensorHandler,
@@ -47,16 +64,18 @@ export {
   SensorOptions,
   SensorProps,
   SensorResponse,
-  Sensors,
-  TouchSensor,
   TouchSensorOptions,
-  useSensors,
-  useSensor,
 } from './sensors';
 
-export type {DndContextDescriptor} from './store';
+export type {Active, DndContextDescriptor, Over} from './store';
 
 export type {
+  DistanceMeasurement,
+  DragEndEvent,
+  DragMoveEvent,
+  DragOverEvent,
+  DragStartEvent,
+  DragCancelEvent,
   LayoutRect,
   RectEntry,
   Translate,
@@ -68,8 +87,9 @@ export {
   defaultCoordinates,
   getBoundingClientRect,
   getViewRect,
+  getScrollableAncestors,
   closestCenter,
   closestCorners,
   rectIntersection,
-  CollisionDetection,
 } from './utilities';
+export type {CollisionDetection} from './utilities';

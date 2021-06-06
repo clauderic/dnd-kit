@@ -29,9 +29,10 @@ const defaultTransition: TransitionGetter = (activatorEvent) => {
   return isKeyboardActivator ? 'transform 250ms ease' : undefined;
 };
 
-const defaultDropAnimation: DropAnimation = {
+export const defaultDropAnimation: DropAnimation = {
   duration: 250,
   easing: 'ease',
+  dragSourceOpacity: 0,
 };
 
 export const DragOverlay = React.memo(
@@ -39,6 +40,7 @@ export const DragOverlay = React.memo(
     adjustScale = false,
     children,
     dropAnimation = defaultDropAnimation,
+    style: styleProp,
     transition = defaultTransition,
     modifiers,
     wrapperElement = 'div',
@@ -52,6 +54,7 @@ export const DragOverlay = React.memo(
       containerNodeRect,
       draggableNodes,
       activatorEvent,
+      over,
       overlayNode,
       scrollableAncestors,
       scrollableAncestorRects,
@@ -59,13 +62,15 @@ export const DragOverlay = React.memo(
     } = useDndContext();
     const transform = useContext(ActiveDraggableContext);
     const modifiedTransform = applyModifiers(modifiers, {
-      transform,
+      active,
       activeNodeRect: activeNodeClientRect,
-      overlayNodeRect: overlayNode.rect,
       draggingNodeRect: overlayNode.rect,
       containerNodeRect,
+      over,
+      overlayNodeRect: overlayNode.rect,
       scrollableAncestors,
       scrollableAncestorRects,
+      transform,
       windowRect,
     });
     const derivedTransform = useDerivedTransform(
@@ -105,6 +110,7 @@ export const DragOverlay = React.memo(
             : typeof transition === 'function'
             ? transition(activatorEvent)
             : transition,
+          ...styleProp,
         }
       : undefined;
     const attributes = isDragging
@@ -119,14 +125,15 @@ export const DragOverlay = React.memo(
     const derivedAttributes = attributes ?? attributesSnapshot.current;
     const {children: finalChildren, transform: _, ...otherAttributes} =
       derivedAttributes ?? {};
-    const prevActive = useRef(active);
+    const prevActiveId = useRef(active?.id ?? null);
     const dropAnimationComplete = useDropAnimation({
-      animate: Boolean(dropAnimation && prevActive.current && !active),
+      animate: Boolean(dropAnimation && prevActiveId.current && !active),
       adjustScale,
-      activeId: prevActive.current,
+      activeId: prevActiveId.current,
       draggableNodes,
       duration: dropAnimation?.duration,
       easing: dropAnimation?.easing,
+      dragSourceOpacity: dropAnimation?.dragSourceOpacity,
       node: overlayNode.nodeRef.current,
       transform: attributesSnapshot.current?.transform,
     });
@@ -135,8 +142,8 @@ export const DragOverlay = React.memo(
     );
 
     useEffect(() => {
-      if (prevActive.current !== active) {
-        prevActive.current = active;
+      if (active?.id !== prevActiveId.current) {
+        prevActiveId.current = active?.id ?? null;
       }
 
       if (active && attributesSnapshot.current !== attributes) {

@@ -6,6 +6,7 @@ export enum Action {
   DragMove = 'dragMove',
   DragEnd = 'dragEnd',
   DragCancel = 'dragCancel',
+  DragOver = 'dragOver',
   RegisterDroppable = 'registerDroppable',
   SetDroppableDisabled = 'setDroppableDisabled',
   UnregisterDroppable = 'unregisterDroppable',

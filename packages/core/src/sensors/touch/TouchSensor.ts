@@ -1,4 +1,4 @@
-import React from 'react';
+import type {TouchEvent} from 'react';
 
 import {
   AbstractPointerSensor,
@@ -6,6 +6,7 @@ import {
   PointerEventHandlers,
   PointerSensorOptions,
 } from '../pointer';
+import type {SensorProps} from '../types';
 
 const events: PointerEventHandlers = {
   move: {name: 'touchmove'},
@@ -13,6 +14,8 @@ const events: PointerEventHandlers = {
 };
 
 export interface TouchSensorOptions extends PointerSensorOptions {}
+
+export type TouchSensorProps = SensorProps<TouchSensorOptions>;
 
 export class TouchSensor extends AbstractPointerSensor {
   constructor(props: PointerSensorProps) {
@@ -22,16 +25,17 @@ export class TouchSensor extends AbstractPointerSensor {
   static activators = [
     {
       eventName: 'onTouchStart' as const,
-      handler: ({nativeEvent}: React.TouchEvent) => {
-        const {touches} = nativeEvent;
+      handler: (
+        {nativeEvent: event}: TouchEvent,
+        {onActivation}: TouchSensorOptions
+      ) => {
+        const {touches} = event;
 
         if (touches.length > 1) {
           return false;
         }
 
-        if (nativeEvent.cancelable) {
-          nativeEvent.preventDefault();
-        }
+        onActivation?.({event});
 
         return true;
       },

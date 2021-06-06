@@ -16,13 +16,16 @@ import {
   defaultCoordinates,
   getBoundingClientRect,
   getOwnerDocument,
+  getWindow,
   getScrollPosition,
+  getScrollElementRect,
 } from '../../utilities';
 
 export interface KeyboardSensorOptions extends SensorOptions {
   keyboardCodes?: KeyboardCodes;
   coordinateGetter?: KeyboardCoordinateGetter;
   scrollBehavior?: ScrollBehavior;
+  onActivation?({event}: {event: KeyboardEvent}): void;
 }
 
 export type KeyboardSensorProps = SensorProps<KeyboardSensorOptions>;
@@ -31,6 +34,7 @@ export class KeyboardSensor implements SensorInstance {
   public autoScrollEnabled = false;
   private coordinates: Coordinates = defaultCoordinates;
   private listeners: Listeners;
+  private windowListeners: Listeners;
 
   constructor(private props: KeyboardSensorProps) {
     const {
@@ -39,7 +43,9 @@ export class KeyboardSensor implements SensorInstance {
 
     this.props = props;
     this.listeners = new Listeners(getOwnerDocument(target));
+    this.windowListeners = new Listeners(getWindow(target));
     this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
 
     this.attach();
   }
@@ -47,17 +53,20 @@ export class KeyboardSensor implements SensorInstance {
   private attach() {
     this.handleStart();
 
-    setTimeout(() => this.listeners.add('keydown', this.handleKeyDown));
+    setTimeout(() => {
+      this.listeners.add('keydown', this.handleKeyDown);
+      this.windowListeners.add('resize', this.handleCancel);
+    });
   }
 
   private handleStart() {
     const {activeNode, onStart} = this.props;
 
-    if (!activeNode.current) {
+    if (!activeNode.node.current) {
       throw new Error('Active draggable node is undefined');
     }
 
-    const activeNodeRect = getBoundingClientRect(activeNode.current);
+    const activeNodeRect = getBoundingClientRect(activeNode.node.current);
     const coordinates = {
       x: activeNodeRect.left,
       y: activeNodeRect.top,
@@ -101,9 +110,8 @@ export class KeyboardSensor implements SensorInstance {
           y: 0,
         };
         const {scrollableAncestors} = context.current;
-        const scrollContainer = scrollableAncestors[0];
 
-        if (scrollContainer) {
+        for (const scrollContainer of scrollableAncestors) {
           const direction = event.code;
           const coordinatesDelta = getCoordinatesDelta(
             newCoordinates,
@@ -114,10 +122,10 @@ export class KeyboardSensor implements SensorInstance {
             isRight,
             isLeft,
             isBottom,
-            scrollElementRect,
             maxScroll,
             minScroll,
           } = getScrollPosition(scrollContainer);
+          const scrollElementRect = getScrollElementRect(scrollContainer);
 
           const clampedCoordinates = {
             x: Math.min(
@@ -178,6 +186,7 @@ export class KeyboardSensor implements SensorInstance {
               left: -scrollDelta.x,
               behavior: scrollBehavior,
             });
+            break;
           } else if (canScrollY && clampedCoordinates.y !== newCoordinates.y) {
             const canFullyScrollToNewCoordinates =
               (direction === KeyboardCode.Down &&
@@ -205,6 +214,8 @@ export class KeyboardSensor implements SensorInstance {
               top: -scrollDelta.y,
               behavior: scrollBehavior,
             });
+
+            break;
           }
         }
 
@@ -242,6 +253,7 @@ export class KeyboardSensor implements SensorInstance {
 
   private detach() {
     this.listeners.removeAll();
+    this.windowListeners.removeAll();
   }
 
   static activators = [
@@ -249,12 +261,17 @@ export class KeyboardSensor implements SensorInstance {
       eventName: 'onKeyDown' as const,
       handler: (
         event: React.KeyboardEvent,
-        {keyboardCodes = defaultKeyboardCodes}: KeyboardSensorOptions
+        {
+          keyboardCodes = defaultKeyboardCodes,
+          onActivation,
+        }: KeyboardSensorOptions
       ) => {
         const {code} = event.nativeEvent;
 
         if (keyboardCodes.start.includes(code)) {
           event.preventDefault();
+
+          onActivation?.({event: event.nativeEvent});
 
           return true;
         }

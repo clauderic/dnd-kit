@@ -518,7 +518,7 @@ describe('Sortable Virtualized List', () => {
   });
 
   describe('Stress test', () => {
-    it('Multiple actions in both directions', () => {
+    it.skip('Multiple actions in both directions', () => {
       const initialIndex = 10;
       const id = getIdForIndex(initialIndex);
       const delta = 10;

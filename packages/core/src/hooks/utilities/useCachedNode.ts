@@ -1,22 +1,26 @@
 import {useLazyMemo} from '@dnd-kit/utilities';
-import type {DraggableNode} from '../../store';
-import {UniqueIdentifier} from '../../types';
+
+import type {DraggableNode, DraggableNodes} from '../../store';
+import type {UniqueIdentifier} from '../../types';
 
 export function useCachedNode(
-  draggableNode: DraggableNode | null,
-  active: UniqueIdentifier | null
-): DraggableNode['current'] {
+  draggableNodes: DraggableNodes,
+  id: UniqueIdentifier | null
+): DraggableNode['node']['current'] {
+  const draggableNode = id !== null ? draggableNodes[id] : undefined;
+  const node = draggableNode ? draggableNode.node.current : null;
+
   return useLazyMemo(
     (cachedNode) => {
-      if (active === null) {
+      if (id === null) {
         return null;
       }
 
       // In some cases, the draggable node can unmount while dragging
       // This is the case for virtualized lists. In those situations,
       // we fall back to the last known value for that node.
-      return draggableNode?.current ?? cachedNode ?? null;
+      return node ?? cachedNode ?? null;
     },
-    [draggableNode, active]
+    [node, id]
   );
 }

@@ -56,6 +56,9 @@ function DraggableStory({
     initialTranslate: Translate;
     translate: Translate;
   }>({initialTranslate: defaultCoordinates, translate: defaultCoordinates});
+  const [initialWindowScroll, setInitialWindowScroll] = useState(
+    defaultCoordinates
+  );
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint,
   });
@@ -68,13 +71,18 @@ function DraggableStory({
   return (
     <DndContext
       sensors={sensors}
-      onDragStart={() => {}}
+      onDragStart={() => {
+        setInitialWindowScroll({
+          x: window.scrollX,
+          y: window.scrollY,
+        });
+      }}
       onDragMove={({delta}) => {
         setTranslate(({initialTranslate}) => ({
           initialTranslate,
           translate: {
-            x: initialTranslate.x + delta.x,
-            y: initialTranslate.y + delta.y,
+            x: initialTranslate.x + delta.x - initialWindowScroll.x,
+            y: initialTranslate.y + delta.y - initialWindowScroll.y,
           },
         }));
       }}
@@ -85,12 +93,14 @@ function DraggableStory({
             initialTranslate: translate,
           };
         });
+        setInitialWindowScroll(defaultCoordinates);
       }}
       onDragCancel={() => {
         setTranslate(({initialTranslate}) => ({
           translate: initialTranslate,
           initialTranslate,
         }));
+        setInitialWindowScroll(defaultCoordinates);
       }}
       modifiers={modifiers}
     >
@@ -165,6 +175,39 @@ export const MinimumDistance = () => (
     }}
   />
 );
+
+export const MinimumDistanceX = () => (
+  <DraggableStory
+    label="I'm activated after dragging 15px on the x axis"
+    activationConstraint={{
+      distance: {x: 15},
+    }}
+  />
+);
+
+MinimumDistanceX.storyName = 'Minimum Distance – X Axis';
+
+export const MinimumDistanceY = () => (
+  <DraggableStory
+    label="I'm activated after dragging 15px on the y axis"
+    activationConstraint={{
+      distance: {y: 15},
+    }}
+  />
+);
+
+MinimumDistanceY.storyName = 'Minimum Distance – Y Axis';
+
+export const MinimumDistanceXY = () => (
+  <DraggableStory
+    label="I'm activated after dragging 15px on the x and y axis"
+    activationConstraint={{
+      distance: {x: 15, y: 15},
+    }}
+  />
+);
+
+MinimumDistanceXY.storyName = 'Minimum Distance – X&Y Axis';
 
 export const HorizontalAxis = () => (
   <DraggableStory

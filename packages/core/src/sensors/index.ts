@@ -2,24 +2,27 @@ export {useSensor} from './useSensor';
 
 export {useSensors} from './useSensors';
 
-export {
-  PointerSensor,
+export {AbstractPointerSensor, PointerSensor} from './pointer';
+export type {
+  AbstractPointerSensorOptions,
+  AbstractPointerSensorProps,
   PointerActivationConstraint,
   PointerEventHandlers,
   PointerSensorOptions,
   PointerSensorProps,
 } from './pointer';
 
-export {MouseSensor, MouseSensorOptions} from './mouse';
+export {MouseSensor} from './mouse';
+export type {MouseSensorOptions, MouseSensorProps} from './mouse';
 
-export {TouchSensor, TouchSensorOptions} from './touch';
+export {TouchSensor} from './touch';
+export type {TouchSensorOptions, TouchSensorProps} from './touch';
 
-export {
+export {KeyboardSensor, KeyboardCode} from './keyboard';
+export type {
   KeyboardCoordinateGetter,
-  KeyboardSensor,
   KeyboardSensorOptions,
   KeyboardSensorProps,
-  KeyboardCode,
   KeyboardCodes,
 } from './keyboard';
 

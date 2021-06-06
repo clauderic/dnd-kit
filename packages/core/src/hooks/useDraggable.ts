@@ -1,12 +1,17 @@
-import {createContext, useContext, useEffect} from 'react';
+import {createContext, useContext, useEffect, useMemo} from 'react';
 import {Transform, useNodeRef} from '@dnd-kit/utilities';
 
-import {Context} from '../store';
+import {Context, Data} from '../store';
 import {ActiveDraggableContext} from '../components/DndContext';
-import {useSyntheticListeners, SyntheticListenerMap} from './utilities';
+import {
+  useData,
+  useSyntheticListeners,
+  SyntheticListenerMap,
+} from './utilities';
 
 export interface UseDraggableArguments {
   id: string;
+  data?: Data;
   disabled?: boolean;
   attributes?: {
     role?: string;
@@ -23,6 +28,7 @@ const defaultRole = 'button';
 
 export function useDraggable({
   id,
+  data,
   disabled = false,
   attributes,
 }: UseDraggableArguments) {
@@ -38,16 +44,17 @@ export function useDraggable({
   } = useContext(Context);
   const {role = defaultRole, roleDescription = 'draggable', tabIndex = 0} =
     attributes ?? {};
-  const isDragging = Boolean(active === id);
+  const isDragging = active?.id === id;
   const transform: Transform | null = useContext(
     isDragging ? ActiveDraggableContext : NullContext
   );
   const [node, setNodeRef] = useNodeRef();
   const listeners = useSyntheticListeners(activators, id);
+  const dataRef = useData(data);
 
   useEffect(
     () => {
-      draggableNodes[id] = node;
+      draggableNodes[id] = {node, data: dataRef};
 
       return () => {
         delete draggableNodes[id];
@@ -57,17 +64,22 @@ export function useDraggable({
     [draggableNodes, id]
   );
 
-  return {
-    active,
-    activeNodeRect,
-    activatorEvent,
-    attributes: {
+  const memoizedAttributes = useMemo(
+    () => ({
       role,
       tabIndex,
       'aria-pressed': isDragging && role === defaultRole ? true : undefined,
       'aria-roledescription': roleDescription,
       'aria-describedby': ariaDescribedById.draggable,
-    },
+    }),
+    [role, tabIndex, isDragging, roleDescription, ariaDescribedById.draggable]
+  );
+
+  return {
+    active,
+    activeNodeRect,
+    activatorEvent,
+    attributes: memoizedAttributes,
     droppableRects,
     isDragging,
     listeners: disabled ? undefined : listeners,

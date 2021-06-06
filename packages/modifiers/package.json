@@ -1,8 +1,9 @@
 {
   "name": "@dnd-kit/modifiers",
-  "version": "1.0.1",
+  "version": "2.1.0",
   "description": "Translate modifier presets for use with `@dnd-kit` packages.",
   "author": "Claudéric Demers",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/clauderic/dnd-kit.git",
@@ -21,12 +22,18 @@
   "files": [
     "README.md",
     "CHANGELOG.md",
+    "LICENSE",
     "dist"
   ],
   "dependencies": {
-    "@dnd-kit/core": "^1.0.1",
-    "@dnd-kit/utilities": "^1.0.1",
+    "@dnd-kit/utilities": "^2.0.0",
     "tslib": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@dnd-kit/core": "^3.0.4"
+  },
+  "devDependencies": {
+    "@dnd-kit/core": "^3.0.4"
   },
   "publishConfig": {
     "access": "public"

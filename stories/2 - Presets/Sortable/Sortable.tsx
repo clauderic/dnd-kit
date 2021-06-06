@@ -7,9 +7,12 @@ import {
   CollisionDetection,
   DragOverlay,
   DndContext,
+  DropAnimation,
+  defaultDropAnimation,
   KeyboardSensor,
   Modifiers,
   MouseSensor,
+  LayoutMeasuring,
   PointerActivationConstraint,
   ScreenReaderInstructions,
   TouchSensor,
@@ -24,6 +27,7 @@ import {
   sortableKeyboardCoordinates,
   SortingStrategy,
   rectSortingStrategy,
+  AnimateLayoutChanges,
 } from '@dnd-kit/sortable';
 
 import {createRange} from '../../utilities';
@@ -31,14 +35,20 @@ import {Item, List, Wrapper} from '../../components';
 
 export interface Props {
   activationConstraint?: PointerActivationConstraint;
+  animateLayoutChanges?: AnimateLayoutChanges;
   adjustScale?: boolean;
   collisionDetection?: CollisionDetection;
   Container?: any; // To-do: Fix me
-  strategy?: SortingStrategy;
+  dropAnimation?: DropAnimation | null;
   itemCount?: number;
   items?: string[];
-  renderItem?: any;
   handle?: boolean;
+  layoutMeasuring?: Partial<LayoutMeasuring>;
+  modifiers?: Modifiers;
+  renderItem?: any;
+  removable?: boolean;
+  strategy?: SortingStrategy;
+  useDragOverlay?: boolean;
   getItemStyles?(args: {
     id: UniqueIdentifier;
     index: number;
@@ -53,9 +63,12 @@ export interface Props {
     id: string;
   }): React.CSSProperties;
   isDisabled?(id: UniqueIdentifier): boolean;
-  modifiers?: Modifiers;
-  useDragOverlay?: boolean;
 }
+
+const defaultDropAnimationConfig: DropAnimation = {
+  ...defaultDropAnimation,
+  dragSourceOpacity: 0.5,
+};
 
 const screenReaderInstructions: ScreenReaderInstructions = {
   draggable: `
@@ -67,19 +80,23 @@ const screenReaderInstructions: ScreenReaderInstructions = {
 
 export function Sortable({
   activationConstraint,
+  animateLayoutChanges,
   adjustScale = false,
   Container = List,
   collisionDetection = closestCenter,
-  strategy = rectSortingStrategy,
+  dropAnimation = defaultDropAnimationConfig,
+  getItemStyles = () => ({}),
+  handle = false,
   itemCount = 16,
   items: initialItems,
-  renderItem,
-  handle = false,
-  getItemStyles = () => ({}),
-  wrapperStyle = () => ({}),
   isDisabled = () => false,
+  layoutMeasuring,
   modifiers,
+  removable,
+  renderItem,
+  strategy = rectSortingStrategy,
   useDragOverlay = true,
+  wrapperStyle = () => ({}),
 }: Props) {
   const [items, setItems] = useState<string[]>(
     () =>
@@ -101,7 +118,9 @@ export function Sortable({
   const getIndex = items.indexOf.bind(items);
   const getPosition = (id: string) => getIndex(id) + 1;
   const activeIndex = activeId ? getIndex(activeId) : -1;
-
+  const handleRemove = removable
+    ? (id: string) => setItems((items) => items.filter((item) => item !== id))
+    : undefined;
   const announcements: Announcements = {
     onDragStart(id) {
       return `Picked up sortable item ${id}. Sortable item ${id} is in position ${getPosition(
@@ -155,6 +174,7 @@ export function Sortable({
         }
       }}
       onDragCancel={() => setActiveId(null)}
+      layoutMeasuring={layoutMeasuring}
       modifiers={modifiers}
     >
       <Wrapper center>
@@ -170,6 +190,8 @@ export function Sortable({
                 wrapperStyle={wrapperStyle}
                 disabled={isDisabled(value)}
                 renderItem={renderItem}
+                onRemove={handleRemove}
+                animateLayoutChanges={animateLayoutChanges}
                 useDragOverlay={useDragOverlay}
               />
             ))}
@@ -178,7 +200,10 @@ export function Sortable({
       </Wrapper>
       {useDragOverlay
         ? createPortal(
-            <DragOverlay adjustScale={adjustScale}>
+            <DragOverlay
+              adjustScale={adjustScale}
+              dropAnimation={dropAnimation}
+            >
               {activeId ? (
                 <Item
                   value={items[activeIndex]}
@@ -209,11 +234,13 @@ export function Sortable({
 }
 
 interface SortableItemProps {
+  animateLayoutChanges?: AnimateLayoutChanges;
   disabled?: boolean;
   id: string;
   index: number;
   handle: boolean;
   useDragOverlay?: boolean;
+  onRemove?(id: string): void;
   style(values: any): React.CSSProperties;
   renderItem?(args: any): React.ReactElement;
   wrapperStyle({
@@ -229,9 +256,11 @@ interface SortableItemProps {
 
 export function SortableItem({
   disabled,
+  animateLayoutChanges,
   id,
   index,
   handle,
+  onRemove,
   style,
   renderItem,
   useDragOverlay,
@@ -247,6 +276,7 @@ export function SortableItem({
     transform,
     transition,
   } = useSortable({
+    animateLayoutChanges,
     id,
     disabled,
   });
@@ -268,6 +298,7 @@ export function SortableItem({
         isSorting,
         overIndex,
       })}
+      onRemove={onRemove ? () => onRemove(id) : undefined}
       transform={transform}
       transition={!useDragOverlay && isDragging ? 'none' : transition}
       wrapperStyle={wrapperStyle({index, isDragging, id})}

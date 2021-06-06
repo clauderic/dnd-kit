@@ -1,7 +1,8 @@
 export {Button} from './Button';
+export {ConfirmModal} from './ConfirmModal';
 export {Axis, Draggable} from './Draggable';
 export {Droppable} from './Droppable';
-export {Item} from './Item';
+export {Item, Action, Handle, Remove} from './Item';
 export {FloatingControls} from './FloatingControls';
 export {Grid} from './Grid';
 export {GridContainer} from './GridContainer';

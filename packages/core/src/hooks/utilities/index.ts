@@ -1,12 +1,23 @@
-export {useAutoScroller} from './useAutoScroller';
+export {
+  AutoScrollActivator,
+  TraversalOrder,
+  useAutoScroller,
+} from './useAutoScroller';
+export type {Options as AutoScrollOptions} from './useAutoScroller';
 export {useCachedNode} from './useCachedNode';
 export {useCombineActivators} from './useCombineActivators';
 export {useFindElementFromPoint} from './useFindElementFromPoint';
-export {useLayoutRectMap} from './useLayoutRectMap';
+export {useData} from './useData';
+export {
+  useLayoutMeasuring,
+  LayoutMeasuringFrequency,
+  LayoutMeasuringStrategy,
+} from './useLayoutMeasuring';
+export type {LayoutMeasuring} from './useLayoutMeasuring';
 export {useScrollOffsets} from './useScrollOffsets';
 export {useScrollableAncestors} from './useScrollableAncestors';
-export {
-  useSyntheticListeners,
+export {useSyntheticListeners} from './useSyntheticListeners';
+export type {
   SyntheticListener,
   SyntheticListeners,
   SyntheticListenerMap,

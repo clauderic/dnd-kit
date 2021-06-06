@@ -1,9 +1,5 @@
-export {
-  closestCenter,
-  closestCorners,
-  rectIntersection,
-  CollisionDetection,
-} from './algorithms';
+export {closestCenter, closestCorners, rectIntersection} from './algorithms';
+export type {CollisionDetection} from './algorithms';
 
 export {
   centerOfRectangle,
@@ -23,7 +19,7 @@ export {
   isViewRect,
 } from './rect';
 
-export {getOwnerDocument} from './document';
+export {getOwnerDocument, getWindow} from './document';
 
 export {isMouseEvent, isTouchEvent} from './event';
 
@@ -34,6 +30,7 @@ export {
   getScrollableElement,
   getScrollCoordinates,
   getScrollDirectionAndSpeed,
+  getScrollElementRect,
   getScrollOffsets,
   getScrollPosition,
   isDocumentScrollingElement,

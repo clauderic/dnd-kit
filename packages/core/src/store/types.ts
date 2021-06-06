@@ -1,4 +1,4 @@
-import React from 'react';
+import type {MutableRefObject} from 'react';
 
 import type {
   Coordinates,
@@ -8,7 +8,7 @@ import type {
   UniqueIdentifier,
 } from '../types';
 import type {SyntheticListeners} from '../hooks/utilities';
-import type {Action, Actions} from './actions';
+import type {Actions} from './actions';
 
 export interface DraggableElement {
   node: DraggableNode;
@@ -20,15 +20,36 @@ export interface DraggableElement {
 
 export type Data = Record<string, any>;
 
+export type DataRef = MutableRefObject<Data | undefined>;
+
 export interface DroppableContainer {
   id: UniqueIdentifier;
-  node: React.MutableRefObject<HTMLElement | null>;
-  rect: React.MutableRefObject<LayoutRect | null>;
+  node: MutableRefObject<HTMLElement | null>;
+  rect: MutableRefObject<LayoutRect | null>;
   disabled: boolean;
-  data: React.MutableRefObject<Data>;
+  data: DataRef;
 }
 
-export type DraggableNode = React.MutableRefObject<HTMLElement | null>;
+export interface Active {
+  id: UniqueIdentifier;
+  data: DataRef;
+  rect: MutableRefObject<{
+    initial: ViewRect | null;
+    translated: ViewRect | null;
+  }>;
+}
+
+export interface Over {
+  id: UniqueIdentifier;
+  rect: LayoutRect;
+  disabled: boolean;
+  data: DataRef;
+}
+
+export type DraggableNode = {
+  node: MutableRefObject<HTMLElement | null>;
+  data: DataRef;
+};
 
 export type DraggableNodes = Record<
   UniqueIdentifier,
@@ -49,7 +70,6 @@ export interface State {
   draggable: {
     active: UniqueIdentifier | null;
     initialCoordinates: Coordinates;
-    lastEvent: Action.DragStart | Action.DragEnd | Action.DragCancel | null;
     nodes: DraggableNodes;
     translate: Coordinates;
   };
@@ -59,26 +79,23 @@ export interface DndContextDescriptor {
   dispatch: React.Dispatch<Actions>;
   activators: SyntheticListeners;
   activatorEvent: Event | null;
-  active: UniqueIdentifier | null;
+  active: Active | null;
   activeNode: HTMLElement | null;
   activeNodeRect: ViewRect | null;
   activeNodeClientRect: ClientRect | null;
   ariaDescribedById: {
     draggable: UniqueIdentifier;
   };
-  overlayNode: {
-    nodeRef: React.MutableRefObject<HTMLElement | null>;
-    rect: ViewRect | null;
-    setRef: (element: HTMLElement | null) => void;
-  };
   containerNodeRect: ViewRect | null;
   draggableNodes: DraggableNodes;
   droppableContainers: DroppableContainers;
   droppableRects: LayoutRectMap;
-  over: {
-    id: UniqueIdentifier;
-    rect: LayoutRect;
-  } | null;
+  over: Over | null;
+  overlayNode: {
+    nodeRef: MutableRefObject<HTMLElement | null>;
+    rect: ViewRect | null;
+    setRef: (element: HTMLElement | null) => void;
+  };
   scrollableAncestors: Element[];
   scrollableAncestorRects: ViewRect[];
   recomputeLayouts(): void;

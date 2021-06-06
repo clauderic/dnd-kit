@@ -1,10 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {
+  CancelDrop,
   closestCorners,
   CollisionDetection,
   DndContext,
   DragOverlay,
+  DropAnimation,
+  defaultDropAnimation,
   KeyboardSensor,
   Modifiers,
   PointerSensor,
@@ -74,10 +77,16 @@ export const defaultContainerStyle = ({
     : 'rgba(246,246,246,1)',
 });
 
+const dropAnimation: DropAnimation = {
+  ...defaultDropAnimation,
+  dragSourceOpacity: 0.5,
+};
+
 type Items = Record<string, string[]>;
 
 interface Props {
   adjustScale?: boolean;
+  cancelDrop?: CancelDrop;
   collisionDetection?: CollisionDetection;
   columns?: number;
   getItemStyles?(args: {
@@ -106,6 +115,7 @@ export const VOID_ID = 'void';
 export function MultipleContainers({
   adjustScale = false,
   itemCount = 3,
+  cancelDrop,
   collisionDetection = closestCorners,
   columns,
   handle = false,
@@ -129,7 +139,7 @@ export function MultipleContainers({
         [VOID_ID]: [],
       }
   );
-  const [dragOverlaydItems, setClonedItems] = useState<Items | null>(null);
+  const [clonedItems, setClonedItems] = useState<Items | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -157,6 +167,17 @@ export function MultipleContainers({
     return index;
   };
 
+  const onDragCancel = () => {
+    if (clonedItems) {
+      // Reset items to their original state in case items have been
+      // Dragged across containrs
+      setItems(clonedItems);
+    }
+
+    setActiveId(null);
+    setClonedItems(null);
+  };
+
   return (
     <DndContext
       sensors={sensors}
@@ -165,8 +186,13 @@ export function MultipleContainers({
         setActiveId(active.id);
         setClonedItems(items);
       }}
-      onDragOver={({active, over, draggingRect}) => {
-        const overId = over?.id || VOID_ID;
+      onDragOver={({active, over}) => {
+        const overId = over?.id;
+
+        if (!overId) {
+          return;
+        }
+
         const overContainer = findContainer(overId);
         const activeContainer = findContainer(active.id);
 
@@ -189,7 +215,9 @@ export function MultipleContainers({
               const isBelowLastItem =
                 over &&
                 overIndex === overItems.length - 1 &&
-                draggingRect.offsetTop > over.rect.offsetTop + over.rect.height;
+                active.rect.current.translated &&
+                active.rect.current.translated.offsetTop >
+                  over.rect.offsetTop + over.rect.height;
 
               const modifier = isBelowLastItem ? 1 : 0;
 
@@ -226,7 +254,7 @@ export function MultipleContainers({
 
         if (overId === VOID_ID) {
           setItems((items) => ({
-            ...(trashable && over?.id === VOID_ID ? items : dragOverlaydItems),
+            ...(trashable && over?.id === VOID_ID ? items : clonedItems),
             [VOID_ID]: [],
           }));
           setActiveId(null);
@@ -253,16 +281,8 @@ export function MultipleContainers({
 
         setActiveId(null);
       }}
-      onDragCancel={() => {
-        if (dragOverlaydItems) {
-          // Reset items to their original state in case items have been
-          // Dragged across containrs
-          setItems(dragOverlaydItems);
-        }
-
-        setActiveId(null);
-        setClonedItems(null);
-      }}
+      cancelDrop={cancelDrop}
+      onDragCancel={onDragCancel}
       modifiers={modifiers}
     >
       <div
@@ -307,7 +327,7 @@ export function MultipleContainers({
           ))}
       </div>
       {createPortal(
-        <DragOverlay adjustScale={adjustScale}>
+        <DragOverlay adjustScale={adjustScale} dropAnimation={dropAnimation}>
           {activeId ? (
             <Item
               value={activeId}
