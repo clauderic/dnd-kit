@@ -1,5 +1,12 @@
 # @dnd-kit/sortable
 
+## 4.0.0
+
+### Patch Changes
+
+- Updated dependencies [[`d39ab11`](https://github.com/clauderic/dnd-kit/commit/d39ab1112f9be78d467b2dfe488a7ea931d93767)]:
+  - @dnd-kit/core@3.1.0
+
 ## 3.1.0
 
 ### Minor Changes
