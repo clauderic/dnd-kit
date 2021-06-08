@@ -1,5 +1,11 @@
 # @dnd-kit/core
 
+## 3.1.0
+
+### Minor Changes
+
+- [`d39ab11`](https://github.com/clauderic/dnd-kit/commit/d39ab1112f9be78d467b2dfe488a7ea931d93767) [#316](https://github.com/clauderic/dnd-kit/pull/316) Thanks [@lsit](https://github.com/lsit)! - Added ability to optionally return screen reader announcements `onDragMove`.
+
 ## 3.0.4
 
 ### Patch Changes
