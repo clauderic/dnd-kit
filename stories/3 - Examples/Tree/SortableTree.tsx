@@ -151,13 +151,6 @@ export function SortableTree({
 
   const announcements: Announcements = {
     onDragStart(id) {
-      if (projected) {
-        setCurrentPosition({
-          parentId: projected.parentId,
-          overId: id,
-        });
-      }
-
       return `Picked up ${id}.`;
     },
     onDragMove(id, overId) {
@@ -167,13 +160,9 @@ export function SortableTree({
       return getMovementAnnouncement('onDragOver', id, overId);
     },
     onDragEnd(id, overId) {
-      setCurrentPosition(null);
-
       return getMovementAnnouncement('onDragEnd', id, overId);
     },
     onDragCancel(id) {
-      setCurrentPosition(null);
-
       return `Moving was cancelled. ${id} was dropped in its original position.`;
     },
   };
@@ -227,9 +216,18 @@ export function SortableTree({
     </DndContext>
   );
 
-  function handleDragStart({active: {id}}: DragStartEvent) {
-    setActiveId(id);
-    setOverId(id);
+  function handleDragStart({active: {id: activeId}}: DragStartEvent) {
+    setActiveId(activeId);
+    setOverId(activeId);
+
+    const activeItem = flattenedItems.find(({id}) => id === activeId);
+
+    if (activeItem) {
+      setCurrentPosition({
+        parentId: activeItem.parentId,
+        overId: activeId,
+      });
+    }
 
     document.body.style.setProperty('cursor', 'grabbing');
   }
@@ -271,6 +269,7 @@ export function SortableTree({
     setOverId(null);
     setActiveId(null);
     setOffsetLeft(0);
+    setCurrentPosition(null);
 
     document.body.style.setProperty('cursor', '');
   }
