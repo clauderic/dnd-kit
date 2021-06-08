@@ -1,6 +1,21 @@
 import {getMinValueIndex} from '../other';
-import {centerOfRectangle, distanceBetween} from '../coordinates';
+import {distanceBetween} from '../coordinates';
+import type {Coordinates, LayoutRect} from '../../types';
 import type {CollisionDetection} from './types';
+
+/**
+ * Returns the coordinates of the center of a given ClientRect
+ */
+function centerOfRectangle(
+  rect: LayoutRect,
+  left = rect.offsetLeft,
+  top = rect.offsetTop
+): Coordinates {
+  return {
+    x: left + rect.width * 0.5,
+    y: top + rect.height * 0.5,
+  };
+}
 
 /**
  * Returns the closest rectangle from an array of rectangles to the center of a given

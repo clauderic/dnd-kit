@@ -2,7 +2,6 @@ export {closestCenter, closestCorners, rectIntersection} from './algorithms';
 export type {CollisionDetection} from './algorithms';
 
 export {
-  centerOfRectangle,
   defaultCoordinates,
   distanceBetween,
   getEventCoordinates,

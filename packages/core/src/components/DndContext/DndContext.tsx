@@ -33,7 +33,6 @@ import {
   useScrollableAncestors,
   useClientRect,
   useClientRects,
-  useFindElementFromPoint,
   useScrollOffsets,
   useViewRect,
 } from '../../hooks/utilities';
@@ -56,7 +55,6 @@ import {
   CollisionDetection,
   defaultCoordinates,
   getAdjustedRect,
-  centerOfRectangle,
   getRectDelta,
   getEventCoordinates,
   rectIntersection,
@@ -211,23 +209,9 @@ export const DndContext = memo(function DndContext({
   const containerNodeRect = useClientRect(
     activeNode ? activeNode.parentElement : null
   );
-  
-  const scrollDetectionCoordinates = activeNodeRect
-    ? add(
-        centerOfRectangle(
-          activeNodeRect,
-          activeNodeRect.left,
-          activeNodeRect.top
-        ),
-        translate
-      )
-    : defaultCoordinates;
-  const detectedScrollElement = useFindElementFromPoint(
-    scrollDetectionCoordinates,
-    activeNode?.ownerDocument
-        
-  const scrollTarget = active ? overNode ?? detectedScrollElement : null;
-  const scrollableAncestors = useScrollableAncestors(scrollTarget);
+  const scrollableAncestors = useScrollableAncestors(
+    activeId ? overNode ?? activeNode : null
+  );
   const scrollableAncestorRects = useClientRects(scrollableAncestors);
 
   const [overlayNodeRef, setOverlayNodeRef] = useNodeRef();
