@@ -1,6 +1,7 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {
+  Announcements,
   DndContext,
   closestCenter,
   KeyboardSensor,
@@ -92,6 +93,11 @@ export function SortableTree({
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
   const [offsetLeft, setOffsetLeft] = useState(0);
+  const [currentPosition, setCurrentPosition] = useState<{
+    parentId: string | null;
+    overId: string;
+  } | null>(null);
+
   const flattenedItems = useMemo(() => {
     const flattenedTree = flattenTree(items);
     const collapsedItems = flattenedTree.reduce<string[]>(
@@ -143,8 +149,27 @@ export function SortableTree({
     };
   }, [flattenedItems, offsetLeft]);
 
+  const announcements: Announcements = {
+    onDragStart(id) {
+      return `Picked up ${id}.`;
+    },
+    onDragMove(id, overId) {
+      return getMovementAnnouncement('onDragMove', id, overId);
+    },
+    onDragOver(id, overId) {
+      return getMovementAnnouncement('onDragOver', id, overId);
+    },
+    onDragEnd(id, overId) {
+      return getMovementAnnouncement('onDragEnd', id, overId);
+    },
+    onDragCancel(id) {
+      return `Moving was cancelled. ${id} was dropped in its original position.`;
+    },
+  };
+
   return (
     <DndContext
+      announcements={announcements}
       sensors={sensors}
       modifiers={indicator ? [adjustTranslate] : undefined}
       collisionDetection={closestCenter}
@@ -191,9 +216,18 @@ export function SortableTree({
     </DndContext>
   );
 
-  function handleDragStart({active: {id}}: DragStartEvent) {
-    setActiveId(id);
-    setOverId(id);
+  function handleDragStart({active: {id: activeId}}: DragStartEvent) {
+    setActiveId(activeId);
+    setOverId(activeId);
+
+    const activeItem = flattenedItems.find(({id}) => id === activeId);
+
+    if (activeItem) {
+      setCurrentPosition({
+        parentId: activeItem.parentId,
+        overId: activeId,
+      });
+    }
 
     document.body.style.setProperty('cursor', 'grabbing');
   }
@@ -235,6 +269,7 @@ export function SortableTree({
     setOverId(null);
     setActiveId(null);
     setOffsetLeft(0);
+    setCurrentPosition(null);
 
     document.body.style.setProperty('cursor', '');
   }
@@ -250,6 +285,65 @@ export function SortableTree({
         return !value;
       })
     );
+  }
+
+  function getMovementAnnouncement(
+    eventName: string,
+    activeId: string,
+    overId?: string
+  ) {
+    if (overId && projected) {
+      if (eventName !== 'onDragEnd') {
+        if (
+          currentPosition &&
+          projected.parentId === currentPosition.parentId &&
+          overId === currentPosition.overId
+        ) {
+          return;
+        } else {
+          setCurrentPosition({
+            parentId: projected.parentId,
+            overId,
+          });
+        }
+      }
+
+      const clonedItems: FlattenedItem[] = JSON.parse(
+        JSON.stringify(flattenTree(items))
+      );
+      const overIndex = clonedItems.findIndex(({id}) => id === overId);
+      const activeIndex = clonedItems.findIndex(({id}) => id === activeId);
+      const sortedItems = arrayMove(clonedItems, activeIndex, overIndex);
+
+      const previousItem = sortedItems[overIndex - 1];
+
+      let announcement;
+      const movedVerb = eventName === 'onDragEnd' ? 'dropped' : 'moved';
+      const nestedVerb = eventName === 'onDragEnd' ? 'dropped' : 'nested';
+
+      if (!previousItem) {
+        const nextItem = sortedItems[overIndex + 1];
+        announcement = `${activeId} was ${movedVerb} before ${nextItem.id}.`;
+      } else {
+        if (projected.depth > previousItem.depth) {
+          announcement = `${activeId} was ${nestedVerb} under ${previousItem.id}.`;
+        } else {
+          let previousSibling: FlattenedItem | undefined = previousItem;
+          while (previousSibling && projected.depth < previousSibling.depth) {
+            const parentId: string | null = previousSibling.parentId;
+            previousSibling = sortedItems.find(({id}) => id === parentId);
+          }
+
+          if (previousSibling) {
+            announcement = `${activeId} was ${movedVerb} after ${previousSibling.id}.`;
+          }
+        }
+      }
+
+      return announcement;
+    }
+
+    return;
   }
 }
 

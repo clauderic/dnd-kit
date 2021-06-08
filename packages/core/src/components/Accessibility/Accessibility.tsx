@@ -34,6 +34,11 @@ export function Accessibility({
         onDragStart({active}) {
           announce(announcements.onDragStart(active.id));
         },
+        onDragMove({active, over}) {
+          if (announcements.onDragMove) {
+            announce(announcements.onDragMove(active.id, over?.id));
+          }
+        },
         onDragOver({active, over}) {
           announce(announcements.onDragOver(active.id, over?.id));
         },
