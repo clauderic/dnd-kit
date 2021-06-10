@@ -77,7 +77,11 @@ Check out our [Accessibility guide](https://docs.dndkit.com/guides/accessibility
 
 Unlike most drag and drop libraries, **dnd kit** intentionally is **not** built on top of the [HTML5 Drag and drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API). This was a deliberate architectural decision, that does come with tradeoffs that you should be aware of before deciding to use it, but for most applications, we believe the benefits outweigh the tradeoffs.
 
-The HTML5 Drag and drop API has some severe **limitations**. It does not support touch devices, which means that the libraries that are built on top of it need to expose an entirely different implementation to support touch devices. This typically increases the complexity of the codebase and the overall bundle size of the library. Further, it requires workarounds to implement common use cases such as customizing the drag preview, locking dragging to a specific axis or to the bounds of a container, or animating the dragged item as it is picked up.
+The HTML5 Drag and drop API has some severe **limitations**. It does not support touch devices or using the keyboard to drag items, which means that the libraries that are built on top of it need to expose an entirely different implementation to support those input methods.
+
+This typically increases the complexity of the codebase and the overall bundle size of the library, and leads to inconsistencies between the mouse, touch and keyboard layers because they're powered by entirely different implementations.
+
+The HTML5 Drag and Drop API is also limiting; it doesn't support common use-cases such as locking dragging to a specific axis or to the bounds of a container, custom collision detection strategies, or even customizing the preview of the dragged item.
 
 The main **tradeoff** with not using the HTML5 Drag and drop API is that you won't be able to drag from the desktop or between windows. If the drag and drop use-case you have in mind involves this kind of functionality, you'll definitely want to use a library that's built on top of the HTML 5 Drag and drop API. We highly recommend you check out [react-dnd](https://github.com/react-dnd/react-dnd/) for a React library that's has a native HTML 5 Drag and drop backend.
 
