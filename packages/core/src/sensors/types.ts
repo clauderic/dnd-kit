@@ -32,7 +32,7 @@ export type SensorContext = {
   droppableContainers: DroppableContainers;
   over: Over | null;
   scrollableAncestors: Element[];
-  scrollAdjustedTransalte: Translate | null;
+  scrollAdjustedTranslate: Translate | null;
   translatedRect: ViewRect | null;
 };
 
