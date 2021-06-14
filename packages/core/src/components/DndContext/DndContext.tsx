@@ -196,7 +196,7 @@ export const DndContext = memo(function DndContext({
     droppableContainers,
     over: null,
     scrollableAncestors: [],
-    scrollAdjustedTransalte: null,
+    scrollAdjustedTranslate: null,
     translatedRect: null,
   });
   const overNode = getDroppableNode(
@@ -243,16 +243,16 @@ export const DndContext = memo(function DndContext({
     ? add(activationCoordinates, translate)
     : null;
 
-  const scrolllAdjustment = useScrollOffsets(scrollableAncestors);
+  const scrollAdjustment = useScrollOffsets(scrollableAncestors);
 
-  const scrollAdjustedTransalte = add(modifiedTranslate, scrolllAdjustment);
+  const scrollAdjustedTranslate = add(modifiedTranslate, scrollAdjustment);
 
   const translatedRect = activeNodeRect
     ? getAdjustedRect(activeNodeRect, modifiedTranslate)
     : null;
 
   const collisionRect = translatedRect
-    ? getAdjustedRect(translatedRect, scrolllAdjustment)
+    ? getAdjustedRect(translatedRect, scrollAdjustment)
     : null;
 
   const overId =
@@ -343,15 +343,15 @@ export const DndContext = memo(function DndContext({
 
       function createHandler(type: Action.DragEnd | Action.DragCancel) {
         return async function handler() {
-          const {active, over, scrollAdjustedTransalte} = sensorContext.current;
+          const {active, over, scrollAdjustedTranslate} = sensorContext.current;
           let event: DragEndEvent | null = null;
 
-          if (active && scrollAdjustedTransalte) {
+          if (active && scrollAdjustedTranslate) {
             const {cancelDrop} = latestProps.current;
 
             event = {
               active: active,
-              delta: scrollAdjustedTransalte,
+              delta: scrollAdjustedTranslate,
               over,
             };
 
@@ -448,21 +448,21 @@ export const DndContext = memo(function DndContext({
     const event: DragMoveEvent = {
       active,
       delta: {
-        x: scrollAdjustedTransalte.x,
-        y: scrollAdjustedTransalte.y,
+        x: scrollAdjustedTranslate.x,
+        y: scrollAdjustedTranslate.y,
       },
       over,
     };
 
     setMonitorState({type: Action.DragMove, event});
     onDragMove?.(event);
-  }, [scrollAdjustedTransalte.x, scrollAdjustedTransalte.y]);
+  }, [scrollAdjustedTranslate.x, scrollAdjustedTranslate.y]);
 
   useEffect(
     () => {
-      const {active, scrollAdjustedTransalte} = sensorContext.current;
+      const {active, scrollAdjustedTranslate} = sensorContext.current;
 
-      if (!active || !activeRef.current || !scrollAdjustedTransalte) {
+      if (!active || !activeRef.current || !scrollAdjustedTranslate) {
         return;
       }
 
@@ -470,8 +470,8 @@ export const DndContext = memo(function DndContext({
       const event: DragOverEvent = {
         active,
         delta: {
-          x: scrollAdjustedTransalte.x,
-          y: scrollAdjustedTransalte.y,
+          x: scrollAdjustedTranslate.x,
+          y: scrollAdjustedTranslate.y,
         },
         over,
       };
@@ -494,7 +494,7 @@ export const DndContext = memo(function DndContext({
       droppableContainers,
       over,
       scrollableAncestors,
-      scrollAdjustedTransalte,
+      scrollAdjustedTranslate: scrollAdjustedTranslate,
       translatedRect,
     };
 
@@ -512,7 +512,7 @@ export const DndContext = memo(function DndContext({
     droppableContainers,
     over,
     scrollableAncestors,
-    scrollAdjustedTransalte,
+    scrollAdjustedTranslate,
     translatedRect,
   ]);
 
