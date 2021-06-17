@@ -16,6 +16,7 @@ import {
   restrictToHorizontalAxis,
   restrictToVerticalAxis,
   restrictToWindowEdges,
+  snapCenterToCursor,
 } from '@dnd-kit/modifiers';
 
 import {
@@ -256,3 +257,10 @@ export const SnapToGrid = () => {
     </>
   );
 };
+
+export const SnapCenterToCursor = () => (
+  <DraggableStory
+    label="When you grab me, my center will move to where the cursor is."
+    modifiers={[snapCenterToCursor]}
+  ></DraggableStory>
+);

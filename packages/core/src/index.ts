@@ -86,6 +86,7 @@ export type {
 export {
   defaultCoordinates,
   getBoundingClientRect,
+  getEventCoordinates,
   getViewRect,
   getScrollableAncestors,
   closestCenter,

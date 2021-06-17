@@ -79,6 +79,12 @@ const gridSize = 20; // pixels
 const snapToGridModifier = createSnapModifier(gridSize);
 ```
 
+### Snap to cursor
+
+#### `snapCenterToCursor`
+
+Snaps the center of the draggable item to the cursor when it is picked up. Has no effect when using the Keyboard sensor.
+
 ## Building custom modifiers
 
 To build your own custom modifiers, refer to the implementation of the built-in modifiers of this package.
