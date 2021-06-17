@@ -4,7 +4,7 @@ export class Listeners {
     handler: EventListenerOrEventListenerObject;
   }[] = [];
 
-  constructor(private target: HTMLElement | Document | Window) {}
+  constructor(private target: EventTarget) {}
 
   public add(
     eventName: string,
