@@ -62,10 +62,11 @@ export const DragOverlay = React.memo(
     } = useDndContext();
     const transform = useContext(ActiveDraggableContext);
     const modifiedTransform = applyModifiers(modifiers, {
+      activatorEvent,
       active,
       activeNodeRect: activeNodeClientRect,
-      draggingNodeRect: overlayNode.rect,
       containerNodeRect,
+      draggingNodeRect: overlayNode.rect,
       over,
       overlayNodeRect: overlayNode.rect,
       scrollableAncestors,
