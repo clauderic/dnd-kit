@@ -8,6 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import {unstable_batchedUpdates} from 'react-dom';
 import {
   add,
   Transform,
@@ -320,13 +321,15 @@ export const DndContext = memo(function DndContext({
             active: {id, data: node.data, rect: activeRects},
           };
 
-          dispatch({
-            type: Action.DragStart,
-            initialCoordinates,
-            active: id,
+          unstable_batchedUpdates(() => {
+            dispatch({
+              type: Action.DragStart,
+              initialCoordinates,
+              active: id,
+            });
+            setMonitorState({type: Action.DragStart, event});
+            onDragStart?.(event);
           });
-          setMonitorState({type: Action.DragStart, event});
-          onDragStart?.(event);
         },
         onMove(coordinates) {
           dispatch({
@@ -338,8 +341,10 @@ export const DndContext = memo(function DndContext({
         onCancel: createHandler(Action.DragCancel),
       });
 
-      setActiveSensor(sensorInstance);
-      setActivatorEvent(event.nativeEvent);
+      unstable_batchedUpdates(() => {
+        setActiveSensor(sensorInstance);
+        setActivatorEvent(event.nativeEvent);
+      });
 
       function createHandler(type: Action.DragEnd | Action.DragCancel) {
         return async function handler() {
@@ -366,17 +371,20 @@ export const DndContext = memo(function DndContext({
 
           activeRef.current = null;
 
-          dispatch({type});
-          setActiveSensor(null);
-          setActivatorEvent(null);
+          unstable_batchedUpdates(() => {
+            dispatch({type});
+            setActiveSensor(null);
+            setActivatorEvent(null);
 
-          if (event) {
-            const {onDragCancel, onDragEnd} = latestProps.current;
-            const handler = type === Action.DragEnd ? onDragEnd : onDragCancel;
+            if (event) {
+              const {onDragCancel, onDragEnd} = latestProps.current;
+              const handler =
+                type === Action.DragEnd ? onDragEnd : onDragCancel;
 
-            setMonitorState({type, event});
-            handler?.(event);
-          }
+              setMonitorState({type, event});
+              handler?.(event);
+            }
+          });
         };
       }
     },
