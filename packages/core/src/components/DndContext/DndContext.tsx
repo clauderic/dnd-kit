@@ -60,6 +60,7 @@ import {
   getEventCoordinates,
   rectIntersection,
 } from '../../utilities';
+import {getMeasurableNode} from '../../utilities/nodes';
 import {applyModifiers, Modifiers} from '../../modifiers';
 import type {
   Active,
@@ -218,7 +219,7 @@ export const DndContext = memo(function DndContext({
 
   const [overlayNodeRef, setOverlayNodeRef] = useNodeRef();
   const overlayNodeRect = useClientRect(
-    activeId ? overlayNodeRef.current : null,
+    activeId ? getMeasurableNode(overlayNodeRef.current) : null,
     willRecomputeLayouts
   );
 
@@ -249,8 +250,8 @@ export const DndContext = memo(function DndContext({
 
   const scrollAdjustedTranslate = add(modifiedTranslate, scrollAdjustment);
 
-  const translatedRect = activeNodeRect
-    ? getAdjustedRect(activeNodeRect, modifiedTranslate)
+  const translatedRect = draggingNodeRect
+    ? getAdjustedRect(draggingNodeRect, modifiedTranslate)
     : null;
 
   const collisionRect = translatedRect
@@ -374,6 +375,7 @@ export const DndContext = memo(function DndContext({
 
           unstable_batchedUpdates(() => {
             dispatch({type});
+            setIsDragging(false);
             setActiveSensor(null);
             setActivatorEvent(null);
 
@@ -391,10 +393,6 @@ export const DndContext = memo(function DndContext({
     },
     [dispatch, draggableNodes]
   );
-
-  useEffect(() => {
-    setIsDragging(activeId !== null);
-  }, [activeId]);
 
   const bindActivatorToSensorInstantiator = useCallback(
     (
@@ -439,6 +437,12 @@ export const DndContext = memo(function DndContext({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     Object.values(props)
   );
+
+  useEffect(() => {
+    if (activeId != null) {
+      setIsDragging(true);
+    }
+  }, [activeId]);
 
   useEffect(() => {
     if (!active) {
