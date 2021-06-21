@@ -143,6 +143,7 @@ export const DndContext = memo(function DndContext({
     type: null,
     event: null,
   }));
+  const [isDragging, setIsDragging] = useState(false);
   const {
     draggable: {active: activeId, nodes: draggableNodes, translate},
     droppable: {containers: droppableContainers},
@@ -174,7 +175,7 @@ export const DndContext = memo(function DndContext({
     recomputeLayouts,
     willRecomputeLayouts,
   } = useLayoutMeasuring(droppableContainers, {
-    dragging: activeId != null,
+    dragging: isDragging,
     dependencies: [translate.x, translate.y],
     config: layoutMeasuring,
   });
@@ -390,6 +391,10 @@ export const DndContext = memo(function DndContext({
     },
     [dispatch, draggableNodes]
   );
+
+  useEffect(() => {
+    setIsDragging(activeId !== null);
+  }, [activeId]);
 
   const bindActivatorToSensorInstantiator = useCallback(
     (
