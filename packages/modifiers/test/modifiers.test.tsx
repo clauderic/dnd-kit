@@ -21,6 +21,7 @@ describe('@dnd-kit/modifiers', () => {
     scaleY: 1,
   };
   const defaultArguments: FirstArgument<Modifier> = {
+    activatorEvent: null,
     active: null,
     over: null,
     transform: defaultTransform,

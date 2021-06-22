@@ -3,6 +3,7 @@ import type {Active, Over} from '../store';
 import type {ClientRect, ViewRect} from '../types';
 
 export type Modifier = (args: {
+  activatorEvent: Event | null;
   active: Active | null;
   activeNodeRect: ViewRect | null;
   draggingNodeRect: ViewRect | null;

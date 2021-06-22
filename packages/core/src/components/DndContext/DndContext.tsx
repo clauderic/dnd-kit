@@ -11,6 +11,7 @@ import React, {
 import {unstable_batchedUpdates} from 'react-dom';
 import {
   add,
+  getEventCoordinates,
   Transform,
   useIsomorphicLayoutEffect,
   useNodeRef,
@@ -57,7 +58,6 @@ import {
   defaultCoordinates,
   getAdjustedRect,
   getRectDelta,
-  getEventCoordinates,
   rectIntersection,
 } from '../../utilities';
 import {getMeasurableNode} from '../../utilities/nodes';
@@ -231,11 +231,12 @@ export const DndContext = memo(function DndContext({
       scaleX: 1,
       scaleY: 1,
     },
+    activatorEvent,
     active,
-    over: sensorContext.current.over,
     activeNodeRect: activeNodeClientRect,
-    draggingNodeRect,
     containerNodeRect,
+    draggingNodeRect,
+    over: sensorContext.current.over,
     overlayNodeRect,
     scrollableAncestors,
     scrollableAncestorRects,

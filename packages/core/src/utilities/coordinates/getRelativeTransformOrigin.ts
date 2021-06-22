@@ -1,4 +1,4 @@
-import {getEventCoordinates} from './getEventCoordinates';
+import {getEventCoordinates} from '@dnd-kit/utilities';
 
 export function getRelativeTransformOrigin(
   event: MouseEvent | TouchEvent | KeyboardEvent,
