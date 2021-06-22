@@ -8,6 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import {unstable_batchedUpdates} from 'react-dom';
 import {
   add,
   Transform,
@@ -59,6 +60,7 @@ import {
   getEventCoordinates,
   rectIntersection,
 } from '../../utilities';
+import {getMeasurableNode} from '../../utilities/nodes';
 import {applyModifiers, Modifiers} from '../../modifiers';
 import type {
   Active,
@@ -142,6 +144,7 @@ export const DndContext = memo(function DndContext({
     type: null,
     event: null,
   }));
+  const [isDragging, setIsDragging] = useState(false);
   const {
     draggable: {active: activeId, nodes: draggableNodes, translate},
     droppable: {containers: droppableContainers},
@@ -173,7 +176,7 @@ export const DndContext = memo(function DndContext({
     recomputeLayouts,
     willRecomputeLayouts,
   } = useLayoutMeasuring(droppableContainers, {
-    dragging: activeId != null,
+    dragging: isDragging,
     dependencies: [translate.x, translate.y],
     config: layoutMeasuring,
   });
@@ -216,11 +219,11 @@ export const DndContext = memo(function DndContext({
 
   const [overlayNodeRef, setOverlayNodeRef] = useNodeRef();
   const overlayNodeRect = useClientRect(
-    activeId ? overlayNodeRef.current : null,
+    activeId ? getMeasurableNode(overlayNodeRef.current) : null,
     willRecomputeLayouts
   );
 
-  const draggingNodeRect = overlayNodeRect ?? activeNodeClientRect;
+  const draggingNodeRect = overlayNodeRect ?? activeNodeRect;
   const modifiedTranslate = applyModifiers(modifiers, {
     transform: {
       x: translate.x - nodeRectDelta.x,
@@ -247,9 +250,20 @@ export const DndContext = memo(function DndContext({
 
   const scrollAdjustedTranslate = add(modifiedTranslate, scrollAdjustment);
 
-  const translatedRect = activeNodeRect
-    ? getAdjustedRect(activeNodeRect, modifiedTranslate)
-    : null;
+  // The overlay node's position is based on the active node's position.
+  // We assume that any difference in positioning is for visual purposes only
+  // and shouldn't affect collision detection. However, the computed height of
+  // the overlay node should affect the collision rect.
+  const rect =
+    overlayNodeRect && activeNodeRect
+      ? {
+          ...activeNodeRect,
+          height: overlayNodeRect.height,
+          width: overlayNodeRect.width,
+        }
+      : activeNodeRect;
+
+  const translatedRect = rect ? getAdjustedRect(rect, modifiedTranslate) : null;
 
   const collisionRect = translatedRect
     ? getAdjustedRect(translatedRect, scrollAdjustment)
@@ -320,13 +334,15 @@ export const DndContext = memo(function DndContext({
             active: {id, data: node.data, rect: activeRects},
           };
 
-          dispatch({
-            type: Action.DragStart,
-            initialCoordinates,
-            active: id,
+          unstable_batchedUpdates(() => {
+            dispatch({
+              type: Action.DragStart,
+              initialCoordinates,
+              active: id,
+            });
+            setMonitorState({type: Action.DragStart, event});
+            onDragStart?.(event);
           });
-          setMonitorState({type: Action.DragStart, event});
-          onDragStart?.(event);
         },
         onMove(coordinates) {
           dispatch({
@@ -338,8 +354,10 @@ export const DndContext = memo(function DndContext({
         onCancel: createHandler(Action.DragCancel),
       });
 
-      setActiveSensor(sensorInstance);
-      setActivatorEvent(event.nativeEvent);
+      unstable_batchedUpdates(() => {
+        setActiveSensor(sensorInstance);
+        setActivatorEvent(event.nativeEvent);
+      });
 
       function createHandler(type: Action.DragEnd | Action.DragCancel) {
         return async function handler() {
@@ -366,17 +384,21 @@ export const DndContext = memo(function DndContext({
 
           activeRef.current = null;
 
-          dispatch({type});
-          setActiveSensor(null);
-          setActivatorEvent(null);
+          unstable_batchedUpdates(() => {
+            dispatch({type});
+            setIsDragging(false);
+            setActiveSensor(null);
+            setActivatorEvent(null);
 
-          if (event) {
-            const {onDragCancel, onDragEnd} = latestProps.current;
-            const handler = type === Action.DragEnd ? onDragEnd : onDragCancel;
+            if (event) {
+              const {onDragCancel, onDragEnd} = latestProps.current;
+              const handler =
+                type === Action.DragEnd ? onDragEnd : onDragCancel;
 
-            setMonitorState({type, event});
-            handler?.(event);
-          }
+              setMonitorState({type, event});
+              handler?.(event);
+            }
+          });
         };
       }
     },
@@ -426,6 +448,12 @@ export const DndContext = memo(function DndContext({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     Object.values(props)
   );
+
+  useEffect(() => {
+    if (activeId != null) {
+      setIsDragging(true);
+    }
+  }, [activeId]);
 
   useEffect(() => {
     if (!active) {
