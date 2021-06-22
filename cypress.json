@@ -2,5 +2,6 @@
   "$schema": "https://on.cypress.io/cypress.schema.json",
   "supportFile": "cypress/support/index.ts",
   "projectId": "zkn9qu",
-  "baseUrl": "http://localhost:6006/"
+  "baseUrl": "http://localhost:6006/",
+  "viewportHeight": 1000
 }

@@ -135,10 +135,20 @@ Cypress.Commands.add(
 
     cy.wrap(subject, {log: false})
       .focus({log: false})
-      .type(Keys.Space, {force: true, log: false})
+      .type(Keys.Space, {
+        delay: 150,
+        scrollBehavior: false,
+        force: true,
+        log: false,
+      })
       .closest('body')
-      .type(arrowKey.repeat(times), {delay: 150, force: true})
-      .type(Keys.Space, {log: false, force: true});
+      .type(arrowKey.repeat(times), {
+        scrollBehavior: false,
+        delay: 150,
+        force: true,
+      })
+      .wait(150)
+      .type(Keys.Space, {scrollBehavior: false, log: false, force: true});
   }
 );
 

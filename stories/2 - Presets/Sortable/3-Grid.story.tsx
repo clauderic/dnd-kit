@@ -1,6 +1,5 @@
 import React from 'react';
 import {LayoutMeasuringStrategy} from '@dnd-kit/core';
-import {restrictToWindowEdges} from '@dnd-kit/modifiers';
 import {
   AnimateLayoutChanges,
   defaultAnimateLayoutChanges,
@@ -22,7 +21,6 @@ const props: Partial<SortableProps> = {
     width: 140,
     height: 140,
   }),
-  modifiers: [restrictToWindowEdges],
 };
 
 export const BasicSetup = () => <Sortable {...props} />;
