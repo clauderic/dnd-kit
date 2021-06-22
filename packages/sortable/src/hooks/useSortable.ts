@@ -146,7 +146,7 @@ export function useSortable({
     }
 
     if (shouldDisplaceDragSource || !transition) {
-      return null;
+      return undefined;
     }
 
     if (isSorting || shouldAnimateLayoutChanges) {
@@ -156,6 +156,6 @@ export function useSortable({
       });
     }
 
-    return null;
+    return undefined;
   }
 }
