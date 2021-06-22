@@ -5,7 +5,14 @@ on:
       - master
 jobs:
   release:
+    name: ${{ matrix.channel }}
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+      matrix:
+        channel:
+          - latest
+          - next
 
     steps:
       - uses: actions/checkout@v2
@@ -21,9 +28,20 @@ jobs:
         uses: bahmutov/npm-install@v1
 
       - name: Create Release Pull Request or Publish to npm
+        if: matrix.channel == 'latest'
         uses: changesets/action@master
         with:
           publish: yarn release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # https://github.com/atlassian/changesets/blob/master/docs/snapshot-releases.md
+      - name: Publish on npm with @next tag
+        if: matrix.channel == 'next'
+        run: |
+          yarn run version:next
+          yarn run release:next
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
