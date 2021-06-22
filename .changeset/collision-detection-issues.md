@@ -1,5 +1,5 @@
 ---
-"@dnd-kit/core": minor
+"@dnd-kit/core": major
 ---
 
 React updates in non-synthetic event handlers are now batched to reduce re-renders and prepare for React 18.
