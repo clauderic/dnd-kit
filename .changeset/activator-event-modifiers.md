@@ -1,5 +1,5 @@
 ---
-"@dnd-kit/core": patch
+"@dnd-kit/core": minor
 ---
 
 Now passing `activatorEvent` as an argument to `modifiers`
