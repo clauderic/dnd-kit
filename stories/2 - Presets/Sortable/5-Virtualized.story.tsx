@@ -112,6 +112,9 @@ function Sortable({
                 overIndex: -1,
                 isDragOverlay: true,
               })}
+              wrapperStyle={{
+                padding: 5,
+              }}
               dragOverlay
             />
           ) : null}

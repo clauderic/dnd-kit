@@ -223,7 +223,7 @@ export const DndContext = memo(function DndContext({
     willRecomputeLayouts
   );
 
-  const draggingNodeRect = overlayNodeRect ?? activeNodeClientRect;
+  const draggingNodeRect = overlayNodeRect ?? activeNodeRect;
   const modifiedTranslate = applyModifiers(modifiers, {
     transform: {
       x: translate.x - nodeRectDelta.x,
@@ -250,9 +250,20 @@ export const DndContext = memo(function DndContext({
 
   const scrollAdjustedTranslate = add(modifiedTranslate, scrollAdjustment);
 
-  const translatedRect = draggingNodeRect
-    ? getAdjustedRect(draggingNodeRect, modifiedTranslate)
-    : null;
+  // The overlay node's position is based on the active node's position.
+  // We assume that any difference in positioning is for visual purposes only
+  // and shouldn't affect collision detection. However, the computed height of
+  // the overlay node should affect the collision rect.
+  const rect =
+    overlayNodeRect && activeNodeRect
+      ? {
+          ...activeNodeRect,
+          height: overlayNodeRect.height,
+          width: overlayNodeRect.width,
+        }
+      : activeNodeRect;
+
+  const translatedRect = rect ? getAdjustedRect(rect, modifiedTranslate) : null;
 
   const collisionRect = translatedRect
     ? getAdjustedRect(translatedRect, scrollAdjustment)
