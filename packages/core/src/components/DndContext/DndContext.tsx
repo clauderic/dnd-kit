@@ -10,6 +10,7 @@ import React, {
 } from 'react';
 import {
   add,
+  getEventCoordinates,
   Transform,
   useIsomorphicLayoutEffect,
   useNodeRef,
@@ -56,7 +57,6 @@ import {
   defaultCoordinates,
   getAdjustedRect,
   getRectDelta,
-  getEventCoordinates,
   rectIntersection,
 } from '../../utilities';
 import {applyModifiers, Modifiers} from '../../modifiers';

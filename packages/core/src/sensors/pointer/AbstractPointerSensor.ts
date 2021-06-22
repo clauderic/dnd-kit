@@ -1,4 +1,7 @@
-import {subtract as getCoordinatesDelta} from '@dnd-kit/utilities';
+import {
+  subtract as getCoordinatesDelta,
+  getEventCoordinates,
+} from '@dnd-kit/utilities';
 
 import {
   getEventListenerTarget,
@@ -6,7 +9,7 @@ import {
   Listeners,
 } from '../utilities';
 
-import {getEventCoordinates, getOwnerDocument} from '../../utilities';
+import {getOwnerDocument} from '../../utilities';
 import {KeyboardCode} from '../keyboard';
 import type {SensorInstance, SensorProps, SensorOptions} from '../types';
 import type {Coordinates, DistanceMeasurement} from '../../types';

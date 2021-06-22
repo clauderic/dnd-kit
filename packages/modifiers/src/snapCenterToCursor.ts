@@ -1,5 +1,9 @@
 import type {Modifier} from '@dnd-kit/core';
-import {getEventCoordinates} from '@dnd-kit/core';
+import {
+  getEventCoordinates,
+  isTouchEvent,
+  isMouseEvent,
+} from '@dnd-kit/utilities';
 
 export const snapCenterToCursor: Modifier = ({
   activatorEvent,
@@ -7,9 +11,9 @@ export const snapCenterToCursor: Modifier = ({
   transform,
 }) => {
   if (
+    activeNodeRect &&
     activatorEvent &&
-    !(activatorEvent instanceof KeyboardEvent) &&
-    activeNodeRect
+    (isTouchEvent(activatorEvent) || isMouseEvent(activatorEvent))
   ) {
     const activatorCoordinates = getEventCoordinates(activatorEvent);
     const offsetX = activatorCoordinates.x - activeNodeRect.left;

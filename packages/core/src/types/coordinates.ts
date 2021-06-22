@@ -1,9 +1,8 @@
+import type {Coordinates} from '@dnd-kit/utilities';
+
 import type {UniqueIdentifier} from './other';
 
-export type Coordinates = {
-  x: number;
-  y: number;
-};
+export type {Coordinates};
 
 export type DistanceMeasurement =
   | number

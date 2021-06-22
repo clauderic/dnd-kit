@@ -4,7 +4,6 @@ export type {CollisionDetection} from './algorithms';
 export {
   defaultCoordinates,
   distanceBetween,
-  getEventCoordinates,
   getRelativeTransformOrigin,
 } from './coordinates';
 
@@ -19,8 +18,6 @@ export {
 } from './rect';
 
 export {getOwnerDocument, getWindow} from './document';
-
-export {isMouseEvent, isTouchEvent} from './event';
 
 export {getMinValueIndex, getMaxValueIndex, omit, noop} from './other';
 
