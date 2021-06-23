@@ -41,7 +41,7 @@ export type SensorOptions = {};
 export interface SensorProps<T> {
   active: UniqueIdentifier;
   activeNode: DraggableNode;
-  event: Event;
+  event: React.SyntheticEvent;
   context: MutableRefObject<SensorContext>;
   options: T;
   onStart(coordinates: Coordinates): void;
@@ -56,7 +56,10 @@ export type SensorInstance = {
 
 export type Activator<T> = {
   eventName: SyntheticEventName;
-  handler(event: React.SyntheticEvent, options: T): boolean | undefined;
+  handler(
+    event: React.SyntheticEvent<any, any>,
+    options: T
+  ): boolean | undefined;
 };
 
 export type Activators<T> = Activator<T>[];
