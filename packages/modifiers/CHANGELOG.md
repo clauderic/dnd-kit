@@ -1,5 +1,17 @@
 # @dnd-kit/modifiers
 
+## 4.0.0
+
+### Minor Changes
+
+- [#334](https://github.com/clauderic/dnd-kit/pull/334) [`13be602`](https://github.com/clauderic/dnd-kit/commit/13be602229c6d5723b3ae98bca7b8f45f0773366) Thanks [@trentmwillis](https://github.com/trentmwillis)! - Add `snapCenterToCursor` modifier
+
+### Patch Changes
+
+- Updated dependencies [[`13be602`](https://github.com/clauderic/dnd-kit/commit/13be602229c6d5723b3ae98bca7b8f45f0773366), [`05d6a78`](https://github.com/clauderic/dnd-kit/commit/05d6a78a17cbaacd8dffed685dfea5a6ea3d38a8), [`13be602`](https://github.com/clauderic/dnd-kit/commit/13be602229c6d5723b3ae98bca7b8f45f0773366)]:
+  - @dnd-kit/core@4.0.0
+  - @dnd-kit/utilities@2.1.0
+
 ## 3.0.0
 
 ### Patch Changes

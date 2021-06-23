@@ -1,5 +1,25 @@
 # @dnd-kit/core
 
+## 4.0.0
+
+### Major Changes
+
+- [#337](https://github.com/clauderic/dnd-kit/pull/337) [`05d6a78`](https://github.com/clauderic/dnd-kit/commit/05d6a78a17cbaacd8dffed685dfea5a6ea3d38a8) Thanks [@clauderic](https://github.com/clauderic)! - React updates in non-synthetic event handlers are now batched to reduce re-renders and prepare for React 18.
+
+  Also fixed issues with collision detection:
+
+  - Defer measurement of droppable node rects until second render after dragging.
+  - Use DragOverlay's width and height in collision rect (if it is used)
+
+### Minor Changes
+
+- [#334](https://github.com/clauderic/dnd-kit/pull/334) [`13be602`](https://github.com/clauderic/dnd-kit/commit/13be602229c6d5723b3ae98bca7b8f45f0773366) Thanks [@trentmwillis](https://github.com/trentmwillis)! - Now passing `activatorEvent` as an argument to `modifiers`
+
+### Patch Changes
+
+- Updated dependencies [[`13be602`](https://github.com/clauderic/dnd-kit/commit/13be602229c6d5723b3ae98bca7b8f45f0773366)]:
+  - @dnd-kit/utilities@2.1.0
+
 ## 3.1.1
 
 ### Patch Changes
