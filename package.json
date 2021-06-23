@@ -21,8 +21,8 @@
     "cypress:open": "cypress open",
     "changeset": "changeset",
     "release": "changeset publish",
-    "version:canary": "changeset version --snapshot canary",
-    "release:canary": "changeset publish --tag canary"
+    "version:next": "changeset version --snapshot next",
+    "release:next": "changeset publish --tag next"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.2.7",
