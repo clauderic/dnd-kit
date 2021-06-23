@@ -1,5 +1,11 @@
 # @dnd-kit/utilities
 
+## 2.1.0
+
+### Minor Changes
+
+- [#334](https://github.com/clauderic/dnd-kit/pull/334) [`13be602`](https://github.com/clauderic/dnd-kit/commit/13be602229c6d5723b3ae98bca7b8f45f0773366) Thanks [@trentmwillis](https://github.com/trentmwillis)! - Move `Coordinates` interface along with `getEventCoordinates`, `isMouseEvent` and `isTouchEvent` helpers to @dnd-kit/utilities
+
 ## 2.0.0
 
 ### Major Changes

@@ -1,5 +1,15 @@
 # @dnd-kit/sortable
 
+## 5.0.0
+
+### Patch Changes
+
+- [#341](https://github.com/clauderic/dnd-kit/pull/341) [`e02b737`](https://github.com/clauderic/dnd-kit/commit/e02b737a3ce94f57592ac2ffe67d5bc8fabe1d43) Thanks [@clauderic](https://github.com/clauderic)! - Return `undefined` instead of `null` for `transition` in `useSortable`
+
+- Updated dependencies [[`13be602`](https://github.com/clauderic/dnd-kit/commit/13be602229c6d5723b3ae98bca7b8f45f0773366), [`05d6a78`](https://github.com/clauderic/dnd-kit/commit/05d6a78a17cbaacd8dffed685dfea5a6ea3d38a8), [`13be602`](https://github.com/clauderic/dnd-kit/commit/13be602229c6d5723b3ae98bca7b8f45f0773366)]:
+  - @dnd-kit/core@4.0.0
+  - @dnd-kit/utilities@2.1.0
+
 ## 4.0.0
 
 ### Patch Changes
