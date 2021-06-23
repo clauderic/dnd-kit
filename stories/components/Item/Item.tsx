@@ -8,6 +8,7 @@ import {Handle, Remove} from './components';
 import styles from './Item.module.css';
 
 export interface Props {
+  className?: string;
   dragOverlay?: boolean;
   color?: string;
   disabled?: boolean;
@@ -43,6 +44,7 @@ export const Item = React.memo(
   React.forwardRef<HTMLLIElement, Props>(
     (
       {
+        className,
         color,
         dragOverlay,
         dragging,
@@ -93,6 +95,7 @@ export const Item = React.memo(
       ) : (
         <li
           className={classNames(
+            className,
             styles.Wrapper,
             fadeIn && styles.fadeIn,
             sorting && styles.sorting,
