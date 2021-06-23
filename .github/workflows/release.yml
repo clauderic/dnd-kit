@@ -20,9 +20,9 @@ jobs:
           fetch-depth: 0
 
       - name: Setup node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          version: 12.x
+          node-version: 12.x
           # https://github.com/atlassian/changesets/issues/550#issuecomment-811245508
           registry-url: https://registry.npmjs.org
 
