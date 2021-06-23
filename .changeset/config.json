@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/@changesets/config@1.3.0/schema.json",
+  "$schema": "https://unpkg.com/@changesets/config@1.5.0/schema.json",
   "changelog": [
     "@changesets/changelog-github",
     { "repo": "clauderic/dnd-kit" }
@@ -9,5 +9,8 @@
   "access": "public",
   "baseBranch": "master",
   "updateInternalDependencies": "patch",
-  "ignore": []
+  "ignore": [],
+  "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
+    "useCalculatedVersionForSnapshots": true
+  }
 }
