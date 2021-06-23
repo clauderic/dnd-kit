@@ -19,10 +19,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Use Node.js 12.x
+      - name: Setup node
         uses: actions/setup-node@v1
         with:
           version: 12.x
+          # https://github.com/atlassian/changesets/issues/550#issuecomment-811245508
+          registry-url: https://registry.npmjs.org
 
       - name: Install dependencies and build (with cache)
         uses: bahmutov/npm-install@v1
