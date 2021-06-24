@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useRef} from 'react';
 import {CSS} from '@dnd-kit/utilities';
 
+import {Context, defaultContext} from '../../store';
 import {getRelativeTransformOrigin} from '../../utilities';
 import {applyModifiers, Modifiers} from '../../modifiers';
 import {ActiveDraggableContext} from '../DndContext';
@@ -47,6 +48,7 @@ export const DragOverlay = React.memo(
     className,
     zIndex = 999,
   }: Props) => {
+    const context = useDndContext();
     const {
       active,
       activeNodeRect,
@@ -59,7 +61,7 @@ export const DragOverlay = React.memo(
       scrollableAncestors,
       scrollableAncestorRects,
       windowRect,
-    } = useDndContext();
+    } = context;
     const transform = useContext(ActiveDraggableContext);
     const modifiedTransform = applyModifiers(modifiers, {
       activatorEvent,
@@ -161,13 +163,17 @@ export const DragOverlay = React.memo(
       return null;
     }
 
-    return React.createElement(
-      wrapperElement,
-      {
-        ...otherAttributes,
-        ref: overlayNode.setRef,
-      },
-      finalChildren
+    return (
+      <Context.Provider value={defaultContext}>
+        {React.createElement(
+          wrapperElement,
+          {
+            ...otherAttributes,
+            ref: overlayNode.setRef,
+          },
+          finalChildren
+        )}
+      </Context.Provider>
     );
   }
 );
