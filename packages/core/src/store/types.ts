@@ -47,9 +47,14 @@ export interface Over {
 }
 
 export type DraggableNode = {
+  id: UniqueIdentifier;
   node: MutableRefObject<HTMLElement | null>;
   data: DataRef;
 };
+
+export interface DraggingNode extends DraggableNode {
+  rect: ViewRect;
+}
 
 export type DraggableNodes = Record<
   UniqueIdentifier,

@@ -62,11 +62,12 @@ import {
 } from '../../utilities';
 import {getMeasurableNode} from '../../utilities/nodes';
 import {applyModifiers, Modifiers} from '../../modifiers';
-import type {
+import {
   Active,
   DroppableContainers,
   DroppableContainer,
   DataRef,
+  DraggingNode,
 } from '../../store/types';
 import type {
   DragStartEvent,
@@ -270,9 +271,27 @@ export const DndContext = memo(function DndContext({
     ? getAdjustedRect(translatedRect, scrollAdjustment)
     : null;
 
+  const draggingNode = useMemo<DraggingNode | null>(() => {
+    if (!activeRef.current || !collisionRect) return null;
+
+    const activeNode = draggableNodes[activeRef.current];
+    if (!activeNode) return null;
+
+    return {...activeNode, rect: collisionRect};
+  }, [collisionRect, draggableNodes]);
+
+  const definedDroppableContainers = useMemo(() => {
+    return Object.values(droppableContainers).filter(
+      Boolean
+    ) as DroppableContainer[];
+  }, [droppableContainers]);
+
   const overId =
-    active && collisionRect
-      ? collisionDetection(Array.from(droppableRects.entries()), collisionRect)
+    active && draggingNode
+      ? collisionDetection({
+          draggingNode,
+          droppableContainers: definedDroppableContainers,
+        })
       : null;
   const overContainer = getOver(overId, droppableContainers);
   const over = useMemo(
