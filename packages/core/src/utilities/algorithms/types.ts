@@ -1,6 +1,11 @@
-import type {RectEntry, ViewRect, UniqueIdentifier} from '../../types';
+import type {DroppableContainer} from 'packages/core/dist/store';
+import type {DraggingNode} from '../../store';
+import type {UniqueIdentifier} from '../../types';
 
-export type CollisionDetection = (
-  entries: RectEntry[],
-  target: ViewRect
-) => UniqueIdentifier | null;
+export type CollisionDetection = ({
+  draggingNode,
+  droppableContainers,
+}: {
+  draggingNode: DraggingNode;
+  droppableContainers: DroppableContainer[];
+}) => UniqueIdentifier | null;

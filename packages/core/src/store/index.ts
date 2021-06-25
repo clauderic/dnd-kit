@@ -7,6 +7,7 @@ export type {
   DataRef,
   DraggableElement,
   DraggableNode,
+  DraggingNode,
   DraggableNodes,
   DroppableContainer,
   DroppableContainers,
