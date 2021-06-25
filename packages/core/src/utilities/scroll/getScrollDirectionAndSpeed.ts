@@ -48,7 +48,7 @@ export function getScrollDirectionAndSpeed(
     speed.y =
       acceleration *
       Math.abs(
-        ((finalScrollContainerRect.top + threshold.height) - top) /
+        (finalScrollContainerRect.top + threshold.height - top) /
           threshold.height
       );
   } else if (
@@ -60,7 +60,7 @@ export function getScrollDirectionAndSpeed(
     speed.y =
       acceleration *
       Math.abs(
-        ((finalScrollContainerRect.bottom - threshold.height) - bottom) /
+        (finalScrollContainerRect.bottom - threshold.height - bottom) /
           threshold.height
       );
   }
@@ -71,7 +71,7 @@ export function getScrollDirectionAndSpeed(
     speed.x =
       acceleration *
       Math.abs(
-        ((finalScrollContainerRect.right - threshold.width) - right) /
+        (finalScrollContainerRect.right - threshold.width - right) /
           threshold.width
       );
   } else if (
@@ -83,7 +83,7 @@ export function getScrollDirectionAndSpeed(
     speed.x =
       acceleration *
       Math.abs(
-        ((finalScrollContainerRect.left + threshold.width) - left) /
+        (finalScrollContainerRect.left + threshold.width - left) /
           threshold.width
       );
   }

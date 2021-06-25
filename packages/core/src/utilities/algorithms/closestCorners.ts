@@ -1,4 +1,3 @@
-import {getMinValueIndex} from '../other';
 import {distanceBetween} from '../coordinates';
 import {isViewRect} from '../rect';
 import type {LayoutRect} from '../../types';
@@ -38,23 +37,38 @@ function cornersOfRectangle(
  * Returns the closest rectangle from an array of rectangles to the corners of
  * another rectangle.
  */
-export const closestCorners: CollisionDetection = (entries, target) => {
-  const corners = cornersOfRectangle(target, target.left, target.top);
+export const closestCorners: CollisionDetection = ({
+  draggingNode: {rect: draggableViewRect},
+  droppableContainers,
+}) => {
+  let minDistanceToCorners = Infinity;
+  let minDistanceContainer;
+  const corners = cornersOfRectangle(
+    draggableViewRect,
+    draggableViewRect.left,
+    draggableViewRect.top
+  );
 
-  const distances = entries.map(([_, entry]) => {
-    const entryCorners = cornersOfRectangle(
-      entry,
-      isViewRect(entry) ? entry.left : undefined,
-      isViewRect(entry) ? entry.top : undefined
-    );
-    const distances = corners.reduce((accumulator, corner, index) => {
-      return accumulator + distanceBetween(entryCorners[index], corner);
-    }, 0);
+  for (let i = 0; i < droppableContainers.length; i++) {
+    const curContainer = droppableContainers[i];
+    const curRect = curContainer.rect.current;
+    if (curRect) {
+      const curRectCorners = cornersOfRectangle(
+        curRect,
+        isViewRect(curRect) ? curRect.left : undefined,
+        isViewRect(curRect) ? curRect.top : undefined
+      );
+      const distances = corners.reduce((accumulator, corner, index) => {
+        return accumulator + distanceBetween(curRectCorners[index], corner);
+      }, 0);
+      const effectiveDistance = Number((distances / 4).toFixed(4));
 
-    return Number((distances / 4).toFixed(4));
-  });
+      if (effectiveDistance < minDistanceToCorners) {
+        minDistanceToCorners = effectiveDistance;
+        minDistanceContainer = curContainer;
+      }
+    }
+  }
 
-  const minValueIndex = getMinValueIndex(distances);
-
-  return entries[minValueIndex] ? entries[minValueIndex][0] : null;
+  return minDistanceContainer ? minDistanceContainer.id : null;
 };
