@@ -54,7 +54,7 @@ export function useDraggable({
 
   useEffect(
     () => {
-      draggableNodes[id] = {node, data: dataRef};
+      draggableNodes[id] = {id, node, data: dataRef};
 
       return () => {
         delete draggableNodes[id];

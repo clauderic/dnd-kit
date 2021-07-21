@@ -1,7 +1,5 @@
 import type {Coordinates} from '@dnd-kit/utilities';
 
-import type {UniqueIdentifier} from './other';
-
 export type {Coordinates};
 
 export type DistanceMeasurement =
@@ -27,8 +25,6 @@ export interface ViewRect extends LayoutRect {
 }
 
 export interface ClientRect extends ViewRect {}
-
-export type RectEntry = [UniqueIdentifier, LayoutRect | ViewRect];
 
 export interface ScrollCoordinates {
   initial: Coordinates;

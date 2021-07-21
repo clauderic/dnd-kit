@@ -270,9 +270,19 @@ export const DndContext = memo(function DndContext({
     ? getAdjustedRect(translatedRect, scrollAdjustment)
     : null;
 
+  const droppableContainersEntries = useMemo(() => {
+    return Object.values(droppableContainers).filter(
+      Boolean
+    ) as DroppableContainer[];
+  }, [droppableContainers]);
+
   const overId =
     active && collisionRect
-      ? collisionDetection(Array.from(droppableRects.entries()), collisionRect)
+      ? collisionDetection({
+          active,
+          collisionRect,
+          droppableContainers: droppableContainersEntries,
+        })
       : null;
   const overContainer = getOver(overId, droppableContainers);
   const over = useMemo(

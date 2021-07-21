@@ -1,6 +1,6 @@
-import {getMinValueIndex} from '../other';
 import {distanceBetween} from '../coordinates';
-import type {Coordinates, LayoutRect} from '../../types';
+import type {Coordinates, LayoutRect, UniqueIdentifier} from '../../types';
+
 import type {CollisionDetection} from './types';
 
 /**
@@ -21,13 +21,32 @@ function centerOfRectangle(
  * Returns the closest rectangle from an array of rectangles to the center of a given
  * rectangle.
  */
-export const closestCenter: CollisionDetection = (rects, rect) => {
-  const centerRect = centerOfRectangle(rect, rect.left, rect.top);
-  const distances = rects.map(([_, rect]) =>
-    distanceBetween(centerOfRectangle(rect), centerRect)
+export const closestCenter: CollisionDetection = ({
+  collisionRect,
+  droppableContainers,
+}) => {
+  const centerRect = centerOfRectangle(
+    collisionRect,
+    collisionRect.left,
+    collisionRect.top
   );
+  let minDistanceToCenter = Infinity;
+  let minDroppableContainer: UniqueIdentifier | null = null;
 
-  const minValueIndex = getMinValueIndex(distances);
+  for (const droppableContainer of droppableContainers) {
+    const {
+      rect: {current: rect},
+    } = droppableContainer;
 
-  return rects[minValueIndex] ? rects[minValueIndex][0] : null;
+    if (rect) {
+      const distBetween = distanceBetween(centerOfRectangle(rect), centerRect);
+
+      if (distBetween < minDistanceToCenter) {
+        minDistanceToCenter = distBetween;
+        minDroppableContainer = droppableContainer.id;
+      }
+    }
+  }
+
+  return minDroppableContainer;
 };

@@ -67,7 +67,14 @@ export type {
   TouchSensorOptions,
 } from './sensors';
 
-export type {Active, DndContextDescriptor, Over} from './store';
+export type {
+  Active,
+  DndContextDescriptor,
+  DraggableNode,
+  DroppableContainers,
+  DroppableContainer,
+  Over,
+} from './store';
 
 export type {
   DistanceMeasurement,
@@ -77,7 +84,6 @@ export type {
   DragStartEvent,
   DragCancelEvent,
   LayoutRect,
-  RectEntry,
   Translate,
   UniqueIdentifier,
   ViewRect,

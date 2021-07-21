@@ -1,7 +1,7 @@
-import {getMinValueIndex} from '../other';
+import type {LayoutRect, UniqueIdentifier} from '../../types';
 import {distanceBetween} from '../coordinates';
 import {isViewRect} from '../rect';
-import type {LayoutRect} from '../../types';
+
 import type {CollisionDetection} from './types';
 
 /**
@@ -38,23 +38,40 @@ function cornersOfRectangle(
  * Returns the closest rectangle from an array of rectangles to the corners of
  * another rectangle.
  */
-export const closestCorners: CollisionDetection = (entries, target) => {
-  const corners = cornersOfRectangle(target, target.left, target.top);
+export const closestCorners: CollisionDetection = ({
+  collisionRect,
+  droppableContainers,
+}) => {
+  let minDistanceToCorners = Infinity;
+  let minDistanceContainer: UniqueIdentifier | null = null;
+  const corners = cornersOfRectangle(
+    collisionRect,
+    collisionRect.left,
+    collisionRect.top
+  );
 
-  const distances = entries.map(([_, entry]) => {
-    const entryCorners = cornersOfRectangle(
-      entry,
-      isViewRect(entry) ? entry.left : undefined,
-      isViewRect(entry) ? entry.top : undefined
-    );
-    const distances = corners.reduce((accumulator, corner, index) => {
-      return accumulator + distanceBetween(entryCorners[index], corner);
-    }, 0);
+  for (const droppableContainer of droppableContainers) {
+    const {
+      rect: {current: rect},
+    } = droppableContainer;
 
-    return Number((distances / 4).toFixed(4));
-  });
+    if (rect) {
+      const rectCorners = cornersOfRectangle(
+        rect,
+        isViewRect(rect) ? rect.left : undefined,
+        isViewRect(rect) ? rect.top : undefined
+      );
+      const distances = corners.reduce((accumulator, corner, index) => {
+        return accumulator + distanceBetween(rectCorners[index], corner);
+      }, 0);
+      const effectiveDistance = Number((distances / 4).toFixed(4));
 
-  const minValueIndex = getMinValueIndex(distances);
+      if (effectiveDistance < minDistanceToCorners) {
+        minDistanceToCorners = effectiveDistance;
+        minDistanceContainer = droppableContainer.id;
+      }
+    }
+  }
 
-  return entries[minValueIndex] ? entries[minValueIndex][0] : null;
+  return minDistanceContainer;
 };
