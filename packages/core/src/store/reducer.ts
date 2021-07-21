@@ -70,10 +70,10 @@ export function reducer(state: State, action: Actions): State {
     }
 
     case Action.SetDroppableDisabled: {
-      const {id, disabled} = action;
+      const {id, key, disabled} = action;
       const element = state.droppable.containers.get(id);
 
-      if (!element) {
+      if (!element || key !== element.key) {
         return state;
       }
 
@@ -93,7 +93,13 @@ export function reducer(state: State, action: Actions): State {
     }
 
     case Action.UnregisterDroppable: {
-      const {id} = action;
+      const {id, key} = action;
+      const element = state.droppable.containers.get(id);
+
+      if (!element || key !== element.key) {
+        return state;
+      }
+
       const containers = new DroppableContainersMap(state.droppable.containers);
       containers.delete(id);
 

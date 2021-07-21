@@ -1,5 +1,5 @@
 import {createContext, useContext, useEffect, useMemo} from 'react';
-import {Transform, useNodeRef} from '@dnd-kit/utilities';
+import {Transform, useNodeRef, useUniqueId} from '@dnd-kit/utilities';
 
 import {Context, Data} from '../store';
 import {ActiveDraggableContext} from '../components/DndContext';
@@ -26,12 +26,15 @@ const NullContext = createContext<any>(null);
 
 const defaultRole = 'button';
 
+const ID_PREFIX = 'Droppable';
+
 export function useDraggable({
   id,
   data,
   disabled = false,
   attributes,
 }: UseDraggableArguments) {
+  const key = useUniqueId(ID_PREFIX);
   const {
     active,
     activeNodeRect,
@@ -54,10 +57,14 @@ export function useDraggable({
 
   useEffect(
     () => {
-      draggableNodes[id] = {id, node, data: dataRef};
+      draggableNodes[id] = {id, key, node, data: dataRef};
 
       return () => {
-        delete draggableNodes[id];
+        const node = draggableNodes[id];
+
+        if (node && node.key === key) {
+          delete draggableNodes[id];
+        }
       };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

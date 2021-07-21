@@ -28,9 +28,11 @@ export type Actions =
   | {
       type: Action.SetDroppableDisabled;
       id: UniqueIdentifier;
+      key: UniqueIdentifier;
       disabled: boolean;
     }
   | {
       type: Action.UnregisterDroppable;
       id: UniqueIdentifier;
+      key: UniqueIdentifier;
     };
