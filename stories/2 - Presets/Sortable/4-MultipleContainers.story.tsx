@@ -34,16 +34,30 @@ export const ManyItems = () => (
 
 export const Vertical = () => <MultipleContainers itemCount={5} vertical />;
 
-const customCollisionDetectionStrategy: CollisionDetection = (rects, rect) => {
-  const voidRects = rects.filter(([id]) => id === VOID_ID);
-  const intersectingVoidRect = rectIntersection(voidRects, rect);
+const customCollisionDetectionStrategy: CollisionDetection = ({
+  droppableContainers,
+  ...args
+}) => {
+  const voidDroppableContainers = droppableContainers.filter(
+    ({id}) => id === VOID_ID
+  );
+  const intersectingVoidContainer = rectIntersection({
+    droppableContainers: voidDroppableContainers,
+    ...args,
+  });
 
-  if (intersectingVoidRect) {
-    return intersectingVoidRect;
+  if (intersectingVoidContainer != null) {
+    return intersectingVoidContainer;
   }
 
-  const otherRects = rects.filter(([id]) => id !== VOID_ID);
-  return closestCorners(otherRects, rect);
+  const otherDroppableContainers = droppableContainers.filter(
+    ({id}) => id !== VOID_ID
+  );
+
+  return closestCorners({
+    droppableContainers: otherDroppableContainers,
+    ...args,
+  });
 };
 
 export const TrashableItems = ({confirmDrop}: {confirmDrop: boolean}) => {
