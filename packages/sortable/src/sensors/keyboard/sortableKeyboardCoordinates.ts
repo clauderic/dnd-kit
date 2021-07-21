@@ -3,7 +3,7 @@ import {
   getViewRect,
   getScrollableAncestors,
   KeyboardCode,
-  RectEntry,
+  DroppableContainer,
   KeyboardCoordinateGetter,
 } from '@dnd-kit/core';
 
@@ -16,55 +16,65 @@ const directions: string[] = [
 
 export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
   event,
-  {context: {droppableContainers, translatedRect, scrollableAncestors}}
+  {context: {active, droppableContainers, translatedRect, scrollableAncestors}}
 ) => {
   if (directions.includes(event.code)) {
     event.preventDefault();
 
-    if (!translatedRect) {
+    if (!active || !translatedRect) {
       return;
     }
 
-    const layoutRects: RectEntry[] = [];
+    const filteredContainers: DroppableContainer[] = [];
 
-    Object.entries(droppableContainers).forEach(([id, container]) => {
-      if (container?.disabled) {
+    Object.values(droppableContainers).forEach((entry) => {
+      if (!entry || entry?.disabled) {
         return;
       }
 
-      const node = container?.node.current;
+      const node = entry?.node.current;
 
       if (!node) {
         return;
       }
 
       const rect = getViewRect(node);
+      const container: DroppableContainer = {
+        ...entry,
+        rect: {
+          current: rect,
+        },
+      };
 
       switch (event.code) {
         case KeyboardCode.Down:
           if (translatedRect.top + translatedRect.height <= rect.top) {
-            layoutRects.push([id, rect]);
+            filteredContainers.push(container);
           }
           break;
         case KeyboardCode.Up:
           if (translatedRect.top >= rect.top + rect.height) {
-            layoutRects.push([id, rect]);
+            filteredContainers.push(container);
           }
           break;
         case KeyboardCode.Left:
           if (translatedRect.left >= rect.left + rect.width) {
-            layoutRects.push([id, rect]);
+            filteredContainers.push(container);
           }
           break;
         case KeyboardCode.Right:
           if (translatedRect.left + translatedRect.width <= rect.left) {
-            layoutRects.push([id, rect]);
+            filteredContainers.push(container);
           }
           break;
       }
     });
 
-    const closestId = closestCorners(layoutRects, translatedRect);
+    const closestId = closestCorners({
+      active,
+      collisionRect: translatedRect,
+      droppableContainers: filteredContainers,
+    });
 
     if (closestId) {
       const newNode = droppableContainers[closestId]?.node.current;

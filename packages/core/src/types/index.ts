@@ -4,7 +4,6 @@ export type {
   DistanceMeasurement,
   LayoutRect,
   ViewRect,
-  RectEntry,
   Translate,
   ScrollCoordinates,
 } from './coordinates';
