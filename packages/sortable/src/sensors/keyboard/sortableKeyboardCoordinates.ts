@@ -27,7 +27,7 @@ export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
 
     const filteredContainers: DroppableContainer[] = [];
 
-    Object.values(droppableContainers).forEach((entry) => {
+    droppableContainers.getEnabled().forEach((entry) => {
       if (!entry || entry?.disabled) {
         return;
       }
@@ -77,7 +77,7 @@ export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
     });
 
     if (closestId) {
-      const newNode = droppableContainers[closestId]?.node.current;
+      const newNode = droppableContainers.get(closestId)?.node.current;
 
       if (newNode) {
         const newScrollAncestors = getScrollableAncestors(newNode);

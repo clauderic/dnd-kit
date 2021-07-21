@@ -62,12 +62,7 @@ import {
 } from '../../utilities';
 import {getMeasurableNode} from '../../utilities/nodes';
 import {applyModifiers, Modifiers} from '../../modifiers';
-import type {
-  Active,
-  DroppableContainers,
-  DroppableContainer,
-  DataRef,
-} from '../../store/types';
+import type {Active, DataRef} from '../../store/types';
 import type {
   DragStartEvent,
   DragCancelEvent,
@@ -171,11 +166,14 @@ export const DndContext = memo(function DndContext({
   const [activatorEvent, setActivatorEvent] = useState<Event | null>(null);
   const latestProps = useRef(props);
   const draggableDescribedById = useUniqueId(`DndDescribedBy`, id);
+  const enabledDroppableContainers = useMemo(() => {
+    return droppableContainers.getEnabled();
+  }, [droppableContainers]);
   const {
     layoutRectMap: droppableRects,
     recomputeLayouts,
     willRecomputeLayouts,
-  } = useLayoutMeasuring(droppableContainers, {
+  } = useLayoutMeasuring(enabledDroppableContainers, {
     dragging: isDragging,
     dependencies: [translate.x, translate.y],
     config: layoutMeasuring,
@@ -202,9 +200,8 @@ export const DndContext = memo(function DndContext({
     scrollAdjustedTranslate: null,
     translatedRect: null,
   });
-  const overNode = getDroppableNode(
-    sensorContext.current.over?.id ?? null,
-    droppableContainers
+  const overNode = droppableContainers.getNodeFor(
+    sensorContext.current.over?.id
   );
   const windowRect = useClientRect(
     activeNode ? activeNode.ownerDocument.defaultView : null
@@ -270,21 +267,15 @@ export const DndContext = memo(function DndContext({
     ? getAdjustedRect(translatedRect, scrollAdjustment)
     : null;
 
-  const droppableContainersEntries = useMemo(() => {
-    return Object.values(droppableContainers).filter(
-      Boolean
-    ) as DroppableContainer[];
-  }, [droppableContainers]);
-
   const overId =
     active && collisionRect
       ? collisionDetection({
           active,
           collisionRect,
-          droppableContainers: droppableContainersEntries,
+          droppableContainers: enabledDroppableContainers,
         })
       : null;
-  const overContainer = getOver(overId, droppableContainers);
+  const overContainer = droppableContainers.get(overId);
   const over = useMemo(
     () =>
       overContainer && overContainer.rect.current
@@ -655,17 +646,3 @@ export const DndContext = memo(function DndContext({
     return {enabled};
   }
 });
-
-function getDroppableNode(
-  id: UniqueIdentifier | null,
-  droppableContainers: DroppableContainers
-): HTMLElement | null {
-  return id ? droppableContainers[id]?.node.current ?? null : null;
-}
-
-function getOver(
-  id: UniqueIdentifier | null,
-  droppableContainers: DroppableContainers
-): DroppableContainer | null {
-  return id ? droppableContainers[id] ?? null : null;
-}

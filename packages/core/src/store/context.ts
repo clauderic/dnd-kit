@@ -1,6 +1,7 @@
 import {createContext} from 'react';
 
 import {noop} from '../utilities/other';
+import {DroppableContainersMap} from './constructors';
 import type {DndContextDescriptor} from './types';
 
 export const Context = createContext<DndContextDescriptor>({
@@ -17,7 +18,7 @@ export const Context = createContext<DndContextDescriptor>({
   dispatch: noop,
   draggableNodes: {},
   droppableRects: new Map(),
-  droppableContainers: {},
+  droppableContainers: new DroppableContainersMap(),
   over: null,
   overlayNode: {
     nodeRef: {

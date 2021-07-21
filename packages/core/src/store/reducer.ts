@@ -1,5 +1,5 @@
-import {omit} from '../utilities';
 import {Action, Actions} from './actions';
+import {DroppableContainersMap} from './constructors';
 import type {State} from './types';
 
 export function getInitialState(): State {
@@ -11,7 +11,7 @@ export function getInitialState(): State {
       translate: {x: 0, y: 0},
     },
     droppable: {
-      containers: {},
+      containers: new DroppableContainersMap(),
     },
   };
 }
@@ -57,50 +57,51 @@ export function reducer(state: State, action: Actions): State {
     case Action.RegisterDroppable: {
       const {element} = action;
       const {id} = element;
+      const containers = new DroppableContainersMap(state.droppable.containers);
+      containers.set(id, element);
 
       return {
         ...state,
         droppable: {
           ...state.droppable,
-          containers: {
-            ...state.droppable.containers,
-            [id]: element,
-          },
+          containers,
         },
       };
     }
 
     case Action.SetDroppableDisabled: {
       const {id, disabled} = action;
-      const element = state.droppable.containers[id];
+      const element = state.droppable.containers.get(id);
 
       if (!element) {
         return state;
       }
 
+      const containers = new DroppableContainersMap(state.droppable.containers);
+      containers.set(id, {
+        ...element,
+        disabled,
+      });
+
       return {
         ...state,
         droppable: {
           ...state.droppable,
-          containers: {
-            ...state.droppable.containers,
-            [id]: {
-              ...element,
-              disabled,
-            },
-          },
+          containers,
         },
       };
     }
 
     case Action.UnregisterDroppable: {
       const {id} = action;
+      const containers = new DroppableContainersMap(state.droppable.containers);
+      containers.delete(id);
 
       return {
         ...state,
         droppable: {
           ...state.droppable,
-          containers: omit(id, state.droppable.containers),
+          containers,
         },
       };
     }

@@ -9,6 +9,7 @@ import type {
 } from '../types';
 import type {SyntheticListeners} from '../hooks/utilities';
 import type {Actions} from './actions';
+import type {DroppableContainersMap} from './constructors';
 
 export interface DraggableElement {
   node: DraggableNode;
@@ -57,10 +58,7 @@ export type DraggableNodes = Record<
   DraggableNode | undefined
 >;
 
-export type DroppableContainers = Record<
-  UniqueIdentifier,
-  DroppableContainer | undefined
->;
+export type DroppableContainers = DroppableContainersMap;
 
 export type LayoutRectMap = Map<UniqueIdentifier, LayoutRect>;
 
