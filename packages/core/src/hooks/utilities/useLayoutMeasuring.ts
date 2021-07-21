@@ -2,7 +2,7 @@ import {useCallback, useEffect, useRef, useState} from 'react';
 import {useLazyMemo} from '@dnd-kit/utilities';
 
 import {getElementLayout} from '../../utilities';
-import type {DroppableContainers, LayoutRectMap} from '../../store/types';
+import type {DroppableContainer, LayoutRectMap} from '../../store/types';
 
 interface Arguments {
   dragging: boolean;
@@ -28,7 +28,7 @@ export interface LayoutMeasuring {
 const defaultValue: LayoutRectMap = new Map();
 
 export function useLayoutMeasuring(
-  containers: DroppableContainers,
+  containers: DroppableContainer[],
   {dragging, dependencies, config}: Arguments
 ) {
   const [willRecomputeLayouts, setWillRecomputeLayouts] = useState(false);
@@ -49,7 +49,7 @@ export function useLayoutMeasuring(
         containersRef.current !== containers ||
         willRecomputeLayouts
       ) {
-        for (let container of Object.values(containers)) {
+        for (let container of containers) {
           if (!container) {
             continue;
           }
@@ -127,19 +127,19 @@ export function useLayoutMeasuring(
 }
 
 function createLayoutRectMap(
-  containers: DroppableContainers | null
+  containers: DroppableContainer[] | null
 ): LayoutRectMap {
   const layoutRectMap: LayoutRectMap = new Map();
 
   if (containers) {
-    for (const container of Object.values(containers)) {
+    for (const container of containers) {
       if (!container) {
         continue;
       }
 
-      const {id, rect, disabled} = container;
+      const {id, rect} = container;
 
-      if (disabled || rect.current == null) {
+      if (rect.current == null) {
         continue;
       }
 

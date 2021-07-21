@@ -9,6 +9,7 @@ import type {
 } from '../types';
 import type {SyntheticListeners} from '../hooks/utilities';
 import type {Actions} from './actions';
+import type {DroppableContainersMap} from './constructors';
 
 export interface DraggableElement {
   node: DraggableNode;
@@ -24,10 +25,11 @@ export type DataRef = MutableRefObject<Data | undefined>;
 
 export interface DroppableContainer {
   id: UniqueIdentifier;
+  key: UniqueIdentifier;
+  data: DataRef;
+  disabled: boolean;
   node: MutableRefObject<HTMLElement | null>;
   rect: MutableRefObject<LayoutRect | null>;
-  disabled: boolean;
-  data: DataRef;
 }
 
 export interface Active {
@@ -48,6 +50,7 @@ export interface Over {
 
 export type DraggableNode = {
   id: UniqueIdentifier;
+  key: UniqueIdentifier;
   node: MutableRefObject<HTMLElement | null>;
   data: DataRef;
 };
@@ -57,10 +60,7 @@ export type DraggableNodes = Record<
   DraggableNode | undefined
 >;
 
-export type DroppableContainers = Record<
-  UniqueIdentifier,
-  DroppableContainer | undefined
->;
+export type DroppableContainers = DroppableContainersMap;
 
 export type LayoutRectMap = Map<UniqueIdentifier, LayoutRect>;
 
