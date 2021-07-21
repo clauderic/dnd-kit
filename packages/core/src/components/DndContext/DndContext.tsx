@@ -342,8 +342,9 @@ export const DndContext = memo(function DndContext({
               active: id,
             });
             setMonitorState({type: Action.DragStart, event});
-            onDragStart?.(event);
           });
+
+          onDragStart?.(event);
         },
         onMove(coordinates) {
           dispatch({
@@ -392,14 +393,16 @@ export const DndContext = memo(function DndContext({
             setActivatorEvent(null);
 
             if (event) {
-              const {onDragCancel, onDragEnd} = latestProps.current;
-              const handler =
-                type === Action.DragEnd ? onDragEnd : onDragCancel;
-
               setMonitorState({type, event});
-              handler?.(event);
             }
           });
+
+          if (event) {
+            const {onDragCancel, onDragEnd} = latestProps.current;
+            const handler = type === Action.DragEnd ? onDragEnd : onDragCancel;
+
+            handler?.(event);
+          }
         };
       }
     },
