@@ -52,10 +52,6 @@ export type DraggableNode = {
   data: DataRef;
 };
 
-export interface DraggingNode extends DraggableNode {
-  rect: ViewRect;
-}
-
 export type DraggableNodes = Record<
   UniqueIdentifier,
   DraggableNode | undefined

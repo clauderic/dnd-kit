@@ -1,5 +1,6 @@
 import {distanceBetween} from '../coordinates';
-import type {Coordinates, LayoutRect} from '../../types';
+import type {Coordinates, LayoutRect, UniqueIdentifier} from '../../types';
+
 import type {CollisionDetection} from './types';
 
 /**
@@ -21,31 +22,31 @@ function centerOfRectangle(
  * rectangle.
  */
 export const closestCenter: CollisionDetection = ({
-  draggingNode: {rect: draggableViewRect},
+  collisionRect,
   droppableContainers,
 }) => {
   const centerRect = centerOfRectangle(
-    draggableViewRect,
-    draggableViewRect.left,
-    draggableViewRect.top
+    collisionRect,
+    collisionRect.left,
+    collisionRect.top
   );
   let minDistanceToCenter = Infinity;
-  let minDroppableContainer;
+  let minDroppableContainer: UniqueIdentifier | null = null;
 
-  for (let i = 0; i < droppableContainers.length; i++) {
-    const curContainer = droppableContainers[i];
-    const curRect = curContainer.rect.current;
-    if (curRect) {
-      const distBetween = distanceBetween(
-        centerOfRectangle(curRect),
-        centerRect
-      );
+  for (const droppableContainer of droppableContainers) {
+    const {
+      rect: {current: rect},
+    } = droppableContainer;
+
+    if (rect) {
+      const distBetween = distanceBetween(centerOfRectangle(rect), centerRect);
+
       if (distBetween < minDistanceToCenter) {
         minDistanceToCenter = distBetween;
-        minDroppableContainer = curContainer;
+        minDroppableContainer = droppableContainer.id;
       }
     }
   }
 
-  return minDroppableContainer ? minDroppableContainer.id : null;
+  return minDroppableContainer;
 };

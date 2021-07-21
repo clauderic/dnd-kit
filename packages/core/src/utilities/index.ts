@@ -19,7 +19,7 @@ export {
 
 export {getOwnerDocument, getWindow} from './document';
 
-export {getMinValueIndex, getMaxValueIndex, omit, noop} from './other';
+export {omit, noop} from './other';
 
 export {
   getScrollableAncestors,

@@ -1,4 +1,5 @@
-import type {LayoutRect, ViewRect} from '../../types';
+import type {LayoutRect, UniqueIdentifier, ViewRect} from '../../types';
+
 import type {CollisionDetection} from './types';
 
 /**
@@ -37,28 +38,26 @@ function getIntersectionRatio(entry: LayoutRect, target: ViewRect): number {
  * rectangle in an array of rectangles.
  */
 export const rectIntersection: CollisionDetection = ({
-  draggingNode: {rect: draggableViewRect},
+  collisionRect,
   droppableContainers,
 }) => {
   let maxIntersectionRatio = 0;
-  let maxIntersectingDroppableContainer;
+  let maxIntersectingDroppableContainer: UniqueIdentifier | null = null;
 
-  for (let i = 0; i < droppableContainers.length; i++) {
-    const curContainer = droppableContainers[i];
-    const curRect = curContainer.rect.current;
-    if (curRect) {
-      const intersectionRatio = getIntersectionRatio(
-        curRect,
-        draggableViewRect
-      );
+  for (const droppableContainer of droppableContainers) {
+    const {
+      rect: {current: rect},
+    } = droppableContainer;
+
+    if (rect) {
+      const intersectionRatio = getIntersectionRatio(rect, collisionRect);
+
       if (intersectionRatio > maxIntersectionRatio) {
         maxIntersectionRatio = intersectionRatio;
-        maxIntersectingDroppableContainer = curContainer;
+        maxIntersectingDroppableContainer = droppableContainer.id;
       }
     }
   }
 
-  return maxIntersectingDroppableContainer
-    ? maxIntersectingDroppableContainer.id
-    : null;
+  return maxIntersectingDroppableContainer;
 };

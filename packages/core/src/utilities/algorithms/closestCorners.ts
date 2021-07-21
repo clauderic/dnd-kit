@@ -1,6 +1,7 @@
+import type {LayoutRect, UniqueIdentifier} from '../../types';
 import {distanceBetween} from '../coordinates';
 import {isViewRect} from '../rect';
-import type {LayoutRect} from '../../types';
+
 import type {CollisionDetection} from './types';
 
 /**
@@ -38,37 +39,39 @@ function cornersOfRectangle(
  * another rectangle.
  */
 export const closestCorners: CollisionDetection = ({
-  draggingNode: {rect: draggableViewRect},
+  collisionRect,
   droppableContainers,
 }) => {
   let minDistanceToCorners = Infinity;
-  let minDistanceContainer;
+  let minDistanceContainer: UniqueIdentifier | null = null;
   const corners = cornersOfRectangle(
-    draggableViewRect,
-    draggableViewRect.left,
-    draggableViewRect.top
+    collisionRect,
+    collisionRect.left,
+    collisionRect.top
   );
 
-  for (let i = 0; i < droppableContainers.length; i++) {
-    const curContainer = droppableContainers[i];
-    const curRect = curContainer.rect.current;
-    if (curRect) {
-      const curRectCorners = cornersOfRectangle(
-        curRect,
-        isViewRect(curRect) ? curRect.left : undefined,
-        isViewRect(curRect) ? curRect.top : undefined
+  for (const droppableContainer of droppableContainers) {
+    const {
+      rect: {current: rect},
+    } = droppableContainer;
+
+    if (rect) {
+      const rectCorners = cornersOfRectangle(
+        rect,
+        isViewRect(rect) ? rect.left : undefined,
+        isViewRect(rect) ? rect.top : undefined
       );
       const distances = corners.reduce((accumulator, corner, index) => {
-        return accumulator + distanceBetween(curRectCorners[index], corner);
+        return accumulator + distanceBetween(rectCorners[index], corner);
       }, 0);
       const effectiveDistance = Number((distances / 4).toFixed(4));
 
       if (effectiveDistance < minDistanceToCorners) {
         minDistanceToCorners = effectiveDistance;
-        minDistanceContainer = curContainer;
+        minDistanceContainer = droppableContainer.id;
       }
     }
   }
 
-  return minDistanceContainer ? minDistanceContainer.id : null;
+  return minDistanceContainer;
 };
