@@ -56,6 +56,7 @@ export type AbstractPointerSensorProps = SensorProps<AbstractPointerSensorOption
 
 enum EventName {
   Keydown = 'keydown',
+  ContextMenu = 'contextmenu',
 }
 
 export class AbstractPointerSensor implements SensorInstance {
@@ -96,7 +97,7 @@ export class AbstractPointerSensor implements SensorInstance {
 
     this.listeners.add(events.move.name, this.handleMove, false);
     this.listeners.add(events.end.name, this.handleEnd);
-
+    this.ownerDocument.addEventListener(EventName.ContextMenu, preventDefault);
     this.ownerDocument.addEventListener(EventName.Keydown, this.handleKeydown);
 
     if (activationConstraint) {
@@ -118,6 +119,10 @@ export class AbstractPointerSensor implements SensorInstance {
 
   private detach() {
     this.listeners.removeAll();
+    this.ownerDocument.removeEventListener(
+      EventName.ContextMenu,
+      preventDefault
+    );
     this.ownerDocument.removeEventListener(
       EventName.Keydown,
       this.handleKeydown
@@ -199,4 +204,8 @@ export class AbstractPointerSensor implements SensorInstance {
       this.handleCancel();
     }
   }
+}
+
+function preventDefault(event: Event) {
+  event.preventDefault();
 }
