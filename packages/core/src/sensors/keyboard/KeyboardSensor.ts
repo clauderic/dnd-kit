@@ -3,15 +3,7 @@ import {
   subtract as getCoordinatesDelta,
 } from '@dnd-kit/utilities';
 
-import {Listeners} from '../utilities';
-import type {SensorInstance, SensorProps, SensorOptions} from '../types';
 import type {Coordinates} from '../../types';
-
-import {KeyboardCoordinateGetter, KeyboardCode, KeyboardCodes} from './types';
-import {
-  defaultKeyboardCodes,
-  defaultKeyboardCoordinateGetter,
-} from './defaults';
 import {
   defaultCoordinates,
   getBoundingClientRect,
@@ -20,6 +12,15 @@ import {
   getScrollPosition,
   getScrollElementRect,
 } from '../../utilities';
+import {Listeners} from '../utilities';
+import {EventName} from '../events';
+import type {SensorInstance, SensorProps, SensorOptions} from '../types';
+
+import {KeyboardCoordinateGetter, KeyboardCode, KeyboardCodes} from './types';
+import {
+  defaultKeyboardCodes,
+  defaultKeyboardCoordinateGetter,
+} from './defaults';
 
 export interface KeyboardSensorOptions extends SensorOptions {
   keyboardCodes?: KeyboardCodes;
@@ -53,10 +54,10 @@ export class KeyboardSensor implements SensorInstance {
   private attach() {
     this.handleStart();
 
-    setTimeout(() => {
-      this.listeners.add('keydown', this.handleKeyDown);
-      this.windowListeners.add('resize', this.handleCancel);
-    });
+    this.windowListeners.add(EventName.Resize, this.handleCancel);
+    this.windowListeners.add(EventName.VisibilityChange, this.handleCancel);
+
+    setTimeout(() => this.listeners.add(EventName.Keydown, this.handleKeyDown));
   }
 
   private handleStart() {

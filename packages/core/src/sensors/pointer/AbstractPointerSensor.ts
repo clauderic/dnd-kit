@@ -9,7 +9,8 @@ import {
   Listeners,
 } from '../utilities';
 
-import {getOwnerDocument} from '../../utilities';
+import {getOwnerDocument, getWindow} from '../../utilities';
+import {EventName} from '../events';
 import {KeyboardCode} from '../keyboard';
 import type {SensorInstance, SensorProps, SensorOptions} from '../types';
 import type {Coordinates, DistanceMeasurement} from '../../types';
@@ -54,17 +55,13 @@ export interface AbstractPointerSensorOptions extends SensorOptions {
 
 export type AbstractPointerSensorProps = SensorProps<AbstractPointerSensorOptions>;
 
-enum EventName {
-  Keydown = 'keydown',
-  ContextMenu = 'contextmenu',
-}
-
 export class AbstractPointerSensor implements SensorInstance {
   public autoScrollEnabled = true;
   private activated: boolean = false;
   private initialCoordinates: Coordinates;
   private timeoutId: NodeJS.Timeout | null = null;
   private listeners: Listeners;
+  private windowListeners: Listeners;
   private ownerDocument: Document;
 
   constructor(
@@ -73,11 +70,13 @@ export class AbstractPointerSensor implements SensorInstance {
     listenerTarget = getEventListenerTarget(props.event.target)
   ) {
     const {event} = props;
+    const {target} = event;
 
     this.props = props;
     this.events = events;
-    this.ownerDocument = getOwnerDocument(event.target);
+    this.ownerDocument = getOwnerDocument(target);
     this.listeners = new Listeners(listenerTarget);
+    this.windowListeners = new Listeners(getWindow(target));
     this.initialCoordinates = getEventCoordinates(event);
     this.handleStart = this.handleStart.bind(this);
     this.handleMove = this.handleMove.bind(this);
@@ -97,7 +96,9 @@ export class AbstractPointerSensor implements SensorInstance {
 
     this.listeners.add(events.move.name, this.handleMove, false);
     this.listeners.add(events.end.name, this.handleEnd);
-    this.ownerDocument.addEventListener(EventName.ContextMenu, preventDefault);
+    this.windowListeners.add(EventName.Resize, this.handleCancel);
+    this.windowListeners.add(EventName.VisibilityChange, this.handleCancel);
+    this.windowListeners.add(EventName.ContextMenu, preventDefault);
     this.ownerDocument.addEventListener(EventName.Keydown, this.handleKeydown);
 
     if (activationConstraint) {
@@ -119,10 +120,7 @@ export class AbstractPointerSensor implements SensorInstance {
 
   private detach() {
     this.listeners.removeAll();
-    this.ownerDocument.removeEventListener(
-      EventName.ContextMenu,
-      preventDefault
-    );
+    this.windowListeners.removeAll();
     this.ownerDocument.removeEventListener(
       EventName.Keydown,
       this.handleKeydown
