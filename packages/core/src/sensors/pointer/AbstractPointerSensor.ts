@@ -61,7 +61,6 @@ export class AbstractPointerSensor implements SensorInstance {
   private initialCoordinates: Coordinates;
   private timeoutId: NodeJS.Timeout | null = null;
   private listeners: Listeners;
-  private nodeListeners: Listeners;
   private documentListeners: Listeners;
   private windowListeners: Listeners;
 
@@ -70,17 +69,13 @@ export class AbstractPointerSensor implements SensorInstance {
     private events: PointerEventHandlers,
     listenerTarget = getEventListenerTarget(props.event.target)
   ) {
-    const {
-      event,
-      activeNode: {node},
-    } = props;
+    const {event} = props;
     const {target} = event;
 
     this.props = props;
     this.events = events;
     this.documentListeners = new Listeners(getOwnerDocument(target));
     this.listeners = new Listeners(listenerTarget);
-    this.nodeListeners = new Listeners(node.current);
     this.windowListeners = new Listeners(getWindow(target));
     this.initialCoordinates = getEventCoordinates(event);
     this.handleStart = this.handleStart.bind(this);
@@ -126,10 +121,10 @@ export class AbstractPointerSensor implements SensorInstance {
   private detach() {
     this.listeners.removeAll();
     this.windowListeners.removeAll();
-    this.documentListeners.removeAll();
 
-    // Wait until the next event loop before removing click listeners
-    setTimeout(this.nodeListeners.removeAll);
+    // Wait until the next event loop before removing document listeners
+    // This is necessary because we listen for `click` events on the document
+    setTimeout(this.documentListeners.removeAll);
 
     if (this.timeoutId !== null) {
       clearTimeout(this.timeoutId);
@@ -144,7 +139,7 @@ export class AbstractPointerSensor implements SensorInstance {
     if (initialCoordinates) {
       this.activated = true;
       // Stop propagation of click events once activation constraints are met
-      this.nodeListeners.add(EventName.Click, stopPropagation, {
+      this.documentListeners.add(EventName.Click, stopPropagation, {
         capture: true,
       });
 
