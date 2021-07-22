@@ -7,14 +7,17 @@ export {
 export type {
   Announcements,
   CancelDrop,
+  DndContextProps,
   DropAnimation,
+  DraggableMeasuring,
+  MeasuringConfiguration,
   ScreenReaderInstructions,
 } from './components';
 
 export {
   AutoScrollActivator,
-  LayoutMeasuringFrequency,
-  LayoutMeasuringStrategy,
+  MeasuringFrequency,
+  MeasuringStrategy,
   TraversalOrder,
   useDraggable,
   useDndContext,
@@ -25,7 +28,7 @@ export type {
   AutoScrollOptions,
   DndMonitorArguments,
   DraggableSyntheticListeners,
-  LayoutMeasuring,
+  DroppableMeasuring,
   UseDndContextReturnValue,
   UseDraggableArguments,
   UseDroppableArguments,
@@ -93,6 +96,8 @@ export {
   defaultCoordinates,
   getBoundingClientRect,
   getViewRect,
+  getLayoutRect,
+  getViewportLayoutRect,
   getScrollableAncestors,
   closestCenter,
   closestCorners,

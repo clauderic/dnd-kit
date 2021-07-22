@@ -1,5 +1,5 @@
 import React from 'react';
-import {LayoutMeasuringStrategy} from '@dnd-kit/core';
+import {MeasuringStrategy} from '@dnd-kit/core';
 import {
   AnimateLayoutChanges,
   defaultAnimateLayoutChanges,
@@ -123,7 +123,7 @@ export const RemovableItems = () => {
     <Sortable
       {...props}
       animateLayoutChanges={animateLayoutChanges}
-      layoutMeasuring={{strategy: LayoutMeasuringStrategy.Always}}
+      measuring={{droppable: {strategy: MeasuringStrategy.Always}}}
       removable
       handle
     />

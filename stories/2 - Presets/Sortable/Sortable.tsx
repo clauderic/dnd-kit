@@ -12,7 +12,7 @@ import {
   KeyboardSensor,
   Modifiers,
   MouseSensor,
-  LayoutMeasuring,
+  MeasuringConfiguration,
   PointerActivationConstraint,
   ScreenReaderInstructions,
   TouchSensor,
@@ -43,7 +43,7 @@ export interface Props {
   itemCount?: number;
   items?: string[];
   handle?: boolean;
-  layoutMeasuring?: Partial<LayoutMeasuring>;
+  measuring?: MeasuringConfiguration;
   modifiers?: Modifiers;
   renderItem?: any;
   removable?: boolean;
@@ -90,7 +90,7 @@ export function Sortable({
   itemCount = 16,
   items: initialItems,
   isDisabled = () => false,
-  layoutMeasuring,
+  measuring,
   modifiers,
   removable,
   renderItem,
@@ -174,7 +174,7 @@ export function Sortable({
         }
       }}
       onDragCancel={() => setActiveId(null)}
-      layoutMeasuring={layoutMeasuring}
+      measuring={measuring}
       modifiers={modifiers}
     >
       <Wrapper center>

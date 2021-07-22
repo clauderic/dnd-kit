@@ -8,11 +8,11 @@ export {useCachedNode} from './useCachedNode';
 export {useCombineActivators} from './useCombineActivators';
 export {useData} from './useData';
 export {
-  useLayoutMeasuring,
-  LayoutMeasuringFrequency,
-  LayoutMeasuringStrategy,
-} from './useLayoutMeasuring';
-export type {LayoutMeasuring} from './useLayoutMeasuring';
+  useDroppableMeasuring,
+  MeasuringFrequency,
+  MeasuringStrategy,
+} from './useDroppableMeasuring';
+export type {DroppableMeasuring} from './useDroppableMeasuring';
 export {useScrollOffsets} from './useScrollOffsets';
 export {useScrollableAncestors} from './useScrollableAncestors';
 export {useSyntheticListeners} from './useSyntheticListeners';
@@ -21,9 +21,4 @@ export type {
   SyntheticListeners,
   SyntheticListenerMap,
 } from './useSyntheticListeners';
-export {
-  useLayoutRect,
-  useClientRect,
-  useClientRects,
-  useViewRect,
-} from './useRect';
+export {useRect, useClientRect, useClientRects} from './useRect';

@@ -4,6 +4,11 @@ export {getRectDelta} from './getRectDelta';
 
 export {getAdjustedRect} from './rectAdjustment';
 
-export {getElementLayout, getBoundingClientRect, getViewRect} from './getRect';
+export {
+  getBoundingClientRect,
+  getLayoutRect,
+  getViewportLayoutRect,
+  getViewRect,
+} from './getRect';
 
 export {isViewRect} from './isViewRect';
