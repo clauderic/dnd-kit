@@ -10,7 +10,7 @@ import {
 } from '../utilities';
 
 import {getOwnerDocument, getWindow} from '../../utilities';
-import {EventName} from '../events';
+import {EventName, preventDefault, stopPropagation} from '../events';
 import {KeyboardCode} from '../keyboard';
 import type {SensorInstance, SensorProps, SensorOptions} from '../types';
 import type {Coordinates, DistanceMeasurement} from '../../types';
@@ -61,21 +61,26 @@ export class AbstractPointerSensor implements SensorInstance {
   private initialCoordinates: Coordinates;
   private timeoutId: NodeJS.Timeout | null = null;
   private listeners: Listeners;
+  private nodeListeners: Listeners;
+  private documentListeners: Listeners;
   private windowListeners: Listeners;
-  private ownerDocument: Document;
 
   constructor(
     private props: AbstractPointerSensorProps,
     private events: PointerEventHandlers,
     listenerTarget = getEventListenerTarget(props.event.target)
   ) {
-    const {event} = props;
+    const {
+      event,
+      activeNode: {node},
+    } = props;
     const {target} = event;
 
     this.props = props;
     this.events = events;
-    this.ownerDocument = getOwnerDocument(target);
+    this.documentListeners = new Listeners(getOwnerDocument(target));
     this.listeners = new Listeners(listenerTarget);
+    this.nodeListeners = new Listeners(node.current);
     this.windowListeners = new Listeners(getWindow(target));
     this.initialCoordinates = getEventCoordinates(event);
     this.handleStart = this.handleStart.bind(this);
@@ -99,7 +104,7 @@ export class AbstractPointerSensor implements SensorInstance {
     this.windowListeners.add(EventName.Resize, this.handleCancel);
     this.windowListeners.add(EventName.VisibilityChange, this.handleCancel);
     this.windowListeners.add(EventName.ContextMenu, preventDefault);
-    this.ownerDocument.addEventListener(EventName.Keydown, this.handleKeydown);
+    this.documentListeners.add(EventName.Keydown, this.handleKeydown);
 
     if (activationConstraint) {
       if (isDistanceConstraint(activationConstraint)) {
@@ -121,10 +126,10 @@ export class AbstractPointerSensor implements SensorInstance {
   private detach() {
     this.listeners.removeAll();
     this.windowListeners.removeAll();
-    this.ownerDocument.removeEventListener(
-      EventName.Keydown,
-      this.handleKeydown
-    );
+    this.documentListeners.removeAll();
+
+    // Wait until the next event loop before removing click listeners
+    setTimeout(this.nodeListeners.removeAll);
 
     if (this.timeoutId !== null) {
       clearTimeout(this.timeoutId);
@@ -138,6 +143,10 @@ export class AbstractPointerSensor implements SensorInstance {
 
     if (initialCoordinates) {
       this.activated = true;
+      // Stop propagation of click events once activation constraints are met
+      this.nodeListeners.add(EventName.Click, stopPropagation, {
+        capture: true,
+      });
 
       onStart(initialCoordinates);
     }
@@ -202,8 +211,4 @@ export class AbstractPointerSensor implements SensorInstance {
       this.handleCancel();
     }
   }
-}
-
-function preventDefault(event: Event) {
-  event.preventDefault();
 }
