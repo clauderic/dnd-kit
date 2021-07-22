@@ -1,38 +1,51 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {useLazyMemo} from '@dnd-kit/utilities';
 
-import {getElementLayout} from '../../utilities';
+import {getLayoutRect} from '../../utilities';
 import type {DroppableContainer, LayoutRectMap} from '../../store/types';
+import type {LayoutRect} from '../../types';
 
 interface Arguments {
   dragging: boolean;
   dependencies: any[];
-  config: Partial<LayoutMeasuring> | undefined;
+  config: Partial<DroppableMeasuring> | undefined;
 }
 
-export enum LayoutMeasuringStrategy {
+export enum MeasuringStrategy {
   Always,
   BeforeDragging,
   WhileDragging,
 }
 
-export enum LayoutMeasuringFrequency {
+export enum MeasuringFrequency {
   Optimized = 'optimized',
 }
 
-export interface LayoutMeasuring {
-  strategy: LayoutMeasuringStrategy;
-  frequency: LayoutMeasuringFrequency | number;
+type MeasuringFunction = (element: HTMLElement) => LayoutRect;
+
+export interface DroppableMeasuring {
+  measure: MeasuringFunction;
+  strategy: MeasuringStrategy;
+  frequency: MeasuringFrequency | number;
 }
 
 const defaultValue: LayoutRectMap = new Map();
 
-export function useLayoutMeasuring(
+const defaultConfig: DroppableMeasuring = {
+  measure: getLayoutRect,
+  strategy: MeasuringStrategy.WhileDragging,
+  frequency: MeasuringFrequency.Optimized,
+};
+
+export function useDroppableMeasuring(
   containers: DroppableContainer[],
   {dragging, dependencies, config}: Arguments
 ) {
   const [willRecomputeLayouts, setWillRecomputeLayouts] = useState(false);
-  const {frequency, strategy} = getLayoutMeasuring(config);
+  const {frequency, measure, strategy} = {
+    ...defaultConfig,
+    ...config,
+  };
   const containersRef = useRef(containers);
   const recomputeLayouts = useCallback(() => setWillRecomputeLayouts(true), []);
   const recomputeLayoutsTimeoutId = useRef<NodeJS.Timeout | null>(null);
@@ -55,7 +68,7 @@ export function useLayoutMeasuring(
           }
 
           container.rect.current = container.node.current
-            ? getElementLayout(container.node.current)
+            ? measure(container.node.current)
             : null;
         }
 
@@ -64,7 +77,7 @@ export function useLayoutMeasuring(
 
       return previousValue;
     },
-    [containers, dragging, disabled, willRecomputeLayouts]
+    [containers, dragging, disabled, measure, willRecomputeLayouts]
   );
 
   useEffect(() => {
@@ -116,9 +129,9 @@ export function useLayoutMeasuring(
 
   function isDisabled() {
     switch (strategy) {
-      case LayoutMeasuringStrategy.Always:
+      case MeasuringStrategy.Always:
         return false;
-      case LayoutMeasuringStrategy.BeforeDragging:
+      case MeasuringStrategy.BeforeDragging:
         return dragging;
       default:
         return !dragging;
@@ -148,20 +161,4 @@ function createLayoutRectMap(
   }
 
   return layoutRectMap;
-}
-
-const defaultLayoutMeasuring: LayoutMeasuring = {
-  strategy: LayoutMeasuringStrategy.WhileDragging,
-  frequency: LayoutMeasuringFrequency.Optimized,
-};
-
-function getLayoutMeasuring(
-  layoutMeasuring: Arguments['config']
-): LayoutMeasuring {
-  return layoutMeasuring
-    ? {
-        ...defaultLayoutMeasuring,
-        ...layoutMeasuring,
-      }
-    : defaultLayoutMeasuring;
 }

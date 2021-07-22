@@ -9,7 +9,8 @@ import {
   PointerSensor,
   KeyboardSensor,
   useDndContext,
-  LayoutMeasuringStrategy,
+  MeasuringConfiguration,
+  MeasuringStrategy,
   DragEndEvent,
 } from '@dnd-kit/core';
 import {
@@ -31,8 +32,10 @@ interface Props {
   layout: Layout;
 }
 
-const layoutMeasuring = {
-  strategy: LayoutMeasuringStrategy.Always,
+const measuring: MeasuringConfiguration = {
+  droppable: {
+    strategy: MeasuringStrategy.Always,
+  },
 };
 
 export function Pages({layout}: Props) {
@@ -53,7 +56,7 @@ export function Pages({layout}: Props) {
       onDragCancel={handleDragCancel}
       sensors={sensors}
       collisionDetection={closestCenter}
-      layoutMeasuring={layoutMeasuring}
+      measuring={measuring}
     >
       <SortableContext items={items}>
         <ul className={classNames(styles.Pages, styles[layout])}>

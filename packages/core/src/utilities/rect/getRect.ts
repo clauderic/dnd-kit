@@ -23,7 +23,7 @@ function getEdgeOffset(
   return getEdgeOffset(node.offsetParent as HTMLElement, parent, nodeOffset);
 }
 
-export function getElementLayout(element: HTMLElement): LayoutRect {
+export function getLayoutRect(element: HTMLElement): LayoutRect {
   const {offsetWidth: width, offsetHeight: height} = element;
   const {x: offsetLeft, y: offsetTop} = getEdgeOffset(element, null);
 
@@ -32,6 +32,19 @@ export function getElementLayout(element: HTMLElement): LayoutRect {
     height,
     offsetTop,
     offsetLeft,
+  };
+}
+
+export function getViewportLayoutRect(element: HTMLElement): LayoutRect {
+  const {width, height, top, left} = element.getBoundingClientRect();
+  const scrollableAncestors = getScrollableAncestors(element);
+  const scrollOffsets = getScrollOffsets(scrollableAncestors);
+
+  return {
+    width,
+    height,
+    offsetTop: top + scrollOffsets.y,
+    offsetLeft: left + scrollOffsets.x,
   };
 }
 
@@ -54,7 +67,7 @@ export function getBoundingClientRect(
     };
   }
 
-  const {offsetTop, offsetLeft} = getElementLayout(element);
+  const {offsetTop, offsetLeft} = getLayoutRect(element);
   const {
     width,
     height,
@@ -77,7 +90,7 @@ export function getBoundingClientRect(
 }
 
 export function getViewRect(element: HTMLElement): ViewRect {
-  const {width, height, offsetTop, offsetLeft} = getElementLayout(element);
+  const {width, height, offsetTop, offsetLeft} = getLayoutRect(element);
   const scrollableAncestors = getScrollableAncestors(element);
   const scrollOffsets = getScrollOffsets(scrollableAncestors);
 

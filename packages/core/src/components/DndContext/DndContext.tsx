@@ -31,16 +31,16 @@ import {
   useAutoScroller,
   useCachedNode,
   useCombineActivators,
-  useLayoutMeasuring,
+  useDroppableMeasuring,
   useScrollableAncestors,
   useClientRect,
   useClientRects,
+  useRect,
   useScrollOffsets,
-  useViewRect,
 } from '../../hooks/utilities';
 import type {
   AutoScrollOptions,
-  LayoutMeasuring,
+  DroppableMeasuring,
   SyntheticListener,
 } from '../../hooks/utilities';
 import {
@@ -58,6 +58,7 @@ import {
   defaultCoordinates,
   getAdjustedRect,
   getRectDelta,
+  getViewRect,
   rectIntersection,
 } from '../../utilities';
 import {getMeasurableNode} from '../../utilities/nodes';
@@ -85,7 +86,7 @@ export interface Props {
   cancelDrop?: CancelDrop;
   children?: React.ReactNode;
   collisionDetection?: CollisionDetection;
-  layoutMeasuring?: Partial<LayoutMeasuring>;
+  measuring?: MeasuringConfiguration;
   modifiers?: Modifiers;
   screenReaderInstructions?: ScreenReaderInstructions;
   sensors?: SensorDescriptor<any>[];
@@ -94,6 +95,15 @@ export interface Props {
   onDragOver?(event: DragOverEvent): void;
   onDragEnd?(event: DragEndEvent): void;
   onDragCancel?(event: DragCancelEvent): void;
+}
+
+export interface DraggableMeasuring {
+  measure(node: HTMLElement): ViewRect;
+}
+
+export interface MeasuringConfiguration {
+  draggable?: Partial<DraggableMeasuring>;
+  droppable?: Partial<DroppableMeasuring>;
 }
 
 export interface CancelDropArguments extends DragEndEvent {}
@@ -128,7 +138,7 @@ export const DndContext = memo(function DndContext({
   children,
   sensors = defaultSensors,
   collisionDetection = rectIntersection,
-  layoutMeasuring,
+  measuring,
   modifiers,
   screenReaderInstructions = defaultScreenReaderInstructions,
   ...props
@@ -173,16 +183,19 @@ export const DndContext = memo(function DndContext({
     layoutRectMap: droppableRects,
     recomputeLayouts,
     willRecomputeLayouts,
-  } = useLayoutMeasuring(enabledDroppableContainers, {
+  } = useDroppableMeasuring(enabledDroppableContainers, {
     dragging: isDragging,
     dependencies: [translate.x, translate.y],
-    config: layoutMeasuring,
+    config: measuring?.droppable,
   });
   const activeNode = useCachedNode(draggableNodes, activeId);
   const activationCoordinates = activatorEvent
     ? getEventCoordinates(activatorEvent)
     : null;
-  const activeNodeRect = useViewRect(activeNode);
+  const activeNodeRect = useRect(
+    activeNode,
+    measuring?.draggable?.measure ?? getViewRect
+  );
   const activeNodeClientRect = useClientRect(activeNode);
   const initialActiveNodeRectRef = useRef<ViewRect | null>(null);
   const initialActiveNodeRect = initialActiveNodeRectRef.current;

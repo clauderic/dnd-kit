@@ -13,7 +13,7 @@ import {
   DragMoveEvent,
   DragEndEvent,
   DragOverEvent,
-  LayoutMeasuring,
+  Measuring,
   LayoutMeasuringStrategy,
   DropAnimation,
   defaultDropAnimation,
@@ -65,8 +65,10 @@ const initialItems: TreeItems = [
   },
 ];
 
-const layoutMeasuring: Partial<LayoutMeasuring> = {
-  strategy: LayoutMeasuringStrategy.Always,
+const measuring = {
+  droppable: {
+    strategy: LayoutMeasuringStrategy.Always,
+  },
 };
 
 const dropAnimation: DropAnimation = {
@@ -173,7 +175,7 @@ export function SortableTree({
       sensors={sensors}
       modifiers={indicator ? [adjustTranslate] : undefined}
       collisionDetection={closestCenter}
-      layoutMeasuring={layoutMeasuring}
+      measuring={measuring}
       onDragStart={handleDragStart}
       onDragMove={handleDragMove}
       onDragOver={handleDragOver}

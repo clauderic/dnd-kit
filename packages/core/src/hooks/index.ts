@@ -11,8 +11,8 @@ export {useDroppable} from './useDroppable';
 export type {UseDroppableArguments} from './useDroppable';
 export {
   AutoScrollActivator,
-  LayoutMeasuringStrategy,
-  LayoutMeasuringFrequency,
+  MeasuringStrategy,
+  MeasuringFrequency,
   TraversalOrder,
 } from './utilities';
-export type {AutoScrollOptions, LayoutMeasuring} from './utilities';
+export type {AutoScrollOptions, DroppableMeasuring} from './utilities';
