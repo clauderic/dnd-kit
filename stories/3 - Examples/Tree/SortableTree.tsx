@@ -14,7 +14,7 @@ import {
   DragEndEvent,
   DragOverEvent,
   Measuring,
-  LayoutMeasuringStrategy,
+  MeasuringStrategy,
   DropAnimation,
   defaultDropAnimation,
   Modifier,
@@ -67,7 +67,7 @@ const initialItems: TreeItems = [
 
 const measuring = {
   droppable: {
-    strategy: LayoutMeasuringStrategy.Always,
+    strategy: MeasuringStrategy.Always,
   },
 };
 
