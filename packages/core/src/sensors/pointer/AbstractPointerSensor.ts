@@ -17,7 +17,7 @@ import type {Coordinates, DistanceMeasurement} from '../../types';
 
 interface DistanceConstraint {
   distance: DistanceMeasurement;
-  maxDistance?: DistanceMeasurement;
+  tolerance?: DistanceMeasurement;
 }
 
 interface DelayConstraint {
@@ -174,8 +174,8 @@ export class AbstractPointerSensor implements SensorInstance {
 
       if (isDistanceConstraint(activationConstraint)) {
         if (
-          activationConstraint.maxDistance &&
-          hasExceededDistance(delta, activationConstraint.maxDistance)
+          activationConstraint.tolerance &&
+          hasExceededDistance(delta, activationConstraint.tolerance)
         ) {
           return this.handleCancel();
         }
