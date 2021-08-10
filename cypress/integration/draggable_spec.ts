@@ -377,5 +377,35 @@ describe('Draggable', () => {
           return subject;
         });
     });
+
+    it('Activates if the mouse is moved more than the minimum distance y and less than tolerance x', () => {
+      const deltaX = 5;
+      const deltaY = 100;
+
+      cy.visitStory('core-draggable-hooks-usedraggable--minimum-distance-y-tolerance-x')
+        .findFirstDraggableItem()
+        .mouseMoveBy(deltaX, deltaY)
+        .then(([subject, {delta}]) => {
+          expect(delta.x).eq(deltaX);
+          expect(delta.y).eq(deltaY);
+
+          return subject;
+        });
+    });
+
+    it('Does not activate if the mouse is moved more than the minimum distance y and more than tolerance x', () => {
+      const deltaX = 150;
+      const deltaY = 100;
+
+      cy.visitStory('core-draggable-hooks-usedraggable--minimum-distance-y-tolerance-x')
+        .findFirstDraggableItem()
+        .mouseMoveBy(deltaX, deltaY)
+        .then(([subject, {delta}]) => {
+          expect(delta.x).eq(0);
+          expect(delta.y).eq(0);
+
+          return subject;
+        });
+    });
   });
 });
