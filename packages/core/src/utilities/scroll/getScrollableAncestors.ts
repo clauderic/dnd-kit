@@ -1,3 +1,4 @@
+import {isFixed} from './isFixed';
 import {isScrollable} from './isScrollable';
 
 export function getScrollableAncestors(element: Node | null): Element[] {
@@ -28,6 +29,10 @@ export function getScrollableAncestors(element: Node | null): Element[] {
 
     if (isScrollable(node)) {
       scrollParents.push(node);
+    }
+
+    if (isFixed(node)) {
+      return scrollParents;
     }
 
     return findScrollableAncestors(node.parentNode);
