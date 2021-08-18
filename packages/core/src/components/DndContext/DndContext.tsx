@@ -199,7 +199,6 @@ export const DndContext = memo(function DndContext({
   const activeNodeClientRect = useClientRect(activeNode);
   const initialActiveNodeRectRef = useRef<ViewRect | null>(null);
   const initialActiveNodeRect = initialActiveNodeRectRef.current;
-  const nodeRectDelta = getRectDelta(activeNodeRect, initialActiveNodeRect);
   const sensorContext = useRef<SensorContext>({
     active: null,
     activeNode,
@@ -229,11 +228,19 @@ export const DndContext = memo(function DndContext({
 
   const [overlayNodeRef, setOverlayNodeRef] = useNodeRef();
   const overlayNodeRect = useClientRect(
-    activeId ? getMeasurableNode(overlayNodeRef.current) : null,
-    willRecomputeLayouts
+    activeId ? getMeasurableNode(overlayNodeRef.current) : null
   );
 
+  // Use the rect of the drag overlay if it is mounted
   const draggingNodeRect = overlayNodeRect ?? activeNodeRect;
+
+  // The delta between the previous and new position of the draggable node
+  // is only relevant when there is no drag overlay
+  const nodeRectDelta =
+    draggingNodeRect === activeNodeRect
+      ? getRectDelta(activeNodeRect, initialActiveNodeRect)
+      : defaultCoordinates;
+
   const modifiedTranslate = applyModifiers(modifiers, {
     transform: {
       x: translate.x - nodeRectDelta.x,
@@ -261,7 +268,9 @@ export const DndContext = memo(function DndContext({
 
   const scrollAdjustedTranslate = add(modifiedTranslate, scrollAdjustment);
 
-  const translatedRect = draggingNodeRect ? getAdjustedRect(draggingNodeRect, modifiedTranslate) : null;
+  const translatedRect = draggingNodeRect
+    ? getAdjustedRect(draggingNodeRect, modifiedTranslate)
+    : null;
 
   const collisionRect = translatedRect
     ? getAdjustedRect(translatedRect, scrollAdjustment)
