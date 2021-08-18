@@ -1,10 +1,11 @@
 import React, {useContext, useEffect, useRef} from 'react';
-import {CSS} from '@dnd-kit/utilities';
+import {CSS, useLazyMemo} from '@dnd-kit/utilities';
 
 import {getRelativeTransformOrigin} from '../../utilities';
 import {applyModifiers, Modifiers} from '../../modifiers';
 import {ActiveDraggableContext} from '../DndContext';
 import {useDndContext} from '../../hooks';
+import type {ViewRect} from '../../types';
 import {useDerivedTransform, useDropAnimation, DropAnimation} from './hooks';
 
 type TransitionGetter = (
@@ -88,13 +89,23 @@ export const DragOverlay = React.memo(
           scaleX: 1,
           scaleY: 1,
         };
-    const style: React.CSSProperties | undefined = activeNodeRect
+    const initialNodeRect = useLazyMemo<ViewRect | null>(
+      (previousValue) => {
+        if (isDragging) {
+          return previousValue ?? activeNodeRect;
+        }
+
+        return null;
+      },
+      [isDragging, activeNodeRect]
+    );
+    const style: React.CSSProperties | undefined = initialNodeRect
       ? {
           position: 'fixed',
-          width: activeNodeRect.width,
-          height: activeNodeRect.height,
-          top: activeNodeRect.top,
-          left: activeNodeRect.left,
+          width: initialNodeRect.width,
+          height: initialNodeRect.height,
+          top: initialNodeRect.top,
+          left: initialNodeRect.left,
           zIndex,
           transform: CSS.Transform.toString(finalTransform),
           touchAction: 'none',
@@ -102,7 +113,7 @@ export const DragOverlay = React.memo(
             adjustScale && activatorEvent
               ? getRelativeTransformOrigin(
                   activatorEvent as MouseEvent | KeyboardEvent | TouchEvent,
-                  activeNodeRect
+                  initialNodeRect
                 )
               : undefined,
           transition: derivedTransform
