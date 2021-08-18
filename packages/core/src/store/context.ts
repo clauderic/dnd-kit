@@ -20,12 +20,15 @@ export const Context = createContext<DndContextDescriptor>({
   droppableRects: new Map(),
   droppableContainers: new DroppableContainersMap(),
   over: null,
-  overlayNode: {
+  dragOverlay: {
     nodeRef: {
       current: null,
     },
     rect: null,
     setRef: noop,
+    transform: {
+      current: null,
+    },
   },
   scrollableAncestors: [],
   scrollableAncestorRects: [],

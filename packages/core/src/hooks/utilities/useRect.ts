@@ -1,11 +1,12 @@
 import {useRef} from 'react';
 import {useLazyMemo} from '@dnd-kit/utilities';
 
-import {getBoundingClientRect} from '../../utilities';
+import {getBoundingClientRect, getViewRect} from '../../utilities';
 import type {LayoutRect} from '../../types';
 
 type RectFn<T, U> = (element: U) => T;
 
+export const useViewRect = createUseRectFn(getViewRect);
 export const useClientRect = createUseRectFn(getBoundingClientRect);
 export const useClientRects = createUseRectsFn(getBoundingClientRect);
 

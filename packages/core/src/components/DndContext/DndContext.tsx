@@ -14,7 +14,6 @@ import {
   getEventCoordinates,
   Transform,
   useIsomorphicLayoutEffect,
-  useNodeRef,
   useUniqueId,
 } from '@dnd-kit/utilities';
 
@@ -31,6 +30,7 @@ import {
   useAutoScroller,
   useCachedNode,
   useCombineActivators,
+  useDragOverlayMeasuring,
   useDroppableMeasuring,
   useScrollableAncestors,
   useClientRect,
@@ -61,7 +61,6 @@ import {
   getViewRect,
   rectIntersection,
 } from '../../utilities';
-import {getMeasurableNode} from '../../utilities/nodes';
 import {applyModifiers, Modifiers} from '../../modifiers';
 import type {Active, DataRef} from '../../store/types';
 import type {
@@ -226,13 +225,13 @@ export const DndContext = memo(function DndContext({
   );
   const scrollableAncestorRects = useClientRects(scrollableAncestors);
 
-  const [overlayNodeRef, setOverlayNodeRef] = useNodeRef();
-  const overlayNodeRect = useClientRect(
-    activeId ? getMeasurableNode(overlayNodeRef.current) : null
-  );
+  const dragOverlay = useDragOverlayMeasuring({
+    disabled: activeId == null,
+    forceRecompute: willRecomputeLayouts,
+  });
 
   // Use the rect of the drag overlay if it is mounted
-  const draggingNodeRect = overlayNodeRect ?? activeNodeRect;
+  const draggingNodeRect = dragOverlay.rect ?? activeNodeRect;
 
   // The delta between the previous and new position of the draggable node
   // is only relevant when there is no drag overlay
@@ -254,7 +253,7 @@ export const DndContext = memo(function DndContext({
     containerNodeRect,
     draggingNodeRect,
     over: sensorContext.current.over,
-    overlayNodeRect,
+    overlayNodeRect: dragOverlay.rect,
     scrollableAncestors,
     scrollableAncestorRects,
     windowRect,
@@ -577,13 +576,9 @@ export const DndContext = memo(function DndContext({
       ariaDescribedById: {
         draggable: draggableDescribedById,
       },
-      overlayNode: {
-        nodeRef: overlayNodeRef,
-        rect: overlayNodeRect,
-        setRef: setOverlayNodeRef,
-      },
       containerNodeRect,
       dispatch,
+      dragOverlay,
       draggableNodes,
       droppableContainers,
       droppableRects,
@@ -604,8 +599,7 @@ export const DndContext = memo(function DndContext({
     activatorEvent,
     activators,
     containerNodeRect,
-    overlayNodeRect,
-    overlayNodeRef,
+    dragOverlay,
     dispatch,
     draggableNodes,
     draggableDescribedById,
@@ -615,7 +609,6 @@ export const DndContext = memo(function DndContext({
     recomputeLayouts,
     scrollableAncestors,
     scrollableAncestorRects,
-    setOverlayNodeRef,
     willRecomputeLayouts,
     windowRect,
   ]);
