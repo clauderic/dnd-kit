@@ -113,11 +113,10 @@ export const DragOverlay = React.memo(
                   initialNodeRect
                 )
               : undefined,
-          transition: modifiedTransform
-            ? undefined
-            : typeof transition === 'function'
-            ? transition(activatorEvent)
-            : transition,
+          transition:
+            typeof transition === 'function'
+              ? transition(activatorEvent)
+              : transition,
           ...styleProp,
         }
       : undefined;
