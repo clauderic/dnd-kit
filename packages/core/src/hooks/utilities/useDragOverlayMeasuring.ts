@@ -1,51 +1,51 @@
-import {useMemo, useRef} from 'react';
-import {Transform, useNodeRef} from '@dnd-kit/utilities';
+import {useMemo} from 'react';
+import {useNodeRef} from '@dnd-kit/utilities';
 
 import {getMeasurableNode} from '../../utilities/nodes';
+import {getLayoutRect} from '../../utilities/rect';
 import type {DndContextDescriptor} from '../../store';
-import type {ClientRect} from '../../types';
+import type {ViewRect} from '../../types';
 
-import {useClientRect} from './useRect';
+import {createUseRectFn} from './useRect';
 
 interface Arguments {
   disabled: boolean;
   forceRecompute: boolean;
 }
 
+// To-do: Delete and replace with `getViewRect` when https://github.com/clauderic/dnd-kit/pull/415 is merged
+function getDragOverlayRect(element: HTMLElement): ViewRect {
+  const {width, height, offsetLeft, offsetTop} = getLayoutRect(element);
+
+  return {
+    top: offsetTop,
+    bottom: offsetTop + height,
+    left: offsetLeft,
+    right: offsetLeft + width,
+    width,
+    height,
+    offsetTop,
+    offsetLeft,
+  };
+}
+const useDragOverlayRect = createUseRectFn(getDragOverlayRect);
+
 export function useDragOverlayMeasuring({
   disabled,
   forceRecompute,
 }: Arguments): DndContextDescriptor['dragOverlay'] {
-  const transform = useRef<Transform | null>(null);
   const [nodeRef, setRef] = useNodeRef();
-  const measuredOverlayRect = useClientRect(
+  const rect = useDragOverlayRect(
     disabled ? null : getMeasurableNode(nodeRef.current),
     forceRecompute
   );
-
-  const rect = useMemo(() => {
-    return measuredOverlayRect && transform.current
-      ? add(measuredOverlayRect, transform.current)
-      : null;
-  }, [measuredOverlayRect]);
 
   return useMemo(
     () => ({
       nodeRef,
       rect,
       setRef,
-      transform,
     }),
-    [rect, transform, nodeRef, setRef]
+    [rect, nodeRef, setRef]
   );
-}
-
-function add(rect: ClientRect, transform: Transform) {
-  return {
-    ...rect,
-    left: Math.round(rect.left - transform.x),
-    right: Math.round(rect.right - transform.x),
-    top: Math.round(rect.top - transform.y),
-    bottom: Math.round(rect.bottom - transform.y),
-  };
 }

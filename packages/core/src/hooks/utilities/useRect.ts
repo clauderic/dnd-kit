@@ -41,7 +41,7 @@ export function useRect<T = LayoutRect, U = HTMLElement>(
   );
 }
 
-function createUseRectFn<T = LayoutRect, U = HTMLElement>(
+export function createUseRectFn<T = LayoutRect, U = HTMLElement>(
   getRect: RectFn<T, U>
 ) {
   return (element: U | null, forceRecompute?: boolean) =>

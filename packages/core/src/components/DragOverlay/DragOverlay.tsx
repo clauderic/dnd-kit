@@ -84,8 +84,6 @@ export const DragOverlay = React.memo(
           scaleY: 1,
         };
 
-    dragOverlay.transform.current = finalTransform;
-
     const initialNodeRect = useLazyMemo<ViewRect | null>(
       (previousValue) => {
         if (isDragging) {

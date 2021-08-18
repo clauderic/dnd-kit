@@ -1,5 +1,4 @@
 import type {MutableRefObject} from 'react';
-import type {Transform} from '@dnd-kit/utilities';
 
 import type {
   Coordinates,
@@ -96,7 +95,6 @@ export interface DndContextDescriptor {
   dragOverlay: {
     nodeRef: MutableRefObject<HTMLElement | null>;
     rect: ViewRect | null;
-    transform: MutableRefObject<Transform | null>;
     setRef: (element: HTMLElement | null) => void;
   };
   scrollableAncestors: Element[];

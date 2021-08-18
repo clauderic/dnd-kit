@@ -26,9 +26,6 @@ export const Context = createContext<DndContextDescriptor>({
     },
     rect: null,
     setRef: noop,
-    transform: {
-      current: null,
-    },
   },
   scrollableAncestors: [],
   scrollableAncestorRects: [],
