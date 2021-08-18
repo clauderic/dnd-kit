@@ -92,7 +92,7 @@ export interface DndContextDescriptor {
   droppableContainers: DroppableContainers;
   droppableRects: LayoutRectMap;
   over: Over | null;
-  overlayNode: {
+  dragOverlay: {
     nodeRef: MutableRefObject<HTMLElement | null>;
     rect: ViewRect | null;
     setRef: (element: HTMLElement | null) => void;

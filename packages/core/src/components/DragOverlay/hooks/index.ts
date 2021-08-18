@@ -1,2 +1,2 @@
-export {useDerivedTransform} from './useDerivedTransform';
-export {useDropAnimation, DropAnimation} from './useDropAnimation';
+export {useDropAnimation} from './useDropAnimation';
+export type {DropAnimation} from './useDropAnimation';

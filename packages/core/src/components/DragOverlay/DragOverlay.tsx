@@ -6,7 +6,7 @@ import {applyModifiers, Modifiers} from '../../modifiers';
 import {ActiveDraggableContext} from '../DndContext';
 import {useDndContext} from '../../hooks';
 import type {ViewRect} from '../../types';
-import {useDerivedTransform, useDropAnimation, DropAnimation} from './hooks';
+import {useDropAnimation, DropAnimation} from './hooks';
 
 type TransitionGetter = (
   activatorEvent: Event | null
@@ -56,7 +56,7 @@ export const DragOverlay = React.memo(
       draggableNodes,
       activatorEvent,
       over,
-      overlayNode,
+      dragOverlay,
       scrollableAncestors,
       scrollableAncestorRects,
       windowRect,
@@ -67,28 +67,23 @@ export const DragOverlay = React.memo(
       active,
       activeNodeRect: activeNodeClientRect,
       containerNodeRect,
-      draggingNodeRect: overlayNode.rect,
+      draggingNodeRect: dragOverlay.rect,
       over,
-      overlayNodeRect: overlayNode.rect,
+      overlayNodeRect: dragOverlay.rect,
       scrollableAncestors,
       scrollableAncestorRects,
       transform,
       windowRect,
     });
-    const derivedTransform = useDerivedTransform(
-      modifiedTransform,
-      activeNodeRect,
-      overlayNode.nodeRef.current
-    );
     const isDragging = active !== null;
-    const intermediateTransform = derivedTransform ?? modifiedTransform;
     const finalTransform = adjustScale
-      ? intermediateTransform
+      ? modifiedTransform
       : {
-          ...intermediateTransform,
+          ...modifiedTransform,
           scaleX: 1,
           scaleY: 1,
         };
+
     const initialNodeRect = useLazyMemo<ViewRect | null>(
       (previousValue) => {
         if (isDragging) {
@@ -116,11 +111,10 @@ export const DragOverlay = React.memo(
                   initialNodeRect
                 )
               : undefined,
-          transition: derivedTransform
-            ? undefined
-            : typeof transition === 'function'
-            ? transition(activatorEvent)
-            : transition,
+          transition:
+            typeof transition === 'function'
+              ? transition(activatorEvent)
+              : transition,
           ...styleProp,
         }
       : undefined;
@@ -145,7 +139,7 @@ export const DragOverlay = React.memo(
       duration: dropAnimation?.duration,
       easing: dropAnimation?.easing,
       dragSourceOpacity: dropAnimation?.dragSourceOpacity,
-      node: overlayNode.nodeRef.current,
+      node: dragOverlay.nodeRef.current,
       transform: attributesSnapshot.current?.transform,
     });
     const shouldRender = Boolean(
@@ -176,7 +170,7 @@ export const DragOverlay = React.memo(
       wrapperElement,
       {
         ...otherAttributes,
-        ref: overlayNode.setRef,
+        ref: dragOverlay.setRef,
       },
       finalChildren
     );

@@ -47,14 +47,14 @@ export function SortableContext({
 }: Props) {
   const {
     active,
-    overlayNode,
+    dragOverlay,
     droppableRects,
     over,
     recomputeLayouts,
     willRecomputeLayouts,
   } = useDndContext();
   const containerId = useUniqueId(ID_PREFIX, id);
-  const useDragOverlay = Boolean(overlayNode.rect !== null);
+  const useDragOverlay = Boolean(dragOverlay.rect !== null);
   const items = useMemo(
     () =>
       userDefinedItems.map((item) =>
