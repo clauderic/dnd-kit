@@ -228,7 +228,8 @@ export const DndContext = memo(function DndContext({
 
   const [overlayNodeRef, setOverlayNodeRef] = useNodeRef();
   const overlayNodeRect = useClientRect(
-    activeId ? getMeasurableNode(overlayNodeRef.current) : null
+    activeId ? getMeasurableNode(overlayNodeRef.current) : null,
+    willRecomputeLayouts
   );
 
   // Use the rect of the drag overlay if it is mounted
