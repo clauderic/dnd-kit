@@ -8,13 +8,21 @@ export function getScrollableAncestors(element: Node | null): Element[] {
       return scrollParents;
     }
 
-    if (node instanceof Document && node.scrollingElement != null) {
+    if (
+      node instanceof Document &&
+      node.scrollingElement != null &&
+      !scrollParents.includes(node.scrollingElement)
+    ) {
       scrollParents.push(node.scrollingElement);
 
       return scrollParents;
     }
 
     if (!(node instanceof HTMLElement) || node instanceof SVGElement) {
+      return scrollParents;
+    }
+
+    if (scrollParents.includes(node)) {
       return scrollParents;
     }
 
