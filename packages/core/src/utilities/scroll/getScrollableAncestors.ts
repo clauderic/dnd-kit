@@ -1,3 +1,4 @@
+import {isFixed} from './isFixed';
 import {isScrollable} from './isScrollable';
 
 export function getScrollableAncestors(element: Node | null): Element[] {
@@ -26,8 +27,14 @@ export function getScrollableAncestors(element: Node | null): Element[] {
       return scrollParents;
     }
 
-    if (isScrollable(node)) {
+    const computedStyle = window.getComputedStyle(node);
+
+    if (isScrollable(node, computedStyle)) {
       scrollParents.push(node);
+    }
+
+    if (isFixed(node, computedStyle)) {
+      return scrollParents;
     }
 
     return findScrollableAncestors(node.parentNode);
