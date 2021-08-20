@@ -27,11 +27,13 @@ export function getScrollableAncestors(element: Node | null): Element[] {
       return scrollParents;
     }
 
-    if (isScrollable(node)) {
+    const computedStyle = window.getComputedStyle(node);
+
+    if (isScrollable(node, computedStyle)) {
       scrollParents.push(node);
     }
 
-    if (isFixed(node)) {
+    if (isFixed(node, computedStyle)) {
       return scrollParents;
     }
 

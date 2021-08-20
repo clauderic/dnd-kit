@@ -1,3 +1,6 @@
-export function isFixed(node: HTMLElement): boolean {
-  return window.getComputedStyle(node).position === 'fixed';
+export function isFixed(
+  node: HTMLElement,
+  computedStyle: CSSStyleDeclaration = window.getComputedStyle(node)
+): boolean {
+  return computedStyle.position === 'fixed';
 }
