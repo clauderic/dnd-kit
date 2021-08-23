@@ -5,12 +5,14 @@ export type SortableTransition = Pick<Transition, 'easing' | 'duration'>;
 
 export type AnimateLayoutChanges = (args: {
   active: Active | null;
+  containerId: UniqueIdentifier;
   isDragging: boolean;
   isSorting: boolean;
   id: UniqueIdentifier;
   index: number;
-  newIndex: number;
   items: UniqueIdentifier[];
+  previousContainerId: UniqueIdentifier;
+  newIndex: number;
   transition: SortableTransition | null;
   wasSorting: boolean;
 }) => boolean;
