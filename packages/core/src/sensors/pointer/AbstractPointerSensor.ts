@@ -174,7 +174,7 @@ export class AbstractPointerSensor implements SensorInstance {
 
       if (isDistanceConstraint(activationConstraint)) {
         if (
-          activationConstraint.tolerance &&
+          activationConstraint.tolerance != null &&
           hasExceededDistance(delta, activationConstraint.tolerance)
         ) {
           return this.handleCancel();
