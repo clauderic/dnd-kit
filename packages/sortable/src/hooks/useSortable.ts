@@ -96,6 +96,7 @@ export function useSortable({
       ? arrayMove(items, activeIndex, overIndex).indexOf(id)
       : index;
   const prevNewIndex = useRef(newIndex);
+  const previousContainerId = useRef(containerId);
   const shouldAnimateLayoutChanges = animateLayoutChanges({
     active,
     isDragging,
@@ -104,6 +105,8 @@ export function useSortable({
     index,
     items,
     newIndex: prevNewIndex.current,
+    containerId,
+    previousContainerId: previousContainerId.current,
     transition,
     wasSorting: wasSorting.current,
   });
@@ -115,10 +118,14 @@ export function useSortable({
   });
 
   useEffect(() => {
-    if (isSorting) {
+    if (isSorting && prevNewIndex.current !== newIndex) {
       prevNewIndex.current = newIndex;
     }
-  }, [isSorting, newIndex]);
+
+    if (containerId !== previousContainerId.current) {
+      previousContainerId.current = containerId;
+    }
+  }, [isSorting, newIndex, containerId]);
 
   return {
     active,
