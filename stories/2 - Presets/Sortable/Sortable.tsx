@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
 
 import {
@@ -115,6 +115,7 @@ export function Sortable({
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+  const isFirstAnnouncement = useRef(true);
   const getIndex = items.indexOf.bind(items);
   const getPosition = (id: string) => getIndex(id) + 1;
   const activeIndex = activeId ? getIndex(activeId) : -1;
@@ -128,6 +129,14 @@ export function Sortable({
       )} of ${items.length}`;
     },
     onDragOver(id, overId) {
+      // In this specific use-case, the picked up item's `id` is always the same as the first `over` id.
+      // The first `onDragOver` event therefore doesn't need to be announced, because it is called
+      // immediately after the `onDragStart` announcement and is redundant.
+      if (isFirstAnnouncement.current === true) {
+        isFirstAnnouncement.current = false;
+        return;
+      }
+
       if (overId) {
         return `Sortable item ${id} was moved into position ${getPosition(
           overId
@@ -146,9 +155,17 @@ export function Sortable({
       return;
     },
     onDragCancel(id) {
-      return `Sorting was cancelled. Sortable item ${id} was dropped.`;
+      return `Sorting was cancelled. Sortable item ${id} was dropped and returned to position ${getPosition(
+        id
+      )} of ${items.length}.`;
     },
   };
+
+  useEffect(() => {
+    if (!activeId) {
+      isFirstAnnouncement.current = true;
+    }
+  }, [activeId]);
 
   return (
     <DndContext
