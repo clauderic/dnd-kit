@@ -62,7 +62,7 @@ import {
   rectIntersection,
 } from '../../utilities';
 import {applyModifiers, Modifiers} from '../../modifiers';
-import type {Active, DataRef} from '../../store/types';
+import {Active, DataRef, Over} from '../../store/types';
 import type {
   DragStartEvent,
   DragCancelEvent,
@@ -274,7 +274,6 @@ export const DndContext = memo(function DndContext({
   const collisionRect = translatedRect
     ? getAdjustedRect(translatedRect, scrollAdjustment)
     : null;
-
   const overId =
     active && collisionRect
       ? collisionDetection({
@@ -283,23 +282,11 @@ export const DndContext = memo(function DndContext({
           droppableContainers: enabledDroppableContainers,
         })
       : null;
-  const overContainer = droppableContainers.get(overId);
-  const over = useMemo(
-    () =>
-      overContainer && overContainer.rect.current
-        ? {
-            id: overContainer.id,
-            rect: overContainer.rect.current,
-            data: overContainer.data,
-            disabled: overContainer.disabled,
-          }
-        : null,
-    [overContainer]
-  );
+  const [over, setOver] = useState<Over | null>(null);
 
   const transform = adjustScale(
     modifiedTranslate,
-    overContainer?.rect.current ?? null,
+    over?.rect ?? null,
     activeNodeRect
   );
 
@@ -501,13 +488,27 @@ export const DndContext = memo(function DndContext({
 
   useEffect(
     () => {
-      const {active, scrollAdjustedTranslate} = sensorContext.current;
+      const {
+        active,
+        droppableContainers,
+        scrollAdjustedTranslate,
+      } = sensorContext.current;
 
       if (!active || !activeRef.current || !scrollAdjustedTranslate) {
         return;
       }
 
       const {onDragOver} = latestProps.current;
+      const overContainer = droppableContainers.get(overId);
+      const over =
+        overContainer && overContainer.rect.current
+          ? {
+              id: overContainer.id,
+              rect: overContainer.rect.current,
+              data: overContainer.data,
+              disabled: overContainer.disabled,
+            }
+          : null;
       const event: DragOverEvent = {
         active,
         delta: {
@@ -517,11 +518,14 @@ export const DndContext = memo(function DndContext({
         over,
       };
 
-      setMonitorState({type: Action.DragOver, event});
-      onDragOver?.(event);
+      unstable_batchedUpdates(() => {
+        setOver(over);
+        setMonitorState({type: Action.DragOver, event});
+        onDragOver?.(event);
+      });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [over?.id]
+    [overId]
   );
 
   useIsomorphicLayoutEffect(() => {

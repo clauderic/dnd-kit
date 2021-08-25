@@ -95,17 +95,20 @@ export function useSortable({
     isValidIndex(activeIndex) && isValidIndex(overIndex)
       ? arrayMove(items, activeIndex, overIndex).indexOf(id)
       : index;
+  const prevItems = useRef(items);
+  const itemsHaveChanged = items !== prevItems.current;
   const prevNewIndex = useRef(newIndex);
   const previousContainerId = useRef(containerId);
   const shouldAnimateLayoutChanges = animateLayoutChanges({
     active,
+    containerId,
     isDragging,
     isSorting,
     id,
     index,
     items,
     newIndex: prevNewIndex.current,
-    containerId,
+    previousItems: prevItems.current,
     previousContainerId: previousContainerId.current,
     transition,
     wasSorting: wasSorting.current,
@@ -125,7 +128,11 @@ export function useSortable({
     if (containerId !== previousContainerId.current) {
       previousContainerId.current = containerId;
     }
-  }, [isSorting, newIndex, containerId]);
+
+    if (items !== prevItems.current) {
+      prevItems.current = items;
+    }
+  }, [isSorting, newIndex, containerId, items]);
 
   return {
     active,
@@ -147,8 +154,12 @@ export function useSortable({
   };
 
   function getTransition() {
-    if (derivedTransform) {
+    if (
       // Temporarily disable transitions for a single frame to set up derived transforms
+      derivedTransform ||
+      // Or to prevent items jumping to back to their "new" position when items change
+      (itemsHaveChanged && prevNewIndex.current === index)
+    ) {
       return disabledTransition;
     }
 

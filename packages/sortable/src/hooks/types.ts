@@ -11,6 +11,7 @@ export type AnimateLayoutChanges = (args: {
   id: UniqueIdentifier;
   index: number;
   items: UniqueIdentifier[];
+  previousItems: UniqueIdentifier[];
   previousContainerId: UniqueIdentifier;
   newIndex: number;
   transition: SortableTransition | null;

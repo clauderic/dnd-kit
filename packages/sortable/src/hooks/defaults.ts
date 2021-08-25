@@ -6,11 +6,17 @@ export const defaultAnimateLayoutChanges: AnimateLayoutChanges = ({
   containerId,
   isSorting,
   index,
+  items,
   newIndex,
+  previousItems,
   previousContainerId,
   transition,
 }) => {
   if (!transition) {
+    return false;
+  }
+
+  if (previousItems !== items && index === newIndex) {
     return false;
   }
 
