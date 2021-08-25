@@ -3,12 +3,20 @@ import {CSS} from '@dnd-kit/utilities';
 import type {AnimateLayoutChanges, SortableTransition} from './types';
 
 export const defaultAnimateLayoutChanges: AnimateLayoutChanges = ({
+  containerId,
   isSorting,
   index,
+  items,
   newIndex,
+  previousItems,
+  previousContainerId,
   transition,
 }) => {
   if (!transition) {
+    return false;
+  }
+
+  if (previousItems !== items && index === newIndex) {
     return false;
   }
 
@@ -16,7 +24,7 @@ export const defaultAnimateLayoutChanges: AnimateLayoutChanges = ({
     return true;
   }
 
-  return newIndex !== index;
+  return newIndex !== index && containerId === previousContainerId;
 };
 
 export const defaultTransition: SortableTransition = {
