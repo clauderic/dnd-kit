@@ -1,5 +1,5 @@
 import type {Coordinates} from './types';
-import {isMouseEvent, isTouchEvent} from '../event';
+import {isMouseEvent, isPointerEvent, isTouchEvent} from '../event';
 
 /**
  * Returns the normalized x and y coordinates for mouse and touch events.
@@ -23,7 +23,7 @@ export function getEventCoordinates(event: Event): Coordinates {
     }
   }
 
-  if (isMouseEvent(event)) {
+  if (isMouseEvent(event) || isPointerEvent(event)) {
     return {
       x: event.clientX,
       y: event.clientY,
