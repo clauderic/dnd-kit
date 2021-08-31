@@ -1,5 +1,5 @@
 import type {Coordinates} from './types';
-import {isTouchEvent} from '../event';
+import {isTouchEvent, hasViewportRelativeCoordinates} from '../event';
 
 /**
  * Returns the normalized x and y coordinates for mouse and touch events.
@@ -23,11 +23,10 @@ export function getEventCoordinates(event: Event): Coordinates {
     }
   }
 
-  // In case of MouseEvent or PointerEvent.
-  if ('clientX' in event && 'clientY' in event) {
+  if (hasViewportRelativeCoordinates(event)) {
     return {
-      x: (event as MouseEvent).clientX,
-      y: (event as MouseEvent).clientY,
+      x: event.clientX,
+      y: event.clientY,
     };
   }
 

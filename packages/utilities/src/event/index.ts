@@ -1,3 +1,2 @@
-export {isMouseEvent} from './isMouseEvent';
-export {isPointerEvent} from './isPointerEvent';
+export {hasViewportRelativeCoordinates} from './hasViewportRelativeCoordinates';
 export {isTouchEvent} from './isTouchEvent';

@@ -2,8 +2,7 @@ import type {Modifier} from '@dnd-kit/core';
 import {
   getEventCoordinates,
   isTouchEvent,
-  isMouseEvent,
-  isPointerEvent,
+  hasViewportRelativeCoordinates,
 } from '@dnd-kit/utilities';
 
 export const snapCenterToCursor: Modifier = ({
@@ -15,8 +14,7 @@ export const snapCenterToCursor: Modifier = ({
     activeNodeRect &&
     activatorEvent &&
     (isTouchEvent(activatorEvent) ||
-      isMouseEvent(activatorEvent) ||
-      isPointerEvent(activatorEvent))
+      hasViewportRelativeCoordinates(activatorEvent))
   ) {
     const activatorCoordinates = getEventCoordinates(activatorEvent);
     const offsetX = activatorCoordinates.x - activeNodeRect.left;
