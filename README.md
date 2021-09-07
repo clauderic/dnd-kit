@@ -52,7 +52,7 @@ Check out our [quick start guide](https://docs.dndkit.com/introduction/getting-s
 
 ### Extensibility
 
-Extensibility is at the core of **dnd kit**. It was built is built to be lean and extensible. It ships with the features we believe most people will want most of the time, and provides extension points to build the rest on top of `@dnd-kit/core`.
+Extensibility is at the core of **dnd kit**. It is built to be lean and extensible. It ships with the features we believe most people will want most of the time, and provides extension points to build the rest on top of `@dnd-kit/core`.
 
 A prime example of the level of extensibility of **dnd kit** is the [Sortable preset](https://docs.dndkit.com/presets/sortable), which is built using the extension points that are exposed by `@dnd-kit/core`.
 
