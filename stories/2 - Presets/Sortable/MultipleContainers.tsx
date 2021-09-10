@@ -137,20 +137,22 @@ export function MultipleContainers({
         D: createRange(itemCount, (index) => `D${index + 1}`),
       }
   );
+  const [activeId, setActiveId] = useState<string | null>(null);
   const lastOverId = useRef<UniqueIdentifier | null>(null);
+  const recentlyMovedToNewContainer = useRef<UniqueIdentifier | null>(null);
   // Custom collision detection strategy optimized for multiple containers
   const collisionDetectionStrategy: CollisionDetection = useCallback(
     (args) => {
       // Start by finding any intersecting droppable
       let overId = rectIntersection(args);
 
-      if (overId === TRASH_ID) {
-        // If the intersecting droppable is the trash, return early
-        // Remove this if you're not using trashable functionality in your app
-        return overId;
-      }
-
       if (overId != null) {
+        if (overId === TRASH_ID) {
+          // If the intersecting droppable is the trash, return early
+          // Remove this if you're not using trashable functionality in your app
+          return overId;
+        }
+
         if (overId in items) {
           const containerItems = items[overId];
 
@@ -173,13 +175,20 @@ export function MultipleContainers({
         return overId;
       }
 
+      // When a draggable item moves to a new container, the layout may shift
+      // and the `overId` may become `null`. We manually set the cached `lastOverId`
+      // to the id of the draggable item that was moved to the new container, otherwise
+      // the previous `overId` will be returned which can cause items to incorrectly shift positions
+      if (recentlyMovedToNewContainer.current) {
+        lastOverId.current = recentlyMovedToNewContainer.current;
+      }
+
       // If no droppable is matched, return the last match
       return lastOverId.current;
     },
     [items]
   );
   const [clonedItems, setClonedItems] = useState<Items | null>(null);
-  const [activeId, setActiveId] = useState<string | null>(null);
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -217,6 +226,12 @@ export function MultipleContainers({
     setClonedItems(null);
   };
 
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      recentlyMovedToNewContainer.current = null;
+    });
+  }, [items]);
+
   return (
     <DndContext
       sensors={sensors}
@@ -251,18 +266,19 @@ export function MultipleContainers({
             if (overId in items) {
               newIndex = overItems.length + 1;
             } else {
-              const isBelowLastItem =
+              const isBelowOverItem =
                 over &&
-                overIndex === overItems.length - 1 &&
                 active.rect.current.translated &&
                 active.rect.current.translated.offsetTop >
                   over.rect.offsetTop + over.rect.height;
 
-              const modifier = isBelowLastItem ? 1 : 0;
+              const modifier = isBelowOverItem ? 1 : 0;
 
               newIndex =
                 overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
             }
+
+            recentlyMovedToNewContainer.current = active.id;
 
             return {
               ...items,
