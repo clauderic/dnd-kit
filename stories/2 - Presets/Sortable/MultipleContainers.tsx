@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {
   CancelDrop,
-  closestCorners,
+  closestCenter,
+  rectIntersection,
   CollisionDetection,
   DndContext,
   DragOverlay,
@@ -87,7 +88,6 @@ type Items = Record<string, string[]>;
 interface Props {
   adjustScale?: boolean;
   cancelDrop?: CancelDrop;
-  collisionDetection?: CollisionDetection;
   columns?: number;
   getItemStyles?(args: {
     value: UniqueIdentifier;
@@ -110,13 +110,12 @@ interface Props {
   vertical?: boolean;
 }
 
-export const VOID_ID = 'void';
+export const TRASH_ID = 'void';
 
 export function MultipleContainers({
   adjustScale = false,
   itemCount = 3,
   cancelDrop,
-  collisionDetection = closestCorners,
   columns,
   handle = false,
   items: initialItems,
@@ -136,8 +135,48 @@ export function MultipleContainers({
         B: createRange(itemCount, (index) => `B${index + 1}`),
         C: createRange(itemCount, (index) => `C${index + 1}`),
         D: createRange(itemCount, (index) => `D${index + 1}`),
-        [VOID_ID]: [],
       }
+  );
+  const lastOverId = useRef<UniqueIdentifier | null>(null);
+  // Custom collision detection strategy optimized for multiple containers
+  const collisionDetectionStrategy: CollisionDetection = useCallback(
+    (args) => {
+      // Start by finding any intersecting droppable
+      let overId = rectIntersection(args);
+
+      if (overId === TRASH_ID) {
+        // If the intersecting droppable is the trash, return early
+        // Remove this if you're not using trashable functionality in your app
+        return overId;
+      }
+
+      if (overId != null) {
+        if (overId in items) {
+          const containerItems = items[overId];
+
+          // If a container is matched and it contains items (columns 'A', 'B', 'C')
+          if (containerItems.length > 0) {
+            // Return the closest droppable within that container
+            overId = closestCenter({
+              ...args,
+              droppableContainers: args.droppableContainers.filter(
+                (container) =>
+                  container.id !== overId &&
+                  containerItems.includes(container.id)
+              ),
+            });
+          }
+        }
+
+        lastOverId.current = overId;
+
+        return overId;
+      }
+
+      // If no droppable is matched, return the last match
+      return lastOverId.current;
+    },
+    [items]
   );
   const [clonedItems, setClonedItems] = useState<Items | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -181,7 +220,7 @@ export function MultipleContainers({
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={collisionDetection}
+      collisionDetection={collisionDetectionStrategy}
       onDragStart={({active}) => {
         setActiveId(active.id);
         setClonedItems(items);
@@ -189,7 +228,7 @@ export function MultipleContainers({
       onDragOver={({active, over}) => {
         const overId = over?.id;
 
-        if (!overId) {
+        if (!overId || overId === TRASH_ID) {
           return;
         }
 
@@ -227,9 +266,9 @@ export function MultipleContainers({
 
             return {
               ...items,
-              [activeContainer]: [
-                ...items[activeContainer].filter((item) => item !== active.id),
-              ],
+              [activeContainer]: items[activeContainer].filter(
+                (item) => item !== active.id
+              ),
               [overContainer]: [
                 ...items[overContainer].slice(0, newIndex),
                 items[activeContainer][activeIndex],
@@ -250,12 +289,19 @@ export function MultipleContainers({
           return;
         }
 
-        const overId = over?.id || VOID_ID;
+        const overId = over?.id;
 
-        if (overId === VOID_ID) {
+        if (!overId) {
+          setActiveId(null);
+          return;
+        }
+
+        if (overId === TRASH_ID) {
           setItems((items) => ({
-            ...(trashable && over?.id === VOID_ID ? items : clonedItems),
-            [VOID_ID]: [],
+            ...items,
+            [activeContainer]: items[activeContainer].filter(
+              (id) => id !== activeId
+            ),
           }));
           setActiveId(null);
           return;
@@ -263,7 +309,7 @@ export function MultipleContainers({
 
         const overContainer = findContainer(overId);
 
-        if (activeContainer && overContainer) {
+        if (overContainer) {
           const activeIndex = items[activeContainer].indexOf(active.id);
           const overIndex = items[overContainer].indexOf(overId);
 
@@ -294,7 +340,7 @@ export function MultipleContainers({
         }}
       >
         {Object.keys(items)
-          .filter((key) => key !== VOID_ID)
+          .filter((key) => key !== TRASH_ID)
           .map((containerId) => (
             <SortableContext
               key={containerId}
@@ -350,7 +396,7 @@ export function MultipleContainers({
         </DragOverlay>,
         document.body
       )}
-      {trashable && activeId ? <Trash /> : null}
+      {trashable && activeId ? <Trash id={TRASH_ID} /> : null}
     </DndContext>
   );
 }
@@ -370,9 +416,9 @@ function getColor(id: string) {
   return undefined;
 }
 
-function Trash() {
+function Trash({id}: {id: UniqueIdentifier}) {
   const {setNodeRef, isOver} = useDroppable({
-    id: VOID_ID,
+    id,
   });
 
   return (
