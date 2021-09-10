@@ -125,7 +125,7 @@ export const MinimumDistance = () => (
 
 export const RemovableItems = () => {
   const animateLayoutChanges: AnimateLayoutChanges = (args) =>
-    args.isSorting || args.wasSorting
+    args.isSorting || args.wasDragging
       ? defaultAnimateLayoutChanges(args)
       : true;
 

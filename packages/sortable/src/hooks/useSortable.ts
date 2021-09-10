@@ -39,7 +39,7 @@ export function useSortable({
     overIndex,
     useDragOverlay,
     strategy: globalStrategy,
-    wasSorting,
+    wasDragging,
   } = useContext(Context);
   const index = items.indexOf(id);
   const data = useMemo(
@@ -73,7 +73,7 @@ export function useSortable({
   const isSorting = Boolean(active);
   const displaceItem =
     isSorting &&
-    wasSorting.current &&
+    wasDragging.current &&
     !disableTransforms &&
     isValidIndex(activeIndex) &&
     isValidIndex(overIndex);
@@ -111,7 +111,7 @@ export function useSortable({
     previousItems: prevItems.current,
     previousContainerId: previousContainerId.current,
     transition,
-    wasSorting: wasSorting.current,
+    wasDragging: wasDragging.current,
   });
   const derivedTransform = useDerivedTransform({
     disabled: !shouldAnimateLayoutChanges,

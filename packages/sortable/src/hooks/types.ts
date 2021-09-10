@@ -15,5 +15,5 @@ export type AnimateLayoutChanges = (args: {
   previousContainerId: UniqueIdentifier;
   newIndex: number;
   transition: SortableTransition | null;
-  wasSorting: boolean;
+  wasDragging: boolean;
 }) => boolean;
