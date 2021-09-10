@@ -62,7 +62,7 @@ import {
   rectIntersection,
 } from '../../utilities';
 import {applyModifiers, Modifiers} from '../../modifiers';
-import {Active, DataRef, Over} from '../../store/types';
+import type {Active, DataRef, Over} from '../../store/types';
 import type {
   DragStartEvent,
   DragCancelEvent,
@@ -384,6 +384,7 @@ export const DndContext = memo(function DndContext({
 
           unstable_batchedUpdates(() => {
             dispatch({type});
+            setOver(null);
             setIsDragging(false);
             setActiveSensor(null);
             setActivatorEvent(null);
