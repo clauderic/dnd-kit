@@ -1,17 +1,8 @@
 import React from 'react';
-import {
-  CancelDrop,
-  closestCorners,
-  CollisionDetection,
-  rectIntersection,
-} from '@dnd-kit/core';
+import {CancelDrop} from '@dnd-kit/core';
 import {rectSortingStrategy} from '@dnd-kit/sortable';
 
-import {
-  MultipleContainers,
-  defaultContainerStyle,
-  VOID_ID,
-} from './MultipleContainers';
+import {MultipleContainers, TRASH_ID} from './MultipleContainers';
 
 import {ConfirmModal} from '../../components';
 
@@ -23,12 +14,11 @@ export const BasicSetup = () => <MultipleContainers />;
 
 export const ManyItems = () => (
   <MultipleContainers
-    itemCount={15}
-    getContainerStyle={(args) => ({
-      ...defaultContainerStyle(args),
+    containerStyle={{
       maxHeight: '80vh',
-      overflowY: 'auto',
-    })}
+    }}
+    itemCount={15}
+    scrollable
   />
 );
 
@@ -39,7 +29,7 @@ export const TrashableItems = ({confirmDrop}: {confirmDrop: boolean}) => {
   const resolveRef = React.useRef<(value: boolean) => void>();
 
   const cancelDrop: CancelDrop = async ({active, over}) => {
-    if (over?.id !== VOID_ID) {
+    if (over?.id !== TRASH_ID) {
       return true;
     }
 

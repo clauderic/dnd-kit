@@ -134,12 +134,13 @@ export const MultipleDecks = () => {
             {...listeners}
           />
         )}
-        getContainerStyle={() => ({
+        containerStyle={{
           position: 'relative',
           flexShrink: 0,
           width: 330,
+          top: -100,
           margin: '20px 20px',
-        })}
+        }}
         getItemStyles={({
           index,
           overIndex,
@@ -157,6 +158,7 @@ export const MultipleDecks = () => {
               : deck.length - index,
           };
         }}
+        minimal
       />
     </>
   );
