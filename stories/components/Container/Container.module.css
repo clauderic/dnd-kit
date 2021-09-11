@@ -30,6 +30,20 @@
     }
   }
 
+  &.placeholder {
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.5);
+    background-color: transparent;
+    border-style: dashed;
+    border-color: rgba(0, 0, 0, 0.08);
+
+    &:hover {
+      border-color: rgba(0, 0, 0, 0.15);
+    }
+  }
+
   &.hover {
     background-color: rgb(235, 235, 235, 1);
   }
@@ -50,20 +64,6 @@
 
   &.shadow {
     box-shadow: 0 1px 10px 0 rgba(34, 33, 81, 0.1);
-  }
-
-  &.placeholder {
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    color: rgba(0, 0, 0, 0.5);
-    background-color: transparent;
-    border-style: dashed;
-    border-color: rgba(0, 0, 0, 0.08);
-
-    &:hover {
-      border-color: rgba(0, 0, 0, 0.15);
-    }
   }
 
   &:focus-visible {

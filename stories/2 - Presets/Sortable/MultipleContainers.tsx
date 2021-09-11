@@ -45,16 +45,19 @@ const animateLayoutChanges: AnimateLayoutChanges = (args) =>
 function DroppableContainer({
   children,
   columns = 1,
+  disabled,
   id,
   items,
   style,
   ...props
 }: ContainerProps & {
+  disabled?: boolean;
   id: string;
   items: string[];
   style?: React.CSSProperties;
 }) {
   const {
+    active,
     attributes,
     isDragging,
     listeners,
@@ -64,13 +67,19 @@ function DroppableContainer({
     transform,
   } = useSortable({
     id,
+    data: {
+      type: 'container',
+    },
     animateLayoutChanges,
   });
-  const isOverContainer = over ? items.includes(over.id) : false;
+  const isOverContainer = over
+    ? (id === over.id && active?.data.current?.type !== 'container') ||
+      items.includes(over.id)
+    : false;
 
   return (
     <Container
-      ref={setNodeRef}
+      ref={disabled ? undefined : setNodeRef}
       style={{
         ...style,
         transition,
@@ -125,6 +134,8 @@ interface Props {
 }
 
 export const TRASH_ID = 'void';
+const PLACEHOLDER_ID = 'placeholder';
+const empty: UniqueIdentifier[] = [];
 
 export function MultipleContainers({
   adjustScale = false,
@@ -364,6 +375,23 @@ export function MultipleContainers({
           return;
         }
 
+        if (overId === PLACEHOLDER_ID) {
+          const newContainerId = getNextContainerId();
+
+          unstable_batchedUpdates(() => {
+            setContainers((containers) => [...containers, newContainerId]);
+            setItems((items) => ({
+              ...items,
+              [activeContainer]: items[activeContainer].filter(
+                (id) => id !== activeId
+              ),
+              [newContainerId]: [active.id],
+            }));
+            setActiveId(null);
+          });
+          return;
+        }
+
         const overContainer = findContainer(overId);
 
         if (overContainer) {
@@ -397,7 +425,7 @@ export function MultipleContainers({
         }}
       >
         <SortableContext
-          items={containers}
+          items={[...containers, PLACEHOLDER_ID]}
           strategy={
             vertical
               ? verticalListSortingStrategy
@@ -436,12 +464,18 @@ export function MultipleContainers({
               </SortableContext>
             </DroppableContainer>
           ))}
+          {minimal ? undefined : (
+            <DroppableContainer
+              id={PLACEHOLDER_ID}
+              disabled={isSortingContainer}
+              items={empty}
+              onClick={handleAddColumn}
+              placeholder
+            >
+              + Add column
+            </DroppableContainer>
+          )}
         </SortableContext>
-        {minimal ? undefined : (
-          <Container placeholder onClick={handleAddColumn}>
-            + Add column
-          </Container>
-        )}
       </div>
       {createPortal(
         <DragOverlay adjustScale={adjustScale} dropAnimation={dropAnimation}>
@@ -522,17 +556,22 @@ export function MultipleContainers({
   }
 
   function handleAddColumn() {
-    const containeIds = Object.keys(items);
-    const lastContaineId = containeIds[containeIds.length - 1];
-    const newContainer = String.fromCharCode(lastContaineId.charCodeAt(0) + 1);
+    const newContainerId = getNextContainerId();
 
     unstable_batchedUpdates(() => {
-      setContainers((containers) => [...containers, newContainer]);
+      setContainers((containers) => [...containers, newContainerId]);
       setItems((items) => ({
         ...items,
-        [newContainer]: [],
+        [newContainerId]: [],
       }));
     });
+  }
+
+  function getNextContainerId() {
+    const containeIds = Object.keys(items);
+    const lastContaineId = containeIds[containeIds.length - 1];
+
+    return String.fromCharCode(lastContaineId.charCodeAt(0) + 1);
   }
 }
 
