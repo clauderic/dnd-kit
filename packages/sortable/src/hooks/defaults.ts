@@ -5,6 +5,7 @@ import type {AnimateLayoutChanges, SortableTransition} from './types';
 export const defaultAnimateLayoutChanges: AnimateLayoutChanges = ({
   containerId,
   isSorting,
+  wasDragging,
   index,
   items,
   newIndex,
@@ -12,7 +13,7 @@ export const defaultAnimateLayoutChanges: AnimateLayoutChanges = ({
   previousContainerId,
   transition,
 }) => {
-  if (!transition) {
+  if (!transition || !wasDragging) {
     return false;
   }
 

@@ -62,10 +62,10 @@ export function SortableContext({
       ),
     [userDefinedItems]
   );
-  const activeIndex = active ? items.indexOf(active.id) : -1;
   const isDragging = active != null;
+  const wasDragging = useRef(false);
+  const activeIndex = active ? items.indexOf(active.id) : -1;
   const isSorting = activeIndex !== -1;
-  const wasDragging = useRef(isDragging);
   const overIndex = over ? items.indexOf(over.id) : -1;
   const previousItemsRef = useRef(items);
   const sortedRects = getSortedRects(items, droppableRects);
@@ -85,9 +85,11 @@ export function SortableContext({
   }, [items]);
 
   useEffect(() => {
-    requestAnimationFrame(() => {
+    const timeoutId = setTimeout(() => {
       wasDragging.current = isDragging;
-    });
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
   }, [isDragging]);
 
   const contextValue = useMemo(
