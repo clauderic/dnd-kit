@@ -69,9 +69,9 @@ function getItemGap(
   index: number,
   activeIndex: number
 ) {
-  const currentRect = layoutRects[index];
-  const previousRect = layoutRects[index - 1];
-  const nextRect = layoutRects[index + 1];
+  const currentRect: LayoutRect | undefined = layoutRects[index];
+  const previousRect: LayoutRect | undefined = layoutRects[index - 1];
+  const nextRect: LayoutRect | undefined = layoutRects[index + 1];
 
   if (!currentRect) {
     return 0;
