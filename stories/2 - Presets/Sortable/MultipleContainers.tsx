@@ -16,11 +16,14 @@ import {
   UniqueIdentifier,
   useSensors,
   useSensor,
+  MeasuringStrategy,
 } from '@dnd-kit/core';
 import {
+  AnimateLayoutChanges,
   SortableContext,
   useSortable,
   arrayMove,
+  defaultAnimateLayoutChanges,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
   SortingStrategy,
@@ -28,7 +31,7 @@ import {
 } from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 
-import {Item, Container} from '../../components';
+import {Item, Container, ContainerProps} from '../../components';
 
 import {createRange} from '../../utilities';
 
@@ -36,23 +39,19 @@ export default {
   title: 'Presets/Sortable/Multiple Containers',
 };
 
+const animateLayoutChanges: AnimateLayoutChanges = (args) =>
+  args.isSorting || args.wasDragging ? defaultAnimateLayoutChanges(args) : true;
+
 function DroppableContainer({
   children,
   columns = 1,
   id,
   items,
-  label,
-  minimal,
-  scrollable,
   style,
-}: {
-  children: React.ReactNode;
-  columns?: number;
+  ...props
+}: ContainerProps & {
   id: string;
   items: string[];
-  minimal?: boolean;
-  label?: string;
-  scrollable?: boolean;
   style?: React.CSSProperties;
 }) {
   const {
@@ -65,13 +64,13 @@ function DroppableContainer({
     transform,
   } = useSortable({
     id,
+    animateLayoutChanges,
   });
   const isOverContainer = over ? items.includes(over.id) : false;
 
   return (
     <Container
       ref={setNodeRef}
-      label={label}
       style={{
         ...style,
         transition,
@@ -79,13 +78,12 @@ function DroppableContainer({
         opacity: isDragging ? 0.5 : undefined,
       }}
       hover={isOverContainer}
-      columns={columns}
       handleProps={{
         ...attributes,
         ...listeners,
       }}
-      scrollable={scrollable}
-      unstyled={minimal}
+      columns={columns}
+      {...props}
     >
       {children}
     </Container>
@@ -265,6 +263,11 @@ export function MultipleContainers({
     <DndContext
       sensors={sensors}
       collisionDetection={collisionDetectionStrategy}
+      measuring={{
+        droppable: {
+          strategy: MeasuringStrategy.Always,
+        },
+      }}
       onDragStart={({active}) => {
         setActiveId(active.id);
         setClonedItems(items);
@@ -410,7 +413,8 @@ export function MultipleContainers({
               items={items[containerId]}
               scrollable={scrollable}
               style={containerStyle}
-              minimal={minimal}
+              unstyled={minimal}
+              onRemove={() => handleRemove(containerId)}
             >
               <SortableContext items={items[containerId]} strategy={strategy}>
                 {items[containerId].map((value, index) => {
@@ -508,6 +512,12 @@ export function MultipleContainers({
           />
         ))}
       </Container>
+    );
+  }
+
+  function handleRemove(containerID: UniqueIdentifier) {
+    setContainers((containers) =>
+      containers.filter((id) => id !== containerID)
     );
   }
 

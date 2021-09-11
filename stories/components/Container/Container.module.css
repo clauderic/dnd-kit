@@ -82,4 +82,22 @@
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+  &:hover {
+    .Actions > * {
+      opacity: 1 !important;
+    }
+  }
+}
+
+.Actions {
+  display: flex;
+
+  > *:first-child:not(:last-child) {
+    opacity: 0;
+
+    &:focus-visible {
+      opacity: 1;
+    }
+  }
 }

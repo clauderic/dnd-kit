@@ -1,7 +1,7 @@
 import React, {forwardRef} from 'react';
 import classNames from 'classnames';
 
-import {Handle} from '../Item';
+import {Handle, Remove} from '../Item';
 
 import styles from './Container.module.css';
 
@@ -18,6 +18,7 @@ export interface Props {
   placeholder?: boolean;
   unstyled?: boolean;
   onClick?(): void;
+  onRemove?(): void;
 }
 
 export const Container = forwardRef<HTMLDivElement, Props>(
@@ -29,12 +30,13 @@ export const Container = forwardRef<HTMLDivElement, Props>(
       horizontal,
       hover,
       onClick,
+      onRemove,
       label,
       placeholder,
       style,
       scrollable,
       shadow,
-      unstyled = true,
+      unstyled,
       ...props
     }: Props,
     ref
@@ -66,7 +68,10 @@ export const Container = forwardRef<HTMLDivElement, Props>(
         {label ? (
           <div className={styles.Header}>
             {label}
-            <Handle {...handleProps} />
+            <div className={styles.Actions}>
+              {onRemove ? <Remove onClick={onRemove} /> : undefined}
+              <Handle {...handleProps} />
+            </div>
           </div>
         ) : null}
         <ul>{children}</ul>
