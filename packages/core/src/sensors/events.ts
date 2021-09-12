@@ -3,6 +3,7 @@ export enum EventName {
   Keydown = 'keydown',
   ContextMenu = 'contextmenu',
   Resize = 'resize',
+  SelectionChange = 'selectionchange',
   VisibilityChange = 'visibilitychange',
 }
 

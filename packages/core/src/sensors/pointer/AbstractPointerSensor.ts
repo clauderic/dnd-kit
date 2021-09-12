@@ -58,6 +58,7 @@ export type AbstractPointerSensorProps = SensorProps<AbstractPointerSensorOption
 
 export class AbstractPointerSensor implements SensorInstance {
   public autoScrollEnabled = true;
+  private document: Document;
   private activated: boolean = false;
   private initialCoordinates: Coordinates;
   private timeoutId: NodeJS.Timeout | null = null;
@@ -75,7 +76,8 @@ export class AbstractPointerSensor implements SensorInstance {
 
     this.props = props;
     this.events = events;
-    this.documentListeners = new Listeners(getOwnerDocument(target));
+    this.document = getOwnerDocument(target);
+    this.documentListeners = new Listeners(this.document);
     this.listeners = new Listeners(listenerTarget);
     this.windowListeners = new Listeners(getWindow(target));
     this.initialCoordinates = getEventCoordinates(event);
@@ -83,6 +85,7 @@ export class AbstractPointerSensor implements SensorInstance {
     this.handleMove = this.handleMove.bind(this);
     this.handleEnd = this.handleEnd.bind(this);
     this.handleKeydown = this.handleKeydown.bind(this);
+    this.removeTextSelection = this.removeTextSelection.bind(this);
 
     this.attach();
   }
@@ -124,8 +127,8 @@ export class AbstractPointerSensor implements SensorInstance {
     this.windowListeners.removeAll();
 
     // Wait until the next event loop before removing document listeners
-    // This is necessary because we listen for `click` events on the document
-    setTimeout(this.documentListeners.removeAll);
+    // This is necessary because we listen for `click` and `selection` events on the document
+    setTimeout(this.documentListeners.removeAll, 50);
 
     if (this.timeoutId !== null) {
       clearTimeout(this.timeoutId);
@@ -139,10 +142,20 @@ export class AbstractPointerSensor implements SensorInstance {
 
     if (initialCoordinates) {
       this.activated = true;
+
       // Stop propagation of click events once activation constraints are met
       this.documentListeners.add(EventName.Click, stopPropagation, {
         capture: true,
       });
+
+      // Remove any text selection from the document
+      this.removeTextSelection();
+
+      // Prevent further text selection while dragging
+      this.documentListeners.add(
+        EventName.SelectionChange,
+        this.removeTextSelection
+      );
 
       onStart(initialCoordinates);
     }
@@ -212,5 +225,9 @@ export class AbstractPointerSensor implements SensorInstance {
     if (event.code === KeyboardCode.Esc) {
       this.handleCancel();
     }
+  }
+
+  private removeTextSelection() {
+    this.document.getSelection()?.removeAllRanges();
   }
 }
