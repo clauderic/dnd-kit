@@ -44,6 +44,7 @@ export function Switch({
   checked,
   onChange,
 }: Props) {
+  const [isDragging, setIsDragging] = useState(false);
   const [overId, setOverId] = useState<string | null>(null);
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -70,7 +71,7 @@ export function Switch({
           [styles.off]: overId === State.Off,
           [styles.disabled]: disabled,
         })}
-        onClick={disabled ? undefined : handleClick}
+        onClick={disabled || isDragging ? undefined : handleClick}
         aria-pressed={checked}
         aria-label={accessibilityLabel}
         disabled={disabled}
@@ -89,6 +90,7 @@ export function Switch({
       measuring={measuring}
       modifiers={modifiers}
       sensors={sensors}
+      onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
@@ -99,6 +101,10 @@ export function Switch({
 
   function handleClick() {
     onChange(!checked);
+  }
+
+  function handleDragStart() {
+    setIsDragging(true);
   }
 
   function handleDragOver({over}: DragOverEvent) {
@@ -112,9 +118,11 @@ export function Switch({
     }
 
     setOverId(null);
+    requestAnimationFrame(() => setIsDragging(false));
   }
 
   function handleDragCancel() {
     setOverId(null);
+    requestAnimationFrame(() => setIsDragging(false));
   }
 }

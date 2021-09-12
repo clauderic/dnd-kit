@@ -24,6 +24,8 @@ $switch-thumb-offset-right: $switch-track-length - $switch-thumb-diameter -
   user-select: none;
   box-sizing: border-box;
   outline: none;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
 
   &:focus-visible {
     box-shadow: 0 0 3px 2px #4c9ffe;
