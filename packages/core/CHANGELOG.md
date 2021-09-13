@@ -1,5 +1,112 @@
 # @dnd-kit/core
 
+## 4.0.0
+
+### Major Changes
+
+- [#337](https://github.com/clauderic/dnd-kit/pull/337) [`05d6a78`](https://github.com/clauderic/dnd-kit/commit/05d6a78a17cbaacd8dffed685dfea5a6ea3d38a8) Thanks [@clauderic](https://github.com/clauderic)! - React updates in non-synthetic event handlers are now batched to reduce re-renders and prepare for React 18.
+
+  Also fixed issues with collision detection:
+
+  - Defer measurement of droppable node rects until second render after dragging.
+  - Use DragOverlay's width and height in collision rect (if it is used)
+
+- [#427](https://github.com/clauderic/dnd-kit/pull/427) [`f96cb5d`](https://github.com/clauderic/dnd-kit/commit/f96cb5d5e45a1000104892244201a70cbe8e6553) Thanks [@clauderic](https://github.com/clauderic)! - - Using transform-agnostic measurements for the DragOverlay node.
+
+  - Renamed the `overlayNode` property to `dragOverlay` on the `DndContextDescriptor` interface.
+
+- [#372](https://github.com/clauderic/dnd-kit/pull/372) [`dbc9601`](https://github.com/clauderic/dnd-kit/commit/dbc9601c922e1d6944a63f66ee647f203abee595) Thanks [@clauderic](https://github.com/clauderic)! - Refactored `DroppableContainers` type from `Record<UniqueIdentifier, DroppableContainer` to a custom instance that extends the [`Map` constructor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) and adds a few other methods such as `toArray()`, `getEnabled()` and `getNodeFor(id)`.
+
+  A unique `key` property was also added to the `DraggableNode` and `DroppableContainer` interfaces. This prevents potential race conditions in the mount and cleanup effects of `useDraggable` and `useDroppable`. It's possible for the clean-up effect to run after another React component using `useDraggable` or `useDroppable` mounts, which causes the newly mounted element to accidentally be un-registered.
+
+- [#379](https://github.com/clauderic/dnd-kit/pull/379) [`8d70540`](https://github.com/clauderic/dnd-kit/commit/8d70540771d1455c326310b438a198d2516e1d04) Thanks [@clauderic](https://github.com/clauderic)! - The `layoutMeasuring` prop of `DndContext` has been renamed to `measuring`.
+
+  The options that could previously be passed to the `layoutMeasuring` prop now need to be passed as:
+
+  ```diff
+  <DndContext
+  - layoutMeasuring={options}
+  + measuring={{
+  +   droppable: options
+  + }}
+  ```
+
+  The `LayoutMeasuring` type has been renamed to `MeasuringConfiguration`. The `LayoutMeasuringStrategy` and `LayoutMeasuringFrequency` enums have also been renamed to `MeasuringStrategy` and `MeasuringFrequency`.
+
+  This refactor allows consumers to configure how to measure both droppable and draggable nodes. By default, `@dnd-kit` ignores transforms when measuring draggable nodes. This beahviour can now be configured:
+
+  ```tsx
+  import {
+    DndContext,
+    getBoundingClientRect,
+    MeasuringConfiguration,
+  } from '@dnd-kit/core';
+
+  const measuringConfig: MeasuringConfiguration = {
+    draggable: {
+      measure: getBoundingClientRect,
+    },
+  };
+
+  function App() {
+    return <DndContext measuring={measuringConfig} />;
+  }
+  ```
+
+- [#350](https://github.com/clauderic/dnd-kit/pull/350) [`a13dbb6`](https://github.com/clauderic/dnd-kit/commit/a13dbb66586edbf2998c7b251e236604255fd227) Thanks [@wmain](https://github.com/wmain)! - Breaking change: The `CollisionDetection` interface has been refactored. It now receives an object that contains the `active` draggable node, along with the `collisionRect` and an array of `droppableContainers`.
+
+  If you've built custom collision detection algorithms, you'll need to update them. Refer to [this PR](https://github.com/clauderic/dnd-kit/pull/350) for examples of how to refactor collision detection functions to the new `CollisionDetection` interface.
+
+  The `sortableKeyboardCoordinates` method has also been updated since it relies on the `closestCorners` collision detection algorithm. If you were using collision detection strategies in a custom `sortableKeyboardCoordinates` method, you'll need to update those as well.
+
+### Minor Changes
+
+- [#334](https://github.com/clauderic/dnd-kit/pull/334) [`13be602`](https://github.com/clauderic/dnd-kit/commit/13be602229c6d5723b3ae98bca7b8f45f0773366) Thanks [@trentmwillis](https://github.com/trentmwillis)! - Now passing `activatorEvent` as an argument to `modifiers`
+
+- [#376](https://github.com/clauderic/dnd-kit/pull/376) [`aede2cc`](https://github.com/clauderic/dnd-kit/commit/aede2cc42d488435cf65f19b63ba6bb7702b3fde) Thanks [@clauderic](https://github.com/clauderic)! - Mouse, Pointer, Touch sensors now cancel dragging on [visibility change](https://developer.mozilla.org/en-US/docs/Web/API/Document/visibilitychange_event) and [window resize](https://developer.mozilla.org/en-US/docs/Web/API/Window/resize_event). The Keyboard sensor already cancelled dragging on window resize. It now also cancels dragging on visibility change.
+
+- [#399](https://github.com/clauderic/dnd-kit/pull/399) [`a32a4c5`](https://github.com/clauderic/dnd-kit/commit/a32a4c5f6228b9f03bf460b8403a38b8c3de493f) Thanks [@supersebh](https://github.com/supersebh)! - Added support for `tolerance` in DistanceConstrain. As soon as the `tolerance` is exceeded, the drag operation will be aborted, unless it has already started (because distance criteria was met).
+
+  Example usage:
+
+  ```
+  // Require the pointer be moved by 10 pixels vertically to initiate drag operation
+  // Abort if the pointer is moved by more than 5 pixels horizontally.
+  {
+    distance: {y: 10},
+    tolerance: {x: 5},
+  }
+  ```
+
+  Be careful not to pick conflicting settings for distance and tolerance if used together. For example, picking a tolerance that is lower than the distance in the same axis would result in the activation constraint never being met.
+
+- [#408](https://github.com/clauderic/dnd-kit/pull/408) [`dea715c`](https://github.com/clauderic/dnd-kit/commit/dea715c342b2d998a9f1562cacb5e70c77562c92) Thanks [@wmain](https://github.com/wmain)! - The collision rect is now completely based on the position of the `DragOverlay` when it is used. Previously, only the `width` and `height` properties of the `DragOverlay` were used for the collision rect, while the `top`, `left`, `bottom` and `right` properties were derived from the active node rect. This new approach is more aligned with developers would expect, but could cause issues for consumers that were relying on the previous (incorrect) behavior.
+
+- [#433](https://github.com/clauderic/dnd-kit/pull/433) [`c447880`](https://github.com/clauderic/dnd-kit/commit/c447880656b6bee2915d5a5f01d3ddfbd5705fa2) Thanks [@clauderic](https://github.com/clauderic)! - Fix unwanted animations when items in sortable context change
+
+- [#415](https://github.com/clauderic/dnd-kit/pull/415) [`2ba6dfe`](https://github.com/clauderic/dnd-kit/commit/2ba6dfe6b080b90b13aa8d9eb07331515a0d2faa) Thanks [@cantrellnm](https://github.com/cantrellnm)! - Prevent `getScrollableAncestors` from continuing to search if a fixed position node is found.
+
+- [#377](https://github.com/clauderic/dnd-kit/pull/377) [`422d083`](https://github.com/clauderic/dnd-kit/commit/422d0831173a893099ba924bf7bbc465640fc15d) Thanks [@clauderic](https://github.com/clauderic)! - Pointer, Mouse and Touch sensors now stop propagation of click events once activation constraints are met.
+
+- [#375](https://github.com/clauderic/dnd-kit/pull/375) [`c4b21b4`](https://github.com/clauderic/dnd-kit/commit/c4b21b4ee17cba31c10928eb227848026f54222a) Thanks [@clauderic](https://github.com/clauderic)! - Prevent context menu from opening when pointer sensor is active
+
+- [`5a41340`](https://github.com/clauderic/dnd-kit/commit/5a41340e6561c3784da2a9266e1b852ba370918c) Thanks [@clauderic](https://github.com/clauderic)! - Pointer, Mouse and Touch sensors now prevent selection changes and clear any existing selection ranges once activation constraints are met.
+
+- [`e2ee0dc`](https://github.com/clauderic/dnd-kit/commit/e2ee0dccb12794c419587019defddfd82ba5d297) Thanks [@clauderic](https://github.com/clauderic)! - Reset the `over` internal state of `<DndContext />` on drop.
+
+- [`1fe9b5c`](https://github.com/clauderic/dnd-kit/commit/1fe9b5c9d34237aae6ab22d54478c419d44a079a) Thanks [@clauderic](https://github.com/clauderic)! - Sensors may now specify a static `setup` method that will be invoked when `<DndContext>` mounts. The setup method may optionally also return a teardown function that will be invoked when the `<DndContext>` associated with that sensor unmounts.
+
+### Patch Changes
+
+- [#430](https://github.com/clauderic/dnd-kit/pull/430) [`46ec5e4`](https://github.com/clauderic/dnd-kit/commit/46ec5e4c6e3ca9fa849666f90fef426b3c465cf0) Thanks [@clauderic](https://github.com/clauderic)! - Fix duplicate scroll ancestor detection. In some scenarios, an element could be added twice to the list of detected scrollable ancestors, resulting in invalid offsets.
+
+- [#371](https://github.com/clauderic/dnd-kit/pull/371) [`7006464`](https://github.com/clauderic/dnd-kit/commit/700646468683e4820269534c6352cca93bb5a987) Thanks [@clauderic](https://github.com/clauderic)! - fix: do not wrap consumer-defined handlers in batchedUpdates
+
+- [`1fe9b5c`](https://github.com/clauderic/dnd-kit/commit/1fe9b5c9d34237aae6ab22d54478c419d44a079a) Thanks [@clauderic](https://github.com/clauderic)! - The TouchSensor attempts to prevent the default browser behavior of scrolling the page by calling `event.preventDefault()` in the `touchmove` event listener. This wasn't working in iOS Safari due to a bug with dynamically attached `touchmove` event listeners. Adding a non-passive, non-capture `touchmove` event listener before dynamically attaching other `touchmove` event listeners solves the issue.
+
+- Updated dependencies [[`0e628bc`](https://github.com/clauderic/dnd-kit/commit/0e628bce53fb1a7223cdedd203cb07b6e62e5ec1), [`13be602`](https://github.com/clauderic/dnd-kit/commit/13be602229c6d5723b3ae98bca7b8f45f0773366), [`1f5ca27`](https://github.com/clauderic/dnd-kit/commit/1f5ca27b17879861c2c545160c2046a747544846)]:
+  - @dnd-kit/utilities@3.0.0
+
 ## 3.1.1
 
 ### Patch Changes
