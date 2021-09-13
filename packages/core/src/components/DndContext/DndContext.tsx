@@ -33,6 +33,7 @@ import {
   useDragOverlayMeasuring,
   useDroppableMeasuring,
   useScrollableAncestors,
+  useSensorSetup,
   useClientRect,
   useClientRects,
   useRect,
@@ -441,6 +442,8 @@ export const DndContext = memo(function DndContext({
     sensors,
     bindActivatorToSensorInstantiator
   );
+
+  useSensorSetup(sensors);
 
   useIsomorphicLayoutEffect(
     () => {

@@ -15,6 +15,7 @@ export {
 export type {DroppableMeasuring} from './useDroppableMeasuring';
 export {useScrollOffsets} from './useScrollOffsets';
 export {useScrollableAncestors} from './useScrollableAncestors';
+export {useSensorSetup} from './useSensorSetup';
 export {useSyntheticListeners} from './useSyntheticListeners';
 export type {
   SyntheticListener,

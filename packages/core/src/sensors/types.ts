@@ -61,9 +61,12 @@ export type Activator<T> = {
 
 export type Activators<T> = Activator<T>[];
 
+type Teardown = () => void;
+
 export interface Sensor<T extends Object> {
   new (props: SensorProps<T>): SensorInstance;
   activators: Activators<T>;
+  setup?(): Teardown | undefined;
 }
 
 export type Sensors = Sensor<any>[];

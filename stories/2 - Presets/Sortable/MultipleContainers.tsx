@@ -10,8 +10,9 @@ import {
   DropAnimation,
   defaultDropAnimation,
   KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
   Modifiers,
-  PointerSensor,
   useDroppable,
   UniqueIdentifier,
   useSensors,
@@ -228,7 +229,8 @@ export function MultipleContainers({
   );
   const [clonedItems, setClonedItems] = useState<Items | null>(null);
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(MouseSensor),
+    useSensor(TouchSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
