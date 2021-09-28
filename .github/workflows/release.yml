@@ -7,6 +7,7 @@ jobs:
   release:
     name: ${{ matrix.channel }}
     runs-on: ubuntu-latest
+    environment: production
     strategy:
       max-parallel: 1
       matrix:
@@ -35,6 +36,7 @@ jobs:
         with:
           publish: yarn release
         env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
