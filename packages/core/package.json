@@ -1,6 +1,6 @@
 {
   "name": "@dnd-kit/core",
-  "version": "3.1.1",
+  "version": "4.0.0",
   "description": "dnd kit – a lightweight React library for building performant and accessible drag and drop experiences",
   "author": "Claudéric Demers",
   "license": "MIT",
@@ -32,7 +32,7 @@
   "dependencies": {
     "tslib": "^2.0.0",
     "@dnd-kit/accessibility": "^3.0.0",
-    "@dnd-kit/utilities": "^2.0.0"
+    "@dnd-kit/utilities": "^3.0.0"
   },
   "publishConfig": {
     "access": "public"

@@ -1,5 +1,41 @@
 # @dnd-kit/sortable
 
+## 5.0.0
+
+### Major Changes
+
+- [#427](https://github.com/clauderic/dnd-kit/pull/427) [`f96cb5d`](https://github.com/clauderic/dnd-kit/commit/f96cb5d5e45a1000104892244201a70cbe8e6553) Thanks [@clauderic](https://github.com/clauderic)! - - Using transform-agnostic measurements for the DragOverlay node.
+
+  - Renamed the `overlayNode` property to `dragOverlay` on the `DndContextDescriptor` interface.
+
+- [`9cfac05`](https://github.com/clauderic/dnd-kit/commit/9cfac057689ae1a91b663ac2eb04c47dadb9b4db) Thanks [@clauderic](https://github.com/clauderic)! - Renamed the `wasSorting` property to `wasDragging` on the `SortableContext` and `AnimateLayoutChanges` interfaces.
+
+### Minor Changes
+
+- [#433](https://github.com/clauderic/dnd-kit/pull/433) [`c447880`](https://github.com/clauderic/dnd-kit/commit/c447880656b6bee2915d5a5f01d3ddfbd5705fa2) Thanks [@clauderic](https://github.com/clauderic)! - Fix unwanted animations when items in sortable context change
+
+### Patch Changes
+
+- [#372](https://github.com/clauderic/dnd-kit/pull/372) [`dbc9601`](https://github.com/clauderic/dnd-kit/commit/dbc9601c922e1d6944a63f66ee647f203abee595) Thanks [@clauderic](https://github.com/clauderic)! - Refactored `DroppableContainers` type from `Record<UniqueIdentifier, DroppableContainer` to a custom instance that extends the [`Map` constructor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) and adds a few other methods such as `toArray()`, `getEnabled()` and `getNodeFor(id)`.
+
+  A unique `key` property was also added to the `DraggableNode` and `DroppableContainer` interfaces. This prevents potential race conditions in the mount and cleanup effects of `useDraggable` and `useDroppable`. It's possible for the clean-up effect to run after another React component using `useDraggable` or `useDroppable` mounts, which causes the newly mounted element to accidentally be un-registered.
+
+- [#350](https://github.com/clauderic/dnd-kit/pull/350) [`a13dbb6`](https://github.com/clauderic/dnd-kit/commit/a13dbb66586edbf2998c7b251e236604255fd227) Thanks [@wmain](https://github.com/wmain)! - Breaking change: The `CollisionDetection` interface has been refactored. It now receives an object that contains the `active` draggable node, along with the `collisionRect` and an array of `droppableContainers`.
+
+  If you've built custom collision detection algorithms, you'll need to update them. Refer to [this PR](https://github.com/clauderic/dnd-kit/pull/350) for examples of how to refactor collision detection functions to the new `CollisionDetection` interface.
+
+  The `sortableKeyboardCoordinates` method has also been updated since it relies on the `closestCorners` collision detection algorithm. If you were using collision detection strategies in a custom `sortableKeyboardCoordinates` method, you'll need to update those as well.
+
+- [`86d1f27`](https://github.com/clauderic/dnd-kit/commit/86d1f27f45fb60db6a34cd258227371595e00435) Thanks [@clauderic](https://github.com/clauderic)! - Fixed a bug in the `horizontalListSortingStrategy` where it did not check if the `currentRect` was undefined.
+
+- [`e42a711`](https://github.com/clauderic/dnd-kit/commit/e42a711a26186c08fc888f8acbf4635ed855f2a2) Thanks [@clauderic](https://github.com/clauderic)! - Fixed a bug with the default layout animation function where it could return `true` initially even if the list had not been sorted yet. Now checking the `wasDragging` property to ensure no layout animation occurs if `wasDragging` is false.
+
+- [#341](https://github.com/clauderic/dnd-kit/pull/341) [`e02b737`](https://github.com/clauderic/dnd-kit/commit/e02b737a3ce94f57592ac2ffe67d5bc8fabe1d43) Thanks [@clauderic](https://github.com/clauderic)! - Return `undefined` instead of `null` for `transition` in `useSortable`
+
+- Updated dependencies [[`13be602`](https://github.com/clauderic/dnd-kit/commit/13be602229c6d5723b3ae98bca7b8f45f0773366), [`aede2cc`](https://github.com/clauderic/dnd-kit/commit/aede2cc42d488435cf65f19b63ba6bb7702b3fde), [`05d6a78`](https://github.com/clauderic/dnd-kit/commit/05d6a78a17cbaacd8dffed685dfea5a6ea3d38a8), [`a32a4c5`](https://github.com/clauderic/dnd-kit/commit/a32a4c5f6228b9f03bf460b8403a38b8c3de493f), [`f96cb5d`](https://github.com/clauderic/dnd-kit/commit/f96cb5d5e45a1000104892244201a70cbe8e6553), [`dea715c`](https://github.com/clauderic/dnd-kit/commit/dea715c342b2d998a9f1562cacb5e70c77562c92), [`dbc9601`](https://github.com/clauderic/dnd-kit/commit/dbc9601c922e1d6944a63f66ee647f203abee595), [`46ec5e4`](https://github.com/clauderic/dnd-kit/commit/46ec5e4c6e3ca9fa849666f90fef426b3c465cf0), [`7006464`](https://github.com/clauderic/dnd-kit/commit/700646468683e4820269534c6352cca93bb5a987), [`0e628bc`](https://github.com/clauderic/dnd-kit/commit/0e628bce53fb1a7223cdedd203cb07b6e62e5ec1), [`c447880`](https://github.com/clauderic/dnd-kit/commit/c447880656b6bee2915d5a5f01d3ddfbd5705fa2), [`2ba6dfe`](https://github.com/clauderic/dnd-kit/commit/2ba6dfe6b080b90b13aa8d9eb07331515a0d2faa), [`8d70540`](https://github.com/clauderic/dnd-kit/commit/8d70540771d1455c326310b438a198d2516e1d04), [`13be602`](https://github.com/clauderic/dnd-kit/commit/13be602229c6d5723b3ae98bca7b8f45f0773366), [`422d083`](https://github.com/clauderic/dnd-kit/commit/422d0831173a893099ba924bf7bbc465640fc15d), [`c4b21b4`](https://github.com/clauderic/dnd-kit/commit/c4b21b4ee17cba31c10928eb227848026f54222a), [`5a41340`](https://github.com/clauderic/dnd-kit/commit/5a41340e6561c3784da2a9266e1b852ba370918c), [`a13dbb6`](https://github.com/clauderic/dnd-kit/commit/a13dbb66586edbf2998c7b251e236604255fd227), [`e2ee0dc`](https://github.com/clauderic/dnd-kit/commit/e2ee0dccb12794c419587019defddfd82ba5d297), [`1fe9b5c`](https://github.com/clauderic/dnd-kit/commit/1fe9b5c9d34237aae6ab22d54478c419d44a079a), [`1fe9b5c`](https://github.com/clauderic/dnd-kit/commit/1fe9b5c9d34237aae6ab22d54478c419d44a079a), [`1f5ca27`](https://github.com/clauderic/dnd-kit/commit/1f5ca27b17879861c2c545160c2046a747544846)]:
+  - @dnd-kit/core@4.0.0
+  - @dnd-kit/utilities@3.0.0
+
 ## 4.0.0
 
 ### Patch Changes
