@@ -84,6 +84,7 @@ export class AbstractPointerSensor implements SensorInstance {
     this.handleStart = this.handleStart.bind(this);
     this.handleMove = this.handleMove.bind(this);
     this.handleEnd = this.handleEnd.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
     this.handleKeydown = this.handleKeydown.bind(this);
     this.removeTextSelection = this.removeTextSelection.bind(this);
 
