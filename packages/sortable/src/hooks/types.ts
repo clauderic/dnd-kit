@@ -17,3 +17,12 @@ export type AnimateLayoutChanges = (args: {
   transition: SortableTransition | null;
   wasDragging: boolean;
 }) => boolean;
+
+export interface NewIndexGetterArguments {
+  id: UniqueIdentifier;
+  items: UniqueIdentifier[];
+  activeIndex: number;
+  overIndex: number;
+}
+
+export type NewIndexGetter = (args: NewIndexGetterArguments) => number;

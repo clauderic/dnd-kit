@@ -1,9 +1,11 @@
 import React from 'react';
 import {MeasuringStrategy} from '@dnd-kit/core';
 import {
+  arraySwap,
   AnimateLayoutChanges,
   defaultAnimateLayoutChanges,
   rectSortingStrategy,
+  rectSwappingStrategy,
 } from '@dnd-kit/sortable';
 
 import {Sortable, Props as SortableProps} from './Sortable';
@@ -102,6 +104,17 @@ export const ScrollContainer = () => (
   >
     <Sortable {...props} />
   </div>
+);
+
+export const Swappable = () => (
+  <Sortable
+    {...props}
+    strategy={rectSwappingStrategy}
+    reorderItems={arraySwap}
+    getNewIndex={({id, items, activeIndex, overIndex}) =>
+      arraySwap(items, activeIndex, overIndex).indexOf(id)
+    }
+  />
 );
 
 export const PressDelay = () => (
