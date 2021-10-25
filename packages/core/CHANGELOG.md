@@ -1,5 +1,11 @@
 # @dnd-kit/core
 
+## 4.0.1
+
+### Patch Changes
+
+- [#479](https://github.com/clauderic/dnd-kit/pull/479) [`5ec3310`](https://github.com/clauderic/dnd-kit/commit/5ec331048e5913b4e4b6c096215ed4920cbd0607) Thanks [@mdrobny](https://github.com/mdrobny)! - fix: bind `handleCancel` handler in AbstractPointerSensor to current execution context (`this`).
+
 ## 4.0.0
 
 ### Major Changes
