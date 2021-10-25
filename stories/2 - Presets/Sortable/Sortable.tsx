@@ -28,6 +28,7 @@ import {
   SortingStrategy,
   rectSortingStrategy,
   AnimateLayoutChanges,
+  NewIndexGetter,
 } from '@dnd-kit/sortable';
 
 import {createRange} from '../../utilities';
@@ -40,13 +41,15 @@ export interface Props {
   collisionDetection?: CollisionDetection;
   Container?: any; // To-do: Fix me
   dropAnimation?: DropAnimation | null;
+  getNewIndex?: NewIndexGetter;
+  handle?: boolean;
   itemCount?: number;
   items?: string[];
-  handle?: boolean;
   measuring?: MeasuringConfiguration;
   modifiers?: Modifiers;
   renderItem?: any;
   removable?: boolean;
+  reorderItems?: typeof arrayMove;
   strategy?: SortingStrategy;
   useDragOverlay?: boolean;
   getItemStyles?(args: {
@@ -86,6 +89,7 @@ export function Sortable({
   collisionDetection = closestCenter,
   dropAnimation = defaultDropAnimationConfig,
   getItemStyles = () => ({}),
+  getNewIndex,
   handle = false,
   itemCount = 16,
   items: initialItems,
@@ -94,6 +98,7 @@ export function Sortable({
   modifiers,
   removable,
   renderItem,
+  reorderItems = arrayMove,
   strategy = rectSortingStrategy,
   useDragOverlay = true,
   wrapperStyle = () => ({}),
@@ -186,7 +191,7 @@ export function Sortable({
         if (over) {
           const overIndex = getIndex(over.id);
           if (activeIndex !== overIndex) {
-            setItems((items) => arrayMove(items, activeIndex, overIndex));
+            setItems((items) => reorderItems(items, activeIndex, overIndex));
           }
         }
       }}
@@ -210,6 +215,7 @@ export function Sortable({
                 onRemove={handleRemove}
                 animateLayoutChanges={animateLayoutChanges}
                 useDragOverlay={useDragOverlay}
+                getNewIndex={getNewIndex}
               />
             ))}
           </Container>
@@ -253,6 +259,7 @@ export function Sortable({
 interface SortableItemProps {
   animateLayoutChanges?: AnimateLayoutChanges;
   disabled?: boolean;
+  getNewIndex?: NewIndexGetter;
   id: string;
   index: number;
   handle: boolean;
@@ -274,9 +281,10 @@ interface SortableItemProps {
 export function SortableItem({
   disabled,
   animateLayoutChanges,
+  getNewIndex,
+  handle,
   id,
   index,
-  handle,
   onRemove,
   style,
   renderItem,
@@ -293,9 +301,10 @@ export function SortableItem({
     transform,
     transition,
   } = useSortable({
-    animateLayoutChanges,
     id,
+    animateLayoutChanges,
     disabled,
+    getNewIndex,
   });
 
   return (

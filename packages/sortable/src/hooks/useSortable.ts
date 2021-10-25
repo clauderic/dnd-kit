@@ -4,19 +4,25 @@ import {CSS, useCombinedRefs} from '@dnd-kit/utilities';
 
 import {Context} from '../components';
 import type {SortingStrategy} from '../types';
-import {arrayMove, isValidIndex} from '../utilities';
+import {isValidIndex} from '../utilities';
 import {
   defaultAnimateLayoutChanges,
   defaultAttributes,
+  defaultNewIndexGetter,
   defaultTransition,
   disabledTransition,
   transitionProperty,
 } from './defaults';
-import type {AnimateLayoutChanges, SortableTransition} from './types';
+import type {
+  AnimateLayoutChanges,
+  NewIndexGetter,
+  SortableTransition,
+} from './types';
 import {useDerivedTransform} from './utilities';
 
 export interface Arguments extends UseDraggableArguments {
   animateLayoutChanges?: AnimateLayoutChanges;
+  getNewIndex?: NewIndexGetter;
   strategy?: SortingStrategy;
   transition?: SortableTransition | null;
 }
@@ -26,6 +32,7 @@ export function useSortable({
   attributes: userDefinedAttributes,
   disabled,
   data: customData,
+  getNewIndex = defaultNewIndexGetter,
   id,
   strategy: localStrategy,
   transition = defaultTransition,
@@ -93,7 +100,7 @@ export function useSortable({
     : null;
   const newIndex =
     isValidIndex(activeIndex) && isValidIndex(overIndex)
-      ? arrayMove(items, activeIndex, overIndex).indexOf(id)
+      ? getNewIndex({id, items, activeIndex, overIndex})
       : index;
   const prevItems = useRef(items);
   const itemsHaveChanged = items !== prevItems.current;

@@ -1,6 +1,19 @@
 import {CSS} from '@dnd-kit/utilities';
 
-import type {AnimateLayoutChanges, SortableTransition} from './types';
+import {arrayMove} from '../utilities';
+
+import type {
+  AnimateLayoutChanges,
+  NewIndexGetter,
+  SortableTransition,
+} from './types';
+
+export const defaultNewIndexGetter: NewIndexGetter = ({
+  id,
+  items,
+  activeIndex,
+  overIndex,
+}) => arrayMove(items, activeIndex, overIndex).indexOf(id);
 
 export const defaultAnimateLayoutChanges: AnimateLayoutChanges = ({
   containerId,

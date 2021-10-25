@@ -1,7 +1,15 @@
 export {SortableContext} from './components';
 export type {SortableContextProps} from './components';
-export {useSortable, defaultAnimateLayoutChanges} from './hooks';
-export type {UseSortableArguments, AnimateLayoutChanges} from './hooks';
+export {
+  useSortable,
+  defaultAnimateLayoutChanges,
+  defaultNewIndexGetter,
+} from './hooks';
+export type {
+  UseSortableArguments,
+  AnimateLayoutChanges,
+  NewIndexGetter,
+} from './hooks';
 export {
   horizontalListSortingStrategy,
   rectSortingStrategy,
@@ -9,5 +17,5 @@ export {
   verticalListSortingStrategy,
 } from './strategies';
 export {sortableKeyboardCoordinates} from './sensors';
-export {arrayMove} from './utilities';
+export {arrayMove, arraySwap} from './utilities';
 export type {SortingStrategy} from './types';
