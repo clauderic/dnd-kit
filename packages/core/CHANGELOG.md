@@ -1,5 +1,11 @@
 # @dnd-kit/core
 
+## 4.0.2
+
+### Patch Changes
+
+- [#504](https://github.com/clauderic/dnd-kit/pull/504) [`d973cc6`](https://github.com/clauderic/dnd-kit/commit/d973cc6f5aaca8a01e6da4a958164eb623c4ce9d) Thanks [@clauderic](https://github.com/clauderic)! - Sensors that extend the `AbstractPointerSensor` now prevent [HTML Drag and Drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API) events from being triggered while the sensor is activated.
+
 ## 4.0.1
 
 ### Patch Changes

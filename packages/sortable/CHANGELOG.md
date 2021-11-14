@@ -1,5 +1,19 @@
 # @dnd-kit/sortable
 
+## 5.1.0
+
+### Minor Changes
+
+- [#486](https://github.com/clauderic/dnd-kit/pull/486) [`d86529c`](https://github.com/clauderic/dnd-kit/commit/d86529cde6daa650e9c9edce7f26fb691d71d723) Thanks [@clauderic](https://github.com/clauderic)! - Improvements to better support swappable strategies:
+
+  - Now exporting an `arraySwap` helper to be used instead of `arrayMove` `onDragEnd`.
+  - Added the `getNewIndex` prop on `useSortable`. By default, `useSortable` assumes that items will be moved to their new index using `arrayMove()`, but this isn't always the case, especially when using strategies like `rectSwappingStrategy`. For those scenarios, consumers can now define custom logic that should be used to get the new index for an item on drop, for example, by computing the new order of items using `arraySwap`.
+
+### Patch Changes
+
+- Updated dependencies [[`d973cc6`](https://github.com/clauderic/dnd-kit/commit/d973cc6f5aaca8a01e6da4a958164eb623c4ce9d)]:
+  - @dnd-kit/core@4.0.2
+
 ## 5.0.0
 
 ### Major Changes
