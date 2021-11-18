@@ -1,10 +1,10 @@
-import {getEventCoordinates} from '@dnd-kit/utilities';
+import {getEventCoordinates, isKeyboardEvent} from '@dnd-kit/utilities';
 
 export function getRelativeTransformOrigin(
   event: MouseEvent | TouchEvent | KeyboardEvent,
   rect: ClientRect
 ) {
-  if (event instanceof KeyboardEvent) {
+  if (isKeyboardEvent(event)) {
     return '0 0';
   }
 

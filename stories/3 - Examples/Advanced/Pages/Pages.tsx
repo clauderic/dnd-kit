@@ -19,7 +19,7 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
-import {CSS} from '@dnd-kit/utilities';
+import {CSS, isKeyboardEvent} from '@dnd-kit/utilities';
 import classNames from 'classnames';
 
 import {createRange} from '../../../utilities';
@@ -111,7 +111,7 @@ function PageOverlay({
   ...props
 }: Omit<PageProps, 'index'> & {items: string[]}) {
   const {activatorEvent, over} = useDndContext();
-  const isKeyboardSorting = activatorEvent instanceof KeyboardEvent;
+  const isKeyboardSorting = isKeyboardEvent(activatorEvent);
   const activeIndex = items.indexOf(id);
   const overIndex = over?.id ? items.indexOf(over?.id) : -1;
 

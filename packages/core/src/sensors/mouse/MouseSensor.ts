@@ -1,6 +1,6 @@
 import type {MouseEvent} from 'react';
+import {getOwnerDocument} from '@dnd-kit/utilities';
 
-import {getOwnerDocument} from '../../utilities';
 import type {SensorProps} from '../types';
 import {
   AbstractPointerSensor,

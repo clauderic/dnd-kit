@@ -1,3 +1,5 @@
+import {isHTMLElement} from '@dnd-kit/utilities';
+
 export function getMeasurableNode(
   node: HTMLElement | undefined | null
 ): HTMLElement | null {
@@ -10,5 +12,5 @@ export function getMeasurableNode(
   }
   const firstChild = node.children[0];
 
-  return firstChild instanceof HTMLElement ? firstChild : node;
+  return isHTMLElement(firstChild) ? firstChild : node;
 }

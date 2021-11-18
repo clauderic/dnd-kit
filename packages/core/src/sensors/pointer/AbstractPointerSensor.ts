@@ -1,6 +1,8 @@
 import {
   subtract as getCoordinatesDelta,
   getEventCoordinates,
+  getOwnerDocument,
+  getWindow,
 } from '@dnd-kit/utilities';
 
 import {
@@ -8,8 +10,6 @@ import {
   hasExceededDistance,
   Listeners,
 } from '../utilities';
-
-import {getOwnerDocument, getWindow} from '../../utilities';
 import {EventName, preventDefault, stopPropagation} from '../events';
 import {KeyboardCode} from '../keyboard';
 import type {SensorInstance, SensorProps, SensorOptions} from '../types';

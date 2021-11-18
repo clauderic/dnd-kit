@@ -1,3 +1,5 @@
+import {isHTMLElement, isWindow} from '@dnd-kit/utilities';
+
 import type {Coordinates, ClientRect, LayoutRect, ViewRect} from '../../types';
 import {getScrollableAncestors, getScrollOffsets} from '../scroll';
 import {defaultCoordinates} from '../coordinates';
@@ -7,7 +9,7 @@ function getEdgeOffset(
   parent: (Node & ParentNode) | null,
   offset = defaultCoordinates
 ): Coordinates {
-  if (!node || !(node instanceof HTMLElement)) {
+  if (!node || !isHTMLElement(node)) {
     return offset;
   }
 
@@ -49,9 +51,9 @@ export function getViewportLayoutRect(element: HTMLElement): LayoutRect {
 }
 
 export function getBoundingClientRect(
-  element: HTMLElement | Window
+  element: HTMLElement | typeof window
 ): ClientRect {
-  if (element instanceof Window) {
+  if (isWindow(element)) {
     const width = window.innerWidth;
     const height = window.innerHeight;
 
