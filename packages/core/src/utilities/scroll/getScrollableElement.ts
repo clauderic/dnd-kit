@@ -1,15 +1,33 @@
-import {canUseDOM} from '@dnd-kit/utilities';
+import {
+  canUseDOM,
+  isHTMLElement,
+  isDocument,
+  getOwnerDocument,
+  isNode,
+  isWindow,
+} from '@dnd-kit/utilities';
 
 export function getScrollableElement(element: EventTarget | null) {
-  if (!canUseDOM) {
+  if (!canUseDOM || !element) {
     return null;
   }
 
-  if (element === document.scrollingElement || element instanceof Document) {
+  if (isWindow(element)) {
+    return element;
+  }
+
+  if (!isNode(element)) {
+    return null;
+  }
+
+  if (
+    isDocument(element) ||
+    element === getOwnerDocument(element).scrollingElement
+  ) {
     return window;
   }
 
-  if (element instanceof HTMLElement) {
+  if (isHTMLElement(element)) {
     return element;
   }
 

@@ -18,8 +18,6 @@ export {
   isViewRect,
 } from './rect';
 
-export {getOwnerDocument, getWindow} from './document';
-
 export {noop} from './other';
 
 export {

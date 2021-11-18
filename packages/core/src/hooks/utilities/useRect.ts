@@ -1,5 +1,5 @@
 import {useRef} from 'react';
-import {useLazyMemo} from '@dnd-kit/utilities';
+import {isHTMLElement, useLazyMemo} from '@dnd-kit/utilities';
 
 import {getBoundingClientRect, getViewRect} from '../../utilities';
 import type {LayoutRect} from '../../types';
@@ -10,7 +10,10 @@ export const useViewRect = createUseRectFn(getViewRect);
 export const useClientRect = createUseRectFn(getBoundingClientRect);
 export const useClientRects = createUseRectsFn(getBoundingClientRect);
 
-export function useRect<T = LayoutRect, U = HTMLElement>(
+export function useRect<
+  T = LayoutRect,
+  U extends Element | Window = HTMLElement
+>(
   element: U | null,
   getRect: (element: U) => T,
   forceRecompute?: boolean
@@ -28,7 +31,7 @@ export function useRect<T = LayoutRect, U = HTMLElement>(
         (!previousValue && element) ||
         element !== previousElement.current
       ) {
-        if (element instanceof HTMLElement && element.parentNode == null) {
+        if (isHTMLElement(element) && element.parentNode == null) {
           return null;
         }
 
@@ -41,9 +44,10 @@ export function useRect<T = LayoutRect, U = HTMLElement>(
   );
 }
 
-export function createUseRectFn<T = LayoutRect, U = HTMLElement>(
-  getRect: RectFn<T, U>
-) {
+export function createUseRectFn<
+  T = LayoutRect,
+  U extends Element | Window = HTMLElement
+>(getRect: RectFn<T, U>) {
   return (element: U | null, forceRecompute?: boolean) =>
     useRect(element, getRect, forceRecompute);
 }

@@ -1,9 +1,11 @@
+import {isWindow} from '@dnd-kit/utilities';
+
 import type {Coordinates} from '../../types';
 
 export function getScrollCoordinates(
   element: Element | typeof window
 ): Coordinates {
-  if (element instanceof Window) {
+  if (isWindow(element)) {
     return {
       x: element.scrollX,
       y: element.scrollY,

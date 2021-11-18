@@ -12,6 +12,17 @@ export type {Coordinates} from './coordinates';
 export {getEventCoordinates} from './coordinates';
 export {CSS} from './css';
 export type {Transform, Transition} from './css';
-export {hasViewportRelativeCoordinates, isTouchEvent} from './event';
-export {canUseDOM} from './execution-context';
+export {
+  hasViewportRelativeCoordinates,
+  isKeyboardEvent,
+  isTouchEvent,
+} from './event';
+export {canUseDOM, getOwnerDocument, getWindow} from './execution-context';
+export {
+  isDocument,
+  isHTMLElement,
+  isNode,
+  isSVGElement,
+  isWindow,
+} from './type-guards';
 export type {Arguments, FirstArgument, Without} from './types';

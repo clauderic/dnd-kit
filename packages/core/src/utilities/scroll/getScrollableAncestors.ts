@@ -1,3 +1,5 @@
+import {isDocument, isHTMLElement, isSVGElement} from '@dnd-kit/utilities';
+
 import {isFixed} from './isFixed';
 import {isScrollable} from './isScrollable';
 
@@ -10,7 +12,7 @@ export function getScrollableAncestors(element: Node | null): Element[] {
     }
 
     if (
-      node instanceof Document &&
+      isDocument(node) &&
       node.scrollingElement != null &&
       !scrollParents.includes(node.scrollingElement)
     ) {
@@ -19,7 +21,7 @@ export function getScrollableAncestors(element: Node | null): Element[] {
       return scrollParents;
     }
 
-    if (!(node instanceof HTMLElement) || node instanceof SVGElement) {
+    if (!isHTMLElement(node) || isSVGElement(node)) {
       return scrollParents;
     }
 

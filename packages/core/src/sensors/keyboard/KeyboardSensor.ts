@@ -1,14 +1,14 @@
 import {
   add as getAdjustedCoordinates,
   subtract as getCoordinatesDelta,
+  getOwnerDocument,
+  getWindow,
 } from '@dnd-kit/utilities';
 
 import type {Coordinates} from '../../types';
 import {
   defaultCoordinates,
   getBoundingClientRect,
-  getOwnerDocument,
-  getWindow,
   getScrollPosition,
   getScrollElementRect,
 } from '../../utilities';

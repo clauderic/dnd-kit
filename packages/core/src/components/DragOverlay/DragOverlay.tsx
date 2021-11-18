@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useRef} from 'react';
-import {CSS, useLazyMemo} from '@dnd-kit/utilities';
+import {CSS, isKeyboardEvent, useLazyMemo} from '@dnd-kit/utilities';
 
 import {getRelativeTransformOrigin} from '../../utilities';
 import {applyModifiers, Modifiers} from '../../modifiers';
@@ -25,7 +25,7 @@ export interface Props {
 }
 
 const defaultTransition: TransitionGetter = (activatorEvent) => {
-  const isKeyboardActivator = activatorEvent instanceof KeyboardEvent;
+  const isKeyboardActivator = isKeyboardEvent(activatorEvent);
 
   return isKeyboardActivator ? 'transform 250ms ease' : undefined;
 };
