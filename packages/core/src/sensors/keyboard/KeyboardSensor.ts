@@ -3,6 +3,7 @@ import {
   subtract as getCoordinatesDelta,
   getOwnerDocument,
   getWindow,
+  isKeyboardEvent,
 } from '@dnd-kit/utilities';
 
 import type {Coordinates} from '../../types';
@@ -79,7 +80,7 @@ export class KeyboardSensor implements SensorInstance {
   }
 
   private handleKeyDown(event: Event) {
-    if (event instanceof KeyboardEvent) {
+    if (isKeyboardEvent(event)) {
       const {coordinates} = this;
       const {active, context, options} = this.props;
       const {
