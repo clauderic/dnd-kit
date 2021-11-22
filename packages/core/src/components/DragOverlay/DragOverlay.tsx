@@ -5,8 +5,8 @@ import {getRelativeTransformOrigin} from '../../utilities';
 import {applyModifiers, Modifiers} from '../../modifiers';
 import {ActiveDraggableContext} from '../DndContext';
 import {useDndContext} from '../../hooks';
-import type {ViewRect} from '../../types';
-import {useDropAnimation, DropAnimation} from './hooks';
+import type {ClientRect} from '../../types';
+import {useDropAnimation, defaultDropAnimation, DropAnimation} from './hooks';
 
 type TransitionGetter = (
   activatorEvent: Event | null
@@ -30,12 +30,6 @@ const defaultTransition: TransitionGetter = (activatorEvent) => {
   return isKeyboardActivator ? 'transform 250ms ease' : undefined;
 };
 
-export const defaultDropAnimation: DropAnimation = {
-  duration: 250,
-  easing: 'ease',
-  dragSourceOpacity: 0,
-};
-
 export const DragOverlay = React.memo(
   ({
     adjustScale = false,
@@ -51,7 +45,6 @@ export const DragOverlay = React.memo(
     const {
       active,
       activeNodeRect,
-      activeNodeClientRect,
       containerNodeRect,
       draggableNodes,
       activatorEvent,
@@ -65,7 +58,7 @@ export const DragOverlay = React.memo(
     const modifiedTransform = applyModifiers(modifiers, {
       activatorEvent,
       active,
-      activeNodeRect: activeNodeClientRect,
+      activeNodeRect,
       containerNodeRect,
       draggingNodeRect: dragOverlay.rect,
       over,
@@ -84,23 +77,33 @@ export const DragOverlay = React.memo(
           scaleY: 1,
         };
 
-    const initialNodeRect = useLazyMemo<ViewRect | null>(
+    const initialRect = useLazyMemo<ClientRect | null>(
       (previousValue) => {
         if (isDragging) {
-          return previousValue ?? activeNodeRect;
+          if (previousValue) {
+            return previousValue;
+          }
+
+          if (!activeNodeRect) {
+            return null;
+          }
+
+          return {
+            ...activeNodeRect,
+          };
         }
 
         return null;
       },
       [isDragging, activeNodeRect]
     );
-    const style: React.CSSProperties | undefined = initialNodeRect
+    const style: React.CSSProperties | undefined = initialRect
       ? {
           position: 'fixed',
-          width: initialNodeRect.width,
-          height: initialNodeRect.height,
-          top: initialNodeRect.top,
-          left: initialNodeRect.left,
+          width: initialRect.width,
+          height: initialRect.height,
+          top: initialRect.top,
+          left: initialRect.left,
           zIndex,
           transform: CSS.Transform.toString(finalTransform),
           touchAction: 'none',
@@ -108,7 +111,7 @@ export const DragOverlay = React.memo(
             adjustScale && activatorEvent
               ? getRelativeTransformOrigin(
                   activatorEvent as MouseEvent | KeyboardEvent | TouchEvent,
-                  initialNodeRect as any
+                  initialRect
                 )
               : undefined,
           transition:

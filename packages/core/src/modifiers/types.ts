@@ -1,17 +1,17 @@
 import type {Transform} from '@dnd-kit/utilities';
 import type {Active, Over} from '../store';
-import type {ClientRect, ViewRect} from '../types';
+import type {ClientRect} from '../types';
 
 export type Modifier = (args: {
   activatorEvent: Event | null;
   active: Active | null;
-  activeNodeRect: ViewRect | null;
-  draggingNodeRect: ViewRect | null;
-  containerNodeRect: ViewRect | null;
+  activeNodeRect: ClientRect | null;
+  draggingNodeRect: ClientRect | null;
+  containerNodeRect: ClientRect | null;
   over: Over | null;
-  overlayNodeRect: ViewRect | null;
+  overlayNodeRect: ClientRect | null;
   scrollableAncestors: Element[];
-  scrollableAncestorRects: ViewRect[];
+  scrollableAncestorRects: ClientRect[];
   transform: Transform;
   windowRect: ClientRect | null;
 }) => Transform;

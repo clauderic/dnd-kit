@@ -2,7 +2,7 @@ import {useCallback, useEffect, useMemo, useRef} from 'react';
 import {useInterval} from '@dnd-kit/utilities';
 
 import {getScrollDirectionAndSpeed, defaultCoordinates} from '../../utilities';
-import type {Coordinates, Direction, ViewRect} from '../../types';
+import type {Coordinates, Direction, ClientRect} from '../../types';
 
 export type ScrollAncestorSortingFn = (ancestors: Element[]) => Element[];
 
@@ -25,11 +25,11 @@ export interface Options {
 }
 
 interface Arguments extends Options {
-  draggingRect: ViewRect | null;
+  draggingRect: ClientRect | null;
   enabled: boolean;
   pointerCoordinates: Coordinates | null;
   scrollableAncestors: Element[];
-  scrollableAncestorRects: ViewRect[];
+  scrollableAncestorRects: ClientRect[];
 }
 
 export type CanScroll = (element: Element) => boolean;

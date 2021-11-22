@@ -45,8 +45,8 @@ export const PlayingCard = forwardRef<HTMLDivElement, Props>(
           {
             '--translate-y': transform ? `${transform.y}px` : undefined,
             '--index': index,
+            '--transition': transition,
             zIndex: style?.zIndex,
-            transition,
           } as React.CSSProperties
         }
       >

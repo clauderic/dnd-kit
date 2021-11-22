@@ -163,3 +163,9 @@ export const RemovableItems = () => {
     />
   );
 };
+
+export const TransformedContainer = () => {
+  return (
+    <Sortable {...props} style={{transform: 'translate3d(100px, 100px, 0)'}} />
+  );
+};

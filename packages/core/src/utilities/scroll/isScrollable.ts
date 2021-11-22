@@ -1,6 +1,10 @@
+import {getWindow} from '@dnd-kit/utilities';
+
 export function isScrollable(
-  node: HTMLElement,
-  computedStyle: CSSStyleDeclaration = window.getComputedStyle(node)
+  element: HTMLElement,
+  computedStyle: CSSStyleDeclaration = getWindow(element).getComputedStyle(
+    element
+  )
 ): boolean {
   const overflowRegex = /(auto|scroll|overlay)/;
   const properties = ['overflow', 'overflowX', 'overflowY'];

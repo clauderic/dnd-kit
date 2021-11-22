@@ -1,10 +1,10 @@
-import type {ViewRect} from '@dnd-kit/core';
+import type {ClientRect} from '@dnd-kit/core';
 import type {Transform} from '@dnd-kit/utilities';
 
 export function restrictToBoundingRect(
   transform: Transform,
-  rect: ViewRect,
-  boundingRect: ViewRect
+  rect: ClientRect,
+  boundingRect: ClientRect
 ): Transform {
   const value = {
     ...transform,

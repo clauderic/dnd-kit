@@ -13,7 +13,6 @@ import {
   DragMoveEvent,
   DragEndEvent,
   DragOverEvent,
-  Measuring,
   MeasuringStrategy,
   DropAnimation,
   defaultDropAnimation,
@@ -173,7 +172,6 @@ export function SortableTree({
     <DndContext
       announcements={announcements}
       sensors={sensors}
-      modifiers={indicator ? [adjustTranslate] : undefined}
       collisionDetection={closestCenter}
       measuring={measuring}
       onDragStart={handleDragStart}
@@ -201,7 +199,10 @@ export function SortableTree({
           />
         ))}
         {createPortal(
-          <DragOverlay dropAnimation={dropAnimation}>
+          <DragOverlay
+            dropAnimation={dropAnimation}
+            modifiers={indicator ? [adjustTranslate] : undefined}
+          >
             {activeId && activeItem ? (
               <TreeItem
                 depth={activeItem.depth}
@@ -283,7 +284,6 @@ export function SortableTree({
   function handleCollapse(id: string) {
     setItems((items) =>
       setProperty(items, id, 'collapsed', (value) => {
-        console.log(value);
         return !value;
       })
     );

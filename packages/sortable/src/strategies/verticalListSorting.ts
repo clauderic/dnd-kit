@@ -1,4 +1,4 @@
-import type {LayoutRect} from '@dnd-kit/core';
+import type {ClientRect} from '@dnd-kit/core';
 import type {SortingStrategy} from '../types';
 
 // To-do: We should be calculating scale transformation
@@ -11,17 +11,17 @@ export const verticalListSortingStrategy: SortingStrategy = ({
   activeIndex,
   activeNodeRect: fallbackActiveRect,
   index,
-  layoutRects,
+  rects,
   overIndex,
 }) => {
-  const activeNodeRect = layoutRects[activeIndex] ?? fallbackActiveRect;
+  const activeNodeRect = rects[activeIndex] ?? fallbackActiveRect;
 
   if (!activeNodeRect) {
     return null;
   }
 
   if (index === activeIndex) {
-    const overIndexRect = layoutRects[overIndex];
+    const overIndexRect = rects[overIndex];
 
     if (!overIndexRect) {
       return null;
@@ -31,15 +31,15 @@ export const verticalListSortingStrategy: SortingStrategy = ({
       x: 0,
       y:
         activeIndex < overIndex
-          ? overIndexRect.offsetTop +
+          ? overIndexRect.top +
             overIndexRect.height -
-            (activeNodeRect.offsetTop + activeNodeRect.height)
-          : overIndexRect.offsetTop - activeNodeRect.offsetTop,
+            (activeNodeRect.top + activeNodeRect.height)
+          : overIndexRect.top - activeNodeRect.top,
       ...defaultScale,
     };
   }
 
-  const itemGap = getItemGap(layoutRects, index, activeIndex);
+  const itemGap = getItemGap(rects, index, activeIndex);
 
   if (index > activeIndex && index <= overIndex) {
     return {
@@ -65,13 +65,13 @@ export const verticalListSortingStrategy: SortingStrategy = ({
 };
 
 function getItemGap(
-  layoutRects: LayoutRect[],
+  clientRects: ClientRect[],
   index: number,
   activeIndex: number
 ) {
-  const currentRect: LayoutRect | undefined = layoutRects[index];
-  const previousRect: LayoutRect | undefined = layoutRects[index - 1];
-  const nextRect: LayoutRect | undefined = layoutRects[index + 1];
+  const currentRect: ClientRect | undefined = clientRects[index];
+  const previousRect: ClientRect | undefined = clientRects[index - 1];
+  const nextRect: ClientRect | undefined = clientRects[index + 1];
 
   if (!currentRect) {
     return 0;
@@ -79,15 +79,15 @@ function getItemGap(
 
   if (activeIndex < index) {
     return previousRect
-      ? currentRect.offsetTop - (previousRect.offsetTop + previousRect.height)
+      ? currentRect.top - (previousRect.top + previousRect.height)
       : nextRect
-      ? nextRect.offsetTop - (currentRect.offsetTop + currentRect.height)
+      ? nextRect.top - (currentRect.top + currentRect.height)
       : 0;
   }
 
   return nextRect
-    ? nextRect.offsetTop - (currentRect.offsetTop + currentRect.height)
+    ? nextRect.top - (currentRect.top + currentRect.height)
     : previousRect
-    ? currentRect.offsetTop - (previousRect.offsetTop + previousRect.height)
+    ? currentRect.top - (previousRect.top + previousRect.height)
     : 0;
 }

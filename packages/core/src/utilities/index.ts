@@ -8,14 +8,13 @@ export {
 } from './coordinates';
 
 export {
+  Rect,
   adjustScale,
   getAdjustedRect,
+  getClientRect,
+  getTransformAgnosticClientRect,
+  getWindowClientRect,
   getRectDelta,
-  getLayoutRect,
-  getViewportLayoutRect,
-  getBoundingClientRect,
-  getViewRect,
-  isViewRect,
 } from './rect';
 
 export {noop} from './other';

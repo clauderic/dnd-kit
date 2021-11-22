@@ -1,5 +1,5 @@
 import React, {MutableRefObject, useEffect, useMemo, useRef} from 'react';
-import {useDndContext, LayoutRect, UniqueIdentifier} from '@dnd-kit/core';
+import {useDndContext, ClientRect, UniqueIdentifier} from '@dnd-kit/core';
 import {useIsomorphicLayoutEffect, useUniqueId} from '@dnd-kit/utilities';
 
 import type {SortingStrategy} from '../types';
@@ -22,7 +22,7 @@ interface ContextDescriptor {
   items: UniqueIdentifier[];
   overIndex: number;
   useDragOverlay: boolean;
-  sortedRects: LayoutRect[];
+  sortedRects: ClientRect[];
   strategy: SortingStrategy;
   wasDragging: MutableRefObject<boolean>;
 }

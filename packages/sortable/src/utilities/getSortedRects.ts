@@ -1,18 +1,18 @@
 import type {
-  LayoutRect,
+  ClientRect,
   UniqueIdentifier,
   UseDndContextReturnValue,
 } from '@dnd-kit/core';
 
 export function getSortedRects(
   items: UniqueIdentifier[],
-  layoutRects: UseDndContextReturnValue['droppableRects']
+  rects: UseDndContextReturnValue['droppableRects']
 ) {
-  return items.reduce<LayoutRect[]>((accumulator, id, index) => {
-    const layoutRect = layoutRects.get(id);
+  return items.reduce<ClientRect[]>((accumulator, id, index) => {
+    const rect = rects.get(id);
 
-    if (layoutRect) {
-      accumulator[index] = layoutRect;
+    if (rect) {
+      accumulator[index] = rect;
     }
 
     return accumulator;

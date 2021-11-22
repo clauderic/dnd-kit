@@ -1,9 +1,9 @@
 import {useEffect, useRef, useState} from 'react';
-import {getBoundingClientRect, LayoutRect} from '@dnd-kit/core';
+import {getClientRect, ClientRect} from '@dnd-kit/core';
 import {Transform, useIsomorphicLayoutEffect} from '@dnd-kit/utilities';
 
 interface Arguments {
-  rect: React.MutableRefObject<LayoutRect | null>;
+  rect: React.MutableRefObject<ClientRect | null>;
   disabled: boolean;
   index: number;
   node: React.MutableRefObject<HTMLElement | null>;
@@ -24,11 +24,13 @@ export function useDerivedTransform({disabled, index, node, rect}: Arguments) {
       const initial = rect.current;
 
       if (initial) {
-        const current = getBoundingClientRect(node.current);
+        const current = getClientRect(node.current, {
+          ignoreTransform: true,
+        });
 
         const delta = {
-          x: initial.offsetLeft - current.offsetLeft,
-          y: initial.offsetTop - current.offsetTop,
+          x: initial.left - current.left,
+          y: initial.top - current.top,
           scaleX: initial.width / current.width,
           scaleY: initial.height / current.height,
         };

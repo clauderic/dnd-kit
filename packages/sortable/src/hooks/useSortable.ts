@@ -91,7 +91,7 @@ export function useSortable({
   const finalTransform = displaceItem
     ? dragSourceDisplacement ??
       strategy({
-        layoutRects: sortedRects,
+        rects: sortedRects,
         activeNodeRect,
         activeIndex,
         overIndex,

@@ -3,7 +3,7 @@ import {
   DndContext,
   DragEndEvent,
   DragOverEvent,
-  getBoundingClientRect,
+  getClientRect,
   MeasuringConfiguration,
   PointerSensor,
   useSensor,
@@ -32,7 +32,7 @@ export interface Props {
 const modifiers = [restrictToParentElement, restrictToHorizontalAxis];
 const measuring: MeasuringConfiguration = {
   draggable: {
-    measure: getBoundingClientRect,
+    measure: getClientRect,
   },
 };
 

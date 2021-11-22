@@ -1,44 +1,63 @@
-import {useMemo} from 'react';
-import {useNodeRef} from '@dnd-kit/utilities';
+import {useMemo, useCallback, useState, useRef} from 'react';
+import {
+  isHTMLElement,
+  useIsomorphicLayoutEffect,
+  useNodeRef,
+} from '@dnd-kit/utilities';
 
 import {getMeasurableNode} from '../../utilities/nodes';
-import {getLayoutRect} from '../../utilities/rect';
+import {getClientRect} from '../../utilities/rect';
 import type {DndContextDescriptor} from '../../store';
-import type {ViewRect} from '../../types';
-
-import {createUseRectFn} from './useRect';
+import type {ClientRect} from '../../types';
 
 interface Arguments {
-  disabled: boolean;
-  forceRecompute: boolean;
+  measure?(element: HTMLElement): ClientRect;
 }
-
-// To-do: Delete and replace with `getViewRect` when https://github.com/clauderic/dnd-kit/pull/415 is merged
-function getDragOverlayRect(element: HTMLElement): ViewRect {
-  const {width, height, offsetLeft, offsetTop} = getLayoutRect(element);
-
-  return {
-    top: offsetTop,
-    bottom: offsetTop + height,
-    left: offsetLeft,
-    right: offsetLeft + width,
-    width,
-    height,
-    offsetTop,
-    offsetLeft,
-  };
-}
-const useDragOverlayRect = createUseRectFn(getDragOverlayRect);
 
 export function useDragOverlayMeasuring({
-  disabled,
-  forceRecompute,
+  measure = getClientRect,
 }: Arguments): DndContextDescriptor['dragOverlay'] {
-  const [nodeRef, setRef] = useNodeRef();
-  const rect = useDragOverlayRect(
-    disabled ? null : getMeasurableNode(nodeRef.current),
-    forceRecompute
+  const [rect, setRect] = useState<ClientRect | null>(null);
+  const measureRef = useRef(measure);
+  const handleResize = useCallback(
+    (entries: ResizeObserverEntry[]) => {
+      for (const {target} of entries) {
+        if (isHTMLElement(target)) {
+          setRect((rect) => {
+            const newRect = measure(target);
+
+            return rect
+              ? {...rect, width: newRect.width, height: newRect.height}
+              : newRect;
+          });
+          break;
+        }
+      }
+    },
+    [measure]
   );
+  const resizeObserver = useMemo(() => new ResizeObserver(handleResize), [
+    handleResize,
+  ]);
+  const handleNodeChange = useCallback(
+    (element) => {
+      const node = getMeasurableNode(element);
+
+      resizeObserver.disconnect();
+
+      if (node) {
+        resizeObserver.observe(node);
+      }
+
+      setRect(node ? measure(node) : null);
+    },
+    [measure, resizeObserver]
+  );
+  const [nodeRef, setRef] = useNodeRef(handleNodeChange);
+
+  useIsomorphicLayoutEffect(() => {
+    measureRef.current = measure;
+  }, [measure]);
 
   return useMemo(
     () => ({

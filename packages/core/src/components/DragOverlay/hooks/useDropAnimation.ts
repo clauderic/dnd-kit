@@ -1,10 +1,10 @@
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import {CSS, Transform, useIsomorphicLayoutEffect} from '@dnd-kit/utilities';
 
 import type {UniqueIdentifier} from '../../../types';
 import type {DraggableNodes} from '../../../store';
-import {getViewRect} from '../../../utilities';
 import {getMeasurableNode} from '../../../utilities/nodes';
+import {getTransformAgnosticClientRect} from '../../../utilities/rect';
 
 export interface DropAnimation {
   duration: number;
@@ -24,20 +24,26 @@ interface Arguments {
   transform: Transform | undefined;
 }
 
+export const defaultDropAnimation: DropAnimation = {
+  duration: 250,
+  easing: 'ease',
+  dragSourceOpacity: 0,
+};
+
 export function useDropAnimation({
   animate,
   adjustScale,
   activeId,
   draggableNodes,
   duration,
-  easing,
   dragSourceOpacity,
+  easing,
   node,
   transform,
 }: Arguments) {
   const [dropAnimationComplete, setDropAnimationComplete] = useState(false);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!animate || !activeId || !easing || !duration) {
       if (animate) {
         setDropAnimationComplete(true);
@@ -46,71 +52,70 @@ export function useDropAnimation({
       return;
     }
 
-    requestAnimationFrame(() => {
-      const finalNode = draggableNodes[activeId]?.node.current;
+    const finalNode = draggableNodes[activeId]?.node.current;
 
-      if (transform && node && finalNode && finalNode.parentNode !== null) {
-        const fromNode = getMeasurableNode(node);
+    if (transform && node && finalNode && finalNode.parentNode !== null) {
+      const fromNode = getMeasurableNode(node);
 
-        if (fromNode) {
-          const from = fromNode.getBoundingClientRect();
-          const to = getViewRect(finalNode);
-          const delta = {
-            x: from.left - to.left,
-            y: from.top - to.top,
+      if (fromNode) {
+        const from = fromNode.getBoundingClientRect();
+        const to = getTransformAgnosticClientRect(finalNode);
+
+        const delta = {
+          x: from.left - to.left,
+          y: from.top - to.top,
+        };
+
+        if (Math.abs(delta.x) || Math.abs(delta.y)) {
+          const scaleDelta = {
+            scaleX: adjustScale
+              ? (to.width * transform.scaleX) / from.width
+              : 1,
+            scaleY: adjustScale
+              ? (to.height * transform.scaleY) / from.height
+              : 1,
           };
+          const finalTransform = CSS.Transform.toString({
+            x: transform.x - delta.x,
+            y: transform.y - delta.y,
+            ...scaleDelta,
+          });
+          const originalOpacity = finalNode.style.opacity;
 
-          if (Math.abs(delta.x) || Math.abs(delta.y)) {
-            const scaleDelta = {
-              scaleX: adjustScale
-                ? (to.width * transform.scaleX) / from.width
-                : 1,
-              scaleY: adjustScale
-                ? (to.height * transform.scaleY) / from.height
-                : 1,
-            };
-            const finalTransform = CSS.Transform.toString({
-              x: transform.x - delta.x,
-              y: transform.y - delta.y,
-              ...scaleDelta,
-            });
-            const originalOpacity = finalNode.style.opacity;
-
-            if (dragSourceOpacity != null) {
-              finalNode.style.opacity = `${dragSourceOpacity}`;
-            }
-
-            const nodeAnimation = node.animate(
-              [
-                {
-                  transform: CSS.Transform.toString(transform),
-                },
-                {
-                  transform: finalTransform,
-                },
-              ],
-              {
-                easing,
-                duration,
-              }
-            );
-
-            nodeAnimation.onfinish = () => {
-              node.style.display = 'none';
-
-              setDropAnimationComplete(true);
-
-              if (finalNode && dragSourceOpacity != null) {
-                finalNode.style.opacity = originalOpacity;
-              }
-            };
-            return;
+          if (dragSourceOpacity != null) {
+            finalNode.style.opacity = `${dragSourceOpacity}`;
           }
+
+          const nodeAnimation = node.animate(
+            [
+              {
+                transform: CSS.Transform.toString(transform),
+              },
+              {
+                transform: finalTransform,
+              },
+            ],
+            {
+              easing,
+              duration,
+            }
+          );
+
+          nodeAnimation.onfinish = () => {
+            node.style.display = 'none';
+
+            setDropAnimationComplete(true);
+
+            if (finalNode && dragSourceOpacity != null) {
+              finalNode.style.opacity = originalOpacity;
+            }
+          };
+          return;
         }
       }
+    }
 
-      setDropAnimationComplete(true);
-    });
+    setDropAnimationComplete(true);
   }, [
     animate,
     activeId,
