@@ -108,7 +108,7 @@ export const DragOverlay = React.memo(
             adjustScale && activatorEvent
               ? getRelativeTransformOrigin(
                   activatorEvent as MouseEvent | KeyboardEvent | TouchEvent,
-                  initialNodeRect
+                  initialNodeRect as any
                 )
               : undefined,
           transition:

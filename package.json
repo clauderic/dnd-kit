@@ -52,13 +52,13 @@
     "react-tiny-virtual-list": "^2.2.0",
     "style-loader": "^2.0.0",
     "tsdx": "^0.14.1",
-    "typescript": "^4.0.5"
+    "typescript": "^4.5.2"
   },
   "resolutions": {
     "prettier": "^2.2.0",
     "**/@typescript-eslint/eslint-plugin": "^4.8.2",
     "**/@typescript-eslint/parser": "^4.8.2",
-    "**/typescript": "^4.0.5",
+    "**/typescript": "^4.5.2",
     "jest": "^27.0.5",
     "ts-jest": "^27.0.3"
   }
