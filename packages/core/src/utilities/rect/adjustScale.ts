@@ -8,7 +8,7 @@ export function adjustScale(
 ): Transform {
   return {
     ...transform,
-    scaleX: rect1 && rect2 ? rect1.width / rect2.width : 1,
-    scaleY: rect1 && rect2 ? rect1.height / rect2.height : 1,
+    scaleX: rect1 && rect2 ? rect1.width / rect2.width : transform.scaleX ?? 1,
+    scaleY: rect1 && rect2 ? rect1.height / rect2.height : transform.scaleY ?? 1,
   };
 }
