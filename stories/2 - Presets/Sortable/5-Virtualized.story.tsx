@@ -77,6 +77,7 @@ function Sortable({
             className={styles.VirtualList}
             itemCount={items.length}
             itemSize={64}
+            stickyIndices={activeId ? [items.indexOf(activeId)] : undefined}
             renderItem={({index, style}) => {
               const id = items[index];
 
@@ -88,10 +89,10 @@ function Sortable({
                   handle={handle}
                   wrapperStyle={() => ({
                     ...style,
-                    opacity: id === activeId ? 0 : undefined,
                     padding: 5,
                   })}
                   style={getItemStyles}
+                  useDragOverlay
                 />
               );
             }}
