@@ -18,7 +18,7 @@ export function useSensorSetup(sensors: SensorDescriptor<any>[]) {
         }
       };
     },
-    // TO-DO: Sensors lenght could theoretically change which would not be a valid dependency
+    // TO-DO: Sensors length could theoretically change which would not be a valid dependency
     // eslint-disable-next-line react-hooks/exhaustive-deps
     sensors.map(({sensor}) => sensor)
   );

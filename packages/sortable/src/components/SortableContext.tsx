@@ -75,7 +75,7 @@ export function SortableContext({
 
   useIsomorphicLayoutEffect(() => {
     if (itemsHaveChanged && isSorting && !willRecomputeLayouts) {
-      // To-do: Add partial recompution of only subset of rects
+      // To-do: Add partial recomputation of only subset of rects
       recomputeLayouts();
     }
   }, [itemsHaveChanged, isSorting, recomputeLayouts, willRecomputeLayouts]);
