@@ -1,3 +1,8 @@
 export function isWindow(element: Object): element is typeof window {
-  return Object.prototype.toString.call(element) === '[object Window]';
+  const elementString = Object.prototype.toString.call(element);
+  return (
+    elementString === '[object Window]' ||
+    // In Electron context the Window object serializes to [object global]
+    elementString === '[object global]'
+  );
 }
