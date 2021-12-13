@@ -27,7 +27,7 @@
 To learn how to get started with **dnd kit**, visit the official documentation website. You'll find in-depth API documentation, tips and guides to help you build drag and drop interfaces. 
 <p>
 <a href="https://docs.dndkit.com">
-<img alt="View documntation" src=".github/assets/documentation.svg" width="200" />
+<img alt="View documentation" src=".github/assets/documentation.svg" width="200" />
 </a>
 </p>
 <p align="center">

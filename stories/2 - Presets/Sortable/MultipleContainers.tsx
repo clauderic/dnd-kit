@@ -258,7 +258,7 @@ export function MultipleContainers({
   const onDragCancel = () => {
     if (clonedItems) {
       // Reset items to their original state in case items have been
-      // Dragged across containrs
+      // Dragged across containers
       setItems(clonedItems);
     }
 
@@ -570,10 +570,10 @@ export function MultipleContainers({
   }
 
   function getNextContainerId() {
-    const containeIds = Object.keys(items);
-    const lastContaineId = containeIds[containeIds.length - 1];
+    const containerIds = Object.keys(items);
+    const lastContainerId = containerIds[containerIds.length - 1];
 
-    return String.fromCharCode(lastContaineId.charCodeAt(0) + 1);
+    return String.fromCharCode(lastContainerId.charCodeAt(0) + 1);
   }
 }
 

@@ -114,15 +114,15 @@ export function useAutoScroller({
         }
 
         const index = scrollableAncestors.indexOf(scrollContainer);
-        const scrolllContainerRect = scrollableAncestorRects[index];
+        const scrollContainerRect = scrollableAncestorRects[index];
 
-        if (!scrolllContainerRect) {
+        if (!scrollContainerRect) {
           continue;
         }
 
         const {direction, speed} = getScrollDirectionAndSpeed(
           scrollContainer,
-          scrolllContainerRect,
+          scrollContainerRect,
           rect,
           acceleration,
           threshold
