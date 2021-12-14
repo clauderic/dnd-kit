@@ -1,5 +1,11 @@
 # @dnd-kit/utilities
 
+## 3.0.2
+
+### Patch Changes
+
+- [#532](https://github.com/clauderic/dnd-kit/pull/532) [`dfa8d69`](https://github.com/clauderic/dnd-kit/commit/dfa8d69d98e8f271b29fa516cc13b8cd0c01d371) Thanks [@Nauss](https://github.com/Nauss)! - fix: `isWindow` has been updated to support checking wether an element is a window object in Electron applications.
+
 ## 3.0.1
 
 ### Patch Changes
