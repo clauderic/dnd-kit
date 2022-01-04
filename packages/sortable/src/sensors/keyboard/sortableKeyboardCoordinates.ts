@@ -65,6 +65,7 @@ export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
       active,
       collisionRect: collisionRect,
       droppableContainers: filteredContainers,
+      pointerCoordinates: null,
     });
 
     if (closestId) {

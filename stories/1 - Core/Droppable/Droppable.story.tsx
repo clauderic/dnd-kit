@@ -3,6 +3,7 @@ import {
   closestCenter,
   closestCorners,
   rectIntersection,
+  pointerWithin,
   DndContext,
   DragOverlay,
   useDraggable,
@@ -145,6 +146,17 @@ export const CollisionDetectionAlgorithms = () => {
             }
           />
           Closest Corners
+        </label>
+        <label>
+          <input
+            type="radio"
+            value="pointerWithin"
+            checked={algorithm === pointerWithin}
+            onClick={() =>
+              setCollisionDetectionAlgorithm({algorithm: pointerWithin})
+            }
+          />
+          Pointer Within
         </label>
       </div>
     </>

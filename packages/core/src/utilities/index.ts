@@ -1,4 +1,9 @@
-export {closestCenter, closestCorners, rectIntersection} from './algorithms';
+export {
+  closestCenter,
+  closestCorners,
+  rectIntersection,
+  pointerWithin,
+} from './algorithms';
 export type {CollisionDetection} from './algorithms';
 
 export {
