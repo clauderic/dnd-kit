@@ -1,6 +1,5 @@
-import type {LayoutRect, UniqueIdentifier} from '../../types';
+import type {ClientRect, UniqueIdentifier} from '../../types';
 import {distanceBetween} from '../coordinates';
-import {isViewRect} from '../rect';
 
 import type {CollisionDetection} from './types';
 
@@ -10,9 +9,9 @@ import type {CollisionDetection} from './types';
  */
 
 function cornersOfRectangle(
-  rect: LayoutRect,
-  left = rect.offsetLeft,
-  top = rect.offsetTop
+  rect: ClientRect,
+  left = rect.left,
+  top = rect.top
 ) {
   return [
     {
@@ -56,11 +55,7 @@ export const closestCorners: CollisionDetection = ({
     } = droppableContainer;
 
     if (rect) {
-      const rectCorners = cornersOfRectangle(
-        rect,
-        isViewRect(rect) ? rect.left : undefined,
-        isViewRect(rect) ? rect.top : undefined
-      );
+      const rectCorners = cornersOfRectangle(rect, rect.left, rect.top);
       const distances = corners.reduce((accumulator, corner, index) => {
         return accumulator + distanceBetween(rectCorners[index], corner);
       }, 0);

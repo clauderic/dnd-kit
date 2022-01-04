@@ -1,21 +1,19 @@
-import type {Coordinates, ViewRect} from '../../types';
+import type {Coordinates, ClientRect} from '../../types';
 
 export function createRectAdjustmentFn(modifier: number) {
-  return function adjustViewRect(
-    viewRect: ViewRect,
+  return function adjustClientRect(
+    rect: ClientRect,
     ...adjustments: Coordinates[]
-  ): ViewRect {
-    return adjustments.reduce<ViewRect>(
+  ): ClientRect {
+    return adjustments.reduce<ClientRect>(
       (acc, adjustment) => ({
         ...acc,
         top: acc.top + modifier * adjustment.y,
         bottom: acc.bottom + modifier * adjustment.y,
         left: acc.left + modifier * adjustment.x,
         right: acc.right + modifier * adjustment.x,
-        offsetLeft: acc.offsetLeft + modifier * adjustment.x,
-        offsetTop: acc.offsetTop + modifier * adjustment.y,
       }),
-      {...viewRect}
+      {...rect}
     );
   };
 }

@@ -1,21 +1,15 @@
-import type {LayoutRect, UniqueIdentifier, ViewRect} from '../../types';
+import type {ClientRect, UniqueIdentifier} from '../../types';
 
 import type {CollisionDetection} from './types';
 
 /**
  * Returns the intersecting rectangle area between two rectangles
  */
-function getIntersectionRatio(entry: LayoutRect, target: ViewRect): number {
-  const top = Math.max(target.top, entry.offsetTop);
-  const left = Math.max(target.left, entry.offsetLeft);
-  const right = Math.min(
-    target.left + target.width,
-    entry.offsetLeft + entry.width
-  );
-  const bottom = Math.min(
-    target.top + target.height,
-    entry.offsetTop + entry.height
-  );
+function getIntersectionRatio(entry: ClientRect, target: ClientRect): number {
+  const top = Math.max(target.top, entry.top);
+  const left = Math.max(target.left, entry.left);
+  const right = Math.min(target.left + target.width, entry.left + entry.width);
+  const bottom = Math.min(target.top + target.height, entry.top + entry.height);
   const width = right - left;
   const height = bottom - top;
 

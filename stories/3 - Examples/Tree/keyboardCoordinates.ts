@@ -1,9 +1,9 @@
 import {
   closestCorners,
-  getViewRect,
+  getClientRect,
   KeyboardCode,
-  RectEntry,
   KeyboardCoordinateGetter,
+  DroppableContainer,
 } from '@dnd-kit/core';
 
 import type {SensorContext} from './types';
@@ -24,17 +24,16 @@ export const sortableTreeKeyboardCoordinates: (
 ) => KeyboardCoordinateGetter = (context, indentationWidth) => (
   event,
   {
-    active,
     currentCoordinates,
-    context: {over, translatedRect, droppableContainers},
+    context: {active, over, collisionRect, droppableContainers},
   }
 ) => {
   if (directions.includes(event.code)) {
-    event.preventDefault();
-
-    if (!translatedRect) {
+    if (!active || !collisionRect) {
       return;
     }
+
+    event.preventDefault();
 
     const {
       current: {items, offset},
@@ -43,7 +42,7 @@ export const sortableTreeKeyboardCoordinates: (
     if (horizontal.includes(event.code) && over?.id) {
       const {depth, maxDepth, minDepth} = getProjection(
         items,
-        active,
+        active.id,
         over.id,
         offset,
         indentationWidth
@@ -71,58 +70,64 @@ export const sortableTreeKeyboardCoordinates: (
       return undefined;
     }
 
-    const layoutRects: RectEntry[] = [];
+    const containers: DroppableContainer[] = [];
 
     const overRect = over?.id
-      ? droppableContainers[over.id]?.rect.current
+      ? droppableContainers.get(over.id)?.rect.current
       : undefined;
 
-    Object.entries(droppableContainers).forEach(([id, container]) => {
-      if (container?.disabled || !overRect) {
-        return;
-      }
+    if (overRect) {
+      droppableContainers.forEach((container) => {
+        if (container?.disabled) {
+          return;
+        }
 
-      const rect = container?.rect.current;
+        const rect = container?.rect.current;
 
-      if (!rect) {
-        return;
-      }
+        if (!rect) {
+          return;
+        }
 
-      switch (event.code) {
-        case KeyboardCode.Down:
-          if (overRect.offsetTop < rect.offsetTop) {
-            layoutRects.push([id, rect]);
-          }
-          break;
-        case KeyboardCode.Up:
-          if (overRect.offsetTop > rect.offsetTop) {
-            layoutRects.push([id, rect]);
-          }
-          break;
-      }
+        switch (event.code) {
+          case KeyboardCode.Down:
+            if (overRect.top < rect.top) {
+              containers.push(container);
+            }
+            break;
+          case KeyboardCode.Up:
+            if (overRect.top > rect.top) {
+              containers.push(container);
+            }
+            break;
+        }
+      });
+    }
+
+    const closestId = closestCorners({
+      active,
+      collisionRect: collisionRect,
+      droppableContainers: containers,
     });
 
-    const closestId = closestCorners(layoutRects, translatedRect);
-
     if (closestId && over?.id) {
-      const newNode = droppableContainers[closestId]?.node.current;
-      const activeNodeRect = droppableContainers[active]?.rect.current;
+      const newNode = droppableContainers.get(closestId)?.node.current;
+      const activeNodeRect = droppableContainers.get(active.id)?.rect.current;
 
       if (newNode && activeNodeRect) {
-        const newRect = getViewRect(newNode);
+        const newRect = getClientRect(newNode, {ignoreTransform: true});
         const newItem = items.find(({id}) => id === closestId);
-        const activeItem = items.find(({id}) => id === active);
+        const activeItem = items.find(({id}) => id === active.id);
 
         if (newItem && activeItem) {
           const {depth} = getProjection(
             items,
-            active,
+            active.id,
             closestId,
             (newItem.depth - activeItem.depth) * indentationWidth,
             indentationWidth
           );
           const offset =
-            newRect.offsetTop > activeNodeRect.offsetTop
+            newRect.top > activeNodeRect.top
               ? Math.abs(activeNodeRect.height - newRect.height)
               : 0;
 

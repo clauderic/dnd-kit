@@ -3,20 +3,20 @@ import type {SortingStrategy} from '../types';
 export const rectSwappingStrategy: SortingStrategy = ({
   activeIndex,
   index,
-  layoutRects,
+  rects,
   overIndex,
 }) => {
   let oldRect;
   let newRect;
 
   if (index === activeIndex) {
-    oldRect = layoutRects[index];
-    newRect = layoutRects[overIndex];
+    oldRect = rects[index];
+    newRect = rects[overIndex];
   }
 
   if (index === overIndex) {
-    oldRect = layoutRects[index];
-    newRect = layoutRects[activeIndex];
+    oldRect = rects[index];
+    newRect = rects[activeIndex];
   }
 
   if (!newRect || !oldRect) {
@@ -24,8 +24,8 @@ export const rectSwappingStrategy: SortingStrategy = ({
   }
 
   return {
-    x: newRect.offsetLeft - oldRect.offsetLeft,
-    y: newRect.offsetTop - oldRect.offsetTop,
+    x: newRect.left - oldRect.left,
+    y: newRect.top - oldRect.top,
     scaleX: newRect.width / oldRect.width,
     scaleY: newRect.height / oldRect.height,
   };

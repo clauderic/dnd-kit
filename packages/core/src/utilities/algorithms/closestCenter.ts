@@ -1,5 +1,5 @@
 import {distanceBetween} from '../coordinates';
-import type {Coordinates, LayoutRect, UniqueIdentifier} from '../../types';
+import type {Coordinates, ClientRect, UniqueIdentifier} from '../../types';
 
 import type {CollisionDetection} from './types';
 
@@ -7,9 +7,9 @@ import type {CollisionDetection} from './types';
  * Returns the coordinates of the center of a given ClientRect
  */
 function centerOfRectangle(
-  rect: LayoutRect,
-  left = rect.offsetLeft,
-  top = rect.offsetTop
+  rect: ClientRect,
+  left = rect.left,
+  top = rect.top
 ): Coordinates {
   return {
     x: left + rect.width * 0.5,

@@ -22,5 +22,5 @@ export type {
   SyntheticListeners,
   SyntheticListenerMap,
 } from './useSyntheticListeners';
-export {useRect, useClientRect, useClientRects, useViewRect} from './useRect';
+export {useRect, useClientRect, useClientRects, useWindowRect} from './useRect';
 export {useDragOverlayMeasuring} from './useDragOverlayMeasuring';

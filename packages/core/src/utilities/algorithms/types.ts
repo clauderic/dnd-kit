@@ -1,8 +1,8 @@
 import type {Active, DroppableContainer} from '../../store';
-import type {UniqueIdentifier, ViewRect} from '../../types';
+import type {UniqueIdentifier, ClientRect} from '../../types';
 
 export type CollisionDetection = (args: {
   active: Active;
-  collisionRect: ViewRect;
+  collisionRect: ClientRect;
   droppableContainers: DroppableContainer[];
 }) => UniqueIdentifier | null;

@@ -1,10 +1,10 @@
-import type {LayoutRect, ViewRect} from '@dnd-kit/core';
+import type {ClientRect} from '@dnd-kit/core';
 import type {Transform} from '@dnd-kit/utilities';
 
 export type SortingStrategy = (args: {
-  activeNodeRect: ViewRect | null;
+  activeNodeRect: ClientRect | null;
   activeIndex: number;
   index: number;
-  layoutRects: LayoutRect[];
+  rects: ClientRect[];
   overIndex: number;
 }) => Transform | null;

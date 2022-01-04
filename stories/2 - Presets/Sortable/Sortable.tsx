@@ -51,6 +51,7 @@ export interface Props {
   removable?: boolean;
   reorderItems?: typeof arrayMove;
   strategy?: SortingStrategy;
+  style?: React.CSSProperties;
   useDragOverlay?: boolean;
   getItemStyles?(args: {
     id: UniqueIdentifier;
@@ -100,6 +101,7 @@ export function Sortable({
   renderItem,
   reorderItems = arrayMove,
   strategy = rectSortingStrategy,
+  style,
   useDragOverlay = true,
   wrapperStyle = () => ({}),
 }: Props) {
@@ -199,7 +201,7 @@ export function Sortable({
       measuring={measuring}
       modifiers={modifiers}
     >
-      <Wrapper center>
+      <Wrapper style={style} center>
         <SortableContext items={items} strategy={strategy}>
           <Container>
             {items.map((value, index) => (

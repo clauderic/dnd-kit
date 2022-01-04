@@ -6,7 +6,7 @@ import {
 } from '@dnd-kit/utilities';
 
 import {Context, Action, Data} from '../store';
-import type {LayoutRect} from '../types';
+import type {ClientRect} from '../types';
 import {useData} from './utilities';
 
 export interface UseDroppableArguments {
@@ -24,7 +24,7 @@ export function useDroppable({
 }: UseDroppableArguments) {
   const key = useUniqueId(ID_PREFIX);
   const {active, dispatch, over} = useContext(Context);
-  const rect = useRef<LayoutRect | null>(null);
+  const rect = useRef<ClientRect | null>(null);
   const [nodeRef, setNodeRef] = useNodeRef();
   const dataRef = useData(data);
 

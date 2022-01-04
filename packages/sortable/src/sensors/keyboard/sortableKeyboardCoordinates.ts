@@ -1,6 +1,5 @@
 import {
   closestCorners,
-  getViewRect,
   getScrollableAncestors,
   KeyboardCode,
   DroppableContainer,
@@ -16,12 +15,12 @@ const directions: string[] = [
 
 export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
   event,
-  {context: {active, droppableContainers, translatedRect, scrollableAncestors}}
+  {context: {active, droppableContainers, collisionRect, scrollableAncestors}}
 ) => {
   if (directions.includes(event.code)) {
     event.preventDefault();
 
-    if (!active || !translatedRect) {
+    if (!active || !collisionRect) {
       return;
     }
 
@@ -32,39 +31,31 @@ export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
         return;
       }
 
-      const node = entry?.node.current;
+      const rect = entry?.rect.current;
 
-      if (!node) {
+      if (!rect) {
         return;
       }
 
-      const rect = getViewRect(node);
-      const container: DroppableContainer = {
-        ...entry,
-        rect: {
-          current: rect,
-        },
-      };
-
       switch (event.code) {
         case KeyboardCode.Down:
-          if (translatedRect.top + translatedRect.height <= rect.top) {
-            filteredContainers.push(container);
+          if (collisionRect.top + collisionRect.height <= rect.top) {
+            filteredContainers.push(entry);
           }
           break;
         case KeyboardCode.Up:
-          if (translatedRect.top >= rect.top + rect.height) {
-            filteredContainers.push(container);
+          if (collisionRect.top >= rect.top + rect.height) {
+            filteredContainers.push(entry);
           }
           break;
         case KeyboardCode.Left:
-          if (translatedRect.left >= rect.left + rect.width) {
-            filteredContainers.push(container);
+          if (collisionRect.left >= rect.left + rect.width) {
+            filteredContainers.push(entry);
           }
           break;
         case KeyboardCode.Right:
-          if (translatedRect.left + translatedRect.width <= rect.left) {
-            filteredContainers.push(container);
+          if (collisionRect.left + collisionRect.width <= rect.left) {
+            filteredContainers.push(entry);
           }
           break;
       }
@@ -72,27 +63,28 @@ export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
 
     const closestId = closestCorners({
       active,
-      collisionRect: translatedRect,
+      collisionRect: collisionRect,
       droppableContainers: filteredContainers,
     });
 
     if (closestId) {
-      const newNode = droppableContainers.get(closestId)?.node.current;
+      const newDroppable = droppableContainers.get(closestId);
+      const newNode = newDroppable?.node.current;
+      const newRect = newDroppable?.rect.current;
 
-      if (newNode) {
+      if (newNode && newRect) {
         const newScrollAncestors = getScrollableAncestors(newNode);
         const hasDifferentScrollAncestors = newScrollAncestors.some(
           (element, index) => scrollableAncestors[index] !== element
         );
-        const newRect = getViewRect(newNode);
         const offset = hasDifferentScrollAncestors
           ? {
               x: 0,
               y: 0,
             }
           : {
-              x: translatedRect.width - newRect.width,
-              y: translatedRect.height - newRect.height,
+              x: collisionRect.width - newRect.width,
+              y: collisionRect.height - newRect.height,
             };
         const newCoordinates = {
           x: newRect.left - offset.x,

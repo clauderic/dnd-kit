@@ -314,8 +314,8 @@ export function MultipleContainers({
               const isBelowOverItem =
                 over &&
                 active.rect.current.translated &&
-                active.rect.current.translated.offsetTop >
-                  over.rect.offsetTop + over.rect.height;
+                active.rect.current.translated.top >
+                  over.rect.top + over.rect.height;
 
               const modifier = isBelowOverItem ? 1 : 0;
 

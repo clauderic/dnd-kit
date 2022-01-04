@@ -1,12 +1,6 @@
 import type {MutableRefObject} from 'react';
 
-import type {
-  Coordinates,
-  ViewRect,
-  ClientRect,
-  LayoutRect,
-  UniqueIdentifier,
-} from '../types';
+import type {Coordinates, ClientRect, UniqueIdentifier} from '../types';
 import type {SyntheticListeners} from '../hooks/utilities';
 import type {Actions} from './actions';
 import type {DroppableContainersMap} from './constructors';
@@ -29,21 +23,21 @@ export interface DroppableContainer {
   data: DataRef;
   disabled: boolean;
   node: MutableRefObject<HTMLElement | null>;
-  rect: MutableRefObject<LayoutRect | null>;
+  rect: MutableRefObject<ClientRect | null>;
 }
 
 export interface Active {
   id: UniqueIdentifier;
   data: DataRef;
   rect: MutableRefObject<{
-    initial: ViewRect | null;
-    translated: ViewRect | null;
+    initial: ClientRect | null;
+    translated: ClientRect | null;
   }>;
 }
 
 export interface Over {
   id: UniqueIdentifier;
-  rect: LayoutRect;
+  rect: ClientRect;
   disabled: boolean;
   data: DataRef;
 }
@@ -62,7 +56,7 @@ export type DraggableNodes = Record<
 
 export type DroppableContainers = DroppableContainersMap;
 
-export type LayoutRectMap = Map<UniqueIdentifier, LayoutRect>;
+export type RectMap = Map<UniqueIdentifier, ClientRect>;
 
 export interface State {
   droppable: {
@@ -82,23 +76,22 @@ export interface DndContextDescriptor {
   activatorEvent: Event | null;
   active: Active | null;
   activeNode: HTMLElement | null;
-  activeNodeRect: ViewRect | null;
-  activeNodeClientRect: ClientRect | null;
+  activeNodeRect: ClientRect | null;
   ariaDescribedById: {
     draggable: UniqueIdentifier;
   };
-  containerNodeRect: ViewRect | null;
+  containerNodeRect: ClientRect | null;
   draggableNodes: DraggableNodes;
   droppableContainers: DroppableContainers;
-  droppableRects: LayoutRectMap;
+  droppableRects: RectMap;
   over: Over | null;
   dragOverlay: {
     nodeRef: MutableRefObject<HTMLElement | null>;
-    rect: ViewRect | null;
+    rect: ClientRect | null;
     setRef: (element: HTMLElement | null) => void;
   };
   scrollableAncestors: Element[];
-  scrollableAncestorRects: ViewRect[];
+  scrollableAncestorRects: ClientRect[];
   recomputeLayouts(): void;
   willRecomputeLayouts: boolean;
   windowRect: ClientRect | null;

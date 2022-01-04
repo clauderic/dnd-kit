@@ -1,9 +1,6 @@
 export type {
   Coordinates,
-  ClientRect,
   DistanceMeasurement,
-  LayoutRect,
-  ViewRect,
   Translate,
   ScrollCoordinates,
 } from './coordinates';
@@ -17,3 +14,4 @@ export type {
 } from './events';
 export type {UniqueIdentifier} from './other';
 export type {SyntheticEventName} from './react';
+export type {ClientRect} from './rect';

@@ -1,5 +1,10 @@
-import {createContext, useContext, useEffect, useMemo} from 'react';
-import {Transform, useNodeRef, useUniqueId} from '@dnd-kit/utilities';
+import {createContext, useContext, useMemo} from 'react';
+import {
+  Transform,
+  useNodeRef,
+  useUniqueId,
+  useIsomorphicLayoutEffect,
+} from '@dnd-kit/utilities';
 
 import {Context, Data} from '../store';
 import {ActiveDraggableContext} from '../components/DndContext';
@@ -55,7 +60,7 @@ export function useDraggable({
   const listeners = useSyntheticListeners(activators, id);
   const dataRef = useData(data);
 
-  useEffect(
+  useIsomorphicLayoutEffect(
     () => {
       draggableNodes[id] = {id, key, node, data: dataRef};
 

@@ -1,4 +1,9 @@
-import {isDocument, isHTMLElement, isSVGElement} from '@dnd-kit/utilities';
+import {
+  getWindow,
+  isDocument,
+  isHTMLElement,
+  isSVGElement,
+} from '@dnd-kit/utilities';
 
 import {isFixed} from './isFixed';
 import {isScrollable} from './isScrollable';
@@ -29,10 +34,13 @@ export function getScrollableAncestors(element: Node | null): Element[] {
       return scrollParents;
     }
 
-    const computedStyle = window.getComputedStyle(node);
+    const {getComputedStyle} = getWindow(node);
+    const computedStyle = getComputedStyle(node);
 
-    if (isScrollable(node, computedStyle)) {
-      scrollParents.push(node);
+    if (node !== element) {
+      if (isScrollable(node, computedStyle)) {
+        scrollParents.push(node);
+      }
     }
 
     if (isFixed(node, computedStyle)) {
@@ -42,5 +50,9 @@ export function getScrollableAncestors(element: Node | null): Element[] {
     return findScrollableAncestors(node.parentNode);
   }
 
-  return element ? findScrollableAncestors(element.parentNode) : scrollParents;
+  if (!element) {
+    return scrollParents;
+  }
+
+  return findScrollableAncestors(element);
 }

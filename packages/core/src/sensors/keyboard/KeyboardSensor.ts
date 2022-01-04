@@ -9,7 +9,7 @@ import {
 import type {Coordinates} from '../../types';
 import {
   defaultCoordinates,
-  getBoundingClientRect,
+  getTransformAgnosticClientRect,
   getScrollPosition,
   getScrollElementRect,
 } from '../../utilities';
@@ -68,7 +68,9 @@ export class KeyboardSensor implements SensorInstance {
       throw new Error('Active draggable node is undefined');
     }
 
-    const activeNodeRect = getBoundingClientRect(activeNode.node.current);
+    const activeNodeRect = getTransformAgnosticClientRect(
+      activeNode.node.current
+    );
     const coordinates = {
       x: activeNodeRect.left,
       y: activeNodeRect.top,

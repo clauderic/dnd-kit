@@ -1,8 +1,9 @@
-import {Direction, ViewRect} from '../../types';
+import {Direction, ClientRect} from '../../types';
 import {getScrollPosition} from './getScrollPosition';
 import {isDocumentScrollingElement} from './documentScrollingElement';
 
-interface Rect extends Pick<ViewRect, 'top' | 'left' | 'right' | 'bottom'> {}
+interface PositionalCoordinates
+  extends Pick<ClientRect, 'top' | 'left' | 'right' | 'bottom'> {}
 
 const defaultThreshold = {
   x: 0.2,
@@ -11,8 +12,8 @@ const defaultThreshold = {
 
 export function getScrollDirectionAndSpeed(
   scrollContainer: Element,
-  scrollContainerRect: ViewRect,
-  {top, left, right, bottom}: Rect,
+  scrollContainerRect: ClientRect,
+  {top, left, right, bottom}: PositionalCoordinates,
   acceleration = 10,
   thresholdPercentage = defaultThreshold
 ) {
