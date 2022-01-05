@@ -288,6 +288,7 @@ export const DndContext = memo(function DndContext({
           active,
           collisionRect,
           droppableContainers: enabledDroppableContainers,
+          pointerCoordinates,
         })
       : null;
   const [over, setOver] = useState<Over | null>(null);
