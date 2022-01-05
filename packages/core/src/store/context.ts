@@ -13,6 +13,7 @@ export const Context = createContext<DndContextDescriptor>({
   ariaDescribedById: {
     draggable: '',
   },
+  collisions: null,
   containerNodeRect: null,
   dispatch: noop,
   draggableNodes: {},

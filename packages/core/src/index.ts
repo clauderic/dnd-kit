@@ -100,4 +100,4 @@ export {
   rectIntersection,
   pointerWithin,
 } from './utilities';
-export type {CollisionDetection} from './utilities';
+export type {Collision, CollisionDetection} from './utilities';

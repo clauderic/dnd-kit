@@ -103,11 +103,13 @@ export const sortableTreeKeyboardCoordinates: (
       });
     }
 
-    const closestId = closestCorners({
+    const collisions = closestCorners({
       active,
       collisionRect: collisionRect,
+      pointerCoordinates: null,
       droppableContainers: containers,
     });
+    const closestId = collisions.length > 0 ? collisions[0][0] : null;
 
     if (closestId && over?.id) {
       const newNode = droppableContainers.get(closestId)?.node.current;

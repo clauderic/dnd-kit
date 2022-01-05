@@ -1,7 +1,8 @@
-import type {ClientRect, UniqueIdentifier} from '../../types';
+import type {ClientRect} from '../../types';
 import {distanceBetween} from '../coordinates';
 
-import type {CollisionDetection} from './types';
+import type {Collision, CollisionDetection} from './types';
+import {sortCollisionsAsc} from './helpers';
 
 /**
  * Returns the coordinates of the corners of a given rectangle:
@@ -34,23 +35,23 @@ function cornersOfRectangle(
 }
 
 /**
- * Returns the closest rectangle from an array of rectangles to the corners of
+ * Returns the closest rectangles from an array of rectangles to the corners of
  * another rectangle.
  */
 export const closestCorners: CollisionDetection = ({
   collisionRect,
   droppableContainers,
 }) => {
-  let minDistanceToCorners = Infinity;
-  let minDistanceContainer: UniqueIdentifier | null = null;
   const corners = cornersOfRectangle(
     collisionRect,
     collisionRect.left,
     collisionRect.top
   );
+  const collisions: Collision[] = [];
 
   for (const droppableContainer of droppableContainers) {
     const {
+      id,
       rect: {current: rect},
     } = droppableContainer;
 
@@ -61,12 +62,9 @@ export const closestCorners: CollisionDetection = ({
       }, 0);
       const effectiveDistance = Number((distances / 4).toFixed(4));
 
-      if (effectiveDistance < minDistanceToCorners) {
-        minDistanceToCorners = effectiveDistance;
-        minDistanceContainer = droppableContainer.id;
-      }
+      collisions.push([id, effectiveDistance]);
     }
   }
 
-  return minDistanceContainer;
+  return collisions.sort(sortCollisionsAsc);
 };

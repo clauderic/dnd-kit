@@ -61,12 +61,13 @@ export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
       }
     });
 
-    const closestId = closestCorners({
+    const collisions = closestCorners({
       active,
       collisionRect: collisionRect,
       droppableContainers: filteredContainers,
       pointerCoordinates: null,
     });
+    const closestId = collisions.length > 0 ? collisions[0][0] : null;
 
     if (closestId) {
       const newDroppable = droppableContainers.get(closestId);

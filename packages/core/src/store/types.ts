@@ -1,6 +1,7 @@
 import type {MutableRefObject} from 'react';
 
 import type {Coordinates, ClientRect, UniqueIdentifier} from '../types';
+import type {Collision} from '../utilities/algorithms';
 import type {SyntheticListeners} from '../hooks/utilities';
 import type {Actions} from './actions';
 import type {DroppableContainersMap} from './constructors';
@@ -80,6 +81,7 @@ export interface DndContextDescriptor {
   ariaDescribedById: {
     draggable: UniqueIdentifier;
   };
+  collisions: Collision[] | null;
   containerNodeRect: ClientRect | null;
   draggableNodes: DraggableNodes;
   droppableContainers: DroppableContainers;

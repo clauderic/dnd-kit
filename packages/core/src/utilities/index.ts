@@ -4,7 +4,7 @@ export {
   rectIntersection,
   pointerWithin,
 } from './algorithms';
-export type {CollisionDetection} from './algorithms';
+export type {Collision, CollisionDetection} from './algorithms';
 
 export {
   defaultCoordinates,

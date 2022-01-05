@@ -1,5 +1,7 @@
 import type {Coordinates, ClientRect} from '../../types';
-import type {CollisionDetection} from './types';
+
+import type {Collision, CollisionDetection} from './types';
+import {getIntersectionRatio, sortCollisionsDesc} from './helpers';
 
 /**
  * check if the given point is within the rectangle
@@ -19,23 +21,31 @@ function isPointerInside(
 }
 
 /**
- * Returns the rectangle that the pointer is hovering over
+ * Returns the rectangles that the pointer is hovering over
  */
 export const pointerWithin: CollisionDetection = ({
   droppableContainers,
+  collisionRect,
   pointerCoordinates,
 }) => {
-  if (!pointerCoordinates) return null;
+  if (!pointerCoordinates) {
+    return [];
+  }
+
+  const collisions: Collision[] = [];
 
   for (const droppableContainer of droppableContainers) {
     const {
+      id,
       rect: {current: rect},
     } = droppableContainer;
 
     if (rect && isPointerInside(rect, pointerCoordinates)) {
-      return droppableContainer.id;
+      const intersectionRatio = getIntersectionRatio(rect, collisionRect);
+
+      collisions.push([id, intersectionRatio]);
     }
   }
 
-  return null;
+  return collisions.sort(sortCollisionsDesc);
 };
