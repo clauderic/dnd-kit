@@ -3,12 +3,14 @@ import {createPortal, unstable_batchedUpdates} from 'react-dom';
 import {
   CancelDrop,
   closestCenter,
+  pointerWithin,
   rectIntersection,
   CollisionDetection,
   DndContext,
   DragOverlay,
   DropAnimation,
   defaultDropAnimation,
+  getFirstCollision,
   KeyboardSensor,
   MouseSensor,
   TouchSensor,
@@ -183,9 +185,10 @@ export function MultipleContainers({
       }
 
       // Start by finding any intersecting droppable
-      const intersections = rectIntersection(args);
-      let overId =
-        intersections && intersections.length > 0 ? intersections[0][0] : null;
+      const intersections = args.pointerCoordinates
+        ? pointerWithin(args)
+        : rectIntersection(args);
+      let overId = getFirstCollision(intersections, 'id');
 
       if (overId != null) {
         if (overId === TRASH_ID) {
@@ -207,13 +210,13 @@ export function MultipleContainers({
                   container.id !== overId &&
                   containerItems.includes(container.id)
               ),
-            })[0][0];
+            })[0]?.id;
           }
         }
 
         lastOverId.current = overId;
 
-        return [[overId, 0]];
+        return [{id: overId}];
       }
 
       // When a draggable item moves to a new container, the layout may shift
@@ -225,7 +228,7 @@ export function MultipleContainers({
       }
 
       // If no droppable is matched, return the last match
-      return lastOverId.current ? [[lastOverId.current, 0]] : [];
+      return lastOverId.current ? [{id: lastOverId.current}] : [];
     },
     [activeId, items]
   );

@@ -1,7 +1,18 @@
-import type {Active, DroppableContainer} from '../../store';
+import type {Active, Data, DroppableContainer} from '../../store';
 import type {Coordinates, ClientRect, UniqueIdentifier} from '../../types';
 
-export type Collision = [UniqueIdentifier, number];
+export interface Collision {
+  id: UniqueIdentifier;
+  data?: Data;
+}
+
+export interface CollisionDescriptor extends Collision {
+  data: {
+    droppableContainer: DroppableContainer;
+    value: number;
+    [key: string]: any;
+  };
+}
 
 export type CollisionDetection = (args: {
   active: Active;

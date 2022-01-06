@@ -94,10 +94,15 @@ export type {
 export {
   defaultCoordinates,
   getClientRect,
+  getFirstCollision,
   getScrollableAncestors,
   closestCenter,
   closestCorners,
   rectIntersection,
   pointerWithin,
 } from './utilities';
-export type {Collision, CollisionDetection} from './utilities';
+export type {
+  Collision,
+  CollisionDescriptor,
+  CollisionDetection,
+} from './utilities';

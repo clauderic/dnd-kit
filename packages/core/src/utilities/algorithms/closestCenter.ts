@@ -1,7 +1,7 @@
 import {distanceBetween} from '../coordinates';
 import type {Coordinates, ClientRect} from '../../types';
 
-import type {Collision, CollisionDetection} from './types';
+import type {CollisionDescriptor, CollisionDetection} from './types';
 import {sortCollisionsAsc} from './helpers';
 
 /**
@@ -31,7 +31,7 @@ export const closestCenter: CollisionDetection = ({
     collisionRect.left,
     collisionRect.top
   );
-  const collisions: Collision[] = [];
+  const collisions: CollisionDescriptor[] = [];
 
   for (const droppableContainer of droppableContainers) {
     const {
@@ -42,7 +42,7 @@ export const closestCenter: CollisionDetection = ({
     if (rect) {
       const distBetween = distanceBetween(centerOfRectangle(rect), centerRect);
 
-      collisions.push([id, distBetween]);
+      collisions.push({id, data: {droppableContainer, value: distBetween}});
     }
   }
 

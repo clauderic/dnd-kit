@@ -59,6 +59,7 @@ import {
   defaultCoordinates,
   getAdjustedRect,
   getRectDelta,
+  getFirstCollision,
   rectIntersection,
 } from '../../utilities';
 import {getTransformAgnosticClientRect} from '../../utilities/rect';
@@ -292,7 +293,7 @@ export const DndContext = memo(function DndContext({
           pointerCoordinates,
         })
       : null;
-  const overId = collisions && collisions.length > 0 ? collisions[0][0] : null;
+  const overId = getFirstCollision(collisions, 'id');
   const [over, setOver] = useState<Over | null>(null);
 
   const transform = adjustScale(

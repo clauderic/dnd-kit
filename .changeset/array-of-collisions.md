@@ -1,12 +1,15 @@
 ---
-"@dnd-kit/core": major
-"@dnd-kit/sortable": minor
+'@dnd-kit/core': major
+'@dnd-kit/sortable': minor
 ---
 
 Refactor of the `CollisionDetection` interface to return an array of `Collision`s:
 
 ```diff
-+export type Collision = [UniqueIdentifier, number];
++export interface Collision {
++  id: UniqueIdentifier;
++  data?: Record<string, any>;
++}
 
 export type CollisionDetection = (args: {
   active: Active;

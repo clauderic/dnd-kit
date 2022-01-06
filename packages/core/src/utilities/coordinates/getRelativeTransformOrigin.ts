@@ -1,15 +1,16 @@
-import {getEventCoordinates, isKeyboardEvent} from '@dnd-kit/utilities';
+import {getEventCoordinates} from '@dnd-kit/utilities';
 import type {ClientRect} from '../../types';
 
 export function getRelativeTransformOrigin(
   event: MouseEvent | TouchEvent | KeyboardEvent,
   rect: ClientRect
 ) {
-  if (isKeyboardEvent(event)) {
+  const eventCoordinates = getEventCoordinates(event);
+
+  if (!eventCoordinates) {
     return '0 0';
   }
 
-  const eventCoordinates = getEventCoordinates(event);
   const transformOrigin = {
     x: ((eventCoordinates.x - rect.left) / rect.width) * 100,
     y: ((eventCoordinates.y - rect.top) / rect.height) * 100,

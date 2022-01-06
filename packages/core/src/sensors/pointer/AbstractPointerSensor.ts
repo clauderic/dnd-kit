@@ -5,6 +5,7 @@ import {
   getWindow,
 } from '@dnd-kit/utilities';
 
+import {defaultCoordinates} from '../../utilities';
 import {
   getEventListenerTarget,
   hasExceededDistance,
@@ -80,7 +81,7 @@ export class AbstractPointerSensor implements SensorInstance {
     this.documentListeners = new Listeners(this.document);
     this.listeners = new Listeners(listenerTarget);
     this.windowListeners = new Listeners(getWindow(target));
-    this.initialCoordinates = getEventCoordinates(event);
+    this.initialCoordinates = getEventCoordinates(event) ?? defaultCoordinates;
     this.handleStart = this.handleStart.bind(this);
     this.handleMove = this.handleMove.bind(this);
     this.handleEnd = this.handleEnd.bind(this);
@@ -174,7 +175,7 @@ export class AbstractPointerSensor implements SensorInstance {
       return;
     }
 
-    const coordinates = getEventCoordinates(event);
+    const coordinates = getEventCoordinates(event) ?? defaultCoordinates;
     const delta = getCoordinatesDelta(initialCoordinates, coordinates);
 
     if (!activated && activationConstraint) {
