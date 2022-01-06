@@ -1,5 +1,10 @@
 import {useContext, useEffect, useMemo, useRef} from 'react';
-import {useDraggable, useDroppable, UseDraggableArguments} from '@dnd-kit/core';
+import {
+  useDraggable,
+  useDroppable,
+  UseDraggableArguments,
+  UseDroppableArguments,
+} from '@dnd-kit/core';
 import {CSS, useCombinedRefs} from '@dnd-kit/utilities';
 
 import {Context} from '../components';
@@ -20,7 +25,9 @@ import type {
 } from './types';
 import {useDerivedTransform} from './utilities';
 
-export interface Arguments extends UseDraggableArguments {
+export interface Arguments
+  extends UseDraggableArguments,
+    Pick<UseDroppableArguments, 'resizeObserverConfig'> {
   animateLayoutChanges?: AnimateLayoutChanges;
   getNewIndex?: NewIndexGetter;
   strategy?: SortingStrategy;
@@ -35,6 +42,7 @@ export function useSortable({
   getNewIndex = defaultNewIndexGetter,
   id,
   strategy: localStrategy,
+  resizeObserverConfig,
   transition = defaultTransition,
 }: Arguments) {
   const {
@@ -53,6 +61,10 @@ export function useSortable({
     () => ({sortable: {containerId, index, items}, ...customData}),
     [containerId, customData, index, items]
   );
+  const itemsAfterCurrentSortable = useMemo(
+    () => items.slice(items.indexOf(id)),
+    [items, id]
+  );
   const {
     collisions,
     rect,
@@ -62,6 +74,10 @@ export function useSortable({
   } = useDroppable({
     id,
     data,
+    resizeObserverConfig: {
+      recomputeIds: itemsAfterCurrentSortable,
+      ...resizeObserverConfig,
+    },
   });
   const {
     active,
