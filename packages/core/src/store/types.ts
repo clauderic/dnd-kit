@@ -94,7 +94,7 @@ export interface DndContextDescriptor {
   };
   scrollableAncestors: Element[];
   scrollableAncestorRects: ClientRect[];
-  recomputeLayouts(): void;
-  willRecomputeLayouts: boolean;
+  recomputeRects(ids: UniqueIdentifier[]): void;
+  willRecomputeRects: boolean;
   windowRect: ClientRect | null;
 }

@@ -3,7 +3,7 @@ import {useLazyMemo} from '@dnd-kit/utilities';
 
 import {Rect, getTransformAgnosticClientRect} from '../../utilities/rect';
 import type {DroppableContainer, RectMap} from '../../store/types';
-import type {ClientRect} from '../../types';
+import type {ClientRect, UniqueIdentifier} from '../../types';
 
 interface Arguments {
   dragging: boolean;
@@ -41,14 +41,21 @@ export function useDroppableMeasuring(
   containers: DroppableContainer[],
   {dragging, dependencies, config}: Arguments
 ) {
-  const [willRecomputeLayouts, setWillRecomputeLayouts] = useState(false);
+  const [recomputeIds, setRecomputeIds] = useState<UniqueIdentifier[] | null>(
+    null
+  );
+  const willRecomputeRects = recomputeIds != null;
   const {frequency, measure, strategy} = {
     ...defaultConfig,
     ...config,
   };
   const containersRef = useRef(containers);
-  const recomputeLayouts = useCallback(() => setWillRecomputeLayouts(true), []);
-  const recomputeLayoutsTimeoutId = useRef<NodeJS.Timeout | null>(null);
+  const recomputeRects = useCallback(
+    (ids: UniqueIdentifier[] = []) =>
+      setRecomputeIds((value) => (value ? value.concat(ids) : ids)),
+    []
+  );
+  const recomputeRectsTimeoutId = useRef<NodeJS.Timeout | null>(null);
   const disabled = isDisabled();
   const rectMap = useLazyMemo<RectMap>(
     (previousValue) => {
@@ -60,34 +67,47 @@ export function useDroppableMeasuring(
         !previousValue ||
         previousValue === defaultValue ||
         containersRef.current !== containers ||
-        willRecomputeLayouts
+        recomputeIds != null
       ) {
+        const rectMap: RectMap = new Map();
+
         for (let container of containers) {
           if (!container) {
             continue;
           }
-          const node = container.node.current;
 
-          container.rect.current = node ? new Rect(measure(node), node) : null;
+          if (
+            recomputeIds &&
+            recomputeIds.length > 0 &&
+            !recomputeIds.includes(container.id) &&
+            container.rect.current
+          ) {
+            // This container does not need to be recomputed
+            rectMap.set(container.id, container.rect.current);
+            continue;
+          }
+
+          const node = container.node.current;
+          const rect = node ? new Rect(measure(node), node) : null;
+
+          container.rect.current = rect;
+
+          if (rect) {
+            rectMap.set(container.id, rect);
+          }
         }
 
-        return createRectMap(containers);
+        return rectMap;
       }
 
       return previousValue;
     },
-    [containers, dragging, disabled, measure, willRecomputeLayouts]
+    [containers, dragging, disabled, measure, recomputeIds]
   );
 
   useEffect(() => {
     containersRef.current = containers;
   }, [containers]);
-
-  useEffect(() => {
-    if (willRecomputeLayouts) {
-      setWillRecomputeLayouts(false);
-    }
-  }, [willRecomputeLayouts]);
 
   useEffect(
     function recompute() {
@@ -95,35 +115,41 @@ export function useDroppableMeasuring(
         return;
       }
 
-      requestAnimationFrame(recomputeLayouts);
+      requestAnimationFrame(() => recomputeRects());
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [dragging, disabled]
   );
+
+  useEffect(() => {
+    if (willRecomputeRects) {
+      setRecomputeIds(null);
+    }
+  }, [willRecomputeRects]);
 
   useEffect(
     function forceRecomputeLayouts() {
       if (
         disabled ||
         typeof frequency !== 'number' ||
-        recomputeLayoutsTimeoutId.current !== null
+        recomputeRectsTimeoutId.current !== null
       ) {
         return;
       }
 
-      recomputeLayoutsTimeoutId.current = setTimeout(() => {
-        recomputeLayouts();
-        recomputeLayoutsTimeoutId.current = null;
+      recomputeRectsTimeoutId.current = setTimeout(() => {
+        recomputeRects();
+        recomputeRectsTimeoutId.current = null;
       }, frequency);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [frequency, disabled, recomputeLayouts, ...dependencies]
+    [frequency, disabled, recomputeRects, ...dependencies]
   );
 
   return {
     rectMap,
-    recomputeLayouts,
-    willRecomputeLayouts,
+    recomputeRects,
+    willRecomputeRects,
   };
 
   function isDisabled() {
@@ -136,26 +162,4 @@ export function useDroppableMeasuring(
         return !dragging;
     }
   }
-}
-
-function createRectMap(containers: DroppableContainer[] | null): RectMap {
-  const rectMap: RectMap = new Map();
-
-  if (containers) {
-    for (const container of containers) {
-      if (!container) {
-        continue;
-      }
-
-      const {id, rect} = container;
-
-      if (rect.current == null) {
-        continue;
-      }
-
-      rectMap.set(id, rect.current);
-    }
-  }
-
-  return rectMap;
 }

@@ -50,8 +50,8 @@ export function SortableContext({
     dragOverlay,
     droppableRects,
     over,
-    recomputeLayouts,
-    willRecomputeLayouts,
+    recomputeRects,
+    willRecomputeRects,
   } = useDndContext();
   const containerId = useUniqueId(ID_PREFIX, id);
   const useDragOverlay = Boolean(dragOverlay.rect !== null);
@@ -65,7 +65,6 @@ export function SortableContext({
   const isDragging = active != null;
   const wasDragging = useRef(false);
   const activeIndex = active ? items.indexOf(active.id) : -1;
-  const isSorting = activeIndex !== -1;
   const overIndex = over ? items.indexOf(over.id) : -1;
   const previousItemsRef = useRef(items);
   const sortedRects = getSortedRects(items, droppableRects);
@@ -74,11 +73,10 @@ export function SortableContext({
     (overIndex !== -1 && activeIndex === -1) || itemsHaveChanged;
 
   useIsomorphicLayoutEffect(() => {
-    if (itemsHaveChanged && isSorting && !willRecomputeLayouts) {
-      // To-do: Add partial recomputation of only subset of rects
-      recomputeLayouts();
+    if (itemsHaveChanged && isDragging && !willRecomputeRects) {
+      recomputeRects(items);
     }
-  }, [itemsHaveChanged, isSorting, recomputeLayouts, willRecomputeLayouts]);
+  }, [itemsHaveChanged, items, isDragging, recomputeRects, willRecomputeRects]);
 
   useEffect(() => {
     previousItemsRef.current = items;

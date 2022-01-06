@@ -29,7 +29,7 @@ export const Context = createContext<DndContextDescriptor>({
   },
   scrollableAncestors: [],
   scrollableAncestorRects: [],
-  recomputeLayouts: noop,
+  recomputeRects: noop,
   windowRect: null,
-  willRecomputeLayouts: false,
+  willRecomputeRects: false,
 });
