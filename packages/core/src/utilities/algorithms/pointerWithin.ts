@@ -1,41 +1,57 @@
 import type {Coordinates, ClientRect} from '../../types';
-import type {CollisionDetection} from './types';
+import {distanceBetween} from '../coordinates';
+
+import type {CollisionDescriptor, CollisionDetection} from './types';
+import {cornersOfRectangle, sortCollisionsAsc} from './helpers';
 
 /**
- * check if the given point is within the rectangle
+ * Check if a given point is contained within a bounding rectangle
  */
-function isPointerInside(
-  entry: ClientRect,
-  pointerCoordinates: Coordinates
-): boolean {
-  const {top, left, bottom, right} = entry;
+function isPointWithinRect(point: Coordinates, rect: ClientRect): boolean {
+  const {top, left, bottom, right} = rect;
 
   return (
-    top <= pointerCoordinates.y &&
-    pointerCoordinates.y <= bottom &&
-    left <= pointerCoordinates.x &&
-    pointerCoordinates.x <= right
+    top <= point.y && point.y <= bottom && left <= point.x && point.x <= right
   );
 }
 
 /**
- * Returns the rectangle that the pointer is hovering over
+ * Returns the rectangles that the pointer is hovering over
  */
 export const pointerWithin: CollisionDetection = ({
   droppableContainers,
   pointerCoordinates,
 }) => {
-  if (!pointerCoordinates) return null;
+  if (!pointerCoordinates) {
+    return [];
+  }
+
+  const collisions: CollisionDescriptor[] = [];
 
   for (const droppableContainer of droppableContainers) {
     const {
+      id,
       rect: {current: rect},
     } = droppableContainer;
 
-    if (rect && isPointerInside(rect, pointerCoordinates)) {
-      return droppableContainer.id;
+    if (rect && isPointWithinRect(pointerCoordinates, rect)) {
+      /* There may be more than a single rectangle intersecting
+       * with the pointer coordinates. In order to sort the
+       * colliding rectangles, we measure the distance between
+       * the pointer and the corners of the intersecting rectangle
+       */
+      const corners = cornersOfRectangle(rect);
+      const distances = corners.reduce((accumulator, corner) => {
+        return accumulator + distanceBetween(pointerCoordinates, corner);
+      }, 0);
+      const effectiveDistance = Number((distances / 4).toFixed(4));
+
+      collisions.push({
+        id,
+        data: {droppableContainer, value: effectiveDistance},
+      });
     }
   }
 
-  return null;
+  return collisions.sort(sortCollisionsAsc);
 };

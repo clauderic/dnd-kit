@@ -23,7 +23,7 @@ export function useDroppable({
   id,
 }: UseDroppableArguments) {
   const key = useUniqueId(ID_PREFIX);
-  const {active, dispatch, over} = useContext(Context);
+  const {active, collisions, dispatch, over} = useContext(Context);
   const rect = useRef<ClientRect | null>(null);
   const [nodeRef, setNodeRef] = useNodeRef();
   const dataRef = useData(data);
@@ -68,6 +68,7 @@ export function useDroppable({
 
   return {
     active,
+    collisions,
     rect,
     isOver: over?.id === id,
     node: nodeRef,

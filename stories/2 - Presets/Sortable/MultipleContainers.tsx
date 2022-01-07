@@ -3,12 +3,14 @@ import {createPortal, unstable_batchedUpdates} from 'react-dom';
 import {
   CancelDrop,
   closestCenter,
+  pointerWithin,
   rectIntersection,
   CollisionDetection,
   DndContext,
   DragOverlay,
   DropAnimation,
   defaultDropAnimation,
+  getFirstCollision,
   KeyboardSensor,
   MouseSensor,
   TouchSensor,
@@ -173,9 +175,6 @@ export function MultipleContainers({
   // Custom collision detection strategy optimized for multiple containers
   const collisionDetectionStrategy: CollisionDetection = useCallback(
     (args) => {
-      // Start by finding any intersecting droppable
-      let overId = rectIntersection(args);
-
       if (activeId && activeId in items) {
         return closestCenter({
           ...args,
@@ -185,11 +184,17 @@ export function MultipleContainers({
         });
       }
 
+      // Start by finding any intersecting droppable
+      const intersections = args.pointerCoordinates
+        ? pointerWithin(args)
+        : rectIntersection(args);
+      let overId = getFirstCollision(intersections, 'id');
+
       if (overId != null) {
         if (overId === TRASH_ID) {
           // If the intersecting droppable is the trash, return early
           // Remove this if you're not using trashable functionality in your app
-          return overId;
+          return intersections;
         }
 
         if (overId in items) {
@@ -205,13 +210,13 @@ export function MultipleContainers({
                   container.id !== overId &&
                   containerItems.includes(container.id)
               ),
-            });
+            })[0]?.id;
           }
         }
 
         lastOverId.current = overId;
 
-        return overId;
+        return [{id: overId}];
       }
 
       // When a draggable item moves to a new container, the layout may shift
@@ -223,7 +228,7 @@ export function MultipleContainers({
       }
 
       // If no droppable is matched, return the last match
-      return lastOverId.current;
+      return lastOverId.current ? [{id: lastOverId.current}] : [];
     },
     [activeId, items]
   );

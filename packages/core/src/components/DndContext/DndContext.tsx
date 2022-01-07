@@ -59,6 +59,7 @@ import {
   defaultCoordinates,
   getAdjustedRect,
   getRectDelta,
+  getFirstCollision,
   rectIntersection,
 } from '../../utilities';
 import {getTransformAgnosticClientRect} from '../../utilities/rect';
@@ -209,6 +210,7 @@ export const DndContext = memo(function DndContext({
     active: null,
     activeNode,
     collisionRect: null,
+    collisions: null,
     droppableRects,
     draggableNodes,
     draggingNode: null,
@@ -282,7 +284,7 @@ export const DndContext = memo(function DndContext({
     ? getAdjustedRect(draggingNodeRect, modifiedTranslate)
     : null;
 
-  const overId =
+  const collisions =
     active && collisionRect
       ? collisionDetection({
           active,
@@ -291,6 +293,7 @@ export const DndContext = memo(function DndContext({
           pointerCoordinates,
         })
       : null;
+  const overId = getFirstCollision(collisions, 'id');
   const [over, setOver] = useState<Over | null>(null);
 
   const transform = adjustScale(
@@ -368,7 +371,12 @@ export const DndContext = memo(function DndContext({
 
       function createHandler(type: Action.DragEnd | Action.DragCancel) {
         return async function handler() {
-          const {active, over, scrollAdjustedTranslate} = sensorContext.current;
+          const {
+            active,
+            collisions,
+            over,
+            scrollAdjustedTranslate,
+          } = sensorContext.current;
           let event: DragEndEvent | null = null;
 
           if (active && scrollAdjustedTranslate) {
@@ -376,6 +384,7 @@ export const DndContext = memo(function DndContext({
 
             event = {
               active: active,
+              collisions,
               delta: scrollAdjustedTranslate,
               over,
             };
@@ -480,7 +489,7 @@ export const DndContext = memo(function DndContext({
 
   useEffect(() => {
     const {onDragMove} = latestProps.current;
-    const {active, over} = sensorContext.current;
+    const {active, collisions, over} = sensorContext.current;
 
     if (!active) {
       return;
@@ -488,6 +497,7 @@ export const DndContext = memo(function DndContext({
 
     const event: DragMoveEvent = {
       active,
+      collisions,
       delta: {
         x: scrollAdjustedTranslate.x,
         y: scrollAdjustedTranslate.y,
@@ -503,6 +513,7 @@ export const DndContext = memo(function DndContext({
     () => {
       const {
         active,
+        collisions,
         droppableContainers,
         scrollAdjustedTranslate,
       } = sensorContext.current;
@@ -524,6 +535,7 @@ export const DndContext = memo(function DndContext({
           : null;
       const event: DragOverEvent = {
         active,
+        collisions,
         delta: {
           x: scrollAdjustedTranslate.x,
           y: scrollAdjustedTranslate.y,
@@ -546,6 +558,7 @@ export const DndContext = memo(function DndContext({
       active,
       activeNode,
       collisionRect,
+      collisions,
       droppableRects,
       draggableNodes,
       draggingNode,
@@ -563,6 +576,7 @@ export const DndContext = memo(function DndContext({
   }, [
     active,
     activeNode,
+    collisions,
     collisionRect,
     draggableNodes,
     draggingNode,
@@ -592,6 +606,7 @@ export const DndContext = memo(function DndContext({
       ariaDescribedById: {
         draggable: draggableDescribedById,
       },
+      collisions,
       containerNodeRect,
       dispatch,
       dragOverlay,
@@ -613,6 +628,7 @@ export const DndContext = memo(function DndContext({
     activeNodeRect,
     activatorEvent,
     activators,
+    collisions,
     containerNodeRect,
     dragOverlay,
     dispatch,

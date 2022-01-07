@@ -2,9 +2,14 @@ export {
   closestCenter,
   closestCorners,
   rectIntersection,
+  getFirstCollision,
   pointerWithin,
 } from './algorithms';
-export type {CollisionDetection} from './algorithms';
+export type {
+  Collision,
+  CollisionDescriptor,
+  CollisionDetection,
+} from './algorithms';
 
 export {
   defaultCoordinates,

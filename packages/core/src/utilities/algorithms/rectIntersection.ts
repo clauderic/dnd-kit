@@ -1,11 +1,15 @@
-import type {ClientRect, UniqueIdentifier} from '../../types';
+import type {ClientRect} from '../../types';
 
-import type {CollisionDetection} from './types';
+import type {CollisionDescriptor, CollisionDetection} from './types';
+import {sortCollisionsDesc} from './helpers';
 
 /**
  * Returns the intersecting rectangle area between two rectangles
  */
-function getIntersectionRatio(entry: ClientRect, target: ClientRect): number {
+export function getIntersectionRatio(
+  entry: ClientRect,
+  target: ClientRect
+): number {
   const top = Math.max(target.top, entry.top);
   const left = Math.max(target.left, entry.left);
   const right = Math.min(target.left + target.width, entry.left + entry.width);
@@ -28,30 +32,32 @@ function getIntersectionRatio(entry: ClientRect, target: ClientRect): number {
 }
 
 /**
- * Returns the rectangle that has the greatest intersection area with a given
+ * Returns the rectangles that has the greatest intersection area with a given
  * rectangle in an array of rectangles.
  */
 export const rectIntersection: CollisionDetection = ({
   collisionRect,
   droppableContainers,
 }) => {
-  let maxIntersectionRatio = 0;
-  let maxIntersectingDroppableContainer: UniqueIdentifier | null = null;
+  const collisions: CollisionDescriptor[] = [];
 
   for (const droppableContainer of droppableContainers) {
     const {
+      id,
       rect: {current: rect},
     } = droppableContainer;
 
     if (rect) {
       const intersectionRatio = getIntersectionRatio(rect, collisionRect);
 
-      if (intersectionRatio > maxIntersectionRatio) {
-        maxIntersectionRatio = intersectionRatio;
-        maxIntersectingDroppableContainer = droppableContainer.id;
+      if (intersectionRatio > 0) {
+        collisions.push({
+          id,
+          data: {droppableContainer, value: intersectionRatio},
+        });
       }
     }
   }
 
-  return maxIntersectingDroppableContainer;
+  return collisions.sort(sortCollisionsDesc);
 };

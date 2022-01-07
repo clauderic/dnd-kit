@@ -14,6 +14,7 @@ import type {
   UniqueIdentifier,
   ClientRect,
 } from '../types';
+import type {Collision} from '../utilities/algorithms';
 
 export enum Response {
   Start = 'start',
@@ -25,6 +26,7 @@ export type SensorContext = {
   active: Active | null;
   activeNode: HTMLElement | null;
   collisionRect: ClientRect | null;
+  collisions: Collision[] | null;
   draggableNodes: DraggableNodes;
   draggingNode: HTMLElement | null;
   draggingNodeRect: ClientRect | null;

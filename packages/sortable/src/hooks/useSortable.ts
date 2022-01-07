@@ -53,7 +53,13 @@ export function useSortable({
     () => ({sortable: {containerId, index, items}, ...customData}),
     [containerId, customData, index, items]
   );
-  const {rect, node, setNodeRef: setDroppableNodeRef} = useDroppable({
+  const {
+    collisions,
+    rect,
+    node,
+    isOver,
+    setNodeRef: setDroppableNodeRef,
+  } = useDroppable({
     id,
     data,
   });
@@ -143,10 +149,15 @@ export function useSortable({
 
   return {
     active,
+    activeIndex,
     attributes,
     activatorEvent,
+    collisions,
     rect,
     index,
+    newIndex,
+    items,
+    isOver,
     isSorting,
     isDragging,
     listeners,

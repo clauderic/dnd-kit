@@ -1,6 +1,7 @@
 import {
   closestCorners,
   getClientRect,
+  getFirstCollision,
   KeyboardCode,
   KeyboardCoordinateGetter,
   DroppableContainer,
@@ -103,11 +104,13 @@ export const sortableTreeKeyboardCoordinates: (
       });
     }
 
-    const closestId = closestCorners({
+    const collisions = closestCorners({
       active,
       collisionRect: collisionRect,
+      pointerCoordinates: null,
       droppableContainers: containers,
     });
+    const closestId = getFirstCollision(collisions, 'id');
 
     if (closestId && over?.id) {
       const newNode = droppableContainers.get(closestId)?.node.current;
