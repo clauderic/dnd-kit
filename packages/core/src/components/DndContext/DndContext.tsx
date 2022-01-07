@@ -187,9 +187,9 @@ export const DndContext = memo(function DndContext({
     return droppableContainers.getEnabled();
   }, [droppableContainers]);
   const {
-    rectMap: droppableRects,
-    recomputeLayouts,
-    willRecomputeLayouts,
+    droppableRects,
+    measureDroppableContainers,
+    measuringScheduled,
   } = useDroppableMeasuring(enabledDroppableContainers, {
     dragging: isDragging,
     dependencies: [translate.x, translate.y],
@@ -614,10 +614,10 @@ export const DndContext = memo(function DndContext({
       droppableContainers,
       droppableRects,
       over,
-      recomputeLayouts,
+      measureDroppableContainers,
       scrollableAncestors,
       scrollableAncestorRects,
-      willRecomputeLayouts,
+      measuringScheduled,
       windowRect,
     };
 
@@ -637,10 +637,10 @@ export const DndContext = memo(function DndContext({
     droppableContainers,
     droppableRects,
     over,
-    recomputeLayouts,
+    measureDroppableContainers,
     scrollableAncestors,
     scrollableAncestorRects,
-    willRecomputeLayouts,
+    measuringScheduled,
     windowRect,
   ]);
 

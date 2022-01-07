@@ -1,10 +1,8 @@
 import {useRef} from 'react';
 import {useIsomorphicLayoutEffect} from '@dnd-kit/utilities';
 
-import type {Data} from '../../store';
-
-export function useData(data: Data | undefined) {
-  const dataRef = useRef(data);
+export function useLatestValue<T extends any>(data: T) {
+  const dataRef = useRef<T>(data);
 
   useIsomorphicLayoutEffect(() => {
     if (dataRef.current !== data) {

@@ -1,4 +1,4 @@
-import {useContext, useEffect, useRef} from 'react';
+import {useCallback, useContext, useEffect, useMemo, useRef} from 'react';
 import {
   useIsomorphicLayoutEffect,
   useNodeRef,
@@ -6,27 +6,109 @@ import {
 } from '@dnd-kit/utilities';
 
 import {Context, Action, Data} from '../store';
-import type {ClientRect} from '../types';
-import {useData} from './utilities';
+import type {ClientRect, UniqueIdentifier} from '../types';
+import {useLatestValue} from './utilities';
+
+interface ResizeObserverConfig {
+  /** Whether the ResizeObserver should be disabled entirely */
+  disabled?: boolean;
+  /** Resize events may affect the layout and position of other droppable containers.
+   * Specify an array of `UniqueIdentifier` of droppable containers that should also be re-measured
+   * when this droppable container resizes. Specifying an empty array re-measures all droppable containers.
+   */
+  updateMeasurementsFor?: UniqueIdentifier[];
+  /** Represents the debounce timeout between when resize events are observed and when elements are re-measured */
+  timeout?: number;
+}
 
 export interface UseDroppableArguments {
-  id: string;
+  id: UniqueIdentifier;
   disabled?: boolean;
   data?: Data;
+  resizeObserverConfig?: ResizeObserverConfig;
 }
 
 const ID_PREFIX = 'Droppable';
+
+const defaultResizeObserverConfig = {
+  timeout: 50,
+};
 
 export function useDroppable({
   data,
   disabled = false,
   id,
+  resizeObserverConfig,
 }: UseDroppableArguments) {
   const key = useUniqueId(ID_PREFIX);
-  const {active, collisions, dispatch, over} = useContext(Context);
+  const {
+    active,
+    collisions,
+    dispatch,
+    over,
+    measureDroppableContainers,
+  } = useContext(Context);
+  const resizeObserverConnected = useRef(false);
   const rect = useRef<ClientRect | null>(null);
-  const [nodeRef, setNodeRef] = useNodeRef();
-  const dataRef = useData(data);
+  const callbackId = useRef<NodeJS.Timeout | null>(null);
+  const {
+    disabled: resizeObserverDisabled,
+    updateMeasurementsFor,
+    timeout: resizeObserverTimeout,
+  } = {
+    ...defaultResizeObserverConfig,
+    ...resizeObserverConfig,
+  };
+  const ids = useLatestValue(updateMeasurementsFor ?? id);
+  const handleResize = useCallback(
+    () => {
+      if (!resizeObserverConnected.current) {
+        // ResizeObserver invokes the `handleResize` callback as soon as `observe` is called,
+        // assuming the element is rendered and displayed.
+        resizeObserverConnected.current = true;
+        return;
+      }
+
+      if (callbackId.current != null) {
+        clearTimeout(callbackId.current);
+      }
+
+      callbackId.current = setTimeout(() => {
+        measureDroppableContainers(
+          typeof ids.current === 'string' ? [ids.current] : ids.current
+        );
+        callbackId.current = null;
+      }, resizeObserverTimeout);
+    },
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+    [resizeObserverTimeout]
+  );
+  const resizeObserver = useMemo(
+    () =>
+      !active || resizeObserverDisabled
+        ? null
+        : new ResizeObserver(handleResize),
+    [active, handleResize, resizeObserverDisabled]
+  );
+  const handleNodeChange = useCallback(
+    (newElement: HTMLElement | null, previousElement: HTMLElement | null) => {
+      if (!resizeObserver) {
+        return;
+      }
+
+      if (previousElement) {
+        resizeObserver.unobserve(previousElement);
+        resizeObserverConnected.current = false;
+      }
+
+      if (newElement) {
+        resizeObserver.observe(newElement);
+      }
+    },
+    [resizeObserver]
+  );
+  const [nodeRef, setNodeRef] = useNodeRef(handleNodeChange);
+  const dataRef = useLatestValue(data);
 
   useIsomorphicLayoutEffect(
     () => {

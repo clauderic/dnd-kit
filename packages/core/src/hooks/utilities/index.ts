@@ -6,7 +6,7 @@ export {
 export type {Options as AutoScrollOptions} from './useAutoScroller';
 export {useCachedNode} from './useCachedNode';
 export {useCombineActivators} from './useCombineActivators';
-export {useData} from './useData';
+export {useLatestValue} from './useLatestValue';
 export {
   useDroppableMeasuring,
   MeasuringFrequency,

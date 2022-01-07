@@ -9,7 +9,7 @@ import {
 import {Context, Data} from '../store';
 import {ActiveDraggableContext} from '../components/DndContext';
 import {
-  useData,
+  useLatestValue,
   useSyntheticListeners,
   SyntheticListenerMap,
 } from './utilities';
@@ -58,7 +58,7 @@ export function useDraggable({
   );
   const [node, setNodeRef] = useNodeRef();
   const listeners = useSyntheticListeners(activators, id);
-  const dataRef = useData(data);
+  const dataRef = useLatestValue(data);
 
   useIsomorphicLayoutEffect(
     () => {

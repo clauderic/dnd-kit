@@ -140,7 +140,8 @@ export const RerenderBeforeSorting = () => {
       {...props}
       wrapperStyle={({isDragging}) => {
         return {
-          height: isDragging ? undefined : 200,
+          transition: 'height 250ms ease',
+          height: isDragging ? 100 : 200,
         };
       }}
     />
