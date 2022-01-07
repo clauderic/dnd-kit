@@ -10,9 +10,15 @@ import type {ClientRect, UniqueIdentifier} from '../types';
 import {useLatestValue} from './utilities';
 
 interface ResizeObserverConfig {
+  /** Whether the ResizeObserver should be disabled entirely */
   disabled?: boolean;
+  /** Resize events may affect the layout and position of other droppable containers.
+   * Specify an array of `UniqueIdentifier` of droppable containers that should also be re-measured
+   * when this droppable container resizes. Specifying an empty array re-measures all droppable containers.
+   */
+  updateMeasurementsFor?: UniqueIdentifier[];
+  /** Represents the debounce timeout between when resize events are observed and when elements are re-measured */
   timeout?: number;
-  recomputeIds?: UniqueIdentifier[];
 }
 
 export interface UseDroppableArguments {
@@ -35,28 +41,31 @@ export function useDroppable({
   resizeObserverConfig,
 }: UseDroppableArguments) {
   const key = useUniqueId(ID_PREFIX);
-  const {active, collisions, dispatch, over, recomputeRects} = useContext(
-    Context
-  );
+  const {
+    active,
+    collisions,
+    dispatch,
+    over,
+    measureDroppableContainers,
+  } = useContext(Context);
+  const resizeObserverConnected = useRef(false);
   const rect = useRef<ClientRect | null>(null);
-  const resizeEventCount = useRef(0);
   const callbackId = useRef<NodeJS.Timeout | null>(null);
   const {
     disabled: resizeObserverDisabled,
-    recomputeIds,
+    updateMeasurementsFor,
     timeout: resizeObserverTimeout,
   } = {
     ...defaultResizeObserverConfig,
     ...resizeObserverConfig,
   };
-  const recomputeIdsRef = useLatestValue(recomputeIds);
+  const ids = useLatestValue(updateMeasurementsFor ?? id);
   const handleResize = useCallback(
     () => {
-      const isFirstResizeEvent = resizeEventCount.current === 0;
-
-      resizeEventCount.current++;
-
-      if (isFirstResizeEvent) {
+      if (!resizeObserverConnected.current) {
+        // ResizeObserver invokes the `handleResize` callback as soon as `observe` is called,
+        // assuming the element is rendered and displayed.
+        resizeObserverConnected.current = true;
         return;
       }
 
@@ -65,17 +74,21 @@ export function useDroppable({
       }
 
       callbackId.current = setTimeout(() => {
+        measureDroppableContainers(
+          typeof ids.current === 'string' ? [ids.current] : ids.current
+        );
         callbackId.current = null;
-
-        recomputeRects(recomputeIdsRef.current ?? []);
       }, resizeObserverTimeout);
     },
     //eslint-disable-next-line react-hooks/exhaustive-deps
-    [recomputeRects, resizeObserverTimeout]
+    [resizeObserverTimeout]
   );
   const resizeObserver = useMemo(
-    () => (resizeObserverDisabled ? null : new ResizeObserver(handleResize)),
-    [handleResize, resizeObserverDisabled]
+    () =>
+      !active || resizeObserverDisabled
+        ? null
+        : new ResizeObserver(handleResize),
+    [active, handleResize, resizeObserverDisabled]
   );
   const handleNodeChange = useCallback(
     (newElement: HTMLElement | null, previousElement: HTMLElement | null) => {
@@ -85,6 +98,7 @@ export function useDroppable({
 
       if (previousElement) {
         resizeObserver.unobserve(previousElement);
+        resizeObserverConnected.current = false;
       }
 
       if (newElement) {

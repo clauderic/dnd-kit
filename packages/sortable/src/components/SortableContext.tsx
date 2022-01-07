@@ -50,8 +50,8 @@ export function SortableContext({
     dragOverlay,
     droppableRects,
     over,
-    recomputeRects,
-    willRecomputeRects,
+    measureDroppableContainers,
+    measuringScheduled,
   } = useDndContext();
   const containerId = useUniqueId(ID_PREFIX, id);
   const useDragOverlay = Boolean(dragOverlay.rect !== null);
@@ -73,10 +73,16 @@ export function SortableContext({
     (overIndex !== -1 && activeIndex === -1) || itemsHaveChanged;
 
   useIsomorphicLayoutEffect(() => {
-    if (itemsHaveChanged && isDragging && !willRecomputeRects) {
-      recomputeRects(items);
+    if (itemsHaveChanged && isDragging && !measuringScheduled) {
+      measureDroppableContainers(items);
     }
-  }, [itemsHaveChanged, items, isDragging, recomputeRects, willRecomputeRects]);
+  }, [
+    itemsHaveChanged,
+    items,
+    isDragging,
+    measureDroppableContainers,
+    measuringScheduled,
+  ]);
 
   useEffect(() => {
     previousItemsRef.current = items;

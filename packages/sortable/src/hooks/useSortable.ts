@@ -75,7 +75,7 @@ export function useSortable({
     id,
     data,
     resizeObserverConfig: {
-      recomputeIds: itemsAfterCurrentSortable,
+      updateMeasurementsFor: itemsAfterCurrentSortable,
       ...resizeObserverConfig,
     },
   });

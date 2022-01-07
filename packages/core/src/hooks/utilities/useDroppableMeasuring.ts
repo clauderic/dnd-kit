@@ -41,35 +41,40 @@ export function useDroppableMeasuring(
   containers: DroppableContainer[],
   {dragging, dependencies, config}: Arguments
 ) {
-  const [recomputeIds, setRecomputeIds] = useState<UniqueIdentifier[] | null>(
-    null
-  );
-  const willRecomputeRects = recomputeIds != null;
+  const [
+    containerIdsScheduledForMeasurement,
+    setContainerIdsScheduledForMeasurement,
+  ] = useState<UniqueIdentifier[] | null>(null);
+  const measuringScheduled = containerIdsScheduledForMeasurement != null;
   const {frequency, measure, strategy} = {
     ...defaultConfig,
     ...config,
   };
   const containersRef = useRef(containers);
-  const recomputeRects = useCallback(
+  const measureDroppableContainers = useCallback(
     (ids: UniqueIdentifier[] = []) =>
-      setRecomputeIds((value) => (value ? value.concat(ids) : ids)),
+      setContainerIdsScheduledForMeasurement((value) =>
+        value ? value.concat(ids) : ids
+      ),
     []
   );
-  const recomputeRectsTimeoutId = useRef<NodeJS.Timeout | null>(null);
+  const timeoutId = useRef<NodeJS.Timeout | null>(null);
   const disabled = isDisabled();
-  const rectMap = useLazyMemo<RectMap>(
+  const droppableRects = useLazyMemo<RectMap>(
     (previousValue) => {
       if (disabled && !dragging) {
         return defaultValue;
       }
 
+      const ids = containerIdsScheduledForMeasurement;
+
       if (
         !previousValue ||
         previousValue === defaultValue ||
         containersRef.current !== containers ||
-        recomputeIds != null
+        ids != null
       ) {
-        const rectMap: RectMap = new Map();
+        const map: RectMap = new Map();
 
         for (let container of containers) {
           if (!container) {
@@ -77,13 +82,13 @@ export function useDroppableMeasuring(
           }
 
           if (
-            recomputeIds &&
-            recomputeIds.length > 0 &&
-            !recomputeIds.includes(container.id) &&
+            ids &&
+            ids.length > 0 &&
+            !ids.includes(container.id) &&
             container.rect.current
           ) {
-            // This container does not need to be recomputed
-            rectMap.set(container.id, container.rect.current);
+            // This container does not need to be re-measured
+            map.set(container.id, container.rect.current);
             continue;
           }
 
@@ -93,16 +98,22 @@ export function useDroppableMeasuring(
           container.rect.current = rect;
 
           if (rect) {
-            rectMap.set(container.id, rect);
+            map.set(container.id, rect);
           }
         }
 
-        return rectMap;
+        return map;
       }
 
       return previousValue;
     },
-    [containers, dragging, disabled, measure, recomputeIds]
+    [
+      containers,
+      containerIdsScheduledForMeasurement,
+      dragging,
+      disabled,
+      measure,
+    ]
   );
 
   useEffect(() => {
@@ -110,46 +121,46 @@ export function useDroppableMeasuring(
   }, [containers]);
 
   useEffect(
-    function recompute() {
+    () => {
       if (disabled) {
         return;
       }
 
-      requestAnimationFrame(() => recomputeRects());
+      requestAnimationFrame(() => measureDroppableContainers());
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [dragging, disabled]
   );
 
   useEffect(() => {
-    if (willRecomputeRects) {
-      setRecomputeIds(null);
+    if (measuringScheduled) {
+      setContainerIdsScheduledForMeasurement(null);
     }
-  }, [willRecomputeRects]);
+  }, [measuringScheduled]);
 
   useEffect(
-    function forceRecomputeLayouts() {
+    () => {
       if (
         disabled ||
         typeof frequency !== 'number' ||
-        recomputeRectsTimeoutId.current !== null
+        timeoutId.current !== null
       ) {
         return;
       }
 
-      recomputeRectsTimeoutId.current = setTimeout(() => {
-        recomputeRects();
-        recomputeRectsTimeoutId.current = null;
+      timeoutId.current = setTimeout(() => {
+        measureDroppableContainers();
+        timeoutId.current = null;
       }, frequency);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [frequency, disabled, recomputeRects, ...dependencies]
+    [frequency, disabled, measureDroppableContainers, ...dependencies]
   );
 
   return {
-    rectMap,
-    recomputeRects,
-    willRecomputeRects,
+    droppableRects,
+    measureDroppableContainers,
+    measuringScheduled,
   };
 
   function isDisabled() {
