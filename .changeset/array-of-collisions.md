@@ -27,3 +27,15 @@ The `over` property remains a single `UniqueIdentifier`, and is set to the first
 Consumers can also access the `collisions` property which can be used to implement use-cases such as combining droppables in user-land.
 
 The `onDragMove`, `onDragOver` and `onDragEnd` callbacks are also updated to receive the collisions array property.
+
+Built-in collision detections such as rectIntersection, closestCenter, closestCorners and pointerWithin adhere to the CollisionDescriptor interface, which extends the Collision interface:
+
+```ts
+export interface CollisionDescriptor extends Collision {
+  data: {
+    droppableContainer: DroppableContainer;
+    value: number;
+    [key: string]: any;
+  };
+}
+```
