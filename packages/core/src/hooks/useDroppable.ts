@@ -1,13 +1,13 @@
 import {useCallback, useContext, useEffect, useMemo, useRef} from 'react';
 import {
   useIsomorphicLayoutEffect,
+  useLatestValue,
   useNodeRef,
   useUniqueId,
 } from '@dnd-kit/utilities';
 
 import {Context, Action, Data} from '../store';
 import type {ClientRect, UniqueIdentifier} from '../types';
-import {useLatestValue} from './utilities';
 
 interface ResizeObserverConfig {
   /** Whether the ResizeObserver should be disabled entirely */

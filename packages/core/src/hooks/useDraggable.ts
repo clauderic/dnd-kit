@@ -2,17 +2,14 @@ import {createContext, useContext, useMemo} from 'react';
 import {
   Transform,
   useNodeRef,
-  useUniqueId,
   useIsomorphicLayoutEffect,
+  useLatestValue,
+  useUniqueId,
 } from '@dnd-kit/utilities';
 
 import {Context, Data} from '../store';
 import {ActiveDraggableContext} from '../components/DndContext';
-import {
-  useLatestValue,
-  useSyntheticListeners,
-  SyntheticListenerMap,
-} from './utilities';
+import {useSyntheticListeners, SyntheticListenerMap} from './utilities';
 
 export interface UseDraggableArguments {
   id: string;

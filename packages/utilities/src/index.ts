@@ -2,6 +2,7 @@ export {
   useCombinedRefs,
   useIsomorphicLayoutEffect,
   useInterval,
+  useLatestValue,
   useLazyMemo,
   useNodeRef,
   useUniqueId,
