@@ -21,7 +21,7 @@ interface ResizeObserverConfig {
 }
 ```
 
-By default, only the current droppable is re-measured when a resize event is observed. However, this may not be suitable for all use-cases. When an element resizes, it can affect the layout and position of other elements, such that it may be necessary to re-measure other droppable nodes in response to that single resize event. The `recomputeIds` property can be used to specify which droppable `id`s should be re-measured in response to resize events being observed.
+By default, only the current droppable is scheduled to be re-measured when a resize event is observed. However, this may not be suitable for all use-cases. When an element resizes, it can affect the layout and position of other elements, such that it may be necessary to re-measure other droppable nodes in response to that single resize event. The `recomputeIds` property can be used to specify which droppable `id`s should be re-measured in response to resize events being observed.
 
 For example, the `useSortable` preset re-computes the measurements of all sortable elements after the element that resizes, so long as they are within the same `SortableContext` as the element that resizes, since it's highly likely that their layout will also shift.
 

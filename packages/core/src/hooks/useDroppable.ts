@@ -31,7 +31,7 @@ export interface UseDroppableArguments {
 const ID_PREFIX = 'Droppable';
 
 const defaultResizeObserverConfig = {
-  timeout: 50,
+  timeout: 25,
 };
 
 export function useDroppable({
@@ -109,6 +109,16 @@ export function useDroppable({
   );
   const [nodeRef, setNodeRef] = useNodeRef(handleNodeChange);
   const dataRef = useLatestValue(data);
+
+  useEffect(() => {
+    if (!resizeObserver || !nodeRef.current) {
+      return;
+    }
+
+    resizeObserver.disconnect();
+    resizeObserverConnected.current = false;
+    resizeObserver.observe(nodeRef.current);
+  }, [nodeRef, resizeObserver]);
 
   useIsomorphicLayoutEffect(
     () => {
