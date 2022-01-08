@@ -20,6 +20,7 @@ import {
   useSensors,
   useSensor,
   MeasuringStrategy,
+  closestCorners,
 } from '@dnd-kit/core';
 import {
   AnimateLayoutChanges,
@@ -172,7 +173,15 @@ export function MultipleContainers({
   const lastOverId = useRef<UniqueIdentifier | null>(null);
   const recentlyMovedToNewContainer = useRef(false);
   const isSortingContainer = activeId ? containers.includes(activeId) : false;
-  // Custom collision detection strategy optimized for multiple containers
+
+  /**
+   * Custom collision detection strategy optimized for multiple containers
+   *
+   * - First, find any droppable containers intersecting with the pointer.
+   * - If there are none, find intersecting containers with the active draggable.
+   * - If there are no intersecting containers, return the last matched intersection
+   *
+   */
   const collisionDetectionStrategy: CollisionDetection = useCallback(
     (args) => {
       if (activeId && activeId in items) {
@@ -185,9 +194,12 @@ export function MultipleContainers({
       }
 
       // Start by finding any intersecting droppable
-      const intersections = args.pointerCoordinates
-        ? pointerWithin(args)
-        : rectIntersection(args);
+      const pointerIntersections = pointerWithin(args);
+      const intersections =
+        pointerIntersections.length > 0
+          ? // If there are droppables intersecting with the pointer, return those
+            pointerIntersections
+          : rectIntersection(args);
       let overId = getFirstCollision(intersections, 'id');
 
       if (overId != null) {
