@@ -1,4 +1,4 @@
-import React, {MutableRefObject, useEffect, useMemo, useRef} from 'react';
+import React, {useEffect, useMemo, useRef} from 'react';
 import {useDndContext, ClientRect, UniqueIdentifier} from '@dnd-kit/core';
 import {useIsomorphicLayoutEffect, useUniqueId} from '@dnd-kit/utilities';
 
@@ -24,7 +24,6 @@ interface ContextDescriptor {
   useDragOverlay: boolean;
   sortedRects: ClientRect[];
   strategy: SortingStrategy;
-  wasDragging: MutableRefObject<boolean>;
 }
 
 export const Context = React.createContext<ContextDescriptor>({
@@ -36,7 +35,6 @@ export const Context = React.createContext<ContextDescriptor>({
   useDragOverlay: false,
   sortedRects: [],
   strategy: rectSortingStrategy,
-  wasDragging: {current: false},
 });
 
 export function SortableContext({
@@ -63,7 +61,6 @@ export function SortableContext({
     [userDefinedItems]
   );
   const isDragging = active != null;
-  const wasDragging = useRef(false);
   const activeIndex = active ? items.indexOf(active.id) : -1;
   const overIndex = over ? items.indexOf(over.id) : -1;
   const previousItemsRef = useRef(items);
@@ -88,14 +85,6 @@ export function SortableContext({
     previousItemsRef.current = items;
   }, [items]);
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      wasDragging.current = isDragging;
-    }, 100);
-
-    return () => clearTimeout(timeoutId);
-  }, [isDragging]);
-
   const contextValue = useMemo(
     (): ContextDescriptor => ({
       activeIndex,
@@ -106,7 +95,6 @@ export function SortableContext({
       useDragOverlay,
       sortedRects,
       strategy,
-      wasDragging,
     }),
     [
       activeIndex,
@@ -117,7 +105,6 @@ export function SortableContext({
       sortedRects,
       useDragOverlay,
       strategy,
-      wasDragging,
     ]
   );
 
