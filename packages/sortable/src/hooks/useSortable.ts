@@ -64,13 +64,7 @@ export function useSortable({
     () => items.slice(items.indexOf(id)),
     [items, id]
   );
-  const {
-    collisions,
-    rect,
-    node,
-    isOver,
-    setNodeRef: setDroppableNodeRef,
-  } = useDroppable({
+  const {rect, node, isOver, setNodeRef: setDroppableNodeRef} = useDroppable({
     id,
     data,
     resizeObserverConfig: {
@@ -81,7 +75,6 @@ export function useSortable({
   const {
     active,
     activeNodeRect,
-    activatorEvent,
     attributes,
     setNodeRef: setDraggableNodeRef,
     listeners,
@@ -168,8 +161,6 @@ export function useSortable({
     active,
     activeIndex,
     attributes,
-    activatorEvent,
-    collisions,
     rect,
     index,
     newIndex,

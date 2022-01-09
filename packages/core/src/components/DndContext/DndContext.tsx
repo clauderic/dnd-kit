@@ -19,8 +19,10 @@ import {
 
 import {
   Action,
-  Context,
-  DndContextDescriptor,
+  PublicContext,
+  InternalContext,
+  PublicContextDescriptor,
+  InternalContextDescriptor,
   getInitialState,
   reducer,
 } from '../../store';
@@ -596,19 +598,14 @@ export const DndContext = memo(function DndContext({
     scrollableAncestorRects,
   });
 
-  const contextValue = useMemo(() => {
-    const memoizedContext: DndContextDescriptor = {
+  const publicContext = useMemo(() => {
+    const context: PublicContextDescriptor = {
       active,
       activeNode,
       activeNodeRect,
       activatorEvent,
-      activators,
-      ariaDescribedById: {
-        draggable: draggableDescribedById,
-      },
       collisions,
       containerNodeRect,
-      dispatch,
       dragOverlay,
       draggableNodes,
       droppableContainers,
@@ -621,19 +618,16 @@ export const DndContext = memo(function DndContext({
       windowRect,
     };
 
-    return memoizedContext;
+    return context;
   }, [
     active,
     activeNode,
     activeNodeRect,
     activatorEvent,
-    activators,
     collisions,
     containerNodeRect,
     dragOverlay,
-    dispatch,
     draggableNodes,
-    draggableDescribedById,
     droppableContainers,
     droppableRects,
     over,
@@ -644,13 +638,41 @@ export const DndContext = memo(function DndContext({
     windowRect,
   ]);
 
+  const internalContext = useMemo(() => {
+    const context: InternalContextDescriptor = {
+      active,
+      activeNodeRect,
+      activators,
+      ariaDescribedById: {
+        draggable: draggableDescribedById,
+      },
+      dispatch,
+      draggableNodes,
+      over,
+      measureDroppableContainers,
+    };
+
+    return context;
+  }, [
+    active,
+    activeNodeRect,
+    activators,
+    dispatch,
+    draggableDescribedById,
+    draggableNodes,
+    over,
+    measureDroppableContainers,
+  ]);
+
   return (
     <DndMonitorContext.Provider value={monitorState}>
-      <Context.Provider value={contextValue}>
-        <ActiveDraggableContext.Provider value={transform}>
-          {children}
-        </ActiveDraggableContext.Provider>
-      </Context.Provider>
+      <InternalContext.Provider value={internalContext}>
+        <PublicContext.Provider value={publicContext}>
+          <ActiveDraggableContext.Provider value={transform}>
+            {children}
+          </ActiveDraggableContext.Provider>
+        </PublicContext.Provider>
+      </InternalContext.Provider>
       <Accessibility
         announcements={announcements}
         hiddenTextDescribedById={draggableDescribedById}
