@@ -4,12 +4,12 @@ import {restrictToBoundingRect} from './utilities';
 
 export const restrictToWindowEdges: Modifier = ({
   transform,
-  activeNodeRect,
+  draggingNodeRect,
   windowRect,
 }) => {
-  if (!activeNodeRect || !windowRect) {
+  if (!draggingNodeRect || !windowRect) {
     return transform;
   }
 
-  return restrictToBoundingRect(transform, activeNodeRect, windowRect);
+  return restrictToBoundingRect(transform, draggingNodeRect, windowRect);
 };
