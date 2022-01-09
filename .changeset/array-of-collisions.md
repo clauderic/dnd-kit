@@ -39,3 +39,13 @@ export interface CollisionDescriptor extends Collision {
   };
 }
 ```
+
+Consumers can also access the array of collisions in components wrapped by `<DndContext>` via the `useDndContext()` hook:
+
+```ts
+import {useDndContext} from '@dnd-kit/core';
+
+function MyComponent() {
+  const {collisions} = useDndContext();
+}
+```
