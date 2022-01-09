@@ -54,7 +54,6 @@ export function useSortable({
     overIndex,
     useDragOverlay,
     strategy: globalStrategy,
-    wasDragging,
   } = useContext(Context);
   const index = items.indexOf(id);
   const data = useMemo(
@@ -102,7 +101,6 @@ export function useSortable({
   const isSorting = Boolean(active);
   const displaceItem =
     isSorting &&
-    wasDragging.current &&
     !disableTransforms &&
     isValidIndex(activeIndex) &&
     isValidIndex(overIndex);
@@ -124,10 +122,9 @@ export function useSortable({
     isValidIndex(activeIndex) && isValidIndex(overIndex)
       ? getNewIndex({id, items, activeIndex, overIndex})
       : index;
-  const prevItems = useRef(items);
-  const itemsHaveChanged = items !== prevItems.current;
-  const prevNewIndex = useRef(newIndex);
-  const previousContainerId = useRef(containerId);
+  const activeId = active?.id;
+  const previous = useRef({activeId, items, newIndex, containerId});
+  const itemsHaveChanged = items !== previous.current.items;
   const shouldAnimateLayoutChanges = animateLayoutChanges({
     active,
     containerId,
@@ -136,11 +133,11 @@ export function useSortable({
     id,
     index,
     items,
-    newIndex: prevNewIndex.current,
-    previousItems: prevItems.current,
-    previousContainerId: previousContainerId.current,
+    newIndex: previous.current.newIndex,
+    previousItems: previous.current.items,
+    previousContainerId: previous.current.containerId,
     transition,
-    wasDragging: wasDragging.current,
+    wasDragging: previous.current.activeId != null,
   });
   const derivedTransform = useDerivedTransform({
     disabled: !shouldAnimateLayoutChanges,
@@ -150,18 +147,22 @@ export function useSortable({
   });
 
   useEffect(() => {
-    if (isSorting && prevNewIndex.current !== newIndex) {
-      prevNewIndex.current = newIndex;
+    if (isSorting && previous.current.newIndex !== newIndex) {
+      previous.current.newIndex = newIndex;
     }
 
-    if (containerId !== previousContainerId.current) {
-      previousContainerId.current = containerId;
+    if (containerId !== previous.current.containerId) {
+      previous.current.containerId = containerId;
     }
 
-    if (items !== prevItems.current) {
-      prevItems.current = items;
+    if (items !== previous.current.items) {
+      previous.current.items = items;
     }
-  }, [isSorting, newIndex, containerId, items]);
+
+    if (activeId !== previous.current.activeId) {
+      previous.current.activeId = activeId;
+    }
+  }, [activeId, isSorting, newIndex, containerId, items]);
 
   return {
     active,
@@ -192,7 +193,7 @@ export function useSortable({
       // Temporarily disable transitions for a single frame to set up derived transforms
       derivedTransform ||
       // Or to prevent items jumping to back to their "new" position when items change
-      (itemsHaveChanged && prevNewIndex.current === index)
+      (itemsHaveChanged && previous.current.newIndex === index)
     ) {
       return disabledTransition;
     }
