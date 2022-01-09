@@ -35,7 +35,7 @@ import {
 } from './utilities';
 import type {FlattenedItem, SensorContext, TreeItems} from './types';
 import {sortableTreeKeyboardCoordinates} from './keyboardCoordinates';
-import {TreeItem, SortableTreeItem} from './components';
+import {SortableTreeItem} from './components';
 
 const initialItems: TreeItems = [
   {
@@ -204,7 +204,8 @@ export function SortableTree({
             modifiers={indicator ? [adjustTranslate] : undefined}
           >
             {activeId && activeItem ? (
-              <TreeItem
+              <SortableTreeItem
+                id={activeId}
                 depth={activeItem.depth}
                 clone
                 childCount={getChildCount(items, activeId) + 1}

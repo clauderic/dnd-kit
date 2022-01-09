@@ -6,7 +6,7 @@ import {
   useUniqueId,
 } from '@dnd-kit/utilities';
 
-import {Context, Action, Data} from '../store';
+import {InternalContext, Action, Data} from '../store';
 import type {ClientRect, UniqueIdentifier} from '../types';
 
 interface ResizeObserverConfig {
@@ -41,13 +41,9 @@ export function useDroppable({
   resizeObserverConfig,
 }: UseDroppableArguments) {
   const key = useUniqueId(ID_PREFIX);
-  const {
-    active,
-    collisions,
-    dispatch,
-    over,
-    measureDroppableContainers,
-  } = useContext(Context);
+  const {active, dispatch, over, measureDroppableContainers} = useContext(
+    InternalContext
+  );
   const resizeObserverConnected = useRef(false);
   const rect = useRef<ClientRect | null>(null);
   const callbackId = useRef<NodeJS.Timeout | null>(null);
@@ -160,7 +156,6 @@ export function useDroppable({
 
   return {
     active,
-    collisions,
     rect,
     isOver: over?.id === id,
     node: nodeRef,

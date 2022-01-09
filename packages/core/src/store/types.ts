@@ -71,16 +71,11 @@ export interface State {
   };
 }
 
-export interface DndContextDescriptor {
-  dispatch: React.Dispatch<Actions>;
-  activators: SyntheticListeners;
+export interface PublicContextDescriptor {
   activatorEvent: Event | null;
   active: Active | null;
   activeNode: HTMLElement | null;
   activeNodeRect: ClientRect | null;
-  ariaDescribedById: {
-    draggable: UniqueIdentifier;
-  };
   collisions: Collision[] | null;
   containerNodeRect: ClientRect | null;
   draggableNodes: DraggableNodes;
@@ -97,4 +92,17 @@ export interface DndContextDescriptor {
   measureDroppableContainers(ids: UniqueIdentifier[]): void;
   measuringScheduled: boolean;
   windowRect: ClientRect | null;
+}
+
+export interface InternalContextDescriptor {
+  activators: SyntheticListeners;
+  active: Active | null;
+  activeNodeRect: ClientRect | null;
+  ariaDescribedById: {
+    draggable: UniqueIdentifier;
+  };
+  dispatch: React.Dispatch<Actions>;
+  draggableNodes: DraggableNodes;
+  over: Over | null;
+  measureDroppableContainers(ids: UniqueIdentifier[]): void;
 }

@@ -7,7 +7,7 @@ import {
 
 import {getMeasurableNode} from '../../utilities/nodes';
 import {getClientRect} from '../../utilities/rect';
-import type {DndContextDescriptor} from '../../store';
+import type {PublicContextDescriptor} from '../../store';
 import type {ClientRect} from '../../types';
 
 interface Arguments {
@@ -16,7 +16,7 @@ interface Arguments {
 
 export function useDragOverlayMeasuring({
   measure = getClientRect,
-}: Arguments): DndContextDescriptor['dragOverlay'] {
+}: Arguments): PublicContextDescriptor['dragOverlay'] {
   const [rect, setRect] = useState<ClientRect | null>(null);
   const measureRef = useRef(measure);
   const handleResize = useCallback(

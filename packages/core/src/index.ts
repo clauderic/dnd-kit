@@ -72,7 +72,7 @@ export type {
 
 export type {
   Active,
-  DndContextDescriptor,
+  PublicContextDescriptor as DndContextDescriptor,
   DraggableNode,
   DroppableContainers,
   DroppableContainer,

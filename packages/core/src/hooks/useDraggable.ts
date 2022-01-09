@@ -7,7 +7,7 @@ import {
   useUniqueId,
 } from '@dnd-kit/utilities';
 
-import {Context, Data} from '../store';
+import {InternalContext, Data} from '../store';
 import {ActiveDraggableContext} from '../components/DndContext';
 import {useSyntheticListeners, SyntheticListenerMap} from './utilities';
 
@@ -38,15 +38,13 @@ export function useDraggable({
 }: UseDraggableArguments) {
   const key = useUniqueId(ID_PREFIX);
   const {
+    activators,
     active,
     activeNodeRect,
-    activatorEvent,
     ariaDescribedById,
     draggableNodes,
-    droppableRects,
-    activators,
     over,
-  } = useContext(Context);
+  } = useContext(InternalContext);
   const {role = defaultRole, roleDescription = 'draggable', tabIndex = 0} =
     attributes ?? {};
   const isDragging = active?.id === id;
@@ -87,9 +85,7 @@ export function useDraggable({
   return {
     active,
     activeNodeRect,
-    activatorEvent,
     attributes: memoizedAttributes,
-    droppableRects,
     isDragging,
     listeners: disabled ? undefined : listeners,
     node,
