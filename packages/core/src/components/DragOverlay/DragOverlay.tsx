@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useRef} from 'react';
-import {CSS, isKeyboardEvent, useLazyMemo} from '@dnd-kit/utilities';
+import {CSS, isKeyboardEvent, Transform, useLazyMemo} from '@dnd-kit/utilities';
 
+import {InternalContext, defaultInternalContext} from '../../store';
 import {getRelativeTransformOrigin} from '../../utilities';
 import {applyModifiers, Modifiers} from '../../modifiers';
 import {ActiveDraggableContext} from '../DndContext';
@@ -23,6 +24,13 @@ export interface Props {
   wrapperElement?: keyof JSX.IntrinsicElements;
   zIndex?: number;
 }
+
+const defaultTransform: Transform = {
+  x: 0,
+  y: 0,
+  scaleX: 1,
+  scaleY: 1,
+};
 
 const defaultTransition: TransitionGetter = (activatorEvent) => {
   const isKeyboardActivator = isKeyboardEvent(activatorEvent);
@@ -169,13 +177,19 @@ export const DragOverlay = React.memo(
       return null;
     }
 
-    return React.createElement(
-      wrapperElement,
-      {
-        ...otherAttributes,
-        ref: dragOverlay.setRef,
-      },
-      finalChildren
+    return (
+      <InternalContext.Provider value={defaultInternalContext}>
+        <ActiveDraggableContext.Provider value={defaultTransform}>
+          {React.createElement(
+            wrapperElement,
+            {
+              ...otherAttributes,
+              ref: dragOverlay.setRef,
+            },
+            finalChildren
+          )}
+        </ActiveDraggableContext.Provider>
+      </InternalContext.Provider>
     );
   }
 );
