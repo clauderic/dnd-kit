@@ -9,6 +9,7 @@
     pointer-events: none;
     padding: 0;
     margin-left: 10px;
+    margin-top: 5px;
 
     .TreeItem {
       --vertical-padding: 5px;

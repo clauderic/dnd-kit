@@ -19,15 +19,15 @@ const Wrapper = ({children}: {children: React.ReactNode}) => (
   </div>
 );
 
-export const BasicSetup = () => (
-  <Wrapper>
-    <SortableTree />
-  </Wrapper>
-);
-
 export const AllFeatures = () => (
   <Wrapper>
     <SortableTree collapsible indicator removable />
+  </Wrapper>
+);
+
+export const BasicSetup = () => (
+  <Wrapper>
+    <SortableTree />
   </Wrapper>
 );
 

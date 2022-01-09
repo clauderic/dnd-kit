@@ -10,6 +10,7 @@ import {
   DropAnimation,
   defaultDropAnimation,
   KeyboardSensor,
+  KeyboardCoordinateGetter,
   Modifiers,
   MouseSensor,
   MeasuringConfiguration,
@@ -39,6 +40,7 @@ export interface Props {
   animateLayoutChanges?: AnimateLayoutChanges;
   adjustScale?: boolean;
   collisionDetection?: CollisionDetection;
+  coordinateGetter?: KeyboardCoordinateGetter;
   Container?: any; // To-do: Fix me
   dropAnimation?: DropAnimation | null;
   getNewIndex?: NewIndexGetter;
@@ -88,6 +90,7 @@ export function Sortable({
   adjustScale = false,
   Container = List,
   collisionDetection = closestCenter,
+  coordinateGetter = sortableKeyboardCoordinates,
   dropAnimation = defaultDropAnimationConfig,
   getItemStyles = () => ({}),
   getNewIndex,
@@ -119,7 +122,7 @@ export function Sortable({
       activationConstraint,
     }),
     useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
+      coordinateGetter,
     })
   );
   const isFirstAnnouncement = useRef(true);

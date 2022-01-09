@@ -20,7 +20,7 @@ import {
   useSensors,
   useSensor,
   MeasuringStrategy,
-  closestCorners,
+  KeyboardCoordinateGetter,
 } from '@dnd-kit/core';
 import {
   AnimateLayoutChanges,
@@ -115,6 +115,7 @@ interface Props {
   cancelDrop?: CancelDrop;
   columns?: number;
   containerStyle?: React.CSSProperties;
+  coordinateGetter?: KeyboardCoordinateGetter;
   getItemStyles?(args: {
     value: UniqueIdentifier;
     index: number;
@@ -149,6 +150,7 @@ export function MultipleContainers({
   handle = false,
   items: initialItems,
   containerStyle,
+  coordinateGetter = sortableKeyboardCoordinates,
   getItemStyles = () => ({}),
   wrapperStyle = () => ({}),
   minimal = false,
@@ -249,7 +251,7 @@ export function MultipleContainers({
     useSensor(MouseSensor),
     useSensor(TouchSensor),
     useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
+      coordinateGetter,
     })
   );
   const findContainer = (id: string) => {

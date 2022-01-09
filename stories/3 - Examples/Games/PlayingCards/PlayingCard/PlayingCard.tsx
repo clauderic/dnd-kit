@@ -49,6 +49,7 @@ export const PlayingCard = forwardRef<HTMLDivElement, Props>(
             zIndex: style?.zIndex,
           } as React.CSSProperties
         }
+        ref={ref}
       >
         <div
           className={classNames(
@@ -66,7 +67,6 @@ export const PlayingCard = forwardRef<HTMLDivElement, Props>(
               zIndex: undefined,
             } as React.CSSProperties
           }
-          ref={ref}
           tabIndex={0}
           {...props}
         >

@@ -4,6 +4,7 @@ import {
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
 
+import {coordinateGetter} from './keyboardCoordinates';
 import {Sortable} from '../../../2 - Presets/Sortable/Sortable';
 import {MultipleContainers} from '../../../2 - Presets/Sortable/MultipleContainers';
 import {PlayingCard, getDeckOfCards} from './PlayingCard';
@@ -16,43 +17,42 @@ export const SingleDeck = () => {
   const [deck] = useState(getDeckOfCards);
 
   return (
-    <>
-      <div style={{position: 'relative', marginTop: 50, paddingBottom: 250}}>
-        <Sortable
-          strategy={verticalListSortingStrategy}
-          items={deck.map(({suit, value}) => `${value}${suit}`)}
-          renderItem={({
-            dragging,
-            value,
-            dragOverlay,
-            listeners,
-            ref,
-            style,
-            index,
-            sorting,
-            transform,
-            transition,
-          }: any) => (
-            <PlayingCard
-              value={value}
-              isDragging={dragging}
-              isPickedUp={dragOverlay}
-              isSorting={sorting}
-              ref={ref}
-              style={style}
-              index={index}
-              transform={transform}
-              transition={transition}
-              {...listeners}
-            />
-          )}
-          getItemStyles={({index, overIndex, isDragging, isDragOverlay}) => ({
-            zIndex: isDragging ? deck.length - overIndex : deck.length - index,
-            opacity: isDragging && !isDragOverlay ? 0.3 : undefined,
-          })}
-        />
-      </div>
-    </>
+    <div style={{position: 'relative', marginTop: 50, paddingBottom: 250}}>
+      <Sortable
+        strategy={verticalListSortingStrategy}
+        items={deck.map(({suit, value}) => `${value}${suit}`)}
+        renderItem={({
+          dragging,
+          value,
+          dragOverlay,
+          listeners,
+          ref,
+          style,
+          index,
+          sorting,
+          transform,
+          transition,
+        }: any) => (
+          <PlayingCard
+            value={value}
+            isDragging={dragging}
+            isPickedUp={dragOverlay}
+            isSorting={sorting}
+            ref={ref}
+            style={style}
+            index={index}
+            transform={transform}
+            transition={transition}
+            {...listeners}
+          />
+        )}
+        getItemStyles={({index, overIndex, isDragging, isDragOverlay}) => ({
+          zIndex: isDragging ? deck.length - overIndex : deck.length - index,
+          opacity: isDragging && !isDragOverlay ? 0.3 : undefined,
+        })}
+        coordinateGetter={coordinateGetter}
+      />
+    </div>
   );
 };
 
@@ -94,12 +94,6 @@ export const MultipleDecks = () => {
           main {
             top: 100px;
             left: 140px;
-          }
-
-          ul {
-            position: relative;
-            margin-left: 50px;
-            margin-right: 50px;
           }
         `}
       </style>
@@ -158,6 +152,7 @@ export const MultipleDecks = () => {
               : deck.length - index,
           };
         }}
+        coordinateGetter={coordinateGetter}
         minimal
       />
     </>
