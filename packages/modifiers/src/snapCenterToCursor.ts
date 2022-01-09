@@ -3,23 +3,23 @@ import {getEventCoordinates} from '@dnd-kit/utilities';
 
 export const snapCenterToCursor: Modifier = ({
   activatorEvent,
-  activeNodeRect,
+  draggingNodeRect,
   transform,
 }) => {
-  if (activeNodeRect && activatorEvent) {
+  if (draggingNodeRect && activatorEvent) {
     const activatorCoordinates = getEventCoordinates(activatorEvent);
 
     if (!activatorCoordinates) {
       return transform;
     }
 
-    const offsetX = activatorCoordinates.x - activeNodeRect.left;
-    const offsetY = activatorCoordinates.y - activeNodeRect.top;
+    const offsetX = activatorCoordinates.x - draggingNodeRect.left;
+    const offsetY = activatorCoordinates.y - draggingNodeRect.top;
 
     return {
       ...transform,
-      x: transform.x + offsetX - activeNodeRect.width / 2,
-      y: transform.y + offsetY - activeNodeRect.height / 2,
+      x: transform.x + offsetX - draggingNodeRect.width / 2,
+      y: transform.y + offsetY - draggingNodeRect.height / 2,
     };
   }
 

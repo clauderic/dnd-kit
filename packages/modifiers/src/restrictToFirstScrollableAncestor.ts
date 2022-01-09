@@ -2,19 +2,19 @@ import type {Modifier} from '@dnd-kit/core';
 import {restrictToBoundingRect} from './utilities';
 
 export const restrictToFirstScrollableAncestor: Modifier = ({
+  draggingNodeRect,
   transform,
-  activeNodeRect,
   scrollableAncestorRects,
 }) => {
   const firstScrollableAncestorRect = scrollableAncestorRects[0];
 
-  if (!activeNodeRect || !firstScrollableAncestorRect) {
+  if (!draggingNodeRect || !firstScrollableAncestorRect) {
     return transform;
   }
 
   return restrictToBoundingRect(
     transform,
-    activeNodeRect,
+    draggingNodeRect,
     firstScrollableAncestorRect
   );
 };
