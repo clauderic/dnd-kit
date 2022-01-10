@@ -1,4 +1,4 @@
-import {useCallback, useContext, useEffect, useMemo, useRef} from 'react';
+import {useCallback, useContext, useEffect, useRef} from 'react';
 import {
   useIsomorphicLayoutEffect,
   useLatestValue,
@@ -8,6 +8,8 @@ import {
 
 import {InternalContext, Action, Data} from '../store';
 import type {ClientRect, UniqueIdentifier} from '../types';
+
+import {useResizeObserver} from './utilities';
 
 interface ResizeObserverConfig {
   /** Whether the ResizeObserver should be disabled entirely */
@@ -79,13 +81,10 @@ export function useDroppable({
     //eslint-disable-next-line react-hooks/exhaustive-deps
     [resizeObserverTimeout]
   );
-  const resizeObserver = useMemo(
-    () =>
-      !active || resizeObserverDisabled
-        ? null
-        : new ResizeObserver(handleResize),
-    [active, handleResize, resizeObserverDisabled]
-  );
+  const resizeObserver = useResizeObserver({
+    onResize: handleResize,
+    disabled: resizeObserverDisabled || !active,
+  });
   const handleNodeChange = useCallback(
     (newElement: HTMLElement | null, previousElement: HTMLElement | null) => {
       if (!resizeObserver) {

@@ -1,6 +1,7 @@
 import {useMemo, useCallback, useState} from 'react';
 import {isHTMLElement, useNodeRef} from '@dnd-kit/utilities';
 
+import {useResizeObserver} from './useResizeObserver';
 import {getMeasurableNode} from '../../utilities/nodes';
 import {getClientRect} from '../../utilities/rect';
 import type {PublicContextDescriptor} from '../../store';
@@ -31,17 +32,15 @@ export function useDragOverlayMeasuring({
     },
     [measure]
   );
-  const resizeObserver = useMemo(() => new ResizeObserver(handleResize), [
-    handleResize,
-  ]);
+  const resizeObserver = useResizeObserver({onResize: handleResize});
   const handleNodeChange = useCallback(
     (element) => {
       const node = getMeasurableNode(element);
 
-      resizeObserver.disconnect();
+      resizeObserver?.disconnect();
 
       if (node) {
-        resizeObserver.observe(node);
+        resizeObserver?.observe(node);
       }
 
       setRect(node ? measure(node) : null);

@@ -12,6 +12,7 @@ export {
   MeasuringStrategy,
 } from './useDroppableMeasuring';
 export type {DroppableMeasuring} from './useDroppableMeasuring';
+export {useResizeObserver} from './useResizeObserver';
 export {useScrollOffsets} from './useScrollOffsets';
 export {useScrollableAncestors} from './useScrollableAncestors';
 export {useSensorSetup} from './useSensorSetup';
