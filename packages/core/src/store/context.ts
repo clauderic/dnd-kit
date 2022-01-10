@@ -30,9 +30,10 @@ export const defaultPublicContext: PublicContextDescriptor = {
 };
 
 export const defaultInternalContext: InternalContextDescriptor = {
+  activatorEvent: null,
+  activators: [],
   active: null,
   activeNodeRect: null,
-  activators: [],
   ariaDescribedById: {
     draggable: '',
   },

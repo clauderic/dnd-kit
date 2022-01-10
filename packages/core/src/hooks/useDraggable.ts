@@ -39,6 +39,7 @@ export function useDraggable({
   const key = useUniqueId(ID_PREFIX);
   const {
     activators,
+    activatorEvent,
     active,
     activeNodeRect,
     ariaDescribedById,
@@ -84,6 +85,7 @@ export function useDraggable({
 
   return {
     active,
+    activatorEvent,
     activeNodeRect,
     attributes: memoizedAttributes,
     isDragging,

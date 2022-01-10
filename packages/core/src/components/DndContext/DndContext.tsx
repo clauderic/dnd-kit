@@ -640,9 +640,10 @@ export const DndContext = memo(function DndContext({
 
   const internalContext = useMemo(() => {
     const context: InternalContextDescriptor = {
+      activatorEvent,
+      activators,
       active,
       activeNodeRect,
-      activators,
       ariaDescribedById: {
         draggable: draggableDescribedById,
       },
@@ -654,9 +655,10 @@ export const DndContext = memo(function DndContext({
 
     return context;
   }, [
+    activatorEvent,
+    activators,
     active,
     activeNodeRect,
-    activators,
     dispatch,
     draggableDescribedById,
     draggableNodes,
