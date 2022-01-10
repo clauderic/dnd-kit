@@ -1,5 +1,11 @@
 # @dnd-kit/core
 
+## 5.0.1
+
+### Patch Changes
+
+- [#573](https://github.com/clauderic/dnd-kit/pull/573) [`cee1d88`](https://github.com/clauderic/dnd-kit/commit/cee1d88a35fd8a412bbc30d9e375d674a10ee485) Thanks [@clauderic](https://github.com/clauderic)! - Only use `ResizeObserver` in `useDroppable` and `<DragOverlay>` if it is available in the execution environment.
+
 ## 5.0.0
 
 ### Major Changes
