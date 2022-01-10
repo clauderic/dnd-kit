@@ -1,5 +1,137 @@
 # @dnd-kit/sortable
 
+## 6.0.0
+
+### Major Changes
+
+- [#518](https://github.com/clauderic/dnd-kit/pull/518) [`6310227`](https://github.com/clauderic/dnd-kit/commit/63102272d0d63dae349e2e9f638277e16a7d5970) Thanks [@clauderic](https://github.com/clauderic)! - Major internal refactor of measuring and collision detection.
+
+  ### Summary of changes
+
+  Previously, all collision detection algorithms were relative to the top and left points of the document. While this approach worked in most situations, it broke down in a number of different use-cases, such as fixed position droppable containers and trying to drag between containers that had different scroll positions.
+
+  This new approach changes the frame of comparison to be relative to the viewport. This is a major breaking change, and will need to be released under a new major version bump.
+
+  ### Breaking changes:
+
+  - By default, `@dnd-kit` now ignores only the transforms applied to the draggable / droppable node itself, but considers all the transforms applied to its ancestors. This should provide the right balance of flexibility for most consumers.
+    - Transforms applied to the droppable and draggable nodes are ignored by default, because the recommended approach for moving items on the screen is to use the transform property, which can interfere with the calculation of collisions.
+    - Consumers can choose an alternate approach that does consider transforms for specific use-cases if needed by configuring the measuring prop of <DndContext>. Refer to the <Switch> example.
+  - Reduced the number of concepts related to measuring from `ViewRect`, `LayoutRect` to just a single concept of `ClientRect`.
+    - The `ClientRect` interface no longer holds the `offsetTop` and `offsetLeft` properties. For most use-cases, you can replace `offsetTop` with `top` and `offsetLeft` with `left`.
+    - Replaced the following exports from the `@dnd-kit/core` package with `getClientRect`:
+      - `getBoundingClientRect`
+      - `getViewRect`
+      - `getLayoutRect`
+      - `getViewportLayoutRect`
+  - Removed `translatedRect` from the `SensorContext` interface. Replace usage with `collisionRect`.
+  - Removed `activeNodeClientRect` on the `DndContext` interface. Replace with `activeNodeRect`.
+
+- [#569](https://github.com/clauderic/dnd-kit/pull/569) [`e7ac3d4`](https://github.com/clauderic/dnd-kit/commit/e7ac3d45699dcc7b47191a67044a516929ac439c) Thanks [@clauderic](https://github.com/clauderic)! - Separated context into public and internal context providers. Certain properties that used to be available on the public `DndContextDescriptor` interface have been moved to the internal context provider and are no longer exposed to consumers:
+
+  ```ts
+  interface DndContextDescriptor {
+  -  dispatch: React.Dispatch<Actions>;
+  -  activators: SyntheticListeners;
+  -  ariaDescribedById: {
+  -    draggable: UniqueIdentifier;
+  -  };
+  }
+  ```
+
+  Having two distinct context providers will allow to keep certain internals such as `dispatch` hidden from consumers.
+
+  It also serves as an optimization until context selectors are implemented in React, properties that change often, such as the droppable containers and droppable rects, the transform value and array of collisions should be stored on a different context provider to limit un-necessary re-renders in `useDraggable`, `useDroppable` and `useSortable`.
+
+  The `<InternalContext.Provider>` is also reset to its default values within `<DragOverlay>`. This paves the way towards being able to seamlessly use components that use hooks such as `useDraggable` and `useDroppable` as children of `<DragOverlay>` without causing interference or namespace collisions.
+
+  Consumers can still make calls to `useDndContext()` to get the `active` or `over` properties if they wish to re-render the component rendered within `DragOverlay` in response to user interaction, since those use the `PublicContext`
+
+### Minor Changes
+
+- [#558](https://github.com/clauderic/dnd-kit/pull/558) [`f3ad20d`](https://github.com/clauderic/dnd-kit/commit/f3ad20d5b2c2f2ca7b82c193c9af5eef38c5ce11) Thanks [@clauderic](https://github.com/clauderic)! - Refactor of the `CollisionDetection` interface to return an array of `Collision`s:
+
+  ```diff
+  +export interface Collision {
+  +  id: UniqueIdentifier;
+  +  data?: Record<string, any>;
+  +}
+
+  export type CollisionDetection = (args: {
+    active: Active;
+    collisionRect: ClientRect;
+    droppableContainers: DroppableContainer[];
+    pointerCoordinates: Coordinates | null;
+  -}) => UniqueIdentifier;
+  +}) => Collision[];
+  ```
+
+  This is a breaking change that requires all collision detection strategies to be updated to return an array of `Collision` rather than a single `UniqueIdentifier`
+
+  The `over` property remains a single `UniqueIdentifier`, and is set to the first item in returned in the collisions array.
+
+  Consumers can also access the `collisions` property which can be used to implement use-cases such as combining droppables in user-land.
+
+  The `onDragMove`, `onDragOver` and `onDragEnd` callbacks are also updated to receive the collisions array property.
+
+  Built-in collision detections such as rectIntersection, closestCenter, closestCorners and pointerWithin adhere to the CollisionDescriptor interface, which extends the Collision interface:
+
+  ```ts
+  export interface CollisionDescriptor extends Collision {
+    data: {
+      droppableContainer: DroppableContainer;
+      value: number;
+      [key: string]: any;
+    };
+  }
+  ```
+
+  Consumers can also access the array of collisions in components wrapped by `<DndContext>` via the `useDndContext()` hook:
+
+  ```ts
+  import {useDndContext} from '@dnd-kit/core';
+
+  function MyComponent() {
+    const {collisions} = useDndContext();
+  }
+  ```
+
+- [#561](https://github.com/clauderic/dnd-kit/pull/561) [`02edd26`](https://github.com/clauderic/dnd-kit/commit/02edd2691b24bb49f2e7c9f9a3f282031bf658b7) Thanks [@clauderic](https://github.com/clauderic)! - Droppable containers now observe the node they are attached to via `setNodeRef` using `ResizeObserver` while dragging.
+
+  This behaviour can be configured using the newly introduced `resizeObserverConfig` property.
+
+  ```ts
+  interface ResizeObserverConfig {
+    /** Whether the ResizeObserver should be disabled entirely */
+    disabled?: boolean;
+    /** Resize events may affect the layout and position of other droppable containers.
+     * Specify an array of `UniqueIdentifier` of droppable containers that should also be re-measured
+     * when this droppable container resizes. Specifying an empty array re-measures all droppable containers.
+     */
+    updateMeasurementsFor?: UniqueIdentifier[];
+    /** Represents the debounce timeout between when resize events are observed and when elements are re-measured */
+    timeout?: number;
+  }
+  ```
+
+  By default, only the current droppable is scheduled to be re-measured when a resize event is observed. However, this may not be suitable for all use-cases. When an element resizes, it can affect the layout and position of other elements, such that it may be necessary to re-measure other droppable nodes in response to that single resize event. The `recomputeIds` property can be used to specify which droppable `id`s should be re-measured in response to resize events being observed.
+
+  For example, the `useSortable` preset re-computes the measurements of all sortable elements after the element that resizes, so long as they are within the same `SortableContext` as the element that resizes, since it's highly likely that their layout will also shift.
+
+  Specifying an empty array for `recomputeIds` forces all droppable containers to be re-measured.
+
+  For consumers that were relyings on the internals of `DndContext` using `useDndContext()`, the `willRecomputeLayouts` property has been renamed to `measuringScheduled`, and the `recomputeLayouts` method has been renamed to `measureDroppableContainers`, and now optionally accepts an array of droppable `UniqueIdentifier` that should be scheduled to be re-measured.
+
+- [#570](https://github.com/clauderic/dnd-kit/pull/570) [`1ade2f3`](https://github.com/clauderic/dnd-kit/commit/1ade2f34403ba1d5a87cbd3ce1cff62860860501) Thanks [@clauderic](https://github.com/clauderic)! - Use `transition` for the active draggable node when keyboard sorting without a `<DragOverlay />`.
+
+### Patch Changes
+
+- [#566](https://github.com/clauderic/dnd-kit/pull/566) [`d315df0`](https://github.com/clauderic/dnd-kit/commit/d315df07022178460a52d6021a41227878b876b8) Thanks [@clauderic](https://github.com/clauderic)! - Fixed a bug where sortable item position was not updated when quickly dragging different sortable items.
+
+- Updated dependencies [[`f3ad20d`](https://github.com/clauderic/dnd-kit/commit/f3ad20d5b2c2f2ca7b82c193c9af5eef38c5ce11), [`02edd26`](https://github.com/clauderic/dnd-kit/commit/02edd2691b24bb49f2e7c9f9a3f282031bf658b7), [`c6c67cb`](https://github.com/clauderic/dnd-kit/commit/c6c67cb9cbc6e61027f7bb084fd2232160037d5e), [`6310227`](https://github.com/clauderic/dnd-kit/commit/63102272d0d63dae349e2e9f638277e16a7d5970), [`e7ac3d4`](https://github.com/clauderic/dnd-kit/commit/e7ac3d45699dcc7b47191a67044a516929ac439c), [`528c67e`](https://github.com/clauderic/dnd-kit/commit/528c67e4c617dfc0ce5221496aa8b222ffc82ddb), [`02edd26`](https://github.com/clauderic/dnd-kit/commit/02edd2691b24bb49f2e7c9f9a3f282031bf658b7)]:
+  - @dnd-kit/core@5.0.0
+  - @dnd-kit/utilities@3.1.0
+
 ## 5.1.0
 
 ### Minor Changes

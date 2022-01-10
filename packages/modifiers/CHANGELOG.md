@@ -1,5 +1,40 @@
 # @dnd-kit/modifiers
 
+## 5.0.0
+
+### Minor Changes
+
+- [#567](https://github.com/clauderic/dnd-kit/pull/567) [`cd3adf3`](https://github.com/clauderic/dnd-kit/commit/cd3adf34f6d3336c539a34e203177322614623ec) Thanks [@clauderic](https://github.com/clauderic)! - Update modifiers to use `draggingNodeRect` instead of `activeNodeRect`. Modifiers should be based on the rect of the node being dragged, whether it is the draggable node or drag overlay node.
+
+- [#518](https://github.com/clauderic/dnd-kit/pull/518) [`6310227`](https://github.com/clauderic/dnd-kit/commit/63102272d0d63dae349e2e9f638277e16a7d5970) Thanks [@clauderic](https://github.com/clauderic)! - Major internal refactor of measuring and collision detection.
+
+  ### Summary of changes
+
+  Previously, all collision detection algorithms were relative to the top and left points of the document. While this approach worked in most situations, it broke down in a number of different use-cases, such as fixed position droppable containers and trying to drag between containers that had different scroll positions.
+
+  This new approach changes the frame of comparison to be relative to the viewport. This is a major breaking change, and will need to be released under a new major version bump.
+
+  ### Breaking changes:
+
+  - By default, `@dnd-kit` now ignores only the transforms applied to the draggable / droppable node itself, but considers all the transforms applied to its ancestors. This should provide the right balance of flexibility for most consumers.
+    - Transforms applied to the droppable and draggable nodes are ignored by default, because the recommended approach for moving items on the screen is to use the transform property, which can interfere with the calculation of collisions.
+    - Consumers can choose an alternate approach that does consider transforms for specific use-cases if needed by configuring the measuring prop of <DndContext>. Refer to the <Switch> example.
+  - Reduced the number of concepts related to measuring from `ViewRect`, `LayoutRect` to just a single concept of `ClientRect`.
+    - The `ClientRect` interface no longer holds the `offsetTop` and `offsetLeft` properties. For most use-cases, you can replace `offsetTop` with `top` and `offsetLeft` with `left`.
+    - Replaced the following exports from the `@dnd-kit/core` package with `getClientRect`:
+      - `getBoundingClientRect`
+      - `getViewRect`
+      - `getLayoutRect`
+      - `getViewportLayoutRect`
+  - Removed `translatedRect` from the `SensorContext` interface. Replace usage with `collisionRect`.
+  - Removed `activeNodeClientRect` on the `DndContext` interface. Replace with `activeNodeRect`.
+
+### Patch Changes
+
+- Updated dependencies [[`f3ad20d`](https://github.com/clauderic/dnd-kit/commit/f3ad20d5b2c2f2ca7b82c193c9af5eef38c5ce11), [`02edd26`](https://github.com/clauderic/dnd-kit/commit/02edd2691b24bb49f2e7c9f9a3f282031bf658b7), [`c6c67cb`](https://github.com/clauderic/dnd-kit/commit/c6c67cb9cbc6e61027f7bb084fd2232160037d5e), [`6310227`](https://github.com/clauderic/dnd-kit/commit/63102272d0d63dae349e2e9f638277e16a7d5970), [`e7ac3d4`](https://github.com/clauderic/dnd-kit/commit/e7ac3d45699dcc7b47191a67044a516929ac439c), [`528c67e`](https://github.com/clauderic/dnd-kit/commit/528c67e4c617dfc0ce5221496aa8b222ffc82ddb), [`02edd26`](https://github.com/clauderic/dnd-kit/commit/02edd2691b24bb49f2e7c9f9a3f282031bf658b7)]:
+  - @dnd-kit/core@5.0.0
+  - @dnd-kit/utilities@3.1.0
+
 ## 4.0.0
 
 ### Minor Changes
