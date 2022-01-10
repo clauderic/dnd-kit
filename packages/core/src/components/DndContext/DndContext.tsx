@@ -13,6 +13,7 @@ import {
   add,
   getEventCoordinates,
   Transform,
+  useLatestValue,
   useIsomorphicLayoutEffect,
   useUniqueId,
 } from '@dnd-kit/utilities';
@@ -183,11 +184,12 @@ export const DndContext = memo(function DndContext({
   const activeRef = useRef<UniqueIdentifier | null>(null);
   const [activeSensor, setActiveSensor] = useState<SensorInstance | null>(null);
   const [activatorEvent, setActivatorEvent] = useState<Event | null>(null);
-  const latestProps = useRef(props);
+  const latestProps = useLatestValue(props, Object.values(props));
   const draggableDescribedById = useUniqueId(`DndDescribedBy`, id);
-  const enabledDroppableContainers = useMemo(() => {
-    return droppableContainers.getEnabled();
-  }, [droppableContainers]);
+  const enabledDroppableContainers = useMemo(
+    () => droppableContainers.getEnabled(),
+    [droppableContainers]
+  );
   const {
     droppableRects,
     measureDroppableContainers,
@@ -225,7 +227,6 @@ export const DndContext = memo(function DndContext({
   const overNode = droppableContainers.getNodeFor(
     sensorContext.current.over?.id
   );
-
   const dragOverlay = useDragOverlayMeasuring({
     measure: measuring?.dragOverlay?.measure,
   });
@@ -424,7 +425,8 @@ export const DndContext = memo(function DndContext({
         };
       }
     },
-    [dispatch, draggableNodes]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [draggableNodes]
   );
 
   const bindActivatorToSensorInstantiator = useCallback(
@@ -465,14 +467,6 @@ export const DndContext = memo(function DndContext({
 
   useSensorSetup(sensors);
 
-  useIsomorphicLayoutEffect(
-    () => {
-      latestProps.current = props;
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    Object.values(props)
-  );
-
   useEffect(() => {
     if (activeId != null) {
       setIsDragging(true);
@@ -489,27 +483,31 @@ export const DndContext = memo(function DndContext({
     }
   }, [activeNodeRect, active]);
 
-  useEffect(() => {
-    const {onDragMove} = latestProps.current;
-    const {active, collisions, over} = sensorContext.current;
+  useEffect(
+    () => {
+      const {onDragMove} = latestProps.current;
+      const {active, collisions, over} = sensorContext.current;
 
-    if (!active) {
-      return;
-    }
+      if (!active) {
+        return;
+      }
 
-    const event: DragMoveEvent = {
-      active,
-      collisions,
-      delta: {
-        x: scrollAdjustedTranslate.x,
-        y: scrollAdjustedTranslate.y,
-      },
-      over,
-    };
+      const event: DragMoveEvent = {
+        active,
+        collisions,
+        delta: {
+          x: scrollAdjustedTranslate.x,
+          y: scrollAdjustedTranslate.y,
+        },
+        over,
+      };
 
-    setMonitorState({type: Action.DragMove, event});
-    onDragMove?.(event);
-  }, [scrollAdjustedTranslate.x, scrollAdjustedTranslate.y]);
+      setMonitorState({type: Action.DragMove, event});
+      onDragMove?.(event);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [scrollAdjustedTranslate.x, scrollAdjustedTranslate.y]
+  );
 
   useEffect(
     () => {

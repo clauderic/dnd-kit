@@ -1,9 +1,5 @@
-import {useMemo, useCallback, useState, useRef} from 'react';
-import {
-  isHTMLElement,
-  useIsomorphicLayoutEffect,
-  useNodeRef,
-} from '@dnd-kit/utilities';
+import {useMemo, useCallback, useState} from 'react';
+import {isHTMLElement, useNodeRef} from '@dnd-kit/utilities';
 
 import {getMeasurableNode} from '../../utilities/nodes';
 import {getClientRect} from '../../utilities/rect';
@@ -18,7 +14,6 @@ export function useDragOverlayMeasuring({
   measure = getClientRect,
 }: Arguments): PublicContextDescriptor['dragOverlay'] {
   const [rect, setRect] = useState<ClientRect | null>(null);
-  const measureRef = useRef(measure);
   const handleResize = useCallback(
     (entries: ResizeObserverEntry[]) => {
       for (const {target} of entries) {
@@ -54,10 +49,6 @@ export function useDragOverlayMeasuring({
     [measure, resizeObserver]
   );
   const [nodeRef, setRef] = useNodeRef(handleNodeChange);
-
-  useIsomorphicLayoutEffect(() => {
-    measureRef.current = measure;
-  }, [measure]);
 
   return useMemo(
     () => ({
