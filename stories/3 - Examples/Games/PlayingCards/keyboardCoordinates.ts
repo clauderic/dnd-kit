@@ -37,6 +37,16 @@ export const coordinateGetter: KeyboardCoordinateGetter = (
         return;
       }
 
+      const data = entry.data.current;
+
+      if (data) {
+        const {type, children} = data;
+
+        if (type === 'container' && children?.length > 0) {
+          return;
+        }
+      }
+
       switch (event.code) {
         case KeyboardCode.Down:
           if (collisionRect.top < rect.top) {

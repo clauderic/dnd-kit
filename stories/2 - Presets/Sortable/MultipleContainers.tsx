@@ -73,6 +73,7 @@ function DroppableContainer({
     id,
     data: {
       type: 'container',
+      children: items,
     },
     animateLayoutChanges,
   });
