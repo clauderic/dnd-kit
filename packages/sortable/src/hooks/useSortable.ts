@@ -5,7 +5,7 @@ import {
   UseDraggableArguments,
   UseDroppableArguments,
 } from '@dnd-kit/core';
-import {CSS, useCombinedRefs} from '@dnd-kit/utilities';
+import {CSS, isKeyboardEvent, useCombinedRefs} from '@dnd-kit/utilities';
 
 import {Context} from '../components';
 import type {SortingStrategy} from '../types';
@@ -74,6 +74,7 @@ export function useSortable({
   });
   const {
     active,
+    activatorEvent,
     activeNodeRect,
     attributes,
     setNodeRef: setDraggableNodeRef,
@@ -116,7 +117,12 @@ export function useSortable({
       ? getNewIndex({id, items, activeIndex, overIndex})
       : index;
   const activeId = active?.id;
-  const previous = useRef({activeId, items, newIndex, containerId});
+  const previous = useRef({
+    activeId,
+    items,
+    newIndex,
+    containerId,
+  });
   const itemsHaveChanged = items !== previous.current.items;
   const shouldAnimateLayoutChanges = animateLayoutChanges({
     active,
@@ -189,7 +195,10 @@ export function useSortable({
       return disabledTransition;
     }
 
-    if (shouldDisplaceDragSource || !transition) {
+    if (
+      (shouldDisplaceDragSource && !isKeyboardEvent(activatorEvent)) ||
+      !transition
+    ) {
       return undefined;
     }
 

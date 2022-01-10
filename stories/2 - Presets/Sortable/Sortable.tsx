@@ -331,7 +331,7 @@ export function SortableItem({
       })}
       onRemove={onRemove ? () => onRemove(id) : undefined}
       transform={transform}
-      transition={!useDragOverlay && isDragging ? 'none' : transition}
+      transition={transition}
       wrapperStyle={wrapperStyle({index, isDragging, id})}
       listeners={listeners}
       data-index={index}

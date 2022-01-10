@@ -95,6 +95,7 @@ export interface PublicContextDescriptor {
 }
 
 export interface InternalContextDescriptor {
+  activatorEvent: Event | null;
   activators: SyntheticListeners;
   active: Active | null;
   activeNodeRect: ClientRect | null;
