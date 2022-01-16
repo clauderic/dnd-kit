@@ -40,6 +40,7 @@ export type {Modifier, Modifiers} from './modifiers';
 export {
   KeyboardSensor,
   KeyboardCode,
+  defaultKeyboardCodes,
   MouseSensor,
   PointerSensor,
   TouchSensor,
