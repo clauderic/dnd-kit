@@ -71,6 +71,10 @@ export function useDroppable({
         clearTimeout(callbackId.current);
       }
 
+      if (!active) {
+        return;
+      }
+      
       callbackId.current = setTimeout(() => {
         measureDroppableContainers(
           typeof ids.current === 'string' ? [ids.current] : ids.current
