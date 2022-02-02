@@ -71,6 +71,7 @@ export function useSortable({
       updateMeasurementsFor: itemsAfterCurrentSortable,
       ...resizeObserverConfig,
     },
+    disabled,
   });
   const {
     active,
