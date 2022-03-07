@@ -64,7 +64,6 @@ export function SortableContext({
   const activeIndex = active ? items.indexOf(active.id) : -1;
   const overIndex = over ? items.indexOf(over.id) : -1;
   const previousItemsRef = useRef(items);
-  const sortedRects = getSortedRects(items, droppableRects);
   const itemsHaveChanged = !isEqual(items, previousItemsRef.current);
   const disableTransforms =
     (overIndex !== -1 && activeIndex === -1) || itemsHaveChanged;
@@ -93,7 +92,7 @@ export function SortableContext({
       items,
       overIndex,
       useDragOverlay,
-      sortedRects,
+      sortedRects: getSortedRects(items, droppableRects),
       strategy,
     }),
     [
@@ -102,7 +101,7 @@ export function SortableContext({
       disableTransforms,
       items,
       overIndex,
-      sortedRects,
+      droppableRects,
       useDragOverlay,
       strategy,
     ]
