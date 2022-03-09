@@ -22,6 +22,14 @@ export interface UseDraggableArguments {
   };
 }
 
+export type DraggableAttributes = {
+  role: string;
+  tabIndex: number;
+  'aria-pressed': boolean | undefined;
+  'aria-roledescription': string;
+  'aria-describedby': string;
+};
+
 export type DraggableSyntheticListeners = SyntheticListenerMap | undefined;
 
 const NullContext = createContext<any>(null);
@@ -72,7 +80,7 @@ export function useDraggable({
     [draggableNodes, id]
   );
 
-  const memoizedAttributes = useMemo(
+  const memoizedAttributes: DraggableAttributes = useMemo(
     () => ({
       role,
       tabIndex,
