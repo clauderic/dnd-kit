@@ -27,6 +27,7 @@ export {
 export type {
   AutoScrollOptions,
   DndMonitorArguments,
+  DraggableAttributes,
   DraggableSyntheticListeners,
   DroppableMeasuring,
   UseDndContextReturnValue,
