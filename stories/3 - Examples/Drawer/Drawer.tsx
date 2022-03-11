@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {
   DndContext,
   DragEndEvent,
@@ -26,6 +26,12 @@ export interface Props {
 const modifiers = [restrictToVerticalAxis, rubberbandModifier];
 
 export function Drawer({children, expanded, header, onChange}: Props) {
+  const tracked = useRef({
+    distance: 0,
+    timestamp: 0,
+    velocity: 0,
+  });
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -39,8 +45,18 @@ export function Drawer({children, expanded, header, onChange}: Props) {
       autoScroll={false}
       modifiers={modifiers}
       sensors={sensors}
-      onDragOver={({over}) => {
-        console.log(over?.id);
+      onDragMove={({delta}) => {
+        // Track drag velocity
+        const timestamp = Date.now();
+        const timeDelta = timestamp - tracked.current.timestamp;
+        const distance = tracked.current.distance - delta.y;
+        const velocity = Math.round((distance / timeDelta) * 1000);
+
+        tracked.current = {
+          distance: delta.y,
+          velocity,
+          timestamp,
+        };
       }}
       onDragEnd={handleDragEnd}
     >
@@ -54,9 +70,24 @@ export function Drawer({children, expanded, header, onChange}: Props) {
   );
 
   function handleDragEnd({over}: DragEndEvent) {
+    const {velocity} = tracked.current;
+
+    if (Math.abs(velocity) > 1000) {
+      // Directional velocity is high, assume intent to expand/collapse
+      // even if we are not over that region.
+      onChange(velocity > 0);
+      return;
+    }
+
     if (over) {
       const expanded = over.id === Region.Expand;
       onChange(expanded);
     }
+
+    tracked.current = {
+      distance: 0,
+      timestamp: 0,
+      velocity: 0,
+    };
   }
 }
