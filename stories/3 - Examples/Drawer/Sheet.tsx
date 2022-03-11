@@ -16,7 +16,6 @@ export function Sheet({children, expanded, header}: Props) {
   const {
     attributes,
     isDragging,
-    // over,
     listeners,
     transform,
     setNodeRef,

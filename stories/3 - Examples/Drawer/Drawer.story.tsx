@@ -1,12 +1,18 @@
 import React, {useState} from 'react';
 
+import {Sortable} from '../../2 - Presets/Sortable/Sortable';
+
 import {Drawer} from './Drawer';
 
 export default {
   title: 'Examples/Drawer/Sheet',
 };
 
-function DrawerExample() {
+interface Props {
+  children: React.ReactNode;
+}
+
+function DrawerExample({children}: Props) {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -15,21 +21,27 @@ function DrawerExample() {
         {expanded ? 'Close' : 'Open'}
       </button>
       <Drawer expanded={expanded} header={'Drag me'} onChange={setExpanded}>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ac
-          mauris sit amet diam pulvinar vestibulum. Sed malesuada ultrices
-          hendrerit.
-        </p>
-
-        <p>
-          Class aptent taciti sociosqu ad litora torquent per conubia nostra,
-          per inceptos himenaeos. Nam nisi tortor, egestas volutpat tortor
-          auctor, efficitur molestie urna. Vestibulum blandit erat massa, eu
-          ornare diam porttitor at.
-        </p>
+        {children}
       </Drawer>
     </div>
   );
 }
 
-export const BottomSheet = () => <DrawerExample />;
+export const BottomSheet = () => (
+  <DrawerExample>
+    <p style={{lineHeight: 2}}>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ac
+      mauris sit amet diam pulvinar vestibulum. Sed malesuada ultrices
+      hendrerit.
+    </p>
+
+    <Sortable />
+
+    <p style={{lineHeight: 2}}>
+      Class aptent taciti sociosqu ad litora torquent per conubia nostra, per
+      inceptos himenaeos. Nam nisi tortor, egestas volutpat tortor auctor,
+      efficitur molestie urna. Vestibulum blandit erat massa, eu ornare diam
+      porttitor at.
+    </p>
+  </DrawerExample>
+);
