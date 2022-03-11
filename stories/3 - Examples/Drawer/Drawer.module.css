@@ -1,0 +1,104 @@
+$header-height: 120px;
+$content-background-color: #fff;
+
+.Drawer {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.Sheet {
+  position: relative;
+  pointer-events: all;
+  display: block;
+  width: 100%;
+  max-width: 500px;
+  transition: transform 200ms ease;
+  transform: translate3d(
+    0,
+    calc(100% - $header-height + var(--transform, 0px)),
+    0
+  );
+
+  &.dragging {
+    transition: none;
+  }
+
+  &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: 1px;
+    width: 100%;
+    height: 100%;
+    transform: translateY(100%);
+    background-color: $content-background-color;
+  }
+
+  &.expanded {
+    transform: translate3d(0, var(--transform), 0);
+  }
+}
+
+.Content {
+  display: block;
+  height: 70vh;
+  padding: 20px;
+  line-height: 2;
+  background-color: $content-background-color;
+}
+
+.Header {
+  --radius: 25px;
+
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  background-color: #efefef;
+  border: 0.1em solid var(--color);
+  border-top-left-radius: var(--radius);
+  border-top-right-radius: var(--radius);
+  height: $header-height;
+  font-size: 20px;
+  color: #333;
+  padding: 1rem;
+  touch-action: none;
+  cursor: grab;
+
+  .dragging & {
+    cursor: grabbing;
+  }
+}
+
+.DropRegions {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: 1.2fr 0.8fr;
+  pointer-events: none;
+}
+
+:global {
+  /* Demo related styles */
+  main {
+    background-color: #dedede;
+  }
+
+  button {
+    float: right;
+    cursor: pointer;
+    appearance: none;
+    font-size: 18px;
+    color: #fff;
+    background-color: #181a22;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 5px;
+    box-shadow: var(--box-shadow);
+  }
+}
