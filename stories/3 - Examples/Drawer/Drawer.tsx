@@ -76,10 +76,7 @@ export function Drawer({children, expanded, header, onChange}: Props) {
       // Directional velocity is high, assume intent to expand/collapse
       // even if we are not over that region.
       onChange(velocity > 0);
-      return;
-    }
-
-    if (over) {
+    } else if (over) {
       const expanded = over.id === Region.Expand;
       onChange(expanded);
     }
