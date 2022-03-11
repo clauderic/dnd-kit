@@ -1,5 +1,5 @@
-$header-height: 120px;
-$content-background-color: #fff;
+$header-height: 100px;
+$content-background-color: #fefefe;
 
 .Drawer {
   position: fixed;
@@ -16,9 +16,11 @@ $content-background-color: #fff;
 .Sheet {
   position: relative;
   pointer-events: all;
-  display: block;
+  display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: 500px;
+  max-height: 75vh;
   transition: transform 200ms ease;
   transform: translate3d(
     0,
@@ -49,15 +51,18 @@ $content-background-color: #fff;
 .Content {
   display: block;
   overflow-y: auto;
-  height: 70vh;
   padding: 20px;
   background-color: $content-background-color;
 }
 
 .Header {
   --radius: 25px;
+  --cursor: grab;
+  --color: rgba(0, 0, 0, 0.05);
 
+  position: relative;
   display: flex;
+  flex-shrink: 0;
   box-sizing: border-box;
   align-items: center;
   justify-content: center;
@@ -70,10 +75,22 @@ $content-background-color: #fff;
   color: #333;
   padding: 1rem;
   touch-action: none;
-  cursor: grab;
+  cursor: var(--cursor);
+
+  &:before {
+    content: '';
+    position: absolute;
+    width: 50px;
+    height: 3px;
+    top: 10px;
+    border-radius: 10px;
+    background-color: var(--color);
+    transition: background-color 0.2s ease;
+  }
 
   .dragging & {
-    cursor: grabbing;
+    --cursor: grabbing;
+    --color: rgba(0, 0, 0, 0.12);
   }
 }
 

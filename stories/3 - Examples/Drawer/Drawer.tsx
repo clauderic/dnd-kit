@@ -35,7 +35,8 @@ export function Drawer({children, expanded, header, onChange}: Props) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 2,
+        delay: 25,
+        tolerance: 40,
       },
     })
   );
@@ -72,7 +73,7 @@ export function Drawer({children, expanded, header, onChange}: Props) {
   function handleDragEnd({over}: DragEndEvent) {
     const {velocity} = tracked.current;
 
-    if (Math.abs(velocity) > 1000) {
+    if (Math.abs(velocity) > 500) {
       // Directional velocity is high, assume intent to expand/collapse
       // even if we are not over that region.
       onChange(velocity > 0);

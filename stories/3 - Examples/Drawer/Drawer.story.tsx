@@ -20,7 +20,11 @@ function DrawerExample({children}: Props) {
       <button onClick={() => setExpanded((value) => !value)}>
         {expanded ? 'Close' : 'Open'}
       </button>
-      <Drawer expanded={expanded} header={'Drag me'} onChange={setExpanded}>
+      <Drawer
+        expanded={expanded}
+        header={'Bottom sheet'}
+        onChange={setExpanded}
+      >
         {children}
       </Drawer>
     </div>
@@ -35,7 +39,7 @@ export const BottomSheet = () => (
       hendrerit.
     </p>
 
-    <Sortable />
+    <Sortable handle />
 
     <p style={{lineHeight: 2}}>
       Class aptent taciti sociosqu ad litora torquent per conubia nostra, per
