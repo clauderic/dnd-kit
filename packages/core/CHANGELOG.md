@@ -1,5 +1,11 @@
 # @dnd-kit/core
 
+## 5.0.2
+
+### Patch Changes
+
+- [#646](https://github.com/clauderic/dnd-kit/pull/646) [`b3b185d`](https://github.com/clauderic/dnd-kit/commit/b3b185dc675b61fe2e3d1a8462728c81c3150b99) Thanks [@lukesmurray](https://github.com/lukesmurray)! - Export `DraggableAttributes` interface for consumers to use when interfacing with `useDraggable` hook.
+
 ## 5.0.1
 
 ### Patch Changes

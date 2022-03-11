@@ -1,5 +1,14 @@
 # @dnd-kit/sortable
 
+## 6.0.1
+
+### Patch Changes
+
+- [#642](https://github.com/clauderic/dnd-kit/pull/642) [`15a6017`](https://github.com/clauderic/dnd-kit/commit/15a6017c4c2dd66911751877cc448456d0e5c96f) Thanks [@vosatom](https://github.com/vosatom)! - Fixed an issue that affected `SortableContext` performance. The `sortedRects` property of the `SortableContext` provider were being recomputed whenever coordinates changed rather than only when the order of the items changed.
+
+- Updated dependencies [[`b3b185d`](https://github.com/clauderic/dnd-kit/commit/b3b185dc675b61fe2e3d1a8462728c81c3150b99)]:
+  - @dnd-kit/core@5.0.2
+
 ## 6.0.0
 
 ### Major Changes
