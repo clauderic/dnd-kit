@@ -1,5 +1,11 @@
 # @dnd-kit/core
 
+## 5.0.3
+
+### Patch Changes
+
+- [#650](https://github.com/clauderic/dnd-kit/pull/650) [`2439aae`](https://github.com/clauderic/dnd-kit/commit/2439aaea86fad793f0da75e2319e174a27142658) Thanks [@clauderic](https://github.com/clauderic)! - - Fixed React warning in development when unmounting a component that uses the `useDraggable` hook by ensuring that the `ResizeObserver` is disconnected in a cleanup effect.
+
 ## 5.0.2
 
 ### Patch Changes
