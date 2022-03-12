@@ -113,6 +113,10 @@ export function useDroppable({
     resizeObserver.disconnect();
     resizeObserverConnected.current = false;
     resizeObserver.observe(nodeRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
   }, [nodeRef, resizeObserver]);
 
   useIsomorphicLayoutEffect(
