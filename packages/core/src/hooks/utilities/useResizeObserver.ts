@@ -1,4 +1,4 @@
-import {useMemo} from 'react';
+import {useEffect, useMemo} from 'react';
 
 interface Arguments {
   disabled?: boolean;
@@ -23,6 +23,10 @@ export function useResizeObserver({onResize, disabled}: Arguments) {
 
     return new ResizeObserver(onResize);
   }, [disabled, onResize]);
+
+  useEffect(() => {
+    return () => resizeObserver?.disconnect();
+  }, [resizeObserver]);
 
   return resizeObserver;
 }
