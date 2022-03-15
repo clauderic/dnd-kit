@@ -37,15 +37,14 @@ export function getIntersectionRatio(
  */
 export const rectIntersection: CollisionDetection = ({
   collisionRect,
+  droppableRects,
   droppableContainers,
 }) => {
   const collisions: CollisionDescriptor[] = [];
 
   for (const droppableContainer of droppableContainers) {
-    const {
-      id,
-      rect: {current: rect},
-    } = droppableContainer;
+    const {id} = droppableContainer;
+    const rect = droppableRects.get(id);
 
     if (rect) {
       const intersectionRatio = getIntersectionRatio(rect, collisionRect);

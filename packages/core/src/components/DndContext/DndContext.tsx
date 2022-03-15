@@ -292,6 +292,7 @@ export const DndContext = memo(function DndContext({
       ? collisionDetection({
           active,
           collisionRect,
+          droppableRects,
           droppableContainers: enabledDroppableContainers,
           pointerCoordinates,
         })
