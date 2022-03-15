@@ -24,6 +24,7 @@ function centerOfRectangle(
  */
 export const closestCenter: CollisionDetection = ({
   collisionRect,
+  droppableRects,
   droppableContainers,
 }) => {
   const centerRect = centerOfRectangle(
@@ -34,10 +35,8 @@ export const closestCenter: CollisionDetection = ({
   const collisions: CollisionDescriptor[] = [];
 
   for (const droppableContainer of droppableContainers) {
-    const {
-      id,
-      rect: {current: rect},
-    } = droppableContainer;
+    const {id} = droppableContainer;
+    const rect = droppableRects.get(id);
 
     if (rect) {
       const distBetween = distanceBetween(centerOfRectangle(rect), centerRect);

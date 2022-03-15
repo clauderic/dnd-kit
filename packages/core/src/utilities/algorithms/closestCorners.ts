@@ -9,16 +9,15 @@ import {cornersOfRectangle, sortCollisionsAsc} from './helpers';
  */
 export const closestCorners: CollisionDetection = ({
   collisionRect,
+  droppableRects,
   droppableContainers,
 }) => {
   const corners = cornersOfRectangle(collisionRect);
   const collisions: CollisionDescriptor[] = [];
 
   for (const droppableContainer of droppableContainers) {
-    const {
-      id,
-      rect: {current: rect},
-    } = droppableContainer;
+    const {id} = droppableContainer;
+    const rect = droppableRects.get(id);
 
     if (rect) {
       const rectCorners = cornersOfRectangle(rect);

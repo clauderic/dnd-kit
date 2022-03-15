@@ -16,7 +16,15 @@ const directions: string[] = [
 
 export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
   event,
-  {context: {active, droppableContainers, collisionRect, scrollableAncestors}}
+  {
+    context: {
+      active,
+      droppableRects,
+      droppableContainers,
+      collisionRect,
+      scrollableAncestors,
+    },
+  }
 ) => {
   if (directions.includes(event.code)) {
     event.preventDefault();
@@ -65,6 +73,7 @@ export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
     const collisions = closestCorners({
       active,
       collisionRect: collisionRect,
+      droppableRects,
       droppableContainers: filteredContainers,
       pointerCoordinates: null,
     });

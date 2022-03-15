@@ -20,6 +20,7 @@ function isPointWithinRect(point: Coordinates, rect: ClientRect): boolean {
  */
 export const pointerWithin: CollisionDetection = ({
   droppableContainers,
+  droppableRects,
   pointerCoordinates,
 }) => {
   if (!pointerCoordinates) {
@@ -29,10 +30,8 @@ export const pointerWithin: CollisionDetection = ({
   const collisions: CollisionDescriptor[] = [];
 
   for (const droppableContainer of droppableContainers) {
-    const {
-      id,
-      rect: {current: rect},
-    } = droppableContainer;
+    const {id} = droppableContainer;
+    const rect = droppableRects.get(id);
 
     if (rect && isPointWithinRect(pointerCoordinates, rect)) {
       /* There may be more than a single rectangle intersecting
