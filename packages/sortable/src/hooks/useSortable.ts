@@ -32,7 +32,7 @@ export interface Arguments
   getNewIndex?: NewIndexGetter;
   strategy?: SortingStrategy;
   transition?: SortableTransition | null;
-  disabled?: boolean | {draggable: boolean; droppable: boolean};
+  disabled?: boolean | {draggable?: boolean; droppable?: boolean};
 }
 
 export function useSortable({
@@ -55,7 +55,8 @@ export function useSortable({
     overIndex,
     useDragOverlay,
     strategy: globalStrategy,
-    disabled: globalDisabled,
+    droppableDisabled: globalDroppableDisabled,
+    draggableDisabled: globalDraggableDisabled,
   } = useContext(Context);
   const index = items.indexOf(id);
   const data = useMemo(
@@ -67,9 +68,11 @@ export function useSortable({
     [items, id]
   );
   const droppableDisabled =
-    typeof disabled === 'boolean' ? false : !!disabled?.droppable;
+    globalDroppableDisabled ||
+    (typeof disabled === 'boolean' ? false : !!disabled?.droppable);
   const draggableDisabled =
-    typeof disabled === 'boolean' ? disabled : !!disabled?.draggable;
+    globalDraggableDisabled ||
+    (typeof disabled === 'boolean' ? disabled : !!disabled?.draggable);
   const {rect, node, isOver, setNodeRef: setDroppableNodeRef} = useDroppable({
     id,
     data,
@@ -77,7 +80,7 @@ export function useSortable({
       updateMeasurementsFor: itemsAfterCurrentSortable,
       ...resizeObserverConfig,
     },
-    disabled: globalDisabled || droppableDisabled,
+    disabled: droppableDisabled,
   });
   const {
     active,
@@ -96,7 +99,7 @@ export function useSortable({
       ...defaultAttributes,
       ...userDefinedAttributes,
     },
-    disabled: globalDisabled || draggableDisabled,
+    disabled: draggableDisabled,
   });
   const setNodeRef = useCombinedRefs(setDroppableNodeRef, setDraggableNodeRef);
   const isSorting = Boolean(active);

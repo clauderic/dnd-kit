@@ -11,7 +11,7 @@ export interface Props {
   items: (UniqueIdentifier | {id: UniqueIdentifier})[];
   strategy?: SortingStrategy;
   id?: string;
-  disabled?: boolean;
+  disabled?: boolean | { draggable?: boolean; droppable?: boolean }; }; 
 }
 
 const ID_PREFIX = 'Sortable';
@@ -25,7 +25,8 @@ interface ContextDescriptor {
   useDragOverlay: boolean;
   sortedRects: ClientRect[];
   strategy: SortingStrategy;
-  disabled?: boolean;
+  droppableDisabled: boolean;
+  draggableDisabled: boolean;
 }
 
 export const Context = React.createContext<ContextDescriptor>({
@@ -37,7 +38,8 @@ export const Context = React.createContext<ContextDescriptor>({
   useDragOverlay: false,
   sortedRects: [],
   strategy: rectSortingStrategy,
-  disabled: false,
+  droppableDisabled: false,
+  draggableDisabled: false,
 });
 
 export function SortableContext({
@@ -71,6 +73,10 @@ export function SortableContext({
   const itemsHaveChanged = !isEqual(items, previousItemsRef.current);
   const disableTransforms =
     (overIndex !== -1 && activeIndex === -1) || itemsHaveChanged;
+  const droppableDisabled =
+    typeof disabled === 'boolean' ? disabled : !!disabled?.droppable;
+  const draggableDisabled =
+    typeof disabled === 'boolean' ? disabled : !!disabled?.draggable;
 
   useIsomorphicLayoutEffect(() => {
     if (itemsHaveChanged && isDragging && !measuringScheduled) {
@@ -98,7 +104,8 @@ export function SortableContext({
       useDragOverlay,
       sortedRects: getSortedRects(items, droppableRects),
       strategy,
-      disabled,
+      droppableDisabled,
+      draggableDisabled,
     }),
     [
       activeIndex,
@@ -109,7 +116,8 @@ export function SortableContext({
       droppableRects,
       useDragOverlay,
       strategy,
-      disabled,
+      droppableDisabled,
+      draggableDisabled,
     ]
   );
 
