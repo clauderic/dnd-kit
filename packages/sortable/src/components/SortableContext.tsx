@@ -11,6 +11,7 @@ export interface Props {
   items: (UniqueIdentifier | {id: UniqueIdentifier})[];
   strategy?: SortingStrategy;
   id?: string;
+  disabled?: boolean;
 }
 
 const ID_PREFIX = 'Sortable';
@@ -24,6 +25,7 @@ interface ContextDescriptor {
   useDragOverlay: boolean;
   sortedRects: ClientRect[];
   strategy: SortingStrategy;
+  disabled?: boolean;
 }
 
 export const Context = React.createContext<ContextDescriptor>({
@@ -35,6 +37,7 @@ export const Context = React.createContext<ContextDescriptor>({
   useDragOverlay: false,
   sortedRects: [],
   strategy: rectSortingStrategy,
+  disabled: false,
 });
 
 export function SortableContext({
@@ -42,6 +45,7 @@ export function SortableContext({
   id,
   items: userDefinedItems,
   strategy = rectSortingStrategy,
+  disabled = false,
 }: Props) {
   const {
     active,
@@ -94,6 +98,7 @@ export function SortableContext({
       useDragOverlay,
       sortedRects: getSortedRects(items, droppableRects),
       strategy,
+      disabled,
     }),
     [
       activeIndex,
@@ -104,6 +109,7 @@ export function SortableContext({
       droppableRects,
       useDragOverlay,
       strategy,
+      disabled,
     ]
   );
 
