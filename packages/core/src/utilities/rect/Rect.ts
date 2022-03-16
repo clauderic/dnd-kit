@@ -12,7 +12,7 @@ const properties = [
 ] as const;
 
 export class Rect {
-  constructor(rect: ClientRect, element: HTMLElement) {
+  constructor(rect: ClientRect, element: Element) {
     const scrollableAncestors = getScrollableAncestors(element);
     const scrollOffsets = getScrollOffsets(scrollableAncestors);
 

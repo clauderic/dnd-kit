@@ -36,11 +36,11 @@ import {
   useDroppableMeasuring,
   useScrollableAncestors,
   useSensorSetup,
-  useClientRect,
-  useClientRects,
+  useRects,
   useWindowRect,
-  useRect,
+  useObservedRect,
   useScrollOffsets,
+  useScrollOffsetsDelta,
 } from '../../hooks/utilities';
 import type {
   AutoScrollOptions,
@@ -203,11 +203,11 @@ export const DndContext = memo(function DndContext({
   const activationCoordinates = activatorEvent
     ? getEventCoordinates(activatorEvent)
     : null;
-  const activeNodeRect = useRect(
+  const activeNodeRect = useObservedRect(
     activeNode,
     measuring?.draggable?.measure ?? getTransformAgnosticClientRect
   );
-  const containerNodeRect = useClientRect(
+  const containerNodeRect = useObservedRect(
     activeNode ? activeNode.parentElement : null
   );
   const sensorContext = useRef<SensorContext>({
@@ -234,15 +234,14 @@ export const DndContext = memo(function DndContext({
   // Use the rect of the drag overlay if it is mounted
   const draggingNode = dragOverlay.nodeRef.current ?? activeNode;
   const draggingNodeRect = dragOverlay.rect ?? activeNodeRect;
+  const usesDragOverlay = dragOverlay.nodeRef.current && dragOverlay.rect;
   const initialActiveNodeRectRef = useRef<ClientRect | null>(null);
   const initialActiveNodeRect = initialActiveNodeRectRef.current;
-
-  // The delta between the previous and new position of the draggable node
-  // is only relevant when there is no drag overlay
-  const nodeRectDelta =
-    draggingNodeRect === activeNodeRect
-      ? getRectDelta(activeNodeRect, initialActiveNodeRect)
-      : defaultCoordinates;
+  const nodeRectDelta = usesDragOverlay
+    ? defaultCoordinates
+    : // The delta between the previous and new position of the draggable node
+      // is only relevant when there is no drag overlay
+      getRectDelta(activeNodeRect, initialActiveNodeRect);
 
   // Get the window rect of the dragging node
   const windowRect = useWindowRect(
@@ -253,7 +252,7 @@ export const DndContext = memo(function DndContext({
   const scrollableAncestors = useScrollableAncestors(
     activeId ? overNode ?? draggingNode : null
   );
-  const scrollableAncestorRects = useClientRects(scrollableAncestors as any);
+  const scrollableAncestorRects = useRects(scrollableAncestors);
 
   // Apply modifiers
   const modifiedTranslate = applyModifiers(modifiers, {
@@ -279,7 +278,13 @@ export const DndContext = memo(function DndContext({
     ? add(activationCoordinates, translate)
     : null;
 
-  const scrollAdjustment = useScrollOffsets(scrollableAncestors);
+  const scrollOffsets = useScrollOffsets(scrollableAncestors);
+  // Represents the scroll delta since dragging was initiated
+  const scrollAdjustment = useScrollOffsetsDelta(scrollOffsets);
+  // Represents the scroll delta since the last time the active node rect was measured
+  const activeNodeScrollDelta = useScrollOffsetsDelta(scrollOffsets, [
+    activeNodeRect,
+  ]);
 
   const scrollAdjustedTranslate = add(modifiedTranslate, scrollAdjustment);
 
@@ -300,8 +305,14 @@ export const DndContext = memo(function DndContext({
   const overId = getFirstCollision(collisions, 'id');
   const [over, setOver] = useState<Over | null>(null);
 
+  // When there is no drag overlay used, we need to account for the
+  // window scroll delta
+  const appliedTranslate = usesDragOverlay
+    ? modifiedTranslate
+    : add(modifiedTranslate, activeNodeScrollDelta);
+
   const transform = adjustScale(
-    modifiedTranslate,
+    appliedTranslate,
     over?.rect ?? null,
     activeNodeRect
   );
@@ -567,7 +578,7 @@ export const DndContext = memo(function DndContext({
       droppableContainers,
       over,
       scrollableAncestors,
-      scrollAdjustedTranslate: scrollAdjustedTranslate,
+      scrollAdjustedTranslate,
     };
 
     activeRects.current = {

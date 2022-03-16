@@ -26,7 +26,7 @@ const props: Partial<SortableProps> = {
 export const BasicSetup = () => <Sortable {...props} />;
 
 export const WithoutDragOverlay = () => (
-  <Sortable {...props} useDragOverlay={false} itemCount={5} />
+  <Sortable {...props} useDragOverlay={false} />
 );
 
 export const DragHandle = () => <Sortable {...props} handle />;

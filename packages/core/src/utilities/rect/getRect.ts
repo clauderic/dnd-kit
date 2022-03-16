@@ -13,7 +13,7 @@ const defaultOptions: Options = {ignoreTransform: false};
  * Returns the bounding client rect of an element relative to the viewport.
  */
 export function getClientRect(
-  element: HTMLElement,
+  element: Element,
   options: Options = defaultOptions
 ) {
   let rect: ClientRect = element.getBoundingClientRect();
@@ -47,8 +47,6 @@ export function getClientRect(
  * applied to the element it measures.
  *
  */
-export function getTransformAgnosticClientRect(
-  element: HTMLElement
-): ClientRect {
+export function getTransformAgnosticClientRect(element: Element): ClientRect {
   return getClientRect(element, {ignoreTransform: true});
 }

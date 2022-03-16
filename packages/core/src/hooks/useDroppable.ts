@@ -82,7 +82,7 @@ export function useDroppable({
     [resizeObserverTimeout]
   );
   const resizeObserver = useResizeObserver({
-    onResize: handleResize,
+    callback: handleResize,
     disabled: resizeObserverDisabled || !active,
   });
   const handleNodeChange = useCallback(

@@ -32,7 +32,7 @@ export function useDragOverlayMeasuring({
     },
     [measure]
   );
-  const resizeObserver = useResizeObserver({onResize: handleResize});
+  const resizeObserver = useResizeObserver({callback: handleResize});
   const handleNodeChange = useCallback(
     (element) => {
       const node = getMeasurableNode(element);
