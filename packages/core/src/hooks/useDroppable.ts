@@ -46,6 +46,7 @@ export function useDroppable({
   const {active, dispatch, over, measureDroppableContainers} = useContext(
     InternalContext
   );
+  const previous = useRef({disabled});
   const resizeObserverConnected = useRef(false);
   const rect = useRef<ClientRect | null>(null);
   const callbackId = useRef<NodeJS.Timeout | null>(null);
@@ -140,18 +141,18 @@ export function useDroppable({
     [id]
   );
 
-  useEffect(
-    () => {
+  useEffect(() => {
+    if (disabled !== previous.current.disabled) {
       dispatch({
         type: Action.SetDroppableDisabled,
         id,
         key,
         disabled,
       });
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [disabled]
-  );
+
+      previous.current.disabled = disabled;
+    }
+  }, [id, key, disabled, dispatch]);
 
   return {
     active,
