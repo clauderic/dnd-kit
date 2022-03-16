@@ -1,16 +1,15 @@
 .Draggable {
   position: relative;
   display: flex;
+  align-items: center;
   flex-direction: column;
   justify-content: center;
   transition: transform 250ms ease;
-  transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0);
 
-  button {
+  > button {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto;
     min-height: 54px;
     flex-shrink: 1;
     appearance: none;
@@ -20,13 +19,13 @@
     background-color: #181a22;
     border-radius: 5px;
     box-shadow: var(--box-shadow);
-    transform: scale(var(--scale, 1));
-    transition: transform 250ms cubic-bezier(0.18, 0.67, 0.6, 1.22),
-      box-shadow 300ms ease;
+    transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0)
+      scale(var(--scale, 1));
+    transition: box-shadow 300ms ease;
   }
 
   &:not(.handle) {
-    button {
+    > button {
       touch-action: none;
       cursor: grab;
 
@@ -37,7 +36,7 @@
   }
 
   &.handle {
-    button {
+    > button {
       --action-background: rgba(255, 255, 255, 0.1);
 
       > svg {
@@ -85,7 +84,7 @@
       cursor: grabbing;
     }
 
-    button {
+    > button {
       --scale: 1.06;
       --box-shadow: -1px 0 15px 0 rgba(34, 33, 81, 0.01),
         0px 15px 15px 0 rgba(34, 33, 81, 0.25);
@@ -101,8 +100,9 @@
     }
   }
 
-  &.dragOverlay {
-    button {
+  &.dragOverlay,
+  &.dragging {
+    > button {
       animation: pop 250ms cubic-bezier(0.18, 0.67, 0.6, 1.22);
     }
   }
@@ -119,10 +119,12 @@
 
 @keyframes pop {
   0% {
-    transform: scale(1);
+    transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0)
+      scale(1);
   }
   100% {
-    transform: scale(var(--scale));
+    transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0)
+      scale(var(--scale));
     box-shadow: var(--box-shadow);
   }
 }

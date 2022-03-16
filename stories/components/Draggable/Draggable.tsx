@@ -1,6 +1,7 @@
 import React, {forwardRef} from 'react';
 import classNames from 'classnames';
-import type {DraggableSyntheticListeners, Translate} from '@dnd-kit/core';
+import type {DraggableSyntheticListeners} from '@dnd-kit/core';
+import type {Transform} from '@dnd-kit/utilities';
 
 import {Handle} from '../Item/components/Handle';
 
@@ -25,7 +26,8 @@ interface Props {
   label?: string;
   listeners?: DraggableSyntheticListeners;
   style?: React.CSSProperties;
-  translate?: Translate;
+  buttonStyle?: React.CSSProperties;
+  transform?: Transform | null;
 }
 
 export const Draggable = forwardRef<HTMLButtonElement, Props>(
@@ -37,7 +39,9 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
       handle,
       label,
       listeners,
-      translate,
+      transform,
+      style,
+      buttonStyle,
       ...props
     },
     ref
@@ -52,18 +56,20 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
         )}
         style={
           {
-            '--translate-x': `${translate?.x ?? 0}px`,
-            '--translate-y': `${translate?.y ?? 0}px`,
+            ...style,
+            '--translate-x': `${transform?.x ?? 0}px`,
+            '--translate-y': `${transform?.y ?? 0}px`,
           } as React.CSSProperties
         }
       >
         <button
-          ref={ref}
           {...props}
           aria-label="Draggable"
           data-cypress="draggable-item"
           {...(handle ? {} : listeners)}
           tabIndex={handle ? -1 : undefined}
+          ref={ref}
+          style={buttonStyle}
         >
           {axis === Axis.Vertical
             ? draggableVertical
