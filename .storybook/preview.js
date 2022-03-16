@@ -13,6 +13,11 @@ addDecorator((storyFn) => (
         body {
           padding: 0 !important;
         }
+        main {
+          position: relative;
+          min-height: 100vh;
+          outline: none;
+        }
       `}
     </style>
     <link rel="preconnect" href="https://fonts.gstatic.com" />
@@ -20,15 +25,6 @@ addDecorator((storyFn) => (
       href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500&display=swap"
       rel="stylesheet"
     />
-    <main
-      style={{
-        position: 'relative',
-        minHeight: '100vh',
-        outline: 'none',
-      }}
-      tabIndex={-1}
-    >
-      {storyFn()}
-    </main>
+    <main tabIndex={-1}>{storyFn()}</main>
   </>
 ));

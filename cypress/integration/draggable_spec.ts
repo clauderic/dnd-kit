@@ -352,7 +352,9 @@ describe('Draggable', () => {
       const deltaX = 100;
       const deltaY = 5;
 
-      cy.visitStory('core-draggable-hooks-usedraggable--minimum-distance-x-tolerance-y')
+      cy.visitStory(
+        'core-draggable-hooks-usedraggable--minimum-distance-x-tolerance-y'
+      )
         .findFirstDraggableItem()
         .mouseMoveBy(deltaX, deltaY)
         .then(([subject, {delta}]) => {
@@ -367,7 +369,9 @@ describe('Draggable', () => {
       const deltaX = 100;
       const deltaY = 150;
 
-      cy.visitStory('core-draggable-hooks-usedraggable--minimum-distance-x-tolerance-y')
+      cy.visitStory(
+        'core-draggable-hooks-usedraggable--minimum-distance-x-tolerance-y'
+      )
         .findFirstDraggableItem()
         .mouseMoveBy(deltaX, deltaY)
         .then(([subject, {delta}]) => {
@@ -382,7 +386,9 @@ describe('Draggable', () => {
       const deltaX = 5;
       const deltaY = 100;
 
-      cy.visitStory('core-draggable-hooks-usedraggable--minimum-distance-y-tolerance-x')
+      cy.visitStory(
+        'core-draggable-hooks-usedraggable--minimum-distance-y-tolerance-x'
+      )
         .findFirstDraggableItem()
         .mouseMoveBy(deltaX, deltaY)
         .then(([subject, {delta}]) => {
@@ -397,7 +403,9 @@ describe('Draggable', () => {
       const deltaX = 150;
       const deltaY = 100;
 
-      cy.visitStory('core-draggable-hooks-usedraggable--minimum-distance-y-tolerance-x')
+      cy.visitStory(
+        'core-draggable-hooks-usedraggable--minimum-distance-y-tolerance-x'
+      )
         .findFirstDraggableItem()
         .mouseMoveBy(deltaX, deltaY)
         .then(([subject, {delta}]) => {
