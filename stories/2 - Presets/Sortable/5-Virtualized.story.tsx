@@ -43,6 +43,8 @@ function Sortable({
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
+      // Disable smooth scrolling in Cypress automated tests
+      scrollBehavior: 'Cypress' in window ? 'auto' : undefined,
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );

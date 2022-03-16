@@ -19,9 +19,10 @@ export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
   {
     context: {
       active,
+      collisionRect,
       droppableRects,
       droppableContainers,
-      collisionRect,
+      over,
       scrollableAncestors,
     },
   }
@@ -48,22 +49,22 @@ export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
 
       switch (event.code) {
         case KeyboardCode.Down:
-          if (collisionRect.top + collisionRect.height <= rect.top) {
+          if (collisionRect.top < rect.top) {
             filteredContainers.push(entry);
           }
           break;
         case KeyboardCode.Up:
-          if (collisionRect.top >= rect.top + rect.height) {
+          if (collisionRect.top > rect.top) {
             filteredContainers.push(entry);
           }
           break;
         case KeyboardCode.Left:
-          if (collisionRect.left >= rect.left + rect.width) {
+          if (collisionRect.left > rect.left) {
             filteredContainers.push(entry);
           }
           break;
         case KeyboardCode.Right:
-          if (collisionRect.left + collisionRect.width <= rect.left) {
+          if (collisionRect.left < rect.left) {
             filteredContainers.push(entry);
           }
           break;
@@ -77,7 +78,11 @@ export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
       droppableContainers: filteredContainers,
       pointerCoordinates: null,
     });
-    const closestId = getFirstCollision(collisions, 'id');
+    let closestId = getFirstCollision(collisions, 'id');
+
+    if (closestId === over?.id && collisions.length > 1) {
+      closestId = collisions[1].id;
+    }
 
     if (closestId != null) {
       const newDroppable = droppableContainers.get(closestId);

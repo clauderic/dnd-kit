@@ -28,12 +28,12 @@ import {
   useSortable,
   arrayMove,
   defaultAnimateLayoutChanges,
-  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
   SortingStrategy,
   horizontalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
+import {coordinateGetter as multipleContainersCoordinateGetter} from './multipleContainersKeyboardCoordinates';
 
 import {Item, Container, ContainerProps} from '../../components';
 
@@ -151,7 +151,7 @@ export function MultipleContainers({
   handle = false,
   items: initialItems,
   containerStyle,
-  coordinateGetter = sortableKeyboardCoordinates,
+  coordinateGetter = multipleContainersCoordinateGetter,
   getItemStyles = () => ({}),
   wrapperStyle = () => ({}),
   minimal = false,

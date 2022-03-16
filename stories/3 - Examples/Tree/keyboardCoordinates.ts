@@ -26,7 +26,7 @@ export const sortableTreeKeyboardCoordinates: (
   event,
   {
     currentCoordinates,
-    context: {active, over, collisionRect, droppableContainers},
+    context: {active, over, collisionRect, droppableRects, droppableContainers},
   }
 ) => {
   if (directions.includes(event.code)) {
@@ -73,41 +73,36 @@ export const sortableTreeKeyboardCoordinates: (
 
     const containers: DroppableContainer[] = [];
 
-    const overRect = over?.id
-      ? droppableContainers.get(over.id)?.rect.current
-      : undefined;
+    droppableContainers.forEach((container) => {
+      if (container?.disabled || container.id === over?.id) {
+        return;
+      }
 
-    if (overRect) {
-      droppableContainers.forEach((container) => {
-        if (container?.disabled) {
-          return;
-        }
+      const rect = container?.rect.current;
 
-        const rect = container?.rect.current;
+      if (!rect) {
+        return;
+      }
 
-        if (!rect) {
-          return;
-        }
-
-        switch (event.code) {
-          case KeyboardCode.Down:
-            if (overRect.top < rect.top) {
-              containers.push(container);
-            }
-            break;
-          case KeyboardCode.Up:
-            if (overRect.top > rect.top) {
-              containers.push(container);
-            }
-            break;
-        }
-      });
-    }
+      switch (event.code) {
+        case KeyboardCode.Down:
+          if (collisionRect.top < rect.top) {
+            containers.push(container);
+          }
+          break;
+        case KeyboardCode.Up:
+          if (collisionRect.top > rect.top) {
+            containers.push(container);
+          }
+          break;
+      }
+    });
 
     const collisions = closestCorners({
       active,
-      collisionRect: collisionRect,
+      collisionRect,
       pointerCoordinates: null,
+      droppableRects,
       droppableContainers: containers,
     });
     const closestId = getFirstCollision(collisions, 'id');
