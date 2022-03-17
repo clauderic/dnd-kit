@@ -15,7 +15,7 @@ const directions: string[] = [
 
 export const coordinateGetter: KeyboardCoordinateGetter = (
   event,
-  {context: {active, droppableContainers, collisionRect}}
+  {context: {active, droppableRects, droppableContainers, collisionRect}}
 ) => {
   if (directions.includes(event.code)) {
     event.preventDefault();
@@ -31,7 +31,7 @@ export const coordinateGetter: KeyboardCoordinateGetter = (
         return;
       }
 
-      const rect = entry?.rect.current;
+      const rect = droppableRects.get(entry.id);
 
       if (!rect) {
         return;
@@ -43,7 +43,9 @@ export const coordinateGetter: KeyboardCoordinateGetter = (
         const {type, children} = data;
 
         if (type === 'container' && children?.length > 0) {
-          return;
+          if (active.data.current?.type !== 'container') {
+            return;
+          }
         }
       }
 
@@ -74,6 +76,7 @@ export const coordinateGetter: KeyboardCoordinateGetter = (
     const collisions = closestCorners({
       active,
       collisionRect: collisionRect,
+      droppableRects,
       droppableContainers: filteredContainers,
       pointerCoordinates: null,
     });
@@ -85,6 +88,13 @@ export const coordinateGetter: KeyboardCoordinateGetter = (
       const newRect = newDroppable?.rect.current;
 
       if (newNode && newRect) {
+        if (newDroppable.data.current?.type === 'container') {
+          return {
+            x: newRect.left + (newRect.width - collisionRect.width) / 2,
+            y: newRect.top + (newRect.height - collisionRect.height) / 2,
+          };
+        }
+
         return {
           x: newRect.left,
           y: newRect.top,

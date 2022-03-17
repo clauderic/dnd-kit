@@ -1,6 +1,9 @@
 name: Compressed Size
 
-on: [pull_request]
+on:
+  push:
+    branches-ignore:
+      - 'master'
 
 jobs:
   build:

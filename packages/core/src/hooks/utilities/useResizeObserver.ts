@@ -1,15 +1,15 @@
 import {useEffect, useMemo} from 'react';
 
 interface Arguments {
+  callback: ResizeObserverCallback;
   disabled?: boolean;
-  onResize: ResizeObserverCallback;
 }
 
 /**
  * Returns a new ResizeObserver instance bound to the `onResize` callback.
  * If `ResizeObserver` is undefined in the execution environment, returns `undefined`.
  */
-export function useResizeObserver({onResize, disabled}: Arguments) {
+export function useResizeObserver({callback, disabled}: Arguments) {
   const resizeObserver = useMemo(() => {
     if (
       disabled ||
@@ -21,8 +21,8 @@ export function useResizeObserver({onResize, disabled}: Arguments) {
 
     const {ResizeObserver} = window;
 
-    return new ResizeObserver(onResize);
-  }, [disabled, onResize]);
+    return new ResizeObserver(callback);
+  }, [disabled, callback]);
 
   useEffect(() => {
     return () => resizeObserver?.disconnect();

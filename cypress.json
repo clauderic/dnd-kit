@@ -3,5 +3,6 @@
   "supportFile": "cypress/support/index.ts",
   "projectId": "zkn9qu",
   "baseUrl": "http://localhost:6006/",
-  "viewportHeight": 1000
+  "viewportHeight": 1000,
+  "scrollBehavior": false
 }

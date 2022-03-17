@@ -6,7 +6,6 @@ import {
   MouseSensor,
   TouchSensor,
   KeyboardSensor,
-  Translate,
   PointerActivationConstraint,
   Modifiers,
   useSensors,
@@ -18,6 +17,7 @@ import {
   restrictToWindowEdges,
   snapCenterToCursor,
 } from '@dnd-kit/modifiers';
+import type {Coordinates} from '@dnd-kit/utilities';
 
 import {
   Axis,
@@ -41,6 +41,7 @@ interface Props {
   axis?: Axis;
   handle?: boolean;
   modifiers?: Modifiers;
+  buttonStyle?: React.CSSProperties;
   style?: React.CSSProperties;
   label?: string;
 }
@@ -52,14 +53,9 @@ function DraggableStory({
   label = 'Go ahead, drag me.',
   modifiers,
   style,
+  buttonStyle,
 }: Props) {
-  const [{translate}, setTranslate] = useState<{
-    initialTranslate: Translate;
-    translate: Translate;
-  }>({initialTranslate: defaultCoordinates, translate: defaultCoordinates});
-  const [initialWindowScroll, setInitialWindowScroll] = useState(
-    defaultCoordinates
-  );
+  const [{x, y}, setCoordinates] = useState<Coordinates>(defaultCoordinates);
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint,
   });
@@ -72,36 +68,13 @@ function DraggableStory({
   return (
     <DndContext
       sensors={sensors}
-      onDragStart={() => {
-        setInitialWindowScroll({
-          x: window.scrollX,
-          y: window.scrollY,
-        });
-      }}
-      onDragMove={({delta}) => {
-        setTranslate(({initialTranslate}) => ({
-          initialTranslate,
-          translate: {
-            x: initialTranslate.x + delta.x - initialWindowScroll.x,
-            y: initialTranslate.y + delta.y - initialWindowScroll.y,
-          },
-        }));
-      }}
-      onDragEnd={() => {
-        setTranslate(({translate}) => {
+      onDragEnd={({delta}) => {
+        setCoordinates(({x, y}) => {
           return {
-            translate,
-            initialTranslate: translate,
+            x: x + delta.x,
+            y: y + delta.y,
           };
         });
-        setInitialWindowScroll(defaultCoordinates);
-      }}
-      onDragCancel={() => {
-        setTranslate(({initialTranslate}) => ({
-          translate: initialTranslate,
-          initialTranslate,
-        }));
-        setInitialWindowScroll(defaultCoordinates);
       }}
       modifiers={modifiers}
     >
@@ -110,8 +83,10 @@ function DraggableStory({
           axis={axis}
           label={label}
           handle={handle}
+          top={y}
+          left={x}
           style={style}
-          translate={translate}
+          buttonStyle={buttonStyle}
         />
       </Wrapper>
     </DndContext>
@@ -122,18 +97,28 @@ interface DraggableItemProps {
   label: string;
   handle?: boolean;
   style?: React.CSSProperties;
-  translate: Translate;
+  buttonStyle?: React.CSSProperties;
   axis?: Axis;
+  top?: number;
+  left?: number;
 }
 
 function DraggableItem({
   axis,
   label,
   style,
-  translate,
+  top,
+  left,
   handle,
+  buttonStyle,
 }: DraggableItemProps) {
-  const {attributes, isDragging, listeners, setNodeRef} = useDraggable({
+  const {
+    attributes,
+    isDragging,
+    listeners,
+    setNodeRef,
+    transform,
+  } = useDraggable({
     id: 'draggable',
   });
 
@@ -144,8 +129,9 @@ function DraggableItem({
       handle={handle}
       label={label}
       listeners={listeners}
-      style={style}
-      translate={translate}
+      style={{...style, top, left}}
+      buttonStyle={buttonStyle}
+      transform={transform}
       axis={axis}
       {...attributes}
     />
@@ -220,7 +206,8 @@ export const MinimumDistanceXToleranceY = () => (
   />
 );
 
-MinimumDistanceXToleranceY.storyName = 'Minimum Distance X Axis and Tolerance Y Axis';
+MinimumDistanceXToleranceY.storyName =
+  'Minimum Distance X Axis and Tolerance Y Axis';
 
 export const MinimumDistanceYToleranceX = () => (
   <DraggableStory
@@ -232,7 +219,8 @@ export const MinimumDistanceYToleranceX = () => (
   />
 );
 
-MinimumDistanceYToleranceX.storyName = 'Minimum Distance Y Axis and Tolerance X Axis';
+MinimumDistanceYToleranceX.storyName =
+  'Minimum Distance Y Axis and Tolerance X Axis';
 
 export const HorizontalAxis = () => (
   <DraggableStory
@@ -261,9 +249,12 @@ export const RestrictToWindowEdges = () => (
 
 export const SnapToGrid = () => {
   const [gridSize, setGridSize] = React.useState(30);
-  const itemStyle = {
-    marginTop: 11,
-    marginLeft: 11,
+  const style = {
+    alignItems: 'flex-start',
+  };
+  const buttonStyle = {
+    marginLeft: gridSize - 20 + 1,
+    marginTop: gridSize - 20 + 1,
     width: gridSize * 8 - 1,
     height: gridSize * 2 - 1,
   };
@@ -274,7 +265,8 @@ export const SnapToGrid = () => {
       <DraggableStory
         label={`Snapping to ${gridSize}px increments`}
         modifiers={[snapToGrid]}
-        style={itemStyle}
+        style={style}
+        buttonStyle={buttonStyle}
         key={gridSize}
       />
       <Grid size={gridSize} onSizeChange={setGridSize} />

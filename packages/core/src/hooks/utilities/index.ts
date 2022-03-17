@@ -12,8 +12,10 @@ export {
   MeasuringStrategy,
 } from './useDroppableMeasuring';
 export type {DroppableMeasuring} from './useDroppableMeasuring';
+export {useObservedRect} from './useObservedRect';
 export {useResizeObserver} from './useResizeObserver';
 export {useScrollOffsets} from './useScrollOffsets';
+export {useScrollOffsetsDelta} from './useScrollOffsetsDelta';
 export {useScrollableAncestors} from './useScrollableAncestors';
 export {useSensorSetup} from './useSensorSetup';
 export {useSyntheticListeners} from './useSyntheticListeners';
@@ -22,5 +24,6 @@ export type {
   SyntheticListeners,
   SyntheticListenerMap,
 } from './useSyntheticListeners';
-export {useRect, useClientRect, useClientRects, useWindowRect} from './useRect';
+export {useRects} from './useRects';
+export {useWindowRect} from './useWindowRect';
 export {useDragOverlayMeasuring} from './useDragOverlayMeasuring';

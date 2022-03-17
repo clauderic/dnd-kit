@@ -105,6 +105,11 @@ export const DragOverlay = React.memo(
       },
       [isDragging, activeNodeRect]
     );
+
+    // We need to wait for the active node to be measured before connecting the drag overlay ref
+    // otherwise collisions can be computed against a mispositioned drag overlay
+    const ref = initialRect ? dragOverlay.setRef : undefined;
+
     const style: React.CSSProperties | undefined = initialRect
       ? {
           position: 'fixed',
@@ -184,7 +189,7 @@ export const DragOverlay = React.memo(
             wrapperElement,
             {
               ...otherAttributes,
-              ref: dragOverlay.setRef,
+              ref,
             },
             finalChildren
           )}

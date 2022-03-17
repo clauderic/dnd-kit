@@ -148,7 +148,11 @@ Cypress.Commands.add(
         force: true,
       })
       .wait(150)
-      .type(Keys.Space, {scrollBehavior: false, log: false, force: true});
+      .type(Keys.Space, {
+        force: true,
+        scrollBehavior: false,
+      })
+      .wait(250);
   }
 );
 

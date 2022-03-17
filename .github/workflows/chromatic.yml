@@ -1,4 +1,5 @@
 name: 'Chromatic'
+
 on: [push]
 
 jobs:

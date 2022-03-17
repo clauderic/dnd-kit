@@ -4,7 +4,6 @@ import {
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
 
-import {coordinateGetter} from './keyboardCoordinates';
 import {Sortable} from '../../../2 - Presets/Sortable/Sortable';
 import {MultipleContainers} from '../../../2 - Presets/Sortable/MultipleContainers';
 import {PlayingCard, getDeckOfCards} from './PlayingCard';
@@ -50,7 +49,6 @@ export const SingleDeck = () => {
           zIndex: isDragging ? deck.length - overIndex : deck.length - index,
           opacity: isDragging && !isDragOverlay ? 0.3 : undefined,
         })}
-        coordinateGetter={coordinateGetter}
       />
     </div>
   );
@@ -152,7 +150,6 @@ export const MultipleDecks = () => {
               : deck.length - index,
           };
         }}
-        coordinateGetter={coordinateGetter}
         minimal
       />
     </>
