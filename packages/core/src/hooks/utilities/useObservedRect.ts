@@ -11,11 +11,11 @@ export function useObservedRect(
   element: HTMLElement | null,
   measure: (element: HTMLElement) => ClientRect = getClientRect
 ) {
-  const [rect, measureRect] = useReducer(reducer, null);
   const initialRect = useMemo(() => (element ? measure(element) : null), [
     element,
     measure,
   ]);
+  const [rect, measureRect] = useReducer(reducer, null);
 
   const handleMutations = useCallback<MutationCallback>(
     (records) => {
