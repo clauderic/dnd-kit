@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
-import {useLazyMemo} from '@dnd-kit/utilities';
+import {useLatestValue, useLazyMemo} from '@dnd-kit/utilities';
 
 import {Rect, getTransformAgnosticClientRect} from '../../utilities/rect';
 import type {DroppableContainer, RectMap} from '../../store/types';
@@ -51,15 +51,21 @@ export function useDroppableMeasuring(
     ...config,
   };
   const containersRef = useRef(containers);
+  const disabled = isDisabled();
+  const disabledRef = useLatestValue(disabled);
   const measureDroppableContainers = useCallback(
-    (ids: UniqueIdentifier[] = []) =>
+    (ids: UniqueIdentifier[] = []) => {
+      if (disabledRef.current) {
+        return;
+      }
+
       setContainerIdsScheduledForMeasurement((value) =>
         value ? value.concat(ids) : ids
-      ),
-    []
+      );
+    },
+    [disabledRef]
   );
   const timeoutId = useRef<NodeJS.Timeout | null>(null);
-  const disabled = isDisabled();
   const droppableRects = useLazyMemo<RectMap>(
     (previousValue) => {
       if (disabled && !dragging) {

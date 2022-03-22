@@ -60,7 +60,6 @@ export function SortableContext({
       ),
     [userDefinedItems]
   );
-  const isDragging = active != null;
   const activeIndex = active ? items.indexOf(active.id) : -1;
   const overIndex = over ? items.indexOf(over.id) : -1;
   const previousItemsRef = useRef(items);
@@ -69,16 +68,10 @@ export function SortableContext({
     (overIndex !== -1 && activeIndex === -1) || itemsHaveChanged;
 
   useIsomorphicLayoutEffect(() => {
-    if (itemsHaveChanged && isDragging && !measuringScheduled) {
+    if (itemsHaveChanged && !measuringScheduled) {
       measureDroppableContainers(items);
     }
-  }, [
-    itemsHaveChanged,
-    items,
-    isDragging,
-    measureDroppableContainers,
-    measuringScheduled,
-  ]);
+  }, [itemsHaveChanged, items, measureDroppableContainers, measuringScheduled]);
 
   useEffect(() => {
     previousItemsRef.current = items;
