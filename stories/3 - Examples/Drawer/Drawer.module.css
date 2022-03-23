@@ -20,7 +20,7 @@ $content-background-color: #fefefe;
   flex-direction: column;
   width: 100%;
   max-width: 500px;
-  max-height: 75vh;
+  max-height: var(--max-height);
   transition: transform 200ms ease;
   transform: translate3d(
     0,

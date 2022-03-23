@@ -1,16 +1,22 @@
 import type {ClientRect, Modifier} from '@dnd-kit/core';
 import type {Transform} from '@dnd-kit/utilities';
 
+import {MAX_DRAWER_HEIGHT_PERCENT} from './constants';
+
 export const rubberbandModifier: Modifier = ({
-  containerNodeRect,
   draggingNodeRect,
   transform,
+  windowRect,
 }) => {
-  if (!draggingNodeRect || !containerNodeRect) {
+  if (!draggingNodeRect || !windowRect) {
     return transform;
   }
 
-  return rubberbandBoundingRect(transform, draggingNodeRect, containerNodeRect);
+  return rubberbandBoundingRect(transform, draggingNodeRect, {
+    ...windowRect,
+    top: (1 - MAX_DRAWER_HEIGHT_PERCENT) * windowRect.height,
+    height: MAX_DRAWER_HEIGHT_PERCENT * windowRect.height,
+  });
 };
 
 function rubberbandBoundingRect(

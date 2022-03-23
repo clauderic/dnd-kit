@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import {useDraggable} from '@dnd-kit/core';
 
 import {Header} from './Header';
+import {MAX_DRAWER_HEIGHT_PERCENT} from './constants';
 
 import styles from './Drawer.module.css';
 
@@ -31,6 +32,7 @@ export function Sheet({children, expanded, header}: Props) {
       })}
       style={
         {
+          '--max-height': `${MAX_DRAWER_HEIGHT_PERCENT * 100}vh`,
           '--transform': transform ? `${transform.y}px` : undefined,
         } as React.CSSProperties
       }
