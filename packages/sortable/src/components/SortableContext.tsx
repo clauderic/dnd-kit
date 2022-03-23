@@ -11,7 +11,7 @@ export interface Props {
   items: (UniqueIdentifier | {id: UniqueIdentifier})[];
   strategy?: SortingStrategy;
   id?: string;
-  disabled?: boolean | { draggable?: boolean; droppable?: boolean }; }; 
+  disabled?: boolean | {draggable?: boolean; droppable?: boolean};
 }
 
 const ID_PREFIX = 'Sortable';
