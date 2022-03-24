@@ -18,6 +18,7 @@ export interface Props {
   children?: React.ReactNode;
   className?: string;
   dropAnimation?: DropAnimation | null | undefined;
+  useCustomDropAnimation?: typeof useDropAnimation | undefined;
   style?: React.CSSProperties;
   transition?: string | TransitionGetter;
   modifiers?: Modifiers;
@@ -43,6 +44,7 @@ export const DragOverlay = React.memo(
     adjustScale = false,
     children,
     dropAnimation = defaultDropAnimation,
+    useCustomDropAnimation = useDropAnimation,
     style: styleProp,
     transition = defaultTransition,
     modifiers,
@@ -147,7 +149,7 @@ export const DragOverlay = React.memo(
     const {children: finalChildren, transform: _, ...otherAttributes} =
       derivedAttributes ?? {};
     const prevActiveId = useRef(active?.id ?? null);
-    const dropAnimationComplete = useDropAnimation({
+    const dropAnimationComplete = useCustomDropAnimation({
       animate: Boolean(dropAnimation && prevActiveId.current && !active),
       adjustScale,
       activeId: prevActiveId.current,

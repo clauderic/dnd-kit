@@ -3,6 +3,7 @@ export {
   DragOverlay,
   defaultAnnouncements,
   defaultDropAnimation,
+  useDropAnimation,
 } from './components';
 export type {
   Announcements,
@@ -101,6 +102,8 @@ export {
   closestCorners,
   rectIntersection,
   pointerWithin,
+  getTransformAgnosticClientRect,
+  getMeasurableNode,
 } from './utilities';
 export type {
   Collision,

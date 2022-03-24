@@ -39,3 +39,5 @@ export {
   getScrollPosition,
   isDocumentScrollingElement,
 } from './scroll';
+
+export {getMeasurableNode} from './nodes';
