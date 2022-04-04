@@ -160,11 +160,25 @@ export const DndContext = memo(function DndContext({
     event: null,
   }));
   const [isDragging, setIsDragging] = useState(false);
+  const [nodeData, setNodeData] = useState<DataRef | null>(null);
   const {
     draggable: {active: activeId, nodes: draggableNodes, translate},
     droppable: {containers: droppableContainers},
   } = state;
-  const node = activeId ? draggableNodes[activeId] : null;
+  const node = useMemo(() => (activeId ? draggableNodes[activeId] : null), [
+    activeId,
+    draggableNodes,
+  ]);
+  useEffect(() => {
+    // It's possible for the active node to unmount while dragging
+    // This will preserve the data
+    if (activeId && node?.data) {
+      setNodeData(node.data);
+    } else if (!activeId && !node) {
+      setNodeData(null);
+    }
+  }, [activeId, node]);
+
   const activeRects = useRef<Active['rect']['current']>({
     initial: null,
     translated: null,
@@ -174,12 +188,11 @@ export const DndContext = memo(function DndContext({
       activeId != null
         ? {
             id: activeId,
-            // It's possible for the active node to unmount while dragging
-            data: node?.data ?? defaultData,
+            data: nodeData ?? defaultData,
             rect: activeRects,
           }
         : null,
-    [activeId, node]
+    [activeId, nodeData]
   );
   const activeRef = useRef<UniqueIdentifier | null>(null);
   const [activeSensor, setActiveSensor] = useState<SensorInstance | null>(null);
