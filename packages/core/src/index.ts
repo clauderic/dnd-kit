@@ -1,6 +1,7 @@
 export {
   DndContext,
   DragOverlay,
+  DragOverlayProps,
   defaultAnnouncements,
   defaultDropAnimation,
 } from './components';
