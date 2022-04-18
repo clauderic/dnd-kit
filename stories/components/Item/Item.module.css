@@ -29,6 +29,7 @@ $focused-outline-color: #4c9ffe;
 }
 
 .Wrapper {
+  position: relative;
   display: flex;
   box-sizing: border-box;
   transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0)
@@ -48,6 +49,25 @@ $focused-outline-color: #4c9ffe;
       0px 15px 15px 0 rgba(34, 33, 81, 0.25);
     z-index: 999;
   }
+
+  &.count:after {
+    content: var(--count);
+
+    position: absolute;
+    top: -14px;
+    right: -14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #2389ff;
+    border: 1px solid #217be2;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #fff;
+  }
 }
 
 .Item {
@@ -55,6 +75,9 @@ $focused-outline-color: #4c9ffe;
   display: flex;
   flex-grow: 1;
   align-items: center;
+  appearance: none;
+  outline: none;
+  border: none;
   padding: 18px 20px;
   background-color: $background-color;
   box-shadow: $box-shadow;
@@ -124,6 +147,20 @@ $focused-outline-color: #4c9ffe;
     background-color: var(--color);
   }
 
+  &.selected:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 0px;
+    height: 100%;
+    width: 2px;
+    display: block;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    background-color: #4c9ffe;
+  }
+
   &:hover {
     .Remove {
       visibility: visible;
@@ -142,4 +179,20 @@ $focused-outline-color: #4c9ffe;
   margin-left: auto;
   margin-bottom: -15px;
   margin-right: -10px;
+}
+
+.Checkbox {
+  display: flex;
+  width: 26px;
+  height: 26px;
+  margin-top: 8px;
+  margin-right: 4px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  background-color: #f9f9fb;
+
+  svg {
+    fill: rgb(124, 124, 124);
+  }
 }

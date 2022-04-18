@@ -4,12 +4,12 @@ import type {DraggableSyntheticListeners} from '@dnd-kit/core';
 import type {Transform} from '@dnd-kit/utilities';
 
 import {Handle, Remove} from './components';
-
 import styles from './Item.module.css';
 
 export interface Props {
   dragOverlay?: boolean;
   color?: string;
+  count?: number;
   disabled?: boolean;
   dragging?: boolean;
   handle?: boolean;
@@ -19,6 +19,8 @@ export interface Props {
   transform?: Transform | null;
   listeners?: DraggableSyntheticListeners;
   sorting?: boolean;
+  selected?: boolean;
+  onSelect?(): void;
   style?: React.CSSProperties;
   transition?: string | null;
   wrapperStyle?: React.CSSProperties;
@@ -44,6 +46,7 @@ export const Item = React.memo(
     (
       {
         color,
+        count,
         dragOverlay,
         dragging,
         disabled,
@@ -53,9 +56,11 @@ export const Item = React.memo(
         index,
         listeners,
         onRemove,
+        onSelect,
         renderItem,
         sorting,
         style,
+        selected,
         transition,
         transform,
         value,
@@ -64,6 +69,8 @@ export const Item = React.memo(
       },
       ref
     ) => {
+      const Element = handle ? 'div' : 'button';
+
       useEffect(() => {
         if (!dragOverlay) {
           return;
@@ -96,7 +103,8 @@ export const Item = React.memo(
             styles.Wrapper,
             fadeIn && styles.fadeIn,
             sorting && styles.sorting,
-            dragOverlay && styles.dragOverlay
+            dragOverlay && styles.dragOverlay,
+            count && styles.count
           )}
           style={
             {
@@ -118,35 +126,54 @@ export const Item = React.memo(
                 : undefined,
               '--index': index,
               '--color': color,
+              '--count': `'${count}'`,
             } as React.CSSProperties
           }
           ref={ref}
         >
-          <div
+          <Element
             className={classNames(
               styles.Item,
               dragging && styles.dragging,
               handle && styles.withHandle,
               dragOverlay && styles.dragOverlay,
               disabled && styles.disabled,
-              color && styles.color
+              color && styles.color,
+              selected && styles.selected
             )}
             style={style}
             data-cypress="draggable-item"
+            onClick={onSelect}
             {...(!handle ? listeners : undefined)}
             {...props}
             tabIndex={!handle ? 0 : undefined}
           >
             {value}
             <span className={styles.Actions}>
+              {selected ? <Checkbox checked /> : null}
               {onRemove ? (
                 <Remove className={styles.Remove} onClick={onRemove} />
               ) : null}
               {handle ? <Handle {...listeners} /> : null}
             </span>
-          </div>
+          </Element>
         </li>
       );
     }
   )
+);
+
+const Checkbox = ({checked}: {checked?: boolean}) => (
+  <div className={styles.Checkbox}>
+    {checked ? (
+      <svg
+        width="12"
+        viewBox="0 0 163 144"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M173.31 0.429993L60.79 112.95L23.864 80.575L15.4656 73.2234L0.766602 90.2004L9.16501 97.552L53.966 136.751L61.841 143.575L181.191 24.2252L189.242 16.3502L173.316 0.424194L173.31 0.429993Z" />
+      </svg>
+    ) : null}
+  </div>
 );

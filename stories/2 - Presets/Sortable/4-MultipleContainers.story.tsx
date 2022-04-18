@@ -12,12 +12,28 @@ export default {
 
 export const BasicSetup = () => <MultipleContainers />;
 
+export const DragHandle = () => <MultipleContainers handle />;
+
 export const ManyItems = () => (
   <MultipleContainers
     containerStyle={{
-      maxHeight: '80vh',
+      maxHeight: '90vh',
     }}
     itemCount={15}
+    scrollable
+  />
+);
+
+export const MultiSelect = () => (
+  <MultipleContainers
+    activationConstraint={{
+      distance: 3,
+    }}
+    containerStyle={{
+      maxHeight: '90vh',
+    }}
+    itemCount={10}
+    multiSelect
     scrollable
   />
 );

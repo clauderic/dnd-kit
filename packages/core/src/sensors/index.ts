@@ -18,7 +18,7 @@ export type {MouseSensorOptions, MouseSensorProps} from './mouse';
 export {TouchSensor} from './touch';
 export type {TouchSensorOptions, TouchSensorProps} from './touch';
 
-export {KeyboardSensor, KeyboardCode} from './keyboard';
+export {KeyboardSensor, KeyboardCode, defaultKeyboardCodes} from './keyboard';
 export type {
   KeyboardCoordinateGetter,
   KeyboardSensorOptions,
