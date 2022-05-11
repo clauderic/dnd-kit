@@ -7,5 +7,16 @@ export type {
   DraggableMeasuring,
   MeasuringConfiguration,
 } from './DndContext';
-export {DragOverlay, defaultDropAnimation} from './DragOverlay';
-export type {DropAnimation, Props as DragOverlayProps} from './DragOverlay';
+export {
+  DragOverlay,
+  defaultDropAnimation,
+  defaultDropAnimationSideEffects,
+} from './DragOverlay';
+export type {
+  DropAnimation,
+  DropAnimationFunction,
+  DropAnimationFunctionArguments,
+  DropAnimationKeyframeResolver,
+  DropAnimationSideEffects,
+  Props as DragOverlayProps,
+} from './DragOverlay';

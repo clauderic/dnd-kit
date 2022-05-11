@@ -25,7 +25,7 @@ export interface Props extends HTMLAttributes<HTMLButtonElement> {
   onRemove?(): void;
 }
 
-export const Page = forwardRef<HTMLButtonElement, Props>(function Page(
+export const Page = forwardRef<HTMLLIElement, Props>(function Page(
   {id, index, active, clone, insertPosition, layout, onRemove, style, ...props},
   ref
 ) {
@@ -40,8 +40,9 @@ export const Page = forwardRef<HTMLButtonElement, Props>(function Page(
         layout === Layout.Vertical && styles.vertical
       )}
       style={style}
+      ref={ref}
     >
-      <button ref={ref} className={styles.Page} data-id={id} {...props} />
+      <button className={styles.Page} data-id={id} {...props} />
       {!active && onRemove ? (
         <button className={styles.Remove} onClick={onRemove}>
           {removeIcon}

@@ -8,10 +8,17 @@ import {
 import {isFixed} from './isFixed';
 import {isScrollable} from './isScrollable';
 
-export function getScrollableAncestors(element: Node | null): Element[] {
+export function getScrollableAncestors(
+  element: Node | null,
+  limit?: number
+): Element[] {
   const scrollParents: Element[] = [];
 
   function findScrollableAncestors(node: Node | null): Element[] {
+    if (limit != null && scrollParents.length >= limit) {
+      return scrollParents;
+    }
+
     if (!node) {
       return scrollParents;
     }
@@ -55,4 +62,10 @@ export function getScrollableAncestors(element: Node | null): Element[] {
   }
 
   return findScrollableAncestors(element);
+}
+
+export function getFirstScrollableAncestor(node: Node | null): Element | null {
+  const [firstScrollableAncestor] = getScrollableAncestors(node, 1);
+
+  return firstScrollableAncestor ?? null;
 }

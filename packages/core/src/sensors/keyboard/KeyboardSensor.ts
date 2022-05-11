@@ -13,6 +13,7 @@ import {
   getScrollPosition,
   getScrollElementRect,
 } from '../../utilities';
+import {scrollIntoViewIfNeeded} from '../../utilities/scroll';
 import {Listeners} from '../utilities';
 import {EventName} from '../events';
 import type {SensorInstance, SensorProps, SensorOptions} from '../types';
@@ -67,6 +68,8 @@ export class KeyboardSensor implements SensorInstance {
     if (!activeNode.node.current) {
       throw new Error('Active draggable node is undefined');
     }
+
+    scrollIntoViewIfNeeded(activeNode.node.current);
 
     const activeNodeRect = getTransformAgnosticClientRect(
       activeNode.node.current

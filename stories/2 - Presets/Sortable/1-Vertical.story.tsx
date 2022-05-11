@@ -138,10 +138,9 @@ export const RerenderBeforeSorting = () => {
   return (
     <Sortable
       {...props}
-      wrapperStyle={({isDragging}) => {
+      wrapperStyle={({active}) => {
         return {
-          transition: 'height 250ms ease',
-          height: isDragging ? 100 : 200,
+          height: active ? 100 : 80,
         };
       }}
     />

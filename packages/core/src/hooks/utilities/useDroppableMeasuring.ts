@@ -1,14 +1,14 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {useLatestValue, useLazyMemo} from '@dnd-kit/utilities';
 
-import {Rect, getTransformAgnosticClientRect} from '../../utilities/rect';
+import {Rect} from '../../utilities/rect';
 import type {DroppableContainer, RectMap} from '../../store/types';
 import type {ClientRect, UniqueIdentifier} from '../../types';
 
 interface Arguments {
   dragging: boolean;
   dependencies: any[];
-  config: Partial<DroppableMeasuring> | undefined;
+  config: DroppableMeasuring;
 }
 
 export enum MeasuringStrategy {
@@ -31,12 +31,6 @@ export interface DroppableMeasuring {
 
 const defaultValue: RectMap = new Map();
 
-const defaultConfig: DroppableMeasuring = {
-  measure: getTransformAgnosticClientRect,
-  strategy: MeasuringStrategy.WhileDragging,
-  frequency: MeasuringFrequency.Optimized,
-};
-
 export function useDroppableMeasuring(
   containers: DroppableContainer[],
   {dragging, dependencies, config}: Arguments
@@ -46,10 +40,7 @@ export function useDroppableMeasuring(
     setContainerIdsScheduledForMeasurement,
   ] = useState<UniqueIdentifier[] | null>(null);
   const measuringScheduled = containerIdsScheduledForMeasurement != null;
-  const {frequency, measure, strategy} = {
-    ...defaultConfig,
-    ...config,
-  };
+  const {frequency, measure, strategy} = config;
   const containersRef = useRef(containers);
   const disabled = isDisabled();
   const disabledRef = useLatestValue(disabled);

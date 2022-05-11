@@ -20,7 +20,8 @@ $switch-thumb-offset-right: $switch-track-length - $switch-thumb-diameter -
   cursor: pointer;
   display: inline-block;
   padding: 0;
-  margin: 0 1rem;
+  margin: 0;
+  width: max-content;
   user-select: none;
   box-sizing: border-box;
   outline: none;
@@ -129,7 +130,9 @@ $switch-thumb-offset-right: $switch-track-length - $switch-thumb-diameter -
 }
 
 .Label {
-  display: block;
+  display: inline-flex;
+  flex-direction: column;
   color: #666;
   padding: 1rem;
+  gap: 0.8rem;
 }

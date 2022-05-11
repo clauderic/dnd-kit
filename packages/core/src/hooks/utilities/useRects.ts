@@ -1,33 +1,50 @@
-import {useRef} from 'react';
-import {useLazyMemo} from '@dnd-kit/utilities';
+import {useReducer} from 'react';
+import {getWindow, useIsomorphicLayoutEffect} from '@dnd-kit/utilities';
 
-import {Rect, getTransformAgnosticClientRect} from '../../utilities/rect';
+import type {ClientRect} from '../../types';
+import {Rect, getClientRect} from '../../utilities/rect';
+import {isDocumentScrollingElement} from '../../utilities';
+
+import {useResizeObserver} from './useResizeObserver';
+import {useWindowRect} from './useWindowRect';
 
 const defaultValue: Rect[] = [];
 
 export function useRects(
   elements: Element[],
-  forceRecompute?: boolean,
-  measure = getTransformAgnosticClientRect
-): Rect[] {
-  const previousElements = useRef(elements);
-
-  return useLazyMemo<Rect[]>(
-    (previousValue) => {
-      if (!elements.length) {
-        return defaultValue;
-      }
-
-      if (
-        forceRecompute ||
-        (!previousValue && elements.length) ||
-        elements !== previousElements.current
-      ) {
-        return elements.map((element) => new Rect(measure(element), element));
-      }
-
-      return previousValue ?? defaultValue;
-    },
-    [elements, measure, forceRecompute]
+  measure: (element: Element) => ClientRect = getClientRect
+): ClientRect[] {
+  const [firstElement] = elements;
+  const windowRect = useWindowRect(
+    firstElement ? getWindow(firstElement) : null
   );
+  const [rects, measureRects] = useReducer(reducer, defaultValue);
+  const resizeObserver = useResizeObserver({callback: measureRects});
+
+  if (elements.length > 0 && rects === defaultValue) {
+    measureRects();
+  }
+
+  useIsomorphicLayoutEffect(() => {
+    if (elements.length) {
+      elements.forEach((element) => resizeObserver?.observe(element));
+    } else {
+      resizeObserver?.disconnect();
+      measureRects();
+    }
+  }, [elements]);
+
+  return rects;
+
+  function reducer() {
+    if (!elements.length) {
+      return defaultValue;
+    }
+
+    return elements.map((element) =>
+      isDocumentScrollingElement(element)
+        ? (windowRect as ClientRect)
+        : new Rect(measure(element), element)
+    );
+  }
 }

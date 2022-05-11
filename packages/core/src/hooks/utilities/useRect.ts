@@ -1,4 +1,4 @@
-import {useCallback, useMemo, useReducer} from 'react';
+import {useReducer} from 'react';
 import {useIsomorphicLayoutEffect} from '@dnd-kit/utilities';
 
 import type {ClientRect} from '../../types';
@@ -7,18 +7,13 @@ import {getClientRect} from '../../utilities';
 import {useMutationObserver} from './useMutationObserver';
 import {useResizeObserver} from './useResizeObserver';
 
-export function useObservedRect(
+export function useRect(
   element: HTMLElement | null,
   measure: (element: HTMLElement) => ClientRect = getClientRect
 ) {
-  const initialRect = useMemo(() => (element ? measure(element) : null), [
-    element,
-    measure,
-  ]);
   const [rect, measureRect] = useReducer(reducer, null);
-
-  const handleMutations = useCallback<MutationCallback>(
-    (records) => {
+  const mutationObserver = useMutationObserver({
+    callback(records) {
       if (!element) {
         return;
       }
@@ -36,10 +31,7 @@ export function useObservedRect(
         }
       }
     },
-    [element]
-  );
-
-  const mutationObserver = useMutationObserver({callback: handleMutations});
+  });
   const resizeObserver = useResizeObserver({callback: measureRect});
 
   useIsomorphicLayoutEffect(() => {
@@ -57,15 +49,11 @@ export function useObservedRect(
     }
   }, [element]);
 
-  return rect ?? initialRect;
+  return rect;
 
   function reducer(currentRect: ClientRect | null) {
     if (!element) {
       return null;
-    }
-
-    if (!currentRect && initialRect) {
-      return initialRect;
     }
 
     const newRect = measure(element);

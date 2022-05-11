@@ -30,6 +30,7 @@ export {
 export {noop} from './other';
 
 export {
+  getFirstScrollableAncestor,
   getScrollableAncestors,
   getScrollableElement,
   getScrollCoordinates,
