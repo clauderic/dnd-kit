@@ -60,6 +60,21 @@ export function SortableContext({
       ),
     [userDefinedItems]
   );
+  // add a runtime type check for non-TS users to avoid confusion around
+  // non-string IDs. See the following links for context on why this is useful.
+  // https://github.com/clauderic/dnd-kit/issues/604
+  // https://github.com/clauderic/dnd-kit/discussions/357#discussioncomment-1018851
+  // https://github.com/clauderic/dnd-kit/issues/606
+  //
+  // the process.env guard will cause this check to be removed from the bundle
+  // at build time by most modern build tools
+  if (process.env.NODE_ENV !== 'production') {
+    if (items.every((i) => typeof id === 'string')) {
+      throw Error(
+        'SortableContext expects items to be an array of either strings, or { id: string } objects. See https://docs.dndkit.com/presets/sortable/sortable-context#items'
+      );
+    }
+  }
   const activeIndex = active ? items.indexOf(active.id) : -1;
   const overIndex = over ? items.indexOf(over.id) : -1;
   const previousItemsRef = useRef(items);
@@ -113,4 +128,3 @@ function isEqual(arr1: string[], arr2: string[]) {
   }
   return true;
 }
-

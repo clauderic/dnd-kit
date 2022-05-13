@@ -55,6 +55,21 @@ export function useSortable({
     useDragOverlay,
     strategy: globalStrategy,
   } = useContext(Context);
+  // add a runtime type check for non-TS users to avoid confusion around
+  // non-string IDs. See the following links for context on why this is useful.
+  // https://github.com/clauderic/dnd-kit/issues/604
+  // https://github.com/clauderic/dnd-kit/discussions/357#discussioncomment-1018851
+  // https://github.com/clauderic/dnd-kit/issues/606
+  //
+  // the process.env guard will cause this check to be removed from the bundle
+  // at build time by most modern build tools
+  if (process.env.NODE_ENV !== 'production') {
+    if (typeof id !== 'string') {
+      throw Error(
+        'useSortable() expects all ids to be strings. See https://docs.dndkit.com/presets/sortable/usesortable#identifier'
+      );
+    }
+  }
   const index = items.indexOf(id);
   const data = useMemo(
     () => ({sortable: {containerId, index, items}, ...customData}),
