@@ -1,8 +1,11 @@
 import type {MutableRefObject} from 'react';
+import type {DeepRequired} from '@dnd-kit/utilities';
 
-import type {Coordinates, ClientRect, UniqueIdentifier} from '../types';
-import type {Collision} from '../utilities/algorithms';
 import type {SyntheticListeners} from '../hooks/utilities';
+import type {Collision} from '../utilities/algorithms';
+import type {MeasuringConfiguration} from '../components';
+import type {Coordinates, ClientRect, UniqueIdentifier} from '../types';
+
 import type {Actions} from './actions';
 import type {DroppableContainersMap} from './constructors';
 
@@ -89,6 +92,7 @@ export interface PublicContextDescriptor {
   };
   scrollableAncestors: Element[];
   scrollableAncestorRects: ClientRect[];
+  measuringConfiguration: DeepRequired<MeasuringConfiguration>;
   measureDroppableContainers(ids: UniqueIdentifier[]): void;
   measuringScheduled: boolean;
   windowRect: ClientRect | null;

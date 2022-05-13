@@ -3,12 +3,10 @@ import {createPortal} from 'react-dom';
 import {
   DndContext,
   DragOverlay,
-  DropAnimation,
-  defaultDropAnimation,
-  Modifiers,
   useDraggable,
-  Translate,
+  defaultDropAnimationSideEffects,
 } from '@dnd-kit/core';
+import type {DropAnimation, Modifiers, Translate} from '@dnd-kit/core';
 import {
   restrictToHorizontalAxis,
   restrictToVerticalAxis,
@@ -31,15 +29,20 @@ interface Props {
   style?: React.CSSProperties;
 }
 
-const defaultDropAnimationConfig: DropAnimation = {
-  ...defaultDropAnimation,
-  dragSourceOpacity: 0.5,
+const dropAnimationConfig: DropAnimation = {
+  sideEffects: defaultDropAnimationSideEffects({
+    styles: {
+      active: {
+        opacity: '0.5',
+      },
+    },
+  }),
 };
 
 function DragOverlayExample({
   axis,
   dragOverlayModifiers,
-  dropAnimation = defaultDropAnimationConfig,
+  dropAnimation = dropAnimationConfig,
   handle,
   label,
   modifiers,

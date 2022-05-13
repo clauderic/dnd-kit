@@ -113,4 +113,3 @@ function isEqual(arr1: string[], arr2: string[]) {
   }
   return true;
 }
-

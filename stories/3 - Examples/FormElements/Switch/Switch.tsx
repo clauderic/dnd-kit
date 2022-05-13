@@ -53,32 +53,34 @@ export function Switch({
     })
   );
 
-  const markup = (
-    <>
-      {label ? (
-        <label className={styles.Label} htmlFor={id}>
-          {label}
-        </label>
-      ) : null}
-      <button
-        id={id}
-        type="button"
-        className={classNames(styles.Switch, {
-          [styles.checked]: checked,
-          [styles.dragging]: overId != null,
-          [styles.on]: overId === State.On,
-          [styles.off]: overId === State.Off,
-          [styles.disabled]: disabled,
-        })}
-        onClick={disabled ? undefined : handleClick}
-        aria-pressed={checked}
-        aria-label={accessibilityLabel}
-        disabled={disabled}
-      >
-        <Track />
-        <Thumb />
-      </button>
-    </>
+  const switchMarkup = (
+    <button
+      id={id}
+      type="button"
+      className={classNames(styles.Switch, {
+        [styles.checked]: checked,
+        [styles.dragging]: overId != null,
+        [styles.on]: overId === State.On,
+        [styles.off]: overId === State.Off,
+        [styles.disabled]: disabled,
+      })}
+      onClick={disabled ? undefined : handleClick}
+      aria-pressed={checked}
+      aria-label={accessibilityLabel}
+      disabled={disabled}
+    >
+      <Track />
+      <Thumb />
+    </button>
+  );
+
+  const markup = label ? (
+    <label className={styles.Label} htmlFor={id}>
+      {label}
+      {switchMarkup}
+    </label>
+  ) : (
+    switchMarkup
   );
 
   return disabled ? (

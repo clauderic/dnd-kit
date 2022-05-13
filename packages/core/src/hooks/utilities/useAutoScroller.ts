@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useMemo, useRef} from 'react';
 import {useInterval} from '@dnd-kit/utilities';
 
-import {getScrollDirectionAndSpeed, defaultCoordinates} from '../../utilities';
+import {getScrollDirectionAndSpeed} from '../../utilities';
 import type {Coordinates, Direction, ClientRect} from '../../types';
 
 export type ScrollAncestorSortingFn = (ancestors: Element[]) => Element[];
@@ -17,6 +17,7 @@ export interface Options {
   canScroll?: CanScroll;
   enabled?: boolean;
   interval?: number;
+  layoutShiftCompensation?: boolean;
   order?: TraversalOrder;
   threshold?: {
     x: number;
@@ -58,10 +59,8 @@ export function useAutoScroller({
   threshold,
 }: Arguments) {
   const [setAutoScrollInterval, clearAutoScrollInterval] = useInterval();
-  const scrollSpeed = useRef<Coordinates>({
-    x: 1,
-    y: 1,
-  });
+  const scrollSpeed = useRef<Coordinates>({x: 0, y: 0});
+  const scrollDirection = useRef<ScrollDirection>({x: 0, y: 0});
   const rect = useMemo(() => {
     switch (activator) {
       case AutoScrollActivator.Pointer:
@@ -76,10 +75,7 @@ export function useAutoScroller({
       case AutoScrollActivator.DraggableRect:
         return draggingRect;
     }
-
-    return null;
   }, [activator, draggingRect, pointerCoordinates]);
-  const scrollDirection = useRef<ScrollDirection>(defaultCoordinates);
   const scrollContainerRef = useRef<Element | null>(null);
   const autoScroll = useCallback(() => {
     const scrollContainer = scrollContainerRef.current;

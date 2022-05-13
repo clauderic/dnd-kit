@@ -1,4 +1,5 @@
 import {useEffect, useMemo} from 'react';
+import {useEvent} from '@dnd-kit/utilities';
 
 interface Arguments {
   callback: ResizeObserverCallback;
@@ -10,19 +11,24 @@ interface Arguments {
  * If `ResizeObserver` is undefined in the execution environment, returns `undefined`.
  */
 export function useResizeObserver({callback, disabled}: Arguments) {
-  const resizeObserver = useMemo(() => {
-    if (
-      disabled ||
-      typeof window === 'undefined' ||
-      typeof window.ResizeObserver === 'undefined'
-    ) {
-      return undefined;
-    }
+  const handleResize = useEvent(callback);
+  const resizeObserver = useMemo(
+    () => {
+      if (
+        disabled ||
+        typeof window === 'undefined' ||
+        typeof window.ResizeObserver === 'undefined'
+      ) {
+        return undefined;
+      }
 
-    const {ResizeObserver} = window;
+      const {ResizeObserver} = window;
 
-    return new ResizeObserver(callback);
-  }, [disabled, callback]);
+      return new ResizeObserver(handleResize);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [disabled]
+  );
 
   useEffect(() => {
     return () => resizeObserver?.disconnect();

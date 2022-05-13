@@ -161,6 +161,7 @@
   right: 5px;
   width: 20px;
   height: 20px;
+  padding: 0;
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.3);
@@ -184,7 +185,8 @@
 }
 
 .PageNumber {
-  display: block;
+  display: inline-block;
+  width: 100%;
   margin-top: 1rem;
   text-align: center;
   color: rgba(0, 0, 0, 0.5);

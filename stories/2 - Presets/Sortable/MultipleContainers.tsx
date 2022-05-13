@@ -9,7 +9,6 @@ import {
   DndContext,
   DragOverlay,
   DropAnimation,
-  defaultDropAnimation,
   getFirstCollision,
   KeyboardSensor,
   MouseSensor,
@@ -21,6 +20,7 @@ import {
   useSensor,
   MeasuringStrategy,
   KeyboardCoordinateGetter,
+  defaultDropAnimationSideEffects,
 } from '@dnd-kit/core';
 import {
   AnimateLayoutChanges,
@@ -105,8 +105,13 @@ function DroppableContainer({
 }
 
 const dropAnimation: DropAnimation = {
-  ...defaultDropAnimation,
-  dragSourceOpacity: 0.5,
+  sideEffects: defaultDropAnimationSideEffects({
+    styles: {
+      active: {
+        opacity: '0.5',
+      },
+    },
+  }),
 };
 
 type Items = Record<string, string[]>;

@@ -1,5 +1,9 @@
 export type Arguments<T> = T extends (...args: infer U) => any ? U : never;
 
+export type DeepRequired<T> = {
+  [K in keyof T]-?: Required<T[K]>;
+};
+
 export type FirstArgument<T> = T extends (
   firstArg: infer U,
   ...args: Array<any>
