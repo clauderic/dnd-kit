@@ -14,6 +14,7 @@ export {
 export type {DroppableMeasuring} from './useDroppableMeasuring';
 export {useInitialValue} from './useInitialValue';
 export {useRect} from './useRect';
+export {useRectDelta} from './useRectDelta';
 export {useResizeObserver} from './useResizeObserver';
 export {useScrollableAncestors} from './useScrollableAncestors';
 export {useScrollIntoViewIfNeeded} from './useScrollIntoViewIfNeeded';

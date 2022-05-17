@@ -1,10 +1,9 @@
-import {useCallback, useMemo, useRef} from 'react';
+import {useMemo, useRef} from 'react';
 import {useIsomorphicLayoutEffect} from '@dnd-kit/utilities';
 import type {DeepRequired} from '@dnd-kit/utilities';
 
 import {getRectDelta} from '../../utilities/rect';
 import {getFirstScrollableAncestor} from '../../utilities/scroll';
-import {useInitialValue} from '../../hooks/utilities';
 import type {ClientRect} from '../../types';
 import {defaultMeasuringConfiguration} from './defaults';
 import type {MeasuringFunction, MeasuringConfiguration} from './types';
@@ -33,32 +32,38 @@ export function useMeasuringConfiguration(
 }
 
 interface Options {
-  disabled?: boolean;
+  disabled: boolean;
+  element: HTMLElement | null;
+  initialRect: ClientRect | null;
   measure: MeasuringFunction;
 }
 
-export function useLayoutShiftScrollCompensation(
-  node: HTMLElement | null,
-  {disabled, measure}: Options
-) {
-  const initialNode = useInitialValue(node);
-  const initialRect = useRef<ClientRect | null>(null);
+export function useLayoutShiftScrollCompensation({
+  element,
+  measure,
+  initialRect,
+  disabled,
+}: Options) {
+  const initialized = useRef(false);
 
   useIsomorphicLayoutEffect(() => {
-    if (!initialNode) {
-      initialRect.current = null;
+    if (disabled) {
+      initialized.current = false;
       return;
     }
 
-    if (disabled || !initialRect.current) {
+    if (!initialRect || !element || initialized.current) {
       return;
     }
 
-    const rect = measure(initialNode);
-    const rectDelta = getRectDelta(rect, initialRect.current);
+    const rect = measure(element);
+    const rectDelta = getRectDelta(rect, initialRect);
+
+    // Only perform layout shift scroll compensation once
+    initialized.current = true;
 
     if (rectDelta.x > 0 || rectDelta.y > 0) {
-      const firstScrollableAncestor = getFirstScrollableAncestor(initialNode);
+      const firstScrollableAncestor = getFirstScrollableAncestor(element);
 
       if (firstScrollableAncestor) {
         firstScrollableAncestor.scrollBy({
@@ -67,14 +72,5 @@ export function useLayoutShiftScrollCompensation(
         });
       }
     }
-  }, [disabled, initialNode, measure]);
-
-  const measureRect = useCallback(
-    (node: HTMLElement) => {
-      initialRect.current = measure(node);
-    },
-    [measure]
-  );
-
-  return measureRect;
+  }, [disabled, initialRect, measure, element]);
 }

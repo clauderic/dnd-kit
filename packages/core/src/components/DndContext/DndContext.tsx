@@ -39,8 +39,8 @@ import {
   useSensorSetup,
   useRects,
   useWindowRect,
-  useInitialValue,
   useRect,
+  useRectDelta,
   useScrollOffsets,
   useScrollOffsetsDelta,
 } from '../../hooks/utilities';
@@ -57,7 +57,6 @@ import {
   CollisionDetection,
   defaultCoordinates,
   getAdjustedRect,
-  getRectDelta,
   getFirstCollision,
   rectIntersection,
 } from '../../utilities';
@@ -196,16 +195,25 @@ export const DndContext = memo(function DndContext({
   const layoutShiftCompensationDisabled =
     activationCoordinates == null ||
     autoScrollOptions.layoutShiftCompensation === false;
-  const setInitialRect = useLayoutShiftScrollCompensation(activeNode, {
+  const initialActiveNodeRect = useMemo(
+    () =>
+      activeNode ? measuringConfiguration.draggable.measure(activeNode) : null,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activeNode, measuringConfiguration.draggable.measure]
+  );
+
+  useLayoutShiftScrollCompensation({
     disabled: layoutShiftCompensationDisabled,
+    element: activeNode,
+    initialRect: initialActiveNodeRect,
     measure: measuringConfiguration.draggable.measure,
   });
 
   const activeNodeRect = useRect(
     activeNode,
-    measuringConfiguration.draggable.measure
+    measuringConfiguration.draggable.measure,
+    initialActiveNodeRect
   );
-  const initialActiveNodeRect = useInitialValue(activeNodeRect);
   const containerNodeRect = useRect(
     activeNode ? activeNode.parentElement : null
   );
@@ -238,11 +246,9 @@ export const DndContext = memo(function DndContext({
   const usesDragOverlay = Boolean(
     dragOverlay.nodeRef.current && dragOverlay.rect
   );
-  const nodeRectDelta = usesDragOverlay
-    ? defaultCoordinates
-    : // The delta between the previous and new position of the draggable node
-      // is only relevant when there is no drag overlay
-      getRectDelta(activeNodeRect, initialActiveNodeRect);
+  // The delta between the previous and new position of the draggable node
+  // is only relevant when there is no drag overlay
+  const nodeRectDelta = useRectDelta(usesDragOverlay ? null : activeNodeRect);
 
   // Get the window rect of the dragging node
   const windowRect = useWindowRect(
@@ -358,11 +364,6 @@ export const DndContext = memo(function DndContext({
           const event: DragStartEvent = {
             active: {id, data: draggableNode.data, rect: activeRects},
           };
-          const node = draggableNode.node.current;
-
-          if (node) {
-            setInitialRect(node);
-          }
 
           unstable_batchedUpdates(() => {
             onDragStart?.(event);

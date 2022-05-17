@@ -9,9 +9,11 @@ import {useResizeObserver} from './useResizeObserver';
 
 export function useRect(
   element: HTMLElement | null,
-  measure: (element: HTMLElement) => ClientRect = getClientRect
+  measure: (element: HTMLElement) => ClientRect = getClientRect,
+  fallbackRect?: ClientRect | null
 ) {
   const [rect, measureRect] = useReducer(reducer, null);
+
   const mutationObserver = useMutationObserver({
     callback(records) {
       if (!element) {
@@ -54,6 +56,12 @@ export function useRect(
   function reducer(currentRect: ClientRect | null) {
     if (!element) {
       return null;
+    }
+
+    if (element.isConnected === false) {
+      // Fall back to last rect we measured if the element is
+      // no longer connected to the DOM.
+      return currentRect ?? fallbackRect ?? null;
     }
 
     const newRect = measure(element);
