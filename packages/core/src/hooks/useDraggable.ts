@@ -20,6 +20,8 @@ export interface UseDraggableArguments {
     roleDescription?: string;
     tabIndex?: number;
   };
+  placeholder?: boolean;
+  placeholderContainerId?: string;
 }
 
 export interface DraggableAttributes {
@@ -43,6 +45,8 @@ export function useDraggable({
   data,
   disabled = false,
   attributes,
+  placeholder = false,
+  placeholderContainerId,
 }: UseDraggableArguments) {
   const key = useUniqueId(ID_PREFIX);
   const {
@@ -56,7 +60,9 @@ export function useDraggable({
   } = useContext(InternalContext);
   const {role = defaultRole, roleDescription = 'draggable', tabIndex = 0} =
     attributes ?? {};
-  const isDragging = active?.id === id;
+  const isDragging = placeholder
+    ? over?.placeholderContainerId.current === placeholderContainerId
+    : active?.id === id;
   const transform: Transform | null = useContext(
     isDragging ? ActiveDraggableContext : NullContext
   );

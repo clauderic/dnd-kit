@@ -1,4 +1,4 @@
-import {useCallback, useContext, useEffect, useRef} from 'react';
+import { useCallback, useContext, useEffect, useRef } from 'react';
 import {
   useIsomorphicLayoutEffect,
   useLatestValue,
@@ -6,10 +6,10 @@ import {
   useUniqueId,
 } from '@dnd-kit/utilities';
 
-import {InternalContext, Action, Data} from '../store';
-import type {ClientRect, UniqueIdentifier} from '../types';
+import { InternalContext, Action, Data } from '../store';
+import type { ClientRect, UniqueIdentifier } from '../types';
 
-import {useResizeObserver} from './utilities';
+import { useResizeObserver } from './utilities';
 
 interface ResizeObserverConfig {
   /** Whether the ResizeObserver should be disabled entirely */
@@ -28,6 +28,8 @@ export interface UseDroppableArguments {
   disabled?: boolean;
   data?: Data;
   resizeObserverConfig?: ResizeObserverConfig;
+  placeholderDraggableId?: UniqueIdentifier;
+  placeholderContainerId?: UniqueIdentifier;
 }
 
 const ID_PREFIX = 'Droppable';
@@ -41,12 +43,14 @@ export function useDroppable({
   disabled = false,
   id,
   resizeObserverConfig,
+  placeholderDraggableId,
+  placeholderContainerId,
 }: UseDroppableArguments) {
   const key = useUniqueId(ID_PREFIX);
-  const {active, dispatch, over, measureDroppableContainers} = useContext(
+  const { active, dispatch, over, measureDroppableContainers } = useContext(
     InternalContext
   );
-  const previous = useRef({disabled});
+  const previous = useRef({ disabled });
   const resizeObserverConnected = useRef(false);
   const rect = useRef<ClientRect | null>(null);
   const callbackId = useRef<NodeJS.Timeout | null>(null);
@@ -105,6 +109,8 @@ export function useDroppable({
   );
   const [nodeRef, setNodeRef] = useNodeRef(handleNodeChange);
   const dataRef = useLatestValue(data);
+  const placeholderDraggableIdRef = useLatestValue(placeholderDraggableId);
+  const placeholderContainerIdRef = useLatestValue(placeholderContainerId);
 
   useEffect(() => {
     if (!resizeObserver || !nodeRef.current) {
@@ -127,6 +133,8 @@ export function useDroppable({
           node: nodeRef,
           rect,
           data: dataRef,
+          placeholderDraggableId: placeholderDraggableIdRef,
+          placeholderContainerId: placeholderContainerIdRef,
         },
       });
 

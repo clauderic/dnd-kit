@@ -543,6 +543,8 @@ export const DndContext = memo(function DndContext({
               rect: overContainer.rect.current,
               data: overContainer.data,
               disabled: overContainer.disabled,
+              placeholderId: overContainer.placeholderDraggableId,
+              placeholderContainerId: overContainer.placeholderContainerId,
             }
           : null;
       const event: DragOverEvent = {

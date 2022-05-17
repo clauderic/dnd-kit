@@ -1,6 +1,6 @@
-import {CSS} from '@dnd-kit/utilities';
+import { CSS } from '@dnd-kit/utilities';
 
-import {arrayMove} from '../utilities';
+import { arrayMove } from '../utilities';
 
 import type {
   AnimateLayoutChanges,
@@ -30,6 +30,7 @@ export const defaultAnimateLayoutChanges: AnimateLayoutChanges = ({
     return false;
   }
 
+  // wenn items sich nur durch placeholder geändert hat -> nicht false returnen
   if (previousItems !== items && index === newIndex) {
     return false;
   }

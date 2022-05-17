@@ -9,11 +9,13 @@ interface Props {
   children: React.ReactNode;
   dragging: boolean;
   id: UniqueIdentifier;
+  placeholderId?: UniqueIdentifier;
 }
 
-export function Droppable({children, id, dragging}: Props) {
+export function Droppable({children, id, dragging, placeholderId}: Props) {
   const {isOver, setNodeRef} = useDroppable({
     id,
+    placeholderDraggableId: placeholderId,
   });
 
   return (

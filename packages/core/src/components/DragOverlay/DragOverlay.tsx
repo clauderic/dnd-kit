@@ -150,7 +150,10 @@ export const DragOverlay = React.memo(
     const dropAnimationComplete = useDropAnimation({
       animate: Boolean(dropAnimation && prevActiveId.current && !active),
       adjustScale,
-      activeId: prevActiveId.current,
+      activeId:
+        over && over.placeholderId.current
+          ? over.placeholderId.current
+          : prevActiveId.current,
       draggableNodes,
       duration: dropAnimation?.duration,
       easing: dropAnimation?.easing,

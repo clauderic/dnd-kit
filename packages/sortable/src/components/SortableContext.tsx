@@ -17,6 +17,7 @@ const ID_PREFIX = 'Sortable';
 
 interface ContextDescriptor {
   activeIndex: number;
+  placeholderIndex: number;
   containerId: string;
   disableTransforms: boolean;
   items: UniqueIdentifier[];
@@ -28,6 +29,7 @@ interface ContextDescriptor {
 
 export const Context = React.createContext<ContextDescriptor>({
   activeIndex: -1,
+  placeholderIndex: -1,
   containerId: ID_PREFIX,
   disableTransforms: false,
   items: [],
@@ -53,20 +55,37 @@ export function SortableContext({
   } = useDndContext();
   const containerId = useUniqueId(ID_PREFIX, id);
   const useDragOverlay = Boolean(dragOverlay.rect !== null);
-  const items = useMemo(
-    () =>
-      userDefinedItems.map((item) =>
-        typeof item === 'string' ? item : item.id
-      ),
-    [userDefinedItems]
-  );
+  const currentPlaceholderId = over?.placeholderId.current;
+  const overId = `${id}`.replace('sortable-', '');
+  const isPlaceholderActive =
+    over?.placeholderContainerId.current === id || over?.id === overId;
+  const isSourceSortable =
+    over?.placeholderContainerId.current ===
+    active?.data.current?.sortable.containerId;
+  const items = useMemo(() => {
+    const userDefinedIds = userDefinedItems.map((item) =>
+      typeof item === 'string' ? item : item.id
+    );
+    if (!isSourceSortable && isPlaceholderActive && currentPlaceholderId) {
+      return [...userDefinedIds, currentPlaceholderId];
+    }
+    return userDefinedIds;
+  }, [
+    currentPlaceholderId,
+    isPlaceholderActive,
+    isSourceSortable,
+    userDefinedItems,
+  ]);
   const activeIndex = active ? items.indexOf(active.id) : -1;
   const overIndex = over ? items.indexOf(over.id) : -1;
+  const placeholderIndex = currentPlaceholderId
+    ? items.indexOf(currentPlaceholderId)
+    : -1;
   const previousItemsRef = useRef(items);
   const itemsHaveChanged = !isEqual(items, previousItemsRef.current);
   const disableTransforms =
-    (overIndex !== -1 && activeIndex === -1) || itemsHaveChanged;
-
+    (overIndex !== -1 && activeIndex === -1 && placeholderIndex === -1) ||
+    itemsHaveChanged;
   useIsomorphicLayoutEffect(() => {
     if (itemsHaveChanged && !measuringScheduled) {
       measureDroppableContainers(items);
@@ -80,6 +99,7 @@ export function SortableContext({
   const contextValue = useMemo(
     (): ContextDescriptor => ({
       activeIndex,
+      placeholderIndex,
       containerId,
       disableTransforms,
       items,
@@ -90,6 +110,7 @@ export function SortableContext({
     }),
     [
       activeIndex,
+      placeholderIndex,
       containerId,
       disableTransforms,
       items,
@@ -113,4 +134,3 @@ function isEqual(arr1: string[], arr2: string[]) {
   }
   return true;
 }
-
