@@ -1,6 +1,6 @@
-import { CSS } from '@dnd-kit/utilities';
+import {CSS} from '@dnd-kit/utilities';
 
-import { arrayMove } from '../utilities';
+import {arrayMove} from '../utilities';
 
 import type {
   AnimateLayoutChanges,
