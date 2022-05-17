@@ -598,6 +598,7 @@ export const DndContext = memo(function DndContext({
 
   useAutoScroller({
     ...autoScrollOptions,
+    delta: translate,
     draggingRect: collisionRect,
     pointerCoordinates,
     scrollableAncestors,
