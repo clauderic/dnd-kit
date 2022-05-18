@@ -1,138 +1,290 @@
-import {useState} from 'react';
-import {CSS, Transform, useIsomorphicLayoutEffect} from '@dnd-kit/utilities';
+import {CSS, useEvent, getWindow} from '@dnd-kit/utilities';
+import type {DeepRequired, Transform} from '@dnd-kit/utilities';
 
-import type {UniqueIdentifier} from '../../../types';
-import type {DraggableNodes} from '../../../store';
+import type {
+  Active,
+  DraggableNode,
+  DraggableNodes,
+  DroppableContainers,
+} from '../../../store';
+import type {ClientRect} from '../../../types';
 import {getMeasurableNode} from '../../../utilities/nodes';
-import {getTransformAgnosticClientRect} from '../../../utilities/rect';
+import {scrollIntoViewIfNeeded} from '../../../utilities/scroll';
+import {parseTransform} from '../../../utilities/transform';
+import type {MeasuringConfiguration} from '../../DndContext';
+import type {Animation} from '../components';
 
-export interface DropAnimation {
-  duration: number;
-  easing: string;
-  dragSourceOpacity?: number;
+interface SharedParameters {
+  active: {
+    id: string;
+    data: Active['data'];
+    node: HTMLElement;
+    rect: ClientRect;
+  };
+  dragOverlay: {
+    node: HTMLElement;
+    rect: ClientRect;
+  };
+  draggableNodes: DraggableNodes;
+  droppableContainers: DroppableContainers;
+  measuringConfiguration: DeepRequired<MeasuringConfiguration>;
 }
+
+export interface KeyframeResolverParameters extends SharedParameters {
+  transform: {
+    initial: Transform;
+    final: Transform;
+  };
+}
+
+export type KeyframeResolver = (
+  parameters: KeyframeResolverParameters
+) => Keyframe[];
+
+export interface DropAnimationOptions {
+  keyframes?: KeyframeResolver;
+  duration?: number;
+  easing?: string;
+  sideEffects?: DropAnimationSideEffects | null;
+}
+
+export type DropAnimation = DropAnimationFunction | DropAnimationOptions;
 
 interface Arguments {
-  activeId: UniqueIdentifier | null;
-  animate: boolean;
-  adjustScale: boolean;
   draggableNodes: DraggableNodes;
-  duration: DropAnimation['duration'] | undefined;
-  easing: DropAnimation['easing'] | undefined;
-  dragSourceOpacity: DropAnimation['dragSourceOpacity'] | undefined;
-  node: HTMLElement | null;
-  transform: Transform | undefined;
+  droppableContainers: DroppableContainers;
+  measuringConfiguration: DeepRequired<MeasuringConfiguration>;
+  config?: DropAnimation | null;
 }
 
-export const defaultDropAnimation: DropAnimation = {
+export interface DropAnimationFunctionArguments extends SharedParameters {
+  transform: Transform;
+}
+
+export type DropAnimationFunction = (
+  args: DropAnimationFunctionArguments
+) => Promise<void> | void;
+
+type CleanupFunction = () => void;
+
+export interface DropAnimationSideEffectsParameters extends SharedParameters {}
+
+export type DropAnimationSideEffects = (
+  parameters: DropAnimationSideEffectsParameters
+) => CleanupFunction | void;
+
+type ExtractStringProperties<T> = {
+  [K in keyof T]?: T[K] extends string ? string : never;
+};
+
+type Styles = ExtractStringProperties<CSSStyleDeclaration>;
+
+interface DefaultDropAnimationSideEffectsOptions {
+  className?: {
+    active?: string;
+    dragOverlay?: string;
+  };
+  styles?: {
+    active?: Styles;
+    dragOverlay?: Styles;
+  };
+}
+
+export const defaultDropAnimationSideEffects = (
+  options: DefaultDropAnimationSideEffectsOptions
+): DropAnimationSideEffects => ({active, dragOverlay}) => {
+  const originalStyles: Record<string, string> = {};
+  const {styles, className} = options;
+
+  if (styles?.active) {
+    for (const [key, value] of Object.entries(styles.active)) {
+      if (value === undefined) {
+        continue;
+      }
+
+      originalStyles[key] = active.node.style.getPropertyValue(key);
+      active.node.style.setProperty(key, value);
+    }
+  }
+
+  if (styles?.dragOverlay) {
+    for (const [key, value] of Object.entries(styles.dragOverlay)) {
+      if (value === undefined) {
+        continue;
+      }
+
+      dragOverlay.node.style.setProperty(key, value);
+    }
+  }
+
+  if (className?.active) {
+    active.node.classList.add(className.active);
+  }
+
+  if (className?.dragOverlay) {
+    dragOverlay.node.classList.add(className.dragOverlay);
+  }
+
+  return function cleanup() {
+    for (const [key, value] of Object.entries(originalStyles)) {
+      active.node.style.setProperty(key, value);
+    }
+
+    if (className?.active) {
+      active.node.classList.remove(className.active);
+    }
+  };
+};
+
+const defaultKeyframeResolver: KeyframeResolver = ({
+  transform: {initial, final},
+}) => [
+  {
+    transform: CSS.Transform.toString(initial),
+  },
+  {
+    transform: CSS.Transform.toString(final),
+  },
+];
+
+export const defaultDropAnimationConfiguration: Required<DropAnimationOptions> = {
   duration: 250,
   easing: 'ease',
-  dragSourceOpacity: 0,
+  keyframes: defaultKeyframeResolver,
+  sideEffects: defaultDropAnimationSideEffects({
+    styles: {
+      active: {
+        opacity: '0',
+      },
+    },
+  }),
 };
 
 export function useDropAnimation({
-  animate,
-  adjustScale,
-  activeId,
+  config,
   draggableNodes,
-  duration,
-  dragSourceOpacity,
-  easing,
-  node,
-  transform,
+  droppableContainers,
+  measuringConfiguration,
 }: Arguments) {
-  const [dropAnimationComplete, setDropAnimationComplete] = useState(false);
-
-  useIsomorphicLayoutEffect(() => {
-    if (!animate || !activeId || !easing || !duration) {
-      if (animate) {
-        setDropAnimationComplete(true);
-      }
-
+  return useEvent<Animation>((id, node) => {
+    if (config === null) {
       return;
     }
 
-    const finalNode = draggableNodes[activeId]?.node.current;
+    const activeDraggable: DraggableNode | undefined = draggableNodes[id];
 
-    if (transform && node && finalNode && finalNode.parentNode !== null) {
-      const fromNode = getMeasurableNode(node);
-
-      if (fromNode) {
-        const from = fromNode.getBoundingClientRect();
-        const to = getTransformAgnosticClientRect(finalNode);
-
-        const delta = {
-          x: from.left - to.left,
-          y: from.top - to.top,
-        };
-
-        if (Math.abs(delta.x) || Math.abs(delta.y)) {
-          const scaleDelta = {
-            scaleX: adjustScale
-              ? (to.width * transform.scaleX) / from.width
-              : 1,
-            scaleY: adjustScale
-              ? (to.height * transform.scaleY) / from.height
-              : 1,
-          };
-          const finalTransform = CSS.Transform.toString({
-            x: transform.x - delta.x,
-            y: transform.y - delta.y,
-            ...scaleDelta,
-          });
-          const originalOpacity = finalNode.style.opacity;
-
-          if (dragSourceOpacity != null) {
-            finalNode.style.opacity = `${dragSourceOpacity}`;
-          }
-
-          const nodeAnimation = node.animate(
-            [
-              {
-                transform: CSS.Transform.toString(transform),
-              },
-              {
-                transform: finalTransform,
-              },
-            ],
-            {
-              easing,
-              duration,
-            }
-          );
-
-          nodeAnimation.onfinish = () => {
-            node.style.display = 'none';
-
-            setDropAnimationComplete(true);
-
-            if (finalNode && dragSourceOpacity != null) {
-              finalNode.style.opacity = originalOpacity;
-            }
-          };
-          return;
-        }
-      }
+    if (!activeDraggable) {
+      return;
     }
 
-    setDropAnimationComplete(true);
-  }, [
-    animate,
-    activeId,
-    adjustScale,
-    draggableNodes,
-    duration,
-    easing,
-    dragSourceOpacity,
-    node,
-    transform,
-  ]);
+    const activeNode = activeDraggable.node.current;
 
-  useIsomorphicLayoutEffect(() => {
-    if (dropAnimationComplete) {
-      setDropAnimationComplete(false);
+    if (!activeNode) {
+      return;
     }
-  }, [dropAnimationComplete]);
 
-  return dropAnimationComplete;
+    const measurableNode = getMeasurableNode(node);
+
+    if (!measurableNode) {
+      return;
+    }
+    const {transform} = getWindow(node).getComputedStyle(node);
+    const parsedTransform = parseTransform(transform);
+
+    if (!parsedTransform) {
+      return;
+    }
+
+    const animation: DropAnimationFunction =
+      typeof config === 'function'
+        ? config
+        : createDefaultDropAnimation(config);
+
+    scrollIntoViewIfNeeded(
+      activeNode,
+      measuringConfiguration.draggable.measure
+    );
+
+    return animation({
+      active: {
+        id,
+        data: activeDraggable.data,
+        node: activeNode,
+        rect: measuringConfiguration.draggable.measure(activeNode),
+      },
+      draggableNodes,
+      dragOverlay: {
+        node,
+        rect: measuringConfiguration.dragOverlay.measure(measurableNode),
+      },
+      droppableContainers,
+      measuringConfiguration,
+      transform: parsedTransform,
+    });
+  });
+}
+
+function createDefaultDropAnimation(
+  options: DropAnimationOptions | undefined
+): DropAnimationFunction {
+  const {duration, easing, sideEffects, keyframes} = {
+    ...defaultDropAnimationConfiguration,
+    ...options,
+  };
+
+  return ({active, dragOverlay, transform, ...rest}) => {
+    if (!duration) {
+      // Do not animate if animation duration is zero.
+      return;
+    }
+
+    const delta = {
+      x: dragOverlay.rect.left - active.rect.left,
+      y: dragOverlay.rect.top - active.rect.top,
+    };
+
+    const scale = {
+      scaleX:
+        transform.scaleX !== 1
+          ? (active.rect.width * transform.scaleX) / dragOverlay.rect.width
+          : 1,
+      scaleY:
+        transform.scaleY !== 1
+          ? (active.rect.height * transform.scaleY) / dragOverlay.rect.height
+          : 1,
+    };
+    const finalTransform = {
+      x: transform.x - delta.x,
+      y: transform.y - delta.y,
+      ...scale,
+    };
+
+    const animationKeyframes = keyframes({
+      ...rest,
+      active,
+      dragOverlay,
+      transform: {initial: transform, final: finalTransform},
+    });
+
+    const [firstKeyframe] = animationKeyframes;
+    const lastKeyframe = animationKeyframes[animationKeyframes.length - 1];
+
+    if (JSON.stringify(firstKeyframe) === JSON.stringify(lastKeyframe)) {
+      // The start and end keyframes are the same, infer that there is no animation needed.
+      return;
+    }
+
+    const cleanup = sideEffects?.({active, dragOverlay, ...rest});
+    const animation = dragOverlay.node.animate(animationKeyframes, {
+      easing,
+      duration,
+    });
+
+    return new Promise((resolve) => {
+      animation.onfinish = () => {
+        cleanup?.();
+        resolve();
+      };
+    });
+  };
 }

@@ -1,4 +1,7 @@
-export {getScrollableAncestors} from './getScrollableAncestors';
+export {
+  getFirstScrollableAncestor,
+  getScrollableAncestors,
+} from './getScrollableAncestors';
 export {getScrollableElement} from './getScrollableElement';
 export {getScrollCoordinates} from './getScrollCoordinates';
 export {getScrollDirectionAndSpeed} from './getScrollDirectionAndSpeed';
@@ -11,3 +14,4 @@ export {
 export {getScrollPosition} from './getScrollPosition';
 export {isDocumentScrollingElement} from './documentScrollingElement';
 export {isScrollable} from './isScrollable';
+export {scrollIntoViewIfNeeded} from './scrollIntoViewIfNeeded';

@@ -1,36 +1,28 @@
 import type {ClientRect} from '../../types';
 
+import {parseTransform} from './parseTransform';
+
 export function inverseTransform(
   rect: ClientRect,
   transform: string,
   transformOrigin: string
 ): ClientRect {
-  let ta, sx, sy, dx, dy;
+  const parsedTransform = parseTransform(transform);
 
-  if (transform.startsWith('matrix3d(')) {
-    ta = transform.slice(9, -1).split(/, /);
-    sx = +ta[0];
-    sy = +ta[5];
-    dx = +ta[12];
-    dy = +ta[13];
-  } else if (transform.startsWith('matrix(')) {
-    ta = transform.slice(7, -1).split(/, /);
-    sx = +ta[0];
-    sy = +ta[3];
-    dx = +ta[4];
-    dy = +ta[5];
-  } else {
+  if (!parsedTransform) {
     return rect;
   }
 
-  const x = rect.left - dx - (1 - sx) * parseFloat(transformOrigin);
+  const {scaleX, scaleY, x: translateX, y: translateY} = parsedTransform;
+
+  const x = rect.left - translateX - (1 - scaleX) * parseFloat(transformOrigin);
   const y =
     rect.top -
-    dy -
-    (1 - sy) *
+    translateY -
+    (1 - scaleY) *
       parseFloat(transformOrigin.slice(transformOrigin.indexOf(' ') + 1));
-  const w = sx ? rect.width / sx : rect.width;
-  const h = sy ? rect.height / sy : rect.height;
+  const w = scaleX ? rect.width / scaleX : rect.width;
+  const h = scaleY ? rect.height / scaleY : rect.height;
 
   return {
     width: w,

@@ -4,12 +4,17 @@ export {
   DragOverlayProps,
   defaultAnnouncements,
   defaultDropAnimation,
+  defaultDropAnimationSideEffects,
 } from './components';
 export type {
   Announcements,
   CancelDrop,
   DndContextProps,
   DropAnimation,
+  DropAnimationFunction,
+  DropAnimationFunctionArguments,
+  DropAnimationKeyframeResolver,
+  DropAnimationSideEffects,
   DraggableMeasuring,
   MeasuringConfiguration,
   ScreenReaderInstructions,

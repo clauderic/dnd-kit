@@ -5,15 +5,20 @@ import {
   rectIntersection,
   pointerWithin,
   DndContext,
-  DragOverlay,
   useDraggable,
   UniqueIdentifier,
   CollisionDetection as CollisionDetectionType,
   Modifiers,
 } from '@dnd-kit/core';
 
-import {Draggable, Droppable, GridContainer, Wrapper} from '../../components';
 import {useUniqueId} from '@dnd-kit/utilities';
+import {
+  Draggable,
+  DraggableOverlay,
+  Droppable,
+  GridContainer,
+  Wrapper,
+} from '../../components';
 
 export default {
   title: 'Core/Droppable/useDroppable',
@@ -74,9 +79,7 @@ function DroppableStory({
           ))}
         </GridContainer>
       </Wrapper>
-      <DragOverlay>
-        {isDragging ? <Draggable dragging dragOverlay /> : null}
-      </DragOverlay>
+      <DraggableOverlay />
     </DndContext>
   );
 }

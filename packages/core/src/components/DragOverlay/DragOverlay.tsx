@@ -1,68 +1,59 @@
-import React, {useContext, useEffect, useRef} from 'react';
-import {CSS, isKeyboardEvent, Transform, useLazyMemo} from '@dnd-kit/utilities';
+import React, {useContext} from 'react';
 
-import {InternalContext, defaultInternalContext} from '../../store';
-import {getRelativeTransformOrigin} from '../../utilities';
 import {applyModifiers, Modifiers} from '../../modifiers';
 import {ActiveDraggableContext} from '../DndContext';
 import {useDndContext} from '../../hooks';
-import type {ClientRect} from '../../types';
-import {useDropAnimation, defaultDropAnimation, DropAnimation} from './hooks';
+import {useInitialValue} from '../../hooks/utilities';
 
-type TransitionGetter = (
-  activatorEvent: Event | null
-) => React.CSSProperties['transition'] | undefined;
+import {
+  AnimationManager,
+  NullifiedContextProvider,
+  PositionedOverlay,
+} from './components';
+import type {PositionedOverlayProps} from './components';
 
-export interface Props {
-  adjustScale?: boolean;
-  children?: React.ReactNode;
-  className?: string;
+import {useDropAnimation, useKey} from './hooks';
+import type {DropAnimation} from './hooks';
+
+export interface Props
+  extends Pick<
+    PositionedOverlayProps,
+    'adjustScale' | 'children' | 'className' | 'style' | 'transition'
+  > {
   dropAnimation?: DropAnimation | null | undefined;
-  style?: React.CSSProperties;
-  transition?: string | TransitionGetter;
   modifiers?: Modifiers;
   wrapperElement?: keyof JSX.IntrinsicElements;
   zIndex?: number;
 }
 
-const defaultTransform: Transform = {
-  x: 0,
-  y: 0,
-  scaleX: 1,
-  scaleY: 1,
-};
-
-const defaultTransition: TransitionGetter = (activatorEvent) => {
-  const isKeyboardActivator = isKeyboardEvent(activatorEvent);
-
-  return isKeyboardActivator ? 'transform 250ms ease' : undefined;
-};
-
 export const DragOverlay = React.memo(
   ({
     adjustScale = false,
     children,
-    dropAnimation = defaultDropAnimation,
-    style: styleProp,
-    transition = defaultTransition,
+    dropAnimation: dropAnimationConfig,
+    style,
+    transition,
     modifiers,
     wrapperElement = 'div',
     className,
     zIndex = 999,
   }: Props) => {
     const {
+      activatorEvent,
       active,
       activeNodeRect,
       containerNodeRect,
       draggableNodes,
-      activatorEvent,
-      over,
+      droppableContainers,
       dragOverlay,
+      over,
+      measuringConfiguration,
       scrollableAncestors,
       scrollableAncestorRects,
       windowRect,
     } = useDndContext();
     const transform = useContext(ActiveDraggableContext);
+    const key = useKey(active?.id);
     const modifiedTransform = applyModifiers(modifiers, {
       activatorEvent,
       active,
@@ -76,128 +67,41 @@ export const DragOverlay = React.memo(
       transform,
       windowRect,
     });
-    const isDragging = active !== null;
-    const finalTransform = adjustScale
-      ? modifiedTransform
-      : {
-          ...modifiedTransform,
-          scaleX: 1,
-          scaleY: 1,
-        };
-
-    const initialRect = useLazyMemo<ClientRect | null>(
-      (previousValue) => {
-        if (isDragging) {
-          if (previousValue) {
-            return previousValue;
-          }
-
-          if (!activeNodeRect) {
-            return null;
-          }
-
-          return {
-            ...activeNodeRect,
-          };
-        }
-
-        return null;
-      },
-      [isDragging, activeNodeRect]
-    );
-
+    const initialRect = useInitialValue(activeNodeRect);
+    const dropAnimation = useDropAnimation({
+      config: dropAnimationConfig,
+      draggableNodes,
+      droppableContainers,
+      measuringConfiguration,
+    });
     // We need to wait for the active node to be measured before connecting the drag overlay ref
     // otherwise collisions can be computed against a mispositioned drag overlay
     const ref = initialRect ? dragOverlay.setRef : undefined;
 
-    const style: React.CSSProperties | undefined = initialRect
-      ? {
-          position: 'fixed',
-          width: initialRect.width,
-          height: initialRect.height,
-          top: initialRect.top,
-          left: initialRect.left,
-          zIndex,
-          transform: CSS.Transform.toString(finalTransform),
-          touchAction: 'none',
-          transformOrigin:
-            adjustScale && activatorEvent
-              ? getRelativeTransformOrigin(
-                  activatorEvent as MouseEvent | KeyboardEvent | TouchEvent,
-                  initialRect
-                )
-              : undefined,
-          transition:
-            typeof transition === 'function'
-              ? transition(activatorEvent)
-              : transition,
-          ...styleProp,
-        }
-      : undefined;
-    const attributes = isDragging
-      ? {
-          style,
-          children,
-          className,
-          transform: finalTransform,
-        }
-      : undefined;
-    const attributesSnapshot = useRef(attributes);
-    const derivedAttributes = attributes ?? attributesSnapshot.current;
-    const {children: finalChildren, transform: _, ...otherAttributes} =
-      derivedAttributes ?? {};
-    const prevActiveId = useRef(active?.id ?? null);
-    const dropAnimationComplete = useDropAnimation({
-      animate: Boolean(dropAnimation && prevActiveId.current && !active),
-      adjustScale,
-      activeId:
-        over && over.placeholderId.current
-          ? over.placeholderId.current
-          : prevActiveId.current,
-      draggableNodes,
-      duration: dropAnimation?.duration,
-      easing: dropAnimation?.easing,
-      dragSourceOpacity: dropAnimation?.dragSourceOpacity,
-      node: dragOverlay.nodeRef.current,
-      transform: attributesSnapshot.current?.transform,
-    });
-    const shouldRender = Boolean(
-      finalChildren && (children || (dropAnimation && !dropAnimationComplete))
-    );
-
-    useEffect(() => {
-      if (active?.id !== prevActiveId.current) {
-        prevActiveId.current = active?.id ?? null;
-      }
-
-      if (active && attributesSnapshot.current !== attributes) {
-        attributesSnapshot.current = attributes;
-      }
-    }, [active, attributes]);
-
-    useEffect(() => {
-      if (dropAnimationComplete) {
-        attributesSnapshot.current = undefined;
-      }
-    }, [dropAnimationComplete]);
-
-    if (!shouldRender) {
-      return null;
-    }
-
     return (
-      <InternalContext.Provider value={defaultInternalContext}>
-        <ActiveDraggableContext.Provider value={defaultTransform}>
-          {React.createElement(
-            wrapperElement,
-            {
-              ...otherAttributes,
-              ref,
-            },
-            finalChildren
-          )}
-        </ActiveDraggableContext.Provider>
-      </InternalContext.Provider>
+      <NullifiedContextProvider>
+        <AnimationManager animation={dropAnimation}>
+          {active && key ? (
+            <PositionedOverlay
+              key={`${key}-${active.id}`}
+              ref={ref}
+              as={wrapperElement}
+              activatorEvent={activatorEvent}
+              adjustScale={adjustScale}
+              className={className}
+              transition={transition}
+              rect={initialRect}
+              style={{
+                zIndex,
+                ...style,
+              }}
+              transform={modifiedTransform}
+            >
+              {children}
+            </PositionedOverlay>
+          ) : null}
+        </AnimationManager>
+      </NullifiedContextProvider>
     );
   }
 );

@@ -2,13 +2,13 @@ import React, {useEffect, useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
 
 import {
+  Active,
   Announcements,
   closestCenter,
   CollisionDetection,
   DragOverlay,
   DndContext,
   DropAnimation,
-  defaultDropAnimation,
   KeyboardSensor,
   KeyboardCoordinateGetter,
   Modifiers,
@@ -20,6 +20,7 @@ import {
   UniqueIdentifier,
   useSensor,
   useSensors,
+  defaultDropAnimationSideEffects,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -64,6 +65,7 @@ export interface Props {
     isDragging: boolean;
   }): React.CSSProperties;
   wrapperStyle?(args: {
+    active: Pick<Active, 'id'> | null;
     index: number;
     isDragging: boolean;
     id: string;
@@ -71,9 +73,14 @@ export interface Props {
   isDisabled?(id: UniqueIdentifier): boolean;
 }
 
-const defaultDropAnimationConfig: DropAnimation = {
-  ...defaultDropAnimation,
-  dragSourceOpacity: 0.5,
+const dropAnimationConfig: DropAnimation = {
+  sideEffects: defaultDropAnimationSideEffects({
+    styles: {
+      active: {
+        opacity: '0.5',
+      },
+    },
+  }),
 };
 
 const screenReaderInstructions: ScreenReaderInstructions = {
@@ -91,7 +98,7 @@ export function Sortable({
   Container = List,
   collisionDetection = closestCenter,
   coordinateGetter = sortableKeyboardCoordinates,
-  dropAnimation = defaultDropAnimationConfig,
+  dropAnimation = dropAnimationConfig,
   getItemStyles = () => ({}),
   getNewIndex,
   handle = false,
@@ -240,6 +247,7 @@ export function Sortable({
                   handle={handle}
                   renderItem={renderItem}
                   wrapperStyle={wrapperStyle({
+                    active: {id: activeId},
                     index: activeIndex,
                     isDragging: true,
                     id: items[activeIndex],
@@ -274,15 +282,7 @@ interface SortableItemProps {
   onRemove?(id: string): void;
   style(values: any): React.CSSProperties;
   renderItem?(args: any): React.ReactElement;
-  wrapperStyle({
-    index,
-    isDragging,
-    id,
-  }: {
-    index: number;
-    isDragging: boolean;
-    id: string;
-  }): React.CSSProperties;
+  wrapperStyle: Props['wrapperStyle'];
 }
 
 export function SortableItem({
@@ -299,6 +299,7 @@ export function SortableItem({
   wrapperStyle,
 }: SortableItemProps) {
   const {
+    active,
     attributes,
     isDragging,
     isSorting,
@@ -334,7 +335,7 @@ export function SortableItem({
       onRemove={onRemove ? () => onRemove(id) : undefined}
       transform={transform}
       transition={transition}
-      wrapperStyle={wrapperStyle({index, isDragging, id})}
+      wrapperStyle={wrapperStyle?.({index, isDragging, active, id})}
       listeners={listeners}
       data-index={index}
       data-id={id}

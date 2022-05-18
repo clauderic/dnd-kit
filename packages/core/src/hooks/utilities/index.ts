@@ -12,11 +12,14 @@ export {
   MeasuringStrategy,
 } from './useDroppableMeasuring';
 export type {DroppableMeasuring} from './useDroppableMeasuring';
-export {useObservedRect} from './useObservedRect';
+export {useInitialValue} from './useInitialValue';
+export {useRect} from './useRect';
+export {useRectDelta} from './useRectDelta';
 export {useResizeObserver} from './useResizeObserver';
+export {useScrollableAncestors} from './useScrollableAncestors';
+export {useScrollIntoViewIfNeeded} from './useScrollIntoViewIfNeeded';
 export {useScrollOffsets} from './useScrollOffsets';
 export {useScrollOffsetsDelta} from './useScrollOffsetsDelta';
-export {useScrollableAncestors} from './useScrollableAncestors';
 export {useSensorSetup} from './useSensorSetup';
 export {useSyntheticListeners} from './useSyntheticListeners';
 export type {

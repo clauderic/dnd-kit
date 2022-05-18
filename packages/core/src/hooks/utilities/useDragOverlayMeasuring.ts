@@ -3,16 +3,15 @@ import {isHTMLElement, useNodeRef} from '@dnd-kit/utilities';
 
 import {useResizeObserver} from './useResizeObserver';
 import {getMeasurableNode} from '../../utilities/nodes';
-import {getClientRect} from '../../utilities/rect';
 import type {PublicContextDescriptor} from '../../store';
 import type {ClientRect} from '../../types';
 
 interface Arguments {
-  measure?(element: HTMLElement): ClientRect;
+  measure(element: HTMLElement): ClientRect;
 }
 
 export function useDragOverlayMeasuring({
-  measure = getClientRect,
+  measure,
 }: Arguments): PublicContextDescriptor['dragOverlay'] {
   const [rect, setRect] = useState<ClientRect | null>(null);
   const handleResize = useCallback(

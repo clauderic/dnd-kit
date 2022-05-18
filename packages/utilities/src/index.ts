@@ -1,10 +1,12 @@
 export {
   useCombinedRefs,
+  useEvent,
   useIsomorphicLayoutEffect,
   useInterval,
   useLatestValue,
   useLazyMemo,
   useNodeRef,
+  usePrevious,
   useUniqueId,
 } from './hooks';
 
@@ -26,4 +28,4 @@ export {
   isSVGElement,
   isWindow,
 } from './type-guards';
-export type {Arguments, FirstArgument, Without} from './types';
+export type {Arguments, DeepRequired, FirstArgument, Without} from './types';

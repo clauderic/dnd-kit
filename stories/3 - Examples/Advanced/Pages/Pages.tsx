@@ -3,15 +3,19 @@ import {
   closestCenter,
   DndContext,
   DragOverlay,
-  DragStartEvent,
   useSensor,
   useSensors,
   PointerSensor,
   KeyboardSensor,
   useDndContext,
-  MeasuringConfiguration,
   MeasuringStrategy,
+  DropAnimation,
+  defaultDropAnimationSideEffects,
+} from '@dnd-kit/core';
+import type {
+  DragStartEvent,
   DragEndEvent,
+  MeasuringConfiguration,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -27,6 +31,7 @@ import {createRange} from '../../../utilities';
 import {Page, Layout, Position} from './Page';
 import type {Props as PageProps} from './Page';
 import styles from './Pages.module.css';
+import pageStyles from './Page.module.css';
 
 interface Props {
   layout: Layout;
@@ -36,6 +41,27 @@ const measuring: MeasuringConfiguration = {
   droppable: {
     strategy: MeasuringStrategy.Always,
   },
+};
+
+const dropAnimation: DropAnimation = {
+  keyframes({transform}) {
+    return [
+      {transform: CSS.Transform.toString(transform.initial)},
+      {
+        transform: CSS.Transform.toString({
+          scaleX: 0.98,
+          scaleY: 0.98,
+          x: transform.final.x - 10,
+          y: transform.final.y - 10,
+        }),
+      },
+    ];
+  },
+  sideEffects: defaultDropAnimationSideEffects({
+    className: {
+      active: pageStyles.active,
+    },
+  }),
 };
 
 export function Pages({layout}: Props) {
@@ -74,7 +100,7 @@ export function Pages({layout}: Props) {
           ))}
         </ul>
       </SortableContext>
-      <DragOverlay>
+      <DragOverlay dropAnimation={dropAnimation}>
         {activeId ? (
           <PageOverlay id={activeId} layout={layout} items={items} />
         ) : null}

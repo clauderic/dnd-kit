@@ -1,21 +1,13 @@
-import React, {useState} from 'react';
-import {createPortal} from 'react-dom';
-import {
-  DndContext,
-  DragOverlay,
-  DropAnimation,
-  defaultDropAnimation,
-  Modifiers,
-  useDraggable,
-  Translate,
-} from '@dnd-kit/core';
+import React from 'react';
+import {DndContext, useDraggable} from '@dnd-kit/core';
+import type {DropAnimation, Modifiers, Translate} from '@dnd-kit/core';
 import {
   restrictToHorizontalAxis,
   restrictToVerticalAxis,
   restrictToWindowEdges,
 } from '@dnd-kit/modifiers';
 
-import {Axis, Draggable, Wrapper} from '../../components';
+import {Axis, Draggable, DraggableOverlay, Wrapper} from '../../components';
 
 export default {
   title: `Core/Draggable/Components/\u003CDragOverlay\u003E`,
@@ -31,50 +23,21 @@ interface Props {
   style?: React.CSSProperties;
 }
 
-const defaultDropAnimationConfig: DropAnimation = {
-  ...defaultDropAnimation,
-  dragSourceOpacity: 0.5,
-};
-
 function DragOverlayExample({
   axis,
-  dragOverlayModifiers,
-  dropAnimation = defaultDropAnimationConfig,
+  dropAnimation,
   handle,
   label,
   modifiers,
 }: Props) {
-  const [isDragging, setIsDragging] = useState(false);
-
   return (
-    <DndContext
-      modifiers={modifiers}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      onDragCancel={handleDragEnd}
-    >
+    <DndContext modifiers={modifiers}>
       <Wrapper>
         <DraggableItem axis={axis} handle={handle} label={label} />
       </Wrapper>
-      {createPortal(
-        <DragOverlay
-          modifiers={dragOverlayModifiers}
-          dropAnimation={dropAnimation}
-        >
-          {isDragging ? <Draggable axis={axis} dragging dragOverlay /> : null}
-        </DragOverlay>,
-        document.body
-      )}
+      <DraggableOverlay axis={axis} dropAnimation={dropAnimation} />
     </DndContext>
   );
-
-  function handleDragStart() {
-    setIsDragging(true);
-  }
-
-  function handleDragEnd() {
-    setIsDragging(false);
-  }
 }
 
 interface DraggableItemProps {
