@@ -35,14 +35,15 @@ import {
   useCombineActivators,
   useDragOverlayMeasuring,
   useDroppableMeasuring,
-  useScrollableAncestors,
-  useSensorSetup,
-  useRects,
-  useWindowRect,
+  useInitialRect,
   useRect,
   useRectDelta,
+  useRects,
+  useScrollableAncestors,
   useScrollOffsets,
   useScrollOffsetsDelta,
+  useSensorSetup,
+  useWindowRect,
 } from '../../hooks/utilities';
 import type {AutoScrollOptions, SyntheticListener} from '../../hooks/utilities';
 import type {
@@ -192,19 +193,14 @@ export const DndContext = memo(function DndContext({
     [activatorEvent]
   );
   const autoScrollOptions = getAutoScrollerOptions();
-  const layoutShiftCompensationDisabled =
-    activationCoordinates == null ||
-    autoScrollOptions.layoutShiftCompensation === false;
-  const initialActiveNodeRect = useMemo(
-    () =>
-      activeNode ? measuringConfiguration.draggable.measure(activeNode) : null,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [activeNode, measuringConfiguration.draggable.measure]
+  const initialActiveNodeRect = useInitialRect(
+    activeNode,
+    measuringConfiguration.draggable.measure
   );
 
   useLayoutShiftScrollCompensation({
-    disabled: layoutShiftCompensationDisabled,
-    element: activeNode,
+    activeNode: activeId ? draggableNodes[activeId] : null,
+    config: autoScrollOptions.layoutShiftCompensation,
     initialRect: initialActiveNodeRect,
     measure: measuringConfiguration.draggable.measure,
   });

@@ -13,7 +13,7 @@ interface AutoScrollOptions {
   canScroll?: CanScroll;
   enabled?: boolean;
   interval?: number;
-+ layoutShiftCompensation?: boolean;
++ layoutShiftCompensation?: boolean | {x: boolean, y: boolean};
   order?: TraversalOrder;
   threshold?: {
     x: number;
@@ -22,7 +22,15 @@ interface AutoScrollOptions {
 }
 ```
 
-To disable layout shift scroll compensation, pass in the following autoscroll configuration to `<DndContext>`:
+To enable/disable layout shift scroll compensation for a single scroll axis, pass in the following autoscroll configuration to `<DndContext>`:
+
+```ts
+<DndContext
+  autoScroll={{layoutShiftCompensation: {x: false, y: true}}}
+>
+```
+
+To completely disable layout shift scroll compensation, pass in the following autoscroll configuration to `<DndContext>`:
 
 ```ts
 <DndContext

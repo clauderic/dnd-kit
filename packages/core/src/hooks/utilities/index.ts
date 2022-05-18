@@ -13,6 +13,7 @@ export {
 } from './useDroppableMeasuring';
 export type {DroppableMeasuring} from './useDroppableMeasuring';
 export {useInitialValue} from './useInitialValue';
+export {useInitialRect} from './useInitialRect';
 export {useRect} from './useRect';
 export {useRectDelta} from './useRectDelta';
 export {useResizeObserver} from './useResizeObserver';

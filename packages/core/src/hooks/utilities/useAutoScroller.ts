@@ -18,7 +18,12 @@ export interface Options {
   canScroll?: CanScroll;
   enabled?: boolean;
   interval?: number;
-  layoutShiftCompensation?: boolean;
+  layoutShiftCompensation?:
+    | boolean
+    | {
+        x: boolean;
+        y: boolean;
+      };
   order?: TraversalOrder;
   threshold?: {
     x: number;
