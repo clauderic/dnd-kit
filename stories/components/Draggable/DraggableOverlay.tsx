@@ -41,8 +41,6 @@ const dropAnimationConfig: DropAnimation = {
           easing: 'ease',
         }
       );
-
-      debugger;
     }
 
     return () => {

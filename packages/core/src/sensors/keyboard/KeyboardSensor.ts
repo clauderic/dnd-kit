@@ -9,13 +9,12 @@ import {
 import type {Coordinates} from '../../types';
 import {
   defaultCoordinates,
-  getTransformAgnosticClientRect,
   getScrollPosition,
   getScrollElementRect,
 } from '../../utilities';
 import {scrollIntoViewIfNeeded} from '../../utilities/scroll';
-import {Listeners} from '../utilities';
 import {EventName} from '../events';
+import {Listeners} from '../utilities';
 import type {SensorInstance, SensorProps, SensorOptions} from '../types';
 
 import {KeyboardCoordinateGetter, KeyboardCode, KeyboardCodes} from './types';
@@ -35,7 +34,7 @@ export type KeyboardSensorProps = SensorProps<KeyboardSensorOptions>;
 
 export class KeyboardSensor implements SensorInstance {
   public autoScrollEnabled = false;
-  private coordinates: Coordinates = defaultCoordinates;
+  private referenceCoordinates: Coordinates | undefined;
   private listeners: Listeners;
   private windowListeners: Listeners;
 
@@ -64,29 +63,17 @@ export class KeyboardSensor implements SensorInstance {
 
   private handleStart() {
     const {activeNode, onStart} = this.props;
+    const node = activeNode.node.current;
 
-    if (!activeNode.node.current) {
-      throw new Error('Active draggable node is undefined');
+    if (node) {
+      scrollIntoViewIfNeeded(node);
     }
 
-    scrollIntoViewIfNeeded(activeNode.node.current);
-
-    const activeNodeRect = getTransformAgnosticClientRect(
-      activeNode.node.current
-    );
-    const coordinates = {
-      x: activeNodeRect.left,
-      y: activeNodeRect.top,
-    };
-
-    this.coordinates = coordinates;
-
-    onStart(coordinates);
+    onStart(defaultCoordinates);
   }
 
   private handleKeyDown(event: Event) {
     if (isKeyboardEvent(event)) {
-      const {coordinates} = this;
       const {active, context, options} = this.props;
       const {
         keyboardCodes = defaultKeyboardCodes,
@@ -105,13 +92,26 @@ export class KeyboardSensor implements SensorInstance {
         return;
       }
 
+      const {collisionRect} = context.current;
+      const currentCoordinates = collisionRect
+        ? {x: collisionRect.left, y: collisionRect.top}
+        : defaultCoordinates;
+
+      if (!this.referenceCoordinates) {
+        this.referenceCoordinates = currentCoordinates;
+      }
+
       const newCoordinates = coordinateGetter(event, {
         active,
         context: context.current,
-        currentCoordinates: coordinates,
+        currentCoordinates,
       });
 
       if (newCoordinates) {
+        const coordinatesDelta = getCoordinatesDelta(
+          newCoordinates,
+          currentCoordinates
+        );
         const scrollDelta = {
           x: 0,
           y: 0,
@@ -120,10 +120,6 @@ export class KeyboardSensor implements SensorInstance {
 
         for (const scrollContainer of scrollableAncestors) {
           const direction = event.code;
-          const coordinatesDelta = getCoordinatesDelta(
-            newCoordinates,
-            coordinates
-          );
           const {
             isTop,
             isRight,
@@ -230,7 +226,10 @@ export class KeyboardSensor implements SensorInstance {
 
         this.handleMove(
           event,
-          getAdjustedCoordinates(newCoordinates, scrollDelta)
+          getAdjustedCoordinates(
+            getCoordinatesDelta(newCoordinates, this.referenceCoordinates),
+            scrollDelta
+          )
         );
       }
     }
@@ -241,7 +240,6 @@ export class KeyboardSensor implements SensorInstance {
 
     event.preventDefault();
     onMove(coordinates);
-    this.coordinates = coordinates;
   }
 
   private handleEnd(event: Event) {

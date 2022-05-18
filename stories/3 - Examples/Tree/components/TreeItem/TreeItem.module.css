@@ -8,8 +8,8 @@
     display: inline-block;
     pointer-events: none;
     padding: 0;
-    margin-left: 10px;
-    margin-top: 5px;
+    padding-left: 10px;
+    padding-top: 5px;
 
     .TreeItem {
       --vertical-padding: 5px;
