@@ -80,6 +80,8 @@ export type {
 
 export type {
   Active,
+  Data,
+  DataRef,
   PublicContextDescriptor as DndContextDescriptor,
   DraggableNode,
   DroppableContainers,

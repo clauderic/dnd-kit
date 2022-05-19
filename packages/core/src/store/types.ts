@@ -17,9 +17,11 @@ export interface DraggableElement {
   disabled: boolean;
 }
 
-export type Data = Record<string, any>;
+type AnyData = Record<string, any>;
 
-export type DataRef = MutableRefObject<Data | undefined>;
+export type Data<T = AnyData> = T & AnyData;
+
+export type DataRef<T = AnyData> = MutableRefObject<Data<T> | undefined>;
 
 export interface DroppableContainer {
   id: UniqueIdentifier;

@@ -18,4 +18,5 @@ export {
 } from './strategies';
 export {sortableKeyboardCoordinates} from './sensors';
 export {arrayMove, arraySwap} from './utilities';
-export type {SortingStrategy} from './types';
+export {hasSortableData} from './types';
+export type {SortableData, SortingStrategy} from './types';

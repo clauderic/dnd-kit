@@ -2,6 +2,8 @@
 '@dnd-kit/core': major
 ---
 
+Accessibility related changes.
+
 #### Regrouping accessibility-related props
 
 Accessibility-related props have been regrouped under the `accessibility` prop of `<DndContext>`:
