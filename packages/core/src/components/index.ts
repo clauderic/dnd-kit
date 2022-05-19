@@ -10,6 +10,8 @@ export type {
   DraggableMeasuring,
   MeasuringConfiguration,
 } from './DndContext';
+export {useDndMonitor} from './DndMonitor';
+export type {DndMonitorListener} from './DndMonitor';
 export {
   DragOverlay,
   defaultDropAnimation,

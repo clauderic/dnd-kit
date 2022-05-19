@@ -28,7 +28,7 @@ import {
   getInitialState,
   reducer,
 } from '../../store';
-import {DndMonitorContext, DndMonitorState} from '../../hooks/monitor';
+import {DndMonitorContext, useDndMonitorProvider} from '../DndMonitor';
 import {
   useAutoScroller,
   useCachedNode,
@@ -144,10 +144,10 @@ export const DndContext = memo(function DndContext({
 }: Props) {
   const store = useReducer(reducer, undefined, getInitialState);
   const [state, dispatch] = store;
-  const [monitorState, setMonitorState] = useState<DndMonitorState>(() => ({
-    type: null,
-    event: null,
-  }));
+  const [
+    dispatchMonitorEvent,
+    registerMonitorListener,
+  ] = useDndMonitorProvider();
   const [status, setStatus] = useState<Status>(Status.Uninitialized);
   const isInitialized = status === Status.Initialized;
   const {
@@ -375,7 +375,7 @@ export const DndContext = memo(function DndContext({
               initialCoordinates,
               active: id,
             });
-            setMonitorState({type: Action.DragStart, event});
+            dispatchMonitorEvent({type: 'onDragStart', event});
           });
         },
         onMove(coordinates) {
@@ -432,16 +432,14 @@ export const DndContext = memo(function DndContext({
             setActiveSensor(null);
             setActivatorEvent(null);
 
-            if (event) {
-              setMonitorState({type, event});
-            }
+            const eventName =
+              type === Action.DragEnd ? 'onDragEnd' : 'onDragCancel';
 
             if (event) {
-              const {onDragCancel, onDragEnd} = latestProps.current;
-              const handler =
-                type === Action.DragEnd ? onDragEnd : onDragCancel;
+              const handler = latestProps.current[eventName];
 
               handler?.(event);
+              dispatchMonitorEvent({type: eventName, event});
             }
           });
         };
@@ -527,8 +525,10 @@ export const DndContext = memo(function DndContext({
         over,
       };
 
-      setMonitorState({type: Action.DragMove, event});
-      onDragMove?.(event);
+      unstable_batchedUpdates(() => {
+        onDragMove?.(event);
+        dispatchMonitorEvent({type: 'onDragMove', event});
+      });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [scrollAdjustedTranslate.x, scrollAdjustedTranslate.y]
@@ -577,8 +577,8 @@ export const DndContext = memo(function DndContext({
 
       unstable_batchedUpdates(() => {
         setOver(over);
-        setMonitorState({type: Action.DragOver, event});
         onDragOver?.(event);
+        dispatchMonitorEvent({type: 'onDragOver', event});
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -701,7 +701,7 @@ export const DndContext = memo(function DndContext({
   ]);
 
   return (
-    <DndMonitorContext.Provider value={monitorState}>
+    <DndMonitorContext.Provider value={registerMonitorListener}>
       <InternalContext.Provider value={internalContext}>
         <PublicContext.Provider value={publicContext}>
           <ActiveDraggableContext.Provider value={transform}>
