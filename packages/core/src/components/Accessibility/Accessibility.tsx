@@ -5,23 +5,27 @@ import {HiddenText, LiveRegion, useAnnouncement} from '@dnd-kit/accessibility';
 
 import type {Announcements, ScreenReaderInstructions} from './types';
 import type {UniqueIdentifier} from '../../types';
-import {defaultAnnouncements} from './defaults';
+import {
+  defaultAnnouncements,
+  defaultScreenReaderInstructions,
+} from './defaults';
 import {DndMonitorArguments, useDndMonitor} from '../../hooks/monitor';
 
 interface Props {
   announcements?: Announcements;
-  screenReaderInstructions: ScreenReaderInstructions;
+  container?: Element;
+  screenReaderInstructions?: ScreenReaderInstructions;
   hiddenTextDescribedById: UniqueIdentifier;
 }
 
 export function Accessibility({
   announcements = defaultAnnouncements,
+  container,
   hiddenTextDescribedById,
-  screenReaderInstructions,
+  screenReaderInstructions = defaultScreenReaderInstructions,
 }: Props) {
   const {announce, announcement} = useAnnouncement();
   const liveRegionId = useUniqueId(`DndLiveRegion`);
-
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -53,16 +57,19 @@ export function Accessibility({
     )
   );
 
-  return mounted
-    ? createPortal(
-        <>
-          <HiddenText
-            id={hiddenTextDescribedById}
-            value={screenReaderInstructions.draggable}
-          />
-          <LiveRegion id={liveRegionId} announcement={announcement} />
-        </>,
-        document.body
-      )
-    : null;
+  if (!mounted) {
+    return null;
+  }
+
+  const markup = (
+    <>
+      <HiddenText
+        id={hiddenTextDescribedById}
+        value={screenReaderInstructions.draggable}
+      />
+      <LiveRegion id={liveRegionId} announcement={announcement} />
+    </>
+  );
+
+  return container ? createPortal(markup, container) : markup;
 }

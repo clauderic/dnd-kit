@@ -74,7 +74,6 @@ import type {
 import {
   Accessibility,
   Announcements,
-  screenReaderInstructions as defaultScreenReaderInstructions,
   ScreenReaderInstructions,
 } from '../Accessibility';
 
@@ -87,14 +86,17 @@ import type {MeasuringConfiguration} from './types';
 
 export interface Props {
   id?: string;
+  accessibility?: {
+    announcements?: Announcements;
+    container?: Element;
+    screenReaderInstructions?: ScreenReaderInstructions;
+  };
   autoScroll?: boolean | AutoScrollOptions;
-  announcements?: Announcements;
   cancelDrop?: CancelDrop;
   children?: React.ReactNode;
   collisionDetection?: CollisionDetection;
   measuring?: MeasuringConfiguration;
   modifiers?: Modifiers;
-  screenReaderInstructions?: ScreenReaderInstructions;
   sensors?: SensorDescriptor<any>[];
   onDragStart?(event: DragStartEvent): void;
   onDragMove?(event: DragMoveEvent): void;
@@ -129,14 +131,13 @@ enum Status {
 
 export const DndContext = memo(function DndContext({
   id,
+  accessibility,
   autoScroll = true,
-  announcements,
   children,
   sensors = defaultSensors,
   collisionDetection = rectIntersection,
   measuring,
   modifiers,
-  screenReaderInstructions = defaultScreenReaderInstructions,
   ...props
 }: Props) {
   const store = useReducer(reducer, undefined, getInitialState);
@@ -682,9 +683,8 @@ export const DndContext = memo(function DndContext({
         </PublicContext.Provider>
       </InternalContext.Provider>
       <Accessibility
-        announcements={announcements}
+        {...accessibility}
         hiddenTextDescribedById={draggableDescribedById}
-        screenReaderInstructions={screenReaderInstructions}
       />
     </DndMonitorContext.Provider>
   );

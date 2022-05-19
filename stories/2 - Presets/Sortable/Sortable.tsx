@@ -188,8 +188,10 @@ export function Sortable({
 
   return (
     <DndContext
-      announcements={announcements}
-      screenReaderInstructions={screenReaderInstructions}
+      accessibility={{
+        announcements,
+        screenReaderInstructions,
+      }}
       sensors={sensors}
       collisionDetection={collisionDetection}
       onDragStart={({active}) => {

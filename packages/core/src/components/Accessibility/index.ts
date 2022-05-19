@@ -1,3 +1,6 @@
 export {Accessibility} from './Accessibility';
-export {defaultAnnouncements, screenReaderInstructions} from './defaults';
+export {
+  defaultAnnouncements,
+  defaultScreenReaderInstructions,
+} from './defaults';
 export type {Announcements, ScreenReaderInstructions} from './types';
