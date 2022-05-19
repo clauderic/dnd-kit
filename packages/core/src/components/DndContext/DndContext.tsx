@@ -74,6 +74,7 @@ import type {
 import {
   Accessibility,
   Announcements,
+  useRestoreFocus,
   ScreenReaderInstructions,
 } from '../Accessibility';
 
@@ -89,6 +90,7 @@ export interface Props {
   accessibility?: {
     announcements?: Announcements;
     container?: Element;
+    restoreFocus?: boolean;
     screenReaderInstructions?: ScreenReaderInstructions;
   };
   autoScroll?: boolean | AutoScrollOptions;
@@ -613,6 +615,13 @@ export const DndContext = memo(function DndContext({
     pointerCoordinates,
     scrollableAncestors,
     scrollableAncestorRects,
+  });
+
+  useRestoreFocus({
+    activeId,
+    activatorEvent,
+    disabled: accessibility?.restoreFocus === false,
+    draggableNodes,
   });
 
   const publicContext = useMemo(() => {

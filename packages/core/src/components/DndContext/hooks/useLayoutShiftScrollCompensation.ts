@@ -1,36 +1,11 @@
-import {useMemo, useRef} from 'react';
+import {useRef} from 'react';
 import {useIsomorphicLayoutEffect} from '@dnd-kit/utilities';
-import type {DeepRequired} from '@dnd-kit/utilities';
 
-import {getRectDelta} from '../../utilities/rect';
-import {getFirstScrollableAncestor} from '../../utilities/scroll';
-import type {ClientRect} from '../../types';
-import {defaultMeasuringConfiguration} from './defaults';
-import type {MeasuringFunction, MeasuringConfiguration} from './types';
-import type {DraggableNode} from '../../store';
-
-export function useMeasuringConfiguration(
-  config: MeasuringConfiguration | undefined
-): DeepRequired<MeasuringConfiguration> {
-  return useMemo(
-    () => ({
-      draggable: {
-        ...defaultMeasuringConfiguration.draggable,
-        ...config?.draggable,
-      },
-      droppable: {
-        ...defaultMeasuringConfiguration.droppable,
-        ...config?.droppable,
-      },
-      dragOverlay: {
-        ...defaultMeasuringConfiguration.dragOverlay,
-        ...config?.dragOverlay,
-      },
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [config?.draggable, config?.droppable, config?.dragOverlay]
-  );
-}
+import {getRectDelta} from '../../../utilities/rect';
+import {getFirstScrollableAncestor} from '../../../utilities/scroll';
+import type {ClientRect} from '../../../types';
+import type {DraggableNode} from '../../../store';
+import type {MeasuringFunction} from '../types';
 
 interface Options {
   activeNode: DraggableNode | null | undefined;
