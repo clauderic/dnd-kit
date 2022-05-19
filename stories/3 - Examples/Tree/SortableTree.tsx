@@ -189,7 +189,7 @@ export function SortableTree({
 
   return (
     <DndContext
-      announcements={announcements}
+      accessibility={{announcements}}
       sensors={sensors}
       collisionDetection={closestCenter}
       measuring={measuring}

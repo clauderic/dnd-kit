@@ -1,6 +1,6 @@
 import type {Announcements, ScreenReaderInstructions} from './types';
 
-export const screenReaderInstructions: ScreenReaderInstructions = {
+export const defaultScreenReaderInstructions: ScreenReaderInstructions = {
   draggable: `
     To pick up a draggable item, press the space bar.
     While dragging, use the arrow keys to move the item.
