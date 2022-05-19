@@ -670,6 +670,7 @@ function SortableItem({
 }: SortableItemProps) {
   const {
     setNodeRef,
+    setActivatorNodeRef,
     listeners,
     isDragging,
     isSorting,
@@ -690,6 +691,7 @@ function SortableItem({
       dragging={isDragging}
       sorting={isSorting}
       handle={handle}
+      handleProps={handle ? {ref: setActivatorNodeRef} : undefined}
       index={index}
       wrapperStyle={wrapperStyle({index})}
       style={style({

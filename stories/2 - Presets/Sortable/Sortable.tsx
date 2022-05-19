@@ -308,6 +308,7 @@ export function SortableItem({
     listeners,
     overIndex,
     setNodeRef,
+    setActivatorNodeRef,
     transform,
     transition,
   } = useSortable({
@@ -325,6 +326,13 @@ export function SortableItem({
       dragging={isDragging}
       sorting={isSorting}
       handle={handle}
+      handleProps={
+        handle
+          ? {
+              ref: setActivatorNodeRef,
+            }
+          : undefined
+      }
       renderItem={renderItem}
       index={index}
       style={style({

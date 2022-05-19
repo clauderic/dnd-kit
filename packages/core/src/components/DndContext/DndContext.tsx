@@ -50,7 +50,7 @@ import type {
   Sensor,
   SensorContext,
   SensorDescriptor,
-  SensorHandler,
+  SensorActivatorFunction,
   SensorInstance,
 } from '../../sensors';
 import {
@@ -447,15 +447,18 @@ export const DndContext = memo(function DndContext({
 
   const bindActivatorToSensorInstantiator = useCallback(
     (
-      handler: SensorHandler,
+      handler: SensorActivatorFunction<any>,
       sensor: SensorDescriptor<any>
     ): SyntheticListener['handler'] => {
       return (event, active) => {
         const nativeEvent = event.nativeEvent as DndEvent;
+        const activeDraggableNode = draggableNodes[active];
 
         if (
-          // No active draggable
+          // Another sensor is already instantiating
           activeRef.current !== null ||
+          // No active draggable
+          !activeDraggableNode ||
           // Event has already been captured
           nativeEvent.dndKit ||
           nativeEvent.defaultPrevented
@@ -463,7 +466,16 @@ export const DndContext = memo(function DndContext({
           return;
         }
 
-        if (handler(event, sensor.options) === true) {
+        const activationContext = {
+          active: activeDraggableNode,
+        };
+        const shouldActivate = handler(
+          event,
+          sensor.options,
+          activationContext
+        );
+
+        if (shouldActivate === true) {
           nativeEvent.dndKit = {
             capturedBy: sensor.sensor,
           };
@@ -473,7 +485,7 @@ export const DndContext = memo(function DndContext({
         }
       };
     },
-    [instantiateSensor]
+    [draggableNodes, instantiateSensor]
   );
 
   const activators = useCombineActivators(
