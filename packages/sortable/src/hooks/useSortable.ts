@@ -5,10 +5,11 @@ import {
   UseDraggableArguments,
   UseDroppableArguments,
 } from '@dnd-kit/core';
+import type {Data} from '@dnd-kit/core';
 import {CSS, isKeyboardEvent, useCombinedRefs} from '@dnd-kit/utilities';
 
 import {Context} from '../components';
-import type {SortingStrategy} from '../types';
+import type {SortableData, SortingStrategy} from '../types';
 import {isValidIndex} from '../utilities';
 import {
   defaultAnimateLayoutChanges,
@@ -56,7 +57,7 @@ export function useSortable({
     strategy: globalStrategy,
   } = useContext(Context);
   const index = items.indexOf(id);
-  const data = useMemo(
+  const data = useMemo<SortableData & Data>(
     () => ({sortable: {containerId, index, items}, ...customData}),
     [containerId, customData, index, items]
   );
@@ -168,6 +169,7 @@ export function useSortable({
     active,
     activeIndex,
     attributes,
+    data,
     rect,
     index,
     newIndex,
