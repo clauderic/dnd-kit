@@ -50,6 +50,7 @@ export type DraggableNode = {
   id: UniqueIdentifier;
   key: UniqueIdentifier;
   node: MutableRefObject<HTMLElement | null>;
+  activatorNode: MutableRefObject<HTMLElement | null>;
   data: DataRef;
 };
 

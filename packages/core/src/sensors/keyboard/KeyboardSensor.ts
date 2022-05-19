@@ -15,7 +15,12 @@ import {
 import {scrollIntoViewIfNeeded} from '../../utilities/scroll';
 import {EventName} from '../events';
 import {Listeners} from '../utilities';
-import type {SensorInstance, SensorProps, SensorOptions} from '../types';
+import type {
+  Activators,
+  SensorInstance,
+  SensorProps,
+  SensorOptions,
+} from '../types';
 
 import {KeyboardCoordinateGetter, KeyboardCode, KeyboardCodes} from './types';
 import {
@@ -263,19 +268,23 @@ export class KeyboardSensor implements SensorInstance {
     this.windowListeners.removeAll();
   }
 
-  static activators = [
+  static activators: Activators<KeyboardSensorOptions> = [
     {
       eventName: 'onKeyDown' as const,
       handler: (
         event: React.KeyboardEvent,
-        {
-          keyboardCodes = defaultKeyboardCodes,
-          onActivation,
-        }: KeyboardSensorOptions
+        {keyboardCodes = defaultKeyboardCodes, onActivation},
+        {active}
       ) => {
         const {code} = event.nativeEvent;
 
         if (keyboardCodes.start.includes(code)) {
+          const activator = active.activatorNode.current;
+
+          if (activator && event.target !== activator) {
+            return false;
+          }
+
           event.preventDefault();
 
           onActivation?.({event: event.nativeEvent});

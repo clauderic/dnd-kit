@@ -55,9 +55,17 @@ export type SensorInstance = {
   autoScrollEnabled: boolean;
 };
 
+export type SensorActivatorFunction<T> = (
+  event: any,
+  options: T,
+  context: {
+    active: DraggableNode;
+  }
+) => boolean | undefined;
+
 export type Activator<T> = {
   eventName: SyntheticEventName;
-  handler(event: React.SyntheticEvent, options: T): boolean | undefined;
+  handler: SensorActivatorFunction<T>;
 };
 
 export type Activators<T> = Activator<T>[];

@@ -32,6 +32,7 @@ export type {
   Response as SensorResponse,
   Sensor,
   Sensors,
+  SensorActivatorFunction,
   SensorDescriptor,
   SensorContext,
   SensorHandler,

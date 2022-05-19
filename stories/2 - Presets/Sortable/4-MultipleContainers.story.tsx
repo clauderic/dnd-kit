@@ -12,6 +12,8 @@ export default {
 
 export const BasicSetup = () => <MultipleContainers />;
 
+export const DragHandle = () => <MultipleContainers handle />;
+
 export const ManyItems = () => (
   <MultipleContainers
     containerStyle={{

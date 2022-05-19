@@ -81,6 +81,7 @@ export function useSortable({
     listeners,
     isDragging,
     over,
+    setActivatorNodeRef,
     transform,
   } = useDraggable({
     id,
@@ -179,6 +180,7 @@ export function useSortable({
     overIndex,
     over,
     setNodeRef,
+    setActivatorNodeRef,
     setDroppableNodeRef,
     setDraggableNodeRef,
     transform: derivedTransform ?? finalTransform,

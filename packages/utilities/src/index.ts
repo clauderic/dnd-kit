@@ -21,6 +21,7 @@ export {
   isTouchEvent,
 } from './event';
 export {canUseDOM, getOwnerDocument, getWindow} from './execution-context';
+export {findFirstFocusableNode} from './focus';
 export {
   isDocument,
   isHTMLElement,

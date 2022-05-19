@@ -61,12 +61,13 @@ export function useDraggable({
     isDragging ? ActiveDraggableContext : NullContext
   );
   const [node, setNodeRef] = useNodeRef();
+  const [activatorNode, setActivatorNodeRef] = useNodeRef();
   const listeners = useSyntheticListeners(activators, id);
   const dataRef = useLatestValue(data);
 
   useIsomorphicLayoutEffect(
     () => {
-      draggableNodes[id] = {id, key, node, data: dataRef};
+      draggableNodes[id] = {id, key, node, activatorNode, data: dataRef};
 
       return () => {
         const node = draggableNodes[id];
@@ -101,6 +102,7 @@ export function useDraggable({
     node,
     over,
     setNodeRef,
+    setActivatorNodeRef,
     transform,
   };
 }

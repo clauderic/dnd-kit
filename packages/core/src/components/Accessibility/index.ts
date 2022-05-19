@@ -1,4 +1,5 @@
 export {Accessibility} from './Accessibility';
+export {RestoreFocus} from './components';
 export {
   defaultAnnouncements,
   defaultScreenReaderInstructions,

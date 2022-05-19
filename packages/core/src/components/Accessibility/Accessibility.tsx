@@ -3,13 +3,14 @@ import {createPortal} from 'react-dom';
 import {useUniqueId} from '@dnd-kit/utilities';
 import {HiddenText, LiveRegion, useAnnouncement} from '@dnd-kit/accessibility';
 
-import type {Announcements, ScreenReaderInstructions} from './types';
+import {DndMonitorArguments, useDndMonitor} from '../../hooks/monitor';
 import type {UniqueIdentifier} from '../../types';
+
+import type {Announcements, ScreenReaderInstructions} from './types';
 import {
   defaultAnnouncements,
   defaultScreenReaderInstructions,
 } from './defaults';
-import {DndMonitorArguments, useDndMonitor} from '../../hooks/monitor';
 
 interface Props {
   announcements?: Announcements;
