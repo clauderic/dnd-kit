@@ -74,7 +74,7 @@ import type {
 import {
   Accessibility,
   Announcements,
-  useRestoreFocus,
+  RestoreFocus,
   ScreenReaderInstructions,
 } from '../Accessibility';
 
@@ -617,13 +617,6 @@ export const DndContext = memo(function DndContext({
     scrollableAncestorRects,
   });
 
-  useRestoreFocus({
-    activeId,
-    activatorEvent,
-    disabled: accessibility?.restoreFocus === false,
-    draggableNodes,
-  });
-
   const publicContext = useMemo(() => {
     const context: PublicContextDescriptor = {
       active,
@@ -702,6 +695,7 @@ export const DndContext = memo(function DndContext({
             {children}
           </ActiveDraggableContext.Provider>
         </PublicContext.Provider>
+        <RestoreFocus disabled={accessibility?.restoreFocus === false} />
       </InternalContext.Provider>
       <Accessibility
         {...accessibility}

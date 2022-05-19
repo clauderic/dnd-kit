@@ -1,28 +1,20 @@
-import {useEffect} from 'react';
+import {useContext, useEffect} from 'react';
 import {
   findFirstFocusableNode,
   isKeyboardEvent,
   usePrevious,
 } from '@dnd-kit/utilities';
 
-import type {DraggableNodes} from '../../../store';
-import type {UniqueIdentifier} from '../../../types';
+import {InternalContext} from '../../../store';
 
-interface Arguments {
-  activeId: UniqueIdentifier | null;
-  activatorEvent: Event | null;
+interface Props {
   disabled: boolean;
-  draggableNodes: DraggableNodes;
 }
 
-export function useRestoreFocus({
-  activeId,
-  activatorEvent,
-  disabled,
-  draggableNodes,
-}: Arguments) {
+export function RestoreFocus({disabled}: Props) {
+  const {active, activatorEvent, draggableNodes} = useContext(InternalContext);
   const previousActivatorEvent = usePrevious(activatorEvent);
-  const previousActiveId = usePrevious(activeId);
+  const previousActiveId = usePrevious(active?.id);
 
   // Restore keyboard focus on the activator node
   useEffect(() => {
@@ -46,20 +38,26 @@ export function useRestoreFocus({
         return;
       }
 
-      const {node, activatorNode} = draggableNode;
+      const {activatorNode, node} = draggableNode;
 
-      for (const element of [node.current, activatorNode.current]) {
-        if (!element) {
-          continue;
-        }
-
-        const focusableNode = findFirstFocusableNode(element);
-
-        if (focusableNode) {
-          focusableNode.focus();
-          break;
-        }
+      if (!activatorNode.current && !node.current) {
+        return;
       }
+
+      requestAnimationFrame(() => {
+        for (const element of [activatorNode.current, node.current]) {
+          if (!element) {
+            continue;
+          }
+
+          const focusableNode = findFirstFocusableNode(element);
+
+          if (focusableNode) {
+            focusableNode.focus();
+            break;
+          }
+        }
+      });
     }
   }, [
     activatorEvent,
@@ -68,4 +66,6 @@ export function useRestoreFocus({
     previousActiveId,
     previousActivatorEvent,
   ]);
+
+  return null;
 }
