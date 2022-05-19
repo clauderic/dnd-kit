@@ -1,6 +1,5 @@
 import {
   closestCorners,
-  getClientRect,
   getFirstCollision,
   KeyboardCode,
   KeyboardCoordinateGetter,
@@ -21,8 +20,9 @@ const horizontal: string[] = [KeyboardCode.Left, KeyboardCode.Right];
 
 export const sortableTreeKeyboardCoordinates: (
   context: SensorContext,
+  indicator: boolean,
   indentationWidth: number
-) => KeyboardCoordinateGetter = (context, indentationWidth) => (
+) => KeyboardCoordinateGetter = (context, indicator, indentationWidth) => (
   event,
   {
     currentCoordinates,
@@ -78,7 +78,7 @@ export const sortableTreeKeyboardCoordinates: (
         return;
       }
 
-      const rect = container?.rect.current;
+      const rect = droppableRects.get(container.id);
 
       if (!rect) {
         return;
@@ -105,16 +105,22 @@ export const sortableTreeKeyboardCoordinates: (
       droppableRects,
       droppableContainers: containers,
     });
-    const closestId = getFirstCollision(collisions, 'id');
+    let closestId = getFirstCollision(collisions, 'id');
+
+    if (closestId === over?.id && collisions.length > 1) {
+      closestId = collisions[1].id;
+    }
 
     if (closestId && over?.id) {
-      const newNode = droppableContainers.get(closestId)?.node.current;
-      const activeNodeRect = droppableContainers.get(active.id)?.rect.current;
+      const activeRect = droppableRects.get(active.id);
+      const newRect = droppableRects.get(closestId);
+      const newDroppable = droppableContainers.get(closestId);
 
-      if (newNode && activeNodeRect) {
-        const newRect = getClientRect(newNode, {ignoreTransform: true});
-        const newItem = items.find(({id}) => id === closestId);
-        const activeItem = items.find(({id}) => id === active.id);
+      if (activeRect && newRect && newDroppable) {
+        const newIndex = items.findIndex(({id}) => id === closestId);
+        const newItem = items[newIndex];
+        const activeIndex = items.findIndex(({id}) => id === active.id);
+        const activeItem = items[activeIndex];
 
         if (newItem && activeItem) {
           const {depth} = getProjection(
@@ -124,14 +130,15 @@ export const sortableTreeKeyboardCoordinates: (
             (newItem.depth - activeItem.depth) * indentationWidth,
             indentationWidth
           );
-          const offset =
-            newRect.top > activeNodeRect.top
-              ? Math.abs(activeNodeRect.height - newRect.height)
-              : 0;
+          const isBelow = newIndex > activeIndex;
+          const modifier = isBelow ? 1 : -1;
+          const offset = indicator
+            ? (collisionRect.height - activeRect.height) / 2
+            : 0;
 
           const newCoordinates = {
             x: newRect.left + depth * indentationWidth,
-            y: newRect.top + offset,
+            y: newRect.top + modifier * offset,
           };
 
           return newCoordinates;

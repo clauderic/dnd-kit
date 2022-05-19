@@ -105,7 +105,7 @@ interface Props {
 export function SortableTree({
   collapsible,
   defaultItems = initialItems,
-  indicator,
+  indicator = false,
   indentationWidth = 50,
   removable,
 }: Props) {
@@ -146,7 +146,7 @@ export function SortableTree({
     offset: offsetLeft,
   });
   const [coordinateGetter] = useState(() =>
-    sortableTreeKeyboardCoordinates(sensorContext, indentationWidth)
+    sortableTreeKeyboardCoordinates(sensorContext, indicator, indentationWidth)
   );
   const sensors = useSensors(
     useSensor(PointerSensor),
