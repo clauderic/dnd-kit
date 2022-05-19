@@ -23,6 +23,7 @@ export enum Response {
 }
 
 export type SensorContext = {
+  activatorEvent: Event | null;
   active: Active | null;
   activeNode: HTMLElement | null;
   collisionRect: ClientRect | null;

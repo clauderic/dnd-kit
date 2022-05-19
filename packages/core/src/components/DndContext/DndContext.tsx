@@ -217,6 +217,7 @@ export const DndContext = memo(function DndContext({
     activeNode ? activeNode.parentElement : null
   );
   const sensorContext = useRef<SensorContext>({
+    activatorEvent: null,
     active: null,
     activeNode,
     collisionRect: null,
@@ -338,10 +339,12 @@ export const DndContext = memo(function DndContext({
         return;
       }
 
+      const activatorEvent = event.nativeEvent;
+
       const sensorInstance = new Sensor({
         active: activeRef.current,
         activeNode,
-        event: event.nativeEvent,
+        event: activatorEvent,
         options,
         // Sensors need to be instantiated with refs for arguments that change over time
         // otherwise they are frozen in time with the stale arguments
@@ -404,6 +407,7 @@ export const DndContext = memo(function DndContext({
             const {cancelDrop} = latestProps.current;
 
             event = {
+              activatorEvent,
               active: active,
               collisions,
               delta: scrollAdjustedTranslate,
@@ -506,14 +510,15 @@ export const DndContext = memo(function DndContext({
   useEffect(
     () => {
       const {onDragMove} = latestProps.current;
-      const {active, collisions, over} = sensorContext.current;
+      const {active, activatorEvent, collisions, over} = sensorContext.current;
 
-      if (!active) {
+      if (!active || !activatorEvent) {
         return;
       }
 
       const event: DragMoveEvent = {
         active,
+        activatorEvent,
         collisions,
         delta: {
           x: scrollAdjustedTranslate.x,
@@ -533,12 +538,18 @@ export const DndContext = memo(function DndContext({
     () => {
       const {
         active,
+        activatorEvent,
         collisions,
         droppableContainers,
         scrollAdjustedTranslate,
       } = sensorContext.current;
 
-      if (!active || !activeRef.current || !scrollAdjustedTranslate) {
+      if (
+        !active ||
+        !activeRef.current ||
+        !activatorEvent ||
+        !scrollAdjustedTranslate
+      ) {
         return;
       }
 
@@ -555,6 +566,7 @@ export const DndContext = memo(function DndContext({
           : null;
       const event: DragOverEvent = {
         active,
+        activatorEvent,
         collisions,
         delta: {
           x: scrollAdjustedTranslate.x,
@@ -575,6 +587,7 @@ export const DndContext = memo(function DndContext({
 
   useIsomorphicLayoutEffect(() => {
     sensorContext.current = {
+      activatorEvent,
       active,
       activeNode,
       collisionRect,
