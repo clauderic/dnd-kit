@@ -37,21 +37,21 @@ export function Accessibility({
     useMemo<DndMonitorListener>(
       () => ({
         onDragStart({active}) {
-          announce(announcements.onDragStart(active.id));
+          announce(announcements.onDragStart({active}));
         },
         onDragMove({active, over}) {
           if (announcements.onDragMove) {
-            announce(announcements.onDragMove(active.id, over?.id));
+            announce(announcements.onDragMove({active, over}));
           }
         },
         onDragOver({active, over}) {
-          announce(announcements.onDragOver(active.id, over?.id));
+          announce(announcements.onDragOver({active, over}));
         },
         onDragEnd({active, over}) {
-          announce(announcements.onDragEnd(active.id, over?.id));
+          announce(announcements.onDragEnd({active, over}));
         },
-        onDragCancel({active}) {
-          announce(announcements.onDragCancel(active.id));
+        onDragCancel({active, over}) {
+          announce(announcements.onDragCancel({active, over}));
         },
       }),
       [announce, announcements]

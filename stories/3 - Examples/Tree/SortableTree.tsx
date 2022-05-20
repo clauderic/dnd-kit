@@ -170,20 +170,20 @@ export function SortableTree({
   }, [flattenedItems, offsetLeft]);
 
   const announcements: Announcements = {
-    onDragStart(id) {
-      return `Picked up ${id}.`;
+    onDragStart({active}) {
+      return `Picked up ${active.id}.`;
     },
-    onDragMove(id, overId) {
-      return getMovementAnnouncement('onDragMove', id, overId);
+    onDragMove({active, over}) {
+      return getMovementAnnouncement('onDragMove', active.id, over?.id);
     },
-    onDragOver(id, overId) {
-      return getMovementAnnouncement('onDragOver', id, overId);
+    onDragOver({active, over}) {
+      return getMovementAnnouncement('onDragOver', active.id, over?.id);
     },
-    onDragEnd(id, overId) {
-      return getMovementAnnouncement('onDragEnd', id, overId);
+    onDragEnd({active, over}) {
+      return getMovementAnnouncement('onDragEnd', active.id, over?.id);
     },
-    onDragCancel(id) {
-      return `Moving was cancelled. ${id} was dropped in its original position.`;
+    onDragCancel({active}) {
+      return `Moving was cancelled. ${active.id} was dropped in its original position.`;
     },
   };
 

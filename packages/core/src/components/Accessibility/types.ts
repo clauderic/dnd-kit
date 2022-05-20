@@ -1,20 +1,16 @@
-import type {UniqueIdentifier} from '../../types';
+import type {Active, Over} from '../../store';
+
+export interface Arguments {
+  active: Active;
+  over: Over | null;
+}
 
 export interface Announcements {
-  onDragStart(id: UniqueIdentifier): string | undefined;
-  onDragMove?(
-    id: UniqueIdentifier,
-    overId: UniqueIdentifier | undefined
-  ): string | undefined;
-  onDragOver(
-    id: UniqueIdentifier,
-    overId: UniqueIdentifier | undefined
-  ): string | undefined;
-  onDragEnd(
-    id: UniqueIdentifier,
-    overId: UniqueIdentifier | undefined
-  ): string | undefined;
-  onDragCancel(id: UniqueIdentifier): string | undefined;
+  onDragStart({active}: Pick<Arguments, 'active'>): string | undefined;
+  onDragMove?({active, over}: Arguments): string | undefined;
+  onDragOver({active, over}: Arguments): string | undefined;
+  onDragEnd({active, over}: Arguments): string | undefined;
+  onDragCancel({active, over}: Arguments): string | undefined;
 }
 
 export interface ScreenReaderInstructions {

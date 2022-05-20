@@ -9,24 +9,24 @@ export const defaultScreenReaderInstructions: ScreenReaderInstructions = {
 };
 
 export const defaultAnnouncements: Announcements = {
-  onDragStart(id) {
-    return `Picked up draggable item ${id}.`;
+  onDragStart({active}) {
+    return `Picked up draggable item ${active.id}.`;
   },
-  onDragOver(id, overId) {
-    if (overId) {
-      return `Draggable item ${id} was moved over droppable area ${overId}.`;
+  onDragOver({active, over}) {
+    if (over) {
+      return `Draggable item ${active.id} was moved over droppable area ${over.id}.`;
     }
 
-    return `Draggable item ${id} is no longer over a droppable area.`;
+    return `Draggable item ${active.id} is no longer over a droppable area.`;
   },
-  onDragEnd(id, overId) {
-    if (overId) {
-      return `Draggable item ${id} was dropped over droppable area ${overId}`;
+  onDragEnd({active, over}) {
+    if (over) {
+      return `Draggable item ${active.id} was dropped over droppable area ${over.id}`;
     }
 
-    return `Draggable item ${id} was dropped.`;
+    return `Draggable item ${active.id} was dropped.`;
   },
-  onDragCancel(id) {
-    return `Dragging was cancelled. Draggable item ${id} was dropped.`;
+  onDragCancel({active}) {
+    return `Dragging was cancelled. Draggable item ${active.id} was dropped.`;
   },
 };

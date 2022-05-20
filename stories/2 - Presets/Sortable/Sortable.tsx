@@ -142,12 +142,12 @@ export function Sortable({
     ? (id: string) => setItems((items) => items.filter((item) => item !== id))
     : undefined;
   const announcements: Announcements = {
-    onDragStart(id) {
+    onDragStart({active: {id}}) {
       return `Picked up sortable item ${id}. Sortable item ${id} is in position ${getPosition(
         id
       )} of ${items.length}`;
     },
-    onDragOver(id, overId) {
+    onDragOver({active, over}) {
       // In this specific use-case, the picked up item's `id` is always the same as the first `over` id.
       // The first `onDragOver` event therefore doesn't need to be announced, because it is called
       // immediately after the `onDragStart` announcement and is redundant.
@@ -156,24 +156,24 @@ export function Sortable({
         return;
       }
 
-      if (overId) {
-        return `Sortable item ${id} was moved into position ${getPosition(
-          overId
-        )} of ${items.length}`;
+      if (over) {
+        return `Sortable item ${
+          active.id
+        } was moved into position ${getPosition(over.id)} of ${items.length}`;
       }
 
       return;
     },
-    onDragEnd(id, overId) {
-      if (overId) {
-        return `Sortable item ${id} was dropped at position ${getPosition(
-          overId
-        )} of ${items.length}`;
+    onDragEnd({active, over}) {
+      if (over) {
+        return `Sortable item ${
+          active.id
+        } was dropped at position ${getPosition(over.id)} of ${items.length}`;
       }
 
       return;
     },
-    onDragCancel(id) {
+    onDragCancel({active: {id}}) {
       return `Sorting was cancelled. Sortable item ${id} was dropped and returned to position ${getPosition(
         id
       )} of ${items.length}.`;
