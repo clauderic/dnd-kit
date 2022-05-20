@@ -2,8 +2,8 @@ import React, {useEffect, useMemo, useRef} from 'react';
 import {useDndContext, ClientRect, UniqueIdentifier} from '@dnd-kit/core';
 import {useIsomorphicLayoutEffect, useUniqueId} from '@dnd-kit/utilities';
 
-import type {SortingStrategy} from '../types';
-import {getSortedRects} from '../utilities';
+import type {Disabled, SortingStrategy} from '../types';
+import {getSortedRects, itemsEqual, normalizeDisabled} from '../utilities';
 import {rectSortingStrategy} from '../strategies';
 
 export interface Props {
@@ -11,6 +11,7 @@ export interface Props {
   items: (UniqueIdentifier | {id: UniqueIdentifier})[];
   strategy?: SortingStrategy;
   id?: string;
+  disabled?: boolean | Disabled;
 }
 
 const ID_PREFIX = 'Sortable';
@@ -18,6 +19,7 @@ const ID_PREFIX = 'Sortable';
 interface ContextDescriptor {
   activeIndex: number;
   containerId: string;
+  disabled: Disabled;
   disableTransforms: boolean;
   items: UniqueIdentifier[];
   overIndex: number;
@@ -35,6 +37,10 @@ export const Context = React.createContext<ContextDescriptor>({
   useDragOverlay: false,
   sortedRects: [],
   strategy: rectSortingStrategy,
+  disabled: {
+    draggable: false,
+    droppable: false,
+  },
 });
 
 export function SortableContext({
@@ -42,6 +48,7 @@ export function SortableContext({
   id,
   items: userDefinedItems,
   strategy = rectSortingStrategy,
+  disabled: disabledProp = false,
 }: Props) {
   const {
     active,
@@ -60,18 +67,26 @@ export function SortableContext({
       ),
     [userDefinedItems]
   );
+  const isDragging = active != null;
   const activeIndex = active ? items.indexOf(active.id) : -1;
   const overIndex = over ? items.indexOf(over.id) : -1;
   const previousItemsRef = useRef(items);
-  const itemsHaveChanged = !isEqual(items, previousItemsRef.current);
+  const itemsHaveChanged = !itemsEqual(items, previousItemsRef.current);
   const disableTransforms =
     (overIndex !== -1 && activeIndex === -1) || itemsHaveChanged;
+  const disabled = normalizeDisabled(disabledProp);
 
   useIsomorphicLayoutEffect(() => {
-    if (itemsHaveChanged && !measuringScheduled) {
+    if (itemsHaveChanged && isDragging && !measuringScheduled) {
       measureDroppableContainers(items);
     }
-  }, [itemsHaveChanged, items, measureDroppableContainers, measuringScheduled]);
+  }, [
+    itemsHaveChanged,
+    items,
+    isDragging,
+    measureDroppableContainers,
+    measuringScheduled,
+  ]);
 
   useEffect(() => {
     previousItemsRef.current = items;
@@ -81,6 +96,7 @@ export function SortableContext({
     (): ContextDescriptor => ({
       activeIndex,
       containerId,
+      disabled,
       disableTransforms,
       items,
       overIndex,
@@ -88,9 +104,12 @@ export function SortableContext({
       sortedRects: getSortedRects(items, droppableRects),
       strategy,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       activeIndex,
       containerId,
+      disabled.draggable,
+      disabled.droppable,
       disableTransforms,
       items,
       overIndex,
@@ -101,15 +120,4 @@ export function SortableContext({
   );
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;
-}
-
-function isEqual(arr1: string[], arr2: string[]) {
-  if (arr1 === arr2) return true;
-  if (arr1.length !== arr2.length) return false;
-  for (let i = 0; i < arr1.length; i++) {
-    if (arr1[i] !== arr2[i]) {
-      return false;
-    }
-  }
-  return true;
 }
