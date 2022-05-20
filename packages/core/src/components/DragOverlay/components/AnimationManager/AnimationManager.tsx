@@ -1,8 +1,10 @@
 import React, {cloneElement, useState} from 'react';
 import {useIsomorphicLayoutEffect, usePrevious} from '@dnd-kit/utilities';
 
+import type {UniqueIdentifier} from '../../../../types';
+
 export type Animation = (
-  key: string,
+  key: UniqueIdentifier,
   node: HTMLElement
 ) => Promise<void> | void;
 
@@ -29,14 +31,12 @@ export function AnimationManager({animation, children}: Props) {
     }
 
     const key = clonedChildren?.key;
+    const id = clonedChildren?.props.id;
 
-    if (typeof key !== 'string') {
+    if (key == null || id == null) {
       setClonedChildren(null);
       return;
     }
-
-    const [prefix] = key.split('-', 1);
-    const id = key.substring(prefix.length + 1);
 
     Promise.resolve(animation(id, element)).then(() => {
       setClonedChildren(null);

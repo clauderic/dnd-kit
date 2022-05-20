@@ -56,10 +56,7 @@ export type DraggableNode = {
   data: DataRef;
 };
 
-export type DraggableNodes = Record<
-  UniqueIdentifier,
-  DraggableNode | undefined
->;
+export type DraggableNodes = Map<UniqueIdentifier, DraggableNode | undefined>;
 
 export type DroppableContainers = DroppableContainersMap;
 
@@ -107,7 +104,7 @@ export interface InternalContextDescriptor {
   active: Active | null;
   activeNodeRect: ClientRect | null;
   ariaDescribedById: {
-    draggable: UniqueIdentifier;
+    draggable: string;
   };
   dispatch: React.Dispatch<Actions>;
   draggableNodes: DraggableNodes;

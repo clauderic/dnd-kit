@@ -1,4 +1,5 @@
 import React, {forwardRef, HTMLAttributes} from 'react';
+import type {UniqueIdentifier} from '@dnd-kit/core';
 import classNames from 'classnames';
 
 import {removeIcon} from './icons';
@@ -15,11 +16,11 @@ export enum Layout {
   Grid = 'grid',
 }
 
-export interface Props extends HTMLAttributes<HTMLButtonElement> {
+export interface Props extends Omit<HTMLAttributes<HTMLButtonElement>, 'id'> {
   active?: boolean;
   clone?: boolean;
   insertPosition?: Position;
-  id: string;
+  id: UniqueIdentifier;
   index?: number;
   layout: Layout;
   onRemove?(): void;
@@ -42,7 +43,7 @@ export const Page = forwardRef<HTMLLIElement, Props>(function Page(
       style={style}
       ref={ref}
     >
-      <button className={styles.Page} data-id={id} {...props} />
+      <button className={styles.Page} data-id={id.toString()} {...props} />
       {!active && onRemove ? (
         <button className={styles.Remove} onClick={onRemove}>
           {removeIcon}

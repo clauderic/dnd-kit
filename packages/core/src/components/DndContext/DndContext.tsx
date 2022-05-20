@@ -154,7 +154,7 @@ export const DndContext = memo(function DndContext({
     draggable: {active: activeId, nodes: draggableNodes, translate},
     droppable: {containers: droppableContainers},
   } = state;
-  const node = activeId ? draggableNodes[activeId] : null;
+  const node = activeId ? draggableNodes.get(activeId) : null;
   const activeRects = useRef<Active['rect']['current']>({
     initial: null,
     translated: null,
@@ -202,7 +202,7 @@ export const DndContext = memo(function DndContext({
   );
 
   useLayoutShiftScrollCompensation({
-    activeNode: activeId ? draggableNodes[activeId] : null,
+    activeNode: activeId ? draggableNodes.get(activeId) : null,
     config: autoScrollOptions.layoutShiftCompensation,
     initialRect: initialActiveNodeRect,
     measure: measuringConfiguration.draggable.measure,
@@ -329,11 +329,11 @@ export const DndContext = memo(function DndContext({
       event: React.SyntheticEvent,
       {sensor: Sensor, options}: SensorDescriptor<any>
     ) => {
-      if (!activeRef.current) {
+      if (activeRef.current == null) {
         return;
       }
 
-      const activeNode = draggableNodes[activeRef.current];
+      const activeNode = draggableNodes.get(activeRef.current);
 
       if (!activeNode) {
         return;
@@ -352,11 +352,11 @@ export const DndContext = memo(function DndContext({
         onStart(initialCoordinates) {
           const id = activeRef.current;
 
-          if (!id) {
+          if (id == null) {
             return;
           }
 
-          const draggableNode = draggableNodes[id];
+          const draggableNode = draggableNodes.get(id);
 
           if (!draggableNode) {
             return;
@@ -456,7 +456,7 @@ export const DndContext = memo(function DndContext({
     ): SyntheticListener['handler'] => {
       return (event, active) => {
         const nativeEvent = event.nativeEvent as DndEvent;
-        const activeDraggableNode = draggableNodes[active];
+        const activeDraggableNode = draggableNodes.get(active);
 
         if (
           // Another sensor is already instantiating
@@ -546,7 +546,7 @@ export const DndContext = memo(function DndContext({
 
       if (
         !active ||
-        !activeRef.current ||
+        activeRef.current == null ||
         !activatorEvent ||
         !scrollAdjustedTranslate
       ) {

@@ -17,6 +17,7 @@ import {
   DropAnimation,
   Modifier,
   defaultDropAnimation,
+  UniqueIdentifier,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -110,12 +111,12 @@ export function SortableTree({
   removable,
 }: Props) {
   const [items, setItems] = useState(() => defaultItems);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [overId, setOverId] = useState<string | null>(null);
+  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
+  const [overId, setOverId] = useState<UniqueIdentifier | null>(null);
   const [offsetLeft, setOffsetLeft] = useState(0);
   const [currentPosition, setCurrentPosition] = useState<{
-    parentId: string | null;
-    overId: string;
+    parentId: UniqueIdentifier | null;
+    overId: UniqueIdentifier;
   } | null>(null);
 
   const flattenedItems = useMemo(() => {
@@ -228,7 +229,7 @@ export function SortableTree({
                 depth={activeItem.depth}
                 clone
                 childCount={getChildCount(items, activeId) + 1}
-                value={activeId}
+                value={activeId.toString()}
                 indentationWidth={indentationWidth}
               />
             ) : null}
@@ -297,11 +298,11 @@ export function SortableTree({
     document.body.style.setProperty('cursor', '');
   }
 
-  function handleRemove(id: string) {
+  function handleRemove(id: UniqueIdentifier) {
     setItems((items) => removeItem(items, id));
   }
 
-  function handleCollapse(id: string) {
+  function handleCollapse(id: UniqueIdentifier) {
     setItems((items) =>
       setProperty(items, id, 'collapsed', (value) => {
         return !value;
@@ -311,8 +312,8 @@ export function SortableTree({
 
   function getMovementAnnouncement(
     eventName: string,
-    activeId: string,
-    overId?: string
+    activeId: UniqueIdentifier,
+    overId?: UniqueIdentifier
   ) {
     if (overId && projected) {
       if (eventName !== 'onDragEnd') {
@@ -352,7 +353,7 @@ export function SortableTree({
         } else {
           let previousSibling: FlattenedItem | undefined = previousItem;
           while (previousSibling && projected.depth < previousSibling.depth) {
-            const parentId: string | null = previousSibling.parentId;
+            const parentId: UniqueIdentifier | null = previousSibling.parentId;
             previousSibling = sortedItems.find(({id}) => id === parentId);
           }
 

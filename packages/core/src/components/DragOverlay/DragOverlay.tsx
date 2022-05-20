@@ -83,7 +83,8 @@ export const DragOverlay = React.memo(
         <AnimationManager animation={dropAnimation}>
           {active && key ? (
             <PositionedOverlay
-              key={`${key}-${active.id}`}
+              key={key}
+              id={active.id}
               ref={ref}
               as={wrapperElement}
               activatorEvent={activatorEvent}

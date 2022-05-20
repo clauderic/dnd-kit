@@ -8,11 +8,12 @@ import {
 } from '@dnd-kit/utilities';
 
 import {InternalContext, Data} from '../store';
+import type {UniqueIdentifier} from '../types';
 import {ActiveDraggableContext} from '../components/DndContext';
 import {useSyntheticListeners, SyntheticListenerMap} from './utilities';
 
 export interface UseDraggableArguments {
-  id: string;
+  id: UniqueIdentifier;
   data?: Data;
   disabled?: boolean;
   attributes?: {
@@ -68,13 +69,13 @@ export function useDraggable({
 
   useIsomorphicLayoutEffect(
     () => {
-      draggableNodes[id] = {id, key, node, activatorNode, data: dataRef};
+      draggableNodes.set(id, {id, key, node, activatorNode, data: dataRef});
 
       return () => {
-        const node = draggableNodes[id];
+        const node = draggableNodes.get(id);
 
         if (node && node.key === key) {
-          delete draggableNodes[id];
+          draggableNodes.delete(id);
         }
       };
     },

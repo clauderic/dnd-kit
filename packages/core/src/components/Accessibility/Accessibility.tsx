@@ -3,7 +3,6 @@ import {createPortal} from 'react-dom';
 import {useUniqueId} from '@dnd-kit/utilities';
 import {HiddenText, LiveRegion, useAnnouncement} from '@dnd-kit/accessibility';
 
-import type {UniqueIdentifier} from '../../types';
 import {DndMonitorListener, useDndMonitor} from '../DndMonitor';
 
 import type {Announcements, ScreenReaderInstructions} from './types';
@@ -16,7 +15,7 @@ interface Props {
   announcements?: Announcements;
   container?: Element;
   screenReaderInstructions?: ScreenReaderInstructions;
-  hiddenTextDescribedById: UniqueIdentifier;
+  hiddenTextDescribedById: string;
 }
 
 export function Accessibility({

@@ -56,8 +56,8 @@ function DroppableContainer({
   ...props
 }: ContainerProps & {
   disabled?: boolean;
-  id: string;
-  items: string[];
+  id: UniqueIdentifier;
+  items: UniqueIdentifier[];
   style?: React.CSSProperties;
 }) {
   const {
@@ -114,7 +114,7 @@ const dropAnimation: DropAnimation = {
   }),
 };
 
-type Items = Record<string, string[]>;
+type Items = Record<UniqueIdentifier, UniqueIdentifier[]>;
 
 interface Props {
   adjustScale?: boolean;
@@ -176,8 +176,10 @@ export function MultipleContainers({
         D: createRange(itemCount, (index) => `D${index + 1}`),
       }
   );
-  const [containers, setContainers] = useState(Object.keys(items));
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const [containers, setContainers] = useState(
+    Object.keys(items) as UniqueIdentifier[]
+  );
+  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const lastOverId = useRef<UniqueIdentifier | null>(null);
   const recentlyMovedToNewContainer = useRef(false);
   const isSortingContainer = activeId ? containers.includes(activeId) : false;
@@ -260,7 +262,7 @@ export function MultipleContainers({
       coordinateGetter,
     })
   );
-  const findContainer = (id: string) => {
+  const findContainer = (id: UniqueIdentifier) => {
     if (id in items) {
       return id;
     }
@@ -268,7 +270,7 @@ export function MultipleContainers({
     return Object.keys(items).find((key) => items[key].includes(id));
   };
 
-  const getIndex = (id: string) => {
+  const getIndex = (id: UniqueIdentifier) => {
     const container = findContainer(id);
 
     if (!container) {
@@ -313,7 +315,7 @@ export function MultipleContainers({
       onDragOver={({active, over}) => {
         const overId = over?.id;
 
-        if (!overId || overId === TRASH_ID || active.id in items) {
+        if (overId == null || overId === TRASH_ID || active.id in items) {
           return;
         }
 
@@ -386,7 +388,7 @@ export function MultipleContainers({
 
         const overId = over?.id;
 
-        if (!overId) {
+        if (overId == null) {
           setActiveId(null);
           return;
         }
@@ -520,13 +522,13 @@ export function MultipleContainers({
     </DndContext>
   );
 
-  function renderSortableItemDragOverlay(id: string) {
+  function renderSortableItemDragOverlay(id: UniqueIdentifier) {
     return (
       <Item
         value={id}
         handle={handle}
         style={getItemStyles({
-          containerId: findContainer(id) as string,
+          containerId: findContainer(id) as UniqueIdentifier,
           overIndex: -1,
           index: getIndex(id),
           value: id,
@@ -542,7 +544,7 @@ export function MultipleContainers({
     );
   }
 
-  function renderContainerDragOverlay(containerId: string) {
+  function renderContainerDragOverlay(containerId: UniqueIdentifier) {
     return (
       <Container
         label={`Column ${containerId}`}
@@ -602,8 +604,8 @@ export function MultipleContainers({
   }
 }
 
-function getColor(id: string) {
-  switch (id[0]) {
+function getColor(id: UniqueIdentifier) {
+  switch (String(id)[0]) {
     case 'A':
       return '#7193f1';
     case 'B':
@@ -646,13 +648,13 @@ function Trash({id}: {id: UniqueIdentifier}) {
 }
 
 interface SortableItemProps {
-  containerId: string;
-  id: string;
+  containerId: UniqueIdentifier;
+  id: UniqueIdentifier;
   index: number;
   handle: boolean;
   disabled?: boolean;
   style(args: any): React.CSSProperties;
-  getIndex(id: string): number;
+  getIndex(id: UniqueIdentifier): number;
   renderItem(): React.ReactElement;
   wrapperStyle({index}: {index: number}): React.CSSProperties;
 }

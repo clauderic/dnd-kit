@@ -32,7 +32,7 @@ export function RestoreFocus({disabled}: Props) {
         return;
       }
 
-      const draggableNode = draggableNodes[previousActiveId];
+      const draggableNode = draggableNodes.get(previousActiveId);
 
       if (!draggableNode) {
         return;
