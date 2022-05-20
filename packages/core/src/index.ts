@@ -5,11 +5,14 @@ export {
   defaultScreenReaderInstructions,
   defaultDropAnimation,
   defaultDropAnimationSideEffects,
+  useDndMonitor,
 } from './components';
 export type {
   Announcements,
   CancelDrop,
   DndContextProps,
+  DndMonitorListener,
+  DndMonitorListener as DndMonitorArguments,
   DragOverlayProps,
   DropAnimation,
   DropAnimationFunction,
@@ -28,12 +31,10 @@ export {
   TraversalOrder,
   useDraggable,
   useDndContext,
-  useDndMonitor,
   useDroppable,
 } from './hooks';
 export type {
   AutoScrollOptions,
-  DndMonitorArguments,
   DraggableAttributes,
   DraggableSyntheticListeners,
   DroppableMeasuring,

@@ -3,8 +3,8 @@ import {createPortal} from 'react-dom';
 import {useUniqueId} from '@dnd-kit/utilities';
 import {HiddenText, LiveRegion, useAnnouncement} from '@dnd-kit/accessibility';
 
-import {DndMonitorArguments, useDndMonitor} from '../../hooks/monitor';
 import type {UniqueIdentifier} from '../../types';
+import {DndMonitorListener, useDndMonitor} from '../DndMonitor';
 
 import type {Announcements, ScreenReaderInstructions} from './types';
 import {
@@ -34,7 +34,7 @@ export function Accessibility({
   }, []);
 
   useDndMonitor(
-    useMemo<DndMonitorArguments>(
+    useMemo<DndMonitorListener>(
       () => ({
         onDragStart({active}) {
           announce(announcements.onDragStart(active.id));
