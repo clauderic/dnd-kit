@@ -25,6 +25,7 @@ export interface UseDraggableArguments {
 export interface DraggableAttributes {
   role: string;
   tabIndex: number;
+  'aria-disabled': boolean;
   'aria-pressed': boolean | undefined;
   'aria-roledescription': string;
   'aria-describedby': string;
@@ -85,11 +86,19 @@ export function useDraggable({
     () => ({
       role,
       tabIndex,
+      'aria-disabled': disabled,
       'aria-pressed': isDragging && role === defaultRole ? true : undefined,
       'aria-roledescription': roleDescription,
       'aria-describedby': ariaDescribedById.draggable,
     }),
-    [role, tabIndex, isDragging, roleDescription, ariaDescribedById.draggable]
+    [
+      disabled,
+      role,
+      tabIndex,
+      isDragging,
+      roleDescription,
+      ariaDescribedById.draggable,
+    ]
   );
 
   return {
