@@ -3,6 +3,8 @@
 '@dnd-kit/sortable': minor
 ---
 
+Automatic focus management and activator node refs.
+
 #### Introducing activator node refs
 
 Introducing the concept of activator node refs for `useDraggable` and `useSortable`. This allows @dnd-kit to handle common use-cases such as restoring focus on the activator node after dragging via the keyboard or only allowing the activator node to instantiate the keyboard sensor.
