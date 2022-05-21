@@ -44,7 +44,7 @@ export default {
 };
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
-  args.isSorting || args.wasDragging ? defaultAnimateLayoutChanges(args) : true;
+  defaultAnimateLayoutChanges({...args, wasDragging: true});
 
 function DroppableContainer({
   children,
