@@ -1,5 +1,5 @@
 import React from 'react';
-import {MeasuringStrategy} from '@dnd-kit/core';
+import {MeasuringStrategy, UniqueIdentifier} from '@dnd-kit/core';
 import {restrictToWindowEdges} from '@dnd-kit/modifiers';
 import {
   AnimateLayoutChanges,
@@ -102,12 +102,15 @@ export const VariableHeights = () => {
   );
 };
 
-export const DisabledItems = () => (
-  <Sortable
-    {...props}
-    isDisabled={(value) => ['1', '5', '8', '13', '20'].includes(value)}
-  />
-);
+export const DisabledItems = () => {
+  const disabledItems: UniqueIdentifier[] = ['1', '5', '8', '13', '20'];
+  return (
+    <Sortable
+      {...props}
+      isDisabled={(value) => disabledItems.includes(value)}
+    />
+  );
+};
 
 export const MarginBetweenItems = () => {
   const getMargin = (index: number) => {

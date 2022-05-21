@@ -16,6 +16,7 @@ import type {
   DragStartEvent,
   DragEndEvent,
   MeasuringConfiguration,
+  UniqueIdentifier,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -65,9 +66,9 @@ const dropAnimation: DropAnimation = {
 };
 
 export function Pages({layout}: Props) {
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const [items, setItems] = useState(() =>
-    createRange<string>(20, (index) => `${index + 1}`)
+    createRange<UniqueIdentifier>(20, (index) => `${index + 1}`)
   );
   const activeIndex = activeId ? items.indexOf(activeId) : -1;
   const sensors = useSensors(
@@ -135,7 +136,7 @@ function PageOverlay({
   id,
   items,
   ...props
-}: Omit<PageProps, 'index'> & {items: string[]}) {
+}: Omit<PageProps, 'index'> & {items: UniqueIdentifier[]}) {
   const {activatorEvent, over} = useDndContext();
   const isKeyboardSorting = isKeyboardEvent(activatorEvent);
   const activeIndex = items.indexOf(id);

@@ -60,10 +60,10 @@ export function SortableContext({
   } = useDndContext();
   const containerId = useUniqueId(ID_PREFIX, id);
   const useDragOverlay = Boolean(dragOverlay.rect !== null);
-  const items = useMemo(
+  const items = useMemo<UniqueIdentifier[]>(
     () =>
       userDefinedItems.map((item) =>
-        typeof item === 'string' ? item : item.id
+        typeof item === 'object' && 'id' in item ? item.id : item
       ),
     [userDefinedItems]
   );

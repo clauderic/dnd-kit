@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import {Action, Handle, Remove} from '../../../../components';
 import styles from './TreeItem.module.css';
 
-export interface Props extends HTMLAttributes<HTMLLIElement> {
+export interface Props extends Omit<HTMLAttributes<HTMLLIElement>, 'id'> {
   childCount?: number;
   clone?: boolean;
   collapsed?: boolean;

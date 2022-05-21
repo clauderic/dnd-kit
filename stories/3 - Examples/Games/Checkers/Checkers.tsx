@@ -117,7 +117,7 @@ export function Checkers() {
       }
 
       const {x: movingPieceX, y: movingPieceY} = movingPiece.position;
-      const [cellY, cellX] = event.over.id.split('-').map(Number);
+      const [cellY, cellX] = event.over.id.toString().split('-').map(Number);
 
       const potentialExistingPiece = pieces[cellY][cellX];
 

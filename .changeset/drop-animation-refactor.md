@@ -108,7 +108,7 @@ For even more advanced use-cases, consumers may also provide a function to the `
 ```ts
 interface DropAnimationFunctionArguments {
   active: {
-    id: string;
+    id: UniqueIdentifier;
     data: DataRef;
     node: HTMLElement;
     rect: ClientRect;

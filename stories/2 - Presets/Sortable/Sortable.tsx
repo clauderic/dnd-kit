@@ -47,7 +47,7 @@ export interface Props {
   getNewIndex?: NewIndexGetter;
   handle?: boolean;
   itemCount?: number;
-  items?: string[];
+  items?: UniqueIdentifier[];
   measuring?: MeasuringConfiguration;
   modifiers?: Modifiers;
   renderItem?: any;
@@ -68,7 +68,7 @@ export interface Props {
     active: Pick<Active, 'id'> | null;
     index: number;
     isDragging: boolean;
-    id: string;
+    id: UniqueIdentifier;
   }): React.CSSProperties;
   isDisabled?(id: UniqueIdentifier): boolean;
 }
@@ -115,12 +115,12 @@ export function Sortable({
   useDragOverlay = true,
   wrapperStyle = () => ({}),
 }: Props) {
-  const [items, setItems] = useState<string[]>(
+  const [items, setItems] = useState<UniqueIdentifier[]>(
     () =>
       initialItems ??
-      createRange<string>(itemCount, (index) => (index + 1).toString())
+      createRange<UniqueIdentifier>(itemCount, (index) => index + 1)
   );
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint,
@@ -135,17 +135,20 @@ export function Sortable({
     })
   );
   const isFirstAnnouncement = useRef(true);
-  const getIndex = items.indexOf.bind(items);
-  const getPosition = (id: string) => getIndex(id) + 1;
+  const getIndex = (id: UniqueIdentifier) => items.indexOf(id);
+  const getPosition = (id: UniqueIdentifier) => getIndex(id) + 1;
   const activeIndex = activeId ? getIndex(activeId) : -1;
   const handleRemove = removable
-    ? (id: string) => setItems((items) => items.filter((item) => item !== id))
+    ? (id: UniqueIdentifier) =>
+        setItems((items) => items.filter((item) => item !== id))
     : undefined;
   const announcements: Announcements = {
     onDragStart({active: {id}}) {
-      return `Picked up sortable item ${id}. Sortable item ${id} is in position ${getPosition(
+      return `Picked up sortable item ${String(
         id
-      )} of ${items.length}`;
+      )}. Sortable item ${id} is in position ${getPosition(id)} of ${
+        items.length
+      }`;
     },
     onDragOver({active, over}) {
       // In this specific use-case, the picked up item's `id` is always the same as the first `over` id.
@@ -277,11 +280,11 @@ interface SortableItemProps {
   animateLayoutChanges?: AnimateLayoutChanges;
   disabled?: boolean;
   getNewIndex?: NewIndexGetter;
-  id: string;
+  id: UniqueIdentifier;
   index: number;
   handle: boolean;
   useDragOverlay?: boolean;
-  onRemove?(id: string): void;
+  onRemove?(id: UniqueIdentifier): void;
   style(values: any): React.CSSProperties;
   renderItem?(args: any): React.ReactElement;
   wrapperStyle: Props['wrapperStyle'];

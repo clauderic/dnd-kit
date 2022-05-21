@@ -74,7 +74,7 @@ export function useDroppable({
 
       callbackId.current = setTimeout(() => {
         measureDroppableContainers(
-          typeof ids.current === 'string' ? [ids.current] : ids.current
+          Array.isArray(ids.current) ? ids.current : [ids.current]
         );
         callbackId.current = null;
       }, resizeObserverTimeout);

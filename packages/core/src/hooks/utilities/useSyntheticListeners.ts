@@ -13,7 +13,7 @@ export type SyntheticListenerMap = Record<string, Function>;
 
 export function useSyntheticListeners(
   listeners: SyntheticListeners,
-  id: string
+  id: UniqueIdentifier
 ): SyntheticListenerMap {
   return useMemo(() => {
     return listeners.reduce<SyntheticListenerMap>(

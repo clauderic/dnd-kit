@@ -1,5 +1,5 @@
 import React from 'react';
-import type {CancelDrop} from '@dnd-kit/core';
+import type {CancelDrop, UniqueIdentifier} from '@dnd-kit/core';
 import {rectSortingStrategy} from '@dnd-kit/sortable';
 
 import {MultipleContainers, TRASH_ID} from './MultipleContainers';
@@ -27,7 +27,7 @@ export const ManyItems = () => (
 export const Vertical = () => <MultipleContainers itemCount={5} vertical />;
 
 export const TrashableItems = ({confirmDrop}: {confirmDrop: boolean}) => {
-  const [activeId, setActiveId] = React.useState<string | null>(null);
+  const [activeId, setActiveId] = React.useState<UniqueIdentifier | null>(null);
   const resolveRef = React.useRef<(value: boolean) => void>();
 
   const cancelDrop: CancelDrop = async ({active, over}) => {

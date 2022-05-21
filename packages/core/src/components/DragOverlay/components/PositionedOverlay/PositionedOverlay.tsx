@@ -4,7 +4,7 @@ import {CSS, isKeyboardEvent} from '@dnd-kit/utilities';
 import type {Transform} from '@dnd-kit/utilities';
 
 import {getRelativeTransformOrigin} from '../../../../utilities';
-import type {ClientRect} from '../../../../types';
+import type {ClientRect, UniqueIdentifier} from '../../../../types';
 
 type TransitionGetter = (
   activatorEvent: Event | null
@@ -16,6 +16,7 @@ export interface Props {
   adjustScale?: boolean;
   children?: React.ReactNode;
   className?: string;
+  id: UniqueIdentifier;
   rect: ClientRect | null;
   style?: React.CSSProperties;
   transition?: string | TransitionGetter;
