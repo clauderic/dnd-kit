@@ -1,5 +1,13 @@
 # @dnd-kit/utilities
 
+## 3.2.0
+
+### Minor Changes
+
+- [#748](https://github.com/clauderic/dnd-kit/pull/748) [`59ca82b`](https://github.com/clauderic/dnd-kit/commit/59ca82b9f228f34c7731ece87aef5d9633608b57) Thanks [@clauderic](https://github.com/clauderic)! - Introduced the `findFirstFocusableNode` utility function that returns the first focusable node within a given HTMLElement, or the element itself if it is focusable.
+
+- [#733](https://github.com/clauderic/dnd-kit/pull/733) [`035021a`](https://github.com/clauderic/dnd-kit/commit/035021aac51161e2bf9715f087a6dd1b46647bfc) Thanks [@clauderic](https://github.com/clauderic)! - Introduced the `useEvent` hook based on [implementation breakdown in the RFC](https://github.com/reactjs/rfcs/blob/useevent/text/0000-useevent.md#internal-implementation). In the future, this hook will be used as a polyfill if the native React hook is unavailble.
+
 ## 3.1.0
 
 ### Minor Changes
