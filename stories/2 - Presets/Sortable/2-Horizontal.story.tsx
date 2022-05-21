@@ -115,9 +115,7 @@ export const MarginBetweenItems = () => {
 
 export const RemovableItems = () => {
   const animateLayoutChanges: AnimateLayoutChanges = (args) =>
-    args.isSorting || args.wasDragging
-      ? defaultAnimateLayoutChanges(args)
-      : true;
+    defaultAnimateLayoutChanges({...args, wasDragging: true});
 
   return (
     <Sortable

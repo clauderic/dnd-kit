@@ -147,6 +147,7 @@ export function useSortable({
     transition,
     wasDragging: previous.current.activeId != null,
   });
+
   const derivedTransform = useDerivedTransform({
     disabled: !shouldAnimateLayoutChanges,
     index,
@@ -166,11 +167,24 @@ export function useSortable({
     if (items !== previous.current.items) {
       previous.current.items = items;
     }
+  }, [isSorting, newIndex, containerId, items]);
 
-    if (activeId !== previous.current.activeId) {
-      previous.current.activeId = activeId;
+  useEffect(() => {
+    if (activeId === previous.current.activeId) {
+      return;
     }
-  }, [activeId, isSorting, newIndex, containerId, items]);
+
+    if (activeId && !previous.current.activeId) {
+      previous.current.activeId = activeId;
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      previous.current.activeId = activeId;
+    }, 50);
+
+    return () => clearTimeout(timeoutId);
+  }, [activeId]);
 
   return {
     active,
