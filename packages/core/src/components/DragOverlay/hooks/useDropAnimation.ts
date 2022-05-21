@@ -276,8 +276,9 @@ function createDefaultDropAnimation(
 
     const cleanup = sideEffects?.({active, dragOverlay, ...rest});
     const animation = dragOverlay.node.animate(animationKeyframes, {
-      easing,
       duration,
+      easing,
+      fill: 'forwards',
     });
 
     return new Promise((resolve) => {
