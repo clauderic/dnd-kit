@@ -1,5 +1,11 @@
 # @dnd-kit/core
 
+## 6.0.1
+
+### Patch Changes
+
+- [#759](https://github.com/clauderic/dnd-kit/pull/759) [`e5b9d38`](https://github.com/clauderic/dnd-kit/commit/e5b9d380887f71d50d8418f48fc3569db8367124) Thanks [@clauderic](https://github.com/clauderic)! - Fixed a regression with the default drop animation of `<DragOverlay>` for consumers using React 18.
+
 ## 6.0.0
 
 ### Major Changes
