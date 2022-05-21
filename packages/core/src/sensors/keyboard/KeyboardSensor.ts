@@ -176,7 +176,7 @@ export class KeyboardSensor implements SensorInstance {
               (direction === KeyboardCode.Left &&
                 newScrollCoordinates >= minScroll.x);
 
-            if (canFullyScrollToNewCoordinates) {
+            if (canFullyScrollToNewCoordinates && !coordinatesDelta.y) {
               // We don't need to update coordinates, the scroll adjustment alone will trigger
               // logic to auto-detect the new container we are over
               scrollContainer.scrollTo({
@@ -205,7 +205,7 @@ export class KeyboardSensor implements SensorInstance {
               (direction === KeyboardCode.Up &&
                 newScrollCoordinates >= minScroll.y);
 
-            if (canFullyScrollToNewCoordinates) {
+            if (canFullyScrollToNewCoordinates && !coordinatesDelta.x) {
               // We don't need to update coordinates, the scroll adjustment alone will trigger
               // logic to auto-detect the new container we are over
               scrollContainer.scrollTo({
