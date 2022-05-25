@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://dndkit.com">
-    <img alt="dnd kit – There's a new kit on the block." width="520" src=".github/assets/dnd-kit-hero.png">
+    <img alt="@dnd-kit – the modern drag & drop toolkit for React" src=".github/assets/dnd-kit-hero-banner.svg">
   </a>
 </p>
 
@@ -13,7 +13,7 @@
 <a href="./LICENSE"><img allt="MIT License" src="https://badgen.now.sh/badge/license/MIT"/></a>
 </p>
 
-- **Built for React:** exposes hooks such as [`useDraggable`](https://docs.dndkit.com/api-documentation/draggable) and [`useDroppable`](https://docs.dndkit.com/api-documentation/droppable), and won't require you to re-architect your app or create additional wrapper DOM nodes.
+- **Built for React:** exposes hooks such as [`useDraggable`](https://docs.dndkit.com/api-documentation/draggable) and [`useDroppable`](https://docs.dndkit.com/api-documentation/droppable), and won't force you to re-architect your app or create additional wrapper DOM nodes.
 - **Feature packed:** customizable collision detection algorithms, multiple activators, draggable overlay, drag handles, auto-scrolling, constraints, and so much more.
 - **Supports a wide range of use cases:** lists, grids, multiple containers, nested contexts, variable sized items, virtualized lists, 2D Games, and more.
 - **Zero dependencies and modular:** the core of the library weighs around 10kb minified and has no external dependencies. It's built around built-in React state management and context, which keeps the library lean.
@@ -24,16 +24,14 @@
 - **Presets:** Need to build a sortable interface? Check out `@dnd-kit/sortable`, which is a thin layer built on top of `@dnd-kit/core`. More presets coming in the future.
 
 ## Documentation
-To learn how to get started with **dnd kit**, visit the official documentation website. You'll find in-depth API documentation, tips and guides to help you build drag and drop interfaces. 
+
+To learn how to get started with **dnd kit**, visit the official documentation website. You'll find in-depth API documentation, tips and guides to help you build drag and drop interfaces.
+
 <p>
 <a href="https://docs.dndkit.com">
-<img alt="View documentation" src=".github/assets/documentation.svg" width="200" />
+<img alt="Visit @dnd-kit documentation" src=".github/assets/documentation.svg" width="200" />
 </a>
 </p>
-<p align="center">
-<img alt="Playful illustration of draggable and droppable concepts" src=".github/assets/concepts-illustration.svg" width="75%" />
-</p>
-
 
 ## Key concepts
 
@@ -77,7 +75,7 @@ Check out our [Accessibility guide](https://docs.dndkit.com/guides/accessibility
 
 Unlike most drag and drop libraries, **dnd kit** intentionally is **not** built on top of the [HTML5 Drag and drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API). This was a deliberate architectural decision, that does come with tradeoffs that you should be aware of before deciding to use it, but for most applications, we believe the benefits outweigh the tradeoffs.
 
-The HTML5 Drag and drop API has some severe **limitations**. It does not support touch devices or using the keyboard to drag items, which means that the libraries that are built on top of it need to expose an entirely different implementation to support those input methods. It also doesn't support common use-cases such as locking dragging to a specific axis or to the bounds of a container, custom collision detection strategies, or even customizing the preview of the dragged item. 
+The HTML5 Drag and drop API has some severe **limitations**. It does not support touch devices or using the keyboard to drag items, which means that the libraries that are built on top of it need to expose an entirely different implementation to support those input methods. It also doesn't support common use-cases such as locking dragging to a specific axis or to the bounds of a container, custom collision detection strategies, or even customizing the preview of the dragged item.
 
 While there are workarounds to some of these issues, those workarounds typically increase the complexity of the codebase and the overall bundle size of the library, and lead to inconsistencies between the mouse, touch and keyboard layers because they're powered by entirely different implementations.
 
@@ -96,6 +94,10 @@ This isn't to say that you can't shift the position of the items in the DOM whil
 #### Synthetic events
 
 **dnd kit** also uses [SyntheticEvent listeners](https://reactjs.org/docs/events.html) for the activator events of all sensors, which leads to improved performance over manually adding event listeners to each individual draggable node.
+
+<p align="center">
+<img alt="Playful illustration of draggable and droppable concepts. A robot picks up a draggable card and moves it over a droppable container." src=".github/assets/concepts-illustration.svg" width="75%" />
+</p>
 
 ## Working in the `@dnd-kit` repository
 
