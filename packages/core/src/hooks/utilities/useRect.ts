@@ -2,14 +2,18 @@ import {useReducer} from 'react';
 import {useIsomorphicLayoutEffect} from '@dnd-kit/utilities';
 
 import type {ClientRect} from '../../types';
-import {getClientRect} from '../../utilities';
+import {getClientRect, Rect} from '../../utilities';
 
 import {useMutationObserver} from './useMutationObserver';
 import {useResizeObserver} from './useResizeObserver';
 
+function defaultMeasure(element: HTMLElement) {
+  return new Rect(getClientRect(element), element);
+}
+
 export function useRect(
   element: HTMLElement | null,
-  measure: (element: HTMLElement) => ClientRect = getClientRect,
+  measure: (element: HTMLElement) => ClientRect = defaultMeasure,
   fallbackRect?: ClientRect | null
 ) {
   const [rect, measureRect] = useReducer(reducer, null);
