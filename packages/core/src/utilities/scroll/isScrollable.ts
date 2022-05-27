@@ -9,11 +9,9 @@ export function isScrollable(
   const overflowRegex = /(auto|scroll|overlay)/;
   const properties = ['overflow', 'overflowX', 'overflowY'];
 
-  return (
-    properties.find((property) => {
-      const value = computedStyle[property as keyof CSSStyleDeclaration];
+  return properties.some((property) => {
+    const value = computedStyle[property as keyof CSSStyleDeclaration];
 
-      return typeof value === 'string' ? overflowRegex.test(value) : false;
-    }) != null
-  );
+    return typeof value === 'string' ? overflowRegex.test(value) : false;
+  });
 }

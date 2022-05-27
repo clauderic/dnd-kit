@@ -16,6 +16,7 @@ export function useScrollableAncestors(node: HTMLElement | null) {
 
       if (
         previousValue &&
+        previousValue !== defaultValue &&
         node &&
         previousNode.current &&
         node.parentNode === previousNode.current.parentNode
