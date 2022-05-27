@@ -144,10 +144,8 @@ export const DndContext = memo(function DndContext({
 }: Props) {
   const store = useReducer(reducer, undefined, getInitialState);
   const [state, dispatch] = store;
-  const [
-    dispatchMonitorEvent,
-    registerMonitorListener,
-  ] = useDndMonitorProvider();
+  const [dispatchMonitorEvent, registerMonitorListener] =
+    useDndMonitorProvider();
   const [status, setStatus] = useState<Status>(Status.Uninitialized);
   const isInitialized = status === Status.Initialized;
   const {
@@ -181,15 +179,12 @@ export const DndContext = memo(function DndContext({
     [droppableContainers]
   );
   const measuringConfiguration = useMeasuringConfiguration(measuring);
-  const {
-    droppableRects,
-    measureDroppableContainers,
-    measuringScheduled,
-  } = useDroppableMeasuring(enabledDroppableContainers, {
-    dragging: isInitialized,
-    dependencies: [translate.x, translate.y],
-    config: measuringConfiguration.droppable,
-  });
+  const {droppableRects, measureDroppableContainers, measuringScheduled} =
+    useDroppableMeasuring(enabledDroppableContainers, {
+      dragging: isInitialized,
+      dependencies: [translate.x, translate.y],
+      config: measuringConfiguration.droppable,
+    });
   const activeNode = useCachedNode(draggableNodes, activeId);
   const activationCoordinates = useMemo(
     () => (activatorEvent ? getEventCoordinates(activatorEvent) : null),
@@ -257,7 +252,7 @@ export const DndContext = memo(function DndContext({
 
   // Get scrollable ancestors of the dragging node
   const scrollableAncestors = useScrollableAncestors(
-    isInitialized ? overNode ?? draggingNode : null
+    isInitialized ? overNode ?? activeNode : null
   );
   const scrollableAncestorRects = useRects(scrollableAncestors);
 
@@ -395,12 +390,8 @@ export const DndContext = memo(function DndContext({
 
       function createHandler(type: Action.DragEnd | Action.DragCancel) {
         return async function handler() {
-          const {
-            active,
-            collisions,
-            over,
-            scrollAdjustedTranslate,
-          } = sensorContext.current;
+          const {active, collisions, over, scrollAdjustedTranslate} =
+            sensorContext.current;
           let event: DragEndEvent | null = null;
 
           if (active && scrollAdjustedTranslate) {
