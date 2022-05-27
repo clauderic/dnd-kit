@@ -1,5 +1,15 @@
 # @dnd-kit/core
 
+## 6.0.2
+
+### Patch Changes
+
+- [#769](https://github.com/clauderic/dnd-kit/pull/769) [`8e3599f`](https://github.com/clauderic/dnd-kit/commit/8e3599fafa3b4444e580c4bef2543c3b6b8241fb) Thanks [@clauderic](https://github.com/clauderic)! - Fixed an issue with the `containerNodeRect` that is exposed to modifiers having stale properties (`top`, `left`, etc.) when its scrollable ancestors were scrolled.
+
+- [#769](https://github.com/clauderic/dnd-kit/pull/769) [`53cb962`](https://github.com/clauderic/dnd-kit/commit/53cb96243e34b552640e0679e1cc1ebd52b271f1) Thanks [@clauderic](https://github.com/clauderic)! - Fixed a regression with scrollable ancestors detection.
+
+  The scrollable ancestors should be determined by the active node or the over node exclusively. The `draggingNode` variable shouldn't be used to detect scrollable ancestors since it can be the drag overlay node, and the drag overlay node doesn't have any scrollable ancestors because it is a fixed position element.
+
 ## 6.0.1
 
 ### Patch Changes
