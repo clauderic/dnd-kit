@@ -7,7 +7,7 @@ export interface Props {
 
 // Hide element visually but keep it readable by screen readers
 const visuallyHidden: React.CSSProperties = {
-  position: 'absolute',
+  position: 'fixed',
   width: 1,
   height: 1,
   margin: -1,
