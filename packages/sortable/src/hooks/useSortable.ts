@@ -71,7 +71,12 @@ export function useSortable({
     () => items.slice(items.indexOf(id)),
     [items, id]
   );
-  const {rect, node, isOver, setNodeRef: setDroppableNodeRef} = useDroppable({
+  const {
+    rect,
+    node,
+    isOver,
+    setNodeRef: setDroppableNodeRef,
+  } = useDroppable({
     id,
     data,
     disabled: disabled.droppable,
