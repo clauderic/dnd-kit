@@ -1,5 +1,14 @@
 # @dnd-kit/sortable
 
+## 7.0.1
+
+### Patch Changes
+
+- [#792](https://github.com/clauderic/dnd-kit/pull/792) [`b6970e7`](https://github.com/clauderic/dnd-kit/commit/b6970e78da868ea5c9f49368e88401d5b4cae765) Thanks [@clauderic](https://github.com/clauderic)! - The `hasSortableData` type-guard that is exported by @dnd-kit/sortable has been updated to also accept the `Active` and `Over` interfaces so it can be used in events such as `onDragStart`, `onDragOver`, and `onDragEnd`.
+
+- Updated dependencies [[`eaa6e12`](https://github.com/clauderic/dnd-kit/commit/eaa6e126b8e4141b87d92d23478c47f5ba204f25)]:
+  - @dnd-kit/core@6.0.4
+
 ## 7.0.0
 
 ### Major Changes
