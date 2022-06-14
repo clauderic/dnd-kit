@@ -88,10 +88,17 @@ export const coordinateGetter: KeyboardCoordinateGetter = (
       const newRect = newDroppable?.rect.current;
 
       if (newNode && newRect) {
-        if (newDroppable.data.current?.type === 'container') {
+        if (newDroppable.id === 'placeholder') {
           return {
             x: newRect.left + (newRect.width - collisionRect.width) / 2,
             y: newRect.top + (newRect.height - collisionRect.height) / 2,
+          };
+        }
+
+        if (newDroppable.data.current?.type === 'container') {
+          return {
+            x: newRect.left + 20,
+            y: newRect.top + 74,
           };
         }
 
