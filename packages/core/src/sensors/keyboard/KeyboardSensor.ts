@@ -235,13 +235,6 @@ export class KeyboardSensor implements SensorInstance {
           }
         }
 
-        console.log(
-          getAdjustedCoordinates(
-            getCoordinatesDelta(newCoordinates, this.referenceCoordinates),
-            scrollDelta
-          )
-        );
-
         this.handleMove(
           event,
           getAdjustedCoordinates(
