@@ -1,4 +1,5 @@
 export {closestCenter} from './closestCenter';
+export {closestEdge} from './closestEdge';
 export {closestCorners} from './closestCorners';
 export {rectIntersection} from './rectIntersection';
 export {pointerWithin} from './pointerWithin';

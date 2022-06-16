@@ -1,6 +1,7 @@
 export {
   closestCenter,
   closestCorners,
+  closestEdge,
   rectIntersection,
   getFirstCollision,
   pointerWithin,

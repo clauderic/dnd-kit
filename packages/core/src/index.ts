@@ -109,6 +109,7 @@ export {
   getScrollableAncestors,
   closestCenter,
   closestCorners,
+  closestEdge,
   rectIntersection,
   pointerWithin,
 } from './utilities';
