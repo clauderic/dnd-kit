@@ -1,10 +1,12 @@
 import {
-  closestCorners,
+  closestEdge,
   getScrollableAncestors,
   getFirstCollision,
   KeyboardCode,
   DroppableContainer,
   KeyboardCoordinateGetter,
+  CollisionDetection,
+  closestCenter,
 } from '@dnd-kit/core';
 import {subtract} from '@dnd-kit/utilities';
 
@@ -74,7 +76,8 @@ export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
       }
     });
 
-    const collisions = closestCorners({
+    const collisionDetection = getCollisionDetectionAlgorithm(event.code);
+    const collisions = collisionDetection({
       active,
       collisionRect: collisionRect,
       droppableRects,
@@ -148,4 +151,19 @@ function isAfter(a: DroppableContainer, b: DroppableContainer) {
   }
 
   return a.data.current.sortable.index < b.data.current.sortable.index;
+}
+
+function getCollisionDetectionAlgorithm(code: string): CollisionDetection {
+  switch (code) {
+    case KeyboardCode.Down:
+      return closestEdge.bottom;
+    case KeyboardCode.Up:
+      return closestEdge.top;
+    case KeyboardCode.Left:
+      return closestEdge.left;
+    case KeyboardCode.Right:
+      return closestEdge.right;
+  }
+
+  return closestCenter;
 }
