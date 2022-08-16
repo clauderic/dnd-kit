@@ -13,8 +13,7 @@
     "start": "tsdx watch --tsconfig tsconfig.build.json --verbose --noClean",
     "build": "tsdx build --tsconfig tsconfig.build.json",
     "test": "tsdx test",
-    "lint": "tsdx lint",
-    "prepublish": "npm run build"
+    "lint": "tsdx lint"
   },
   "main": "dist/index.js",
   "module": "dist/accessibility.esm.js",
@@ -30,7 +29,14 @@
   "dependencies": {
     "tslib": "^2.0.0"
   },
+  "wix": {
+    "artifact": {
+      "groupId": "com.wixpress",
+      "artifactId": "dnd-kit-accessibility"
+    }
+  },
   "publishConfig": {
-    "access": "public"
+    "registry": "http://npm.dev.wixpress.com/",
+    "versionBumpStrategy": "manual"
   }
 }

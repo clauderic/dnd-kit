@@ -13,8 +13,7 @@
     "start": "tsdx watch --tsconfig tsconfig.build.json --verbose --noClean",
     "build": "tsdx build --tsconfig tsconfig.build.json",
     "test": "tsdx test",
-    "lint": "tsdx lint",
-    "prepublish": "npm run build"
+    "lint": "tsdx lint"
   },
   "main": "dist/index.js",
   "module": "dist/modifiers.esm.js",
@@ -35,7 +34,14 @@
   "devDependencies": {
     "@dnd-kit/core": "6.1.0-wix.0"
   },
+  "wix": {
+    "artifact": {
+      "groupId": "com.wixpress",
+      "artifactId": "dnd-kit-modifiers"
+    }
+  },
   "publishConfig": {
-    "access": "public"
+    "registry": "http://npm.dev.wixpress.com/",
+    "versionBumpStrategy": "manual"
   }
 }

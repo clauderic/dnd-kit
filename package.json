@@ -14,7 +14,6 @@
     "lint": "lerna run lint -- --fix",
     "build": "lerna run build",
     "build:storybook": "build-storybook",
-    "prepublish": "lerna run prepublish",
     "start:playground": "yarn run build && yarn --cwd playground && yarn --cwd playground start",
     "start:storybook": "start-storybook -p 6006",
     "cypress": "cypress run",
