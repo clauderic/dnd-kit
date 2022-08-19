@@ -17,7 +17,7 @@ jobs:
           start: npm run start:storybook
           wait-on: 'http://localhost:6006'
           wait-on-timeout: 120
-          browser: 'Replay Firefox'
+          browser: 'Replay Chromium'
         env:
           RECORD_ALL_CONTENT: 1
           RECORD_REPLAY_METADATA_FILE: /tmp/replay-metadata
