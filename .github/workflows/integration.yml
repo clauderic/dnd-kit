@@ -2,8 +2,7 @@ name: E2E Test
 
 on:
   push:
-    branches-ignore:
-      - 'master'
+
 jobs:
   cypress:
     name: Cypress
@@ -16,8 +15,3 @@ jobs:
           start: npm run start:storybook
           wait-on: 'http://localhost:6006'
           wait-on-timeout: 120
-        env:
-          # pass the Dashboard record key as an environment variable
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          # pass GitHub token to allow accurately detecting a build vs a re-run build
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
