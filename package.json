@@ -18,6 +18,7 @@
     "start:playground": "yarn run build && yarn --cwd playground && yarn --cwd playground start",
     "start:storybook": "start-storybook -p 6006",
     "cypress": "cypress run",
+    "cypress:replay": "RECORD_ALL_CONTENT=1 RECORD_REPLAY_METADATA_FILE=$(mktemp) cypress run --browser 'Replay Firefox'",
     "cypress:open": "cypress open",
     "changeset": "changeset",
     "release": "changeset publish",
