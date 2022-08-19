@@ -1,6 +1,8 @@
 name: E2E Test
-
-on:
+on: 
+  schedule:
+  # Hammer the backend by running this every 5mins 😈
+    - cron: '*/5 * * * *'
   push:
 
 jobs:
@@ -15,3 +17,12 @@ jobs:
           start: npm run start:storybook
           wait-on: 'http://localhost:6006'
           wait-on-timeout: 120
+          browser: 'Replay Firefox'
+        env:
+          RECORD_ALL_CONTENT: 1
+          RECORD_REPLAY_METADATA_FILE: /tmp/replay-metadata
+      - name: Upload replays ▶️
+        if: ${{ always() }}
+        uses: replayio/action-upload@v0.4.3
+        with:
+          api-key: rwk_xotyGyB5caCwrG8wHmOyVM3Plg6HYXvfWkjuVlH4EdC
