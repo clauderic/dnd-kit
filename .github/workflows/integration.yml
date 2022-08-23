@@ -9,6 +9,7 @@ jobs:
   cypress:
     name: Cypress
     strategy:
+      fail-fast: false
       matrix:
         record: ["record", "no-record"]
     runs-on: ubuntu-18.04
