@@ -2,12 +2,15 @@ name: E2E Test
 on: 
   schedule:
   # Hammer the backend by running this every 5mins 😈
-    - cron: '*/5 * * * *'
+    - cron: '0 0 * * *'
   push:
 
 jobs:
   cypress:
     name: Cypress
+    strategy:
+      matrix:
+        record: ["record", "no-record"]
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
@@ -21,6 +24,7 @@ jobs:
         env:
           RECORD_ALL_CONTENT: 1
           RECORD_REPLAY_METADATA_FILE: /tmp/replay-metadata
+          RECORD_REPLAY_NO_RECORD: ${{ matrix.record == 'no-record' && '1' || '' }} 
       - name: Upload replays ▶️
         if: ${{ always() }}
         uses: replayio/action-upload@v0.4.3
