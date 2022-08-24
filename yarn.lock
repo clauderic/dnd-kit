@@ -2948,37 +2948,46 @@
     prop-types "^15.6.1"
     react-lifecycles-compat "^3.0.4"
 
-"@replayio/cypress@^0.2.14":
-  version "0.2.14"
-  resolved "https://registry.yarnpkg.com/@replayio/cypress/-/cypress-0.2.14.tgz#227fd864e7c03545d1b563dfcdc5c0b5cbb151c6"
-  integrity sha512-EysyIQ81L9nV57YLJ0KMDxXN+rEbaeBj/w4Qbjh4mIOoEFJ/rkLrOP1Ro3OjpoWIhplDGMh1s0YFVlRWujcdWA==
+"@replayio/cypress@0.0.0-experimental-6e3a19f0":
+  version "0.0.0-experimental-6e3a19f0"
+  resolved "https://registry.yarnpkg.com/@replayio/cypress/-/cypress-0.0.0-experimental-6e3a19f0.tgz#2f40c48de10cf97a4bd7d11c99ed560b4e8882ff"
+  integrity sha512-apqG9yKQxxcEt1xECkAlBVxwd1EPJAB7Pw9j6kiGxGh0/rlJi6LPMwzS/dvu1CXVcidEL2J1nwTnifRNl4hAZg==
   dependencies:
-    "@replayio/replay" "^0.9.3"
+    "@replayio/replay" "^0.0.0-experimental-6e3a19f0"
+    "@replayio/test-utils" "^0.0.0-experimental-6e3a19f0"
     uuid "^8.3.2"
 
-"@replayio/replay@^0.9.3":
-  version "0.9.3"
-  resolved "https://registry.yarnpkg.com/@replayio/replay/-/replay-0.9.3.tgz#3b935c2042f41f62c21122ac5bdebc6bc76c4421"
-  integrity sha512-rcMYNQhBRtznRd+OLhLiFvxYB8SawWpFuIN1FGxbYMLFvcTIZcniDRjQ3uRVz/k2thZNoDNj3PjzoPf2l17NTQ==
+"@replayio/replay@^0.0.0-experimental-6e3a19f0":
+  version "0.0.0-experimental-e8ede605"
+  resolved "https://registry.yarnpkg.com/@replayio/replay/-/replay-0.0.0-experimental-e8ede605.tgz#ad5807f675d9aa9c0d642f774365a09bd7601043"
+  integrity sha512-Jc8LlnBsfKiJ3mXQ1zRIovf7NLYTNsYfynIXH77tHomRTvYhTXom/4o16nSZXKsNAZmAw0pRtB3OMBrMXGhvBg==
   dependencies:
-    "@replayio/sourcemap-upload" "^1.0.2"
+    "@replayio/sourcemap-upload" "^0.0.0-experimental-e8ede605"
     commander "^7.2.0"
     is-uuid "^1.0.2"
-    jsonata "^1.8.6"
     superstruct "^0.15.4"
     text-table "^0.2.0"
     ws "^7.5.0"
 
-"@replayio/sourcemap-upload@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@replayio/sourcemap-upload/-/sourcemap-upload-1.0.2.tgz#59a5a1abe7d7f551b2c9683d3eb730a1bd6e153d"
-  integrity sha512-gsFKIjHW3IycC7g/uHH3PkECeZ2l+QugJ9lQxAiDlRoMVQg77CrAm6yciBTpdlodRsw97vrJWYJj8c5tNOIUZQ==
+"@replayio/sourcemap-upload@^0.0.0-experimental-e8ede605":
+  version "0.0.0-experimental-e8ede605"
+  resolved "https://registry.yarnpkg.com/@replayio/sourcemap-upload/-/sourcemap-upload-0.0.0-experimental-e8ede605.tgz#73ad97efee52546c339e808d71d53625a1125c7a"
+  integrity sha512-Wf6sbFSp/qOT2EBLPZb0wJj0TJ4JpIRizZ5fw+7+RO3/EDRkTDiy5oLAr5Md60m70bEFBg51zXWz22I8GE2i8w==
   dependencies:
     commander "^7.2.0"
     debug "^4.3.1"
     glob "^7.1.6"
     node-fetch "^2.6.1"
     string.prototype.matchall "^4.0.5"
+
+"@replayio/test-utils@^0.0.0-experimental-6e3a19f0":
+  version "0.0.0-experimental-6e3a19f0"
+  resolved "https://registry.yarnpkg.com/@replayio/test-utils/-/test-utils-0.0.0-experimental-6e3a19f0.tgz#4ed33e0f9427fd94ab14970cdf0bb06a2d54e7a5"
+  integrity sha512-vx82oM6sW/QR3A8MQemISbKNvu9wqd3P4GfrxZpsjTwORng5+WeMzmqLWPi5Hg8hDivpzlkdBav/VFDNfaZGVg==
+  dependencies:
+    "@replayio/replay" "^0.0.0-experimental-6e3a19f0"
+    node-fetch "^2.6.7"
+    uuid "^8.3.2"
 
 "@rollup/plugin-babel@^5.1.0":
   version "5.2.1"
@@ -11178,11 +11187,6 @@ json5@^1.0.1:
   integrity sha512-aKS4WQjPenRxiQsC93MNfjx+nbF4PAdYzmd/1JIj8HYzqfbu86beTuNgXDzPknWk0n0uARlyewZo4s++ES36Ow==
   dependencies:
     minimist "^1.2.0"
-
-jsonata@^1.8.6:
-  version "1.8.6"
-  resolved "https://registry.yarnpkg.com/jsonata/-/jsonata-1.8.6.tgz#e5f0e6ace870a34bac881a182ca2b31227122791"
-  integrity sha512-ZH2TPYdNP2JecOl/HvrH47Xc+9imibEMQ4YqKy/F/FrM+2a6vfbGxeCX23dB9Fr6uvGwv+ghf1KxWB3iZk09wA==
 
 jsonfile@^4.0.0:
   version "4.0.0"
