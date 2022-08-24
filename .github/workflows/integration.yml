@@ -4,6 +4,7 @@ on:
   # Hammer the backend by running this every 5mins 😈
     - cron: '0 0 * * *'
   push:
+  workflow_dispatch:
 
 jobs:
   cypress:
