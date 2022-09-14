@@ -1,1 +1,0 @@
-export {sortableKeyboardCoordinates} from './sortableKeyboardCoordinates';

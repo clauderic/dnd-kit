@@ -1,158 +1,195 @@
-<p align="center">
-  <a href="https://dndkit.com">
-    <img alt="@dnd-kit – the modern drag & drop toolkit for React" src=".github/assets/dnd-kit-hero-banner.svg">
-  </a>
-</p>
+# Turborepo Design System Starter
 
-<p align="left">
-  <a href="https://www.npmjs.com/package/@dnd-kit/core"><img src="https://img.shields.io/npm/v/@dnd-kit/core.svg" alt="Stable Release" /></a>
-  <a href="https://github.com/clauderic/dnd-kit/actions"><img src="https://badgen.net/github/checks/clauderic/dnd-kit" alt="Build status" /></a>
-  <a href="https://bundlephobia.com/result?p=@dnd-kit/core"><img alt="gzip size" src="https://badgen.net/bundlephobia/minzip/@dnd-kit/core?label=gzip%20size&color=green"/></a>
-  <a href="./LICENSE"><img allt="MIT License" src="https://badgen.now.sh/badge/license/MIT"/></a>
-  <a href="https://twitter.com/intent/follow?screen_name=dndkit">
-    <img alt="Follow us on Twitter" src="https://img.shields.io/twitter/follow/dndkit?style=social">
-  </a>
-</p>
+This guide explains how to use a React design system starter powered by:
 
-- **Feature packed:** customizable collision detection algorithms, multiple activators, draggable overlay, drag handles, auto-scrolling, constraints, and so much more.
-- **Built for React:** exposes hooks such as [`useDraggable`](https://docs.dndkit.com/api-documentation/draggable) and [`useDroppable`](https://docs.dndkit.com/api-documentation/droppable). and won't force you to re-architect your app or create additional wrapper DOM nodes.
-- **Supports a wide range of use cases:** lists, grids, multiple containers, nested contexts, variable sized items, virtualized lists, 2D Games, and more.
-- **Zero dependencies and modular:** the core of the library weighs around 10kb minified and has no external dependencies. It's built around built-in React state management and context, which keeps the library lean.
-- **Built-in support for multiple input methods:** Pointer, mouse, touch and keyboard sensors.
-- **Fully customizable & extensible:** Customize every detail: animations, transitions, behaviours, styles. Build your own sensors, collision detection algorithms, customize key bindings and so much more.
-- **Accessibility:** Keyboard support, sensible default aria attributes, customizable screen reader instructions and live regions built-in.
-- **Performance:** It was built with performance in mind in order to support silky smooth animations.
-- **Presets:** Need to build a sortable interface? Check out `@dnd-kit/sortable`, which is a thin layer built on top of `@dnd-kit/core`. More presets coming in the future.
+- 🏎 [Turborepo](https://turborepo.org) — High-performance build system for Monorepos
+- 🚀 [React](https://reactjs.org/) — JavaScript library for user interfaces
+- 🛠 [Tsup](https://github.com/egoist/tsup) — TypeScript bundler powered by esbuild
+- 📖 [Storybook](https://storybook.js.org/) — UI component environment powered by Vite
 
-## Documentation
+As well as a few others tools preconfigured:
 
-To learn how to get started with **dnd kit**, visit the official documentation website. You'll find in-depth API documentation, tips and guides to help you build drag and drop interfaces.
+- [TypeScript](https://www.typescriptlang.org/) for static type checking
+- [ESLint](https://eslint.org/) for code linting
+- [Prettier](https://prettier.io) for code formatting
+- [Changesets](https://github.com/changesets/changesets) for managing versioning and changelogs
+- [GitHub Actions](https://github.com/changesets/action) for fully automated package publishing
 
-<p>
-<a href="https://docs.dndkit.com">
-<img alt="Visit @dnd-kit documentation" src=".github/assets/documentation.svg" width="200" />
-</a>
-</p>
+## Getting Started
 
-## Key concepts
+Clone the design system example locally or [from GitHub](https://github.com/vercel/turborepo/tree/main/examples/design-system):
 
-The core library of **dnd kit** exposes two main concepts:
-
-- [Draggable elements](https://docs.dndkit.com/api-documentation/draggable)
-- [Droppable areas](https://docs.dndkit.com/api-documentation/droppable)
-
-Augment your existing components using the `useDraggable` and `useDroppable` hooks, or combine both to create components that can both be dragged and dropped over.
-
-Handle events and customize the behaviour of your draggable elements and droppable areas using the `<DndContext>` provider. Configure sensors to handle different input methods.
-
-Use the `<DragOverlay>` component to render a draggable overlay that is removed from the normal document flow and is positioned relative to the viewport.
-
-Check out our [quick start guide](https://docs.dndkit.com/introduction/getting-started) to learn how get started.
-
-### Extensibility
-
-Extensibility is at the core of **dnd kit**. It is built to be lean and extensible. It ships with the features we believe most people will want most of the time, and provides extension points to build the rest on top of `@dnd-kit/core`.
-
-A prime example of the level of extensibility of **dnd kit** is the [Sortable preset](https://docs.dndkit.com/presets/sortable), which is built using the extension points that are exposed by `@dnd-kit/core`.
-
-The primary extension points of **dnd kit** are:
-
-- Sensors
-- Modifiers
-- Constraints
-- Custom collision detection algorithms
-
-### Accessibility
-
-Building accessible drag and drop interfaces is hard; **dnd kit** has a number of sensible defaults and starting points to help you make your drag and drop interface accessible:
-
-- Customizable **screen reader instructions** for how to interact with draggable items
-- Customizable **live region updates** to provide screen reader announcements in real-time of what is currently happening with draggable and droppable elements.
-- Sensible defaults for **`aria` attributes** that should be passed to draggable items
-
-Check out our [Accessibility guide](https://docs.dndkit.com/guides/accessibility) to learn more about how you can help provide a better experience for screen readers.
-
-### Architecture
-
-Unlike most drag and drop libraries, **dnd kit** intentionally is **not** built on top of the [HTML5 Drag and drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API). This was a deliberate architectural decision, that does come with tradeoffs that you should be aware of before deciding to use it, but for most applications, we believe the benefits outweigh the tradeoffs.
-
-The HTML5 Drag and drop API has some severe **limitations**. It does not support touch devices or using the keyboard to drag items, which means that the libraries that are built on top of it need to expose an entirely different implementation to support those input methods. It also doesn't support common use-cases such as locking dragging to a specific axis or to the bounds of a container, custom collision detection strategies, or even customizing the preview of the dragged item.
-
-While there are workarounds to some of these issues, those workarounds typically increase the complexity of the codebase and the overall bundle size of the library, and lead to inconsistencies between the mouse, touch and keyboard layers because they're powered by entirely different implementations.
-
-The main **tradeoff** with not using the HTML5 Drag and drop API is that you won't be able to drag from the desktop or between windows. If the drag and drop use-case you have in mind involves this kind of functionality, you'll definitely want to use a library that's built on top of the HTML 5 Drag and drop API. We highly recommend you check out [react-dnd](https://github.com/react-dnd/react-dnd/) for a React library that's has a native HTML 5 Drag and drop backend.
-
-### Performance
-
-#### **Minimizing DOM mutations**
-
-**dnd kit** lets you build drag and drop interfaces without having to mutate the DOM every time an item needs to shift position.
-
-This is possible because **dnd kit** lazily calculates and stores the initial positions and layout of your droppable containers when a drag operation is initiated. These positions are passed down to your components that use `useDraggable` and `useDroppable` so that you can compute the new positions of your items while a drag operation is underway, and move them to their new positions using performant CSS properties that do not trigger a repaint such as `translate3d` and `scale`. For an example of how this can be achieved, check out the implementation of the sorting strategies that are exposed by the [`@dnd-kit/sortable`](packages/sortable/README.md) library.
-
-This isn't to say that you can't shift the position of the items in the DOM while dragging, this is something that **is supported** and sometimes inevitable. In some cases, it won't be possible to know in advance what the new position and layout of the item until you move it in the DOM. Just know that these kind of mutations to the DOM while dragging are much more expensive and will cause a repaint, so if possible, prefer computing the new positions using `translate3d` and `scale`.
-
-#### Synthetic events
-
-**dnd kit** also uses [SyntheticEvent listeners](https://reactjs.org/docs/events.html) for the activator events of all sensors, which leads to improved performance over manually adding event listeners to each individual draggable node.
-
-<p align="center">
-<img alt="Playful illustration of draggable and droppable concepts. A robot picks up a draggable card and moves it over a droppable container." src=".github/assets/concepts-illustration.svg" width="75%" />
-</p>
-
-## Working in the `@dnd-kit` repository
-
-### Packages contained within this repository
-
-- `@dnd-kit/core`
-- `@dnd-kit/accessibility`
-- `@dnd-kit/sortable`
-- `@dnd-kit/modifiers`
-- `@dnd-kit/utilities`
-
-### Installing dependencies
-
-You'll need to install all the dependencies in the root directory. Since the `@dnd-kit` is a monorepo that uses Lerna and Yarn Workspaces, npm CLI is not supported (only yarn).
-
-```sh
+```bash
+npx degit vercel/turborepo/examples/design-system design-system
+cd design-system
 yarn install
+git init . && git add . && git commit -m "Init"
 ```
 
-This will install all dependencies in each project, build them, and symlink them via Lerna
+### Useful Commands
 
-### Development workflow
+- `yarn build` - Build all packages including the Storybook site
+- `yarn dev` - Run all packages locally and preview with Storybook
+- `yarn lint` - Lint all packages
+- `yarn changeset` - Generate a changeset
+- `yarn clean` - Clean up all `node_modules` and `dist` folders (runs each package's clean script)
 
-In one terminal, run `yarn start` in parallel:
+## Turborepo
 
-```sh
-yarn start
+[Turborepo](https://turborepo.org) is a high-performance build system for JavaScript and TypeScript codebases. It was designed after the workflows used by massive software engineering organizations to ship code at scale. Turborepo abstracts the complex configuration needed for monorepos and provides fast, incremental builds with zero-configuration remote caching.
+
+Using Turborepo simplifes managing your design system monorepo, as you can have a single lint, build, test, and release process for all packages. [Learn more](https://vercel.com/blog/monorepos-are-changing-how-teams-build-software) about how monorepos improve your development workflow.
+
+## Apps & Packages
+
+This Turborepo includes the following packages and applications:
+
+- `apps/docs`: Component documentation site with Storybook
+- `packages/core`: Core library
+- `packages/utilities`: Shared utilities
+- `packages/@dnd-kit/config-ts`: Shared `tsconfig.json`s used throughout the Turborepo
+- `packages/config-eslint`: ESLint preset
+
+Each package and app is 100% [TypeScript](https://www.typescriptlang.org/). Yarn Workspaces enables us to "hoist" dependencies that are shared between packages to the root `package.json`. This means smaller `node_modules` folders and a better local dev experience. To install a dependency for the entire monorepo, use the `-W` workspaces flag with `yarn add`.
+
+This example sets up your `.gitignore` to exclude all generated files, other folders like `node_modules` used to store your dependencies.
+
+### Compilation
+
+To make the core library code work across all browsers, we need to compile the raw TypeScript and React code to plain JavaScript. We can accomplish this with `tsup`, which uses `esbuild` to greatly improve performance.
+
+Running `yarn build` from the root of the Turborepo will run the `build` command defined in each package's `package.json` file. Turborepo runs each `build` in parallel and caches & hashes the output to speed up future builds.
+
+For `dnd-kit-core`, the `build` command is the following:
+
+```bash
+tsup src/index.tsx --format esm,cjs --dts --external react
 ```
 
-This builds each package to `<packages>/<package>/dist` and runs the project in watch mode so any edits you save inside `<packages>/<package>/src` cause a rebuild to `<packages>/<package>/dist`. The results will stream to to the terminal.
+`tsup` compiles `src/index.tsx`, which exports all of the components in the design system, into both ES Modules and CommonJS formats as well as their TypeScript types. The `package.json` for `dnd-kit-core` then instructs the consumer to select the correct format:
 
-### Running storybook
-
-```sh
-yarn start:storybook
+```json:dnd-kit-core/package.json
+{
+  "name": "@dnd-kit/abstract",
+  "version": "0.0.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+}
 ```
 
-Runs the storybook
-Open [http://localhost:6006](http://localhost:6006) to view it in the browser.
+Run `yarn build` to confirm compilation is working correctly. You should see a folder `dnd-kit-core/dist` which contains the compiled output.
 
-![Screenshot of Storybook running locally](.github/assets/storybook-screenshot.png)
-
-### Working with the playground
-
-You can play with local packages in the Parcel-powered playground.
-
-```sh
-yarn start:playground
+```bash
+dnd-kit-core
+└── dist
+    ├── index.d.ts  <-- Types
+    ├── index.js    <-- CommonJS version
+    └── index.mjs   <-- ES Modules version
 ```
 
-This will start the playground on `localhost:1234`. If you have lerna running watch in parallel mode in one terminal, and then you run parcel, your playground will hot reload when you make changes to any imported module whose source is inside of `packages/*/src/*`. Note that to accomplish this, each package's `start` command passes TDSX the `--noClean` flag. This prevents Parcel from exploding between rebuilds because of File Not Found errors.
+## Components
 
-Important Safety Tip: When adding/altering packages in the playground, use `alias` object in package.json. This will tell Parcel to resolve them to the filesystem instead of trying to install the package from NPM. It also fixes duplicate React errors you may run into.
+Each file inside of `dnd-kit-core/src` is a component inside our design system. For example:
 
-### Running Cypress
+```tsx:dnd-kit-core/src/Button.tsx
+import * as React from 'react';
 
-(In a third terminal) you can run Cypress and it will run the integration tests against storybook.
+export interface ButtonProps {
+  children: React.ReactNode;
+}
+
+export function Button(props: ButtonProps) {
+  return <button>{props.children}</button>;
+}
+
+Button.displayName = 'Button';
+```
+
+When adding a new file, ensure the component is also exported from the entry `index.tsx` file:
+
+```tsx:dnd-kit-core/src/index.tsx
+import * as React from "react";
+export { Button, type ButtonProps } from "./Button";
+// Add new component exports here
+```
+
+## Storybook
+
+Storybook provides us with an interactive UI playground for our components. This allows us to preview our components in the browser and instantly see changes when developing locally. This example preconfigures Storybook to:
+
+- Use Vite to bundle stories instantly (in milliseconds)
+- Automatically find any stories inside the `stories/` folder
+- Support using module path aliases like `@dnd-kit-core` for imports
+- Write MDX for component documentation pages
+
+For example, here's the included Story for our `Button` component:
+
+```js:apps/docs/stories/button.stories.mdx
+import { Button } from '@dnd-kit-core/src';
+import { Meta, Story, Preview, Props } from '@storybook/addon-docs/blocks';
+
+<Meta title="Components/Button" component={Button} />
+
+# Button
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget consectetur tempor, nisl nunc egestas nisi, euismod aliquam nisl nunc euismod.
+
+## Props
+
+<Props of={Box} />
+
+## Examples
+
+<Preview>
+  <Story name="Default">
+    <Button>Hello</Button>
+  </Story>
+</Preview>
+```
+
+This example includes a few helpful Storybook scripts:
+
+- `yarn dev`: Starts Storybook in dev mode with hot reloading at `localhost:6006`
+- `yarn build`: Builds the Storybook UI and generates the static HTML files
+- `yarn preview-storybook`: Starts a local server to view the generated Storybook UI
+
+## Versioning & Publishing Packages
+
+This example uses [Changesets](https://github.com/changesets/changesets) to manage versions, create changelogs, and publish to npm. It's preconfigured so you can start publishing packages immediately.
+
+You'll need to create an `NPM_TOKEN` and `GITHUB_TOKEN` and add it to your GitHub repository settings to enable access to npm. It's also worth installing the [Changesets bot](https://github.com/apps/changeset-bot) on your repository.
+
+### Generating the Changelog
+
+To generate your changelog, run `yarn changeset` locally:
+
+1. **Which packages would you like to include?** – This shows which packages and changed and which have remained the same. By default, no packages are included. Press `space` to select the packages you want to include in the `changeset`.
+1. **Which packages should have a major bump?** – Press `space` to select the packages you want to bump versions for.
+1. If doing the first major version, confirm you want to release.
+1. Write a summary for the changes.
+1. Confirm the changeset looks as expected.
+1. A new Markdown file will be created in the `changeset` folder with the summary and a list of the packages included.
+
+### Releasing
+
+When you push your code to GitHub, the [GitHub Action](https://github.com/changesets/action) will run the `release` script defined in the root `package.json`:
+
+```bash
+turbo run build --filter=docs^... && changeset publish
+```
+
+Turborepo runs the `build` script for all publishable packages (excluding docs) and publishes the packages to npm. By default, this example includes `dnd-kit` as the npm organization. To change this, do the following:
+
+- Rename folders in `packages/*` to replace `dnd-kit` with your desired scope
+- Search and replace `dnd-kit` with your desired scope
+- Re-run `yarn install`
+
+To publish packages to a private npm organization scope, **remove** the following from each of the `package.json`'s
+
+```diff
+- "publishConfig": {
+-  "access": "public"
+- },
+```

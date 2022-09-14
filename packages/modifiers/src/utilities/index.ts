@@ -1,1 +1,0 @@
-export {restrictToBoundingRect} from './restrictToBoundingRect';

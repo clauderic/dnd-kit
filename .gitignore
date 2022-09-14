@@ -11,7 +11,7 @@ yalc.lock
 # production
 /build
 dist
-/storybook-static
+**/storybook-static
 
 # testing
 coverage

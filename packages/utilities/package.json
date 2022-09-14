@@ -1,35 +1,26 @@
 {
   "name": "@dnd-kit/utilities",
-  "version": "3.2.0",
-  "description": "Internal utilities to bee shared between `@dnd-kit` packages",
-  "author": "Claudéric Demers",
+  "version": "0.0.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/clauderic/dnd-kit.git",
-    "directory": "packages/utilities"
-  },
-  "scripts": {
-    "start": "tsdx watch --tsconfig tsconfig.build.json --verbose --noClean",
-    "build": "tsdx build --tsconfig tsconfig.build.json",
-    "test": "tsdx test",
-    "lint": "tsdx lint",
-    "prepublish": "npm run build"
-  },
-  "main": "dist/index.js",
-  "module": "dist/utilities.esm.js",
-  "typings": "dist/index.d.ts",
   "files": [
-    "README.md",
-    "CHANGELOG.md",
-    "LICENSE",
-    "dist"
+    "dist/**"
   ],
-  "dependencies": {
-    "tslib": "^2.0.0"
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --external react",
+    "dev": "tsup src/index.ts --format esm,cjs --watch --dts --external react",
+    "lint": "TIMING=1 eslint src/**/*.ts* --fix",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
-  "peerDependencies": {
-    "react": ">=16.8.0"
+  "devDependencies": {
+    "@dnd-kit/config-eslint": "*",
+    "@dnd-kit/config-ts": "*",
+    "eslint": "^8.15.0",
+    "tsup": "^5.10.1",
+    "typescript": "^4.5.3"
   },
   "publishConfig": {
     "access": "public"
