@@ -4,7 +4,7 @@ import {useIsomorphicLayoutEffect} from './useIsomorphicLayoutEffect';
 
 export function useLatestValue<T extends any>(
   value: T,
-  dependencies = [value]
+  dependencies: unknown[] = [value]
 ) {
   const valueRef = useRef<T>(value);
 
