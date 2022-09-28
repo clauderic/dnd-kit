@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import type {Transform} from '@dnd-kit/utilities';
 
 import {InternalContext, defaultInternalContext} from '../../../../store';

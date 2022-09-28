@@ -1,4 +1,5 @@
-import React, {cloneElement, useState} from 'react';
+import * as React from 'react';
+import {cloneElement, useState} from 'react';
 import {useIsomorphicLayoutEffect, usePrevious} from '@dnd-kit/utilities';
 
 import type {UniqueIdentifier} from '../../../../types';
