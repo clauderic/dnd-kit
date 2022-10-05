@@ -1,9 +1,8 @@
-import {useCallback, useEffect, useRef, useState} from 'react';
 import {useLatestValue, useLazyMemo} from '@dnd-kit/utilities';
-
-import {Rect} from '../../utilities/rect';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import type {DroppableContainer, RectMap} from '../../store/types';
 import type {ClientRect, UniqueIdentifier} from '../../types';
+import {Rect} from '../../utilities/rect';
 
 interface Arguments {
   dragging: boolean;
@@ -38,7 +37,7 @@ export function useDroppableMeasuring(
   const [
     containerIdsScheduledForMeasurement,
     setContainerIdsScheduledForMeasurement,
-  ] = useState<UniqueIdentifier[] | null>(null);
+  ] = useState<Set<UniqueIdentifier> | null>(null);
   const measuringScheduled = containerIdsScheduledForMeasurement != null;
   const {frequency, measure, strategy} = config;
   const containersRef = useRef(containers);
@@ -50,9 +49,15 @@ export function useDroppableMeasuring(
         return;
       }
 
-      setContainerIdsScheduledForMeasurement((value) =>
-        value ? value.concat(ids) : ids
-      );
+      setContainerIdsScheduledForMeasurement((value) => {
+        if (value == null) {
+          return new Set(ids);
+        } else {
+          const nextValue = new Set(value);
+          ids.forEach((id) => nextValue.add(id));
+          return nextValue;
+        }
+      });
     },
     [disabledRef]
   );
@@ -80,8 +85,8 @@ export function useDroppableMeasuring(
 
           if (
             ids &&
-            ids.length > 0 &&
-            !ids.includes(container.id) &&
+            ids.size > 0 &&
+            !ids.has(container.id) &&
             container.rect.current
           ) {
             // This container does not need to be re-measured
