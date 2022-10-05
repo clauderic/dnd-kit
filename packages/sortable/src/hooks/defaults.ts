@@ -1,7 +1,4 @@
 import {CSS} from '@dnd-kit/utilities';
-
-import {arrayMove} from '../utilities';
-
 import type {
   AnimateLayoutChanges,
   NewIndexGetter,
@@ -13,7 +10,17 @@ export const defaultNewIndexGetter: NewIndexGetter = ({
   items,
   activeIndex,
   overIndex,
-}) => arrayMove(items, activeIndex, overIndex).indexOf(id);
+}) => {
+  const index = items.indexOf(id);
+
+  if (activeIndex > index && overIndex < index) {
+    return index + 1;
+  }
+  if (activeIndex < index && overIndex > index) {
+    return index - 1;
+  }
+  return index;
+};
 
 export const defaultAnimateLayoutChanges: AnimateLayoutChanges = ({
   containerId,
