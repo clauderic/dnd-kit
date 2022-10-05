@@ -5,6 +5,8 @@ import {useIsomorphicLayoutEffect, useUniqueId} from '@dnd-kit/utilities';
 import type {Disabled, SortingStrategy} from '../types';
 import {getSortedRects, itemsEqual, normalizeDisabled} from '../utilities';
 import {rectSortingStrategy} from '../strategies';
+import type {IndexGetter} from 'packages/sortable/src/hooks/types';
+import {defaultIndexGetter} from 'packages/sortable/src/hooks/defaults';
 
 export interface Props {
   children: React.ReactNode;
@@ -12,6 +14,7 @@ export interface Props {
   strategy?: SortingStrategy;
   id?: string;
   disabled?: boolean | Disabled;
+  getItemIndex?: IndexGetter;
 }
 
 const ID_PREFIX = 'Sortable';
@@ -26,6 +29,7 @@ interface ContextDescriptor {
   useDragOverlay: boolean;
   sortedRects: ClientRect[];
   strategy: SortingStrategy;
+  getItemIndex: IndexGetter;
 }
 
 export const Context = React.createContext<ContextDescriptor>({
@@ -41,6 +45,7 @@ export const Context = React.createContext<ContextDescriptor>({
     draggable: false,
     droppable: false,
   },
+  getItemIndex: defaultIndexGetter,
 });
 
 export function SortableContext({
@@ -49,6 +54,7 @@ export function SortableContext({
   items: userDefinedItems,
   strategy = rectSortingStrategy,
   disabled: disabledProp = false,
+  getItemIndex = defaultIndexGetter,
 }: Props) {
   const {
     active,
@@ -68,8 +74,8 @@ export function SortableContext({
     [userDefinedItems]
   );
   const isDragging = active != null;
-  const activeIndex = active ? items.indexOf(active.id) : -1;
-  const overIndex = over ? items.indexOf(over.id) : -1;
+  const activeIndex = active ? getItemIndex({id: active.id, items}) : -1;
+  const overIndex = over ? getItemIndex({id: over.id, items}) : -1;
   const previousItemsRef = useRef(items);
   const itemsHaveChanged = !itemsEqual(items, previousItemsRef.current);
   const disableTransforms =
@@ -103,6 +109,7 @@ export function SortableContext({
       useDragOverlay,
       sortedRects: getSortedRects(items, droppableRects),
       strategy,
+      getItemIndex,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
@@ -116,6 +123,7 @@ export function SortableContext({
       droppableRects,
       useDragOverlay,
       strategy,
+      getItemIndex,
     ]
   );
 

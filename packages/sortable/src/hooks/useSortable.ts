@@ -57,19 +57,20 @@ export function useSortable({
     overIndex,
     useDragOverlay,
     strategy: globalStrategy,
+    getItemIndex,
   } = useContext(Context);
   const disabled: Disabled = normalizeLocalDisabled(
     localDisabled,
     globalDisabled
   );
-  const index = items.indexOf(id);
+  const index = getItemIndex({id, items});
   const data = useMemo<SortableData & Data>(
     () => ({sortable: {containerId, index, items}, ...customData}),
     [containerId, customData, index, items]
   );
   const itemsAfterCurrentSortable = useMemo(
-    () => items.slice(items.indexOf(id)),
-    [items, id]
+    () => items.slice(getItemIndex({id, items})),
+    [items, getItemIndex, id]
   );
   const {rect, node, isOver, setNodeRef: setDroppableNodeRef} = useDroppable({
     id,

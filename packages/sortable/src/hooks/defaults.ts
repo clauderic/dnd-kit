@@ -4,6 +4,7 @@ import {arrayMove} from '../utilities';
 
 import type {
   AnimateLayoutChanges,
+  IndexGetter,
   NewIndexGetter,
   SortableTransition,
 } from './types';
@@ -14,6 +15,9 @@ export const defaultNewIndexGetter: NewIndexGetter = ({
   activeIndex,
   overIndex,
 }) => arrayMove(items, activeIndex, overIndex).indexOf(id);
+
+export const defaultIndexGetter: IndexGetter = ({id, items}) =>
+  items.indexOf(id);
 
 export const defaultAnimateLayoutChanges: AnimateLayoutChanges = ({
   containerId,
