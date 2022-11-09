@@ -17,6 +17,18 @@ export type KeyboardCodes = {
   end: KeyboardEvent['code'][];
 };
 
+export type KeyboardCodeModifiers = {
+  start?: KeyboardEventModifiers | undefined;
+  cancel?: KeyboardEventModifiers | undefined;
+  end?: KeyboardEventModifiers | undefined;
+}
+
+export type KeyboardEventModifiers = {
+  altKey?: KeyboardEvent['altKey'] | undefined;
+  ctrlKey?: KeyboardEvent['ctrlKey'] | undefined;
+  shiftKey?: KeyboardEvent['shiftKey'] | undefined;
+}
+
 export type KeyboardCoordinateGetter = (
   event: KeyboardEvent,
   args: {

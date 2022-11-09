@@ -22,7 +22,12 @@ import type {
   SensorOptions,
 } from '../types';
 
-import {KeyboardCoordinateGetter, KeyboardCode, KeyboardCodes} from './types';
+import {
+  KeyboardCoordinateGetter,
+  KeyboardCode,
+  KeyboardCodes,
+  KeyboardCodeModifiers,
+} from './types';
 import {
   defaultKeyboardCodes,
   defaultKeyboardCoordinateGetter,
@@ -30,6 +35,7 @@ import {
 
 export interface KeyboardSensorOptions extends SensorOptions {
   keyboardCodes?: KeyboardCodes;
+  keyboardCodeModifiers?: KeyboardCodeModifiers;
   coordinateGetter?: KeyboardCoordinateGetter;
   scrollBehavior?: ScrollBehavior;
   onActivation?({event}: {event: KeyboardEvent}): void;
@@ -82,17 +88,34 @@ export class KeyboardSensor implements SensorInstance {
       const {active, context, options} = this.props;
       const {
         keyboardCodes = defaultKeyboardCodes,
+        keyboardCodeModifiers = undefined,
         coordinateGetter = defaultKeyboardCoordinateGetter,
         scrollBehavior = 'smooth',
       } = options;
-      const {code} = event;
+      const {code, altKey, ctrlKey, shiftKey} = event;
 
       if (keyboardCodes.end.includes(code)) {
+        if (
+          (keyboardCodeModifiers?.end?.altKey && !altKey) ||
+          (keyboardCodeModifiers?.end?.ctrlKey && !ctrlKey) ||
+          (keyboardCodeModifiers?.end?.shiftKey && !shiftKey)
+        ) {
+          return;
+        }
+
         this.handleEnd(event);
         return;
       }
 
       if (keyboardCodes.cancel.includes(code)) {
+        if (
+          (keyboardCodeModifiers?.cancel?.altKey && !altKey) ||
+          (keyboardCodeModifiers?.cancel?.ctrlKey && !ctrlKey) ||
+          (keyboardCodeModifiers?.cancel?.shiftKey && !shiftKey)
+        ) {
+          return;
+        }
+
         this.handleCancel(event);
         return;
       }
@@ -279,10 +302,22 @@ export class KeyboardSensor implements SensorInstance {
       eventName: 'onKeyDown' as const,
       handler: (
         event: React.KeyboardEvent,
-        {keyboardCodes = defaultKeyboardCodes, onActivation},
+        {
+          keyboardCodes = defaultKeyboardCodes,
+          keyboardCodeModifiers = undefined,
+          onActivation,
+        },
         {active}
       ) => {
-        const {code} = event.nativeEvent;
+        const {code, altKey, ctrlKey, shiftKey} = event.nativeEvent;
+
+        if (
+          (keyboardCodeModifiers?.start?.altKey && !altKey) ||
+          (keyboardCodeModifiers?.start?.ctrlKey && !ctrlKey) ||
+          (keyboardCodeModifiers?.start?.shiftKey && !shiftKey)
+        ) {
+          return false;
+        }
 
         if (keyboardCodes.start.includes(code)) {
           const activator = active.activatorNode.current;
