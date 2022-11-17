@@ -2,8 +2,8 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {useInterval, useLazyMemo, usePrevious} from '@dnd-kit/utilities';
 
 import {getScrollDirectionAndSpeed} from '../../utilities';
+import type {ClientRect, Coordinates} from '../../types';
 import {Direction} from '../../types';
-import type {Coordinates, ClientRect} from '../../types';
 
 export type ScrollAncestorSortingFn = (ancestors: Element[]) => Element[];
 
@@ -52,20 +52,48 @@ interface ScrollDirection {
   y: 0 | Direction;
 }
 
+type DirectionValue = -1 | 0 | 1;
+
+export interface AutoScrollState {
+  isScrolling: boolean;
+  direction: {
+    x: DirectionValue;
+    y: DirectionValue;
+  };
+}
+
+const initialAutoScrollState = (): AutoScrollState => ({
+  isScrolling: false,
+  direction: {
+    x: 0,
+    y: 0,
+  },
+});
+
 function useAutoScrollInterval() {
-  const [isScrolling, setIsScrolling] = useState(false);
   const [setInterval, clearInterval] = useInterval();
+  const [state, setState] = useState(initialAutoScrollState);
 
   return {
-    setAutoScrollInterval: (listener: Function, duration: number) => {
+    setAutoScrollInterval: (
+      listener: Function,
+      duration: number,
+      direction: ScrollDirection
+    ) => {
       setInterval(listener, duration);
-      setIsScrolling(true);
+      setState({
+        isScrolling: true,
+        direction,
+      });
     },
     clearAutoScrollInterval: () => {
       clearInterval();
-      setIsScrolling(false);
+      setState({
+        isScrolling: true,
+        direction: {x: 0, y: 0},
+      });
     },
-    isScrolling,
+    state,
   };
 }
 
@@ -84,8 +112,11 @@ export function useAutoScroller({
   threshold,
 }: Arguments) {
   const scrollIntent = useScrollIntent({delta, disabled: !enabled});
-  const {setAutoScrollInterval, clearAutoScrollInterval, isScrolling} =
-    useAutoScrollInterval();
+  const {
+    setAutoScrollInterval,
+    clearAutoScrollInterval,
+    state: autoScrollState,
+  } = useAutoScrollInterval();
   const scrollSpeed = useRef<Coordinates>({x: 0, y: 0});
   const scrollDirection = useRef<ScrollDirection>({x: 0, y: 0});
   const rect = useMemo(() => {
@@ -162,7 +193,7 @@ export function useAutoScroller({
           clearAutoScrollInterval();
 
           scrollContainerRef.current = scrollContainer;
-          setAutoScrollInterval(autoScroll, interval);
+          setAutoScrollInterval(autoScroll, interval, direction);
 
           scrollSpeed.current = speed;
           scrollDirection.current = direction;
@@ -196,9 +227,7 @@ export function useAutoScroller({
     ]
   );
 
-  return {
-    isScrolling,
-  };
+  return autoScrollState;
 }
 
 interface ScrollIntent {

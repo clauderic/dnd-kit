@@ -8,6 +8,7 @@ import type {Coordinates, ClientRect, UniqueIdentifier} from '../types';
 
 import type {Actions} from './actions';
 import type {DroppableContainersMap} from './constructors';
+import type {AutoScrollState} from '../hooks/utilities/useAutoScroller';
 
 export interface DraggableElement {
   node: DraggableNode;
@@ -96,7 +97,7 @@ export interface PublicContextDescriptor {
   measureDroppableContainers(ids: UniqueIdentifier[]): void;
   measuringScheduled: boolean;
   windowRect: ClientRect | null;
-  isAutoScrolling: boolean;
+  autoScrollState: AutoScrollState;
 }
 
 export interface InternalContextDescriptor {

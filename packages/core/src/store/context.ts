@@ -29,7 +29,13 @@ export const defaultPublicContext: PublicContextDescriptor = {
   measureDroppableContainers: noop,
   windowRect: null,
   measuringScheduled: false,
-  isAutoScrolling: false,
+  autoScrollState: {
+    isScrolling: false,
+    direction: {
+      x: 0,
+      y: 0,
+    },
+  },
 };
 
 export const defaultInternalContext: InternalContextDescriptor = {
