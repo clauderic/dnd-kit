@@ -1,6 +1,6 @@
 {
   "name": "@dnd-kit/utilities",
-  "version": "3.3.0-wix.0",
+  "version": "3.3.0-wix.1",
   "description": "Internal utilities to bee shared between `@dnd-kit` packages",
   "author": "Claudéric Demers",
   "license": "MIT",
