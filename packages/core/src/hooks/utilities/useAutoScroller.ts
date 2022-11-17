@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useMemo, useRef} from 'react';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {useInterval, useLazyMemo, usePrevious} from '@dnd-kit/utilities';
 
 import {getScrollDirectionAndSpeed} from '../../utilities';
@@ -52,6 +52,23 @@ interface ScrollDirection {
   y: 0 | Direction;
 }
 
+function useAutoScrollInterval() {
+  const [isScrolling, setIsScrolling] = useState(false);
+  const [setInterval, clearInterval] = useInterval();
+
+  return {
+    setAutoScrollInterval: (listener: Function, duration: number) => {
+      setInterval(listener, duration);
+      setIsScrolling(true);
+    },
+    clearAutoScrollInterval: () => {
+      clearInterval();
+      setIsScrolling(false);
+    },
+    isScrolling,
+  };
+}
+
 export function useAutoScroller({
   acceleration,
   activator = AutoScrollActivator.Pointer,
@@ -67,7 +84,8 @@ export function useAutoScroller({
   threshold,
 }: Arguments) {
   const scrollIntent = useScrollIntent({delta, disabled: !enabled});
-  const [setAutoScrollInterval, clearAutoScrollInterval] = useInterval();
+  const {setAutoScrollInterval, clearAutoScrollInterval, isScrolling} =
+    useAutoScrollInterval();
   const scrollSpeed = useRef<Coordinates>({x: 0, y: 0});
   const scrollDirection = useRef<ScrollDirection>({x: 0, y: 0});
   const rect = useMemo(() => {
@@ -177,6 +195,10 @@ export function useAutoScroller({
       JSON.stringify(threshold),
     ]
   );
+
+  return {
+    isScrolling,
+  };
 }
 
 interface ScrollIntent {

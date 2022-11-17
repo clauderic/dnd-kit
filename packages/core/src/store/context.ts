@@ -29,6 +29,7 @@ export const defaultPublicContext: PublicContextDescriptor = {
   measureDroppableContainers: noop,
   windowRect: null,
   measuringScheduled: false,
+  isAutoScrolling: false,
 };
 
 export const defaultInternalContext: InternalContextDescriptor = {
@@ -49,6 +50,5 @@ export const InternalContext = createContext<InternalContextDescriptor>(
   defaultInternalContext
 );
 
-export const PublicContext = createContext<PublicContextDescriptor>(
-  defaultPublicContext
-);
+export const PublicContext =
+  createContext<PublicContextDescriptor>(defaultPublicContext);
