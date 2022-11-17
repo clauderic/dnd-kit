@@ -17,6 +17,7 @@ import {
   DropAnimation,
   Modifier,
   defaultDropAnimation,
+  UniqueIdentifier,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -105,17 +106,17 @@ interface Props {
 export function SortableTree({
   collapsible,
   defaultItems = initialItems,
-  indicator,
+  indicator = false,
   indentationWidth = 50,
   removable,
 }: Props) {
   const [items, setItems] = useState(() => defaultItems);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [overId, setOverId] = useState<string | null>(null);
+  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
+  const [overId, setOverId] = useState<UniqueIdentifier | null>(null);
   const [offsetLeft, setOffsetLeft] = useState(0);
   const [currentPosition, setCurrentPosition] = useState<{
-    parentId: string | null;
-    overId: string;
+    parentId: UniqueIdentifier | null;
+    overId: UniqueIdentifier;
   } | null>(null);
 
   const flattenedItems = useMemo(() => {
@@ -146,7 +147,7 @@ export function SortableTree({
     offset: offsetLeft,
   });
   const [coordinateGetter] = useState(() =>
-    sortableTreeKeyboardCoordinates(sensorContext, indentationWidth)
+    sortableTreeKeyboardCoordinates(sensorContext, indicator, indentationWidth)
   );
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -170,26 +171,26 @@ export function SortableTree({
   }, [flattenedItems, offsetLeft]);
 
   const announcements: Announcements = {
-    onDragStart(id) {
-      return `Picked up ${id}.`;
+    onDragStart({active}) {
+      return `Picked up ${active.id}.`;
     },
-    onDragMove(id, overId) {
-      return getMovementAnnouncement('onDragMove', id, overId);
+    onDragMove({active, over}) {
+      return getMovementAnnouncement('onDragMove', active.id, over?.id);
     },
-    onDragOver(id, overId) {
-      return getMovementAnnouncement('onDragOver', id, overId);
+    onDragOver({active, over}) {
+      return getMovementAnnouncement('onDragOver', active.id, over?.id);
     },
-    onDragEnd(id, overId) {
-      return getMovementAnnouncement('onDragEnd', id, overId);
+    onDragEnd({active, over}) {
+      return getMovementAnnouncement('onDragEnd', active.id, over?.id);
     },
-    onDragCancel(id) {
-      return `Moving was cancelled. ${id} was dropped in its original position.`;
+    onDragCancel({active}) {
+      return `Moving was cancelled. ${active.id} was dropped in its original position.`;
     },
   };
 
   return (
     <DndContext
-      announcements={announcements}
+      accessibility={{announcements}}
       sensors={sensors}
       collisionDetection={closestCenter}
       measuring={measuring}
@@ -228,7 +229,7 @@ export function SortableTree({
                 depth={activeItem.depth}
                 clone
                 childCount={getChildCount(items, activeId) + 1}
-                value={activeId}
+                value={activeId.toString()}
                 indentationWidth={indentationWidth}
               />
             ) : null}
@@ -297,11 +298,11 @@ export function SortableTree({
     document.body.style.setProperty('cursor', '');
   }
 
-  function handleRemove(id: string) {
+  function handleRemove(id: UniqueIdentifier) {
     setItems((items) => removeItem(items, id));
   }
 
-  function handleCollapse(id: string) {
+  function handleCollapse(id: UniqueIdentifier) {
     setItems((items) =>
       setProperty(items, id, 'collapsed', (value) => {
         return !value;
@@ -311,8 +312,8 @@ export function SortableTree({
 
   function getMovementAnnouncement(
     eventName: string,
-    activeId: string,
-    overId?: string
+    activeId: UniqueIdentifier,
+    overId?: UniqueIdentifier
   ) {
     if (overId && projected) {
       if (eventName !== 'onDragEnd') {
@@ -352,7 +353,7 @@ export function SortableTree({
         } else {
           let previousSibling: FlattenedItem | undefined = previousItem;
           while (previousSibling && projected.depth < previousSibling.depth) {
-            const parentId: string | null = previousSibling.parentId;
+            const parentId: UniqueIdentifier | null = previousSibling.parentId;
             previousSibling = sortedItems.find(({id}) => id === parentId);
           }
 

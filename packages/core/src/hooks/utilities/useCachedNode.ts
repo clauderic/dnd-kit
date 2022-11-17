@@ -7,7 +7,7 @@ export function useCachedNode(
   draggableNodes: DraggableNodes,
   id: UniqueIdentifier | null
 ): DraggableNode['node']['current'] {
-  const draggableNode = id !== null ? draggableNodes[id] : undefined;
+  const draggableNode = id !== null ? draggableNodes.get(id) : undefined;
   const node = draggableNode ? draggableNode.node.current : null;
 
   return useLazyMemo(

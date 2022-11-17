@@ -1,5 +1,13 @@
 # @dnd-kit/modifiers
 
+## 6.0.0
+
+### Patch Changes
+
+- Updated dependencies [[`4173087`](https://github.com/clauderic/dnd-kit/commit/417308704454c50f88ab305ab450a99bde5034b0), [`59ca82b`](https://github.com/clauderic/dnd-kit/commit/59ca82b9f228f34c7731ece87aef5d9633608b57), [`7161f70`](https://github.com/clauderic/dnd-kit/commit/7161f702c9fe06f8dafa6449d48b918070ca46fb), [`a52fba1`](https://github.com/clauderic/dnd-kit/commit/a52fba1ccff8a8f40e2cb8dcc15236cfd9e8fbec), [`40707ce`](https://github.com/clauderic/dnd-kit/commit/40707ce6f388957203d6df4ccbeef460450ffd7d), [`a41e5b8`](https://github.com/clauderic/dnd-kit/commit/a41e5b8eff84f0528ffc8b3455b94b95ab60a4a9), [`bf30718`](https://github.com/clauderic/dnd-kit/commit/bf30718bc22584a47053c14f5920e317ac45cd50), [`a41e5b8`](https://github.com/clauderic/dnd-kit/commit/a41e5b8eff84f0528ffc8b3455b94b95ab60a4a9), [`a41e5b8`](https://github.com/clauderic/dnd-kit/commit/a41e5b8eff84f0528ffc8b3455b94b95ab60a4a9), [`035021a`](https://github.com/clauderic/dnd-kit/commit/035021aac51161e2bf9715f087a6dd1b46647bfc), [`77e3d44`](https://github.com/clauderic/dnd-kit/commit/77e3d44502383d2f9a9f9af014b053619b3e37b3), [`5811986`](https://github.com/clauderic/dnd-kit/commit/5811986e7544a5e80039870a015e38df805eaad1), [`e302bd4`](https://github.com/clauderic/dnd-kit/commit/e302bd4488bdfb6735c97ac42c1f4a0b1e8bfdf9), [`188a450`](https://github.com/clauderic/dnd-kit/commit/188a4507b99d8e8fdaa50bd26deb826c86608e18), [`59ca82b`](https://github.com/clauderic/dnd-kit/commit/59ca82b9f228f34c7731ece87aef5d9633608b57), [`750d726`](https://github.com/clauderic/dnd-kit/commit/750d72655922363b2218d7b41e028f9dceaef013), [`5f3c700`](https://github.com/clauderic/dnd-kit/commit/5f3c7009698d15936fd20f30f11ad3b23cd7886f), [`035021a`](https://github.com/clauderic/dnd-kit/commit/035021aac51161e2bf9715f087a6dd1b46647bfc), [`e6e242c`](https://github.com/clauderic/dnd-kit/commit/e6e242cbc718ed687a26f5c622eeed4dbd6c2425), [`035021a`](https://github.com/clauderic/dnd-kit/commit/035021aac51161e2bf9715f087a6dd1b46647bfc), [`33e6dd2`](https://github.com/clauderic/dnd-kit/commit/33e6dd2dc954f1f2da90d8f8af995021031b6b41), [`10f6836`](https://github.com/clauderic/dnd-kit/commit/10f683631103b1d919f2fbca1177141b9369d2cf), [`c1b3b5a`](https://github.com/clauderic/dnd-kit/commit/c1b3b5a0be5759b707e22c4e1b1236aaa82773a2), [`035021a`](https://github.com/clauderic/dnd-kit/commit/035021aac51161e2bf9715f087a6dd1b46647bfc)]:
+  - @dnd-kit/core@6.0.0
+  - @dnd-kit/utilities@3.2.0
+
 ## 5.0.0
 
 ### Minor Changes

@@ -9,14 +9,18 @@ import {
 import type {Coordinates} from '../../types';
 import {
   defaultCoordinates,
-  getTransformAgnosticClientRect,
   getScrollPosition,
   getScrollElementRect,
 } from '../../utilities';
 import {scrollIntoViewIfNeeded} from '../../utilities/scroll';
-import {Listeners} from '../utilities';
 import {EventName} from '../events';
-import type {SensorInstance, SensorProps, SensorOptions} from '../types';
+import {Listeners} from '../utilities';
+import type {
+  Activators,
+  SensorInstance,
+  SensorProps,
+  SensorOptions,
+} from '../types';
 
 import {KeyboardCoordinateGetter, KeyboardCode, KeyboardCodes} from './types';
 import {
@@ -35,7 +39,7 @@ export type KeyboardSensorProps = SensorProps<KeyboardSensorOptions>;
 
 export class KeyboardSensor implements SensorInstance {
   public autoScrollEnabled = false;
-  private coordinates: Coordinates = defaultCoordinates;
+  private referenceCoordinates: Coordinates | undefined;
   private listeners: Listeners;
   private windowListeners: Listeners;
 
@@ -64,29 +68,17 @@ export class KeyboardSensor implements SensorInstance {
 
   private handleStart() {
     const {activeNode, onStart} = this.props;
+    const node = activeNode.node.current;
 
-    if (!activeNode.node.current) {
-      throw new Error('Active draggable node is undefined');
+    if (node) {
+      scrollIntoViewIfNeeded(node);
     }
 
-    scrollIntoViewIfNeeded(activeNode.node.current);
-
-    const activeNodeRect = getTransformAgnosticClientRect(
-      activeNode.node.current
-    );
-    const coordinates = {
-      x: activeNodeRect.left,
-      y: activeNodeRect.top,
-    };
-
-    this.coordinates = coordinates;
-
-    onStart(coordinates);
+    onStart(defaultCoordinates);
   }
 
   private handleKeyDown(event: Event) {
     if (isKeyboardEvent(event)) {
-      const {coordinates} = this;
       const {active, context, options} = this.props;
       const {
         keyboardCodes = defaultKeyboardCodes,
@@ -105,13 +97,26 @@ export class KeyboardSensor implements SensorInstance {
         return;
       }
 
+      const {collisionRect} = context.current;
+      const currentCoordinates = collisionRect
+        ? {x: collisionRect.left, y: collisionRect.top}
+        : defaultCoordinates;
+
+      if (!this.referenceCoordinates) {
+        this.referenceCoordinates = currentCoordinates;
+      }
+
       const newCoordinates = coordinateGetter(event, {
         active,
         context: context.current,
-        currentCoordinates: coordinates,
+        currentCoordinates,
       });
 
       if (newCoordinates) {
+        const coordinatesDelta = getCoordinatesDelta(
+          newCoordinates,
+          currentCoordinates
+        );
         const scrollDelta = {
           x: 0,
           y: 0,
@@ -120,18 +125,8 @@ export class KeyboardSensor implements SensorInstance {
 
         for (const scrollContainer of scrollableAncestors) {
           const direction = event.code;
-          const coordinatesDelta = getCoordinatesDelta(
-            newCoordinates,
-            coordinates
-          );
-          const {
-            isTop,
-            isRight,
-            isLeft,
-            isBottom,
-            maxScroll,
-            minScroll,
-          } = getScrollPosition(scrollContainer);
+          const {isTop, isRight, isLeft, isBottom, maxScroll, minScroll} =
+            getScrollPosition(scrollContainer);
           const scrollElementRect = getScrollElementRect(scrollContainer);
 
           const clampedCoordinates = {
@@ -169,13 +164,13 @@ export class KeyboardSensor implements SensorInstance {
           if (canScrollX && clampedCoordinates.x !== newCoordinates.x) {
             const newScrollCoordinates =
               scrollContainer.scrollLeft + coordinatesDelta.x;
-            const canFullyScrollToNewCoordinates =
+            const canScrollToNewCoordinates =
               (direction === KeyboardCode.Right &&
                 newScrollCoordinates <= maxScroll.x) ||
               (direction === KeyboardCode.Left &&
                 newScrollCoordinates >= minScroll.x);
 
-            if (canFullyScrollToNewCoordinates) {
+            if (canScrollToNewCoordinates && !coordinatesDelta.y) {
               // We don't need to update coordinates, the scroll adjustment alone will trigger
               // logic to auto-detect the new container we are over
               scrollContainer.scrollTo({
@@ -185,26 +180,32 @@ export class KeyboardSensor implements SensorInstance {
               return;
             }
 
-            scrollDelta.x =
-              direction === KeyboardCode.Right
-                ? scrollContainer.scrollLeft - maxScroll.x
-                : scrollContainer.scrollLeft - minScroll.x;
+            if (canScrollToNewCoordinates) {
+              scrollDelta.x = scrollContainer.scrollLeft - newScrollCoordinates;
+            } else {
+              scrollDelta.x =
+                direction === KeyboardCode.Right
+                  ? scrollContainer.scrollLeft - maxScroll.x
+                  : scrollContainer.scrollLeft - minScroll.x;
+            }
 
-            scrollContainer.scrollBy({
-              left: -scrollDelta.x,
-              behavior: scrollBehavior,
-            });
+            if (scrollDelta.x) {
+              scrollContainer.scrollBy({
+                left: -scrollDelta.x,
+                behavior: scrollBehavior,
+              });
+            }
             break;
           } else if (canScrollY && clampedCoordinates.y !== newCoordinates.y) {
             const newScrollCoordinates =
               scrollContainer.scrollTop + coordinatesDelta.y;
-            const canFullyScrollToNewCoordinates =
+            const canScrollToNewCoordinates =
               (direction === KeyboardCode.Down &&
                 newScrollCoordinates <= maxScroll.y) ||
               (direction === KeyboardCode.Up &&
                 newScrollCoordinates >= minScroll.y);
 
-            if (canFullyScrollToNewCoordinates) {
+            if (canScrollToNewCoordinates && !coordinatesDelta.x) {
               // We don't need to update coordinates, the scroll adjustment alone will trigger
               // logic to auto-detect the new container we are over
               scrollContainer.scrollTo({
@@ -214,15 +215,21 @@ export class KeyboardSensor implements SensorInstance {
               return;
             }
 
-            scrollDelta.y =
-              direction === KeyboardCode.Down
-                ? scrollContainer.scrollTop - maxScroll.y
-                : scrollContainer.scrollTop - minScroll.y;
+            if (canScrollToNewCoordinates) {
+              scrollDelta.y = scrollContainer.scrollTop - newScrollCoordinates;
+            } else {
+              scrollDelta.y =
+                direction === KeyboardCode.Down
+                  ? scrollContainer.scrollTop - maxScroll.y
+                  : scrollContainer.scrollTop - minScroll.y;
+            }
 
-            scrollContainer.scrollBy({
-              top: -scrollDelta.y,
-              behavior: scrollBehavior,
-            });
+            if (scrollDelta.y) {
+              scrollContainer.scrollBy({
+                top: -scrollDelta.y,
+                behavior: scrollBehavior,
+              });
+            }
 
             break;
           }
@@ -230,7 +237,10 @@ export class KeyboardSensor implements SensorInstance {
 
         this.handleMove(
           event,
-          getAdjustedCoordinates(newCoordinates, scrollDelta)
+          getAdjustedCoordinates(
+            getCoordinatesDelta(newCoordinates, this.referenceCoordinates),
+            scrollDelta
+          )
         );
       }
     }
@@ -241,7 +251,6 @@ export class KeyboardSensor implements SensorInstance {
 
     event.preventDefault();
     onMove(coordinates);
-    this.coordinates = coordinates;
   }
 
   private handleEnd(event: Event) {
@@ -265,19 +274,23 @@ export class KeyboardSensor implements SensorInstance {
     this.windowListeners.removeAll();
   }
 
-  static activators = [
+  static activators: Activators<KeyboardSensorOptions> = [
     {
       eventName: 'onKeyDown' as const,
       handler: (
         event: React.KeyboardEvent,
-        {
-          keyboardCodes = defaultKeyboardCodes,
-          onActivation,
-        }: KeyboardSensorOptions
+        {keyboardCodes = defaultKeyboardCodes, onActivation},
+        {active}
       ) => {
         const {code} = event.nativeEvent;
 
         if (keyboardCodes.start.includes(code)) {
+          const activator = active.activatorNode.current;
+
+          if (activator && event.target !== activator) {
+            return false;
+          }
+
           event.preventDefault();
 
           onActivation?.({event: event.nativeEvent});

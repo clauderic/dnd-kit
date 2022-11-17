@@ -18,7 +18,12 @@ export interface Options {
   canScroll?: CanScroll;
   enabled?: boolean;
   interval?: number;
-  layoutShiftCompensation?: boolean;
+  layoutShiftCompensation?:
+    | boolean
+    | {
+        x: boolean;
+        y: boolean;
+      };
   order?: TraversalOrder;
   threshold?: {
     x: number;
@@ -128,10 +133,14 @@ export function useAutoScroller({
           threshold
         );
 
-        if (
-          (speed.x > 0 && scrollIntent.x[direction.x as Direction]) ||
-          (speed.y > 0 && scrollIntent.y[direction.y as Direction])
-        ) {
+        for (const axis of ['x', 'y'] as const) {
+          if (!scrollIntent[axis][direction[axis] as Direction]) {
+            speed[axis] = 0;
+            direction[axis] = 0;
+          }
+        }
+
+        if (speed.x > 0 || speed.y > 0) {
           clearAutoScrollInterval();
 
           scrollContainerRef.current = scrollContainer;

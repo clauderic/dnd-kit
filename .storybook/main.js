@@ -1,6 +1,10 @@
 const path = require('path');
 
 module.exports = {
+  reactOptions: {
+    legacyRootApi: false,
+  },
+  staticDirs: ['./assets'],
   stories: ['../stories/**/*.story.tsx'],
   addons: [
     '@storybook/addon-essentials',

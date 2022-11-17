@@ -1,5 +1,11 @@
 # @dnd-kit/accessibility
 
+## 3.0.1
+
+### Patch Changes
+
+- [#776](https://github.com/clauderic/dnd-kit/pull/776) [`3978c43`](https://github.com/clauderic/dnd-kit/commit/3978c43c6b045f10b75f47ad8bbea38a84437bd6) Thanks [@clauderic](https://github.com/clauderic)! - The ARIA live region element used for screen reader announcements is now positioned using `position: fixed` instead of `position: absolute`. As of `@dnd-kit/core^6.0.0`, the live region element is no longer portaled by default into the `document.body`. This change was introduced in order to fix issues with portaled live regions. However, this change can introduce visual regressions when using absolutely positioned elements, since the live region element is constrained to the stacking and position context of its closest positioned ancestor. Using fixed position ensures the element does not introduce visual regressions.
+
 ## 3.0.0
 
 ### Major Changes

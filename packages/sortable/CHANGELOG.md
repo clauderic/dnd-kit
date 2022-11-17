@@ -1,5 +1,137 @@
 # @dnd-kit/sortable
 
+## 7.0.1
+
+### Patch Changes
+
+- [#792](https://github.com/clauderic/dnd-kit/pull/792) [`b6970e7`](https://github.com/clauderic/dnd-kit/commit/b6970e78da868ea5c9f49368e88401d5b4cae765) Thanks [@clauderic](https://github.com/clauderic)! - The `hasSortableData` type-guard that is exported by @dnd-kit/sortable has been updated to also accept the `Active` and `Over` interfaces so it can be used in events such as `onDragStart`, `onDragOver`, and `onDragEnd`.
+
+- Updated dependencies [[`eaa6e12`](https://github.com/clauderic/dnd-kit/commit/eaa6e126b8e4141b87d92d23478c47f5ba204f25)]:
+  - @dnd-kit/core@6.0.4
+
+## 7.0.0
+
+### Major Changes
+
+- [#755](https://github.com/clauderic/dnd-kit/pull/755) [`33e6dd2`](https://github.com/clauderic/dnd-kit/commit/33e6dd2dc954f1f2da90d8f8af995021031b6b41) Thanks [@clauderic](https://github.com/clauderic)! - The `UniqueIdentifier` type has been updated to now accept either `string` or `number` identifiers. As a result, the `id` property of `useDraggable`, `useDroppable` and `useSortable` and the `items` prop of `<SortableContext>` now all accept either `string` or `number` identifiers.
+
+  #### Migration steps
+
+  For consumers that are using TypeScript, import the `UniqueIdentifier` type to have strongly typed local state:
+
+  ```diff
+  + import type {UniqueIdentifier} from '@dnd-kit/core';
+
+  function MyComponent() {
+  -  const [items, setItems] = useState(['A', 'B', 'C']);
+  +  const [items, setItems] = useState<UniqueIdentifier>(['A', 'B', 'C']);
+  }
+  ```
+
+  Alternatively, consumers can cast or convert the `id` property to a `string` when reading the `id` property of interfaces such as `Active`, `Over`, `DroppableContainer` and `DraggableNode`.
+
+  The `draggableNodes` object has also been converted to a map. Consumers that were reading from the `draggableNodes` property that is available on the public context of `<DndContext>` should follow these migration steps:
+
+  ```diff
+  - draggableNodes[someId];
+  + draggableNodes.get(someId);
+  ```
+
+- [#660](https://github.com/clauderic/dnd-kit/pull/660) [`30bbd12`](https://github.com/clauderic/dnd-kit/commit/30bbd12f9606c2e99523cb9ece465041cb37e916) Thanks [@clauderic](https://github.com/clauderic)! - Changes to the default `sortableKeyboardCoordinates` KeyboardSensor coordinate getter.
+
+  #### Better handling of variable sizes
+
+  The default `sortableKeyboardCoordinates` function now has better handling of lists that have items of variable sizes. We recommend that consumers re-order lists `onDragOver` instead of `onDragEnd` when sorting lists of variable sizes via the keyboard for optimal compatibility.
+
+  #### Better handling of overlapping droppables
+
+  The default `sortableKeyboardCoordinates` function that is exported from the `@dnd-kit/sortable` package has been updated to better handle cases where the collision rectangle is overlapping droppable rectangles. For example, for `down` arrow key, the default function had logic that would only consider collisions against droppables that were below the `bottom` edge of the collision rect. This was problematic when the collision rect was overlapping droppable rects, because it meant that it's bottom edge was below the top edge of the droppable, and that resulted in that droppable being skipped.
+
+  ```diff
+  - collisionRect.bottom > droppableRect.top
+  + collisionRect.top > droppableRect.top
+  ```
+
+  This change should be backwards compatible for most consumers, but may introduce regressions in some use-cases, especially for consumers that may have copied the multiple containers examples. There is now a custom sortable keyboard coordinate getter [optimized for multiple containers that you can refer to](https://github.com/clauderic/dnd-kit/tree/master/stories/2%20-%20Presets/Sortable/multipleContainersKeyboardCoordinates.ts).
+
+### Minor Changes
+
+- [#748](https://github.com/clauderic/dnd-kit/pull/748) [`59ca82b`](https://github.com/clauderic/dnd-kit/commit/59ca82b9f228f34c7731ece87aef5d9633608b57) Thanks [@clauderic](https://github.com/clauderic)! - Automatic focus management and activator node refs.
+
+  #### Introducing activator node refs
+
+  Introducing the concept of activator node refs for `useDraggable` and `useSortable`. This allows @dnd-kit to handle common use-cases such as restoring focus on the activator node after dragging via the keyboard or only allowing the activator node to instantiate the keyboard sensor.
+
+  Consumers of `useDraggable` and `useSortable` may now optionally set the activator node ref on the element that receives listeners:
+
+  ```diff
+  import {useDraggable} from '@dnd-kit/core';
+
+  function Draggable(props) {
+    const {
+      listeners,
+      setNodeRef,
+  +   setActivatorNodeRef,
+    } = useDraggable({id: props.id});
+
+    return (
+      <div ref={setNodeRef}>
+        Draggable element
+        <button
+          {...listeners}
+  +       ref={setActivatorNodeRef}
+        >
+          :: Drag Handle
+        </button>
+      </div>
+    )
+  }
+  ```
+
+  It's common for the activator element (the element that receives the sensor listeners) to differ from the draggable node. When this happens, @dnd-kit has no reliable way to get a reference to the activator node after dragging ends, as the original `event.target` that instantiated the sensor may no longer be mounted in the DOM or associated with the draggable node that was previously active.
+
+  #### Automatically restoring focus
+
+  Focus management is now automatically handled by @dnd-kit. When the activator event is a Keyboard event, @dnd-kit will now attempt to automatically restore focus back to the first focusable node of the activator node or draggable node.
+
+  If no activator node is specified via the `setActivatorNodeRef` setter function of `useDraggble` and `useSortable`, @dnd-kit will automatically restore focus on the first focusable node of the draggable node set via the `setNodeRef` setter function of `useDraggable` and `useSortable`.
+
+  If you were previously managing focus manually and would like to opt-out of automatic focus management, use the newly introduced `restoreFocus` property of the `accessibility` prop of `<DndContext>`:
+
+  ```diff
+  <DndContext
+    accessibility={{
+  +   restoreFocus: false
+    }}
+  ```
+
+- [#672](https://github.com/clauderic/dnd-kit/pull/672) [`10f6836`](https://github.com/clauderic/dnd-kit/commit/10f683631103b1d919f2fbca1177141b9369d2cf) Thanks [@clauderic](https://github.com/clauderic)! - `SortableContext` now always requests measuring of droppable containers when its `items` prop changes, regardless of whether or not dragging is in progress. Measuring will occur if the measuring configuration allows for it.
+
+- [#754](https://github.com/clauderic/dnd-kit/pull/754) [`224201a`](https://github.com/clauderic/dnd-kit/commit/224201a2a5611f0efeb57c9b273eddf23c28e01f) Thanks [@clauderic](https://github.com/clauderic)! - The `<SortableContext>` component now optionally accepts a `disabled` prop to globally disable `useSortable` hooks rendered within it.
+
+  The `disabled` prop accepts either a boolean or an object with the following shape:
+
+  ```ts
+  interface Disabled {
+    draggable?: boolean;
+    droppable?: boolean;
+  }
+  ```
+
+  The `useSortable` hook has now been updated to also optionally accept the `disabled` configuration object to conditionally disable the `useDraggable` and/or `useDroppable` hooks used internally.
+
+  Like the `strategy` prop, the `disabled` prop defined on the `useSortable` hook takes precedence over the `disabled` prop defined on the parent `<SortableContext>`.
+
+### Patch Changes
+
+- [#757](https://github.com/clauderic/dnd-kit/pull/757) [`e6d544f`](https://github.com/clauderic/dnd-kit/commit/e6d544f3f775e6a43de25d1aee67efeec0d5db58) Thanks [@clauderic](https://github.com/clauderic)! - The `wasDragging` property of `animateLayoutChanges` now remains true for longer than a single re-render. Before this change, it was possible for the component where `useSortable` is used to re-render before @dnd-kit is ready to perform the layout animation, causing the animation to be skipped entirely.
+
+- [#749](https://github.com/clauderic/dnd-kit/pull/749) [`188a450`](https://github.com/clauderic/dnd-kit/commit/188a4507b99d8e8fdaa50bd26deb826c86608e18) Thanks [@clauderic](https://github.com/clauderic)! - Faster (and safer) equal implementation.
+
+- Updated dependencies [[`4173087`](https://github.com/clauderic/dnd-kit/commit/417308704454c50f88ab305ab450a99bde5034b0), [`59ca82b`](https://github.com/clauderic/dnd-kit/commit/59ca82b9f228f34c7731ece87aef5d9633608b57), [`7161f70`](https://github.com/clauderic/dnd-kit/commit/7161f702c9fe06f8dafa6449d48b918070ca46fb), [`a52fba1`](https://github.com/clauderic/dnd-kit/commit/a52fba1ccff8a8f40e2cb8dcc15236cfd9e8fbec), [`40707ce`](https://github.com/clauderic/dnd-kit/commit/40707ce6f388957203d6df4ccbeef460450ffd7d), [`a41e5b8`](https://github.com/clauderic/dnd-kit/commit/a41e5b8eff84f0528ffc8b3455b94b95ab60a4a9), [`bf30718`](https://github.com/clauderic/dnd-kit/commit/bf30718bc22584a47053c14f5920e317ac45cd50), [`a41e5b8`](https://github.com/clauderic/dnd-kit/commit/a41e5b8eff84f0528ffc8b3455b94b95ab60a4a9), [`a41e5b8`](https://github.com/clauderic/dnd-kit/commit/a41e5b8eff84f0528ffc8b3455b94b95ab60a4a9), [`035021a`](https://github.com/clauderic/dnd-kit/commit/035021aac51161e2bf9715f087a6dd1b46647bfc), [`77e3d44`](https://github.com/clauderic/dnd-kit/commit/77e3d44502383d2f9a9f9af014b053619b3e37b3), [`5811986`](https://github.com/clauderic/dnd-kit/commit/5811986e7544a5e80039870a015e38df805eaad1), [`e302bd4`](https://github.com/clauderic/dnd-kit/commit/e302bd4488bdfb6735c97ac42c1f4a0b1e8bfdf9), [`188a450`](https://github.com/clauderic/dnd-kit/commit/188a4507b99d8e8fdaa50bd26deb826c86608e18), [`59ca82b`](https://github.com/clauderic/dnd-kit/commit/59ca82b9f228f34c7731ece87aef5d9633608b57), [`750d726`](https://github.com/clauderic/dnd-kit/commit/750d72655922363b2218d7b41e028f9dceaef013), [`5f3c700`](https://github.com/clauderic/dnd-kit/commit/5f3c7009698d15936fd20f30f11ad3b23cd7886f), [`035021a`](https://github.com/clauderic/dnd-kit/commit/035021aac51161e2bf9715f087a6dd1b46647bfc), [`e6e242c`](https://github.com/clauderic/dnd-kit/commit/e6e242cbc718ed687a26f5c622eeed4dbd6c2425), [`035021a`](https://github.com/clauderic/dnd-kit/commit/035021aac51161e2bf9715f087a6dd1b46647bfc), [`33e6dd2`](https://github.com/clauderic/dnd-kit/commit/33e6dd2dc954f1f2da90d8f8af995021031b6b41), [`10f6836`](https://github.com/clauderic/dnd-kit/commit/10f683631103b1d919f2fbca1177141b9369d2cf), [`c1b3b5a`](https://github.com/clauderic/dnd-kit/commit/c1b3b5a0be5759b707e22c4e1b1236aaa82773a2), [`035021a`](https://github.com/clauderic/dnd-kit/commit/035021aac51161e2bf9715f087a6dd1b46647bfc)]:
+  - @dnd-kit/core@6.0.0
+  - @dnd-kit/utilities@3.2.0
+
 ## 6.0.1
 
 ### Patch Changes

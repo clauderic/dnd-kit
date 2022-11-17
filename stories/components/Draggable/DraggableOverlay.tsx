@@ -39,10 +39,9 @@ const dropAnimationConfig: DropAnimation = {
         {
           duration: 250,
           easing: 'ease',
+          fill: 'forwards',
         }
       );
-
-      debugger;
     }
 
     return () => {
@@ -52,7 +51,7 @@ const dropAnimationConfig: DropAnimation = {
 };
 
 interface Props {
-  axis: ComponentProps<typeof Draggable>['axis'];
+  axis?: ComponentProps<typeof Draggable>['axis'];
   dropAnimation?: DropAnimation | null;
 }
 

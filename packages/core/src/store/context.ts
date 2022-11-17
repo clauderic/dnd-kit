@@ -12,7 +12,7 @@ export const defaultPublicContext: PublicContextDescriptor = {
   activeNodeRect: null,
   collisions: null,
   containerNodeRect: null,
-  draggableNodes: {},
+  draggableNodes: new Map(),
   droppableRects: new Map(),
   droppableContainers: new DroppableContainersMap(),
   over: null,
@@ -40,7 +40,7 @@ export const defaultInternalContext: InternalContextDescriptor = {
     draggable: '',
   },
   dispatch: noop,
-  draggableNodes: {},
+  draggableNodes: new Map(),
   over: null,
   measureDroppableContainers: noop,
 };

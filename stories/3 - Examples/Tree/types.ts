@@ -1,7 +1,8 @@
 import type {MutableRefObject} from 'react';
+import type {UniqueIdentifier} from '@dnd-kit/core';
 
 export interface TreeItem {
-  id: string;
+  id: UniqueIdentifier;
   children: TreeItem[];
   collapsed?: boolean;
 }
@@ -9,7 +10,7 @@ export interface TreeItem {
 export type TreeItems = TreeItem[];
 
 export interface FlattenedItem extends TreeItem {
-  parentId: null | string;
+  parentId: UniqueIdentifier | null;
   depth: number;
   index: number;
 }

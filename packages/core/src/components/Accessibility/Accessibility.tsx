@@ -3,25 +3,29 @@ import {createPortal} from 'react-dom';
 import {useUniqueId} from '@dnd-kit/utilities';
 import {HiddenText, LiveRegion, useAnnouncement} from '@dnd-kit/accessibility';
 
+import {DndMonitorListener, useDndMonitor} from '../DndMonitor';
+
 import type {Announcements, ScreenReaderInstructions} from './types';
-import type {UniqueIdentifier} from '../../types';
-import {defaultAnnouncements} from './defaults';
-import {DndMonitorArguments, useDndMonitor} from '../../hooks/monitor';
+import {
+  defaultAnnouncements,
+  defaultScreenReaderInstructions,
+} from './defaults';
 
 interface Props {
   announcements?: Announcements;
-  screenReaderInstructions: ScreenReaderInstructions;
-  hiddenTextDescribedById: UniqueIdentifier;
+  container?: Element;
+  screenReaderInstructions?: ScreenReaderInstructions;
+  hiddenTextDescribedById: string;
 }
 
 export function Accessibility({
   announcements = defaultAnnouncements,
+  container,
   hiddenTextDescribedById,
-  screenReaderInstructions,
+  screenReaderInstructions = defaultScreenReaderInstructions,
 }: Props) {
   const {announce, announcement} = useAnnouncement();
   const liveRegionId = useUniqueId(`DndLiveRegion`);
-
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -29,40 +33,43 @@ export function Accessibility({
   }, []);
 
   useDndMonitor(
-    useMemo<DndMonitorArguments>(
+    useMemo<DndMonitorListener>(
       () => ({
         onDragStart({active}) {
-          announce(announcements.onDragStart(active.id));
+          announce(announcements.onDragStart({active}));
         },
         onDragMove({active, over}) {
           if (announcements.onDragMove) {
-            announce(announcements.onDragMove(active.id, over?.id));
+            announce(announcements.onDragMove({active, over}));
           }
         },
         onDragOver({active, over}) {
-          announce(announcements.onDragOver(active.id, over?.id));
+          announce(announcements.onDragOver({active, over}));
         },
         onDragEnd({active, over}) {
-          announce(announcements.onDragEnd(active.id, over?.id));
+          announce(announcements.onDragEnd({active, over}));
         },
-        onDragCancel({active}) {
-          announce(announcements.onDragCancel(active.id));
+        onDragCancel({active, over}) {
+          announce(announcements.onDragCancel({active, over}));
         },
       }),
       [announce, announcements]
     )
   );
 
-  return mounted
-    ? createPortal(
-        <>
-          <HiddenText
-            id={hiddenTextDescribedById}
-            value={screenReaderInstructions.draggable}
-          />
-          <LiveRegion id={liveRegionId} announcement={announcement} />
-        </>,
-        document.body
-      )
-    : null;
+  if (!mounted) {
+    return null;
+  }
+
+  const markup = (
+    <>
+      <HiddenText
+        id={hiddenTextDescribedById}
+        value={screenReaderInstructions.draggable}
+      />
+      <LiveRegion id={liveRegionId} announcement={announcement} />
+    </>
+  );
+
+  return container ? createPortal(markup, container) : markup;
 }

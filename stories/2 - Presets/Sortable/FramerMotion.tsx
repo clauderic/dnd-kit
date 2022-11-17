@@ -8,6 +8,7 @@ import {
   KeyboardSensor,
   useSensor,
   useSensors,
+  UniqueIdentifier,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -24,9 +25,8 @@ import styles from '../../components/Item/Item.module.css';
 
 export function FramerMotion() {
   const [items, setItems] = useState(() =>
-    createRange<string>(16, (index) => (index + 1).toString())
+    createRange<UniqueIdentifier>(16, (index) => index + 1)
   );
-  const [activeId, setActiveId] = useState(null);
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -39,7 +39,6 @@ export function FramerMotion() {
       <DndContext
         collisionDetection={closestCenter}
         sensors={sensors}
-        onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
         <SortableContext strategy={rectSortingStrategy} items={items}>
@@ -53,15 +52,14 @@ export function FramerMotion() {
     </Wrapper>
   );
 
-  function handleDragStart({active}) {
-    setActiveId(active.id);
-  }
+  function handleDragEnd({active, over}: DragEndEvent) {
+    if (!over) {
+      return;
+    }
 
-  function handleDragEnd({over}: DragEndEvent) {
     setItems((items) =>
-      arrayMove(items, items.indexOf(activeId), items.indexOf(over.id))
+      arrayMove(items, items.indexOf(active.id), items.indexOf(over.id))
     );
-    setActiveId(null);
   }
 }
 
@@ -77,7 +75,7 @@ const initialStyles = {
   scale: 1,
 };
 
-function Item({id}) {
+function Item({id}: {id: UniqueIdentifier}) {
   const {
     attributes,
     setNodeRef,
@@ -94,8 +92,7 @@ function Item({id}) {
       className={styles.Item}
       style={baseStyles}
       ref={setNodeRef}
-      tabIndex={0}
-      layoutId={id}
+      layoutId={String(id)}
       animate={
         transform
           ? {

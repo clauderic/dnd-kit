@@ -1,7 +1,15 @@
 import {useLazyMemo} from '@dnd-kit/utilities';
 
-export function useInitialValue<T>(value: T | null) {
-  return useLazyMemo<T | null>(
+type AnyFunction = (...args: any) => any;
+
+export function useInitialValue<
+  T,
+  U extends AnyFunction | undefined = undefined
+>(
+  value: T | null,
+  computeFn?: U
+): U extends AnyFunction ? ReturnType<U> | null : T | null {
+  return useLazyMemo(
     (previousValue) => {
       if (!value) {
         return null;
@@ -11,8 +19,8 @@ export function useInitialValue<T>(value: T | null) {
         return previousValue;
       }
 
-      return value;
+      return typeof computeFn === 'function' ? computeFn(value) : value;
     },
-    [value]
+    [computeFn, value]
   );
 }

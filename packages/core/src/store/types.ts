@@ -17,9 +17,11 @@ export interface DraggableElement {
   disabled: boolean;
 }
 
-export type Data = Record<string, any>;
+type AnyData = Record<string, any>;
 
-export type DataRef = MutableRefObject<Data | undefined>;
+export type Data<T = AnyData> = T & AnyData;
+
+export type DataRef<T = AnyData> = MutableRefObject<Data<T> | undefined>;
 
 export interface DroppableContainer {
   id: UniqueIdentifier;
@@ -54,13 +56,11 @@ export type DraggableNode = {
   id: UniqueIdentifier;
   key: UniqueIdentifier;
   node: MutableRefObject<HTMLElement | null>;
+  activatorNode: MutableRefObject<HTMLElement | null>;
   data: DataRef;
 };
 
-export type DraggableNodes = Record<
-  UniqueIdentifier,
-  DraggableNode | undefined
->;
+export type DraggableNodes = Map<UniqueIdentifier, DraggableNode | undefined>;
 
 export type DroppableContainers = DroppableContainersMap;
 
@@ -108,7 +108,7 @@ export interface InternalContextDescriptor {
   active: Active | null;
   activeNodeRect: ClientRect | null;
   ariaDescribedById: {
-    draggable: UniqueIdentifier;
+    draggable: string;
   };
   dispatch: React.Dispatch<Actions>;
   draggableNodes: DraggableNodes;

@@ -13,6 +13,7 @@ export interface Props {
   disabled?: boolean;
   dragging?: boolean;
   handle?: boolean;
+  handleProps?: any;
   height?: number;
   index?: number;
   fadeIn?: boolean;
@@ -49,6 +50,7 @@ export const Item = React.memo(
         disabled,
         fadeIn,
         handle,
+        handleProps,
         height,
         index,
         listeners,
@@ -142,7 +144,7 @@ export const Item = React.memo(
               {onRemove ? (
                 <Remove className={styles.Remove} onClick={onRemove} />
               ) : null}
-              {handle ? <Handle {...listeners} /> : null}
+              {handle ? <Handle {...handleProps} {...listeners} /> : null}
             </span>
           </div>
         </li>

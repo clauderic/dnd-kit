@@ -7,7 +7,7 @@ import type {
   DraggableNodes,
   DroppableContainers,
 } from '../../../store';
-import type {ClientRect} from '../../../types';
+import type {ClientRect, UniqueIdentifier} from '../../../types';
 import {getMeasurableNode} from '../../../utilities/nodes';
 import {scrollIntoViewIfNeeded} from '../../../utilities/scroll';
 import {parseTransform} from '../../../utilities/transform';
@@ -16,7 +16,7 @@ import type {Animation} from '../components';
 
 interface SharedParameters {
   active: {
-    id: string;
+    id: UniqueIdentifier;
     data: Active['data'];
     node: HTMLElement;
     rect: ClientRect;
@@ -171,7 +171,7 @@ export function useDropAnimation({
       return;
     }
 
-    const activeDraggable: DraggableNode | undefined = draggableNodes[id];
+    const activeDraggable: DraggableNode | undefined = draggableNodes.get(id);
 
     if (!activeDraggable) {
       return;
@@ -276,8 +276,9 @@ function createDefaultDropAnimation(
 
     const cleanup = sideEffects?.({active, dragOverlay, ...rest});
     const animation = dragOverlay.node.animate(animationKeyframes, {
-      easing,
       duration,
+      easing,
+      fill: 'forwards',
     });
 
     return new Promise((resolve) => {

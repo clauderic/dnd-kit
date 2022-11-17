@@ -4,6 +4,7 @@ import type {Collision} from '../utilities/algorithms';
 import type {Translate} from './coordinates';
 
 interface DragEvent {
+  activatorEvent: Event;
   active: Active;
   collisions: Collision[] | null;
   delta: Translate;

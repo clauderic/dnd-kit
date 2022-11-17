@@ -7,7 +7,7 @@ export function getInitialState(): State {
     draggable: {
       active: null,
       initialCoordinates: {x: 0, y: 0},
-      nodes: {},
+      nodes: new Map(),
       translate: {x: 0, y: 0},
     },
     droppable: {

@@ -1,5 +1,432 @@
 # @dnd-kit/core
 
+## 6.0.5
+
+### Patch Changes
+
+- [`4a5132d`](https://github.com/clauderic/dnd-kit/commit/4a5132db4e6acbe407df3d3e2fd18b466647746d) Thanks [@clauderic](https://github.com/clauderic)! - Removed a stray `console.log` in the `KeyboardSensor`
+
+## 6.0.4
+
+### Patch Changes
+
+- [#797](https://github.com/clauderic/dnd-kit/pull/797) [`eaa6e12`](https://github.com/clauderic/dnd-kit/commit/eaa6e126b8e4141b87d92d23478c47f5ba204f25) Thanks [@clauderic](https://github.com/clauderic)! - Fixed a regression in the `KeyboardSensor` scrolling logic.
+
+## 6.0.3
+
+### Patch Changes
+
+- [#772](https://github.com/clauderic/dnd-kit/pull/772) [`e97cb1f`](https://github.com/clauderic/dnd-kit/commit/e97cb1f3240cb495c8bf5c63e5145cf15c411a6f) Thanks [@clauderic](https://github.com/clauderic)! - The ARIA live region element used for screen reader announcements is now positioned using `position: fixed` instead of `position: absolute`. As of `@dnd-kit/core^6.0.0`, the live region element is no longer portaled by default into the `document.body`. This change was introduced in order to fix issues with portaled live regions. However, this change can introduce visual regressions when using absolutely positioned elements, since the live region element is constrained to the stacking and position context of its closest positioned ancestor. Using fixed position ensures the element does not introduce visual regressions.
+
+## 6.0.2
+
+### Patch Changes
+
+- [#769](https://github.com/clauderic/dnd-kit/pull/769) [`8e3599f`](https://github.com/clauderic/dnd-kit/commit/8e3599fafa3b4444e580c4bef2543c3b6b8241fb) Thanks [@clauderic](https://github.com/clauderic)! - Fixed an issue with the `containerNodeRect` that is exposed to modifiers having stale properties (`top`, `left`, etc.) when its scrollable ancestors were scrolled.
+
+- [#769](https://github.com/clauderic/dnd-kit/pull/769) [`53cb962`](https://github.com/clauderic/dnd-kit/commit/53cb96243e34b552640e0679e1cc1ebd52b271f1) Thanks [@clauderic](https://github.com/clauderic)! - Fixed a regression with scrollable ancestors detection.
+
+  The scrollable ancestors should be determined by the active node or the over node exclusively. The `draggingNode` variable shouldn't be used to detect scrollable ancestors since it can be the drag overlay node, and the drag overlay node doesn't have any scrollable ancestors because it is a fixed position element.
+
+## 6.0.1
+
+### Patch Changes
+
+- [#759](https://github.com/clauderic/dnd-kit/pull/759) [`e5b9d38`](https://github.com/clauderic/dnd-kit/commit/e5b9d380887f71d50d8418f48fc3569db8367124) Thanks [@clauderic](https://github.com/clauderic)! - Fixed a regression with the default drop animation of `<DragOverlay>` for consumers using React 18.
+
+## 6.0.0
+
+### Major Changes
+
+- [#746](https://github.com/clauderic/dnd-kit/pull/746) [`4173087`](https://github.com/clauderic/dnd-kit/commit/417308704454c50f88ab305ab450a99bde5034b0) Thanks [@clauderic](https://github.com/clauderic)! - Accessibility related changes.
+
+  #### Regrouping accessibility-related props
+
+  Accessibility-related props have been regrouped under the `accessibility` prop of `<DndContext>`:
+
+  ```diff
+  <DndContext
+  - announcements={customAnnouncements}
+  - screenReaderInstructions={customScreenReaderInstructions}
+  + accessibility={{
+  +  announcements: customAnnouncements,
+  +  screenReaderInstructions: customScreenReaderInstructions,
+  + }}
+  ```
+
+  This is a breaking change that will allow easier addition of new accessibility-related features without overloading the props namespace of `<DndContext>`.
+
+  #### Arguments object for announcements
+
+  The arguments passed to announcement callbacks have changed. They now receive an object that contains the `active` and `over` properties that match the signature of those passed to the DragEvent handlers (`onDragStart`, `onDragMove`, etc.). This change allows consumers to read the `data` property of the `active` and `over` node to customize the announcements based on the data.
+
+  Example migration steps:
+
+  ```diff
+  export const announcements: Announcements = {
+  -  onDragStart(id) {
+  +  onDragStart({active}) {
+  -    return `Picked up draggable item ${id}.`;
+  +    return `Picked up draggable item ${active.id}.`;
+    },
+  -  onDragOver(id, overId) {
+  +  onDragOver({active, over}) {
+  -    if (overId) {
+  +    if (over) {
+  -      return `Draggable item ${id} was moved over droppable area ${overId}.`;
+  +      return `Draggable item ${active.id} was moved over droppable area ${over.id}.`;
+      }
+
+  -    return `Draggable item ${id} is no longer over a droppable area.`;
+  +    return `Draggable item ${active.id} is no longer over a droppable area.`;
+    },
+  };
+  ```
+
+  #### Accessibility-related DOM nodes are no longer portaled by default
+
+  The DOM nodes for the screen reader instructions and announcements are no longer portaled into the `document.body` element by default.
+
+  This change is motivated by the fact that screen readers do not always announce ARIA live regions that are rendered on the `document.body`. Common examples of this include when rendering a `<DndContext>` within a `<dialog>` element or an element that has `role="dialog"`, only ARIA live regions rendered within the dialog will be announced.
+
+  Consumers can now opt to render announcements in the portal container of their choice using the `container` property of the `accessibility` prop:
+
+  ```diff
+  <DndContext
+  + accessibility={{
+  +  container: document.body,
+  + }}
+  ```
+
+- [#733](https://github.com/clauderic/dnd-kit/pull/733) [`035021a`](https://github.com/clauderic/dnd-kit/commit/035021aac51161e2bf9715f087a6dd1b46647bfc) Thanks [@clauderic](https://github.com/clauderic)! - The `<DragOverlay>` component's drop animation has been refactored, which fixes a number of bugs with the existing implementation and introduces new functionality.
+
+  ### What's new?
+
+  #### Scrolling the draggable node into view if needed
+
+  The drop animation now ensures that the the draggable node that we are animating to is in the viewport before performing the drop animation and scrolls it into view if needed.
+
+  #### Changes to the `dropAnimation` prop
+
+  The `dropAnimation` prop of `<DragOverlay>` now accepts either a configuration object or a custom drop animation function.
+
+  The configuration object adheres to the following shape:
+
+  ```ts
+  interface DropAnimationOptions {
+    duration?: number;
+    easing?: string;
+    keyframes?: DropAnimationKeyframeResolver;
+    sideEffects?: DropAnimationSideEffects;
+  }
+  ```
+
+  The default drop animation options are:
+
+  ```ts
+  const defaultDropAnimationConfiguration: DropAnimationOptions = {
+    duration: 250,
+    easing: 'ease',
+    keyframes: defaultDropAnimationKeyframes,
+    sideEffects: defaultDropAnimationSideEffects({
+      styles: {
+        active: {
+          opacity: '0',
+        },
+      },
+    }),
+  };
+  ```
+
+  The `keyframes` option allows consumers to override the keyframes of the drop animation. For example, here is how you would add a fade out transition to the drop animation using keyframes:
+
+  ```ts
+  import {CSS} from '@dnd-kit/utilities';
+
+  const customDropAnimation = {
+    keyframes({transform}) {
+      return [
+        {opacity: 1, transform: CSS.Transform.toString(transform.initial)},
+        {opacity: 0, transform: CSS.Transform.toString(transform.final)},
+      ];
+    },
+  };
+  ```
+
+  The `dragSourceOpacity` option has been deprecated in favour of letting consumers define arbitrary side effects that should run before the animation starts. Side effects may return a cleanup function that should run when the drop animation has completed.
+
+  ```ts
+  type CleanupFunction = () => void;
+
+  export type DropAnimationSideEffects = (
+    parameters: DropAnimationSideEffectsParameters
+  ) => CleanupFunction | void;
+  ```
+
+  Drop animation side effects are a powerful abstraction that provide a lot of flexibility. The `defaultDropAnimationSideEffects` function is exported by `@dnd-kit/core` and aims to facilitate the types of side-effects we anticipate most consumers will want to use out of the box:
+
+  ```ts
+  interface DefaultDropAnimationSideEffectsOptions {
+    // Apply a className on the active draggable or drag overlay node during the drop animation
+    className?: {
+      active?: string;
+      dragOverlay?: string;
+    };
+    // Apply temporary styles to the active draggable node or drag overlay during the drop animation
+    styles?: {
+      active?: Styles;
+      dragOverlay?: Styles;
+    };
+  }
+  ```
+
+  For advanced side-effects, consumers may define a custom `sideEffects` function that may optionally return a cleanup function that will be executed when the drop animation completes:
+
+  ```ts
+  const customDropAnimation = {
+    sideEffects({active}) {
+      active.node.classList.add('dropAnimationInProgress');
+      active.node.animate([{opacity: 0}, {opacity: 1}], {
+        easing: 'ease-in',
+        duration: 250,
+      });
+
+      return () => {
+        // Clean up when the drop animation is complete
+        active.node.classList.remove('dropAnimationInProgress');
+      };
+    },
+  };
+  ```
+
+  For even more advanced use-cases, consumers may also provide a function to the `dropAnimation` prop, which adheres to the following shape:
+
+  ```ts
+  interface DropAnimationFunctionArguments {
+    active: {
+      id: UniqueIdentifier;
+      data: DataRef;
+      node: HTMLElement;
+      rect: ClientRect;
+    };
+    draggableNodes: DraggableNodes;
+    dragOverlay: {
+      node: HTMLElement;
+      rect: ClientRect;
+    };
+    droppableContainers: DroppableContainers;
+    measuringConfiguration: DeepRequired<MeasuringConfiguration>;
+    transform: Transform;
+  }
+
+  type DropAnimationFunction = (
+    args: DropAnimationFunctionArguments
+  ) => Promise<void> | void;
+  ```
+
+  ### Bug fixes
+
+  - The `<DragOverlay>` now respects the `measuringConfiguration` specified for the `dragOverlay` and `draggable` properties when measuring the rects to animate to and from.
+  - The `<DragOverlay>` component now supports rendering children while performing the drop animation. Previously, the drag overlay would be in a broken state when trying to pick up an item while a drop animation was in progress.
+
+  ### Migration steps
+
+  For consumers that were relying on the `dragSourceOpacity` property in their `dropAnimation` configuration:
+
+  ```diff
+  + import {defaultDropAnimationSideEffects} from '@dnd-kit/core';
+
+  const dropAnimation = {
+  - dragSourceOpacity: 0.5,
+  + sideEffects: defaultDropAnimationSideEffects({
+  +   styles : {
+  +     active: {
+  +       opacity: '0.5',
+  +     },
+  +   },
+  +  ),
+  };
+  ```
+
+- [#745](https://github.com/clauderic/dnd-kit/pull/745) [`5f3c700`](https://github.com/clauderic/dnd-kit/commit/5f3c7009698d15936fd20f30f11ad3b23cd7886f) Thanks [@clauderic](https://github.com/clauderic)! - The keyboard sensor now keeps track of the initial coordinates of the collision rect to provide a translate delta when move events are dispatched.
+
+  This is a breaking change that may affect consumers that had created custom keyboard coordinate getters.
+
+  Previously the keyboard sensor would measure the initial rect of the active node and store its top and left properties as its initial coordinates it would then compare all subsequent move coordinates to calculate the delta.
+
+  This approach suffered from the following issues:
+
+  - It didn't respect the measuring configuration defined on the `<DndContext>` for the draggable node
+  - Some consumers re-render the active node after dragging begins, which would lead to stale measurements
+  - An error had to be thrown if there was no active node during the activation phase of the keyboard sensor. This shouldn't be a concern of the keyboard sensor.
+  - The `currentCoordinates` passed to the coordinate getter were often stale and not an accurate representation of the current position of the collision rect, which can be affected by a number of different variables, such as modifiers.
+
+- [#755](https://github.com/clauderic/dnd-kit/pull/755) [`33e6dd2`](https://github.com/clauderic/dnd-kit/commit/33e6dd2dc954f1f2da90d8f8af995021031b6b41) Thanks [@clauderic](https://github.com/clauderic)! - The `UniqueIdentifier` type has been updated to now accept either `string` or `number` identifiers. As a result, the `id` property of `useDraggable`, `useDroppable` and `useSortable` and the `items` prop of `<SortableContext>` now all accept either `string` or `number` identifiers.
+
+  #### Migration steps
+
+  For consumers that are using TypeScript, import the `UniqueIdentifier` type to have strongly typed local state:
+
+  ```diff
+  + import type {UniqueIdentifier} from '@dnd-kit/core';
+
+  function MyComponent() {
+  -  const [items, setItems] = useState(['A', 'B', 'C']);
+  +  const [items, setItems] = useState<UniqueIdentifier>(['A', 'B', 'C']);
+  }
+  ```
+
+  Alternatively, consumers can cast or convert the `id` property to a `string` when reading the `id` property of interfaces such as `Active`, `Over`, `DroppableContainer` and `DraggableNode`.
+
+  The `draggableNodes` object has also been converted to a map. Consumers that were reading from the `draggableNodes` property that is available on the public context of `<DndContext>` should follow these migration steps:
+
+  ```diff
+  - draggableNodes[someId];
+  + draggableNodes.get(someId);
+  ```
+
+### Minor Changes
+
+- [#748](https://github.com/clauderic/dnd-kit/pull/748) [`59ca82b`](https://github.com/clauderic/dnd-kit/commit/59ca82b9f228f34c7731ece87aef5d9633608b57) Thanks [@clauderic](https://github.com/clauderic)! - Automatic focus management and activator node refs.
+
+  #### Introducing activator node refs
+
+  Introducing the concept of activator node refs for `useDraggable` and `useSortable`. This allows @dnd-kit to handle common use-cases such as restoring focus on the activator node after dragging via the keyboard or only allowing the activator node to instantiate the keyboard sensor.
+
+  Consumers of `useDraggable` and `useSortable` may now optionally set the activator node ref on the element that receives listeners:
+
+  ```diff
+  import {useDraggable} from '@dnd-kit/core';
+
+  function Draggable(props) {
+    const {
+      listeners,
+      setNodeRef,
+  +   setActivatorNodeRef,
+    } = useDraggable({id: props.id});
+
+    return (
+      <div ref={setNodeRef}>
+        Draggable element
+        <button
+          {...listeners}
+  +       ref={setActivatorNodeRef}
+        >
+          :: Drag Handle
+        </button>
+      </div>
+    )
+  }
+  ```
+
+  It's common for the activator element (the element that receives the sensor listeners) to differ from the draggable node. When this happens, @dnd-kit has no reliable way to get a reference to the activator node after dragging ends, as the original `event.target` that instantiated the sensor may no longer be mounted in the DOM or associated with the draggable node that was previously active.
+
+  #### Automatically restoring focus
+
+  Focus management is now automatically handled by @dnd-kit. When the activator event is a Keyboard event, @dnd-kit will now attempt to automatically restore focus back to the first focusable node of the activator node or draggable node.
+
+  If no activator node is specified via the `setActivatorNodeRef` setter function of `useDraggble` and `useSortable`, @dnd-kit will automatically restore focus on the first focusable node of the draggable node set via the `setNodeRef` setter function of `useDraggable` and `useSortable`.
+
+  If you were previously managing focus manually and would like to opt-out of automatic focus management, use the newly introduced `restoreFocus` property of the `accessibility` prop of `<DndContext>`:
+
+  ```diff
+  <DndContext
+    accessibility={{
+  +   restoreFocus: false
+    }}
+  ```
+
+- [#751](https://github.com/clauderic/dnd-kit/pull/751) [`a52fba1`](https://github.com/clauderic/dnd-kit/commit/a52fba1ccff8a8f40e2cb8dcc15236cfd9e8fbec) Thanks [@clauderic](https://github.com/clauderic)! - Added the `aria-disabled` attribute to the `attribtues` object returned by `useDraggable` and `useSortable`. The value of the `aria-disabled` attribute is populated based on whether or not the `disabled` argument is passed to `useDraggble` or `useSortable`.
+
+- [#741](https://github.com/clauderic/dnd-kit/pull/741) [`40707ce`](https://github.com/clauderic/dnd-kit/commit/40707ce6f388957203d6df4ccbeef460450ffd7d) Thanks [@clauderic](https://github.com/clauderic)! - The auto scroller now keeps track of the drag direction to infer scroll intent. By default, auto-scrolling will now be disabled for a given direction if dragging in that direction hasn't occurred yet. This prevents accidental auto-scrolling when picking up a draggable item that is near the scroll boundary threshold.
+
+- [#660](https://github.com/clauderic/dnd-kit/pull/660) [`a41e5b8`](https://github.com/clauderic/dnd-kit/commit/a41e5b8eff84f0528ffc8b3455b94b95ab60a4a9) Thanks [@clauderic](https://github.com/clauderic)! - Fixed a bug with the `delta` property returned in `onDragMove`, `onDragOver`, `onDragEnd` and `onDragCancel`. The `delta` property represents the `transform` delta since dragging was initiated, along with the scroll delta. However, due to an oversight, the `delta` property was actually returning the `transform` delta and the _current_ scroll offsets rather than the scroll _delta_.
+
+  This same change has been made to the `scrollAdjustedTranslate` property that is exposed to sensors.
+
+- [#750](https://github.com/clauderic/dnd-kit/pull/750) [`bf30718`](https://github.com/clauderic/dnd-kit/commit/bf30718bc22584a47053c14f5920e317ac45cd50) Thanks [@clauderic](https://github.com/clauderic)! - The `useDndMonitor()` hook has been refactored to be synchronously invoked at the same time as the events dispatched by `<DndContext>` (such as `onDragStart`, `onDragOver`, `onDragEnd`).
+
+  The new refactor uses the subscribe/notify pattern and no longer causes re-renders in consuming components of `useDndMonitor()` when events are dispatched.
+
+- [#660](https://github.com/clauderic/dnd-kit/pull/660) [`a41e5b8`](https://github.com/clauderic/dnd-kit/commit/a41e5b8eff84f0528ffc8b3455b94b95ab60a4a9) Thanks [@clauderic](https://github.com/clauderic)! - The `activeNodeRect` and `containerNodeRect` are now observed by a `ResizeObserver` in case they resize while dragging.
+
+- [#660](https://github.com/clauderic/dnd-kit/pull/660) [`a41e5b8`](https://github.com/clauderic/dnd-kit/commit/a41e5b8eff84f0528ffc8b3455b94b95ab60a4a9) Thanks [@clauderic](https://github.com/clauderic)! - Improved `useDraggable` usage without `<DragOverlay>`:
+
+  - The active draggable now scrolls with the page even if there is no `<DragOverlay>` used.
+  - Fixed issues when re-ordering the active draggable node in the DOM while dragging.
+
+- [#660](https://github.com/clauderic/dnd-kit/pull/660) [`77e3d44`](https://github.com/clauderic/dnd-kit/commit/77e3d44502383d2f9a9f9af014b053619b3e37b3) Thanks [@clauderic](https://github.com/clauderic)! - Fixed an issue with `useDroppable` hook needlessly dispatching `SetDroppableDisabled` actions even if the `disabled` property had not changed since registering the droppable.
+
+- [#749](https://github.com/clauderic/dnd-kit/pull/749) [`188a450`](https://github.com/clauderic/dnd-kit/commit/188a4507b99d8e8fdaa50bd26deb826c86608e18) Thanks [@clauderic](https://github.com/clauderic)! - The `onDragStart`, `onDragMove`, `onDragOver`, `onDragEnd` and `onDragCancel` events of `<DndContext>` and `useDndMonitor` now expose the `activatorEvent` event that instantiated the activated sensor.
+
+- [#733](https://github.com/clauderic/dnd-kit/pull/733) [`035021a`](https://github.com/clauderic/dnd-kit/commit/035021aac51161e2bf9715f087a6dd1b46647bfc) Thanks [@clauderic](https://github.com/clauderic)! - The `KeyboardSensor` now scrolls the focused activator draggable node into view if it is not within the viewport.
+
+- [#733](https://github.com/clauderic/dnd-kit/pull/733) [`035021a`](https://github.com/clauderic/dnd-kit/commit/035021aac51161e2bf9715f087a6dd1b46647bfc) Thanks [@clauderic](https://github.com/clauderic)! - By default, @dnd-kit now attempts to compensate for layout shifts that happen right after the `onDragStart` event is dispatched by scrolling the first scrollable ancestor of the active draggable node.
+
+  The `autoScroll` prop of `<DndContext>` now optionally accepts a `layoutShiftCompensation` property to control this new behavior:
+
+  ```diff
+  interface AutoScrollOptions {
+    acceleration?: number;
+    activator?: AutoScrollActivator;
+    canScroll?: CanScroll;
+    enabled?: boolean;
+    interval?: number;
+  + layoutShiftCompensation?: boolean | {x: boolean, y: boolean};
+    order?: TraversalOrder;
+    threshold?: {
+      x: number;
+      y: number;
+    };
+  }
+  ```
+
+  To enable/disable layout shift scroll compensation for a single scroll axis, pass in the following autoscroll configuration to `<DndContext>`:
+
+  ```ts
+  <DndContext
+    autoScroll={{layoutShiftCompensation: {x: false, y: true}}}
+  >
+  ```
+
+  To completely disable layout shift scroll compensation, pass in the following autoscroll configuration to `<DndContext>`:
+
+  ```ts
+  <DndContext
+    autoScroll={{layoutShiftCompensation: false}}
+  >
+  ```
+
+- [#672](https://github.com/clauderic/dnd-kit/pull/672) [`10f6836`](https://github.com/clauderic/dnd-kit/commit/10f683631103b1d919f2fbca1177141b9369d2cf) Thanks [@clauderic](https://github.com/clauderic)! - The `measureDroppableContainers` method now properly respects the MeasuringStrategy defined on `<DndContext />` and will not measure containers while measuring is disabled.
+
+- [#656](https://github.com/clauderic/dnd-kit/pull/656) [`c1b3b5a`](https://github.com/clauderic/dnd-kit/commit/c1b3b5a0be5759b707e22c4e1b1236aaa82773a2) Thanks [@clauderic](https://github.com/clauderic)! - Fixed an issue with collision detection using stale rects. The `droppableRects` property has been added to the `CollisionDetection` interface.
+
+  All built-in collision detection algorithms have been updated to get the rect for a given droppable container from `droppableRects` rather than from the `rect.current` ref:
+
+  ```diff
+  - const rect = droppableContainers.get(id).rect.current;
+  + const rect = droppableRects.get(id);
+  ```
+
+  The `rect.current` ref stored on DroppableContainers can be stale if measuring is scheduled but has not completed yet. Collision detection algorithms should use the `droppableRects` map instead to get the latest, most up-to-date measurement of a droppable container in order to avoid computing collisions against stale rects.
+
+  This is not a breaking change. However, if you've forked any of the built-in collision detection algorithms or you've authored custom ones, we highly recommend you update your use-cases to avoid possibly computing collisions against stale rects.
+
+### Patch Changes
+
+- [#742](https://github.com/clauderic/dnd-kit/pull/742) [`7161f70`](https://github.com/clauderic/dnd-kit/commit/7161f702c9fe06f8dafa6449d48b918070ca46fb) Thanks [@clauderic](https://github.com/clauderic)! - Fallback to initial rect measured for the active draggable node if it unmounts during initialization (after `onDragStart` is dispatched).
+
+- [#749](https://github.com/clauderic/dnd-kit/pull/749) [`5811986`](https://github.com/clauderic/dnd-kit/commit/5811986e7544a5e80039870a015e38df805eaad1) Thanks [@clauderic](https://github.com/clauderic)! - The `Data` and `DataRef` types are now exported by `@dnd-kit/core`.
+
+- [#699](https://github.com/clauderic/dnd-kit/pull/699) [`e302bd4`](https://github.com/clauderic/dnd-kit/commit/e302bd4488bdfb6735c97ac42c1f4a0b1e8bfdf9) Thanks [@JuAn-Kang](https://github.com/JuAn-Kang)! - Export `DragOverlayProps` for consumers.
+
+- [`750d726`](https://github.com/clauderic/dnd-kit/commit/750d72655922363b2218d7b41e028f9dceaef013) Thanks [@clauderic](https://github.com/clauderic)! - Fixed a bug in the `KeyboardSensor` where it would not move the draggable on the horizontal axis if it could fully scroll to the new vertical coordinates, and would not move the draggable on the vertical axis if it could fully scroll to the new horizontal coordinates.
+
+- [#660](https://github.com/clauderic/dnd-kit/pull/660) [`e6e242c`](https://github.com/clauderic/dnd-kit/commit/e6e242cbc718ed687a26f5c622eeed4dbd6c2425) Thanks [@clauderic](https://github.com/clauderic)! - The `KeyboardSensor` was updated to use `scrollTo` instead of `scrollBy` when it is able to fully scroll to the new coordinates returned by the coordinate getter function. This resolves issues that can happen with `scrollBy` when called in rapid succession.
+
+- Updated dependencies [[`59ca82b`](https://github.com/clauderic/dnd-kit/commit/59ca82b9f228f34c7731ece87aef5d9633608b57), [`035021a`](https://github.com/clauderic/dnd-kit/commit/035021aac51161e2bf9715f087a6dd1b46647bfc)]:
+  - @dnd-kit/utilities@3.2.0
+
 ## 5.0.3
 
 ### Patch Changes
