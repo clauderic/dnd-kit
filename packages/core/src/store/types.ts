@@ -96,6 +96,7 @@ export interface PublicContextDescriptor {
   measureDroppableContainers(ids: UniqueIdentifier[]): void;
   measuringScheduled: boolean;
   windowRect: ClientRect | null;
+  isAutoScrolling: boolean;
 }
 
 export interface InternalContextDescriptor {
