@@ -81,7 +81,7 @@ export interface Sensor<T extends Object> {
 
 export type Sensors = Sensor<any>[];
 
-export type SensorDescriptor<T> = {
+export type SensorDescriptor<T extends Object> = {
   sensor: Sensor<T>;
   options: T;
 };
