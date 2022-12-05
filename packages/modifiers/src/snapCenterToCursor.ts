@@ -1,5 +1,5 @@
-import type {Modifier} from '@dnd-kit/core';
-import {getEventCoordinates} from '@dnd-kit/utilities';
+import type {Modifier} from '@schuchertmanagementberatung/dnd-kit-core';
+import {getEventCoordinates} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 export const snapCenterToCursor: Modifier = ({
   activatorEvent,

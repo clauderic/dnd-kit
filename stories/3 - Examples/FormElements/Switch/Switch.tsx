@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   DndContext,
   DragEndEvent,
@@ -8,16 +8,16 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-} from '@dnd-kit/core';
+} from '@schuchertmanagementberatung/dnd-kit-core';
 import {
   restrictToHorizontalAxis,
   restrictToParentElement,
-} from '@dnd-kit/modifiers';
+} from '@schuchertmanagementberatung/dnd-kit-modifiers';
 import classNames from 'classnames';
 
-import {State} from './constants';
-import {Thumb} from './Thumb';
-import {Track} from './Track';
+import { State } from './constants';
+import { Thumb } from './Thumb';
+import { Track } from './Track';
 import styles from './Switch.module.css';
 
 export interface Props {
@@ -103,11 +103,11 @@ export function Switch({
     onChange(!checked);
   }
 
-  function handleDragOver({over}: DragOverEvent) {
+  function handleDragOver({ over }: DragOverEvent) {
     setOverId(over?.id ?? null);
   }
 
-  function handleDragEnd({over}: DragEndEvent) {
+  function handleDragEnd({ over }: DragEndEvent) {
     if (over) {
       const checked = over.id === State.On;
       onChange(checked);

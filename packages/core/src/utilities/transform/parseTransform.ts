@@ -1,4 +1,4 @@
-import type {Transform} from '@dnd-kit/utilities';
+import type {Transform} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 export function parseTransform(transform: string): Transform | null {
   if (transform.startsWith('matrix3d(')) {

@@ -16,8 +16,8 @@ import {
   useLatestValue,
   useIsomorphicLayoutEffect,
   useUniqueId,
-} from '@dnd-kit/utilities';
-import type {Transform} from '@dnd-kit/utilities';
+} from '@schuchertmanagementberatung/dnd-kit-utilities';
+import type {Transform} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 import {
   Action,

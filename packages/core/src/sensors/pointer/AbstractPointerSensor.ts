@@ -3,7 +3,7 @@ import {
   getEventCoordinates,
   getOwnerDocument,
   getWindow,
-} from '@dnd-kit/utilities';
+} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 import {defaultCoordinates} from '../../utilities';
 import {
@@ -55,7 +55,8 @@ export interface AbstractPointerSensorOptions extends SensorOptions {
   onActivation?({event}: {event: Event}): void;
 }
 
-export type AbstractPointerSensorProps = SensorProps<AbstractPointerSensorOptions>;
+export type AbstractPointerSensorProps =
+  SensorProps<AbstractPointerSensorOptions>;
 
 export class AbstractPointerSensor implements SensorInstance {
   public autoScrollEnabled = true;

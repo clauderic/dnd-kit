@@ -1,15 +1,15 @@
 import React from 'react';
-import {MeasuringStrategy} from '@dnd-kit/core';
+import { MeasuringStrategy } from '@schuchertmanagementberatung/dnd-kit-core';
 import {
   arraySwap,
   AnimateLayoutChanges,
   defaultAnimateLayoutChanges,
   rectSortingStrategy,
   rectSwappingStrategy,
-} from '@dnd-kit/sortable';
+} from '@schuchertmanagementberatung/dnd-kit-sortable';
 
-import {Sortable, Props as SortableProps} from './Sortable';
-import {GridContainer} from '../../components';
+import { Sortable, Props as SortableProps } from './Sortable';
+import { GridContainer } from '../../components';
 
 export default {
   title: 'Presets/Sortable/Grid',
@@ -34,7 +34,7 @@ export const WithoutDragOverlay = () => (
 export const LargeFirstTile = () => (
   <Sortable
     {...props}
-    getItemStyles={({index}) => {
+    getItemStyles={({ index }) => {
       if (index === 0) {
         return {
           fontSize: '2rem',
@@ -44,7 +44,7 @@ export const LargeFirstTile = () => (
 
       return {};
     }}
-    wrapperStyle={({index}) => {
+    wrapperStyle={({ index }) => {
       if (index === 0) {
         return {
           height: 288,
@@ -65,7 +65,7 @@ export const VariableSizes = () => (
   <Sortable
     {...props}
     itemCount={14}
-    getItemStyles={({index}) => {
+    getItemStyles={({ index }) => {
       if (index === 0 || index === 9) {
         return {
           fontSize: '2rem',
@@ -75,7 +75,7 @@ export const VariableSizes = () => (
 
       return {};
     }}
-    wrapperStyle={({index}) => {
+    wrapperStyle={({ index }) => {
       if (index === 0 || index === 9) {
         return {
           height: 288,
@@ -111,7 +111,7 @@ export const Swappable = () => (
     {...props}
     strategy={rectSwappingStrategy}
     reorderItems={arraySwap}
-    getNewIndex={({id, items, activeIndex, overIndex}) =>
+    getNewIndex={({ id, items, activeIndex, overIndex }) =>
       arraySwap(items, activeIndex, overIndex).indexOf(id)
     }
   />
@@ -138,13 +138,13 @@ export const MinimumDistance = () => (
 
 export const RemovableItems = () => {
   const animateLayoutChanges: AnimateLayoutChanges = (args) =>
-    defaultAnimateLayoutChanges({...args, wasDragging: true});
+    defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
   return (
     <Sortable
       {...props}
       animateLayoutChanges={animateLayoutChanges}
-      measuring={{droppable: {strategy: MeasuringStrategy.Always}}}
+      measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
       removable
       handle
     />

@@ -1,18 +1,18 @@
 import React from 'react';
-import {MeasuringStrategy, UniqueIdentifier} from '@dnd-kit/core';
-import {restrictToWindowEdges} from '@dnd-kit/modifiers';
+import { MeasuringStrategy, UniqueIdentifier } from '@schuchertmanagementberatung/dnd-kit-core';
+import { restrictToWindowEdges } from '@schuchertmanagementberatung/dnd-kit-modifiers';
 import {
   AnimateLayoutChanges,
   defaultAnimateLayoutChanges,
   verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+} from '@schuchertmanagementberatung/dnd-kit-sortable';
 import {
   restrictToVerticalAxis,
   restrictToFirstScrollableAncestor,
-} from '@dnd-kit/modifiers';
+} from '@schuchertmanagementberatung/dnd-kit-modifiers';
 
-import {createRange} from '../../utilities';
-import {Sortable, Props as SortableProps} from './Sortable';
+import { createRange } from '../../utilities';
+import { Sortable, Props as SortableProps } from './Sortable';
 
 export default {
   title: 'Presets/Sortable/Vertical',
@@ -93,7 +93,7 @@ export const VariableHeights = () => {
   return (
     <Sortable
       {...props}
-      wrapperStyle={({id}) => {
+      wrapperStyle={({ id }) => {
         return {
           height: randomHeights[Number(id)],
         };
@@ -128,7 +128,7 @@ export const MarginBetweenItems = () => {
   return (
     <Sortable
       {...props}
-      wrapperStyle={({index}) => {
+      wrapperStyle={({ index }) => {
         return {
           marginBottom: getMargin(index),
         };
@@ -141,7 +141,7 @@ export const RerenderBeforeSorting = () => {
   return (
     <Sortable
       {...props}
-      wrapperStyle={({active}) => {
+      wrapperStyle={({ active }) => {
         return {
           height: active ? 100 : 80,
         };
@@ -152,13 +152,13 @@ export const RerenderBeforeSorting = () => {
 
 export const RemovableItems = () => {
   const animateLayoutChanges: AnimateLayoutChanges = (args) =>
-    defaultAnimateLayoutChanges({...args, wasDragging: true});
+    defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
   return (
     <Sortable
       {...props}
       animateLayoutChanges={animateLayoutChanges}
-      measuring={{droppable: {strategy: MeasuringStrategy.Always}}}
+      measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
       removable
       handle
     />
@@ -167,6 +167,6 @@ export const RemovableItems = () => {
 
 export const TransformedContainer = () => {
   return (
-    <Sortable {...props} style={{transform: 'translate3d(100px, 100px, 0)'}} />
+    <Sortable {...props} style={{ transform: 'translate3d(100px, 100px, 0)' }} />
   );
 };

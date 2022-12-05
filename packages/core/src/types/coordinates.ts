@@ -1,4 +1,4 @@
-import type {Coordinates} from '@dnd-kit/utilities';
+import type {Coordinates} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 export type {Coordinates};
 

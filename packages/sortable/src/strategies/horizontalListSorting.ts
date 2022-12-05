@@ -1,4 +1,4 @@
-import type {ClientRect} from '@dnd-kit/core';
+import type {ClientRect} from '@schuchertmanagementberatung/dnd-kit-core';
 import type {SortingStrategy} from '../types';
 
 // To-do: We should be calculating scale transformation

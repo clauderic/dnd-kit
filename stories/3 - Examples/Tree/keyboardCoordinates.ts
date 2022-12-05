@@ -4,10 +4,10 @@ import {
   KeyboardCode,
   KeyboardCoordinateGetter,
   DroppableContainer,
-} from '@dnd-kit/core';
+} from '@schuchertmanagementberatung/dnd-kit-core';
 
-import type {SensorContext} from './types';
-import {getProjection} from './utilities';
+import type { SensorContext } from './types';
+import { getProjection } from './utilities';
 
 const directions: string[] = [
   KeyboardCode.Down,
@@ -26,7 +26,7 @@ export const sortableTreeKeyboardCoordinates: (
   event,
   {
     currentCoordinates,
-    context: {active, over, collisionRect, droppableRects, droppableContainers},
+    context: { active, over, collisionRect, droppableRects, droppableContainers },
   }
 ) => {
   if (directions.includes(event.code)) {
@@ -37,11 +37,11 @@ export const sortableTreeKeyboardCoordinates: (
     event.preventDefault();
 
     const {
-      current: {items, offset},
+      current: { items, offset },
     } = context;
 
     if (horizontal.includes(event.code) && over?.id) {
-      const {depth, maxDepth, minDepth} = getProjection(
+      const { depth, maxDepth, minDepth } = getProjection(
         items,
         active.id,
         over.id,
@@ -117,13 +117,13 @@ export const sortableTreeKeyboardCoordinates: (
       const newDroppable = droppableContainers.get(closestId);
 
       if (activeRect && newRect && newDroppable) {
-        const newIndex = items.findIndex(({id}) => id === closestId);
+        const newIndex = items.findIndex(({ id }) => id === closestId);
         const newItem = items[newIndex];
-        const activeIndex = items.findIndex(({id}) => id === active.id);
+        const activeIndex = items.findIndex(({ id }) => id === active.id);
         const activeItem = items[activeIndex];
 
         if (newItem && activeItem) {
-          const {depth} = getProjection(
+          const { depth } = getProjection(
             items,
             active.id,
             closestId,

@@ -4,7 +4,7 @@ import {
   getOwnerDocument,
   getWindow,
   isKeyboardEvent,
-} from '@dnd-kit/utilities';
+} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 import type {Coordinates} from '../../types';
 import {

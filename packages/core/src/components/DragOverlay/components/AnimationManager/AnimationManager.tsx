@@ -1,5 +1,8 @@
 import React, {cloneElement, useState} from 'react';
-import {useIsomorphicLayoutEffect, usePrevious} from '@dnd-kit/utilities';
+import {
+  useIsomorphicLayoutEffect,
+  usePrevious,
+} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 import type {UniqueIdentifier} from '../../../../types';
 
@@ -14,10 +17,8 @@ export interface Props {
 }
 
 export function AnimationManager({animation, children}: Props) {
-  const [
-    clonedChildren,
-    setClonedChildren,
-  ] = useState<React.ReactElement | null>(null);
+  const [clonedChildren, setClonedChildren] =
+    useState<React.ReactElement | null>(null);
   const [element, setElement] = useState<HTMLElement | null>(null);
   const previousChildren = usePrevious(children);
 

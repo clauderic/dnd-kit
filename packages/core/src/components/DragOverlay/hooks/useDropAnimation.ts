@@ -1,5 +1,12 @@
-import {CSS, useEvent, getWindow} from '@dnd-kit/utilities';
-import type {DeepRequired, Transform} from '@dnd-kit/utilities';
+import {
+  CSS,
+  useEvent,
+  getWindow,
+} from '@schuchertmanagementberatung/dnd-kit-utilities';
+import type {
+  DeepRequired,
+  Transform,
+} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 import type {
   Active,
@@ -90,51 +97,51 @@ interface DefaultDropAnimationSideEffectsOptions {
   };
 }
 
-export const defaultDropAnimationSideEffects = (
-  options: DefaultDropAnimationSideEffectsOptions
-): DropAnimationSideEffects => ({active, dragOverlay}) => {
-  const originalStyles: Record<string, string> = {};
-  const {styles, className} = options;
+export const defaultDropAnimationSideEffects =
+  (options: DefaultDropAnimationSideEffectsOptions): DropAnimationSideEffects =>
+  ({active, dragOverlay}) => {
+    const originalStyles: Record<string, string> = {};
+    const {styles, className} = options;
 
-  if (styles?.active) {
-    for (const [key, value] of Object.entries(styles.active)) {
-      if (value === undefined) {
-        continue;
+    if (styles?.active) {
+      for (const [key, value] of Object.entries(styles.active)) {
+        if (value === undefined) {
+          continue;
+        }
+
+        originalStyles[key] = active.node.style.getPropertyValue(key);
+        active.node.style.setProperty(key, value);
       }
-
-      originalStyles[key] = active.node.style.getPropertyValue(key);
-      active.node.style.setProperty(key, value);
     }
-  }
 
-  if (styles?.dragOverlay) {
-    for (const [key, value] of Object.entries(styles.dragOverlay)) {
-      if (value === undefined) {
-        continue;
+    if (styles?.dragOverlay) {
+      for (const [key, value] of Object.entries(styles.dragOverlay)) {
+        if (value === undefined) {
+          continue;
+        }
+
+        dragOverlay.node.style.setProperty(key, value);
       }
-
-      dragOverlay.node.style.setProperty(key, value);
-    }
-  }
-
-  if (className?.active) {
-    active.node.classList.add(className.active);
-  }
-
-  if (className?.dragOverlay) {
-    dragOverlay.node.classList.add(className.dragOverlay);
-  }
-
-  return function cleanup() {
-    for (const [key, value] of Object.entries(originalStyles)) {
-      active.node.style.setProperty(key, value);
     }
 
     if (className?.active) {
-      active.node.classList.remove(className.active);
+      active.node.classList.add(className.active);
     }
+
+    if (className?.dragOverlay) {
+      dragOverlay.node.classList.add(className.dragOverlay);
+    }
+
+    return function cleanup() {
+      for (const [key, value] of Object.entries(originalStyles)) {
+        active.node.style.setProperty(key, value);
+      }
+
+      if (className?.active) {
+        active.node.classList.remove(className.active);
+      }
+    };
   };
-};
 
 const defaultKeyframeResolver: KeyframeResolver = ({
   transform: {initial, final},
@@ -147,18 +154,19 @@ const defaultKeyframeResolver: KeyframeResolver = ({
   },
 ];
 
-export const defaultDropAnimationConfiguration: Required<DropAnimationOptions> = {
-  duration: 250,
-  easing: 'ease',
-  keyframes: defaultKeyframeResolver,
-  sideEffects: defaultDropAnimationSideEffects({
-    styles: {
-      active: {
-        opacity: '0',
+export const defaultDropAnimationConfiguration: Required<DropAnimationOptions> =
+  {
+    duration: 250,
+    easing: 'ease',
+    keyframes: defaultKeyframeResolver,
+    sideEffects: defaultDropAnimationSideEffects({
+      styles: {
+        active: {
+          opacity: '0',
+        },
       },
-    },
-  }),
-};
+    }),
+  };
 
 export function useDropAnimation({
   config,

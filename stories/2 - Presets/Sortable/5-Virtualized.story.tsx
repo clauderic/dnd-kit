@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {createPortal} from 'react-dom';
+import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import VirtualList from 'react-tiny-virtual-list';
 
 import {
@@ -11,19 +11,19 @@ import {
   useSensor,
   useSensors,
   UniqueIdentifier,
-} from '@dnd-kit/core';
+} from '@schuchertmanagementberatung/dnd-kit-core';
 import {
   arrayMove,
   sortableKeyboardCoordinates,
   SortableContext,
   verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+} from '@schuchertmanagementberatung/dnd-kit-sortable';
 
 import styles from './Virtualized.module.css';
 
-import {createRange} from '../../utilities';
-import {SortableItem, Props} from './Sortable';
-import {Item, Wrapper} from '../../components';
+import { createRange } from '../../utilities';
+import { SortableItem, Props } from './Sortable';
+import { Item, Wrapper } from '../../components';
 
 export default {
   title: 'Presets/Sortable/Virtualized',
@@ -56,10 +56,10 @@ function Sortable({
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
-      onDragStart={({active}) => {
+      onDragStart={({ active }) => {
         setActiveId(active.id);
       }}
-      onDragEnd={({over}) => {
+      onDragEnd={({ over }) => {
         if (over) {
           const overIndex = getIndex(over.id);
           if (activeIndex !== overIndex) {
@@ -81,7 +81,7 @@ function Sortable({
             itemCount={items.length}
             itemSize={64}
             stickyIndices={activeId ? [items.indexOf(activeId)] : undefined}
-            renderItem={({index, style}) => {
+            renderItem={({ index, style }) => {
               const id = items[index];
 
               return (

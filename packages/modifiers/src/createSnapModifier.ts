@@ -1,4 +1,4 @@
-import type {Modifier} from '@dnd-kit/core';
+import type {Modifier} from '@schuchertmanagementberatung/dnd-kit-core';
 
 export function createSnapModifier(gridSize: number): Modifier {
   return ({transform}) => ({

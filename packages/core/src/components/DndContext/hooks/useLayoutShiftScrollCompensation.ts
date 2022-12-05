@@ -1,5 +1,5 @@
 import {useRef} from 'react';
-import {useIsomorphicLayoutEffect} from '@dnd-kit/utilities';
+import {useIsomorphicLayoutEffect} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 import {getRectDelta} from '../../../utilities/rect';
 import {getFirstScrollableAncestor} from '../../../utilities/scroll';

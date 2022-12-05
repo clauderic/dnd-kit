@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {createPortal, unstable_batchedUpdates} from 'react-dom';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal, unstable_batchedUpdates } from 'react-dom';
 import {
   CancelDrop,
   closestCenter,
@@ -21,7 +21,7 @@ import {
   MeasuringStrategy,
   KeyboardCoordinateGetter,
   defaultDropAnimationSideEffects,
-} from '@dnd-kit/core';
+} from '@schuchertmanagementberatung/dnd-kit-core';
 import {
   AnimateLayoutChanges,
   SortableContext,
@@ -31,20 +31,20 @@ import {
   verticalListSortingStrategy,
   SortingStrategy,
   horizontalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import {CSS} from '@dnd-kit/utilities';
-import {coordinateGetter as multipleContainersCoordinateGetter} from './multipleContainersKeyboardCoordinates';
+} from '@schuchertmanagementberatung/dnd-kit-sortable';
+import { CSS } from '@schuchertmanagementberatung/dnd-kit-utilities';
+import { coordinateGetter as multipleContainersCoordinateGetter } from './multipleContainersKeyboardCoordinates';
 
-import {Item, Container, ContainerProps} from '../../components';
+import { Item, Container, ContainerProps } from '../../components';
 
-import {createRange} from '../../utilities';
+import { createRange } from '../../utilities';
 
 export default {
   title: 'Presets/Sortable/Multiple Containers',
 };
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
-  defaultAnimateLayoutChanges({...args, wasDragging: true});
+  defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
 function DroppableContainer({
   children,
@@ -79,7 +79,7 @@ function DroppableContainer({
   });
   const isOverContainer = over
     ? (id === over.id && active?.data.current?.type !== 'container') ||
-      items.includes(over.id)
+    items.includes(over.id)
     : false;
 
   return (
@@ -131,7 +131,7 @@ interface Props {
     isSorting: boolean;
     isDragOverlay: boolean;
   }): React.CSSProperties;
-  wrapperStyle?(args: {index: number}): React.CSSProperties;
+  wrapperStyle?(args: { index: number }): React.CSSProperties;
   itemCount?: number;
   items?: Items;
   handle?: boolean;
@@ -208,7 +208,7 @@ export function MultipleContainers({
       const intersections =
         pointerIntersections.length > 0
           ? // If there are droppables intersecting with the pointer, return those
-            pointerIntersections
+          pointerIntersections
           : rectIntersection(args);
       let overId = getFirstCollision(intersections, 'id');
 
@@ -238,7 +238,7 @@ export function MultipleContainers({
 
         lastOverId.current = overId;
 
-        return [{id: overId}];
+        return [{ id: overId }];
       }
 
       // When a draggable item moves to a new container, the layout may shift
@@ -250,7 +250,7 @@ export function MultipleContainers({
       }
 
       // If no droppable is matched, return the last match
-      return lastOverId.current ? [{id: lastOverId.current}] : [];
+      return lastOverId.current ? [{ id: lastOverId.current }] : [];
     },
     [activeId, items]
   );
@@ -308,11 +308,11 @@ export function MultipleContainers({
           strategy: MeasuringStrategy.Always,
         },
       }}
-      onDragStart={({active}) => {
+      onDragStart={({ active }) => {
         setActiveId(active.id);
         setClonedItems(items);
       }}
-      onDragOver={({active, over}) => {
+      onDragOver={({ active, over }) => {
         const overId = over?.id;
 
         if (overId == null || overId === TRASH_ID || active.id in items) {
@@ -342,7 +342,7 @@ export function MultipleContainers({
                 over &&
                 active.rect.current.translated &&
                 active.rect.current.translated.top >
-                  over.rect.top + over.rect.height;
+                over.rect.top + over.rect.height;
 
               const modifier = isBelowOverItem ? 1 : 0;
 
@@ -369,7 +369,7 @@ export function MultipleContainers({
           });
         }
       }}
-      onDragEnd={({active, over}) => {
+      onDragEnd={({ active, over }) => {
         if (active.id in items && over?.id) {
           setContainers((containers) => {
             const activeIndex = containers.indexOf(active.id);
@@ -537,7 +537,7 @@ export function MultipleContainers({
           isDragOverlay: true,
         })}
         color={getColor(id)}
-        wrapperStyle={wrapperStyle({index: 0})}
+        wrapperStyle={wrapperStyle({ index: 0 })}
         renderItem={renderItem}
         dragOverlay
       />
@@ -570,7 +570,7 @@ export function MultipleContainers({
               isDragOverlay: false,
             })}
             color={getColor(item)}
-            wrapperStyle={wrapperStyle({index})}
+            wrapperStyle={wrapperStyle({ index })}
             renderItem={renderItem}
           />
         ))}
@@ -619,8 +619,8 @@ function getColor(id: UniqueIdentifier) {
   return undefined;
 }
 
-function Trash({id}: {id: UniqueIdentifier}) {
-  const {setNodeRef, isOver} = useDroppable({
+function Trash({ id }: { id: UniqueIdentifier }) {
+  const { setNodeRef, isOver } = useDroppable({
     id,
   });
 
@@ -656,7 +656,7 @@ interface SortableItemProps {
   style(args: any): React.CSSProperties;
   getIndex(id: UniqueIdentifier): number;
   renderItem(): React.ReactElement;
-  wrapperStyle({index}: {index: number}): React.CSSProperties;
+  wrapperStyle({ index }: { index: number }): React.CSSProperties;
 }
 
 function SortableItem({
@@ -693,9 +693,9 @@ function SortableItem({
       dragging={isDragging}
       sorting={isSorting}
       handle={handle}
-      handleProps={handle ? {ref: setActivatorNodeRef} : undefined}
+      handleProps={handle ? { ref: setActivatorNodeRef } : undefined}
       index={index}
-      wrapperStyle={wrapperStyle({index})}
+      wrapperStyle={wrapperStyle({ index })}
       style={style({
         index,
         value: id,

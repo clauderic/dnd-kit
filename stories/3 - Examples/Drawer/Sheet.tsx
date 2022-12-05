@@ -1,9 +1,9 @@
 import React from 'react';
 import classNames from 'classnames';
-import {useDraggable} from '@dnd-kit/core';
+import { useDraggable } from '@schuchertmanagementberatung/dnd-kit-core';
 
-import {Header} from './Header';
-import {MAX_DRAWER_HEIGHT_PERCENT} from './constants';
+import { Header } from './Header';
+import { MAX_DRAWER_HEIGHT_PERCENT } from './constants';
 
 import styles from './Drawer.module.css';
 
@@ -13,7 +13,7 @@ interface Props {
   header: React.ReactNode;
 }
 
-export function Sheet({children, expanded, header}: Props) {
+export function Sheet({ children, expanded, header }: Props) {
   const {
     attributes,
     isDragging,

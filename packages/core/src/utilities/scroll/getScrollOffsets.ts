@@ -1,4 +1,4 @@
-import {add} from '@dnd-kit/utilities';
+import {add} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 import type {Coordinates} from '../../types';
 import {

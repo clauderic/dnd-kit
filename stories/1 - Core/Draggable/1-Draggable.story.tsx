@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   DndContext,
   useDraggable,
@@ -9,15 +9,15 @@ import {
   PointerActivationConstraint,
   Modifiers,
   useSensors,
-} from '@dnd-kit/core';
+} from '@schuchertmanagementberatung/dnd-kit-core';
 import {
   createSnapModifier,
   restrictToHorizontalAxis,
   restrictToVerticalAxis,
   restrictToWindowEdges,
   snapCenterToCursor,
-} from '@dnd-kit/modifiers';
-import type {Coordinates} from '@dnd-kit/utilities';
+} from '@schuchertmanagementberatung/dnd-kit-modifiers';
+import type { Coordinates } from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 import {
   Axis,
@@ -55,7 +55,7 @@ function DraggableStory({
   style,
   buttonStyle,
 }: Props) {
-  const [{x, y}, setCoordinates] = useState<Coordinates>(defaultCoordinates);
+  const [{ x, y }, setCoordinates] = useState<Coordinates>(defaultCoordinates);
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint,
   });
@@ -68,8 +68,8 @@ function DraggableStory({
   return (
     <DndContext
       sensors={sensors}
-      onDragEnd={({delta}) => {
-        setCoordinates(({x, y}) => {
+      onDragEnd={({ delta }) => {
+        setCoordinates(({ x, y }) => {
           return {
             x: x + delta.x,
             y: y + delta.y,
@@ -129,7 +129,7 @@ function DraggableItem({
       handle={handle}
       label={label}
       listeners={listeners}
-      style={{...style, top, left}}
+      style={{ ...style, top, left }}
       buttonStyle={buttonStyle}
       transform={transform}
       axis={axis}
@@ -167,7 +167,7 @@ export const MinimumDistanceX = () => (
   <DraggableStory
     label="I'm activated after dragging 15px on the x axis"
     activationConstraint={{
-      distance: {x: 15},
+      distance: { x: 15 },
     }}
   />
 );
@@ -178,7 +178,7 @@ export const MinimumDistanceY = () => (
   <DraggableStory
     label="I'm activated after dragging 15px on the y axis"
     activationConstraint={{
-      distance: {y: 15},
+      distance: { y: 15 },
     }}
   />
 );
@@ -189,7 +189,7 @@ export const MinimumDistanceXY = () => (
   <DraggableStory
     label="I'm activated after dragging 15px on the x and y axis"
     activationConstraint={{
-      distance: {x: 15, y: 15},
+      distance: { x: 15, y: 15 },
     }}
   />
 );
@@ -200,8 +200,8 @@ export const MinimumDistanceXToleranceY = () => (
   <DraggableStory
     label="I'm activated after dragging 15px on the x axis and aborted after dragging 30px on the y axis"
     activationConstraint={{
-      distance: {x: 15},
-      tolerance: {y: 30},
+      distance: { x: 15 },
+      tolerance: { y: 30 },
     }}
   />
 );
@@ -213,8 +213,8 @@ export const MinimumDistanceYToleranceX = () => (
   <DraggableStory
     label="I'm activated after dragging 15px on the y axis and aborted after dragging 30px on the x axis"
     activationConstraint={{
-      distance: {y: 15},
-      tolerance: {x: 30},
+      distance: { y: 15 },
+      tolerance: { x: 30 },
     }}
   />
 );

@@ -1,9 +1,9 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import classNames from 'classnames';
-import type {DraggableSyntheticListeners} from '@dnd-kit/core';
-import type {Transform} from '@dnd-kit/utilities';
+import type { DraggableSyntheticListeners } from '@schuchertmanagementberatung/dnd-kit-core';
+import type { Transform } from '@schuchertmanagementberatung/dnd-kit-utilities';
 
-import {Handle, Remove} from './components';
+import { Handle, Remove } from './components';
 
 import styles from './Item.module.css';
 

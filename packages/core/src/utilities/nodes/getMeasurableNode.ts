@@ -1,4 +1,4 @@
-import {isHTMLElement} from '@dnd-kit/utilities';
+import {isHTMLElement} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 export function getMeasurableNode(
   node: HTMLElement | undefined | null

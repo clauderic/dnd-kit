@@ -26,15 +26,15 @@
     "dist"
   ],
   "dependencies": {
-    "@dnd-kit/utilities": "^3.2.0",
+    "@schuchertmanagementberatung/dnd-kit-utilities": "^3.2.0",
     "tslib": "^2.0.0"
   },
   "peerDependencies": {
     "react": ">=16.8.0",
-    "@dnd-kit/core": "^6.0.4"
+    "@schuchertmanagementberatung/dnd-kit-core": "^6.0.4"
   },
   "devDependencies": {
-    "@dnd-kit/core": "^6.0.4"
+    "@schuchertmanagementberatung/dnd-kit-core": "^6.0.4"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"

@@ -1,14 +1,14 @@
 import React from 'react';
-import {useDroppable} from '@dnd-kit/core';
+import { useDroppable } from '@schuchertmanagementberatung/dnd-kit-core';
 
-import {State} from './constants';
+import { State } from './constants';
 import styles from './Switch.module.css';
 
 export function Track() {
-  const {setNodeRef: setOnRegionNodeRef} = useDroppable({
+  const { setNodeRef: setOnRegionNodeRef } = useDroppable({
     id: State.On,
   });
-  const {setNodeRef: setOffRegionNodeRef} = useDroppable({
+  const { setNodeRef: setOffRegionNodeRef } = useDroppable({
     id: State.Off,
   });
 

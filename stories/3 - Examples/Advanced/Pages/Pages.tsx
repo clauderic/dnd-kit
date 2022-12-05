@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   closestCenter,
   DndContext,
@@ -11,26 +11,26 @@ import {
   MeasuringStrategy,
   DropAnimation,
   defaultDropAnimationSideEffects,
-} from '@dnd-kit/core';
+} from '@schuchertmanagementberatung/dnd-kit-core';
 import type {
   DragStartEvent,
   DragEndEvent,
   MeasuringConfiguration,
   UniqueIdentifier,
-} from '@dnd-kit/core';
+} from '@schuchertmanagementberatung/dnd-kit-core';
 import {
   arrayMove,
   useSortable,
   SortableContext,
   sortableKeyboardCoordinates,
-} from '@dnd-kit/sortable';
-import {CSS, isKeyboardEvent} from '@dnd-kit/utilities';
+} from '@schuchertmanagementberatung/dnd-kit-sortable';
+import { CSS, isKeyboardEvent } from '@schuchertmanagementberatung/dnd-kit-utilities';
 import classNames from 'classnames';
 
-import {createRange} from '../../../utilities';
+import { createRange } from '../../../utilities';
 
-import {Page, Layout, Position} from './Page';
-import type {Props as PageProps} from './Page';
+import { Page, Layout, Position } from './Page';
+import type { Props as PageProps } from './Page';
 import styles from './Pages.module.css';
 import pageStyles from './Page.module.css';
 
@@ -45,9 +45,9 @@ const measuring: MeasuringConfiguration = {
 };
 
 const dropAnimation: DropAnimation = {
-  keyframes({transform}) {
+  keyframes({ transform }) {
     return [
-      {transform: CSS.Transform.toString(transform.initial)},
+      { transform: CSS.Transform.toString(transform.initial) },
       {
         transform: CSS.Transform.toString({
           scaleX: 0.98,
@@ -65,7 +65,7 @@ const dropAnimation: DropAnimation = {
   }),
 };
 
-export function Pages({layout}: Props) {
+export function Pages({ layout }: Props) {
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const [items, setItems] = useState(() =>
     createRange<UniqueIdentifier>(20, (index) => `${index + 1}`)
@@ -73,7 +73,7 @@ export function Pages({layout}: Props) {
   const activeIndex = activeId ? items.indexOf(activeId) : -1;
   const sensors = useSensors(
     useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {coordinateGetter: sortableKeyboardCoordinates})
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
   return (
@@ -109,7 +109,7 @@ export function Pages({layout}: Props) {
     </DndContext>
   );
 
-  function handleDragStart({active}: DragStartEvent) {
+  function handleDragStart({ active }: DragStartEvent) {
     setActiveId(active.id);
   }
 
@@ -117,7 +117,7 @@ export function Pages({layout}: Props) {
     setActiveId(null);
   }
 
-  function handleDragEnd({over}: DragEndEvent) {
+  function handleDragEnd({ over }: DragEndEvent) {
     if (over) {
       const overIndex = items.indexOf(over.id);
 
@@ -136,8 +136,8 @@ function PageOverlay({
   id,
   items,
   ...props
-}: Omit<PageProps, 'index'> & {items: UniqueIdentifier[]}) {
-  const {activatorEvent, over} = useDndContext();
+}: Omit<PageProps, 'index'> & { items: UniqueIdentifier[] }) {
+  const { activatorEvent, over } = useDndContext();
   const isKeyboardSorting = isKeyboardEvent(activatorEvent);
   const activeIndex = items.indexOf(id);
   const overIndex = over?.id ? items.indexOf(over?.id) : -1;
@@ -162,7 +162,7 @@ function SortablePage({
   id,
   activeIndex,
   ...props
-}: PageProps & {activeIndex: number}) {
+}: PageProps & { activeIndex: number }) {
   const {
     attributes,
     listeners,
