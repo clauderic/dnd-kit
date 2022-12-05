@@ -1,5 +1,5 @@
 {
-  "name": "@dnd-kit/modifiers",
+  "name": "@schuchertmanagementberatung/dnd-kit-modifiers",
   "version": "6.0.0",
   "description": "Translate modifier presets for use with `@dnd-kit` packages.",
   "author": "Claudéric Demers",
