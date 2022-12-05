@@ -37,6 +37,6 @@
     "@dnd-kit/core": "^6.0.4"
   },
   "publishConfig": {
-    "access": "public"
+    "registry": "https://npm.pkg.github.com/"
   }
 }
