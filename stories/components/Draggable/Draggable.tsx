@@ -1,9 +1,9 @@
-import React, {forwardRef} from 'react';
+import React, { forwardRef } from 'react';
 import classNames from 'classnames';
-import type {DraggableSyntheticListeners} from '@dnd-kit/core';
-import type {Transform} from '@dnd-kit/utilities';
+import type { DraggableSyntheticListeners } from '@schuchertmanagementberatung/dnd-kit-core';
+import type { Transform } from '@schuchertmanagementberatung/dnd-kit-utilities';
 
-import {Handle} from '../Item/components/Handle';
+import { Handle } from '../Item/components/Handle';
 
 import {
   draggable,
@@ -74,8 +74,8 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
           {axis === Axis.Vertical
             ? draggableVertical
             : axis === Axis.Horizontal
-            ? draggableHorizontal
-            : draggable}
+              ? draggableHorizontal
+              : draggable}
           {handle ? <Handle {...(handle ? listeners : {})} /> : null}
         </button>
         {label ? <label>{label}</label> : null}

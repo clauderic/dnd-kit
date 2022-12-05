@@ -1,4 +1,4 @@
-import type {Modifier} from '@dnd-kit/core';
+import type {Modifier} from '@schuchertmanagementberatung/dnd-kit-core';
 import {restrictToBoundingRect} from './utilities';
 
 export const restrictToFirstScrollableAncestor: Modifier = ({

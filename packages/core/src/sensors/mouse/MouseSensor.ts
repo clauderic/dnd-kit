@@ -1,5 +1,5 @@
 import type {MouseEvent} from 'react';
-import {getOwnerDocument} from '@dnd-kit/utilities';
+import {getOwnerDocument} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 import type {SensorProps} from '../types';
 import {

@@ -1,5 +1,8 @@
 import {useEffect, useRef} from 'react';
-import {Coordinates, subtract} from '@dnd-kit/utilities';
+import {
+  Coordinates,
+  subtract,
+} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 import {defaultCoordinates} from '../../utilities';
 

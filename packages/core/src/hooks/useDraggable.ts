@@ -5,7 +5,7 @@ import {
   useIsomorphicLayoutEffect,
   useLatestValue,
   useUniqueId,
-} from '@dnd-kit/utilities';
+} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 import {InternalContext, Data} from '../store';
 import type {UniqueIdentifier} from '../types';
@@ -56,8 +56,11 @@ export function useDraggable({
     draggableNodes,
     over,
   } = useContext(InternalContext);
-  const {role = defaultRole, roleDescription = 'draggable', tabIndex = 0} =
-    attributes ?? {};
+  const {
+    role = defaultRole,
+    roleDescription = 'draggable',
+    tabIndex = 0,
+  } = attributes ?? {};
   const isDragging = active?.id === id;
   const transform: Transform | null = useContext(
     isDragging ? ActiveDraggableContext : NullContext

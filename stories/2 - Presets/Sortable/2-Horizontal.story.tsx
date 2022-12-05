@@ -1,15 +1,15 @@
 import React from 'react';
-import {MeasuringStrategy} from '@dnd-kit/core';
+import { MeasuringStrategy } from '@schuchertmanagementberatung/dnd-kit-core';
 import {
   AnimateLayoutChanges,
   defaultAnimateLayoutChanges,
   horizontalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import {restrictToHorizontalAxis} from '@dnd-kit/modifiers';
+} from '@schuchertmanagementberatung/dnd-kit-sortable';
+import { restrictToHorizontalAxis } from '@schuchertmanagementberatung/dnd-kit-modifiers';
 
-import {createRange} from '../../utilities';
-import {List} from '../../components';
-import {Sortable, Props as SortableProps} from './Sortable';
+import { createRange } from '../../utilities';
+import { List } from '../../components';
+import { Sortable, Props as SortableProps } from './Sortable';
 
 export default {
   title: 'Presets/Sortable/Horizontal',
@@ -78,7 +78,7 @@ export const VariableWidths = () => {
   return (
     <Sortable
       {...props}
-      wrapperStyle={({id}) => {
+      wrapperStyle={({ id }) => {
         return {
           width: randomWidths[Number(id)],
         };
@@ -103,7 +103,7 @@ export const MarginBetweenItems = () => {
   return (
     <Sortable
       {...props}
-      wrapperStyle={({index}) => {
+      wrapperStyle={({ index }) => {
         return {
           ...baseStyles,
           marginRight: getMargin(index),
@@ -115,13 +115,13 @@ export const MarginBetweenItems = () => {
 
 export const RemovableItems = () => {
   const animateLayoutChanges: AnimateLayoutChanges = (args) =>
-    defaultAnimateLayoutChanges({...args, wasDragging: true});
+    defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
   return (
     <Sortable
       {...props}
       animateLayoutChanges={animateLayoutChanges}
-      measuring={{droppable: {strategy: MeasuringStrategy.Always}}}
+      measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
       removable
       handle
     />

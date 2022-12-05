@@ -4,9 +4,13 @@ import {
   useDroppable,
   UseDraggableArguments,
   UseDroppableArguments,
-} from '@dnd-kit/core';
-import type {Data} from '@dnd-kit/core';
-import {CSS, isKeyboardEvent, useCombinedRefs} from '@dnd-kit/utilities';
+} from '@schuchertmanagementberatung/dnd-kit-core';
+import type {Data} from '@schuchertmanagementberatung/dnd-kit-core';
+import {
+  CSS,
+  isKeyboardEvent,
+  useCombinedRefs,
+} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 import {Context} from '../components';
 import type {Disabled, SortableData, SortingStrategy} from '../types';
@@ -71,7 +75,12 @@ export function useSortable({
     () => items.slice(items.indexOf(id)),
     [items, id]
   );
-  const {rect, node, isOver, setNodeRef: setDroppableNodeRef} = useDroppable({
+  const {
+    rect,
+    node,
+    isOver,
+    setNodeRef: setDroppableNodeRef,
+  } = useDroppable({
     id,
     data,
     disabled: disabled.droppable,

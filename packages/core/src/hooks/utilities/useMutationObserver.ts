@@ -1,5 +1,5 @@
 import {useEffect, useMemo} from 'react';
-import {useEvent} from '@dnd-kit/utilities';
+import {useEvent} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 interface Arguments {
   callback: MutationCallback;

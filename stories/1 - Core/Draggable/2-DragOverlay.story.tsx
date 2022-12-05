@@ -1,13 +1,13 @@
 import React from 'react';
-import {DndContext, useDraggable} from '@dnd-kit/core';
-import type {DropAnimation, Modifiers, Translate} from '@dnd-kit/core';
+import { DndContext, useDraggable } from '@schuchertmanagementberatung/dnd-kit-core';
+import type { DropAnimation, Modifiers, Translate } from '@schuchertmanagementberatung/dnd-kit-core';
 import {
   restrictToHorizontalAxis,
   restrictToVerticalAxis,
   restrictToWindowEdges,
-} from '@dnd-kit/modifiers';
+} from '@schuchertmanagementberatung/dnd-kit-modifiers';
 
-import {Axis, Draggable, DraggableOverlay, Wrapper} from '../../components';
+import { Axis, Draggable, DraggableOverlay, Wrapper } from '../../components';
 
 export default {
   title: `Core/Draggable/Components/\u003CDragOverlay\u003E`,
@@ -47,8 +47,8 @@ interface DraggableItemProps {
   translate?: Translate;
 }
 
-function DraggableItem({axis, label}: DraggableItemProps) {
-  const {setNodeRef, listeners, isDragging} = useDraggable({
+function DraggableItem({ axis, label }: DraggableItemProps) {
+  const { setNodeRef, listeners, isDragging } = useDraggable({
     id: 'draggable-item',
   });
 

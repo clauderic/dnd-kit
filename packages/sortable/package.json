@@ -1,5 +1,5 @@
 {
-  "name": "@dnd-kit/sortable",
+  "name": "@schuchertmanagementberatung/dnd-kit-sortable",
   "version": "7.0.1",
   "description": "Official sortable preset and sensors for dnd kit",
   "author": "Claudéric Demers",
@@ -26,17 +26,17 @@
     "dist"
   ],
   "dependencies": {
-    "@dnd-kit/utilities": "^3.2.0",
+    "@schuchertmanagementberatung/dnd-kit-utilities": "^3.2.0",
     "tslib": "^2.0.0"
   },
   "peerDependencies": {
     "react": ">=16.8.0",
-    "@dnd-kit/core": "^6.0.4"
+    "@schuchertmanagementberatung/dnd-kit-core": "^6.0.4"
   },
   "devDependencies": {
-    "@dnd-kit/core": "^6.0.4"
+    "@schuchertmanagementberatung/dnd-kit-core": "^6.0.4"
   },
   "publishConfig": {
-    "access": "public"
+    "registry": "https://npm.pkg.github.com/"
   }
 }

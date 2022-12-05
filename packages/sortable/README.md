@@ -1,6 +1,6 @@
-# @dnd-kit/sortable
+# @schuchertmanagementberatung/dnd-kit-sortable
 
-[![Stable release](https://img.shields.io/npm/v/@dnd-kit/sortable.svg)](https://npm.im/@dnd-kit/sortable)
+[![Stable release](https://img.shields.io/npm/v/@schuchertmanagementberatung/dnd-kit-sortable.svg)](https://npm.im/@schuchertmanagementberatung/dnd-kit-sortable)
 
 The sortable preset provides the building blocks to build sortable interfaces with @dnd-kit.
 
@@ -9,12 +9,12 @@ The sortable preset provides the building blocks to build sortable interfaces wi
 To get started, install the sortable preset via npm or yarn:
 
 ```
-npm install @dnd-kit/sortable
+npm install @schuchertmanagementberatung/dnd-kit-sortable
 ```
 
 ## Architecture
 
-The sortable preset builds on top of the primitives exposed by `@dnd-kit/core` to help building sortable interfaces.
+The sortable preset builds on top of the primitives exposed by `@schuchertmanagementberatung/dnd-kit-core` to help building sortable interfaces.
 
 The sortable preset exposes two main concepts: `SortableContext` and the `useSortable` hook:
 

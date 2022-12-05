@@ -1,8 +1,8 @@
-import React, {forwardRef, HTMLAttributes} from 'react';
-import type {UniqueIdentifier} from '@dnd-kit/core';
+import React, { forwardRef, HTMLAttributes } from 'react';
+import type { UniqueIdentifier } from '@schuchertmanagementberatung/dnd-kit-core';
 import classNames from 'classnames';
 
-import {removeIcon} from './icons';
+import { removeIcon } from './icons';
 import styles from './Page.module.css';
 
 export enum Position {
@@ -27,7 +27,7 @@ export interface Props extends Omit<HTMLAttributes<HTMLButtonElement>, 'id'> {
 }
 
 export const Page = forwardRef<HTMLLIElement, Props>(function Page(
-  {id, index, active, clone, insertPosition, layout, onRemove, style, ...props},
+  { id, index, active, clone, insertPosition, layout, onRemove, style, ...props },
   ref
 ) {
   return (

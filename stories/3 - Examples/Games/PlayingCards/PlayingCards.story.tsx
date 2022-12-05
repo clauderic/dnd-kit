@@ -1,12 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   verticalListSortingStrategy,
   rectSortingStrategy,
-} from '@dnd-kit/sortable';
+} from '@schuchertmanagementberatung/dnd-kit-sortable';
 
-import {Sortable} from '../../../2 - Presets/Sortable/Sortable';
-import {MultipleContainers} from '../../../2 - Presets/Sortable/MultipleContainers';
-import {PlayingCard, getDeckOfCards} from './PlayingCard';
+import { Sortable } from '../../../2 - Presets/Sortable/Sortable';
+import { MultipleContainers } from '../../../2 - Presets/Sortable/MultipleContainers';
+import { PlayingCard, getDeckOfCards } from './PlayingCard';
 
 export default {
   title: 'Examples/2D Games/Playing Cards',
@@ -16,10 +16,10 @@ export const SingleDeck = () => {
   const [deck] = useState(getDeckOfCards);
 
   return (
-    <div style={{position: 'relative', marginTop: 50, paddingBottom: 250}}>
+    <div style={{ position: 'relative', marginTop: 50, paddingBottom: 250 }}>
       <Sortable
         strategy={verticalListSortingStrategy}
-        items={deck.map(({suit, value}) => `${value}${suit}`)}
+        items={deck.map(({ suit, value }) => `${value}${suit}`)}
         renderItem={({
           dragging,
           value,
@@ -45,7 +45,7 @@ export const SingleDeck = () => {
             {...listeners}
           />
         )}
-        getItemStyles={({index, overIndex, isDragging, isDragOverlay}) => ({
+        getItemStyles={({ index, overIndex, isDragging, isDragOverlay }) => ({
           zIndex: isDragging ? deck.length - overIndex : deck.length - index,
           opacity: isDragging && !isDragOverlay ? 0.3 : undefined,
         })}
@@ -61,7 +61,7 @@ function stringifyDeck(
   }[],
   prefix: string
 ) {
-  return deck.map(({suit, value}) => `${prefix}-${value}${suit}`);
+  return deck.map(({ suit, value }) => `${prefix}-${value}${suit}`);
 }
 
 export const MultipleDecks = () => {
@@ -146,8 +146,8 @@ export const MultipleDecks = () => {
             zIndex: isDragOverlay
               ? undefined
               : isDragging
-              ? deck.length - overIndex
-              : deck.length - index,
+                ? deck.length - overIndex
+                : deck.length - index,
           };
         }}
         minimal

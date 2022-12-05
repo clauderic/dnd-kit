@@ -1,5 +1,8 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
-import {useLatestValue, useLazyMemo} from '@dnd-kit/utilities';
+import {
+  useLatestValue,
+  useLazyMemo,
+} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 import {Rect} from '../../utilities/rect';
 import type {DroppableContainer, RectMap} from '../../store/types';

@@ -1,6 +1,6 @@
 import 'react-app-polyfill/ie11';
 import * as React from 'react';
-import {useMemo, useState} from 'react';
+import { useMemo, useState } from 'react';
 import * as ReactDOM from 'react-dom';
 
 import {
@@ -9,8 +9,8 @@ import {
   useDroppable,
   UniqueIdentifier,
   DragEndEvent,
-} from '@dnd-kit/core';
-import {CSS} from '@dnd-kit/utilities';
+} from '@schuchertmanagementberatung/dnd-kit-core';
+import { CSS } from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 const Playground = () => {
   const containers = ['A', 'B', 'C'];
@@ -22,7 +22,7 @@ const Playground = () => {
     <DndContext onDragEnd={handleDragEnd}>
       {parent === null ? item : null}
 
-      <div style={{display: 'flex'}}>
+      <div style={{ display: 'flex' }}>
         {containers.map((id) => (
           <Droppable key={id} id={id}>
             {parent === id ? item : 'Drop here'}
@@ -33,7 +33,7 @@ const Playground = () => {
   );
 
   function handleDragEnd(event: DragEndEvent) {
-    const {over} = event;
+    const { over } = event;
 
     setParent(over ? over.id : null);
   }
@@ -72,8 +72,8 @@ interface DroppableProps {
   id: string;
 }
 
-function Droppable({id, children}: DroppableProps) {
-  const {isOver, setNodeRef} = useDroppable({id});
+function Droppable({ id, children }: DroppableProps) {
+  const { isOver, setNodeRef } = useDroppable({ id });
 
   return (
     <div

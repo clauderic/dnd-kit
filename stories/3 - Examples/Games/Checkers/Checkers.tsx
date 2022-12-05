@@ -1,12 +1,12 @@
-import React, {useCallback, useMemo, useState} from 'react';
-import {AnimateSharedLayout} from 'framer-motion';
+import React, { useCallback, useMemo, useState } from 'react';
+import { AnimateSharedLayout } from 'framer-motion';
 import {
   DndContext,
   useDraggable,
   DragEndEvent,
   DragStartEvent,
   DragOverlay,
-} from '@dnd-kit/core';
+} from '@schuchertmanagementberatung/dnd-kit-core';
 import {
   Board,
   Cell,
@@ -32,7 +32,7 @@ export function Checkers() {
   const [isOddTurn, setIsOddTurn] = useState(true);
   const [oddScore, setOddScore] = useState(0);
   const [evenScore, setEvenScore] = useState(0);
-  const {evenWon, oddWon} = useMemo(() => checkEnd(pieces), [pieces]);
+  const { evenWon, oddWon } = useMemo(() => checkEnd(pieces), [pieces]);
 
   const checkCanMove = useCallback(
     function (
@@ -43,14 +43,14 @@ export function Checkers() {
       moveToY: number
     ): CanMoveProps {
       if (movingPiece.position) {
-        const {x: moveFromX, y: moveFromY} = movingPiece.position;
+        const { x: moveFromX, y: moveFromY } = movingPiece.position;
 
         const dx = moveToX - moveFromX;
         const dy = moveToY - moveFromY;
 
         if (isOddTurn && isOddPiece) {
           if (dy < 0) {
-            return {canMove: false};
+            return { canMove: false };
           }
 
           if (Math.abs(dx) === 2 && Math.abs(dy) === 2) {
@@ -60,22 +60,22 @@ export function Checkers() {
             };
             const potentialEnemyPiece =
               pieces[potentialEnemyPieceCoordinates.y][
-                potentialEnemyPieceCoordinates.x
+              potentialEnemyPieceCoordinates.x
               ];
 
             if (potentialEnemyPiece == null || potentialEnemyPiece.odd) {
-              return {canMove: false};
+              return { canMove: false };
             } else {
-              return {canMove: true, toRemove: potentialEnemyPiece};
+              return { canMove: true, toRemove: potentialEnemyPiece };
             }
           }
 
           const canMove =
             (dy === 1 || dy === 2) && Math.abs(dx) === Math.abs(dy);
-          return {canMove};
+          return { canMove };
         } else if (!isOddTurn && !isOddPiece) {
           if (dy > 0) {
-            return {canMove: false};
+            return { canMove: false };
           }
 
           if (Math.abs(dx) === 2 && Math.abs(dy) === 2) {
@@ -85,23 +85,23 @@ export function Checkers() {
             };
             const potentialEnemyPiece =
               pieces[potentialEnemyPieceCoordinates.y][
-                potentialEnemyPieceCoordinates.x
+              potentialEnemyPieceCoordinates.x
               ];
 
             if (potentialEnemyPiece == null || !potentialEnemyPiece.odd) {
-              return {canMove: false};
+              return { canMove: false };
             } else {
-              return {canMove: true, toRemove: potentialEnemyPiece};
+              return { canMove: true, toRemove: potentialEnemyPiece };
             }
           }
 
           const canMove =
             (dy === -1 || dy === -2) && Math.abs(dx) === Math.abs(dy);
-          return {canMove};
+          return { canMove };
         }
       }
 
-      return {canMove: false};
+      return { canMove: false };
     },
     [pieces]
   );
@@ -116,7 +116,7 @@ export function Checkers() {
         return;
       }
 
-      const {x: movingPieceX, y: movingPieceY} = movingPiece.position;
+      const { x: movingPieceX, y: movingPieceY } = movingPiece.position;
       const [cellY, cellX] = event.over.id.toString().split('-').map(Number);
 
       const potentialExistingPiece = pieces[cellY][cellX];
@@ -124,7 +124,7 @@ export function Checkers() {
       setMovingPiece(null);
 
       if (event.over && !potentialExistingPiece) {
-        const {canMove, toRemove} = checkCanMove(
+        const { canMove, toRemove } = checkCanMove(
           isOddTurn,
           movingPiece.odd,
           movingPiece,
@@ -137,7 +137,7 @@ export function Checkers() {
         }
         const newPiece: PieceProps = {
           ...movingPiece,
-          position: {x: cellX, y: cellY},
+          position: { x: cellX, y: cellY },
         };
         // Clone pieces
         const newPieces = pieces.map((row) => row.slice());
@@ -162,7 +162,7 @@ export function Checkers() {
   );
 
   const handleDragStart = useCallback(
-    function handleDragStart({active}: DragStartEvent) {
+    function handleDragStart({ active }: DragStartEvent) {
       const piece = pieces.reduce<PieceProps | undefined>((acc, row) => {
         return acc ?? row.find((cell) => cell?.id === active.id);
       }, undefined);
@@ -210,12 +210,12 @@ export function Checkers() {
                 if (!piece) {
                   const canDrop = movingPiece
                     ? checkCanMove(
-                        isOddTurn,
-                        movingPiece.odd,
-                        movingPiece,
-                        x,
-                        y
-                      ).canMove
+                      isOddTurn,
+                      movingPiece.odd,
+                      movingPiece,
+                      x,
+                      y
+                    ).canMove
                     : false;
 
                   return (
@@ -259,7 +259,7 @@ export function Checkers() {
 }
 
 function DraggablePiece(props: PieceProps) {
-  const {attributes, isDragging, listeners, setNodeRef} = useDraggable({
+  const { attributes, isDragging, listeners, setNodeRef } = useDraggable({
     id: props.id,
   });
 
@@ -290,7 +290,7 @@ function generateBoard() {
         odd = !odd;
       }
 
-      board[y][x] = {odd, id: `${y}-${x}`, x, y};
+      board[y][x] = { odd, id: `${y}-${x}`, x, y };
     }
   }
 
@@ -313,7 +313,7 @@ function generatePieces(board: CellProps[][]) {
         pieces[y][x] = {
           odd,
           id: `${y}-${x}`,
-          position: {x, y},
+          position: { x, y },
           disabled: false,
         };
       }
@@ -325,8 +325,8 @@ function generatePieces(board: CellProps[][]) {
 
 function checkEnd(
   pieces: (PieceProps | undefined)[][]
-): {oddWon: boolean; evenWon: boolean} {
-  const result = {oddWon: true, evenWon: true};
+): { oddWon: boolean; evenWon: boolean } {
+  const result = { oddWon: true, evenWon: true };
 
   for (let y = 0; y < BOARD_SIZE; y++) {
     for (let x = 0; x < BOARD_SIZE; x++) {

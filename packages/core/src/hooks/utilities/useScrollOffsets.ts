@@ -1,5 +1,5 @@
 import {useState, useCallback, useMemo, useRef, useEffect} from 'react';
-import {add} from '@dnd-kit/utilities';
+import {add} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 import {
   defaultCoordinates,
@@ -12,10 +12,8 @@ import type {Coordinates} from '../../types';
 type ScrollCoordinates = Map<HTMLElement | Window, Coordinates>;
 
 export function useScrollOffsets(elements: Element[]): Coordinates {
-  const [
-    scrollCoordinates,
-    setScrollCoordinates,
-  ] = useState<ScrollCoordinates | null>(null);
+  const [scrollCoordinates, setScrollCoordinates] =
+    useState<ScrollCoordinates | null>(null);
   const prevElements = useRef(elements);
 
   // To-do: Throttle the handleScroll callback

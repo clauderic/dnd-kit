@@ -1,10 +1,10 @@
 import React from 'react';
-import type {CancelDrop, UniqueIdentifier} from '@dnd-kit/core';
-import {rectSortingStrategy} from '@dnd-kit/sortable';
+import type { CancelDrop, UniqueIdentifier } from '@schuchertmanagementberatung/dnd-kit-core';
+import { rectSortingStrategy } from '@schuchertmanagementberatung/dnd-kit-sortable';
 
-import {MultipleContainers, TRASH_ID} from './MultipleContainers';
+import { MultipleContainers, TRASH_ID } from './MultipleContainers';
 
-import {ConfirmModal} from '../../components';
+import { ConfirmModal } from '../../components';
 
 export default {
   title: 'Presets/Sortable/Multiple Containers',
@@ -26,11 +26,11 @@ export const ManyItems = () => (
 
 export const Vertical = () => <MultipleContainers itemCount={5} vertical />;
 
-export const TrashableItems = ({confirmDrop}: {confirmDrop: boolean}) => {
+export const TrashableItems = ({ confirmDrop }: { confirmDrop: boolean }) => {
   const [activeId, setActiveId] = React.useState<UniqueIdentifier | null>(null);
   const resolveRef = React.useRef<(value: boolean) => void>();
 
-  const cancelDrop: CancelDrop = async ({active, over}) => {
+  const cancelDrop: CancelDrop = async ({ active, over }) => {
     if (over?.id !== TRASH_ID) {
       return true;
     }
@@ -68,7 +68,7 @@ TrashableItems.argTypes = {
   confirmDrop: {
     name: 'Request user confirmation before deletion',
     defaultValue: false,
-    control: {type: 'boolean'},
+    control: { type: 'boolean' },
   },
 };
 

@@ -1,5 +1,5 @@
 import type {MutableRefObject} from 'react';
-import type {DeepRequired} from '@dnd-kit/utilities';
+import type {DeepRequired} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 import type {SyntheticListeners} from '../hooks/utilities';
 import type {Collision} from '../utilities/algorithms';

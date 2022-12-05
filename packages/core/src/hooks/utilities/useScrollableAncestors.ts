@@ -1,5 +1,5 @@
 import {useEffect, useRef} from 'react';
-import {useLazyMemo} from '@dnd-kit/utilities';
+import {useLazyMemo} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 import {getScrollableAncestors} from '../../utilities';
 

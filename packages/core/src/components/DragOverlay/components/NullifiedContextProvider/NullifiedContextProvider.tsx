@@ -1,5 +1,5 @@
 import React from 'react';
-import type {Transform} from '@dnd-kit/utilities';
+import type {Transform} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 import {InternalContext, defaultInternalContext} from '../../../../store';
 import {ActiveDraggableContext} from '../../../DndContext';

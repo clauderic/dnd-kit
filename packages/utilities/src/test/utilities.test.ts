@@ -1,4 +1,4 @@
-describe('@dnd-kit/utilities', () => {
+describe('@schuchertmanagementberatung/dnd-kit-utilities', () => {
   it('works', () => {
     expect(true).toBe(true);
   });

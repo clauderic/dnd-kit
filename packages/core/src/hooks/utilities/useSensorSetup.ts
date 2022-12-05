@@ -1,5 +1,5 @@
 import {useEffect} from 'react';
-import {canUseDOM} from '@dnd-kit/utilities';
+import {canUseDOM} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 import type {SensorDescriptor} from '../../sensors';
 

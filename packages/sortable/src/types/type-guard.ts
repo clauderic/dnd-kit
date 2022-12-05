@@ -4,7 +4,7 @@ import type {
   DroppableContainer,
   DraggableNode,
   Over,
-} from '@dnd-kit/core';
+} from '@schuchertmanagementberatung/dnd-kit-core';
 
 import type {SortableData} from './data';
 

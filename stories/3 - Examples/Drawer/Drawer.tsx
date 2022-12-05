@@ -1,17 +1,17 @@
-import React, {useRef} from 'react';
+import React, { useRef } from 'react';
 import {
   DndContext,
   DragEndEvent,
   PointerSensor,
   useSensor,
   useSensors,
-} from '@dnd-kit/core';
-import {restrictToVerticalAxis} from '@dnd-kit/modifiers';
+} from '@schuchertmanagementberatung/dnd-kit-core';
+import { restrictToVerticalAxis } from '@schuchertmanagementberatung/dnd-kit-modifiers';
 
-import {Region} from './constants';
-import {rubberbandModifier} from './modifiers';
-import {DropRegions} from './DropRegions';
-import {Sheet} from './Sheet';
+import { Region } from './constants';
+import { rubberbandModifier } from './modifiers';
+import { DropRegions } from './DropRegions';
+import { Sheet } from './Sheet';
 import styles from './Drawer.module.css';
 
 export interface Props {
@@ -25,7 +25,7 @@ export interface Props {
 
 const modifiers = [restrictToVerticalAxis, rubberbandModifier];
 
-export function Drawer({children, expanded, header, onChange}: Props) {
+export function Drawer({ children, expanded, header, onChange }: Props) {
   const tracked = useRef({
     distance: 0,
     timestamp: 0,
@@ -46,7 +46,7 @@ export function Drawer({children, expanded, header, onChange}: Props) {
       autoScroll={false}
       modifiers={modifiers}
       sensors={sensors}
-      onDragMove={({delta}) => {
+      onDragMove={({ delta }) => {
         // Track drag velocity
         const timestamp = Date.now();
         const timeDelta = timestamp - tracked.current.timestamp;
@@ -70,8 +70,8 @@ export function Drawer({children, expanded, header, onChange}: Props) {
     </DndContext>
   );
 
-  function handleDragEnd({over}: DragEndEvent) {
-    const {velocity} = tracked.current;
+  function handleDragEnd({ over }: DragEndEvent) {
+    const { velocity } = tracked.current;
 
     if (Math.abs(velocity) > 500) {
       // Directional velocity is high, assume intent to expand/collapse

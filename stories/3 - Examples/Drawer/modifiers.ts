@@ -1,7 +1,7 @@
-import type {ClientRect, Modifier} from '@dnd-kit/core';
-import type {Transform} from '@dnd-kit/utilities';
+import type { ClientRect, Modifier } from '@schuchertmanagementberatung/dnd-kit-core';
+import type { Transform } from '@schuchertmanagementberatung/dnd-kit-utilities';
 
-import {MAX_DRAWER_HEIGHT_PERCENT} from './constants';
+import { MAX_DRAWER_HEIGHT_PERCENT } from './constants';
 
 export const rubberbandModifier: Modifier = ({
   draggingNodeRect,

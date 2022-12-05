@@ -1,6 +1,6 @@
-# @dnd-kit/modifiers
+# @schuchertmanagementberatung/dnd-kit-modifiers
 
-[![Stable release](https://img.shields.io/npm/v/@dnd-kit/modifiers.svg)](https://npm.im/@dnd-kit/sortable)
+[![Stable release](https://img.shields.io/npm/v/@schuchertmanagementberatung/dnd-kit-modifiers.svg)](https://npm.im/@schuchertmanagementberatung/dnd-kit-sortable)
 
 Modifiers let you dynamically modify the movement coordinates that are detected by sensors. They can be used for a wide range of use cases, for example:
 
@@ -14,7 +14,7 @@ Modifiers let you dynamically modify the movement coordinates that are detected 
 To start using modifiers, install the modifiers package via yarn or npm:
 
 ```
-npm install @dnd-kit/modifiers
+npm install @schuchertmanagementberatung/dnd-kit-modifiers
 ```
 
 ## Usage
@@ -26,7 +26,7 @@ import {DndContext, DragOverlay} from '@dnd-kit';
 import {
   restrictToVerticalAxis,
   restrictToWindowEdges,
-} from '@dnd-kit/modifiers';
+} from '@schuchertmanagementberatung/dnd-kit-modifiers';
 
 function App() {
   return (
@@ -73,7 +73,7 @@ Restrict movement to the first scrollable ancestor of the draggable item that is
 Function to create modifiers to snap to a given grid size.
 
 ```javascript
-import {createSnapModifier} from '@dnd-kit/modifiers';
+import {createSnapModifier} from '@schuchertmanagementberatung/dnd-kit-modifiers';
 
 const gridSize = 20; // pixels
 const snapToGridModifier = createSnapModifier(gridSize);

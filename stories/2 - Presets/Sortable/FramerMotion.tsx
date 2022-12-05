@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {motion} from 'framer-motion';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import {
   DndContext,
   DragEndEvent,
@@ -9,17 +9,17 @@ import {
   useSensor,
   useSensors,
   UniqueIdentifier,
-} from '@dnd-kit/core';
+} from '@schuchertmanagementberatung/dnd-kit-core';
 import {
   SortableContext,
   useSortable,
   arrayMove,
   rectSortingStrategy,
   sortableKeyboardCoordinates,
-} from '@dnd-kit/sortable';
+} from '@schuchertmanagementberatung/dnd-kit-sortable';
 
-import {GridContainer, Wrapper} from '../../components';
-import {createRange} from '../../utilities';
+import { GridContainer, Wrapper } from '../../components';
+import { createRange } from '../../utilities';
 
 import styles from '../../components/Item/Item.module.css';
 
@@ -52,7 +52,7 @@ export function FramerMotion() {
     </Wrapper>
   );
 
-  function handleDragEnd({active, over}: DragEndEvent) {
+  function handleDragEnd({ active, over }: DragEndEvent) {
     if (!over) {
       return;
     }
@@ -75,7 +75,7 @@ const initialStyles = {
   scale: 1,
 };
 
-function Item({id}: {id: UniqueIdentifier}) {
+function Item({ id }: { id: UniqueIdentifier }) {
   const {
     attributes,
     setNodeRef,
@@ -96,14 +96,14 @@ function Item({id}: {id: UniqueIdentifier}) {
       animate={
         transform
           ? {
-              x: transform.x,
-              y: transform.y,
-              scale: isDragging ? 1.05 : 1,
-              zIndex: isDragging ? 1 : 0,
-              boxShadow: isDragging
-                ? '0 0 0 1px rgba(63, 63, 68, 0.05), 0px 15px 15px 0 rgba(34, 33, 81, 0.25)'
-                : undefined,
-            }
+            x: transform.x,
+            y: transform.y,
+            scale: isDragging ? 1.05 : 1,
+            zIndex: isDragging ? 1 : 0,
+            boxShadow: isDragging
+              ? '0 0 0 1px rgba(63, 63, 68, 0.05), 0px 15px 15px 0 rgba(34, 33, 81, 0.25)'
+              : undefined,
+          }
           : initialStyles
       }
       transition={{

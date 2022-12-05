@@ -1,4 +1,4 @@
-import type {Without} from '@dnd-kit/utilities';
+import type {Without} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 export type SyntheticEventName = keyof Without<
   React.DOMAttributes<any>,

@@ -1,5 +1,8 @@
-import type {Active, UniqueIdentifier} from '@dnd-kit/core';
-import type {Transition} from '@dnd-kit/utilities';
+import type {
+  Active,
+  UniqueIdentifier,
+} from '@schuchertmanagementberatung/dnd-kit-core';
+import type {Transition} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 export type SortableTransition = Pick<Transition, 'easing' | 'duration'>;
 
