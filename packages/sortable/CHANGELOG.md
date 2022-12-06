@@ -1,5 +1,11 @@
 # @schuchertmanagementberatung/dnd-kit-sortable
 
+## 7.1.2
+
+### Patch Changes
+
+- [`59cbb7a`](https://github.com/clauderic/dnd-kit/commit/59cbb7a14ea50d2ea8b4d6ad8bd8dfe8269ab38c) Thanks [@5ebastianMeier](https://github.com/5ebastianMeier)! - Fix remembering last sortable over item
+
 ## 7.1.1
 
 ### Patch Changes
