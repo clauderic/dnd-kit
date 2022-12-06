@@ -21,6 +21,9 @@ jobs:
 
       - name: Install dependencies and build (with cache)
         uses: bahmutov/npm-install@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Test
         run: yarn test --ci --coverage --maxWorkers=2
