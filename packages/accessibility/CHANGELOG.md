@@ -1,5 +1,11 @@
 # @schuchertmanagementberatung/dnd-kit-accessibility
 
+## 3.0.3
+
+### Patch Changes
+
+- [`df33941`](https://github.com/clauderic/dnd-kit/commit/df339419796504c1721378e4d314f8fac8e9ca28) Thanks [@5ebastianMeier](https://github.com/5ebastianMeier)! - fix naming of esm package entry points to reflect package name changes
+
 ## 3.0.2
 
 ### Patch Changes
