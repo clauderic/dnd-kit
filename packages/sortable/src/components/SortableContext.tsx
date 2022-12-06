@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef} from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import {
   useDndContext,
   ClientRect,
@@ -6,16 +6,17 @@ import {
 } from '@schuchertmanagementberatung/dnd-kit-core';
 import {
   useIsomorphicLayoutEffect,
+  usePrevious,
   useUniqueId,
 } from '@schuchertmanagementberatung/dnd-kit-utilities';
 
-import type {Disabled, SortingStrategy} from '../types';
-import {getSortedRects, itemsEqual, normalizeDisabled} from '../utilities';
-import {rectSortingStrategy} from '../strategies';
+import type { Disabled, SortingStrategy } from '../types';
+import { getSortedRects, itemsEqual, normalizeDisabled } from '../utilities';
+import { rectSortingStrategy } from '../strategies';
 
 export interface Props {
   children: React.ReactNode;
-  items: (UniqueIdentifier | {id: UniqueIdentifier})[];
+  items: (UniqueIdentifier | { id: UniqueIdentifier })[];
   strategy?: SortingStrategy;
   id?: string;
   disabled?: boolean | Disabled;
@@ -76,7 +77,9 @@ export function SortableContext({
   );
   const isDragging = active != null;
   const activeIndex = active ? items.indexOf(active.id) : -1;
-  const overIndex = over ? items.indexOf(over.id) : -1;
+  const previousOver = usePrevious(over);
+  const lastSortableOver = over?.data?.current?.sortable ? over : previousOver;
+  const overIndex = lastSortableOver ? items.indexOf(lastSortableOver.id) : -1;
   const previousItemsRef = useRef(items);
   const itemsHaveChanged = !itemsEqual(items, previousItemsRef.current);
   const disableTransforms =
