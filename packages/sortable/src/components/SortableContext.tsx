@@ -3,10 +3,10 @@ import {
   useDndContext,
   ClientRect,
   UniqueIdentifier,
+  Over,
 } from '@schuchertmanagementberatung/dnd-kit-core';
 import {
   useIsomorphicLayoutEffect,
-  usePrevious,
   useUniqueId,
 } from '@schuchertmanagementberatung/dnd-kit-utilities';
 
@@ -66,6 +66,7 @@ export function SortableContext({
     measureDroppableContainers,
     measuringScheduled,
   } = useDndContext();
+  const sortableOverRef = useRef<Over | null>(null);
   const containerId = useUniqueId(ID_PREFIX, id);
   const useDragOverlay = Boolean(dragOverlay.rect !== null);
   const items = useMemo<UniqueIdentifier[]>(
@@ -77,9 +78,13 @@ export function SortableContext({
   );
   const isDragging = active != null;
   const activeIndex = active ? items.indexOf(active.id) : -1;
-  const previousOver = usePrevious(over);
-  const lastSortableOver = over?.data?.current?.sortable ? over : previousOver;
-  const overIndex = lastSortableOver ? items.indexOf(lastSortableOver.id) : -1;
+  const sortableOver = over?.data?.current?.sortable ? over : null;
+  if (sortableOver) {
+    sortableOverRef.current = sortableOver;
+  }
+  const overIndex = sortableOverRef.current
+    ? items.indexOf(sortableOverRef.current.id)
+    : -1;
   const previousItemsRef = useRef(items);
   const itemsHaveChanged = !itemsEqual(items, previousItemsRef.current);
   const disableTransforms =
