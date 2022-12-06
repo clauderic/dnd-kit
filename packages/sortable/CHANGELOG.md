@@ -1,5 +1,17 @@
 # @schuchertmanagementberatung/dnd-kit-sortable
 
+## 7.1.0
+
+### Minor Changes
+
+- [`f2a526c`](https://github.com/clauderic/dnd-kit/commit/f2a526c02c9277ea720121387d4739ea21706012) Thanks [@5ebastianMeier](https://github.com/5ebastianMeier)! - remember last sortable over item to ensure seemless sorting animations
+
+### Patch Changes
+
+- Updated dependencies [[`f2a526c`](https://github.com/clauderic/dnd-kit/commit/f2a526c02c9277ea720121387d4739ea21706012)]:
+  - @schuchertmanagementberatung/dnd-kit-core@6.0.7
+  - @schuchertmanagementberatung/dnd-kit-utilities@3.2.2
+
 ## 7.0.1
 
 ### Patch Changes

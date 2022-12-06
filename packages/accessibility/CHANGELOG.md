@@ -1,5 +1,11 @@
 # @schuchertmanagementberatung/dnd-kit-accessibility
 
+## 3.0.2
+
+### Patch Changes
+
+- [`f2a526c`](https://github.com/clauderic/dnd-kit/commit/f2a526c02c9277ea720121387d4739ea21706012) Thanks [@5ebastianMeier](https://github.com/5ebastianMeier)! - remember last sortable over item to ensure seemless sorting animations
+
 ## 3.0.1
 
 ### Patch Changes
