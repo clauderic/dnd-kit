@@ -1,5 +1,15 @@
 # @schuchertmanagementberatung/dnd-kit-sortable
 
+## 7.1.1
+
+### Patch Changes
+
+- [`df33941`](https://github.com/clauderic/dnd-kit/commit/df339419796504c1721378e4d314f8fac8e9ca28) Thanks [@5ebastianMeier](https://github.com/5ebastianMeier)! - fix naming of esm package entry points to reflect package name changes
+
+- Updated dependencies [[`df33941`](https://github.com/clauderic/dnd-kit/commit/df339419796504c1721378e4d314f8fac8e9ca28)]:
+  - @schuchertmanagementberatung/dnd-kit-core@6.0.8
+  - @schuchertmanagementberatung/dnd-kit-utilities@3.2.3
+
 ## 7.1.0
 
 ### Minor Changes
