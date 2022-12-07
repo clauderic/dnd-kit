@@ -1,5 +1,11 @@
 # @schuchertmanagementberatung/dnd-kit-utilities
 
+## 3.3.0
+
+### Minor Changes
+
+- [`f871ccd`](https://github.com/clauderic/dnd-kit/commit/f871ccd616ebf63019e45413e12fa41396cc3cee) Thanks [@5ebastianMeier](https://github.com/5ebastianMeier)! - CSS translation now allows z value to allow z-axis control when z-index is not respected
+
 ## 3.2.3
 
 ### Patch Changes
