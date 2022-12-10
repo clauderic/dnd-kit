@@ -11,6 +11,7 @@ import {
   Modifiers,
 } from '@dnd-kit/core';
 
+import {useUniqueId} from '@dnd-kit/utilities';
 import {
   Draggable,
   DraggableOverlay,
@@ -28,17 +29,21 @@ interface Props {
   containers?: string[];
   modifiers?: Modifiers;
   value?: string;
+  placeholder?: boolean;
 }
 
 function DroppableStory({
   containers = ['A'],
   collisionDetection,
   modifiers,
+  placeholder = false,
 }: Props) {
   const [isDragging, setIsDragging] = useState(false);
   const [parent, setParent] = useState<UniqueIdentifier | null>(null);
 
   const item = <DraggableItem />;
+
+  const placeholderId = useUniqueId('Placeholder');
 
   return (
     <DndContext
@@ -57,8 +62,19 @@ function DroppableStory({
         </Wrapper>
         <GridContainer columns={2}>
           {containers.map((id) => (
-            <Droppable key={id} id={id} dragging={isDragging}>
+            <Droppable
+              key={id}
+              id={id}
+              dragging={isDragging}
+              placeholderId={placeholderId}
+            >
               {parent === id ? item : null}
+              {parent !== id && placeholder && (
+                <PlaceholderItem
+                  placeholderId={placeholderId}
+                  placeholderContainerId={id}
+                />
+              )}
             </Droppable>
           ))}
         </GridContainer>
@@ -90,7 +106,33 @@ function DraggableItem({handle}: DraggableProps) {
   );
 }
 
+interface PlaceholderItemProps {
+  placeholderId: string;
+  placeholderContainerId: string;
+}
+
+function PlaceholderItem({
+  placeholderId,
+  placeholderContainerId,
+}: PlaceholderItemProps) {
+  const {isDragging, over, setNodeRef} = useDraggable({
+    id: placeholderId,
+    placeholder: true,
+    placeholderContainerId: placeholderContainerId,
+  });
+
+  const isPlaceholderActive = over?.id === placeholderContainerId;
+
+  if (!isPlaceholderActive) {
+    return null;
+  }
+
+  return <Draggable dragging={isDragging} ref={setNodeRef} />;
+}
+
 export const BasicSetup = () => <DroppableStory />;
+
+export const Placeholder = () => <DroppableStory placeholder />;
 
 export const MultipleDroppables = () => (
   <DroppableStory containers={['A', 'B', 'C']} />

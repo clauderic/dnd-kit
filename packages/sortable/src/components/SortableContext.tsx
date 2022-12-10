@@ -18,6 +18,7 @@ const ID_PREFIX = 'Sortable';
 
 interface ContextDescriptor {
   activeIndex: number;
+  placeholderIndex: number;
   containerId: string;
   disabled: Disabled;
   disableTransforms: boolean;
@@ -30,6 +31,7 @@ interface ContextDescriptor {
 
 export const Context = React.createContext<ContextDescriptor>({
   activeIndex: -1,
+  placeholderIndex: -1,
   containerId: ID_PREFIX,
   disableTransforms: false,
   items: [],
@@ -60,20 +62,39 @@ export function SortableContext({
   } = useDndContext();
   const containerId = useUniqueId(ID_PREFIX, id);
   const useDragOverlay = Boolean(dragOverlay.rect !== null);
-  const items = useMemo<UniqueIdentifier[]>(
-    () =>
-      userDefinedItems.map((item) =>
-        typeof item === 'object' && 'id' in item ? item.id : item
-      ),
-    [userDefinedItems]
+  const currentPlaceholderId = over?.placeholderId.current;
+  const overId = `${id}`.replace('sortable-', '');
+  const isPlaceholderActive =
+    over?.placeholderContainerId.current === id || over?.id === overId;
+  const isSourceSortable =
+    over?.placeholderContainerId.current ===
+    active?.data.current?.sortable.containerId;
+  const items = useMemo<UniqueIdentifier[]>(() => {
+    const userDefinedIds = userDefinedItems.map((item) =>
+    typeof item === 'object' && 'id' in item ? item.id : item
   );
+    if (!isSourceSortable && isPlaceholderActive && currentPlaceholderId) {
+      return [...userDefinedIds, currentPlaceholderId];
+    }
+    return userDefinedIds;
+  }, [
+    currentPlaceholderId,
+    isPlaceholderActive,
+    isSourceSortable,
+    userDefinedItems,
+  ]);
+
   const isDragging = active != null;
   const activeIndex = active ? items.indexOf(active.id) : -1;
   const overIndex = over ? items.indexOf(over.id) : -1;
+  const placeholderIndex = currentPlaceholderId
+    ? items.indexOf(currentPlaceholderId)
+    : -1;
   const previousItemsRef = useRef(items);
   const itemsHaveChanged = !itemsEqual(items, previousItemsRef.current);
   const disableTransforms =
-    (overIndex !== -1 && activeIndex === -1) || itemsHaveChanged;
+    (overIndex !== -1 && activeIndex === -1 && placeholderIndex === -1) ||
+    itemsHaveChanged;
   const disabled = normalizeDisabled(disabledProp);
 
   useIsomorphicLayoutEffect(() => {
@@ -95,6 +116,7 @@ export function SortableContext({
   const contextValue = useMemo(
     (): ContextDescriptor => ({
       activeIndex,
+      placeholderIndex,
       containerId,
       disabled,
       disableTransforms,
@@ -107,6 +129,7 @@ export function SortableContext({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       activeIndex,
+      placeholderIndex,
       containerId,
       disabled.draggable,
       disabled.droppable,

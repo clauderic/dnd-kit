@@ -4,6 +4,7 @@ import {
   useDroppable,
   UseDraggableArguments,
   UseDroppableArguments,
+  UniqueIdentifier,
 } from '@dnd-kit/core';
 import type {Data} from '@dnd-kit/core';
 import {CSS, isKeyboardEvent, useCombinedRefs} from '@dnd-kit/utilities';
@@ -34,6 +35,9 @@ export interface Arguments
   getNewIndex?: NewIndexGetter;
   strategy?: SortingStrategy;
   transition?: SortableTransition | null;
+  placeholder?: boolean;
+  placeholderContainerId?: string;
+  placeholderId?: UniqueIdentifier;
 }
 
 export function useSortable({
@@ -46,11 +50,15 @@ export function useSortable({
   strategy: localStrategy,
   resizeObserverConfig,
   transition = defaultTransition,
+  placeholder = false,
+  placeholderContainerId,
+  placeholderId,
 }: Arguments) {
   const {
     items,
     containerId,
     activeIndex,
+    placeholderIndex,
     disabled: globalDisabled,
     disableTransforms,
     sortedRects,
@@ -79,6 +87,8 @@ export function useSortable({
       updateMeasurementsFor: itemsAfterCurrentSortable,
       ...resizeObserverConfig,
     },
+    placeholderDraggableId: placeholderId,
+    placeholderContainerId,
   });
   const {
     active,
@@ -98,14 +108,18 @@ export function useSortable({
       ...defaultAttributes,
       ...userDefinedAttributes,
     },
+    placeholder,
+    placeholderContainerId,
     disabled: disabled.draggable,
   });
   const setNodeRef = useCombinedRefs(setDroppableNodeRef, setDraggableNodeRef);
   const isSorting = Boolean(active);
+  const activeIndexUsed =
+    placeholderIndex !== -1 ? placeholderIndex : activeIndex;
   const displaceItem =
     isSorting &&
     !disableTransforms &&
-    isValidIndex(activeIndex) &&
+    isValidIndex(activeIndexUsed) &&
     isValidIndex(overIndex);
   const shouldDisplaceDragSource = !useDragOverlay && isDragging;
   const dragSourceDisplacement =
@@ -116,16 +130,16 @@ export function useSortable({
       strategy({
         rects: sortedRects,
         activeNodeRect,
-        activeIndex,
+        activeIndex: activeIndexUsed,
         overIndex,
         index,
       })
     : null;
   const newIndex =
-    isValidIndex(activeIndex) && isValidIndex(overIndex)
-      ? getNewIndex({id, items, activeIndex, overIndex})
+    isValidIndex(activeIndexUsed) && isValidIndex(overIndex)
+      ? getNewIndex({id, items, activeIndex: activeIndexUsed, overIndex})
       : index;
-  const activeId = active?.id;
+  const activeId = placeholder ? placeholderId : active?.id;
   const previous = useRef({
     activeId,
     items,
@@ -147,10 +161,12 @@ export function useSortable({
     transition,
     wasDragging: previous.current.activeId != null,
   });
+  const isSortablePlaceholderActive =
+    over?.placeholderContainerId.current === placeholderContainerId;
 
   const derivedTransform = useDerivedTransform({
     disabled: !shouldAnimateLayoutChanges,
-    index,
+    index: isSortablePlaceholderActive ? newIndex : index,
     node,
     rect,
   });
@@ -186,9 +202,11 @@ export function useSortable({
     return () => clearTimeout(timeoutId);
   }, [activeId]);
 
+  const hasPlaceholderIndex = placeholderIndex !== -1;
+
   return {
     active,
-    activeIndex,
+    activeIndex: activeIndexUsed,
     attributes,
     data,
     rect,
@@ -206,14 +224,16 @@ export function useSortable({
     setActivatorNodeRef,
     setDroppableNodeRef,
     setDraggableNodeRef,
-    transform: derivedTransform ?? finalTransform,
+    transform: hasPlaceholderIndex
+      ? finalTransform
+      : derivedTransform ?? finalTransform,
     transition: getTransition(),
   };
 
   function getTransition() {
     if (
       // Temporarily disable transitions for a single frame to set up derived transforms
-      derivedTransform ||
+      (derivedTransform && !hasPlaceholderIndex) ||
       // Or to prevent items jumping to back to their "new" position when items change
       (itemsHaveChanged && previous.current.newIndex === index)
     ) {
