@@ -6,7 +6,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/clauderic/dnd-kit.git",
+    "url": "git+https://github.com/schuchertmanagementberatung/dnd-kit.git",
     "directory": "packages/core"
   },
   "scripts": {
