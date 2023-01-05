@@ -1,5 +1,11 @@
 # @dnd-kit/core
 
+## 6.0.7
+
+### Patch Changes
+
+- [#788](https://github.com/clauderic/dnd-kit/pull/788) [`da94c02`](https://github.com/clauderic/dnd-kit/commit/da94c02a26986b8816b7b31e318f68e9e1b9a1d2) Thanks [@clauderic](https://github.com/clauderic)! - Bug fixes for React 18 Strict Mode
+
 ## 6.0.6
 
 ### Patch Changes
