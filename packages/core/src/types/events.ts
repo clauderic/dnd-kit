@@ -1,22 +1,27 @@
-import type {Active, Over} from '../store';
+import type {Active, Data, Over} from '../store';
 import type {Collision} from '../utilities/algorithms';
 
 import type {Translate} from './coordinates';
 
-interface DragEvent {
+interface DragEvent<DataT extends Data = Data> {
   activatorEvent: Event;
-  active: Active;
+  active: Active<DataT>;
   collisions: Collision[] | null;
   delta: Translate;
-  over: Over | null;
+  over: Over<DataT> | null;
 }
 
-export interface DragStartEvent extends Pick<DragEvent, 'active'> {}
+export interface DragStartEvent<DataT extends Data = Data>
+  extends Pick<DragEvent<DataT>, 'active'> {}
 
-export interface DragMoveEvent extends DragEvent {}
+export interface DragMoveEvent<DataT extends Data = Data>
+  extends DragEvent<DataT> {}
 
-export interface DragOverEvent extends DragMoveEvent {}
+export interface DragOverEvent<DataT extends Data = Data>
+  extends DragMoveEvent<DataT> {}
 
-export interface DragEndEvent extends DragEvent {}
+export interface DragEndEvent<DataT extends Data = Data>
+  extends DragEvent<DataT> {}
 
-export interface DragCancelEvent extends DragEndEvent {}
+export interface DragCancelEvent<DataT extends Data = Data>
+  extends DragEndEvent<DataT> {}
