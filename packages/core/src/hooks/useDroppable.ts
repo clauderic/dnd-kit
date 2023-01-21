@@ -1,4 +1,4 @@
-import {useCallback, useContext, useEffect, useRef} from 'react';
+import {Context, useCallback, useContext, useEffect, useRef} from 'react';
 import {
   useIsomorphicLayoutEffect,
   useLatestValue,
@@ -6,7 +6,12 @@ import {
   useUniqueId,
 } from '@dnd-kit/utilities';
 
-import {InternalContext, Action, Data} from '../store';
+import {
+  InternalContext,
+  Action,
+  Data,
+  InternalContextDescriptor,
+} from '../store';
 import type {ClientRect, UniqueIdentifier} from '../types';
 
 import {useResizeObserver} from './utilities';
@@ -23,10 +28,10 @@ interface ResizeObserverConfig {
   timeout?: number;
 }
 
-export interface UseDroppableArguments {
+export interface UseDroppableArguments<DataT extends Data = Data> {
   id: UniqueIdentifier;
   disabled?: boolean;
-  data?: Data;
+  data?: DataT;
   resizeObserverConfig?: ResizeObserverConfig;
 }
 
@@ -36,15 +41,15 @@ const defaultResizeObserverConfig = {
   timeout: 25,
 };
 
-export function useDroppable({
+export function useDroppable<DataT extends Data = Data>({
   data,
   disabled = false,
   id,
   resizeObserverConfig,
-}: UseDroppableArguments) {
+}: UseDroppableArguments<DataT>) {
   const key = useUniqueId(ID_PREFIX);
   const {active, dispatch, over, measureDroppableContainers} = useContext(
-    InternalContext
+    InternalContext as Context<InternalContextDescriptor<DataT>>
   );
   const previous = useRef({disabled});
   const resizeObserverConnected = useRef(false);

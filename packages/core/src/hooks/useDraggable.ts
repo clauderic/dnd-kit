@@ -1,4 +1,4 @@
-import {createContext, useContext, useMemo} from 'react';
+import {Context, createContext, useContext, useMemo} from 'react';
 import {
   Transform,
   useNodeRef,
@@ -7,14 +7,14 @@ import {
   useUniqueId,
 } from '@dnd-kit/utilities';
 
-import {InternalContext, Data} from '../store';
+import {InternalContext, Data, InternalContextDescriptor} from '../store';
 import type {UniqueIdentifier} from '../types';
 import {ActiveDraggableContext} from '../components/DndContext';
 import {useSyntheticListeners, SyntheticListenerMap} from './utilities';
 
-export interface UseDraggableArguments {
+export interface UseDraggableArguments<DataT extends Data = Data> {
   id: UniqueIdentifier;
-  data?: Data;
+  data?: DataT;
   disabled?: boolean;
   attributes?: {
     role?: string;
@@ -40,13 +40,14 @@ const defaultRole = 'button';
 
 const ID_PREFIX = 'Droppable';
 
-export function useDraggable({
+export function useDraggable<DataT extends Data = Data>({
   id,
   data,
   disabled = false,
   attributes,
-}: UseDraggableArguments) {
+}: UseDraggableArguments<DataT>) {
   const key = useUniqueId(ID_PREFIX);
+
   const {
     activators,
     activatorEvent,
@@ -55,7 +56,8 @@ export function useDraggable({
     ariaDescribedById,
     draggableNodes,
     over,
-  } = useContext(InternalContext);
+  } = useContext(InternalContext as Context<InternalContextDescriptor<DataT>>);
+
   const {
     role = defaultRole,
     roleDescription = 'draggable',

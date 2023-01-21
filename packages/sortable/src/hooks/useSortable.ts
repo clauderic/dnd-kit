@@ -26,8 +26,8 @@ import type {
 } from './types';
 import {useDerivedTransform} from './utilities';
 
-export interface Arguments
-  extends Omit<UseDraggableArguments, 'disabled'>,
+export interface Arguments<DataT extends Data = Data>
+  extends Omit<UseDraggableArguments<DataT>, 'disabled'>,
     Pick<UseDroppableArguments, 'resizeObserverConfig'> {
   animateLayoutChanges?: AnimateLayoutChanges;
   disabled?: boolean | Disabled;
@@ -36,7 +36,7 @@ export interface Arguments
   transition?: SortableTransition | null;
 }
 
-export function useSortable({
+export function useSortable<DataT extends Data = Data>({
   animateLayoutChanges = defaultAnimateLayoutChanges,
   attributes: userDefinedAttributes,
   disabled: localDisabled,
@@ -46,7 +46,7 @@ export function useSortable({
   strategy: localStrategy,
   resizeObserverConfig,
   transition = defaultTransition,
-}: Arguments) {
+}: Arguments<DataT>) {
   const {
     items,
     containerId,
@@ -63,10 +63,12 @@ export function useSortable({
     globalDisabled
   );
   const index = items.indexOf(id);
-  const data = useMemo<SortableData & Data>(
-    () => ({sortable: {containerId, index, items}, ...customData}),
+
+  const data = useMemo<SortableData & Omit<DataT, keyof SortableData>>(
+    () => ({...(customData as DataT), sortable: {containerId, index, items}}),
     [containerId, customData, index, items]
   );
+
   const itemsAfterCurrentSortable = useMemo(
     () => items.slice(items.indexOf(id)),
     [items, id]

@@ -23,42 +23,46 @@ export type Data<T = AnyData> = T & AnyData;
 
 export type DataRef<T = AnyData> = MutableRefObject<Data<T> | undefined>;
 
-export interface DroppableContainer {
+export interface DroppableContainer<DataT extends Data = Data> {
   id: UniqueIdentifier;
   key: UniqueIdentifier;
-  data: DataRef;
+  data: DataRef<DataT>;
   disabled: boolean;
   node: MutableRefObject<HTMLElement | null>;
   rect: MutableRefObject<ClientRect | null>;
 }
 
-export interface Active {
+export interface Active<DataT extends Data = Data> {
   id: UniqueIdentifier;
-  data: DataRef;
+  data: DataRef<DataT>;
   rect: MutableRefObject<{
     initial: ClientRect | null;
     translated: ClientRect | null;
   }>;
 }
 
-export interface Over {
+export interface Over<DataT extends Data = Data> {
   id: UniqueIdentifier;
   rect: ClientRect;
   disabled: boolean;
-  data: DataRef;
+  data: DataRef<DataT>;
 }
 
-export type DraggableNode = {
+export type DraggableNode<DataT extends Data = Data> = {
   id: UniqueIdentifier;
   key: UniqueIdentifier;
   node: MutableRefObject<HTMLElement | null>;
   activatorNode: MutableRefObject<HTMLElement | null>;
-  data: DataRef;
+  data: DataRef<DataT>;
 };
 
-export type DraggableNodes = Map<UniqueIdentifier, DraggableNode | undefined>;
+export type DraggableNodes<DataT extends Data = Data> = Map<
+  UniqueIdentifier,
+  DraggableNode<DataT> | undefined
+>;
 
-export type DroppableContainers = DroppableContainersMap;
+export type DroppableContainers<DataT extends Data = Data> =
+  DroppableContainersMap<DataT>;
 
 export type RectMap = Map<UniqueIdentifier, ClientRect>;
 
@@ -74,17 +78,17 @@ export interface State {
   };
 }
 
-export interface PublicContextDescriptor {
+export interface PublicContextDescriptor<DataT extends Data = Data> {
   activatorEvent: Event | null;
-  active: Active | null;
+  active: Active<DataT> | null;
   activeNode: HTMLElement | null;
   activeNodeRect: ClientRect | null;
   collisions: Collision[] | null;
   containerNodeRect: ClientRect | null;
-  draggableNodes: DraggableNodes;
-  droppableContainers: DroppableContainers;
+  draggableNodes: DraggableNodes<DataT>;
+  droppableContainers: DroppableContainers<DataT>;
   droppableRects: RectMap;
-  over: Over | null;
+  over: Over<DataT> | null;
   dragOverlay: {
     nodeRef: MutableRefObject<HTMLElement | null>;
     rect: ClientRect | null;
@@ -98,16 +102,16 @@ export interface PublicContextDescriptor {
   windowRect: ClientRect | null;
 }
 
-export interface InternalContextDescriptor {
+export interface InternalContextDescriptor<DataT extends Data = Data> {
   activatorEvent: Event | null;
   activators: SyntheticListeners;
-  active: Active | null;
+  active: Active<DataT> | null;
   activeNodeRect: ClientRect | null;
   ariaDescribedById: {
     draggable: string;
   };
   dispatch: React.Dispatch<Actions>;
-  draggableNodes: DraggableNodes;
-  over: Over | null;
+  draggableNodes: DraggableNodes<DataT>;
+  over: Over<DataT> | null;
   measureDroppableContainers(ids: UniqueIdentifier[]): void;
 }

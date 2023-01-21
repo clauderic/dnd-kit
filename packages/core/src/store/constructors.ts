@@ -1,11 +1,11 @@
 import type {UniqueIdentifier} from '../types';
-import type {DroppableContainer} from './types';
+import type {Data, DroppableContainer} from './types';
 
 type Identifier = UniqueIdentifier | null | undefined;
 
-export class DroppableContainersMap extends Map<
+export class DroppableContainersMap<DataT extends Data = Data> extends Map<
   UniqueIdentifier,
-  DroppableContainer
+  DroppableContainer<DataT>
 > {
   get(id: Identifier) {
     return id != null ? super.get(id) ?? undefined : undefined;
