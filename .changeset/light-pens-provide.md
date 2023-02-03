@@ -8,7 +8,7 @@ This is being added for users who want to expand the KeyboardCodes to also use c
 
 To use this code. Add the KeyboardCodeModifiers optional parameter when setting up the KeyboardSensor options. You can then define rules for Start, Cancel, and End and each modifier set to true will apply to their respective keyboard code.
 
-The following is an example if you wanted to set up Shift+Space to start and end.
+The following is an example if you wanted to set up Alt+Space to start and end.
 `
 keyboardCodes: {
     start: ['Space'],
