@@ -41,8 +41,7 @@ export function getScrollableAncestors(
       return scrollParents;
     }
 
-    const {getComputedStyle} = getWindow(node);
-    const computedStyle = getComputedStyle(node);
+    const computedStyle = getWindow(element).getComputedStyle(node);
 
     if (node !== element) {
       if (isScrollable(node, computedStyle)) {
