@@ -1,5 +1,11 @@
 # @dnd-kit/core
 
+## 6.0.8
+
+### Patch Changes
+
+- [#1038](https://github.com/clauderic/dnd-kit/pull/1038) [`da888ee`](https://github.com/clauderic/dnd-kit/commit/da888eea8675ff07ad3b2b8f43bc52408b69bd66) Thanks [@WillDonohoe](https://github.com/WillDonohoe)! - Fix errors with calls to `getComputedStyle` in Firefox when destructuring from the window object
+
 ## 6.0.7
 
 ### Patch Changes
