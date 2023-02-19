@@ -103,7 +103,7 @@ export const VariableHeights = () => {
 };
 
 export const DisabledItems = () => {
-  const disabledItems: UniqueIdentifier[] = ['1', '5', '8', '13', '20'];
+  const disabledItems: UniqueIdentifier[] = [1, 5, 8, 13, 20];
   return (
     <Sortable
       {...props}
