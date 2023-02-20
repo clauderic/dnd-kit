@@ -93,7 +93,7 @@ export interface PublicContextDescriptor {
   scrollableAncestors: Element[];
   scrollableAncestorRects: ClientRect[];
   measuringConfiguration: DeepRequired<MeasuringConfiguration>;
-  measureDroppableContainers(ids: UniqueIdentifier[]): void;
+  measureDroppableContainers(ids: ReadonlyArray<UniqueIdentifier>): void;
   measuringScheduled: boolean;
   windowRect: ClientRect | null;
 }
@@ -109,5 +109,5 @@ export interface InternalContextDescriptor {
   dispatch: React.Dispatch<Actions>;
   draggableNodes: DraggableNodes;
   over: Over | null;
-  measureDroppableContainers(ids: UniqueIdentifier[]): void;
+  measureDroppableContainers(ids: ReadonlyArray<UniqueIdentifier>): void;
 }

@@ -35,13 +35,15 @@ export function useDroppableMeasuring(
   containers: DroppableContainer[],
   {dragging, dependencies, config}: Arguments
 ) {
-  const [queue, setQueue] = useState<UniqueIdentifier[] | null>(null);
+  const [queue, setQueue] = useState<ReadonlyArray<UniqueIdentifier> | null>(
+    null
+  );
   const {frequency, measure, strategy} = config;
   const containersRef = useRef(containers);
   const disabled = isDisabled();
   const disabledRef = useLatestValue(disabled);
   const measureDroppableContainers = useCallback(
-    (ids: UniqueIdentifier[] = []) => {
+    (ids: ReadonlyArray<UniqueIdentifier> = []) => {
       if (disabledRef.current) {
         return;
       }

@@ -8,7 +8,7 @@ import {rectSortingStrategy} from '../strategies';
 
 export interface Props {
   children: React.ReactNode;
-  items: (UniqueIdentifier | {id: UniqueIdentifier})[];
+  items: ReadonlyArray<UniqueIdentifier | {id: UniqueIdentifier}>;
   strategy?: SortingStrategy;
   id?: string;
   disabled?: boolean | Disabled;
@@ -21,10 +21,10 @@ interface ContextDescriptor {
   containerId: string;
   disabled: Disabled;
   disableTransforms: boolean;
-  items: UniqueIdentifier[];
+  items: ReadonlyArray<UniqueIdentifier>;
   overIndex: number;
   useDragOverlay: boolean;
-  sortedRects: ClientRect[];
+  sortedRects: ReadonlyArray<ClientRect>;
   strategy: SortingStrategy;
 }
 
@@ -59,7 +59,7 @@ export function SortableContext({
   } = useDndContext();
   const containerId = useUniqueId(ID_PREFIX, id);
   const useDragOverlay = Boolean(dragOverlay.rect !== null);
-  const items = useMemo<UniqueIdentifier[]>(
+  const items = useMemo<ReadonlyArray<UniqueIdentifier>>(
     () =>
       userDefinedItems.map((item) =>
         typeof item === 'object' && 'id' in item ? item.id : item

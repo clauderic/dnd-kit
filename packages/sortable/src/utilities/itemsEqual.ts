@@ -1,6 +1,9 @@
 import type {UniqueIdentifier} from '@dnd-kit/core';
 
-export function itemsEqual(a: UniqueIdentifier[], b: UniqueIdentifier[]) {
+export function itemsEqual(
+  a: ReadonlyArray<UniqueIdentifier>,
+  b: ReadonlyArray<UniqueIdentifier>
+) {
   if (a === b) {
     return true;
   }

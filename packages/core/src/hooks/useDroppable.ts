@@ -18,7 +18,7 @@ interface ResizeObserverConfig {
    * Specify an array of `UniqueIdentifier` of droppable containers that should also be re-measured
    * when this droppable container resizes. Specifying an empty array re-measures all droppable containers.
    */
-  updateMeasurementsFor?: UniqueIdentifier[];
+  updateMeasurementsFor?: ReadonlyArray<UniqueIdentifier>;
   /** Represents the debounce timeout between when resize events are observed and when elements are re-measured */
   timeout?: number;
 }
@@ -43,9 +43,8 @@ export function useDroppable({
   resizeObserverConfig,
 }: UseDroppableArguments) {
   const key = useUniqueId(ID_PREFIX);
-  const {active, dispatch, over, measureDroppableContainers} = useContext(
-    InternalContext
-  );
+  const {active, dispatch, over, measureDroppableContainers} =
+    useContext(InternalContext);
   const previous = useRef({disabled});
   const resizeObserverConnected = useRef(false);
   const rect = useRef<ClientRect | null>(null);
