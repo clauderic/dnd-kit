@@ -6,6 +6,7 @@ export enum EventName {
   Resize = 'resize',
   SelectionChange = 'selectionchange',
   VisibilityChange = 'visibilitychange',
+  TouchCancel = 'touchcancel',
 }
 
 export function preventDefault(event: Event) {

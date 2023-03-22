@@ -55,7 +55,8 @@ export interface AbstractPointerSensorOptions extends SensorOptions {
   onActivation?({event}: {event: Event}): void;
 }
 
-export type AbstractPointerSensorProps = SensorProps<AbstractPointerSensorOptions>;
+export type AbstractPointerSensorProps =
+  SensorProps<AbstractPointerSensorOptions>;
 
 export class AbstractPointerSensor implements SensorInstance {
   public autoScrollEnabled = true;
@@ -105,6 +106,7 @@ export class AbstractPointerSensor implements SensorInstance {
     this.windowListeners.add(EventName.Resize, this.handleCancel);
     this.windowListeners.add(EventName.DragStart, preventDefault);
     this.windowListeners.add(EventName.VisibilityChange, this.handleCancel);
+    this.windowListeners.add(EventName.TouchCancel, this.handleCancel);
     this.windowListeners.add(EventName.ContextMenu, preventDefault);
     this.documentListeners.add(EventName.Keydown, this.handleKeydown);
 
