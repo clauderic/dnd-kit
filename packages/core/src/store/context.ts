@@ -39,7 +39,13 @@ export const defaultInternalContext: InternalContextDescriptor = {
   ariaDescribedById: {
     draggable: '',
   },
-  dispatch: noop,
+  dispatch: () => {
+    console.error(
+      new Error(
+        'could not find dnd-kit context value; please ensure the component is wrapped in a <DndContext>'
+      )
+    );
+  },
   draggableNodes: new Map(),
   over: null,
   measureDroppableContainers: noop,
