@@ -8,5 +8,5 @@ export function isScrollingDisabled(
     element
   )
 ): boolean {
-  return hasOverflowStyles(element, computedStyle, /(hide)/);
+  return hasOverflowStyles(element, computedStyle, /(hidden)/);
 }
