@@ -83,7 +83,7 @@ import {
 } from './hooks';
 import type {MeasuringConfiguration} from './types';
 import {createActiveAPI} from './activeAPI';
-import {useActiveRects} from './useActiveRects';
+import {useActiveNodeDomValues} from './useActiveNodeDomValues';
 
 export interface Props {
   id?: string;
@@ -180,14 +180,15 @@ export const DndContext = memo(function DndContext({
       config: measuringConfiguration.droppable,
     });
 
-  const activeNodeStuff = useActiveRects(
+  const activeNodeDomValues = useActiveNodeDomValues(
     draggableNodes,
     measuringConfiguration,
     active?.id || null
   );
-  const activeNode = activeNodeStuff?.activeNode || null;
-  const initialActiveNodeRect = activeNodeStuff?.initialActiveNodeRect || null;
-  const activeNodeRect = activeNodeStuff?.activeNodeRect || null;
+  const activeNode = activeNodeDomValues?.activeNode || null;
+  const initialActiveNodeRect =
+    activeNodeDomValues?.initialActiveNodeRect || null;
+  const activeNodeRect = activeNodeDomValues?.activeNodeRect || null;
   const containerNodeRect = useRect(
     activeNode ? activeNode.parentElement : null
   );
@@ -667,12 +668,12 @@ export const DndContext = memo(function DndContext({
       useMyActivatorEvent: activeAPI.useMyActivatorEvent,
       useGlobalActivatorEvent: activeAPI.useActivatorEvent,
       useMyActiveNodeRect: (id: UniqueIdentifier) => {
-        const stuff = useActiveRects(
+        const domValues = useActiveNodeDomValues(
           draggableNodes,
           measuringConfiguration,
           id
         );
-        return stuff?.activeNodeRect || null;
+        return domValues?.activeNodeRect || null;
       },
       activators,
       ariaDescribedById: {

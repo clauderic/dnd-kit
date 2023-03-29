@@ -5,7 +5,7 @@ import type {DraggableNodes} from '../../store';
 import type {UniqueIdentifier} from '../../types';
 import type {MeasuringConfiguration} from './types';
 
-export function useActiveRects(
+export function useActiveNodeDomValues(
   draggableNodes: DraggableNodes,
   measuringConfiguration: DeepRequired<MeasuringConfiguration>,
   activeId: UniqueIdentifier | null

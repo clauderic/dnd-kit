@@ -48,7 +48,6 @@ function DraggableStory({
     '2': defaultCoordinates,
     '3': defaultCoordinates,
   });
-  //   const [{x, y}, setCoordinates] = useState<Coordinates>(defaultCoordinates);
   const sensorOptions = useMemo(
     () => ({
       activationConstraint,
@@ -159,6 +158,9 @@ function DraggableItem({
   );
 }
 
+//we are memoizing the draggable item to prevent it all items from re-rendering when one of them changes coordinates.
+//so it will be easier to test
+//changes in the context are ignored by the memoization
 const MemoDraggableItem = React.memo(DraggableItem);
 
 export const BasicSetup = () => <DraggableStory />;
