@@ -51,7 +51,7 @@ export function useDraggable({
     activators,
     useMyActivatorEvent,
     useMyActive,
-    activeNodeRect,
+    useMyActiveNodeRect,
     ariaDescribedById,
     draggableNodes,
     over,
@@ -64,6 +64,7 @@ export function useDraggable({
   const active = useMyActive(id);
   const isDragging = active !== null;
   const activatorEvent = useMyActivatorEvent(id);
+  const activeNodeRect = useMyActiveNodeRect(id);
   const transform: Transform | null = useContext(
     isDragging ? ActiveDraggableContext : NullContext
   );

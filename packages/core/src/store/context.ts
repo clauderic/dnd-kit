@@ -3,7 +3,12 @@ import {createContext} from 'react';
 import {noop} from '../utilities/other';
 import {defaultMeasuringConfiguration} from '../components/DndContext/defaults';
 import {DroppableContainersMap} from './constructors';
-import type {InternalContextDescriptor, PublicContextDescriptor} from './types';
+import type {
+  Active,
+  InternalContextDescriptor,
+  PublicContextDescriptor,
+} from './types';
+import type {ClientRect} from '../types';
 
 export const defaultPublicContext: PublicContextDescriptor = {
   activatorEvent: null,
@@ -32,10 +37,7 @@ export const defaultPublicContext: PublicContextDescriptor = {
 };
 
 export const defaultInternalContext: InternalContextDescriptor = {
-  activatorEvent: null,
   activators: [],
-  active: null,
-  activeNodeRect: null,
   ariaDescribedById: {
     draggable: '',
   },
@@ -43,12 +45,29 @@ export const defaultInternalContext: InternalContextDescriptor = {
   draggableNodes: new Map(),
   over: null,
   measureDroppableContainers: noop,
+  useMyActive: function (): Active | null {
+    throw new Error('Function not implemented.');
+  },
+  useGloablActive: function (): Active | null {
+    throw new Error('Function not implemented.');
+  },
+  useHasActive: function (): boolean {
+    throw new Error('Function not implemented.');
+  },
+  useMyActivatorEvent: function (): Event | null {
+    throw new Error('Function not implemented.');
+  },
+  useGlobalActivatorEvent: function (): Event | null {
+    throw new Error('Function not implemented.');
+  },
+  useMyActiveNodeRect: function (): ClientRect | null {
+    throw new Error('Function not implemented.');
+  },
 };
 
 export const InternalContext = createContext<InternalContextDescriptor>(
   defaultInternalContext
 );
 
-export const PublicContext = createContext<PublicContextDescriptor>(
-  defaultPublicContext
-);
+export const PublicContext =
+  createContext<PublicContextDescriptor>(defaultPublicContext);

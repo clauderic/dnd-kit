@@ -97,11 +97,13 @@ export interface PublicContextDescriptor {
 }
 
 export interface InternalContextDescriptor {
-  useMyActivatorEvent: (id: UniqueIdentifier) => Event | null;
   activators: SyntheticListeners;
   useMyActive: (id: UniqueIdentifier) => Active | null;
+  useGloablActive: () => Active | null;
   useHasActive: () => boolean;
-  activeNodeRect: ClientRect | null;
+  useMyActivatorEvent: (id: UniqueIdentifier) => Event | null;
+  useGlobalActivatorEvent: () => Event | null;
+  useMyActiveNodeRect: (id: UniqueIdentifier) => ClientRect | null;
   ariaDescribedById: {
     draggable: string;
   };

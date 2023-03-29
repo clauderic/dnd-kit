@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {
   DndContext,
   useDraggable,
@@ -49,13 +49,15 @@ function DraggableStory({
     '3': defaultCoordinates,
   });
   //   const [{x, y}, setCoordinates] = useState<Coordinates>(defaultCoordinates);
-  const mouseSensor = useSensor(MouseSensor, {
-    activationConstraint,
-  });
-  const touchSensor = useSensor(TouchSensor, {
-    activationConstraint,
-  });
-  const keyboardSensor = useSensor(KeyboardSensor, {});
+  const sensorOptions = useMemo(
+    () => ({
+      activationConstraint,
+    }),
+    [activationConstraint]
+  );
+  const mouseSensor = useSensor(MouseSensor, sensorOptions);
+  const touchSensor = useSensor(TouchSensor, sensorOptions);
+  const keyboardSensor = useSensor(KeyboardSensor);
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
 
   return (

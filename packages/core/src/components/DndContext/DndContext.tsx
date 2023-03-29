@@ -31,11 +31,9 @@ import {
 import {DndMonitorContext, useDndMonitorProvider} from '../DndMonitor';
 import {
   useAutoScroller,
-  useCachedNode,
   useCombineActivators,
   useDragOverlayMeasuring,
   useDroppableMeasuring,
-  useInitialRect,
   useRect,
   useRectDelta,
   useRects,
@@ -85,6 +83,7 @@ import {
 } from './hooks';
 import type {MeasuringConfiguration} from './types';
 import {createActiveAPI} from './activeAPI';
+import {useActiveRects} from './useActiveRects';
 
 export interface Props {
   id?: string;
@@ -180,16 +179,24 @@ export const DndContext = memo(function DndContext({
       dependencies: [translate.x, translate.y],
       config: measuringConfiguration.droppable,
     });
-  const activeNode = useCachedNode(draggableNodes, activeId);
+
+  const activeNodeStuff = useActiveRects(
+    draggableNodes,
+    measuringConfiguration,
+    active?.id || null
+  );
+  const activeNode = activeNodeStuff?.activeNode || null;
+  const initialActiveNodeRect = activeNodeStuff?.initialActiveNodeRect || null;
+  const activeNodeRect = activeNodeStuff?.activeNodeRect || null;
+  const containerNodeRect = useRect(
+    activeNode ? activeNode.parentElement : null
+  );
+
   const activationCoordinates = useMemo(
     () => (activatorEvent ? getEventCoordinates(activatorEvent) : null),
     [activatorEvent]
   );
   const autoScrollOptions = getAutoScrollerOptions();
-  const initialActiveNodeRect = useInitialRect(
-    activeNode,
-    measuringConfiguration.draggable.measure
-  );
 
   useLayoutShiftScrollCompensation({
     activeNode: activeId ? draggableNodes.get(activeId) : null,
@@ -198,14 +205,6 @@ export const DndContext = memo(function DndContext({
     measure: measuringConfiguration.draggable.measure,
   });
 
-  const activeNodeRect = useRect(
-    activeNode,
-    measuringConfiguration.draggable.measure,
-    initialActiveNodeRect
-  );
-  const containerNodeRect = useRect(
-    activeNode ? activeNode.parentElement : null
-  );
   const sensorContext = useRef<SensorContext>({
     activatorEvent: null,
     active: null,
@@ -664,9 +663,18 @@ export const DndContext = memo(function DndContext({
     const context: InternalContextDescriptor = {
       useMyActive: activeAPI.useMyActive,
       useHasActive: activeAPI.useHasActive,
+      useGloablActive: activeAPI.useActive,
       useMyActivatorEvent: activeAPI.useMyActivatorEvent,
+      useGlobalActivatorEvent: activeAPI.useActivatorEvent,
+      useMyActiveNodeRect: (id: UniqueIdentifier) => {
+        const stuff = useActiveRects(
+          draggableNodes,
+          measuringConfiguration,
+          id
+        );
+        return stuff?.activeNodeRect || null;
+      },
       activators,
-      activeNodeRect,
       ariaDescribedById: {
         draggable: draggableDescribedById,
       },
@@ -678,14 +686,18 @@ export const DndContext = memo(function DndContext({
 
     return context;
   }, [
+    activeAPI.useMyActive,
+    activeAPI.useHasActive,
+    activeAPI.useActive,
+    activeAPI.useMyActivatorEvent,
+    activeAPI.useActivatorEvent,
     activators,
-    activeNodeRect,
-    dispatch,
     draggableDescribedById,
+    dispatch,
     draggableNodes,
     over,
     measureDroppableContainers,
-    activeAPI,
+    measuringConfiguration,
   ]);
 
   return (
