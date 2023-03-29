@@ -362,9 +362,8 @@ export const DndContext = memo(function DndContext({
             setStatus(Status.Initializing);
             activeAPI.setActive(id);
             dispatch({
-              type: Action.DragStart,
+              type: Action.SetInitiailCoordinates,
               initialCoordinates,
-              active: id,
             });
             dispatchMonitorEvent({type: 'onDragStart', event});
           });
@@ -375,8 +374,8 @@ export const DndContext = memo(function DndContext({
             coordinates,
           });
         },
-        onEnd: createHandler(Action.DragEnd),
-        onCancel: createHandler(Action.DragCancel),
+        onEnd: createHandler('DragEnd'),
+        onCancel: createHandler('DragCancel'),
       });
 
       unstable_batchedUpdates(() => {
@@ -384,7 +383,7 @@ export const DndContext = memo(function DndContext({
         activeAPI.setActivatorEvent(event.nativeEvent);
       });
 
-      function createHandler(type: Action.DragEnd | Action.DragCancel) {
+      function createHandler(type: 'DragEnd' | 'DragCancel') {
         return async function handler() {
           const {active, collisions, over, scrollAdjustedTranslate} =
             sensorContext.current;
@@ -401,11 +400,11 @@ export const DndContext = memo(function DndContext({
               over,
             };
 
-            if (type === Action.DragEnd && typeof cancelDrop === 'function') {
+            if (type === 'DragEnd' && typeof cancelDrop === 'function') {
               const shouldCancel = await Promise.resolve(cancelDrop(event));
 
               if (shouldCancel) {
-                type = Action.DragCancel;
+                type = 'DragCancel';
               }
             }
           }
@@ -414,14 +413,13 @@ export const DndContext = memo(function DndContext({
 
           unstable_batchedUpdates(() => {
             activeAPI.setActive(null);
-            dispatch({type});
+            dispatch({type: Action.ClearCoordinates});
             setStatus(Status.Uninitialized);
             setOver(null);
             setActiveSensor(null);
             activeAPI.setActivatorEvent(null);
 
-            const eventName =
-              type === Action.DragEnd ? 'onDragEnd' : 'onDragCancel';
+            const eventName = type === 'DragEnd' ? 'onDragEnd' : 'onDragCancel';
 
             if (event) {
               const handler = latestProps.current[eventName];

@@ -5,7 +5,7 @@ import type {State} from './types';
 export function getInitialState(): State {
   return {
     draggable: {
-      initialCoordinates: {x: 0, y: 0},
+      initialCoordinates: null,
       translate: {x: 0, y: 0},
     },
     droppable: {
@@ -16,7 +16,7 @@ export function getInitialState(): State {
 
 export function reducer(state: State, action: Actions): State {
   switch (action.type) {
-    case Action.DragStart:
+    case Action.SetInitiailCoordinates:
       return {
         ...state,
         draggable: {
@@ -25,9 +25,9 @@ export function reducer(state: State, action: Actions): State {
         },
       };
     case Action.DragMove:
-      // if (!state.draggable.active) {
-      //   return state;
-      // }
+      if (!state.draggable.initialCoordinates) {
+        return state;
+      }
 
       return {
         ...state,
@@ -39,8 +39,7 @@ export function reducer(state: State, action: Actions): State {
           },
         },
       };
-    case Action.DragEnd:
-    case Action.DragCancel:
+    case Action.ClearCoordinates:
       return {
         ...state,
         draggable: {

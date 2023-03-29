@@ -67,7 +67,7 @@ export interface State {
     containers: DroppableContainers;
   };
   draggable: {
-    initialCoordinates: Coordinates;
+    initialCoordinates: Coordinates | null;
     translate: Coordinates;
   };
 }
