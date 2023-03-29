@@ -78,12 +78,13 @@ import {
   ScreenReaderInstructions,
 } from '../Accessibility';
 
-import {defaultData, defaultSensors} from './defaults';
+import {defaultSensors} from './defaults';
 import {
   useLayoutShiftScrollCompensation,
   useMeasuringConfiguration,
 } from './hooks';
 import type {MeasuringConfiguration} from './types';
+import {createActiveAPI} from './activeAPI';
 
 export interface Props {
   id?: string;
@@ -149,29 +150,23 @@ export const DndContext = memo(function DndContext({
   const [status, setStatus] = useState<Status>(Status.Uninitialized);
   const isInitialized = status === Status.Initialized;
   const {
-    draggable: {active: activeId, nodes: draggableNodes, translate},
+    draggable: {translate},
     droppable: {containers: droppableContainers},
   } = state;
-  const node = activeId ? draggableNodes.get(activeId) : null;
   const activeRects = useRef<Active['rect']['current']>({
     initial: null,
     translated: null,
   });
-  const active = useMemo<Active | null>(
-    () =>
-      activeId != null
-        ? {
-            id: activeId,
-            // It's possible for the active node to unmount while dragging
-            data: node?.data ?? defaultData,
-            rect: activeRects,
-          }
-        : null,
-    [activeId, node]
-  );
+
+  const activeAPI = useMemo(() => createActiveAPI(activeRects), []);
+  const draggableNodes = activeAPI.draggableNodes;
+  const active = activeAPI.useActive();
+  const activeId = active?.id || null;
+
+  const activatorEvent = activeAPI.useActivatorEvent();
+
   const activeRef = useRef<UniqueIdentifier | null>(null);
   const [activeSensor, setActiveSensor] = useState<SensorInstance | null>(null);
-  const [activatorEvent, setActivatorEvent] = useState<Event | null>(null);
   const latestProps = useLatestValue(props, Object.values(props));
   const draggableDescribedById = useUniqueId(`DndDescribedBy`, id);
   const enabledDroppableContainers = useMemo(
@@ -365,6 +360,7 @@ export const DndContext = memo(function DndContext({
           unstable_batchedUpdates(() => {
             onDragStart?.(event);
             setStatus(Status.Initializing);
+            activeAPI.setActive(id);
             dispatch({
               type: Action.DragStart,
               initialCoordinates,
@@ -385,7 +381,7 @@ export const DndContext = memo(function DndContext({
 
       unstable_batchedUpdates(() => {
         setActiveSensor(sensorInstance);
-        setActivatorEvent(event.nativeEvent);
+        activeAPI.setActivatorEvent(event.nativeEvent);
       });
 
       function createHandler(type: Action.DragEnd | Action.DragCancel) {
@@ -417,11 +413,12 @@ export const DndContext = memo(function DndContext({
           activeRef.current = null;
 
           unstable_batchedUpdates(() => {
+            activeAPI.setActive(null);
             dispatch({type});
             setStatus(Status.Uninitialized);
             setOver(null);
             setActiveSensor(null);
-            setActivatorEvent(null);
+            activeAPI.setActivatorEvent(null);
 
             const eventName =
               type === Action.DragEnd ? 'onDragEnd' : 'onDragCancel';
@@ -665,9 +662,10 @@ export const DndContext = memo(function DndContext({
 
   const internalContext = useMemo(() => {
     const context: InternalContextDescriptor = {
-      activatorEvent,
+      useMyActive: activeAPI.useMyActive,
+      useHasActive: activeAPI.useHasActive,
+      useMyActivatorEvent: activeAPI.useMyActivatorEvent,
       activators,
-      active,
       activeNodeRect,
       ariaDescribedById: {
         draggable: draggableDescribedById,
@@ -680,15 +678,14 @@ export const DndContext = memo(function DndContext({
 
     return context;
   }, [
-    activatorEvent,
     activators,
-    active,
     activeNodeRect,
     dispatch,
     draggableDescribedById,
     draggableNodes,
     over,
     measureDroppableContainers,
+    activeAPI,
   ]);
 
   return (

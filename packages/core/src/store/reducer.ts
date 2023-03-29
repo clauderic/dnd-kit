@@ -5,9 +5,7 @@ import type {State} from './types';
 export function getInitialState(): State {
   return {
     draggable: {
-      active: null,
       initialCoordinates: {x: 0, y: 0},
-      nodes: new Map(),
       translate: {x: 0, y: 0},
     },
     droppable: {
@@ -24,13 +22,12 @@ export function reducer(state: State, action: Actions): State {
         draggable: {
           ...state.draggable,
           initialCoordinates: action.initialCoordinates,
-          active: action.active,
         },
       };
     case Action.DragMove:
-      if (!state.draggable.active) {
-        return state;
-      }
+      // if (!state.draggable.active) {
+      //   return state;
+      // }
 
       return {
         ...state,
@@ -48,7 +45,6 @@ export function reducer(state: State, action: Actions): State {
         ...state,
         draggable: {
           ...state.draggable,
-          active: null,
           initialCoordinates: {x: 0, y: 0},
           translate: {x: 0, y: 0},
         },

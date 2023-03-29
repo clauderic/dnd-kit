@@ -67,9 +67,7 @@ export interface State {
     containers: DroppableContainers;
   };
   draggable: {
-    active: UniqueIdentifier | null;
     initialCoordinates: Coordinates;
-    nodes: DraggableNodes;
     translate: Coordinates;
   };
 }
@@ -99,9 +97,10 @@ export interface PublicContextDescriptor {
 }
 
 export interface InternalContextDescriptor {
-  activatorEvent: Event | null;
+  useMyActivatorEvent: (id: UniqueIdentifier) => Event | null;
   activators: SyntheticListeners;
-  active: Active | null;
+  useMyActive: (id: UniqueIdentifier) => Active | null;
+  useHasActive: () => boolean;
   activeNodeRect: ClientRect | null;
   ariaDescribedById: {
     draggable: string;
