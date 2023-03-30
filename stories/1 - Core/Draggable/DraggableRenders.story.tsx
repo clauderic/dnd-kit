@@ -16,7 +16,7 @@ import type {Coordinates} from '@dnd-kit/utilities';
 import {Axis, Draggable, Wrapper} from '../../components';
 
 export default {
-  title: 'Core/Draggable/Multi/draggable',
+  title: 'Core/Draggable/DraggableRenders',
 };
 
 const defaultCoordinates = {
@@ -151,7 +151,7 @@ function DraggableItem({
       }}
     >
       <div>
-        <span data-testid={id} ref={span}>
+        <span data-testid={`draggable-status-${id}`} ref={span}>
           mounted
         </span>
         <Draggable

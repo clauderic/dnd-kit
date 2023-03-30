@@ -23,7 +23,7 @@ declare namespace Cypress {
     mouseMoveBy(
       x: number,
       y: number,
-      options?: {delay: number}
+      options?: {delay: number; noDrop?: boolean}
     ): Chainable<
       [
         Element,
