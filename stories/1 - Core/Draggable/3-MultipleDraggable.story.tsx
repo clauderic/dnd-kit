@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {Profiler, useMemo, useRef, useState} from 'react';
 import {
   DndContext,
   useDraggable,
@@ -139,22 +139,35 @@ function DraggableItem({
     useDraggable({
       id: id,
     });
-
-  console.log('render draggable', id);
+  const span = useRef<HTMLSpanElement>(null);
 
   return (
-    <Draggable
-      ref={setNodeRef}
-      dragging={isDragging}
-      handle={handle}
-      label={label}
-      listeners={listeners}
-      style={{...style, top, left}}
-      buttonStyle={buttonStyle}
-      transform={transform}
-      axis={axis}
-      {...attributes}
-    />
+    <Profiler
+      id="App"
+      onRender={(id, phase) => {
+        if (phase === 'update' && span.current) {
+          span.current.innerHTML = 'updated';
+        }
+      }}
+    >
+      <div>
+        <span data-testid={id} ref={span}>
+          mounted
+        </span>
+        <Draggable
+          ref={setNodeRef}
+          dragging={isDragging}
+          handle={handle}
+          label={label}
+          listeners={listeners}
+          style={{...style, top, left}}
+          buttonStyle={buttonStyle}
+          transform={transform}
+          axis={axis}
+          {...attributes}
+        />
+      </div>
+    </Profiler>
   );
 }
 
