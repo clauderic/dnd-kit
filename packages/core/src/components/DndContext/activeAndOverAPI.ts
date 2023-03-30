@@ -62,9 +62,6 @@ export function createActiveAndOverAPI(rect: Rects) {
       return useSyncExternalStore(subscribe, () => activeId === id);
     },
 
-    useHasActive: function () {
-      return useSyncExternalStore(subscribe, () => activeId !== null);
-    },
     useActive: function () {
       return useSyncExternalStore(subscribe, () => active);
     },

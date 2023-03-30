@@ -51,9 +51,6 @@ export const defaultInternalContext: InternalContextDescriptor = {
   useGloablActive: function (): Active | null {
     throw new Error('Function not implemented.');
   },
-  useHasActive: function (): boolean {
-    throw new Error('Function not implemented.');
-  },
   useMyActivatorEvent: function (): Event | null {
     throw new Error('Function not implemented.');
   },

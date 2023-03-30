@@ -100,7 +100,6 @@ export interface InternalContextDescriptor {
   activators: SyntheticListeners;
   useMyActive: (id: UniqueIdentifier) => Active | null;
   useGloablActive: () => Active | null;
-  useHasActive: () => boolean;
   useMyActivatorEvent: (id: UniqueIdentifier) => Event | null;
   useGlobalActivatorEvent: () => Event | null;
   useMyActiveNodeRect: (id: UniqueIdentifier) => ClientRect | null;

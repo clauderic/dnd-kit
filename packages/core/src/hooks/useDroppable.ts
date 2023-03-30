@@ -43,13 +43,8 @@ export function useDroppable({
   resizeObserverConfig,
 }: UseDroppableArguments) {
   const key = useUniqueId(ID_PREFIX);
-  const {
-    useHasActive,
-    dispatch,
-    useMyOverForDroppable,
-    measureDroppableContainers,
-  } = useContext(InternalContext);
-  const hasActive = useHasActive();
+  const {dispatch, useMyOverForDroppable, measureDroppableContainers} =
+    useContext(InternalContext);
   const over = useMyOverForDroppable(id);
   const previous = useRef({disabled});
   const resizeObserverConnected = useRef(false);
@@ -89,7 +84,9 @@ export function useDroppable({
   );
   const resizeObserver = useResizeObserver({
     callback: handleResize,
-    disabled: resizeObserverDisabled || !hasActive,
+    //the use of hasActive here forces all droppable to re-render when start/end drag.
+    //are we sure it is needed to disable the resize observer when there is no active drag?
+    disabled: resizeObserverDisabled,
   });
   const handleNodeChange = useCallback(
     (newElement: HTMLElement | null, previousElement: HTMLElement | null) => {

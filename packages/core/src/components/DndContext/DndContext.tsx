@@ -664,7 +664,6 @@ export const DndContext = memo(function DndContext({
   const internalContext = useMemo(() => {
     const context: InternalContextDescriptor = {
       useMyActive: activeAndOverAPI.useMyActive,
-      useHasActive: activeAndOverAPI.useHasActive,
       useGloablActive: activeAndOverAPI.useActive,
       useMyActivatorEvent: activeAndOverAPI.useMyActivatorEvent,
       useGlobalActivatorEvent: activeAndOverAPI.useActivatorEvent,
