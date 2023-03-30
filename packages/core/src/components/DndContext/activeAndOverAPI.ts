@@ -1,6 +1,6 @@
 import type {MutableRefObject} from 'react';
 import {useSyncExternalStore} from 'use-sync-external-store/shim';
-import type {Active} from '../../store';
+import type {Active, Over} from '../../store';
 
 import type {UniqueIdentifier, ClientRect} from '../../types';
 import {defaultData} from './defaults';
@@ -10,13 +10,15 @@ type Rects = MutableRefObject<{
   translated: ClientRect | null;
 }>;
 
-export function createActiveAPI(rect: Rects) {
+export function createActiveAndOverAPI(rect: Rects) {
   let activeId: UniqueIdentifier | null = null;
   let active: Active | null = null;
 
   let activatorEvent: Event | null = null;
   const draggableNodes = new Map<UniqueIdentifier, any>();
   const activeRects = rect;
+
+  let over: Over | null = null;
 
   const registry: (() => void)[] = [];
 
@@ -51,6 +53,11 @@ export function createActiveAPI(rect: Rects) {
       registry.forEach((li) => li());
     },
 
+    setOver: function (overInfo: Over | null) {
+      over = overInfo;
+      registry.forEach((li) => li());
+    },
+
     useIsDragging: function (id: UniqueIdentifier) {
       return useSyncExternalStore(subscribe, () => activeId === id);
     },
@@ -75,6 +82,20 @@ export function createActiveAPI(rect: Rects) {
       return useSyncExternalStore(subscribe, () =>
         activeId === id ? activatorEvent : null
       );
+    },
+
+    useMyOverForDraggable: function (draggableId: UniqueIdentifier) {
+      return useSyncExternalStore(subscribe, () =>
+        activeId === draggableId ? over : null
+      );
+    },
+    useMyOverForDroppable: function (droppableId: UniqueIdentifier) {
+      return useSyncExternalStore(subscribe, () =>
+        over && over.id === droppableId ? over : null
+      );
+    },
+    useOver: function () {
+      return useSyncExternalStore(subscribe, () => over);
     },
   };
 }

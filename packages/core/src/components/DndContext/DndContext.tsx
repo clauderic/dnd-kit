@@ -60,7 +60,7 @@ import {
   rectIntersection,
 } from '../../utilities';
 import {applyModifiers, Modifiers} from '../../modifiers';
-import type {Active, Over} from '../../store/types';
+import type {Active} from '../../store/types';
 import type {
   DragStartEvent,
   DragCancelEvent,
@@ -82,7 +82,7 @@ import {
   useMeasuringConfiguration,
 } from './hooks';
 import type {MeasuringConfiguration} from './types';
-import {createActiveAPI} from './activeAPI';
+import {createActiveAndOverAPI} from './activeAndOverAPI';
 import {useActiveNodeDomValues} from './useActiveNodeDomValues';
 
 export interface Props {
@@ -157,12 +157,15 @@ export const DndContext = memo(function DndContext({
     translated: null,
   });
 
-  const activeAPI = useMemo(() => createActiveAPI(activeRects), []);
-  const draggableNodes = activeAPI.draggableNodes;
-  const active = activeAPI.useActive();
+  const activeAndOverAPI = useMemo(
+    () => createActiveAndOverAPI(activeRects),
+    []
+  );
+  const draggableNodes = activeAndOverAPI.draggableNodes;
+  const active = activeAndOverAPI.useActive();
   const activeId = active?.id || null;
 
-  const activatorEvent = activeAPI.useActivatorEvent();
+  const activatorEvent = activeAndOverAPI.useActivatorEvent();
 
   const activeRef = useRef<UniqueIdentifier | null>(null);
   const [activeSensor, setActiveSensor] = useState<SensorInstance | null>(null);
@@ -300,7 +303,7 @@ export const DndContext = memo(function DndContext({
         })
       : null;
   const overId = getFirstCollision(collisions, 'id');
-  const [over, setOver] = useState<Over | null>(null);
+  const over = activeAndOverAPI.useOver();
 
   // When there is no drag overlay used, we need to account for the
   // window scroll delta
@@ -360,7 +363,7 @@ export const DndContext = memo(function DndContext({
           unstable_batchedUpdates(() => {
             onDragStart?.(event);
             setStatus(Status.Initializing);
-            activeAPI.setActive(id);
+            activeAndOverAPI.setActive(id);
             dispatch({
               type: Action.SetInitiailCoordinates,
               initialCoordinates,
@@ -380,7 +383,7 @@ export const DndContext = memo(function DndContext({
 
       unstable_batchedUpdates(() => {
         setActiveSensor(sensorInstance);
-        activeAPI.setActivatorEvent(event.nativeEvent);
+        activeAndOverAPI.setActivatorEvent(event.nativeEvent);
       });
 
       function createHandler(type: 'DragEnd' | 'DragCancel') {
@@ -412,12 +415,12 @@ export const DndContext = memo(function DndContext({
           activeRef.current = null;
 
           unstable_batchedUpdates(() => {
-            activeAPI.setActive(null);
+            activeAndOverAPI.setActive(null);
             dispatch({type: Action.ClearCoordinates});
             setStatus(Status.Uninitialized);
-            setOver(null);
+            activeAndOverAPI.setOver(null);
             setActiveSensor(null);
-            activeAPI.setActivatorEvent(null);
+            activeAndOverAPI.setActivatorEvent(null);
 
             const eventName = type === 'DragEnd' ? 'onDragEnd' : 'onDragCancel';
 
@@ -562,7 +565,7 @@ export const DndContext = memo(function DndContext({
       };
 
       unstable_batchedUpdates(() => {
-        setOver(over);
+        activeAndOverAPI.setOver(over);
         onDragOver?.(event);
         dispatchMonitorEvent({type: 'onDragOver', event});
       });
@@ -660,11 +663,11 @@ export const DndContext = memo(function DndContext({
 
   const internalContext = useMemo(() => {
     const context: InternalContextDescriptor = {
-      useMyActive: activeAPI.useMyActive,
-      useHasActive: activeAPI.useHasActive,
-      useGloablActive: activeAPI.useActive,
-      useMyActivatorEvent: activeAPI.useMyActivatorEvent,
-      useGlobalActivatorEvent: activeAPI.useActivatorEvent,
+      useMyActive: activeAndOverAPI.useMyActive,
+      useHasActive: activeAndOverAPI.useHasActive,
+      useGloablActive: activeAndOverAPI.useActive,
+      useMyActivatorEvent: activeAndOverAPI.useMyActivatorEvent,
+      useGlobalActivatorEvent: activeAndOverAPI.useActivatorEvent,
       useMyActiveNodeRect: (id: UniqueIdentifier) => {
         const domValues = useActiveNodeDomValues(
           draggableNodes,
@@ -679,22 +682,18 @@ export const DndContext = memo(function DndContext({
       },
       dispatch,
       draggableNodes,
-      over,
+      useMyOverForDraggable: activeAndOverAPI.useMyOverForDraggable,
+      useMyOverForDroppable: activeAndOverAPI.useMyOverForDroppable,
       measureDroppableContainers,
     };
 
     return context;
   }, [
-    activeAPI.useMyActive,
-    activeAPI.useHasActive,
-    activeAPI.useActive,
-    activeAPI.useMyActivatorEvent,
-    activeAPI.useActivatorEvent,
+    activeAndOverAPI,
     activators,
     draggableDescribedById,
     dispatch,
     draggableNodes,
-    over,
     measureDroppableContainers,
     measuringConfiguration,
   ]);

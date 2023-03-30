@@ -6,6 +6,7 @@ import {DroppableContainersMap} from './constructors';
 import type {
   Active,
   InternalContextDescriptor,
+  Over,
   PublicContextDescriptor,
 } from './types';
 import type {ClientRect} from '../types';
@@ -43,7 +44,6 @@ export const defaultInternalContext: InternalContextDescriptor = {
   },
   dispatch: noop,
   draggableNodes: new Map(),
-  over: null,
   measureDroppableContainers: noop,
   useMyActive: function (): Active | null {
     throw new Error('Function not implemented.');
@@ -61,6 +61,12 @@ export const defaultInternalContext: InternalContextDescriptor = {
     throw new Error('Function not implemented.');
   },
   useMyActiveNodeRect: function (): ClientRect | null {
+    throw new Error('Function not implemented.');
+  },
+  useMyOverForDraggable: function (): Over | null {
+    throw new Error('Function not implemented.');
+  },
+  useMyOverForDroppable: function (): Over | null {
     throw new Error('Function not implemented.');
   },
 };

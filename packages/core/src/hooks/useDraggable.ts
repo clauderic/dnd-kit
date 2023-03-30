@@ -54,7 +54,7 @@ export function useDraggable({
     useMyActiveNodeRect,
     ariaDescribedById,
     draggableNodes,
-    over,
+    useMyOverForDraggable,
   } = useContext(InternalContext);
   const {
     role = defaultRole,
@@ -65,6 +65,7 @@ export function useDraggable({
   const isDragging = active !== null;
   const activatorEvent = useMyActivatorEvent(id);
   const activeNodeRect = useMyActiveNodeRect(id);
+  const over = useMyOverForDraggable(id);
   const transform: Transform | null = useContext(
     isDragging ? ActiveDraggableContext : NullContext
   );

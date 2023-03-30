@@ -43,9 +43,14 @@ export function useDroppable({
   resizeObserverConfig,
 }: UseDroppableArguments) {
   const key = useUniqueId(ID_PREFIX);
-  const {useHasActive, dispatch, over, measureDroppableContainers} =
-    useContext(InternalContext);
+  const {
+    useHasActive,
+    dispatch,
+    useMyOverForDroppable,
+    measureDroppableContainers,
+  } = useContext(InternalContext);
   const hasActive = useHasActive();
+  const over = useMyOverForDroppable(id);
   const previous = useRef({disabled});
   const resizeObserverConnected = useRef(false);
   const rect = useRef<ClientRect | null>(null);
@@ -157,7 +162,7 @@ export function useDroppable({
   return {
     //I removed the active from here, it forces all droppable to re-render when active changes.
     rect,
-    isOver: over?.id === id,
+    isOver: !!over,
     node: nodeRef,
     over,
     setNodeRef,
