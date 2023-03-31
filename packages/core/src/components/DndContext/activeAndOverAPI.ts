@@ -41,6 +41,7 @@ export function createActiveAndOverAPI(rect: Rects) {
 
   return {
     draggableNodes,
+    subscribe,
     setActive: function (id: UniqueIdentifier | null) {
       if (activeId === id) return;
       activeId = id;
@@ -57,6 +58,9 @@ export function createActiveAndOverAPI(rect: Rects) {
       over = overInfo;
       registry.forEach((li) => li());
     },
+
+    getActive: () => active,
+    getOver: () => over,
 
     useIsDragging: function (id: UniqueIdentifier) {
       return useSyncExternalStore(subscribe, () => activeId === id);

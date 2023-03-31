@@ -638,6 +638,7 @@ export const DndContext = memo(function DndContext({
       measuringConfiguration,
       measuringScheduled,
       windowRect,
+      activeAndOverAPI: activeAndOverAPI,
     };
 
     return context;
@@ -659,6 +660,7 @@ export const DndContext = memo(function DndContext({
     measuringConfiguration,
     measuringScheduled,
     windowRect,
+    activeAndOverAPI,
   ]);
 
   const internalContext = useMemo(() => {

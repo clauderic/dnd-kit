@@ -1,4 +1,4 @@
-import {useContext, useEffect, useMemo, useRef} from 'react';
+import {createContext, useContext, useEffect, useMemo, useRef} from 'react';
 import {
   useDraggable,
   useDroppable,
@@ -14,24 +14,20 @@ import {isValidIndex} from '../utilities';
 import {
   defaultAnimateLayoutChanges,
   defaultAttributes,
-  defaultNewIndexGetter,
   defaultTransition,
   disabledTransition,
   transitionProperty,
 } from './defaults';
-import type {
-  AnimateLayoutChanges,
-  NewIndexGetter,
-  SortableTransition,
-} from './types';
+import type {AnimateLayoutChanges, SortableTransition} from './types';
 import {useDerivedTransform} from './utilities';
+import {ActiveContext} from '../components/SortableContext';
+const NullContext = createContext<any>(null);
 
 export interface Arguments
   extends Omit<UseDraggableArguments, 'disabled'>,
     Pick<UseDroppableArguments, 'resizeObserverConfig'> {
   animateLayoutChanges?: AnimateLayoutChanges;
   disabled?: boolean | Disabled;
-  getNewIndex?: NewIndexGetter;
   strategy?: SortingStrategy;
   transition?: SortableTransition | null;
 }
@@ -41,7 +37,6 @@ export function useSortable({
   attributes: userDefinedAttributes,
   disabled: localDisabled,
   data: customData,
-  getNewIndex = defaultNewIndexGetter,
   id,
   strategy: localStrategy,
   resizeObserverConfig,
@@ -50,13 +45,12 @@ export function useSortable({
   const {
     items,
     containerId,
-    activeIndex,
     disabled: globalDisabled,
     disableTransforms,
-    sortedRects,
-    overIndex,
     useDragOverlay,
     strategy: globalStrategy,
+    useMyNewIndex,
+    previousSortingStateRef,
   } = useContext(Context);
   const disabled: Disabled = normalizeLocalDisabled(
     localDisabled,
@@ -105,52 +99,55 @@ export function useSortable({
     },
     disabled: disabled.draggable,
   });
+
+  const activeSortable = useContext(isDragging ? ActiveContext : NullContext);
+  let shouldDisplaceDragSource = false;
+  let finalTransform = null;
+  if (isDragging) {
+    const activeIndex = activeSortable?.index;
+    const sortedRects = activeSortable?.sortedRects;
+    const overIndex = activeSortable?.overIndex;
+
+    const displaceItem =
+      !disableTransforms &&
+      isValidIndex(activeIndex) &&
+      isValidIndex(overIndex);
+
+    const shouldDisplaceDragSource = !useDragOverlay;
+    const dragSourceDisplacement =
+      shouldDisplaceDragSource && displaceItem ? transform : null;
+
+    const strategy = localStrategy ?? globalStrategy;
+    finalTransform = displaceItem
+      ? dragSourceDisplacement ??
+        strategy({
+          rects: sortedRects,
+          activeNodeRect,
+          activeIndex,
+          overIndex,
+          index,
+        })
+      : null;
+  }
+
   const setNodeRef = useCombinedRefs(setDroppableNodeRef, setDraggableNodeRef);
-  const isSorting = Boolean(active);
-  const displaceItem =
-    isSorting &&
-    !disableTransforms &&
-    isValidIndex(activeIndex) &&
-    isValidIndex(overIndex);
-  const shouldDisplaceDragSource = !useDragOverlay && isDragging;
-  const dragSourceDisplacement =
-    shouldDisplaceDragSource && displaceItem ? transform : null;
-  const strategy = localStrategy ?? globalStrategy;
-  const finalTransform = displaceItem
-    ? dragSourceDisplacement ??
-      strategy({
-        rects: sortedRects,
-        activeNodeRect,
-        activeIndex,
-        overIndex,
-        index,
-      })
-    : null;
-  const newIndex =
-    isValidIndex(activeIndex) && isValidIndex(overIndex)
-      ? getNewIndex({id, items, activeIndex, overIndex})
-      : index;
-  const activeId = active?.id;
-  const previous = useRef({
-    activeId,
-    items,
-    newIndex,
-    containerId,
-  });
-  const itemsHaveChanged = items !== previous.current.items;
+
+  const newIndex = useMyNewIndex(id, index);
+  const prevNewIndex = useRef(newIndex);
+  const itemsHaveChanged = items !== previousSortingStateRef.current.items;
   const shouldAnimateLayoutChanges = animateLayoutChanges({
     active,
     containerId,
     isDragging,
-    isSorting,
+    isSorting: isDragging,
     id,
     index,
     items,
-    newIndex: previous.current.newIndex,
-    previousItems: previous.current.items,
-    previousContainerId: previous.current.containerId,
+    newIndex: prevNewIndex.current,
+    previousItems: previousSortingStateRef.current.items,
+    previousContainerId: previousSortingStateRef.current.containerId,
     transition,
-    wasDragging: previous.current.activeId != null,
+    wasDragging: previousSortingStateRef.current.activeId != null,
   });
 
   const derivedTransform = useDerivedTransform({
@@ -161,39 +158,13 @@ export function useSortable({
   });
 
   useEffect(() => {
-    if (isSorting && previous.current.newIndex !== newIndex) {
-      previous.current.newIndex = newIndex;
+    if (prevNewIndex.current !== newIndex) {
+      prevNewIndex.current = newIndex;
     }
-
-    if (containerId !== previous.current.containerId) {
-      previous.current.containerId = containerId;
-    }
-
-    if (items !== previous.current.items) {
-      previous.current.items = items;
-    }
-  }, [isSorting, newIndex, containerId, items]);
-
-  useEffect(() => {
-    if (activeId === previous.current.activeId) {
-      return;
-    }
-
-    if (activeId && !previous.current.activeId) {
-      previous.current.activeId = activeId;
-      return;
-    }
-
-    const timeoutId = setTimeout(() => {
-      previous.current.activeId = activeId;
-    }, 50);
-
-    return () => clearTimeout(timeoutId);
-  }, [activeId]);
+  }, [newIndex]);
 
   return {
     active,
-    activeIndex,
     attributes,
     data,
     rect,
@@ -201,11 +172,9 @@ export function useSortable({
     newIndex,
     items,
     isOver,
-    isSorting,
     isDragging,
     listeners,
     node,
-    overIndex,
     over,
     setNodeRef,
     setActivatorNodeRef,
@@ -220,7 +189,7 @@ export function useSortable({
       // Temporarily disable transitions for a single frame to set up derived transforms
       derivedTransform ||
       // Or to prevent items jumping to back to their "new" position when items change
-      (itemsHaveChanged && previous.current.newIndex === index)
+      (itemsHaveChanged && prevNewIndex.current === index)
     ) {
       return disabledTransition;
     }
@@ -232,7 +201,7 @@ export function useSortable({
       return undefined;
     }
 
-    if (isSorting || shouldAnimateLayoutChanges) {
+    if (shouldAnimateLayoutChanges) {
       return CSS.Transition.toString({
         ...transition,
         property: transitionProperty,

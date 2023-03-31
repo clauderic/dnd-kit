@@ -1,12 +1,9 @@
 import {CSS} from '@dnd-kit/utilities';
+import type {NewIndexGetter} from '../types';
 
 import {arrayMove} from '../utilities';
 
-import type {
-  AnimateLayoutChanges,
-  NewIndexGetter,
-  SortableTransition,
-} from './types';
+import type {AnimateLayoutChanges, SortableTransition} from './types';
 
 export const defaultNewIndexGetter: NewIndexGetter = ({
   id,
@@ -17,7 +14,7 @@ export const defaultNewIndexGetter: NewIndexGetter = ({
 
 export const defaultAnimateLayoutChanges: AnimateLayoutChanges = ({
   containerId,
-  isSorting,
+  isDragging,
   wasDragging,
   index,
   items,
@@ -34,7 +31,7 @@ export const defaultAnimateLayoutChanges: AnimateLayoutChanges = ({
     return false;
   }
 
-  if (isSorting) {
+  if (isDragging) {
     return true;
   }
 

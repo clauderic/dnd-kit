@@ -5,11 +5,7 @@ export {
   defaultAnimateLayoutChanges,
   defaultNewIndexGetter,
 } from './hooks';
-export type {
-  UseSortableArguments,
-  AnimateLayoutChanges,
-  NewIndexGetter,
-} from './hooks';
+export type {UseSortableArguments, AnimateLayoutChanges} from './hooks';
 export {
   horizontalListSortingStrategy,
   rectSortingStrategy,
@@ -19,4 +15,4 @@ export {
 export {sortableKeyboardCoordinates} from './sensors';
 export {arrayMove, arraySwap} from './utilities';
 export {hasSortableData} from './types';
-export type {SortableData, SortingStrategy} from './types';
+export type {SortableData, SortingStrategy, NewIndexGetter} from './types';

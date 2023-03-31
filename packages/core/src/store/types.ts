@@ -8,6 +8,7 @@ import type {Coordinates, ClientRect, UniqueIdentifier} from '../types';
 
 import type {Actions} from './actions';
 import type {DroppableContainersMap} from './constructors';
+import type {createActiveAndOverAPI} from '../components/DndContext/activeAndOverAPI';
 
 export interface DraggableElement {
   node: DraggableNode;
@@ -94,6 +95,7 @@ export interface PublicContextDescriptor {
   measureDroppableContainers(ids: UniqueIdentifier[]): void;
   measuringScheduled: boolean;
   windowRect: ClientRect | null;
+  activeAndOverAPI: ReturnType<typeof createActiveAndOverAPI>;
 }
 
 export interface InternalContextDescriptor {
