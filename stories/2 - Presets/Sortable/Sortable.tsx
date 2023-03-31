@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
 
 import {
@@ -21,6 +21,7 @@ import {
   useSensor,
   useSensors,
   defaultDropAnimationSideEffects,
+  useDndContext,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -120,7 +121,7 @@ export function Sortable({
       initialItems ??
       createRange<UniqueIdentifier>(itemCount, (index) => index + 1)
   );
-  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
+
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint,
@@ -137,7 +138,6 @@ export function Sortable({
   const isFirstAnnouncement = useRef(true);
   const getIndex = (id: UniqueIdentifier) => items.indexOf(id);
   const getPosition = (id: UniqueIdentifier) => getIndex(id) + 1;
-  const activeIndex = activeId ? getIndex(activeId) : -1;
   const handleRemove = removable
     ? (id: UniqueIdentifier) =>
         setItems((items) => items.filter((item) => item !== id))
@@ -168,6 +168,7 @@ export function Sortable({
       return;
     },
     onDragEnd({active, over}) {
+      isFirstAnnouncement.current = true;
       if (over) {
         return `Sortable item ${
           active.id
@@ -177,17 +178,12 @@ export function Sortable({
       return;
     },
     onDragCancel({active: {id}}) {
+      isFirstAnnouncement.current = true;
       return `Sorting was cancelled. Sortable item ${id} was dropped and returned to position ${getPosition(
         id
       )} of ${items.length}.`;
     },
   };
-
-  useEffect(() => {
-    if (!activeId) {
-      isFirstAnnouncement.current = true;
-    }
-  }, [activeId]);
 
   return (
     <DndContext
@@ -197,24 +193,15 @@ export function Sortable({
       }}
       sensors={sensors}
       collisionDetection={collisionDetection}
-      onDragStart={({active}) => {
-        if (!active) {
-          return;
-        }
-
-        setActiveId(active.id);
-      }}
-      onDragEnd={({over}) => {
-        setActiveId(null);
-
+      onDragEnd={({over, active}) => {
         if (over) {
           const overIndex = getIndex(over.id);
+          const activeIndex = getIndex(active.id);
           if (activeIndex !== overIndex) {
             setItems((items) => reorderItems(items, activeIndex, overIndex));
           }
         }
       }}
-      onDragCancel={() => setActiveId(null)}
       measuring={measuring}
       modifiers={modifiers}
     >
@@ -240,39 +227,64 @@ export function Sortable({
           </Container>
         </SortableContext>
       </Wrapper>
-      {useDragOverlay
-        ? createPortal(
-            <DragOverlay
-              adjustScale={adjustScale}
-              dropAnimation={dropAnimation}
-            >
-              {activeId ? (
-                <Item
-                  value={items[activeIndex]}
-                  handle={handle}
-                  renderItem={renderItem}
-                  wrapperStyle={wrapperStyle({
-                    active: {id: activeId},
-                    index: activeIndex,
-                    isDragging: true,
-                    id: items[activeIndex],
-                  })}
-                  style={getItemStyles({
-                    id: items[activeIndex],
-                    index: activeIndex,
-                    isSorting: activeId !== null,
-                    isDragging: true,
-                    overIndex: -1,
-                    isDragOverlay: true,
-                  })}
-                  dragOverlay
-                />
-              ) : null}
-            </DragOverlay>,
-            document.body
-          )
-        : null}
+      {useDragOverlay ? (
+        <SortableDragOverlay
+          items={items}
+          adjustScale={adjustScale}
+          dropAnimation={dropAnimation}
+          handle={handle}
+          renderItem={renderItem}
+          wrapperStyle={wrapperStyle}
+          getItemStyles={getItemStyles}
+        />
+      ) : null}
     </DndContext>
+  );
+}
+
+function SortableDragOverlay({
+  items,
+  adjustScale,
+  dropAnimation,
+  handle,
+  renderItem,
+  wrapperStyle,
+  getItemStyles,
+}: Pick<Props, 'adjustScale' | 'dropAnimation' | 'handle' | 'renderItem'> & {
+  items: UniqueIdentifier[];
+  wrapperStyle: Exclude<Props['wrapperStyle'], undefined>;
+  getItemStyles: Exclude<Props['getItemStyles'], undefined>;
+}) {
+  const {active} = useDndContext();
+  const getIndex = (id: UniqueIdentifier) => items.indexOf(id);
+  const activeIndex = active ? getIndex(active.id) : -1;
+
+  return createPortal(
+    <DragOverlay adjustScale={adjustScale} dropAnimation={dropAnimation}>
+      {active ? (
+        <Item
+          value={items[activeIndex]}
+          handle={handle}
+          renderItem={renderItem}
+          wrapperStyle={wrapperStyle({
+            active: {id: active.id},
+            index: activeIndex,
+            isDragging: true,
+            id: items[activeIndex],
+          })}
+          style={getItemStyles({
+            id: items[activeIndex],
+            index: activeIndex,
+            isSorting: active !== null,
+            isDragging: true,
+            overIndex: -1,
+            isDragOverlay: true,
+          })}
+          dragOverlay
+        />
+      ) : null}
+    </DragOverlay>,
+    document.body
   );
 }
 
