@@ -106,7 +106,7 @@ export function useSortable({
     disabled: disabled.draggable,
   });
   const setNodeRef = useCombinedRefs(setDroppableNodeRef, setDraggableNodeRef);
-  const isSorting = Boolean(active);
+  const isSorting = activeIndex >= 0;
   const displaceItem =
     isSorting &&
     !disableTransforms &&
