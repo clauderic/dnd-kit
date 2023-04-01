@@ -50,27 +50,20 @@ export function createSortingAPI(
   }
 
   return {
-    setSortingInfo: (
+    silentSetSortingInfo: (
       droppable: Map<UniqueIdentifier, ClientRect>,
       newItems: UniqueIdentifier[]
     ) => {
-      // let changed = false;
       if (droppableRects !== droppable) {
         droppableRects = droppable;
         sortedRecs = getSortedRects(newItems, droppableRects);
-        // changed = true;
       }
       if (newItems !== items && !itemsEqual(newItems, items)) {
         items = newItems;
-        // calculateIndexes();
         itemsHaveChanged = true;
-        // changed = true;
       } else {
         itemsHaveChanged = false;
       }
-      // if (changed) {
-      //   registry.forEach((li) => li());
-      // }
     },
     init: () => {
       unsubscribeFromActiveAndOver = activeAndOverAPI.subscribe(() => {
