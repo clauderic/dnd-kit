@@ -1,15 +1,25 @@
-import type {UniqueIdentifier, DndContextDescriptor} from '@dnd-kit/core';
+import type {
+  UniqueIdentifier,
+  DndContextDescriptor,
+  ClientRect,
+} from '@dnd-kit/core';
 import {useSyncExternalStore} from 'use-sync-external-store/shim';
 import {defaultNewIndexGetter} from '../hooks/defaults';
-import {isValidIndex} from '../utilities';
+import type {SortingStrategy} from '../types';
+import {getSortedRects, isValidIndex, itemsEqual} from '../utilities';
 
 export function createSortingAPI(
   activeAndOverAPI: DndContextDescriptor['activeAndOverAPI'],
-  getNewIndex = defaultNewIndexGetter
+  getNewIndex = defaultNewIndexGetter,
+  strategy: SortingStrategy
 ) {
+  let unsubscribeFromActiveAndOver = () => {};
   let activeIndex: number = -1;
   let overIndex: number = -1;
   let items: UniqueIdentifier[] = [];
+  let itemsHaveChanged = false;
+  let droppableRects: Map<UniqueIdentifier, ClientRect> = new Map();
+  let sortedRecs: ClientRect[] = [];
   calculateIndexes();
 
   let registry: (() => void)[] = [];
@@ -29,21 +39,47 @@ export function createSortingAPI(
       return;
     }
     const over = activeAndOverAPI.getOver();
-    items = active?.data.current?.sortable.items;
-
     activeIndex = active ? items.indexOf(active.id) : -1;
     overIndex = over ? items.indexOf(over.id) : -1;
   }
 
-  const unsubscribeFromActiveAndOver = activeAndOverAPI.subscribe(() => {
-    calculateIndexes();
-    registry.forEach((li) => li());
-  });
+  function shouldDisplaceItems() {
+    return (
+      isValidIndex(overIndex) && isValidIndex(activeIndex) && !itemsHaveChanged
+    );
+  }
 
   return {
+    setSortingInfo: (
+      droppable: Map<UniqueIdentifier, ClientRect>,
+      newItems: UniqueIdentifier[]
+    ) => {
+      // let changed = false;
+      if (droppableRects !== droppable) {
+        droppableRects = droppable;
+        sortedRecs = getSortedRects(newItems, droppableRects);
+        // changed = true;
+      }
+      if (newItems !== items && !itemsEqual(newItems, items)) {
+        items = newItems;
+        // calculateIndexes();
+        itemsHaveChanged = true;
+        // changed = true;
+      } else {
+        itemsHaveChanged = false;
+      }
+      // if (changed) {
+      //   registry.forEach((li) => li());
+      // }
+    },
+    init: () => {
+      unsubscribeFromActiveAndOver = activeAndOverAPI.subscribe(() => {
+        calculateIndexes();
+        registry.forEach((li) => li());
+      });
+    },
     clear: () => {
       unsubscribeFromActiveAndOver();
-      registry = [];
     },
     useMyNewIndex: (id: UniqueIdentifier, currentIndex: number) => {
       return useSyncExternalStore(subscribe, () => {
@@ -52,6 +88,34 @@ export function createSortingAPI(
           : currentIndex;
       });
     },
+
+    useMyStrategyValue(
+      id: UniqueIdentifier,
+      currentIndex: number,
+      activeNodeRect: ClientRect | null
+    ) {
+      return useSyncExternalStore(subscribe, () => {
+        if (!shouldDisplaceItems() || currentIndex === activeIndex) {
+          return null;
+        }
+        const delta = strategy({
+          id,
+          activeNodeRect,
+          rects: sortedRecs,
+          activeIndex,
+          overIndex,
+          index: currentIndex,
+        });
+
+        const deltaJson = JSON.stringify(delta);
+        if (deltaJson === JSON.stringify({x: 0, y: 0, scaleX: 1, scaleY: 1})) {
+          return null;
+        }
+        return deltaJson;
+      });
+    },
     getOverIndex: () => overIndex,
+    getItemsHaveChanged: () => itemsHaveChanged,
+    getShouldDisplaceItems: () => shouldDisplaceItems(),
   };
 }

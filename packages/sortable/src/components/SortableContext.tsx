@@ -3,7 +3,7 @@ import {useDndContext, ClientRect, UniqueIdentifier} from '@dnd-kit/core';
 import {useIsomorphicLayoutEffect, useUniqueId} from '@dnd-kit/utilities';
 
 import type {Disabled, NewIndexGetter, SortingStrategy} from '../types';
-import {getSortedRects, itemsEqual, normalizeDisabled} from '../utilities';
+import {getSortedRects, normalizeDisabled} from '../utilities';
 import {rectSortingStrategy} from '../strategies';
 import {createSortingAPI} from './sortingAPI';
 import {usePreviousSortingStateRef} from './usePreviousSortingState';
@@ -29,6 +29,11 @@ interface ContextDescriptor {
   strategy: SortingStrategy;
   useMyNewIndex: (id: UniqueIdentifier, currentIndex: number) => number;
   previousSortingStateRef: ReturnType<typeof usePreviousSortingStateRef>;
+  useMyStrategyValue: (
+    id: UniqueIdentifier,
+    currentIndex: number,
+    activeNodeRect: ClientRect | null
+  ) => string | null;
 }
 
 export const Context = React.createContext<ContextDescriptor>({
@@ -45,6 +50,7 @@ export const Context = React.createContext<ContextDescriptor>({
   previousSortingStateRef: {
     current: {activeId: null, containerId: '', items: []},
   },
+  useMyStrategyValue: () => null,
 });
 
 export const ActiveContext = React.createContext({
@@ -78,19 +84,22 @@ export function SortableContext({
     [userDefinedItems]
   );
   const sortingAPI = useMemo(
-    () => createSortingAPI(activeAndOverAPI, getNewIndex),
+    () => createSortingAPI(activeAndOverAPI, getNewIndex, strategy),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
   useEffect(() => {
+    sortingAPI.init();
     return sortingAPI.clear;
-  }, []);
+  }, [sortingAPI]);
+
+  sortingAPI.setSortingInfo(droppableRects, items);
   const isDragging = active != null;
   const activeIndex = active ? items.indexOf(active.id) : -1;
   const overIndex = sortingAPI.getOverIndex();
   const previousItemsRef = useRef(items);
-  const itemsHaveChanged = !itemsEqual(items, previousItemsRef.current);
-  const disableTransforms =
-    (overIndex !== -1 && activeIndex === -1) || itemsHaveChanged;
+  const itemsHaveChanged = sortingAPI.getItemsHaveChanged();
+  const disableTransforms = !sortingAPI.getShouldDisplaceItems();
   const disabled = normalizeDisabled(disabledProp);
 
   useIsomorphicLayoutEffect(() => {
@@ -126,6 +135,7 @@ export function SortableContext({
       strategy,
       useMyNewIndex: sortingAPI.useMyNewIndex,
       previousSortingStateRef,
+      useMyStrategyValue: sortingAPI.useMyStrategyValue,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [

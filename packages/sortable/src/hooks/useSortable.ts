@@ -1,4 +1,4 @@
-import {createContext, useContext, useEffect, useMemo, useRef} from 'react';
+import {useContext, useEffect, useMemo, useRef} from 'react';
 import {
   useDraggable,
   useDroppable,
@@ -10,7 +10,6 @@ import {CSS, isKeyboardEvent, useCombinedRefs} from '@dnd-kit/utilities';
 
 import {Context} from '../components';
 import type {Disabled, SortableData, SortingStrategy} from '../types';
-import {isValidIndex} from '../utilities';
 import {
   defaultAnimateLayoutChanges,
   defaultAttributes,
@@ -20,8 +19,6 @@ import {
 } from './defaults';
 import type {AnimateLayoutChanges, SortableTransition} from './types';
 import {useDerivedTransform} from './utilities';
-import {ActiveContext} from '../components/SortableContext';
-const NullContext = createContext<any>(null);
 
 export interface Arguments
   extends Omit<UseDraggableArguments, 'disabled'>,
@@ -38,7 +35,8 @@ export function useSortable({
   disabled: localDisabled,
   data: customData,
   id,
-  strategy: localStrategy,
+  //TODO: deal with local strategy....
+  // strategy: localStrategy,
   resizeObserverConfig,
   transition = defaultTransition,
 }: Arguments) {
@@ -48,14 +46,15 @@ export function useSortable({
     disabled: globalDisabled,
     disableTransforms,
     useDragOverlay,
-    strategy: globalStrategy,
     useMyNewIndex,
     previousSortingStateRef,
+    useMyStrategyValue,
   } = useContext(Context);
   const disabled: Disabled = normalizeLocalDisabled(
     localDisabled,
     globalDisabled
   );
+
   const index = items.indexOf(id);
   const data = useMemo<SortableData & Data>(
     () => ({sortable: {containerId, index, items}, ...customData}),
@@ -100,37 +99,15 @@ export function useSortable({
     disabled: disabled.draggable,
   });
 
-  const activeSortable = useContext(isDragging ? ActiveContext : NullContext);
-  let shouldDisplaceDragSource = false;
-  let finalTransform = null;
-  if (isDragging) {
-    const activeIndex = activeSortable?.index;
-    const sortedRects = activeSortable?.sortedRects;
-    const overIndex = activeSortable?.overIndex;
-
-    const displaceItem =
-      !disableTransforms &&
-      isValidIndex(activeIndex) &&
-      isValidIndex(overIndex);
-
-    const shouldDisplaceDragSource = !useDragOverlay;
-    const dragSourceDisplacement =
-      shouldDisplaceDragSource && displaceItem ? transform : null;
-
-    const strategy = localStrategy ?? globalStrategy;
-    finalTransform = displaceItem
-      ? dragSourceDisplacement ??
-        strategy({
-          rects: sortedRects,
-          activeNodeRect,
-          activeIndex,
-          overIndex,
-          index,
-        })
-      : null;
-  }
-
   const setNodeRef = useCombinedRefs(setDroppableNodeRef, setDraggableNodeRef);
+
+  const shouldDisplaceDragSource =
+    !disableTransforms && !useDragOverlay && isDragging;
+  const dragSourceDisplacement = shouldDisplaceDragSource ? transform : null;
+  const otherItemDisplacement = useMyStrategyValue(id, index, activeNodeRect);
+  const finalTransform =
+    dragSourceDisplacement ??
+    (otherItemDisplacement ? JSON.parse(otherItemDisplacement) : null);
 
   const newIndex = useMyNewIndex(id, index);
   const prevNewIndex = useRef(newIndex);
@@ -139,7 +116,8 @@ export function useSortable({
     active,
     containerId,
     isDragging,
-    isSorting: isDragging,
+    //this value was true as long as there is an active item... not sure what was the purpose
+    isSorting: true,
     id,
     index,
     items,
@@ -152,7 +130,7 @@ export function useSortable({
 
   const derivedTransform = useDerivedTransform({
     disabled: !shouldAnimateLayoutChanges,
-    index,
+    index: newIndex,
     node,
     rect,
   });
@@ -201,14 +179,10 @@ export function useSortable({
       return undefined;
     }
 
-    if (shouldAnimateLayoutChanges) {
-      return CSS.Transition.toString({
-        ...transition,
-        property: transitionProperty,
-      });
-    }
-
-    return undefined;
+    return CSS.Transition.toString({
+      ...transition,
+      property: transitionProperty,
+    });
   }
 }
 
