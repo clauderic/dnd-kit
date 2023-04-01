@@ -78,14 +78,14 @@ export function SortableContext({
     [userDefinedItems]
   );
   const sortingAPI = useMemo(
-    () => createSortingAPI(items, activeAndOverAPI, getNewIndex),
-    [activeAndOverAPI, items, getNewIndex]
+    () => createSortingAPI(activeAndOverAPI, getNewIndex),
+    []
   );
   useEffect(() => {
     return sortingAPI.clear;
-  });
+  }, []);
   const isDragging = active != null;
-  const activeIndex = sortingAPI.getActiveIndex();
+  const activeIndex = active ? items.indexOf(active.id) : -1;
   const overIndex = sortingAPI.getOverIndex();
   const previousItemsRef = useRef(items);
   const itemsHaveChanged = !itemsEqual(items, previousItemsRef.current);

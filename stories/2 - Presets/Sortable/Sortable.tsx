@@ -206,7 +206,11 @@ export function Sortable({
       modifiers={modifiers}
     >
       <Wrapper style={style} center>
-        <SortableContext items={items} strategy={strategy}>
+        <SortableContext
+          items={items}
+          strategy={strategy}
+          getNewIndex={getNewIndex}
+        >
           <Container>
             {items.map((value, index) => (
               <SortableItem
@@ -221,7 +225,6 @@ export function Sortable({
                 onRemove={handleRemove}
                 animateLayoutChanges={animateLayoutChanges}
                 useDragOverlay={useDragOverlay}
-                getNewIndex={getNewIndex}
               />
             ))}
           </Container>
@@ -291,7 +294,6 @@ function SortableDragOverlay({
 interface SortableItemProps {
   animateLayoutChanges?: AnimateLayoutChanges;
   disabled?: boolean;
-  getNewIndex?: NewIndexGetter;
   id: UniqueIdentifier;
   index: number;
   handle: boolean;
@@ -305,7 +307,6 @@ interface SortableItemProps {
 export function SortableItem({
   disabled,
   animateLayoutChanges,
-  getNewIndex,
   handle,
   id,
   index,
@@ -319,9 +320,7 @@ export function SortableItem({
     active,
     attributes,
     isDragging,
-    isSorting,
     listeners,
-    overIndex,
     setNodeRef,
     setActivatorNodeRef,
     transform,
@@ -330,7 +329,6 @@ export function SortableItem({
     id,
     animateLayoutChanges,
     disabled,
-    getNewIndex,
   });
 
   return (
@@ -339,7 +337,7 @@ export function SortableItem({
       value={id}
       disabled={disabled}
       dragging={isDragging}
-      sorting={isSorting}
+      sorting={true}
       handle={handle}
       handleProps={
         handle
@@ -354,8 +352,8 @@ export function SortableItem({
         index,
         id,
         isDragging,
-        isSorting,
-        overIndex,
+        isSorting: true,
+        overIndex: 3,
       })}
       onRemove={onRemove ? () => onRemove(id) : undefined}
       transform={transform}
