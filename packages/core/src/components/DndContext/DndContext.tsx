@@ -686,6 +686,7 @@ export const DndContext = memo(function DndContext({
       useMyOverForDraggable: activeAndOverAPI.useMyOverForDraggable,
       useMyOverForDroppable: activeAndOverAPI.useMyOverForDroppable,
       measureDroppableContainers,
+      isDefaultContext: false,
     };
 
     return context;
