@@ -55,6 +55,7 @@ export function useDraggable({
     ariaDescribedById,
     draggableNodes,
     over,
+    isDefaultContext,
   } = useContext(InternalContext);
   const {
     role = defaultRole,
@@ -121,5 +122,6 @@ export function useDraggable({
     setNodeRef,
     setActivatorNodeRef,
     transform,
+    isDefaultContext,
   };
 }

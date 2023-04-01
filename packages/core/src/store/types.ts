@@ -111,4 +111,7 @@ export interface InternalContextDescriptor {
   draggableNodes: DraggableNodes;
   over: Over | null;
   measureDroppableContainers(ids: UniqueIdentifier[]): void;
+  //this is a temparary solution, since we don't return general active element from useDraggable hook
+  //I added this to know if a sortable item is inside an overlay
+  isDefaultContext: boolean;
 }

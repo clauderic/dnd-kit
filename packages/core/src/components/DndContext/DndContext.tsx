@@ -681,6 +681,7 @@ export const DndContext = memo(function DndContext({
       draggableNodes,
       over,
       measureDroppableContainers,
+      isDefaultContext: false,
     };
 
     return context;
