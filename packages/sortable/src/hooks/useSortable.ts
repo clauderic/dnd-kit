@@ -179,10 +179,15 @@ export function useSortable({
       return undefined;
     }
 
-    return CSS.Transition.toString({
-      ...transition,
-      property: transitionProperty,
-    });
+    const isDropping =
+      previousSortingStateRef.current.activeId === id && !isDragging;
+    if (shouldAnimateLayoutChanges || !isDropping) {
+      return CSS.Transition.toString({
+        ...transition,
+        property: transitionProperty,
+      });
+    }
+    return undefined;
   }
 }
 
