@@ -88,7 +88,7 @@ export function createSortingAPI(
       activeNodeRect: ClientRect | null
     ) {
       return useSyncExternalStore(subscribe, () => {
-        if (!shouldDisplaceItems() || currentIndex === activeIndex) {
+        if (!shouldDisplaceItems()) {
           return null;
         }
         const delta = strategy({
@@ -100,11 +100,7 @@ export function createSortingAPI(
           index: currentIndex,
         });
 
-        const deltaJson = JSON.stringify(delta);
-        if (deltaJson === JSON.stringify({x: 0, y: 0, scaleX: 1, scaleY: 1})) {
-          return null;
-        }
-        return deltaJson;
+        return JSON.stringify(delta);
       });
     },
     getOverIndex: () => overIndex,

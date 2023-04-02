@@ -156,9 +156,10 @@ export function SortableTree({
     })
   );
 
-  const sortedIds = useMemo(() => flattenedItems.map(({id}) => id), [
-    flattenedItems,
-  ]);
+  const sortedIds = useMemo(
+    () => flattenedItems.map(({id}) => id),
+    [flattenedItems]
+  );
   const activeItem = activeId
     ? flattenedItems.find(({id}) => id === activeId)
     : null;
