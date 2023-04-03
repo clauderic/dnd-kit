@@ -30,8 +30,8 @@ export function useRects(
       elements.forEach((element) => resizeObserver?.observe(element));
     } else {
       resizeObserver?.disconnect();
-      measureRects();
     }
+    measureRects();
   }, [elements]);
 
   return rects;
