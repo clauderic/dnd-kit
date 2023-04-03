@@ -68,6 +68,7 @@ export function useSortable({
     rect,
     node,
     isOver,
+    over: droppableOver,
     setNodeRef: setDroppableNodeRef,
   } = useDroppable({
     id,
@@ -86,9 +87,9 @@ export function useSortable({
     setNodeRef: setDraggableNodeRef,
     listeners,
     isDragging,
-    over,
     setActivatorNodeRef,
     transform,
+    over: draggableOver,
   } = useDraggable({
     id,
     data,
@@ -153,7 +154,7 @@ export function useSortable({
     isDragging,
     listeners,
     node,
-    over,
+    over: droppableOver || draggableOver,
     setNodeRef,
     setActivatorNodeRef,
     setDroppableNodeRef,
