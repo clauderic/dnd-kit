@@ -23,6 +23,7 @@ import {
   useSortable,
   SortableContext,
   sortableKeyboardCoordinates,
+  SortingStrategy,
 } from '@dnd-kit/sortable';
 import {CSS, isKeyboardEvent} from '@dnd-kit/utilities';
 import classNames from 'classnames';
@@ -33,6 +34,7 @@ import {Page, Layout, Position} from './Page';
 import type {Props as PageProps} from './Page';
 import styles from './Pages.module.css';
 import pageStyles from './Page.module.css';
+import type {NewIndexGetter} from 'packages/sortable/dist';
 
 interface Props {
   layout: Layout;
@@ -65,6 +67,19 @@ const dropAnimation: DropAnimation = {
   }),
 };
 
+const strategy: SortingStrategy = () => {
+  return {
+    scaleX: 1,
+    scaleY: 1,
+    x: 0,
+    y: 0,
+  };
+};
+
+const getNewIndex: NewIndexGetter = ({id, items}) => {
+  return items.indexOf(id);
+};
+
 export function Pages({layout}: Props) {
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const [items, setItems] = useState(() =>
@@ -85,7 +100,11 @@ export function Pages({layout}: Props) {
       collisionDetection={closestCenter}
       measuring={measuring}
     >
-      <SortableContext items={items}>
+      <SortableContext
+        items={items}
+        getNewIndex={getNewIndex}
+        strategy={strategy}
+      >
         <ul className={classNames(styles.Pages, styles[layout])}>
           {items.map((id, index) => (
             <SortablePage
@@ -168,14 +187,12 @@ function SortablePage({
     listeners,
     index,
     isDragging,
-    isSorting,
     over,
     setNodeRef,
     transform,
     transition,
   } = useSortable({
     id,
-    animateLayoutChanges: always,
   });
 
   return (
@@ -185,7 +202,7 @@ function SortablePage({
       active={isDragging}
       style={{
         transition,
-        transform: isSorting ? undefined : CSS.Translate.toString(transform),
+        transform: CSS.Translate.toString(transform),
       }}
       insertPosition={
         over?.id === id
@@ -199,8 +216,4 @@ function SortablePage({
       {...listeners}
     />
   );
-}
-
-function always() {
-  return true;
 }
