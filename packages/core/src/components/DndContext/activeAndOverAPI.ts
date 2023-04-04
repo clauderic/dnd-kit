@@ -76,6 +76,12 @@ export function createActiveAndOverAPI(rect: Rects) {
       );
     },
 
+    useMyActiveForDroppable: function (droppableId: UniqueIdentifier) {
+      return useSyncExternalStore(subscribe, () => {
+        return over && over.id === droppableId ? active : null;
+      });
+    },
+
     useActivatorEvent: function () {
       return useSyncExternalStore(subscribe, () => activatorEvent);
     },

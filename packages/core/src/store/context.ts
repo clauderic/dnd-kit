@@ -44,6 +44,7 @@ export const defaultInternalContext: InternalContextDescriptor = {
   draggableNodes: new Map(),
   measureDroppableContainers: noop,
   useMyActive: () => null,
+  useMyActiveForDroppable: () => null,
   useGloablActive: () => null,
   useMyActivatorEvent: () => null,
   useGlobalActivatorEvent: () => null,

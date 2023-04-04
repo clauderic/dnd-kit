@@ -70,6 +70,7 @@ export function useSortable({
     isOver,
     over: droppableOver,
     setNodeRef: setDroppableNodeRef,
+    activeOverItem,
   } = useDroppable({
     id,
     data,
@@ -143,7 +144,7 @@ export function useSortable({
   }, [newIndex]);
 
   return {
-    active,
+    active: active || activeOverItem,
     attributes,
     data,
     rect,
