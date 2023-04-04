@@ -22,6 +22,7 @@ import {
   useSensors,
   defaultDropAnimationSideEffects,
   useDndContext,
+  useConditionalDndContext,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -72,6 +73,7 @@ export interface Props {
     id: UniqueIdentifier;
   }): React.CSSProperties;
   isDisabled?(id: UniqueIdentifier): boolean;
+  usingGlobalActiveInStyle?: boolean;
 }
 
 const dropAnimationConfig: DropAnimation = {
@@ -115,6 +117,7 @@ export function Sortable({
   style,
   useDragOverlay = true,
   wrapperStyle = () => ({}),
+  usingGlobalActiveInStyle = false,
 }: Props) {
   const [items, setItems] = useState<UniqueIdentifier[]>(
     () =>
@@ -225,6 +228,7 @@ export function Sortable({
                 onRemove={handleRemove}
                 animateLayoutChanges={animateLayoutChanges}
                 useDragOverlay={useDragOverlay}
+                usingGlobalActiveInStyle={usingGlobalActiveInStyle}
               />
             ))}
           </Container>
@@ -302,6 +306,7 @@ interface SortableItemProps {
   style(values: any): React.CSSProperties;
   renderItem?(args: any): React.ReactElement;
   wrapperStyle: Props['wrapperStyle'];
+  usingGlobalActiveInStyle: boolean;
 }
 
 export function SortableItem({
@@ -315,6 +320,7 @@ export function SortableItem({
   renderItem,
   useDragOverlay,
   wrapperStyle,
+  usingGlobalActiveInStyle,
 }: SortableItemProps) {
   const {
     active,
@@ -330,6 +336,8 @@ export function SortableItem({
     animateLayoutChanges,
     disabled,
   });
+
+  const dndContext = useConditionalDndContext(usingGlobalActiveInStyle);
 
   return (
     <Item
@@ -352,13 +360,18 @@ export function SortableItem({
         index,
         id,
         isDragging,
-        isSorting: true,
+        isSorting: usingGlobalActiveInStyle ? !!dndContext?.active : true,
         overIndex: 3,
       })}
       onRemove={onRemove ? () => onRemove(id) : undefined}
       transform={transform}
       transition={transition}
-      wrapperStyle={wrapperStyle?.({index, isDragging, active, id})}
+      wrapperStyle={wrapperStyle?.({
+        index,
+        isDragging,
+        active: dndContext?.active || active,
+        id,
+      })}
       listeners={listeners}
       data-index={index}
       data-id={id}
