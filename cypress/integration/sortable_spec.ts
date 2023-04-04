@@ -543,3 +543,30 @@ describe('Sortable Virtualized List', () => {
     });
   });
 });
+
+describe('Sortable Renders only what is necessary ', () => {
+  it('should render active and items between active and over', () => {
+    cy.visitStory('presets-sortable-renders--basic-setup');
+
+    cy.get('[data-cypress="draggable-item"]').then((droppables) => {
+      const coords = droppables[1].getBoundingClientRect(); //drop after item id - 3
+      return cy
+        .findFirstDraggableItem()
+        .mouseMoveBy(coords.x + 10, coords.y + 10, {delay: 1, noDrop: true});
+    });
+
+    for (let id = 1; id <= 3; id++) {
+      cy.get(`[data-testid="sortable-status-${id}"]`).should(
+        'have.text',
+        `updated ${id}`
+      );
+    }
+
+    for (let id = 4; id <= 10; id++) {
+      cy.get(`[data-testid="sortable-status-${id}"]`).should(
+        'have.text',
+        `mounted ${id}`
+      );
+    }
+  });
+});

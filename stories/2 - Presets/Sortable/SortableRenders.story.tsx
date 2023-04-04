@@ -16,17 +16,10 @@ export default {
 };
 
 function SortableItem({id, index}: {id: UniqueIdentifier; index: number}) {
-  const {
-    attributes,
-    isDragging,
-    isSorting,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({
-    id,
-  });
+  const {attributes, isDragging, listeners, setNodeRef, transform, transition} =
+    useSortable({
+      id,
+    });
 
   const span = useRef<HTMLSpanElement>(null);
 
@@ -40,14 +33,14 @@ function SortableItem({id, index}: {id: UniqueIdentifier; index: number}) {
       }}
     >
       <div>
-        <span data-testid={`draggable-status-${id}`} ref={span}>
+        <span data-testid={`sortable-status-${id}`} ref={span}>
           mounted {id}
         </span>
         <Item
           ref={setNodeRef}
           value={id}
           dragging={isDragging}
-          sorting={isSorting}
+          sorting={true}
           index={index}
           transform={transform}
           transition={transition}
