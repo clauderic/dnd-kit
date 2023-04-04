@@ -6,7 +6,7 @@ import type {Disabled, NewIndexGetter, SortingStrategy} from '../types';
 import {normalizeDisabled} from '../utilities';
 import {rectSortingStrategy} from '../strategies';
 import {createSortingAPI} from './sortingAPI';
-import {usePreviousSortingStateRef} from './usePreviousSortingState';
+import {useGlobalActiveRef} from './useGlobalActiveRef';
 import {defaultNewIndexGetter} from '../hooks/defaults';
 
 export interface Props {
@@ -27,7 +27,7 @@ interface ContextDescriptor {
   items: UniqueIdentifier[];
   useDragOverlay: boolean;
   useMyNewIndex: (id: UniqueIdentifier, currentIndex: number) => number;
-  previousSortingStateRef: ReturnType<typeof usePreviousSortingStateRef>;
+  globalActiveRef: ReturnType<typeof useGlobalActiveRef>;
   useMyStrategyValue: (
     id: UniqueIdentifier,
     currentIndex: number,
@@ -45,8 +45,8 @@ export const Context = React.createContext<ContextDescriptor>({
     droppable: false,
   },
   useMyNewIndex: () => -1,
-  previousSortingStateRef: {
-    current: {activeId: null, containerId: '', items: []},
+  globalActiveRef: {
+    current: {activeId: null, prevActiveId: null},
   },
   useMyStrategyValue: () => null,
 });
@@ -102,11 +102,7 @@ export function SortableContext({
     previousItemsRef.current = items;
   }, [items]);
 
-  const previousSortingStateRef = usePreviousSortingStateRef({
-    activeId: active?.id || null,
-    containerId,
-    items,
-  });
+  const globalActiveRef = useGlobalActiveRef(active?.id || null);
   const contextValue = useMemo(
     (): ContextDescriptor => ({
       containerId,
@@ -115,7 +111,7 @@ export function SortableContext({
       items,
       useDragOverlay,
       useMyNewIndex: sortingAPI.useMyNewIndex,
-      previousSortingStateRef,
+      globalActiveRef,
       useMyStrategyValue: sortingAPI.useMyStrategyValue,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -127,7 +123,7 @@ export function SortableContext({
       items,
       useDragOverlay,
       sortingAPI,
-      previousSortingStateRef,
+      globalActiveRef,
     ]
   );
 

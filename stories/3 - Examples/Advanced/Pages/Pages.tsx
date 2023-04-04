@@ -24,6 +24,7 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   SortingStrategy,
+  AnimateLayoutChanges,
 } from '@dnd-kit/sortable';
 import {CSS, isKeyboardEvent} from '@dnd-kit/utilities';
 import classNames from 'classnames';
@@ -193,6 +194,7 @@ function SortablePage({
     transition,
   } = useSortable({
     id,
+    animateLayoutChanges: always,
   });
 
   return (
@@ -217,3 +219,7 @@ function SortablePage({
     />
   );
 }
+
+const always: AnimateLayoutChanges = () => {
+  return true;
+};

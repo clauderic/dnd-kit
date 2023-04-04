@@ -14,7 +14,6 @@ export const defaultNewIndexGetter: NewIndexGetter = ({
 
 export const defaultAnimateLayoutChanges: AnimateLayoutChanges = ({
   containerId,
-  isDragging,
   wasDragging,
   index,
   items,
@@ -22,6 +21,7 @@ export const defaultAnimateLayoutChanges: AnimateLayoutChanges = ({
   previousItems,
   previousContainerId,
   transition,
+  isSorting,
 }) => {
   if (!transition || !wasDragging) {
     return false;
@@ -31,7 +31,7 @@ export const defaultAnimateLayoutChanges: AnimateLayoutChanges = ({
     return false;
   }
 
-  if (isDragging) {
+  if (isSorting) {
     return true;
   }
 

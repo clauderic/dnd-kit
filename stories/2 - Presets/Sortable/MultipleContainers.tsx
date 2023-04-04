@@ -53,34 +53,25 @@ function DroppableContainer({
   id,
   items,
   style,
+  isActiveOverContainer,
   ...props
 }: ContainerProps & {
   disabled?: boolean;
   id: UniqueIdentifier;
   items: UniqueIdentifier[];
   style?: React.CSSProperties;
+  isActiveOverContainer: boolean;
 }) {
-  const {
-    active,
-    attributes,
-    isDragging,
-    listeners,
-    over,
-    setNodeRef,
-    transition,
-    transform,
-  } = useSortable({
-    id,
-    data: {
-      type: 'container',
-      children: items,
-    },
-    animateLayoutChanges,
-  });
-  const isOverContainer = over
-    ? (id === over.id && active?.data.current?.type !== 'container') ||
-      items.includes(over.id)
-    : false;
+  const {attributes, isDragging, listeners, setNodeRef, transition, transform} =
+    useSortable({
+      id,
+      data: {
+        type: 'container',
+        children: items,
+      },
+      animateLayoutChanges,
+    });
+  const isOverContainer = isActiveOverContainer;
 
   return (
     <Container
@@ -178,6 +169,9 @@ export function MultipleContainers({
   );
   const [containers, setContainers] = useState(
     Object.keys(items) as UniqueIdentifier[]
+  );
+  const [overContainer, setOverContainer] = useState<UniqueIdentifier | null>(
+    null
   );
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const lastOverId = useRef<UniqueIdentifier | null>(null);
@@ -283,6 +277,7 @@ export function MultipleContainers({
   };
 
   const onDragCancel = () => {
+    setOverContainer(null);
     if (clonedItems) {
       // Reset items to their original state in case items have been
       // Dragged across containers
@@ -323,8 +318,10 @@ export function MultipleContainers({
         const activeContainer = findContainer(active.id);
 
         if (!overContainer || !activeContainer) {
+          setOverContainer(null);
           return;
         }
+        setOverContainer(overContainer);
 
         if (activeContainer !== overContainer) {
           setItems((items) => {
@@ -370,6 +367,7 @@ export function MultipleContainers({
         }
       }}
       onDragEnd={({active, over}) => {
+        setOverContainer(null);
         if (active.id in items && over?.id) {
           setContainers((containers) => {
             const activeIndex = containers.indexOf(active.id);
@@ -472,6 +470,7 @@ export function MultipleContainers({
               style={containerStyle}
               unstyled={minimal}
               onRemove={() => handleRemove(containerId)}
+              isActiveOverContainer={overContainer === containerId}
             >
               <SortableContext items={items[containerId]} strategy={strategy}>
                 {items[containerId].map((value, index) => {
@@ -500,6 +499,7 @@ export function MultipleContainers({
               items={empty}
               onClick={handleAddColumn}
               placeholder
+              isActiveOverContainer={false}
             >
               + Add column
             </DroppableContainer>
@@ -675,9 +675,7 @@ function SortableItem({
     setActivatorNodeRef,
     listeners,
     isDragging,
-    isSorting,
     over,
-    overIndex,
     transform,
     transition,
   } = useSortable({
@@ -691,7 +689,7 @@ function SortableItem({
       ref={disabled ? undefined : setNodeRef}
       value={id}
       dragging={isDragging}
-      sorting={isSorting}
+      sorting={true}
       handle={handle}
       handleProps={handle ? {ref: setActivatorNodeRef} : undefined}
       index={index}
@@ -700,8 +698,8 @@ function SortableItem({
         index,
         value: id,
         isDragging,
-        isSorting,
-        overIndex: over ? getIndex(over.id) : overIndex,
+        isSorting: true,
+        overIndex: over ? getIndex(over.id) : -1,
         containerId,
       })}
       color={getColor(id)}
