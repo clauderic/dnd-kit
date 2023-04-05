@@ -544,7 +544,7 @@ describe('Sortable Virtualized List', () => {
   });
 });
 
-describe.only('Sortable Renders only what is necessary ', () => {
+describe('Sortable Renders only what is necessary ', () => {
   it('should render active and items between active and over - no drop', () => {
     cy.visitStory('presets-sortable-renders--basic-setup');
 
@@ -570,6 +570,8 @@ describe.only('Sortable Renders only what is necessary ', () => {
     }
   });
 
+  //we test for drop in place, because otherwise items change and cause a real re-render to all items
+  //probably possible to fix that too but I didn't get there
   it('should render active only on d&d in place - with drop', () => {
     cy.visitStory('presets-sortable-renders--basic-setup');
 
