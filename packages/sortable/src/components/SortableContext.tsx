@@ -23,7 +23,6 @@ const ID_PREFIX = 'Sortable';
 interface ContextDescriptor {
   containerId: string;
   disabled: Disabled;
-  disableTransforms: boolean;
   items: UniqueIdentifier[];
   useDragOverlay: boolean;
   useMyNewIndex: (id: UniqueIdentifier, currentIndex: number) => number;
@@ -33,11 +32,11 @@ interface ContextDescriptor {
     currentIndex: number,
     activeNodeRect: ClientRect | null
   ) => string | null;
+  useShouldUseDragTransform: (id: UniqueIdentifier) => boolean;
 }
 
 export const Context = React.createContext<ContextDescriptor>({
   containerId: ID_PREFIX,
-  disableTransforms: false,
   items: [],
   useDragOverlay: false,
   disabled: {
@@ -49,6 +48,7 @@ export const Context = React.createContext<ContextDescriptor>({
     current: {activeId: null, prevActiveId: null},
   },
   useMyStrategyValue: () => null,
+  useShouldUseDragTransform: () => false,
 });
 
 export function SortableContext({
@@ -89,7 +89,6 @@ export function SortableContext({
   const isDragging = active != null;
   const previousItemsRef = useRef(items);
   const itemsHaveChanged = sortingAPI.getItemsHaveChanged();
-  const disableTransforms = !sortingAPI.getShouldDisplaceItems();
   const disabled = normalizeDisabled(disabledProp);
 
   useIsomorphicLayoutEffect(() => {
@@ -107,7 +106,7 @@ export function SortableContext({
     (): ContextDescriptor => ({
       containerId,
       disabled,
-      disableTransforms,
+      useShouldUseDragTransform: sortingAPI.useShouldUseDragTransform,
       items,
       useDragOverlay,
       useMyNewIndex: sortingAPI.useMyNewIndex,
@@ -119,8 +118,7 @@ export function SortableContext({
       containerId,
       disabled.draggable,
       disabled.droppable,
-      disableTransforms,
-      items,
+      // items,
       useDragOverlay,
       sortingAPI,
       globalActiveRef,

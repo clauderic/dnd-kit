@@ -31,6 +31,8 @@ export function createSortingAPI(
     };
   }
 
+  const nullDelta = JSON.stringify({x: 0, y: 0, scaleX: 1, scaleY: 1});
+
   function calculateIndexes() {
     const active = activeAndOverAPI.getActive();
     if (!active) {
@@ -99,8 +101,26 @@ export function createSortingAPI(
           overIndex,
           index: currentIndex,
         });
+        if (!delta) {
+          return null;
+        }
 
-        return JSON.stringify(delta);
+        // We need to stringify the delta object to compare it to the previous
+        //we construct a new object so the order of keys will be the same
+        const deltaJson = JSON.stringify({
+          x: delta.x,
+          y: delta.y,
+          scaleX: delta.scaleX,
+          scaleY: delta.scaleY,
+        });
+        return deltaJson === nullDelta ? null : deltaJson;
+      });
+    },
+    useShouldUseDragTransform: (id: UniqueIdentifier) => {
+      return useSyncExternalStore(subscribe, () => {
+        return id === activeAndOverAPI.getActive()?.id
+          ? shouldDisplaceItems()
+          : false;
       });
     },
     getOverIndex: () => overIndex,

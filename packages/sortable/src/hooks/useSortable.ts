@@ -44,7 +44,7 @@ export function useSortable({
     items,
     containerId,
     disabled: globalDisabled,
-    disableTransforms,
+    useShouldUseDragTransform,
     useDragOverlay,
     useMyNewIndex,
     globalActiveRef,
@@ -103,8 +103,9 @@ export function useSortable({
 
   const setNodeRef = useCombinedRefs(setDroppableNodeRef, setDraggableNodeRef);
 
+  const shouldUseDragTransforms = useShouldUseDragTransform(id);
   const shouldDisplaceDragSource =
-    !disableTransforms && !useDragOverlay && isDragging;
+    shouldUseDragTransforms && !useDragOverlay && isDragging;
   const dragSourceDisplacement = shouldDisplaceDragSource ? transform : null;
   const otherItemDisplacement = useMyStrategyValue(id, index, activeNodeRect);
   const finalTransform =
