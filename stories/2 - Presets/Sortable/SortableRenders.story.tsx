@@ -54,6 +54,10 @@ function SortableItem({id, index}: {id: UniqueIdentifier; index: number}) {
   );
 }
 
+// we memoize the components to filters out the re-renders caused by the parent
+// context changes won't be affected by this
+const MemoSortableItem = React.memo(SortableItem);
+
 function Sortable() {
   const [items, setItems] = useState<UniqueIdentifier[]>(() =>
     createRange<UniqueIdentifier>(20, (index) => index + 1)
@@ -77,7 +81,7 @@ function Sortable() {
         <SortableContext items={items}>
           <Container>
             {items.map((id, index) => (
-              <SortableItem key={id} id={id} index={index} />
+              <MemoSortableItem key={id} id={id} index={index} />
             ))}
           </Container>
         </SortableContext>

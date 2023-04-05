@@ -29,7 +29,10 @@ interface Props {
   modifiers?: Modifiers;
   value?: string;
 }
-
+// we memoize the components to filters out the re-renders caused by the parent
+// context changes won't be affected by this
+const MemoDraggable = React.memo(DraggableItem);
+const MemoDroppable = React.memo(Droppable);
 function DroppableStory({
   containers = ['A'],
   items = ['1'],
@@ -75,16 +78,16 @@ function DroppableStory({
       <Wrapper>
         <Wrapper style={{width: 350, flexShrink: 0}}>
           {orphanItems.map((itemId) => (
-            <DraggableItem key={itemId} id={itemId} />
+            <MemoDraggable key={itemId} id={itemId} />
           ))}
         </Wrapper>
         <GridContainer columns={2}>
           {containers.map((id) => (
-            <Droppable key={id} id={id} showRenderState={true}>
+            <MemoDroppable key={id} id={id} showRenderState={true}>
               {itemsPyParent[id]?.map((itemId) => (
-                <DraggableItem key={itemId} id={itemId} />
+                <MemoDraggable key={itemId} id={itemId} />
               )) || null}
-            </Droppable>
+            </MemoDroppable>
           ))}
         </GridContainer>
       </Wrapper>

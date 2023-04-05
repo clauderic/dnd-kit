@@ -544,8 +544,8 @@ describe('Sortable Virtualized List', () => {
   });
 });
 
-describe('Sortable Renders only what is necessary ', () => {
-  it('should render active and items between active and over', () => {
+describe.only('Sortable Renders only what is necessary ', () => {
+  it('should render active and items between active and over - no drop', () => {
     cy.visitStory('presets-sortable-renders--basic-setup');
 
     cy.get('[data-cypress="draggable-item"]').then((droppables) => {
@@ -563,6 +563,26 @@ describe('Sortable Renders only what is necessary ', () => {
     }
 
     for (let id = 4; id <= 10; id++) {
+      cy.get(`[data-testid="sortable-status-${id}"]`).should(
+        'have.text',
+        `mounted ${id}`
+      );
+    }
+  });
+
+  it('should render active only on d&d in place - with drop', () => {
+    cy.visitStory('presets-sortable-renders--basic-setup');
+
+    cy.findFirstDraggableItem().mouseMoveBy(10, 10, {
+      delay: 1,
+      noDrop: false,
+    });
+
+    cy.get(`[data-testid="sortable-status-1"]`).should(
+      'have.text',
+      `updated 1`
+    );
+    for (let id = 2; id <= 10; id++) {
       cy.get(`[data-testid="sortable-status-${id}"]`).should(
         'have.text',
         `mounted ${id}`
