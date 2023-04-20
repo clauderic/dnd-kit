@@ -28,6 +28,15 @@
   - @schuchertmanagementberatung/dnd-kit-core@6.0.7
   - @schuchertmanagementberatung/dnd-kit-utilities@3.2.2
 
+## 7.0.2
+
+### Patch Changes
+
+- [#788](https://github.com/clauderic/dnd-kit/pull/788) [`da94c02`](https://github.com/clauderic/dnd-kit/commit/da94c02a26986b8816b7b31e318f68e9e1b9a1d2) Thanks [@clauderic](https://github.com/clauderic)! - Bug fixes for React 18 Strict Mode
+
+- Updated dependencies [[`da94c02`](https://github.com/clauderic/dnd-kit/commit/da94c02a26986b8816b7b31e318f68e9e1b9a1d2)]:
+  - @dnd-kit/core@6.0.7
+
 ## 7.0.1
 
 ### Patch Changes

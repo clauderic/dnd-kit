@@ -29,6 +29,27 @@
 - Updated dependencies [[`da7c60d`](https://github.com/clauderic/dnd-kit/commit/da7c60dcbb76d89cf1fcb421e69a4abcea2eeebe)]:
   - @schuchertmanagementberatung/dnd-kit-utilities@3.2.1
 
+## 6.0.8
+
+### Patch Changes
+
+- [#1038](https://github.com/clauderic/dnd-kit/pull/1038) [`da888ee`](https://github.com/clauderic/dnd-kit/commit/da888eea8675ff07ad3b2b8f43bc52408b69bd66) Thanks [@WillDonohoe](https://github.com/WillDonohoe)! - Fix errors with calls to `getComputedStyle` in Firefox when destructuring from the window object
+
+## 6.0.7
+
+### Patch Changes
+
+- [#788](https://github.com/clauderic/dnd-kit/pull/788) [`da94c02`](https://github.com/clauderic/dnd-kit/commit/da94c02a26986b8816b7b31e318f68e9e1b9a1d2) Thanks [@clauderic](https://github.com/clauderic)! - Bug fixes for React 18 Strict Mode
+
+## 6.0.6
+
+### Patch Changes
+
+- [#948](https://github.com/clauderic/dnd-kit/pull/948) [`da7c60d`](https://github.com/clauderic/dnd-kit/commit/da7c60dcbb76d89cf1fcb421e69a4abcea2eeebe) Thanks [@Ayc0](https://github.com/Ayc0)! - Upgrade to TypeScript to 4.8
+
+- Updated dependencies [[`da7c60d`](https://github.com/clauderic/dnd-kit/commit/da7c60dcbb76d89cf1fcb421e69a4abcea2eeebe)]:
+  - @dnd-kit/utilities@3.2.1
+
 ## 6.0.5
 
 ### Patch Changes

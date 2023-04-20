@@ -27,7 +27,7 @@ function getDocumentScroll() {
 }
 
 Cypress.Commands.add('findFirstDraggableItem', () => {
-  return cy.get(`[data-cypress="draggable-item"`);
+  return cy.get(`[data-cypress="draggable-item"]`).first();
 });
 
 Cypress.Commands.add(
@@ -47,7 +47,12 @@ Cypress.Commands.add(
   {
     prevSubject: 'element',
   },
-  (subject, x: number, y: number, options?: {delay: number}) => {
+  (
+    subject,
+    x: number,
+    y: number,
+    options?: {delay: number; noDrop?: boolean}
+  ) => {
     cy.wrap(subject, {log: false})
       .then((subject) => {
         const initialRect = subject.get(0).getBoundingClientRect();
@@ -56,7 +61,8 @@ Cypress.Commands.add(
         return [subject, initialRect, windowScroll] as const;
       })
       .then(([subject, initialRect, initialWindowScroll]) => {
-        cy.wrap(subject)
+        let resultOps = cy
+          .wrap(subject)
           .trigger('mousedown', {force: true})
           .wait(options?.delay || 0, {log: Boolean(options?.delay)})
           .trigger('mousemove', {
@@ -72,29 +78,31 @@ Cypress.Commands.add(
             force: true,
             clientX: Math.floor(initialRect.left + initialRect.width / 2 + x),
             clientY: Math.floor(initialRect.top + initialRect.height / 2 + y),
-          })
-          .wait(100)
-          .trigger('mouseup', {force: true})
-          .wait(250)
-          .then((subject: any) => {
-            const finalRect = subject.get(0).getBoundingClientRect();
-            const windowScroll = getDocumentScroll();
-            const windowScrollDelta = {
-              x: windowScroll.x - initialWindowScroll.x,
-              y: windowScroll.y - initialWindowScroll.y,
-            };
-
-            const delta = {
-              x: Math.round(
-                finalRect.left - initialRect.left - windowScrollDelta.x
-              ),
-              y: Math.round(
-                finalRect.top - initialRect.top - windowScrollDelta.y
-              ),
-            };
-
-            return [subject, {initialRect, finalRect, delta}] as const;
           });
+
+        if (!options?.noDrop) {
+          resultOps = resultOps.wait(100).trigger('mouseup', {force: true});
+        }
+
+        resultOps.wait(250).then((subject: any) => {
+          const finalRect = subject.get(0).getBoundingClientRect();
+          const windowScroll = getDocumentScroll();
+          const windowScrollDelta = {
+            x: windowScroll.x - initialWindowScroll.x,
+            y: windowScroll.y - initialWindowScroll.y,
+          };
+
+          const delta = {
+            x: Math.round(
+              finalRect.left - initialRect.left - windowScrollDelta.x
+            ),
+            y: Math.round(
+              finalRect.top - initialRect.top - windowScrollDelta.y
+            ),
+          };
+
+          return [subject, {initialRect, finalRect, delta}] as const;
+        });
       });
   }
 );

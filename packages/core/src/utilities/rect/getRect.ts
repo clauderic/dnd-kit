@@ -19,8 +19,8 @@ export function getClientRect(
   let rect: ClientRect = element.getBoundingClientRect();
 
   if (options.ignoreTransform) {
-    const {getComputedStyle} = getWindow(element);
-    const {transform, transformOrigin} = getComputedStyle(element);
+    const {transform, transformOrigin} =
+      getWindow(element).getComputedStyle(element);
 
     if (transform) {
       rect = inverseTransform(rect, transform, transformOrigin);

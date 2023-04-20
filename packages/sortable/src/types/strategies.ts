@@ -1,7 +1,9 @@
-import type {ClientRect} from '@schuchertmanagementberatung/dnd-kit-core';
-import type {Transform} from '@schuchertmanagementberatung/dnd-kit-utilities';
+import type { ClientRect } from '@schuchertmanagementberatung/dnd-kit-core';
+import type { Transform } from '@schuchertmanagementberatung/dnd-kit-utilities';
+import type { UniqueIdentifier } from 'packages/core/dist';
 
 export type SortingStrategy = (args: {
+  id: UniqueIdentifier;
   activeNodeRect: ClientRect | null;
   activeIndex: number;
   index: number;

@@ -32,7 +32,8 @@
   "dependencies": {
     "tslib": "^2.0.0",
     "@schuchertmanagementberatung/dnd-kit-accessibility": "^3.0.3",
-    "@schuchertmanagementberatung/dnd-kit-utilities": "^3.2.3"
+    "@schuchertmanagementberatung/dnd-kit-utilities": "^3.2.3",
+    "use-sync-external-store": "^1.2.0"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
