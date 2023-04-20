@@ -20,6 +20,7 @@ export interface Props {
   strategy?: SortingStrategy;
   id?: string;
   disabled?: boolean | Disabled;
+  activeIndex?: number | null;
 }
 
 const ID_PREFIX = 'Sortable';
@@ -57,6 +58,7 @@ export function SortableContext({
   items: userDefinedItems,
   strategy = rectSortingStrategy,
   disabled: disabledProp = false,
+  activeIndex: activeIndexProp = null,
 }: Props) {
   const {
     active,
@@ -78,6 +80,7 @@ export function SortableContext({
   );
   const isDragging = active != null;
   const activeIndex = active ? items.indexOf(active.id) : -1;
+  const activeIndexUsed = activeIndexProp ?? activeIndex;
   const sortableOver = over?.data?.current?.sortable ? over : null;
   if (sortableOver) {
     sortableOverRef.current = sortableOver;
@@ -88,7 +91,7 @@ export function SortableContext({
   const previousItemsRef = useRef(items);
   const itemsHaveChanged = !itemsEqual(items, previousItemsRef.current);
   const disableTransforms =
-    (overIndex !== -1 && activeIndex === -1) || itemsHaveChanged;
+    (overIndex !== -1 && activeIndexUsed === -1) || itemsHaveChanged;
   const disabled = normalizeDisabled(disabledProp);
 
   useIsomorphicLayoutEffect(() => {
@@ -109,7 +112,7 @@ export function SortableContext({
 
   const contextValue = useMemo(
     (): ContextDescriptor => ({
-      activeIndex,
+      activeIndex: activeIndexUsed,
       containerId,
       disabled,
       disableTransforms,
@@ -121,7 +124,7 @@ export function SortableContext({
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
-      activeIndex,
+      activeIndexUsed,
       containerId,
       disabled.draggable,
       disabled.droppable,
