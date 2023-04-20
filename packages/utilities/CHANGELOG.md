@@ -1,5 +1,11 @@
 # @schuchertmanagementberatung/dnd-kit-utilities
 
+## 4.0.0
+
+### Major Changes
+
+- [`274ea99`](https://github.com/clauderic/dnd-kit/commit/274ea9965b550f60d6f8120c4cb4f15b4f42cd03) Thanks [@5ebastianMeier](https://github.com/5ebastianMeier)! - Merged external sortable performance PR
+
 ## 3.3.0
 
 ### Minor Changes
