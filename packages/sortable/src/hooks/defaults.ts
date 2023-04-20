@@ -1,4 +1,4 @@
-import { CSS } from '@dnd-kit/utilities';
+import { CSS } from '@schuchertmanagementberatung/dnd-kit-utilities';
 import type { NewIndexGetter } from '../types';
 
 import { arrayMove } from '../utilities';

@@ -1,9 +1,9 @@
-import type {DeepRequired} from '@dnd-kit/utilities';
-import {useMemo} from 'react';
-import {useCachedNode, useInitialRect, useRect} from '../../hooks/utilities';
-import type {DraggableNodes} from '../../store';
-import type {UniqueIdentifier} from '../../types';
-import type {MeasuringConfiguration} from './types';
+import type { DeepRequired } from '@schuchertmanagementberatung/dnd-kit-utilities';
+import { useMemo } from 'react';
+import { useCachedNode, useInitialRect, useRect } from '../../hooks/utilities';
+import type { DraggableNodes } from '../../store';
+import type { UniqueIdentifier } from '../../types';
+import type { MeasuringConfiguration } from './types';
 
 export function useActiveNodeDomValues(
   draggableNodes: DraggableNodes,
@@ -26,10 +26,10 @@ export function useActiveNodeDomValues(
   const value = useMemo(() => {
     return activeNode
       ? {
-          activeNode,
-          activeNodeRect,
-          initialActiveNodeRect,
-        }
+        activeNode,
+        activeNodeRect,
+        initialActiveNodeRect,
+      }
       : null;
   }, [activeNode, activeNodeRect, initialActiveNodeRect]);
 

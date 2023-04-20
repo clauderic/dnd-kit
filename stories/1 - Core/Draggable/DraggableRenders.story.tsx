@@ -1,4 +1,4 @@
-import React, {Profiler, useMemo, useRef, useState} from 'react';
+import React, { Profiler, useMemo, useRef, useState } from 'react';
 import {
   DndContext,
   useDraggable,
@@ -9,11 +9,11 @@ import {
   PointerActivationConstraint,
   Modifiers,
   useSensors,
-} from '@dnd-kit/core';
+} from '@schuchertmanagementberatung/dnd-kit-core';
 
-import type {Coordinates} from '@dnd-kit/utilities';
+import type { Coordinates } from '@schuchertmanagementberatung/dnd-kit-utilities';
 
-import {Axis, Draggable, Wrapper} from '../../components';
+import { Axis, Draggable, Wrapper } from '../../components';
 
 export default {
   title: 'Core/Draggable/DraggableRenders',
@@ -43,7 +43,7 @@ function DraggableStory({
   style,
   buttonStyle,
 }: Props) {
-  const [coordinated, setCoordinates] = useState<{[id: string]: Coordinates}>({
+  const [coordinated, setCoordinates] = useState<{ [id: string]: Coordinates }>({
     '1': defaultCoordinates,
     '2': defaultCoordinates,
     '3': defaultCoordinates,
@@ -62,7 +62,7 @@ function DraggableStory({
   return (
     <DndContext
       sensors={sensors}
-      onDragEnd={({delta, active}) => {
+      onDragEnd={({ delta, active }) => {
         setCoordinates((state) => {
           return {
             ...state,
@@ -135,7 +135,7 @@ function DraggableItem({
   handle,
   buttonStyle,
 }: DraggableItemProps) {
-  const {attributes, isDragging, listeners, setNodeRef, transform} =
+  const { attributes, isDragging, listeners, setNodeRef, transform } =
     useDraggable({
       id: id,
     });
@@ -160,7 +160,7 @@ function DraggableItem({
           handle={handle}
           label={label}
           listeners={listeners}
-          style={{...style, top, left}}
+          style={{ ...style, top, left }}
           buttonStyle={buttonStyle}
           transform={transform}
           axis={axis}

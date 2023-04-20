@@ -2,18 +2,18 @@ import type {
   UniqueIdentifier,
   DndContextDescriptor,
   ClientRect,
-} from '@dnd-kit/core';
-import {useSyncExternalStore} from 'use-sync-external-store/shim';
-import {defaultNewIndexGetter} from '../hooks/defaults';
-import type {SortingStrategy} from '../types';
-import {getSortedRects, isValidIndex, itemsEqual} from '../utilities';
+} from '@schuchertmanagementberatung/dnd-kit-core';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { defaultNewIndexGetter } from '../hooks/defaults';
+import type { SortingStrategy } from '../types';
+import { getSortedRects, isValidIndex, itemsEqual } from '../utilities';
 
 export function createSortingAPI(
   activeAndOverAPI: DndContextDescriptor['activeAndOverAPI'],
   getNewIndex = defaultNewIndexGetter,
   strategy: SortingStrategy
 ) {
-  let unsubscribeFromActiveAndOver = () => {};
+  let unsubscribeFromActiveAndOver = () => { };
   let activeIndex: number = -1;
   let overIndex: number = -1;
   let items: UniqueIdentifier[] = [];
@@ -31,7 +31,7 @@ export function createSortingAPI(
     };
   }
 
-  const nullDelta = JSON.stringify({x: 0, y: 0, scaleX: 1, scaleY: 1});
+  const nullDelta = JSON.stringify({ x: 0, y: 0, scaleX: 1, scaleY: 1 });
 
   function calculateIndexes() {
     const active = activeAndOverAPI.getActive();
@@ -79,7 +79,7 @@ export function createSortingAPI(
     useMyNewIndex: (id: UniqueIdentifier, currentIndex: number) => {
       return useSyncExternalStore(subscribe, () => {
         return isValidIndex(activeIndex) && isValidIndex(overIndex)
-          ? getNewIndex({id, items, activeIndex, overIndex})
+          ? getNewIndex({ id, items, activeIndex, overIndex })
           : currentIndex;
       });
     },

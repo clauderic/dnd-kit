@@ -1,5 +1,8 @@
 import React from 'react';
-import { useDndContext, useDroppable } from '@dnd-kit/core';
+import {
+  useDndContext,
+  useDroppable,
+} from '@schuchertmanagementberatung/dnd-kit-core';
 
 import { Region } from './constants';
 import styles from './Drawer.module.css';

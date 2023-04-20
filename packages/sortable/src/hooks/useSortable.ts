@@ -1,19 +1,19 @@
-import { useContext, useEffect, useMemo, useRef } from 'react';
+import {useContext, useEffect, useMemo, useRef} from 'react';
 import {
   useDraggable,
   useDroppable,
   UseDraggableArguments,
   UseDroppableArguments,
 } from '@schuchertmanagementberatung/dnd-kit-core';
-import type { Data } from '@schuchertmanagementberatung/dnd-kit-core';
+import type {Data} from '@schuchertmanagementberatung/dnd-kit-core';
 import {
   CSS,
   isKeyboardEvent,
   useCombinedRefs,
 } from '@schuchertmanagementberatung/dnd-kit-utilities';
 
-import { Context } from '../components';
-import type { Disabled, SortableData, SortingStrategy } from '../types';
+import {Context} from '../components';
+import type {Disabled, SortableData, SortingStrategy} from '../types';
 import {
   defaultAnimateLayoutChanges,
   defaultAttributes,
@@ -21,12 +21,12 @@ import {
   disabledTransition,
   transitionProperty,
 } from './defaults';
-import type { AnimateLayoutChanges, SortableTransition } from './types';
-import { useDerivedTransform } from './utilities';
+import type {AnimateLayoutChanges, SortableTransition} from './types';
+import {useDerivedTransform} from './utilities';
 
 export interface Arguments
   extends Omit<UseDraggableArguments, 'disabled'>,
-  Pick<UseDroppableArguments, 'resizeObserverConfig'> {
+    Pick<UseDroppableArguments, 'resizeObserverConfig'> {
   animateLayoutChanges?: AnimateLayoutChanges;
   disabled?: boolean | Disabled;
   strategy?: SortingStrategy;
@@ -61,7 +61,7 @@ export function useSortable({
 
   const index = items.indexOf(id);
   const data = useMemo<SortableData & Data>(
-    () => ({ sortable: { containerId, index, items }, ...customData }),
+    () => ({sortable: {containerId, index, items}, ...customData}),
     [containerId, customData, index, items]
   );
   const itemsAfterCurrentSortable = useMemo(

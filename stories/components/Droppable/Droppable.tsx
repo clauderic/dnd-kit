@@ -1,5 +1,8 @@
 import React, { Profiler, useRef } from 'react';
-import { useDroppable, UniqueIdentifier } from '@dnd-kit/core';
+import {
+  useDroppable,
+  UniqueIdentifier,
+} from '@schuchertmanagementberatung/dnd-kit-core';
 import classNames from 'classnames';
 
 import { droppable } from './droppable-svg';

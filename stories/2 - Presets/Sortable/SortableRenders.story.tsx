@@ -1,22 +1,26 @@
-import React, {Profiler, useRef, useState} from 'react';
-import {arrayMove, SortableContext, useSortable} from '@dnd-kit/sortable';
+import React, { Profiler, useRef, useState } from 'react';
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+} from '@schuchertmanagementberatung/dnd-kit-sortable';
 
-import {Container, Item, Wrapper} from '../../components';
+import { Container, Item, Wrapper } from '../../components';
 import {
   DndContext,
   MouseSensor,
   UniqueIdentifier,
   useSensor,
   useSensors,
-} from '@dnd-kit/core';
-import {createRange} from '../../utilities';
+} from '@schuchertmanagementberatung/dnd-kit-core';
+import { createRange } from '../../utilities';
 
 export default {
   title: 'Presets/Sortable/Renders',
 };
 
-function SortableItem({id, index}: {id: UniqueIdentifier; index: number}) {
-  const {attributes, isDragging, listeners, setNodeRef, transform, transition} =
+function SortableItem({ id, index }: { id: UniqueIdentifier; index: number }) {
+  const { attributes, isDragging, listeners, setNodeRef, transform, transition } =
     useSortable({
       id,
     });
@@ -67,7 +71,7 @@ function Sortable() {
   return (
     <DndContext
       sensors={sensors}
-      onDragEnd={({over, active}) => {
+      onDragEnd={({ over, active }) => {
         if (over) {
           const overIndex = getIndex(over.id);
           const activeIndex = getIndex(active.id);

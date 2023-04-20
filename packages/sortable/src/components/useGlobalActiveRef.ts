@@ -1,11 +1,11 @@
-import type {UniqueIdentifier} from '@dnd-kit/core';
-import {useRef, useEffect} from 'react';
+import type { UniqueIdentifier } from '@schuchertmanagementberatung/dnd-kit-core';
+import { useRef, useEffect } from 'react';
 
 export function useGlobalActiveRef(activeId: UniqueIdentifier | null) {
   const activeState = useRef<{
     activeId: null | UniqueIdentifier;
     prevActiveId: null | UniqueIdentifier;
-  }>({activeId: null, prevActiveId: null});
+  }>({ activeId: null, prevActiveId: null });
 
   activeState.current.activeId = activeId;
 

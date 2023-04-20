@@ -25,8 +25,11 @@ import {
   sortableKeyboardCoordinates,
   SortingStrategy,
   AnimateLayoutChanges,
-} from '@dnd-kit/sortable';
-import { CSS, isKeyboardEvent } from '@dnd-kit/utilities';
+} from '@schuchertmanagementberatung/dnd-kit-sortable';
+import {
+  CSS,
+  isKeyboardEvent,
+} from '@schuchertmanagementberatung/dnd-kit-utilities';
 import classNames from 'classnames';
 
 import { createRange } from '../../../utilities';

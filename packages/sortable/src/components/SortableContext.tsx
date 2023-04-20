@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, {useEffect, useMemo, useRef} from 'react';
 import {
   useDndContext,
   ClientRect,
@@ -9,16 +9,16 @@ import {
   useUniqueId,
 } from '@schuchertmanagementberatung/dnd-kit-utilities';
 
-import { normalizeDisabled } from '../utilities';
-import { rectSortingStrategy } from '../strategies';
-import type { Disabled, NewIndexGetter, SortingStrategy } from '../types';
-import { createSortingAPI } from './sortingAPI';
-import { useGlobalActiveRef } from './useGlobalActiveRef';
-import { defaultNewIndexGetter } from '../hooks/defaults';
+import {normalizeDisabled} from '../utilities';
+import {rectSortingStrategy} from '../strategies';
+import type {Disabled, NewIndexGetter, SortingStrategy} from '../types';
+import {createSortingAPI} from './sortingAPI';
+import {useGlobalActiveRef} from './useGlobalActiveRef';
+import {defaultNewIndexGetter} from '../hooks/defaults';
 
 export interface Props {
   children: React.ReactNode;
-  items: (UniqueIdentifier | { id: UniqueIdentifier })[];
+  items: (UniqueIdentifier | {id: UniqueIdentifier})[];
   strategy?: SortingStrategy;
   id?: string;
   disabled?: boolean | Disabled;
@@ -52,7 +52,7 @@ export const Context = React.createContext<ContextDescriptor>({
   },
   useMyNewIndex: () => -1,
   globalActiveRef: {
-    current: { activeId: null, prevActiveId: null },
+    current: {activeId: null, prevActiveId: null},
   },
   useMyStrategyValue: () => null,
   useShouldUseDragTransform: () => false,

@@ -1,4 +1,4 @@
-import React, {Profiler, useMemo, useRef, useState} from 'react';
+import React, { Profiler, useMemo, useRef, useState } from 'react';
 import {
   DndContext,
   useDraggable,
@@ -8,7 +8,7 @@ import {
   MouseSensor,
   useSensor,
   useSensors,
-} from '@dnd-kit/core';
+} from '@schuchertmanagementberatung/dnd-kit-core';
 
 import {
   Draggable,
@@ -51,7 +51,7 @@ function DroppableStory({
       acc[parentId] = acc[parentId] || [];
       acc[parentId].push(itemId);
       return acc;
-    }, {} as {[parentId: UniqueIdentifier]: UniqueIdentifier[]});
+    }, {} as { [parentId: UniqueIdentifier]: UniqueIdentifier[] });
   }, [parents]);
 
   const mouseSensor = useSensor(MouseSensor);
@@ -61,22 +61,22 @@ function DroppableStory({
       collisionDetection={collisionDetection}
       modifiers={modifiers}
       sensors={sensors}
-      onDragEnd={({over, active}) => {
+      onDragEnd={({ over, active }) => {
         if ((!over && !parents[active.id]) || over?.id === parents[active.id]) {
           return;
         }
         if (over) {
-          setParents((prev) => ({...prev, [active.id]: over.id}));
+          setParents((prev) => ({ ...prev, [active.id]: over.id }));
         } else {
           setParents((prev) => {
-            const {[active.id]: _, ...rest} = prev;
+            const { [active.id]: _, ...rest } = prev;
             return rest;
           });
         }
       }}
     >
       <Wrapper>
-        <Wrapper style={{width: 350, flexShrink: 0}}>
+        <Wrapper style={{ width: 350, flexShrink: 0 }}>
           {orphanItems.map((itemId) => (
             <MemoDraggable key={itemId} id={itemId} />
           ))}
@@ -101,8 +101,8 @@ interface DraggableProps {
   id: UniqueIdentifier;
 }
 
-function DraggableItem({handle, id}: DraggableProps) {
-  const {isDragging, setNodeRef, listeners, attributes, transform} =
+function DraggableItem({ handle, id }: DraggableProps) {
+  const { isDragging, setNodeRef, listeners, attributes, transform } =
     useDraggable({
       id: id,
     });
