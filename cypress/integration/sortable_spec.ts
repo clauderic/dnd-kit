@@ -543,3 +543,52 @@ describe('Sortable Virtualized List', () => {
     });
   });
 });
+
+describe('Sortable Renders only what is necessary ', () => {
+  it('should render active and items between active and over - no drop', () => {
+    cy.visitStory('presets-sortable-renders--basic-setup');
+
+    cy.get('[data-cypress="draggable-item"]').then((droppables) => {
+      const coords = droppables[1].getBoundingClientRect(); //drop after item id - 3
+      return cy
+        .findFirstDraggableItem()
+        .mouseMoveBy(coords.x + 10, coords.y + 10, {delay: 1, noDrop: true});
+    });
+
+    for (let id = 1; id <= 3; id++) {
+      cy.get(`[data-testid="sortable-status-${id}"]`).should(
+        'have.text',
+        `updated ${id}`
+      );
+    }
+
+    for (let id = 4; id <= 10; id++) {
+      cy.get(`[data-testid="sortable-status-${id}"]`).should(
+        'have.text',
+        `mounted ${id}`
+      );
+    }
+  });
+
+  //we test for drop in place, because otherwise items change and cause a real re-render to all items
+  //probably possible to fix that too but I didn't get there
+  it('should render active only on d&d in place - with drop', () => {
+    cy.visitStory('presets-sortable-renders--basic-setup');
+
+    cy.findFirstDraggableItem().mouseMoveBy(10, 10, {
+      delay: 1,
+      noDrop: false,
+    });
+
+    cy.get(`[data-testid="sortable-status-1"]`).should(
+      'have.text',
+      `updated 1`
+    );
+    for (let id = 2; id <= 10; id++) {
+      cy.get(`[data-testid="sortable-status-${id}"]`).should(
+        'have.text',
+        `mounted ${id}`
+      );
+    }
+  });
+});

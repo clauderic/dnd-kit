@@ -3,16 +3,18 @@ import {
   useDndContext,
   ClientRect,
   UniqueIdentifier,
-  Over,
 } from '@schuchertmanagementberatung/dnd-kit-core';
 import {
   useIsomorphicLayoutEffect,
   useUniqueId,
 } from '@schuchertmanagementberatung/dnd-kit-utilities';
 
-import type { Disabled, SortingStrategy } from '../types';
-import { getSortedRects, itemsEqual, normalizeDisabled } from '../utilities';
+import { normalizeDisabled } from '../utilities';
 import { rectSortingStrategy } from '../strategies';
+import type { Disabled, NewIndexGetter, SortingStrategy } from '../types';
+import { createSortingAPI } from './sortingAPI';
+import { useGlobalActiveRef } from './useGlobalActiveRef';
+import { defaultNewIndexGetter } from '../hooks/defaults';
 
 export interface Props {
   children: React.ReactNode;
@@ -20,36 +22,40 @@ export interface Props {
   strategy?: SortingStrategy;
   id?: string;
   disabled?: boolean | Disabled;
-  activeIndex?: number | null;
+  getNewIndex?: NewIndexGetter;
 }
 
 const ID_PREFIX = 'Sortable';
 
 interface ContextDescriptor {
-  activeIndex: number;
   containerId: string;
   disabled: Disabled;
-  disableTransforms: boolean;
   items: UniqueIdentifier[];
-  overIndex: number;
   useDragOverlay: boolean;
-  sortedRects: ClientRect[];
-  strategy: SortingStrategy;
+  useMyNewIndex: (id: UniqueIdentifier, currentIndex: number) => number;
+  globalActiveRef: ReturnType<typeof useGlobalActiveRef>;
+  useMyStrategyValue: (
+    id: UniqueIdentifier,
+    currentIndex: number,
+    activeNodeRect: ClientRect | null
+  ) => string | null;
+  useShouldUseDragTransform: (id: UniqueIdentifier) => boolean;
 }
 
 export const Context = React.createContext<ContextDescriptor>({
-  activeIndex: -1,
   containerId: ID_PREFIX,
-  disableTransforms: false,
   items: [],
-  overIndex: -1,
   useDragOverlay: false,
-  sortedRects: [],
-  strategy: rectSortingStrategy,
   disabled: {
     draggable: false,
     droppable: false,
   },
+  useMyNewIndex: () => -1,
+  globalActiveRef: {
+    current: { activeId: null, prevActiveId: null },
+  },
+  useMyStrategyValue: () => null,
+  useShouldUseDragTransform: () => false,
 });
 
 export function SortableContext({
@@ -57,18 +63,16 @@ export function SortableContext({
   id,
   items: userDefinedItems,
   strategy = rectSortingStrategy,
+  getNewIndex = defaultNewIndexGetter,
   disabled: disabledProp = false,
-  activeIndex: activeIndexProp = null,
 }: Props) {
   const {
     active,
     dragOverlay,
     droppableRects,
-    over,
     measureDroppableContainers,
-    measuringScheduled,
+    activeAndOverAPI,
   } = useDndContext();
-  const sortableOverRef = useRef<Over | null>(null);
   const containerId = useUniqueId(ID_PREFIX, id);
   const useDragOverlay = Boolean(dragOverlay.rect !== null);
   const items = useMemo<UniqueIdentifier[]>(
@@ -78,62 +82,53 @@ export function SortableContext({
       ),
     [userDefinedItems]
   );
+  const sortingAPI = useMemo(
+    () => createSortingAPI(activeAndOverAPI, getNewIndex, strategy),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+  useEffect(() => {
+    sortingAPI.init();
+    return sortingAPI.clear;
+  }, [sortingAPI]);
+
+  sortingAPI.silentSetSortingInfo(droppableRects, items);
   const isDragging = active != null;
-  const activeIndex = active ? items.indexOf(active.id) : -1;
-  const activeIndexUsed = activeIndexProp ?? activeIndex;
-  const sortableOver = over?.data?.current?.sortable ? over : null;
-  if (sortableOver) {
-    sortableOverRef.current = sortableOver;
-  }
-  const overIndex = sortableOverRef.current
-    ? items.indexOf(sortableOverRef.current.id)
-    : -1;
   const previousItemsRef = useRef(items);
-  const itemsHaveChanged = !itemsEqual(items, previousItemsRef.current);
-  const disableTransforms =
-    (overIndex !== -1 && activeIndexUsed === -1) || itemsHaveChanged;
+  const itemsHaveChanged = sortingAPI.getItemsHaveChanged();
   const disabled = normalizeDisabled(disabledProp);
 
   useIsomorphicLayoutEffect(() => {
-    if (itemsHaveChanged && isDragging && !measuringScheduled) {
+    if (itemsHaveChanged && isDragging) {
       measureDroppableContainers(items);
     }
-  }, [
-    itemsHaveChanged,
-    items,
-    isDragging,
-    measureDroppableContainers,
-    measuringScheduled,
-  ]);
+  }, [itemsHaveChanged, items, isDragging, measureDroppableContainers]);
 
   useEffect(() => {
     previousItemsRef.current = items;
   }, [items]);
 
+  const globalActiveRef = useGlobalActiveRef(active?.id || null);
   const contextValue = useMemo(
     (): ContextDescriptor => ({
-      activeIndex: activeIndexUsed,
       containerId,
       disabled,
-      disableTransforms,
+      useShouldUseDragTransform: sortingAPI.useShouldUseDragTransform,
       items,
-      overIndex,
       useDragOverlay,
-      sortedRects: getSortedRects(items, droppableRects),
-      strategy,
+      useMyNewIndex: sortingAPI.useMyNewIndex,
+      globalActiveRef,
+      useMyStrategyValue: sortingAPI.useMyStrategyValue,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
-      activeIndexUsed,
       containerId,
       disabled.draggable,
       disabled.droppable,
-      disableTransforms,
-      items,
-      overIndex,
-      droppableRects,
+      // items,
       useDragOverlay,
-      strategy,
+      sortingAPI,
+      globalActiveRef,
     ]
   );
 

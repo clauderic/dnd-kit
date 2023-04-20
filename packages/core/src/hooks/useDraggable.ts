@@ -1,4 +1,4 @@
-import {createContext, useContext, useMemo} from 'react';
+import { createContext, useContext, useMemo } from 'react';
 import {
   Transform,
   useNodeRef,
@@ -7,10 +7,10 @@ import {
   useUniqueId,
 } from '@schuchertmanagementberatung/dnd-kit-utilities';
 
-import {InternalContext, Data} from '../store';
-import type {UniqueIdentifier} from '../types';
-import {ActiveDraggableContext} from '../components/DndContext';
-import {useSyntheticListeners, SyntheticListenerMap} from './utilities';
+import { InternalContext, Data } from '../store';
+import type { UniqueIdentifier } from '../types';
+import { ActiveDraggableContext } from '../components/DndContext';
+import { useSyntheticListeners, SyntheticListenerMap } from './utilities';
 
 export interface UseDraggableArguments {
   id: UniqueIdentifier;
@@ -49,19 +49,24 @@ export function useDraggable({
   const key = useUniqueId(ID_PREFIX);
   const {
     activators,
-    activatorEvent,
-    active,
-    activeNodeRect,
+    useMyActivatorEvent,
+    useMyActive,
+    useMyActiveNodeRect,
     ariaDescribedById,
     draggableNodes,
-    over,
+    useMyOverForDraggable,
+    isDefaultContext,
   } = useContext(InternalContext);
   const {
     role = defaultRole,
     roleDescription = 'draggable',
     tabIndex = 0,
   } = attributes ?? {};
-  const isDragging = active?.id === id;
+  const active = useMyActive(id);
+  const isDragging = active !== null;
+  const activatorEvent = useMyActivatorEvent(id);
+  const activeNodeRect = useMyActiveNodeRect(id);
+  const over = useMyOverForDraggable(id);
   const transform: Transform | null = useContext(
     isDragging ? ActiveDraggableContext : NullContext
   );
@@ -72,7 +77,7 @@ export function useDraggable({
 
   useIsomorphicLayoutEffect(
     () => {
-      draggableNodes.set(id, {id, key, node, activatorNode, data: dataRef});
+      draggableNodes.set(id, { id, key, node, activatorNode, data: dataRef });
 
       return () => {
         const node = draggableNodes.get(id);
@@ -106,6 +111,7 @@ export function useDraggable({
   );
 
   return {
+    //active and activatorEvent will by null if this isn't the active node
     active,
     activatorEvent,
     activeNodeRect,
@@ -117,5 +123,6 @@ export function useDraggable({
     setNodeRef,
     setActivatorNodeRef,
     transform,
+    isDefaultContext,
   };
 }

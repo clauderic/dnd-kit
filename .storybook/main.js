@@ -3,6 +3,7 @@ const path = require('path');
 module.exports = {
   reactOptions: {
     legacyRootApi: false,
+    strictMode: true,
   },
   staticDirs: ['./assets'],
   stories: ['../stories/**/*.story.tsx'],

@@ -30,6 +30,16 @@
   - @schuchertmanagementberatung/dnd-kit-core@6.0.6
   - @schuchertmanagementberatung/dnd-kit-utilities@3.2.1
 
+## 6.0.1
+
+### Patch Changes
+
+- [#823](https://github.com/clauderic/dnd-kit/pull/823) [`b065c37`](https://github.com/clauderic/dnd-kit/commit/b065c3750078bee43caa5a79f54196d4612d2375) Thanks [@DaniGuardiola](https://github.com/DaniGuardiola)! - Add missing peer dependency to @dnd-kit/modifiers
+
+- Updated dependencies [[`da7c60d`](https://github.com/clauderic/dnd-kit/commit/da7c60dcbb76d89cf1fcb421e69a4abcea2eeebe)]:
+  - @dnd-kit/core@6.0.6
+  - @dnd-kit/utilities@3.2.1
+
 ## 6.0.0
 
 ### Patch Changes
