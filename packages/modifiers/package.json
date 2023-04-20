@@ -1,6 +1,6 @@
 {
   "name": "@schuchertmanagementberatung/dnd-kit-modifiers",
-  "version": "6.0.4",
+  "version": "7.0.0",
   "description": "Translate modifier presets for use with `@dnd-kit` packages.",
   "author": "Claudéric Demers",
   "license": "MIT",
@@ -26,15 +26,15 @@
     "dist"
   ],
   "dependencies": {
-    "@schuchertmanagementberatung/dnd-kit-utilities": "^3.2.3",
+    "@schuchertmanagementberatung/dnd-kit-utilities": "^4.0.0",
     "tslib": "^2.0.0"
   },
   "peerDependencies": {
-    "@schuchertmanagementberatung/dnd-kit-core": "^6.0.8",
+    "@schuchertmanagementberatung/dnd-kit-core": "^7.0.0",
     "react": ">=16.8.0"
   },
   "devDependencies": {
-    "@schuchertmanagementberatung/dnd-kit-core": "^6.0.8"
+    "@schuchertmanagementberatung/dnd-kit-core": "^7.0.0"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
