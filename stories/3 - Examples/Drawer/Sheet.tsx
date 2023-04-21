@@ -14,10 +14,15 @@ interface Props {
 }
 
 export function Sheet({ children, expanded, header }: Props) {
-  const { attributes, isDragging, listeners, transform, setNodeRef } =
-    useDraggable({
-      id: 'header',
-    });
+  const {
+    attributes,
+    isDragging,
+    listeners,
+    transform,
+    setNodeRef,
+  } = useDraggable({
+    id: 'header',
+  });
 
   return (
     <div

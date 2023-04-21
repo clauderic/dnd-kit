@@ -35,6 +35,7 @@ function DroppableStory({
   collisionDetection,
   modifiers,
 }: Props) {
+  const [isDragging, setIsDragging] = useState(false);
   const [parent, setParent] = useState<UniqueIdentifier | null>(null);
 
   const item = <DraggableItem />;
@@ -43,9 +44,12 @@ function DroppableStory({
     <DndContext
       collisionDetection={collisionDetection}
       modifiers={parent === null ? undefined : modifiers}
+      onDragStart={() => setIsDragging(true)}
       onDragEnd={({ over }) => {
         setParent(over ? over.id : null);
+        setIsDragging(false);
       }}
+      onDragCancel={() => setIsDragging(false)}
     >
       <Wrapper>
         <Wrapper style={{ width: 350, flexShrink: 0 }}>
@@ -53,7 +57,7 @@ function DroppableStory({
         </Wrapper>
         <GridContainer columns={2}>
           {containers.map((id) => (
-            <Droppable key={id} id={id}>
+            <Droppable key={id} id={id} dragging={isDragging}>
               {parent === id ? item : null}
             </Droppable>
           ))}

@@ -1,15 +1,11 @@
 import React from 'react';
-import {
-  useDndContext,
-  useDroppable,
-} from '@schuchertmanagementberatung/dnd-kit-core';
+import { useDroppable } from '@schuchertmanagementberatung/dnd-kit-core';
 
 import { Region } from './constants';
 import styles from './Drawer.module.css';
 
 export function DropRegions() {
-  const { active } = useDndContext();
-  const { setNodeRef: setExpandRegionNodeRef } = useDroppable({
+  const { active, setNodeRef: setExpandRegionNodeRef } = useDroppable({
     id: Region.Expand,
   });
   const { setNodeRef: setCollapseRegionRef } = useDroppable({

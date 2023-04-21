@@ -30,12 +30,6 @@
 
 - [#948](https://github.com/clauderic/dnd-kit/pull/948) [`da7c60d`](https://github.com/clauderic/dnd-kit/commit/da7c60dcbb76d89cf1fcb421e69a4abcea2eeebe) Thanks [@Ayc0](https://github.com/Ayc0)! - Upgrade to TypeScript to 4.8
 
-## 3.2.1
-
-### Patch Changes
-
-- [#948](https://github.com/clauderic/dnd-kit/pull/948) [`da7c60d`](https://github.com/clauderic/dnd-kit/commit/da7c60dcbb76d89cf1fcb421e69a4abcea2eeebe) Thanks [@Ayc0](https://github.com/Ayc0)! - Upgrade to TypeScript to 4.8
-
 ## 3.2.0
 
 ### Minor Changes

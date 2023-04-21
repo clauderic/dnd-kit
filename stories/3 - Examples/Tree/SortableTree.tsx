@@ -121,7 +121,7 @@ export function SortableTree({
 
   const flattenedItems = useMemo(() => {
     const flattenedTree = flattenTree(items);
-    const collapsedItems = flattenedTree.reduce<UniqueIdentifier[]>(
+    const collapsedItems = flattenedTree.reduce<string[]>(
       (acc, { children, collapsed, id }) =>
         collapsed && children.length ? [...acc, id] : acc,
       []
@@ -156,10 +156,9 @@ export function SortableTree({
     })
   );
 
-  const sortedIds = useMemo(
-    () => flattenedItems.map(({ id }) => id),
-    [flattenedItems]
-  );
+  const sortedIds = useMemo(() => flattenedItems.map(({ id }) => id), [
+    flattenedItems,
+  ]);
   const activeItem = activeId
     ? flattenedItems.find(({ id }) => id === activeId)
     : null;

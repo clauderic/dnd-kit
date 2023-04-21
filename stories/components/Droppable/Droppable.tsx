@@ -1,8 +1,5 @@
-import React, { Profiler, useRef } from 'react';
-import {
-  useDroppable,
-  UniqueIdentifier,
-} from '@schuchertmanagementberatung/dnd-kit-core';
+import React from 'react';
+import { useDroppable, UniqueIdentifier } from '@schuchertmanagementberatung/dnd-kit-core';
 import classNames from 'classnames';
 
 import { droppable } from './droppable-svg';
@@ -10,24 +7,22 @@ import styles from './Droppable.module.css';
 
 interface Props {
   children: React.ReactNode;
+  dragging: boolean;
   id: UniqueIdentifier;
-  showRenderState?: boolean;
 }
 
-export function Droppable({ children, id, showRenderState }: Props) {
+export function Droppable({ children, id, dragging }: Props) {
   const { isOver, setNodeRef } = useDroppable({
     id,
   });
 
-  const span = useRef<HTMLSpanElement>(null);
-
-  const DroppableContent = (
+  return (
     <div
       ref={setNodeRef}
-      data-cypress={`droppable-container-${id}`}
       className={classNames(
         styles.Droppable,
         isOver && styles.over,
+        dragging && styles.dragging,
         children && styles.dropped
       )}
       aria-label="Droppable region"
@@ -35,25 +30,5 @@ export function Droppable({ children, id, showRenderState }: Props) {
       {children}
       {droppable}
     </div>
-  );
-
-  return showRenderState ? (
-    <Profiler
-      id="App"
-      onRender={(id, phase) => {
-        if (phase === 'update' && span.current) {
-          span.current.innerHTML = 'updated';
-        }
-      }}
-    >
-      <div>
-        <span data-testid={`droppable-status-${id}`} ref={span}>
-          mounted
-        </span>
-        {DroppableContent}
-      </div>
-    </Profiler>
-  ) : (
-    DroppableContent
   );
 }

@@ -8,7 +8,6 @@ import type {Coordinates, ClientRect, UniqueIdentifier} from '../types';
 
 import type {Actions} from './actions';
 import type {DroppableContainersMap} from './constructors';
-import type {createActiveAndOverAPI} from '../components/DndContext/activeAndOverAPI';
 
 export interface DraggableElement {
   node: DraggableNode;
@@ -68,7 +67,9 @@ export interface State {
     containers: DroppableContainers;
   };
   draggable: {
-    initialCoordinates: Coordinates | null;
+    active: UniqueIdentifier | null;
+    initialCoordinates: Coordinates;
+    nodes: DraggableNodes;
     translate: Coordinates;
   };
 }
@@ -95,26 +96,18 @@ export interface PublicContextDescriptor {
   measureDroppableContainers(ids: UniqueIdentifier[]): void;
   measuringScheduled: boolean;
   windowRect: ClientRect | null;
-  activeAndOverAPI: ReturnType<typeof createActiveAndOverAPI>;
 }
 
 export interface InternalContextDescriptor {
+  activatorEvent: Event | null;
   activators: SyntheticListeners;
-  useMyActive: (id: UniqueIdentifier) => Active | null;
-  useGloablActive: () => Active | null;
-  useMyActiveForDroppable: (droppableId: UniqueIdentifier) => Active | null;
-  useMyActivatorEvent: (id: UniqueIdentifier) => Event | null;
-  useGlobalActivatorEvent: () => Event | null;
-  useMyActiveNodeRect: (id: UniqueIdentifier) => ClientRect | null;
+  active: Active | null;
+  activeNodeRect: ClientRect | null;
   ariaDescribedById: {
     draggable: string;
   };
   dispatch: React.Dispatch<Actions>;
   draggableNodes: DraggableNodes;
-  useMyOverForDraggable: (draggableId: UniqueIdentifier) => Over | null;
-  useMyOverForDroppable: (droppableId: UniqueIdentifier) => Over | null;
+  over: Over | null;
   measureDroppableContainers(ids: UniqueIdentifier[]): void;
-  //this is a temparary solution, since we don't return general active element from useDraggable hook
-  //I added this to know if a sortable item is inside an overlay
-  isDefaultContext: boolean;
 }
