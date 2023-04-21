@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  MeasuringStrategy,
-  UniqueIdentifier,
-} from '@schuchertmanagementberatung/dnd-kit-core';
+import { MeasuringStrategy, UniqueIdentifier } from '@schuchertmanagementberatung/dnd-kit-core';
 import { restrictToWindowEdges } from '@schuchertmanagementberatung/dnd-kit-modifiers';
 import {
   AnimateLayoutChanges,
@@ -106,7 +103,7 @@ export const VariableHeights = () => {
 };
 
 export const DisabledItems = () => {
-  const disabledItems: UniqueIdentifier[] = [1, 5, 8, 13, 20];
+  const disabledItems: UniqueIdentifier[] = ['1', '5', '8', '13', '20'];
   return (
     <Sortable
       {...props}
@@ -144,7 +141,6 @@ export const RerenderBeforeSorting = () => {
   return (
     <Sortable
       {...props}
-      usingGlobalActiveInStyle={true}
       wrapperStyle={({ active }) => {
         return {
           height: active ? 100 : 80,

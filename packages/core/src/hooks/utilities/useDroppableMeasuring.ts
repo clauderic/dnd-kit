@@ -38,7 +38,11 @@ export function useDroppableMeasuring(
   containers: DroppableContainer[],
   {dragging, dependencies, config}: Arguments
 ) {
-  const [queue, setQueue] = useState<UniqueIdentifier[] | null>(null);
+  const [
+    containerIdsScheduledForMeasurement,
+    setContainerIdsScheduledForMeasurement,
+  ] = useState<UniqueIdentifier[] | null>(null);
+  const measuringScheduled = containerIdsScheduledForMeasurement != null;
   const {frequency, measure, strategy} = config;
   const containersRef = useRef(containers);
   const disabled = isDisabled();
@@ -49,13 +53,9 @@ export function useDroppableMeasuring(
         return;
       }
 
-      setQueue((value) => {
-        if (value === null) {
-          return ids;
-        }
-
-        return value.concat(ids.filter((id) => !value.includes(id)));
-      });
+      setContainerIdsScheduledForMeasurement((value) =>
+        value ? value.concat(ids) : ids
+      );
     },
     [disabledRef]
   );
@@ -66,11 +66,13 @@ export function useDroppableMeasuring(
         return defaultValue;
       }
 
+      const ids = containerIdsScheduledForMeasurement;
+
       if (
         !previousValue ||
         previousValue === defaultValue ||
         containersRef.current !== containers ||
-        queue != null
+        ids != null
       ) {
         const map: RectMap = new Map();
 
@@ -80,9 +82,9 @@ export function useDroppableMeasuring(
           }
 
           if (
-            queue &&
-            queue.length > 0 &&
-            !queue.includes(container.id) &&
+            ids &&
+            ids.length > 0 &&
+            !ids.includes(container.id) &&
             container.rect.current
           ) {
             // This container does not need to be re-measured
@@ -105,7 +107,13 @@ export function useDroppableMeasuring(
 
       return previousValue;
     },
-    [containers, queue, dragging, disabled, measure]
+    [
+      containers,
+      containerIdsScheduledForMeasurement,
+      dragging,
+      disabled,
+      measure,
+    ]
   );
 
   useEffect(() => {
@@ -118,21 +126,17 @@ export function useDroppableMeasuring(
         return;
       }
 
-      measureDroppableContainers();
+      requestAnimationFrame(() => measureDroppableContainers());
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [dragging, disabled]
   );
 
-  useEffect(
-    () => {
-      if (queue && queue.length > 0) {
-        setQueue(null);
-      }
-    },
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(queue)]
-  );
+  useEffect(() => {
+    if (measuringScheduled) {
+      setContainerIdsScheduledForMeasurement(null);
+    }
+  }, [measuringScheduled]);
 
   useEffect(
     () => {
@@ -156,7 +160,7 @@ export function useDroppableMeasuring(
   return {
     droppableRects,
     measureDroppableContainers,
-    measuringScheduled: queue != null,
+    measuringScheduled,
   };
 
   function isDisabled() {

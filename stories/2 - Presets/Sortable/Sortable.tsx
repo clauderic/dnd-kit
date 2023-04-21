@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import {
@@ -21,8 +21,6 @@ import {
   useSensor,
   useSensors,
   defaultDropAnimationSideEffects,
-  useDndContext,
-  useConditionalDndContext,
 } from '@schuchertmanagementberatung/dnd-kit-core';
 import {
   arrayMove,
@@ -73,7 +71,6 @@ export interface Props {
     id: UniqueIdentifier;
   }): React.CSSProperties;
   isDisabled?(id: UniqueIdentifier): boolean;
-  usingGlobalActiveInStyle?: boolean;
 }
 
 const dropAnimationConfig: DropAnimation = {
@@ -117,14 +114,13 @@ export function Sortable({
   style,
   useDragOverlay = true,
   wrapperStyle = () => ({}),
-  usingGlobalActiveInStyle = false,
 }: Props) {
   const [items, setItems] = useState<UniqueIdentifier[]>(
     () =>
       initialItems ??
       createRange<UniqueIdentifier>(itemCount, (index) => index + 1)
   );
-
+  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint,
@@ -141,6 +137,7 @@ export function Sortable({
   const isFirstAnnouncement = useRef(true);
   const getIndex = (id: UniqueIdentifier) => items.indexOf(id);
   const getPosition = (id: UniqueIdentifier) => getIndex(id) + 1;
+  const activeIndex = activeId ? getIndex(activeId) : -1;
   const handleRemove = removable
     ? (id: UniqueIdentifier) =>
       setItems((items) => items.filter((item) => item !== id))
@@ -169,7 +166,6 @@ export function Sortable({
       return;
     },
     onDragEnd({ active, over }) {
-      isFirstAnnouncement.current = true;
       if (over) {
         return `Sortable item ${active.id
           } was dropped at position ${getPosition(over.id)} of ${items.length}`;
@@ -178,12 +174,17 @@ export function Sortable({
       return;
     },
     onDragCancel({ active: { id } }) {
-      isFirstAnnouncement.current = true;
       return `Sorting was cancelled. Sortable item ${id} was dropped and returned to position ${getPosition(
         id
       )} of ${items.length}.`;
     },
   };
+
+  useEffect(() => {
+    if (!activeId) {
+      isFirstAnnouncement.current = true;
+    }
+  }, [activeId]);
 
   return (
     <DndContext
@@ -193,24 +194,29 @@ export function Sortable({
       }}
       sensors={sensors}
       collisionDetection={collisionDetection}
-      onDragEnd={({ over, active }) => {
+      onDragStart={({ active }) => {
+        if (!active) {
+          return;
+        }
+
+        setActiveId(active.id);
+      }}
+      onDragEnd={({ over }) => {
+        setActiveId(null);
+
         if (over) {
           const overIndex = getIndex(over.id);
-          const activeIndex = getIndex(active.id);
           if (activeIndex !== overIndex) {
             setItems((items) => reorderItems(items, activeIndex, overIndex));
           }
         }
       }}
+      onDragCancel={() => setActiveId(null)}
       measuring={measuring}
       modifiers={modifiers}
     >
       <Wrapper style={style} center>
-        <SortableContext
-          items={items}
-          strategy={strategy}
-          getNewIndex={getNewIndex}
-        >
+        <SortableContext items={items} strategy={strategy}>
           <Container>
             {items.map((value, index) => (
               <SortableItem
@@ -225,76 +231,52 @@ export function Sortable({
                 onRemove={handleRemove}
                 animateLayoutChanges={animateLayoutChanges}
                 useDragOverlay={useDragOverlay}
-                usingGlobalActiveInStyle={usingGlobalActiveInStyle}
+                getNewIndex={getNewIndex}
               />
             ))}
           </Container>
         </SortableContext>
       </Wrapper>
-      {useDragOverlay ? (
-        <SortableDragOverlay
-          items={items}
-          adjustScale={adjustScale}
-          dropAnimation={dropAnimation}
-          handle={handle}
-          renderItem={renderItem}
-          wrapperStyle={wrapperStyle}
-          getItemStyles={getItemStyles}
-        />
-      ) : null}
+      {useDragOverlay
+        ? createPortal(
+          <DragOverlay
+            adjustScale={adjustScale}
+            dropAnimation={dropAnimation}
+          >
+            {activeId ? (
+              <Item
+                value={items[activeIndex]}
+                handle={handle}
+                renderItem={renderItem}
+                wrapperStyle={wrapperStyle({
+                  active: { id: activeId },
+                  index: activeIndex,
+                  isDragging: true,
+                  id: items[activeIndex],
+                })}
+                style={getItemStyles({
+                  id: items[activeIndex],
+                  index: activeIndex,
+                  isSorting: activeId !== null,
+                  isDragging: true,
+                  overIndex: -1,
+                  isDragOverlay: true,
+                })}
+                dragOverlay
+              />
+            ) : null}
+          </DragOverlay>,
+          document.body
+        )
+        : null}
     </DndContext>
-  );
-}
-
-function SortableDragOverlay({
-  items,
-  adjustScale,
-  dropAnimation,
-  handle,
-  renderItem,
-  wrapperStyle,
-  getItemStyles,
-}: Pick<Props, 'adjustScale' | 'dropAnimation' | 'handle' | 'renderItem'> & {
-  items: UniqueIdentifier[];
-  wrapperStyle: Exclude<Props['wrapperStyle'], undefined>;
-  getItemStyles: Exclude<Props['getItemStyles'], undefined>;
-}) {
-  const { active } = useDndContext();
-  const getIndex = (id: UniqueIdentifier) => items.indexOf(id);
-  const activeIndex = active ? getIndex(active.id) : -1;
-
-  return createPortal(
-    <DragOverlay adjustScale={adjustScale} dropAnimation={dropAnimation}>
-      {active ? (
-        <Item
-          value={items[activeIndex]}
-          handle={handle}
-          renderItem={renderItem}
-          wrapperStyle={wrapperStyle({
-            active: { id: active.id },
-            index: activeIndex,
-            isDragging: true,
-            id: items[activeIndex],
-          })}
-          style={getItemStyles({
-            id: items[activeIndex],
-            index: activeIndex,
-            isSorting: active !== null,
-            isDragging: true,
-            overIndex: -1,
-            isDragOverlay: true,
-          })}
-          dragOverlay
-        />
-      ) : null}
-    </DragOverlay>,
-    document.body
   );
 }
 
 interface SortableItemProps {
   animateLayoutChanges?: AnimateLayoutChanges;
   disabled?: boolean;
+  getNewIndex?: NewIndexGetter;
   id: UniqueIdentifier;
   index: number;
   handle: boolean;
@@ -303,12 +285,12 @@ interface SortableItemProps {
   style(values: any): React.CSSProperties;
   renderItem?(args: any): React.ReactElement;
   wrapperStyle: Props['wrapperStyle'];
-  usingGlobalActiveInStyle: boolean;
 }
 
 export function SortableItem({
   disabled,
   animateLayoutChanges,
+  getNewIndex,
   handle,
   id,
   index,
@@ -317,13 +299,14 @@ export function SortableItem({
   renderItem,
   useDragOverlay,
   wrapperStyle,
-  usingGlobalActiveInStyle,
 }: SortableItemProps) {
   const {
     active,
     attributes,
     isDragging,
+    isSorting,
     listeners,
+    overIndex,
     setNodeRef,
     setActivatorNodeRef,
     transform,
@@ -332,9 +315,8 @@ export function SortableItem({
     id,
     animateLayoutChanges,
     disabled,
+    getNewIndex,
   });
-
-  const dndContext = useConditionalDndContext(usingGlobalActiveInStyle);
 
   return (
     <Item
@@ -342,7 +324,7 @@ export function SortableItem({
       value={id}
       disabled={disabled}
       dragging={isDragging}
-      sorting={true}
+      sorting={isSorting}
       handle={handle}
       handleProps={
         handle
@@ -357,18 +339,13 @@ export function SortableItem({
         index,
         id,
         isDragging,
-        isSorting: usingGlobalActiveInStyle ? !!dndContext?.active : true,
-        overIndex: 3,
+        isSorting,
+        overIndex,
       })}
       onRemove={onRemove ? () => onRemove(id) : undefined}
       transform={transform}
       transition={transition}
-      wrapperStyle={wrapperStyle?.({
-        index,
-        isDragging,
-        active: dndContext?.active || active,
-        id,
-      })}
+      wrapperStyle={wrapperStyle?.({ index, isDragging, active, id })}
       listeners={listeners}
       data-index={index}
       data-id={id}

@@ -4,7 +4,6 @@ import {noop} from '../utilities/other';
 import {defaultMeasuringConfiguration} from '../components/DndContext/defaults';
 import {DroppableContainersMap} from './constructors';
 import type {InternalContextDescriptor, PublicContextDescriptor} from './types';
-import {createActiveAndOverAPI} from '../components/DndContext/activeAndOverAPI';
 
 export const defaultPublicContext: PublicContextDescriptor = {
   activatorEvent: null,
@@ -30,28 +29,20 @@ export const defaultPublicContext: PublicContextDescriptor = {
   measureDroppableContainers: noop,
   windowRect: null,
   measuringScheduled: false,
-  activeAndOverAPI: createActiveAndOverAPI({
-    current: {initial: null, translated: null},
-  }),
 };
 
 export const defaultInternalContext: InternalContextDescriptor = {
+  activatorEvent: null,
   activators: [],
+  active: null,
+  activeNodeRect: null,
   ariaDescribedById: {
     draggable: '',
   },
   dispatch: noop,
   draggableNodes: new Map(),
+  over: null,
   measureDroppableContainers: noop,
-  useMyActive: () => null,
-  useMyActiveForDroppable: () => null,
-  useGloablActive: () => null,
-  useMyActivatorEvent: () => null,
-  useGlobalActivatorEvent: () => null,
-  useMyActiveNodeRect: () => null,
-  isDefaultContext: true,
-  useMyOverForDraggable: () => null,
-  useMyOverForDroppable: () => null,
 };
 
 export const InternalContext = createContext<InternalContextDescriptor>(

@@ -32,7 +32,6 @@ export {
   useDraggable,
   useDndContext,
   useDroppable,
-  useConditionalDndContext,
 } from './hooks';
 export type {
   AutoScrollOptions,
