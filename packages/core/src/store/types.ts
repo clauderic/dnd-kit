@@ -108,6 +108,5 @@ export interface InternalContextDescriptor {
   };
   dispatch: React.Dispatch<Actions>;
   draggableNodes: DraggableNodes;
-  over: Over | null;
   measureDroppableContainers(ids: UniqueIdentifier[]): void;
 }

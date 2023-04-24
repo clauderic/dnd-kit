@@ -1,24 +1,22 @@
-import {useContext, useEffect, useMemo, useRef} from 'react';
 import {
   useDraggable,
   useDroppable,
   UseDraggableArguments,
   UseDroppableArguments,
+  Data,
 } from '@schuchertmanagementberatung/dnd-kit-core';
-import type {Data} from '@schuchertmanagementberatung/dnd-kit-core';
 import {
   CSS,
   isKeyboardEvent,
   useCombinedRefs,
 } from '@schuchertmanagementberatung/dnd-kit-utilities';
-
+import {useContext, useMemo, useRef, useEffect} from 'react';
 import {Context} from '../components';
-import type {Disabled, SortableData, SortingStrategy} from '../types';
-import {isValidIndex} from '../utilities';
+import type {Disabled, SortingStrategy, SortableData} from '../types';
+
 import {
   defaultAnimateLayoutChanges,
   defaultAttributes,
-  defaultNewIndexGetter,
   defaultTransition,
   disabledTransition,
   transitionProperty,
@@ -45,9 +43,7 @@ export function useSortable({
   attributes: userDefinedAttributes,
   disabled: localDisabled,
   data: customData,
-  getNewIndex = defaultNewIndexGetter,
   id,
-  strategy: localStrategy,
   resizeObserverConfig,
   transition = defaultTransition,
 }: Arguments) {
@@ -56,11 +52,8 @@ export function useSortable({
     containerId,
     activeIndex,
     disabled: globalDisabled,
-    disableTransforms,
-    sortedRects,
     overIndex,
     useDragOverlay,
-    strategy: globalStrategy,
   } = useContext(Context);
   const disabled: Disabled = normalizeLocalDisabled(
     localDisabled,
@@ -78,7 +71,6 @@ export function useSortable({
   const {
     rect,
     node,
-    isOver,
     setNodeRef: setDroppableNodeRef,
   } = useDroppable({
     id,
@@ -92,14 +84,11 @@ export function useSortable({
   const {
     active,
     activatorEvent,
-    activeNodeRect,
     attributes,
     setNodeRef: setDraggableNodeRef,
     listeners,
     isDragging,
-    over,
     setActivatorNodeRef,
-    transform,
   } = useDraggable({
     id,
     data,
@@ -111,29 +100,9 @@ export function useSortable({
   });
   const setNodeRef = useCombinedRefs(setDroppableNodeRef, setDraggableNodeRef);
   const isSorting = Boolean(active);
-  const displaceItem =
-    isSorting &&
-    !disableTransforms &&
-    isValidIndex(activeIndex) &&
-    isValidIndex(overIndex);
   const shouldDisplaceDragSource = !useDragOverlay && isDragging;
-  const dragSourceDisplacement =
-    shouldDisplaceDragSource && displaceItem ? transform : null;
-  const strategy = localStrategy ?? globalStrategy;
-  const finalTransform = displaceItem
-    ? dragSourceDisplacement ??
-      strategy({
-        rects: sortedRects,
-        activeNodeRect,
-        activeIndex,
-        overIndex,
-        index,
-      })
-    : null;
-  const newIndex =
-    isValidIndex(activeIndex) && isValidIndex(overIndex)
-      ? getNewIndex({id, items, activeIndex, overIndex})
-      : index;
+  const finalTransform = null;
+  const newIndex = index;
   const activeId = active?.id;
   const previous = useRef({
     activeId,
@@ -204,13 +173,11 @@ export function useSortable({
     index,
     newIndex,
     items,
-    isOver,
     isSorting,
     isDragging,
     listeners,
     node,
     overIndex,
-    over,
     setNodeRef,
     setActivatorNodeRef,
     setDroppableNodeRef,

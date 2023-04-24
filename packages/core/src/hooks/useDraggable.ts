@@ -54,7 +54,6 @@ export function useDraggable({
     activeNodeRect,
     ariaDescribedById,
     draggableNodes,
-    over,
   } = useContext(InternalContext);
   const {
     role = defaultRole,
@@ -113,7 +112,6 @@ export function useDraggable({
     isDragging,
     listeners: disabled ? undefined : listeners,
     node,
-    over,
     setNodeRef,
     setActivatorNodeRef,
     transform,
