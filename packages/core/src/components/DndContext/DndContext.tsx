@@ -313,10 +313,11 @@ export const DndContext = memo(function DndContext({
     ? modifiedTranslate
     : add(modifiedTranslate, activeNodeScrollDelta);
 
-  const transform = adjustScale(
-    appliedTranslate,
-    over?.rect ?? null,
-    activeNodeRect
+  const overRect = over?.rect;
+
+  const transform = useMemo(
+    () => adjustScale(appliedTranslate, overRect ?? null, activeNodeRect),
+    [activeNodeRect, appliedTranslate, overRect]
   );
 
   const instantiateSensor = useCallback(
