@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, {useEffect, useMemo, useRef} from 'react';
 import {
   useDndContext,
   ClientRect,
@@ -10,13 +10,13 @@ import {
   useUniqueId,
 } from '@schuchertmanagementberatung/dnd-kit-utilities';
 
-import type { Disabled, SortingStrategy } from '../types';
-import { getSortedRects, itemsEqual, normalizeDisabled } from '../utilities';
-import { rectSortingStrategy } from '../strategies';
+import type {Disabled, SortingStrategy} from '../types';
+import {getSortedRects, itemsEqual, normalizeDisabled} from '../utilities';
+import {rectSortingStrategy} from '../strategies';
 
 export interface Props {
   children: React.ReactNode;
-  items: (UniqueIdentifier | { id: UniqueIdentifier })[];
+  items: (UniqueIdentifier | {id: UniqueIdentifier})[];
   strategy?: SortingStrategy;
   id?: string;
   disabled?: boolean | Disabled;
