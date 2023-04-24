@@ -17,7 +17,6 @@ import type {Disabled, SortingStrategy, SortableData} from '../types';
 import {
   defaultAnimateLayoutChanges,
   defaultAttributes,
-  defaultNewIndexGetter,
   defaultTransition,
   disabledTransition,
   transitionProperty,
@@ -44,9 +43,7 @@ export function useSortable({
   attributes: userDefinedAttributes,
   disabled: localDisabled,
   data: customData,
-  getNewIndex = defaultNewIndexGetter,
   id,
-  strategy: localStrategy,
   resizeObserverConfig,
   transition = defaultTransition,
 }: Arguments) {
