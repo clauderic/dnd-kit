@@ -1,13 +1,13 @@
-import type { MutableRefObject } from 'react';
-import type { DeepRequired } from '@schuchertmanagementberatung/dnd-kit-utilities';
+import type {MutableRefObject} from 'react';
+import type {DeepRequired} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
-import type { SyntheticListeners } from '../hooks/utilities';
-import type { Collision } from '../utilities/algorithms';
-import type { MeasuringConfiguration } from '../components';
-import type { Coordinates, ClientRect, UniqueIdentifier } from '../types';
+import type {SyntheticListeners} from '../hooks/utilities';
+import type {Collision} from '../utilities/algorithms';
+import type {MeasuringConfiguration} from '../components';
+import type {Coordinates, ClientRect, UniqueIdentifier} from '../types';
 
-import type { Actions } from './actions';
-import type { DroppableContainersMap } from './constructors';
+import type {Actions} from './actions';
+import type {DroppableContainersMap} from './constructors';
 
 export interface DraggableElement {
   node: DraggableNode;
