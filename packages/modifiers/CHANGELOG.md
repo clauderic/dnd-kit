@@ -1,5 +1,17 @@
 # @schuchertmanagementberatung/dnd-kit-modifiers
 
+## 8.0.0
+
+### Major Changes
+
+- [`5a432e4`](https://github.com/clauderic/dnd-kit/commit/5a432e4eed81be1d99a33e9a7b2a2b70e8370b40) Thanks [@5ebastianMeier](https://github.com/5ebastianMeier)! - Revert sortable performance PR
+
+### Patch Changes
+
+- Updated dependencies [[`8ddf2c4`](https://github.com/clauderic/dnd-kit/commit/8ddf2c474c1fd251ddbe86bdbda193ea3d8d6f94), [`08f28cd`](https://github.com/clauderic/dnd-kit/commit/08f28cd2bbfa7b750985806effffc959bdb012cd), [`5a432e4`](https://github.com/clauderic/dnd-kit/commit/5a432e4eed81be1d99a33e9a7b2a2b70e8370b40)]:
+  - @schuchertmanagementberatung/dnd-kit-core@8.0.0
+  - @schuchertmanagementberatung/dnd-kit-utilities@5.0.0
+
 ## 7.0.0
 
 ### Major Changes
