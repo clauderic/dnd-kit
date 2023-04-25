@@ -13,6 +13,7 @@ import {
   useActiveDraggableContextStore,
   useInternalContextStore,
 } from '../store/new-store';
+import {shallow} from 'zustand/shallow';
 
 export interface UseDraggableArguments {
   id: UniqueIdentifier;
@@ -50,17 +51,27 @@ export function useDraggable({
   const {
     activators,
     activatorEvent,
-    active,
     activeNodeRect,
     ariaDescribedById,
     draggableNodes,
-  } = useInternalContextStore();
+    activeId,
+  } = useInternalContextStore(
+    (state) => ({
+      activators: state.activators,
+      activatorEvent: state.activatorEvent,
+      activeNodeRect: state.activeNodeRect,
+      ariaDescribedById: state.ariaDescribedById,
+      draggableNodes: state.draggableNodes,
+      activeId: state.active?.id,
+    }),
+    shallow
+  );
   const {
     role = defaultRole,
     roleDescription = 'draggable',
     tabIndex = 0,
   } = attributes ?? {};
-  const isDragging = active?.id === id;
+  const isDragging = activeId === id;
   const activeDraggableTransform = useActiveDraggableContextStore();
   const transform: Transform | null = isDragging
     ? activeDraggableTransform
@@ -106,7 +117,6 @@ export function useDraggable({
   );
 
   return {
-    active,
     activatorEvent,
     activeNodeRect,
     attributes: memoizedAttributes,

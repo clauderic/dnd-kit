@@ -15,6 +15,7 @@ import {
   useDndKitStore,
   useInternalContextStore,
 } from '../store/new-store';
+import {shallow} from 'zustand/shallow';
 
 interface ResizeObserverConfig {
   /** Whether the ResizeObserver should be disabled entirely */
@@ -49,11 +50,12 @@ export function useDroppable({
 }: UseDroppableArguments) {
   const key = useUniqueId(ID_PREFIX);
   const store = useDndKitStore();
-  const [active, measureDroppableContainers] = useInternalContextStore(
-    (state: InternalContextStore) => [
-      state.active,
-      state.measureDroppableContainers,
-    ]
+  const {isActive, measureDroppableContainers} = useInternalContextStore(
+    (state: InternalContextStore) => ({
+      isActive: !!state.active,
+      measureDroppableContainers: state.measureDroppableContainers,
+    }),
+    shallow
   );
   const previous = useRef({disabled});
   const resizeObserverConnected = useRef(false);
@@ -93,7 +95,7 @@ export function useDroppable({
   );
   const resizeObserver = useResizeObserver({
     callback: handleResize,
-    disabled: resizeObserverDisabled || !active,
+    disabled: resizeObserverDisabled || !isActive,
   });
   const handleNodeChange = useCallback(
     (newElement: HTMLElement | null, previousElement: HTMLElement | null) => {
@@ -161,7 +163,6 @@ export function useDroppable({
   }, [id, key, disabled, store]);
 
   return {
-    active,
     rect,
     node: nodeRef,
     setNodeRef,
