@@ -20,3 +20,4 @@ export type {
   Over,
   State,
 } from './types';
+export * from './new-store';

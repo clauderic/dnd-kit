@@ -1,9 +1,9 @@
 import React, {useEffect, useMemo, useRef} from 'react';
 import {
-  useDndContext,
   ClientRect,
   UniqueIdentifier,
   Over,
+  usePublicContextStore,
 } from '@schuchertmanagementberatung/dnd-kit-core';
 import {
   useIsomorphicLayoutEffect,
@@ -67,7 +67,7 @@ export function SortableContext({
     over,
     measureDroppableContainers,
     measuringScheduled,
-  } = useDndContext();
+  } = usePublicContextStore();
   const sortableOverRef = useRef<Over | null>(null);
   const containerId = useUniqueId(ID_PREFIX, id);
   const useDragOverlay = Boolean(dragOverlay.rect !== null);
