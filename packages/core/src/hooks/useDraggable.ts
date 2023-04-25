@@ -1,4 +1,4 @@
-import {createContext, useContext, useMemo} from 'react';
+import {useMemo} from 'react';
 import {
   Transform,
   useNodeRef,
@@ -6,11 +6,13 @@ import {
   useLatestValue,
   useUniqueId,
 } from '@schuchertmanagementberatung/dnd-kit-utilities';
-
-import {InternalContext, Data} from '../store';
+import type {Data} from '../store';
 import type {UniqueIdentifier} from '../types';
-import {ActiveDraggableContext} from '../components/DndContext';
 import {useSyntheticListeners, SyntheticListenerMap} from './utilities';
+import {
+  useActiveDraggableContextStore,
+  useInternalContextStore,
+} from '../store/new-store';
 
 export interface UseDraggableArguments {
   id: UniqueIdentifier;
@@ -34,8 +36,6 @@ export interface DraggableAttributes {
 
 export type DraggableSyntheticListeners = SyntheticListenerMap | undefined;
 
-const NullContext = createContext<any>(null);
-
 const defaultRole = 'button';
 
 const ID_PREFIX = 'Droppable';
@@ -54,16 +54,17 @@ export function useDraggable({
     activeNodeRect,
     ariaDescribedById,
     draggableNodes,
-  } = useContext(InternalContext);
+  } = useInternalContextStore();
   const {
     role = defaultRole,
     roleDescription = 'draggable',
     tabIndex = 0,
   } = attributes ?? {};
   const isDragging = active?.id === id;
-  const transform: Transform | null = useContext(
-    isDragging ? ActiveDraggableContext : NullContext
-  );
+  const activeDraggableTransform = useActiveDraggableContextStore();
+  const transform: Transform | null = isDragging
+    ? activeDraggableTransform
+    : null;
   const [node, setNodeRef] = useNodeRef();
   const [activatorNode, setActivatorNodeRef] = useNodeRef();
   const listeners = useSyntheticListeners(activators, id);

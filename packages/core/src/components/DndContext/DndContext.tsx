@@ -438,7 +438,8 @@ export const DndContext = memo(function DndContext({
         };
       }
     },
-    [dispatchMonitorEvent, draggableNodes, latestProps, store]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [draggableNodes, store]
   );
 
   const bindActivatorToSensorInstantiator = useCallback(
