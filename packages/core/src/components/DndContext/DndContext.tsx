@@ -4,7 +4,6 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useReducer,
   useRef,
   useState,
 } from 'react';
@@ -21,12 +20,8 @@ import type {Transform} from '@schuchertmanagementberatung/dnd-kit-utilities';
 
 import {
   Action,
-  PublicContext,
-  InternalContext,
   PublicContextDescriptor,
   InternalContextDescriptor,
-  getInitialState,
-  reducer,
 } from '../../store';
 import {DndMonitorContext, useDndMonitorProvider} from '../DndMonitor';
 import {
@@ -84,6 +79,12 @@ import {
   useMeasuringConfiguration,
 } from './hooks';
 import type {MeasuringConfiguration} from './types';
+import {
+  useActiveDraggableContextStore,
+  useDndKitStore,
+  useInternalContextStore,
+  usePublicContextStore,
+} from '../../store/new-store';
 
 export interface Props {
   id?: string;
@@ -142,8 +143,9 @@ export const DndContext = memo(function DndContext({
   modifiers,
   ...props
 }: Props) {
-  const store = useReducer(reducer, undefined, getInitialState);
-  const [state, dispatch] = store;
+  const store = useDndKitStore();
+  // const store = useReducer(reducer, undefined, getInitialState);
+  // const [state, dispatch] = store;
   const [dispatchMonitorEvent, registerMonitorListener] =
     useDndMonitorProvider();
   const [status, setStatus] = useState<Status>(Status.Uninitialized);
@@ -151,7 +153,7 @@ export const DndContext = memo(function DndContext({
   const {
     draggable: {active: activeId, nodes: draggableNodes, translate},
     droppable: {containers: droppableContainers},
-  } = state;
+  } = store;
   const node = activeId ? draggableNodes.get(activeId) : null;
   const activeRects = useRef<Active['rect']['current']>({
     initial: null,
@@ -366,8 +368,7 @@ export const DndContext = memo(function DndContext({
           unstable_batchedUpdates(() => {
             onDragStart?.(event);
             setStatus(Status.Initializing);
-            dispatch({
-              type: Action.DragStart,
+            store.dragStart({
               initialCoordinates,
               active: id,
             });
@@ -375,8 +376,7 @@ export const DndContext = memo(function DndContext({
           });
         },
         onMove(coordinates) {
-          dispatch({
-            type: Action.DragMove,
+          store.dragMove({
             coordinates,
           });
         },
@@ -418,7 +418,8 @@ export const DndContext = memo(function DndContext({
           activeRef.current = null;
 
           unstable_batchedUpdates(() => {
-            dispatch({type});
+            store.dragEnd();
+            // dispatch({type});
             setStatus(Status.Uninitialized);
             setOver(null);
             setActiveSensor(null);
@@ -438,7 +439,7 @@ export const DndContext = memo(function DndContext({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [draggableNodes]
+    [draggableNodes, store]
   );
 
   const bindActivatorToSensorInstantiator = useCallback(
@@ -622,7 +623,44 @@ export const DndContext = memo(function DndContext({
     scrollableAncestorRects,
   });
 
-  const publicContext = useMemo(() => {
+  const updateInternalContextStore = useInternalContextStore(
+    (state) => state.updateState
+  );
+  useIsomorphicLayoutEffect(() => {
+    const context: InternalContextDescriptor = {
+      activatorEvent,
+      activators,
+      active,
+      activeNodeRect,
+      ariaDescribedById: {
+        draggable: draggableDescribedById,
+      },
+      draggableNodes,
+      measureDroppableContainers,
+    };
+    updateInternalContextStore(context);
+  }, [
+    activatorEvent,
+    activators,
+    active,
+    activeNodeRect,
+    draggableDescribedById,
+    draggableNodes,
+    updateInternalContextStore,
+    measureDroppableContainers,
+  ]);
+
+  const updateActiveDraggableContextStore = useActiveDraggableContextStore(
+    (state) => state.updateState
+  );
+  useIsomorphicLayoutEffect(() => {
+    updateActiveDraggableContextStore(transform);
+  }, [updateActiveDraggableContextStore, transform]);
+
+  const updatePublicContextStore = usePublicContextStore(
+    (state) => state.updateState
+  );
+  useIsomorphicLayoutEffect(() => {
     const context: PublicContextDescriptor = {
       active,
       activeNode,
@@ -642,64 +680,32 @@ export const DndContext = memo(function DndContext({
       measuringScheduled,
       windowRect,
     };
-
-    return context;
+    updatePublicContextStore(context);
   }, [
+    activatorEvent,
     active,
     activeNode,
     activeNodeRect,
-    activatorEvent,
     collisions,
     containerNodeRect,
     dragOverlay,
     draggableNodes,
     droppableContainers,
     droppableRects,
-    over,
     measureDroppableContainers,
-    scrollableAncestors,
-    scrollableAncestorRects,
     measuringConfiguration,
     measuringScheduled,
+    over,
+    updatePublicContextStore,
+    scrollableAncestorRects,
+    scrollableAncestors,
     windowRect,
-  ]);
-
-  const internalContext = useMemo(() => {
-    const context: InternalContextDescriptor = {
-      activatorEvent,
-      activators,
-      active,
-      activeNodeRect,
-      ariaDescribedById: {
-        draggable: draggableDescribedById,
-      },
-      dispatch,
-      draggableNodes,
-      measureDroppableContainers,
-    };
-
-    return context;
-  }, [
-    activatorEvent,
-    activators,
-    active,
-    activeNodeRect,
-    dispatch,
-    draggableDescribedById,
-    draggableNodes,
-    measureDroppableContainers,
   ]);
 
   return (
     <DndMonitorContext.Provider value={registerMonitorListener}>
-      <InternalContext.Provider value={internalContext}>
-        <PublicContext.Provider value={publicContext}>
-          <ActiveDraggableContext.Provider value={transform}>
-            {children}
-          </ActiveDraggableContext.Provider>
-        </PublicContext.Provider>
-        <RestoreFocus disabled={accessibility?.restoreFocus === false} />
-      </InternalContext.Provider>
+      {children}
+      <RestoreFocus disabled={accessibility?.restoreFocus === false} />
       <Accessibility
         {...accessibility}
         hiddenTextDescribedById={draggableDescribedById}

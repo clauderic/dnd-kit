@@ -89,6 +89,12 @@ export type {
   DroppableContainer,
   Over,
 } from './store';
+export {
+  useDndKitStore,
+  usePublicContextStore,
+  useInternalContextStore,
+  useActiveDraggableContextStore,
+} from './store';
 
 export type {
   ClientRect,

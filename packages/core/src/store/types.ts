@@ -6,7 +6,6 @@ import type {Collision} from '../utilities/algorithms';
 import type {MeasuringConfiguration} from '../components';
 import type {Coordinates, ClientRect, UniqueIdentifier} from '../types';
 
-import type {Actions} from './actions';
 import type {DroppableContainersMap} from './constructors';
 
 export interface DraggableElement {
@@ -106,7 +105,6 @@ export interface InternalContextDescriptor {
   ariaDescribedById: {
     draggable: string;
   };
-  dispatch: React.Dispatch<Actions>;
   draggableNodes: DraggableNodes;
   measureDroppableContainers(ids: UniqueIdentifier[]): void;
 }

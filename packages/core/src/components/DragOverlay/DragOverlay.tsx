@@ -1,19 +1,17 @@
-import React, {useContext} from 'react';
+import React from 'react';
 
 import {applyModifiers, Modifiers} from '../../modifiers';
-import {ActiveDraggableContext} from '../DndContext';
-import {useDndContext} from '../../hooks';
 import {useInitialValue} from '../../hooks/utilities';
 
-import {
-  AnimationManager,
-  NullifiedContextProvider,
-  PositionedOverlay,
-} from './components';
+import {AnimationManager, PositionedOverlay} from './components';
 import type {PositionedOverlayProps} from './components';
 
 import {useDropAnimation, useKey} from './hooks';
 import type {DropAnimation} from './hooks';
+import {
+  useActiveDraggableContextStore,
+  usePublicContextStore,
+} from '../../store/new-store';
 
 export interface Props
   extends Pick<
@@ -51,8 +49,8 @@ export const DragOverlay = React.memo(
       scrollableAncestors,
       scrollableAncestorRects,
       windowRect,
-    } = useDndContext();
-    const transform = useContext(ActiveDraggableContext);
+    } = usePublicContextStore();
+    const transform = useActiveDraggableContextStore();
     const key = useKey(active?.id);
     const modifiedTransform = applyModifiers(modifiers, {
       activatorEvent,
@@ -79,30 +77,28 @@ export const DragOverlay = React.memo(
     const ref = initialRect ? dragOverlay.setRef : undefined;
 
     return (
-      <NullifiedContextProvider>
-        <AnimationManager animation={dropAnimation}>
-          {active && key ? (
-            <PositionedOverlay
-              key={key}
-              id={active.id}
-              ref={ref}
-              as={wrapperElement}
-              activatorEvent={activatorEvent}
-              adjustScale={adjustScale}
-              className={className}
-              transition={transition}
-              rect={initialRect}
-              style={{
-                zIndex,
-                ...style,
-              }}
-              transform={modifiedTransform}
-            >
-              {children}
-            </PositionedOverlay>
-          ) : null}
-        </AnimationManager>
-      </NullifiedContextProvider>
+      <AnimationManager animation={dropAnimation}>
+        {active && key ? (
+          <PositionedOverlay
+            key={key}
+            id={active.id}
+            ref={ref}
+            as={wrapperElement}
+            activatorEvent={activatorEvent}
+            adjustScale={adjustScale}
+            className={className}
+            transition={transition}
+            rect={initialRect}
+            style={{
+              zIndex,
+              ...style,
+            }}
+            transform={modifiedTransform}
+          >
+            {children}
+          </PositionedOverlay>
+        ) : null}
+      </AnimationManager>
     );
   }
 );
