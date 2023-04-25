@@ -1,5 +1,11 @@
 # @schuchertmanagementberatung/dnd-kit-core
 
+## 9.0.0
+
+### Major Changes
+
+- [`73128c4`](https://github.com/clauderic/dnd-kit/commit/73128c48e60fb5d6f87742c4496552bf1eb5c3aa) Thanks [@5ebastianMeier](https://github.com/5ebastianMeier)! - Use Zustand for internal state management and transient updates
+
 ## 8.0.0
 
 ### Major Changes
