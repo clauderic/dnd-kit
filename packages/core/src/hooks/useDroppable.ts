@@ -1,4 +1,4 @@
-import {useCallback, useContext, useEffect, useRef} from 'react';
+import {useCallback, useEffect, useRef} from 'react';
 import {
   useIsomorphicLayoutEffect,
   useLatestValue,
@@ -6,10 +6,15 @@ import {
   useUniqueId,
 } from '@schuchertmanagementberatung/dnd-kit-utilities';
 
-import {InternalContext, Action, Data} from '../store';
+import {Data} from '../store';
 import type {ClientRect, UniqueIdentifier} from '../types';
 
 import {useResizeObserver} from './utilities';
+import {
+  InternalContextStore,
+  useDndKitStore,
+  useInternalContextStore,
+} from '../store/new-store';
 
 interface ResizeObserverConfig {
   /** Whether the ResizeObserver should be disabled entirely */
@@ -43,8 +48,13 @@ export function useDroppable({
   resizeObserverConfig,
 }: UseDroppableArguments) {
   const key = useUniqueId(ID_PREFIX);
-  const {active, dispatch, measureDroppableContainers} =
-    useContext(InternalContext);
+  const store = useDndKitStore();
+  const [active, measureDroppableContainers] = useInternalContextStore(
+    (state: InternalContextStore) => [
+      state.active,
+      state.measureDroppableContainers,
+    ]
+  );
   const previous = useRef({disabled});
   const resizeObserverConnected = useRef(false);
   const rect = useRef<ClientRect | null>(null);
@@ -117,8 +127,7 @@ export function useDroppable({
 
   useIsomorphicLayoutEffect(
     () => {
-      dispatch({
-        type: Action.RegisterDroppable,
+      store.registerDroppable({
         element: {
           id,
           key,
@@ -130,8 +139,7 @@ export function useDroppable({
       });
 
       return () =>
-        dispatch({
-          type: Action.UnregisterDroppable,
+        store.unregisterDroppable({
           key,
           id,
         });
@@ -142,8 +150,7 @@ export function useDroppable({
 
   useEffect(() => {
     if (disabled !== previous.current.disabled) {
-      dispatch({
-        type: Action.SetDroppableDisabled,
+      store.setDroppableDisabled({
         id,
         key,
         disabled,
@@ -151,7 +158,7 @@ export function useDroppable({
 
       previous.current.disabled = disabled;
     }
-  }, [id, key, disabled, dispatch]);
+  }, [id, key, disabled, store]);
 
   return {
     active,
