@@ -118,7 +118,7 @@ export function SortableContext({
       containerId,
       disabled.draggable,
       disabled.droppable,
-      // items,
+      items,
       useDragOverlay,
       sortingAPI,
       globalActiveRef,
