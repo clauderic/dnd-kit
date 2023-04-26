@@ -1,5 +1,11 @@
 # @schuchertmanagementberatung/dnd-kit-core
 
+## 9.2.0
+
+### Minor Changes
+
+- [`0cecfb0`](https://github.com/clauderic/dnd-kit/commit/0cecfb0c7bd6d51a73e6c5ec7874dc180a4b9b66) Thanks [@5ebastianMeier](https://github.com/5ebastianMeier)! - Scope droppable store usage
+
 ## 9.1.0
 
 ### Minor Changes
