@@ -6,7 +6,7 @@ import {
   useUniqueId,
 } from '@schuchertmanagementberatung/dnd-kit-utilities';
 
-import {Data} from '../store';
+import type {Data} from '../store';
 import type {ClientRect, UniqueIdentifier} from '../types';
 
 import {useResizeObserver} from './utilities';
@@ -49,7 +49,15 @@ export function useDroppable({
   resizeObserverConfig,
 }: UseDroppableArguments) {
   const key = useUniqueId(ID_PREFIX);
-  const store = useDndKitStore();
+  const {registerDroppable, setDroppableDisabled, unregisterDroppable} =
+    useDndKitStore(
+      (state) => ({
+        registerDroppable: state.registerDroppable,
+        setDroppableDisabled: state.setDroppableDisabled,
+        unregisterDroppable: state.unregisterDroppable,
+      }),
+      shallow
+    );
   const {isActive, measureDroppableContainers} = useInternalContextStore(
     (state: InternalContextStore) => ({
       isActive: !!state.active,
@@ -129,7 +137,7 @@ export function useDroppable({
 
   useIsomorphicLayoutEffect(
     () => {
-      store.registerDroppable({
+      registerDroppable({
         element: {
           id,
           key,
@@ -141,7 +149,7 @@ export function useDroppable({
       });
 
       return () =>
-        store.unregisterDroppable({
+        unregisterDroppable({
           key,
           id,
         });
@@ -152,7 +160,7 @@ export function useDroppable({
 
   useEffect(() => {
     if (disabled !== previous.current.disabled) {
-      store.setDroppableDisabled({
+      setDroppableDisabled({
         id,
         key,
         disabled,
@@ -160,7 +168,7 @@ export function useDroppable({
 
       previous.current.disabled = disabled;
     }
-  }, [id, key, disabled, store]);
+  }, [id, key, disabled, setDroppableDisabled]);
 
   return {
     rect,
