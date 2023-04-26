@@ -1,5 +1,13 @@
 # @schuchertmanagementberatung/dnd-kit-core
 
+## 9.4.0
+
+### Minor Changes
+
+- [`fb2b66d`](https://github.com/clauderic/dnd-kit/commit/fb2b66d92a77c27727488320632db6c897ac4f45) Thanks [@5ebastianMeier](https://github.com/5ebastianMeier)! - optimize internal context selector
+
+- [`4130ef4`](https://github.com/clauderic/dnd-kit/commit/4130ef4aaa0fc066a24960af2b260fda083754fa) Thanks [@5ebastianMeier](https://github.com/5ebastianMeier)! - Remove obsolete export from useDraggable
+
 ## 9.3.0
 
 ### Minor Changes
