@@ -7,3 +7,4 @@ export {useLazyMemo} from './useLazyMemo';
 export {useNodeRef} from './useNodeRef';
 export {usePrevious} from './usePrevious';
 export {useUniqueId} from './useUniqueId';
+export {usePassiveNodeRef} from './usePassiveNodeRef';
