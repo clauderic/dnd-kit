@@ -1,20 +1,20 @@
-import { useCallback, useMemo } from 'react';
+import {useCallback, useMemo} from 'react';
 import {
   useIsomorphicLayoutEffect,
   useLatestValue,
   useUniqueId,
   usePassiveNodeRef,
 } from '@schuchertmanagementberatung/dnd-kit-utilities';
-import type { Data } from '../store';
-import type { UniqueIdentifier } from '../types';
-import { useSyntheticListeners, SyntheticListenerMap } from './utilities';
+import type {Data} from '../store';
+import type {UniqueIdentifier} from '../types';
+import {useSyntheticListeners, SyntheticListenerMap} from './utilities';
 import {
   ActiveDraggableContextStore,
   InternalContextStore,
   useActiveDraggableContextStore,
   useInternalContextStore,
 } from '../store/new-store';
-import { shallow } from 'zustand/shallow';
+import {shallow} from 'zustand/shallow';
 
 export interface UseDraggableArguments {
   id: UniqueIdentifier;
@@ -95,7 +95,7 @@ export function useDraggable({
 
   useIsomorphicLayoutEffect(
     () => {
-      draggableNodes.set(id, { id, key, node, activatorNode, data: dataRef });
+      draggableNodes.set(id, {id, key, node, activatorNode, data: dataRef});
 
       return () => {
         const node = draggableNodes.get(id);
