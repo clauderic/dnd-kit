@@ -13,6 +13,7 @@ import {
   useActiveDraggableContextStore,
   useInternalContextStore,
 } from '../store/new-store';
+import {shallow} from 'zustand/shallow';
 
 export interface UseDraggableArguments {
   id: UniqueIdentifier;
@@ -54,7 +55,16 @@ export function useDraggable({
     activeNodeRect,
     ariaDescribedById,
     draggableNodes,
-  } = useInternalContextStore();
+  } = useInternalContextStore((state) => {
+    return {
+      activators: state.activators,
+      activatorEvent: state.activatorEvent,
+      active: state.active,
+      activeNodeRect: state.activeNodeRect,
+      ariaDescribedById: state.ariaDescribedById,
+      draggableNodes: state.draggableNodes,
+    };
+  }, shallow);
   const {
     role = defaultRole,
     roleDescription = 'draggable',
