@@ -80,6 +80,7 @@ import {
 } from './hooks';
 import type {MeasuringConfiguration} from './types';
 import {
+  DndKitStore,
   useActiveDraggableContextStore,
   useDndKitStore,
   useInternalContextStore,
@@ -144,6 +145,11 @@ export const DndContext = memo(function DndContext({
   ...props
 }: Props) {
   const store = useDndKitStore();
+  const storeRef = useRef<DndKitStore>();
+
+  useEffect(() => {
+    storeRef.current = store;
+  }, [store]);
   // const store = useReducer(reducer, undefined, getInitialState);
   // const [state, dispatch] = store;
   const [dispatchMonitorEvent, registerMonitorListener] =
@@ -368,7 +374,7 @@ export const DndContext = memo(function DndContext({
           unstable_batchedUpdates(() => {
             onDragStart?.(event);
             setStatus(Status.Initializing);
-            store.dragStart({
+            storeRef.current?.dragStart({
               initialCoordinates,
               active: id,
             });
@@ -376,7 +382,7 @@ export const DndContext = memo(function DndContext({
           });
         },
         onMove(coordinates) {
-          store.dragMove({
+          storeRef.current?.dragMove({
             coordinates,
           });
         },
@@ -418,7 +424,7 @@ export const DndContext = memo(function DndContext({
           activeRef.current = null;
 
           unstable_batchedUpdates(() => {
-            store.dragEnd();
+            storeRef.current?.dragEnd();
             // dispatch({type});
             setStatus(Status.Uninitialized);
             setOver(null);
@@ -439,7 +445,7 @@ export const DndContext = memo(function DndContext({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [draggableNodes, store]
+    [draggableNodes]
   );
 
   const bindActivatorToSensorInstantiator = useCallback(
