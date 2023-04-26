@@ -10,6 +10,7 @@ import type {UniqueIdentifier} from '../types';
 import {useSyntheticListeners, SyntheticListenerMap} from './utilities';
 import {
   ActiveDraggableContextStore,
+  InternalContextStore,
   useActiveDraggableContextStore,
   useInternalContextStore,
 } from '../store/new-store';
@@ -48,30 +49,32 @@ export function useDraggable({
   attributes,
 }: UseDraggableArguments) {
   const key = useUniqueId(ID_PREFIX);
+  const internalContextSelector = useCallback(
+    (state: InternalContextStore) => {
+      return {
+        activators: state.activators,
+        activatorEvent: state.activatorEvent,
+        activeNodeRect: state.activeNodeRect,
+        ariaDescribedByIdDraggable: state.ariaDescribedById?.draggable,
+        draggableNodes: state.draggableNodes,
+        isDragging: state.active?.id === id,
+      };
+    },
+    [id]
+  );
   const {
     activators,
     activatorEvent,
     activeNodeRect,
-    ariaDescribedById,
+    ariaDescribedByIdDraggable,
     draggableNodes,
-    activeId,
-  } = useInternalContextStore(
-    (state) => ({
-      activators: state.activators,
-      activatorEvent: state.activatorEvent,
-      activeNodeRect: state.activeNodeRect,
-      ariaDescribedById: state.ariaDescribedById,
-      draggableNodes: state.draggableNodes,
-      activeId: state.active?.id,
-    }),
-    shallow
-  );
+    isDragging,
+  } = useInternalContextStore(internalContextSelector, shallow);
   const {
     role = defaultRole,
     roleDescription = 'draggable',
     tabIndex = 0,
   } = attributes ?? {};
-  const isDragging = activeId === id;
   const activeDraggableSelector = useCallback(
     (state: ActiveDraggableContextStore) => {
       if (isDragging) {
@@ -113,7 +116,7 @@ export function useDraggable({
       'aria-disabled': disabled,
       'aria-pressed': isDragging && role === defaultRole ? true : undefined,
       'aria-roledescription': roleDescription,
-      'aria-describedby': ariaDescribedById.draggable,
+      'aria-describedby': ariaDescribedByIdDraggable,
     }),
     [
       disabled,
@@ -121,7 +124,7 @@ export function useDraggable({
       tabIndex,
       isDragging,
       roleDescription,
-      ariaDescribedById.draggable,
+      ariaDescribedByIdDraggable,
     ]
   );
 
