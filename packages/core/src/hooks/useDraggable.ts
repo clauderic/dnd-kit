@@ -54,7 +54,6 @@ export function useDraggable({
       return {
         activators: state.activators,
         activatorEvent: state.activatorEvent,
-        activeNodeRect: state.activeNodeRect,
         ariaDescribedByIdDraggable: state.ariaDescribedById?.draggable,
         draggableNodes: state.draggableNodes,
         isDragging: state.active?.id === id,
@@ -65,7 +64,6 @@ export function useDraggable({
   const {
     activators,
     activatorEvent,
-    activeNodeRect,
     ariaDescribedByIdDraggable,
     draggableNodes,
     isDragging,
@@ -130,7 +128,6 @@ export function useDraggable({
 
   return {
     activatorEvent,
-    activeNodeRect,
     attributes: memoizedAttributes,
     isDragging,
     listeners: disabled ? undefined : listeners,
