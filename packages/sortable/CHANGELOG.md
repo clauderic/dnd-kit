@@ -1,5 +1,16 @@
 # @schuchertmanagementberatung/dnd-kit-sortable
 
+## 11.0.0
+
+### Minor Changes
+
+- [`8f0c90f`](https://github.com/clauderic/dnd-kit/commit/8f0c90fd968d47cc8eb355799761f8c2d0237208) Thanks [@5ebastianMeier](https://github.com/5ebastianMeier)! - optimize memoization
+
+### Patch Changes
+
+- Updated dependencies [[`8f0c90f`](https://github.com/clauderic/dnd-kit/commit/8f0c90fd968d47cc8eb355799761f8c2d0237208), [`539ecbb`](https://github.com/clauderic/dnd-kit/commit/539ecbbf50a2eb632d53d941addf75f8f0b8896c)]:
+  - @schuchertmanagementberatung/dnd-kit-core@9.1.0
+
 ## 10.0.0
 
 ### Patch Changes
