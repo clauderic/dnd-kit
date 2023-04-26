@@ -1,6 +1,6 @@
 {
   "name": "@schuchertmanagementberatung/dnd-kit-utilities",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "Internal utilities to bee shared between `@dnd-kit` packages",
   "author": "Claudéric Demers",
   "license": "MIT",

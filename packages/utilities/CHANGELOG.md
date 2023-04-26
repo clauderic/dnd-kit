@@ -1,5 +1,11 @@
 # @schuchertmanagementberatung/dnd-kit-utilities
 
+## 5.1.0
+
+### Minor Changes
+
+- [`7523ccf`](https://github.com/clauderic/dnd-kit/commit/7523ccf0bb5a0e9bcb0abddba0991f419cfbb8a5) Thanks [@5ebastianMeier](https://github.com/5ebastianMeier)! - Prevent rerenders on passive components
+
 ## 5.0.0
 
 ### Major Changes
