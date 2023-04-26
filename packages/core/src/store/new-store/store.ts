@@ -23,7 +23,6 @@ export const useDndKitStore = create<DndKitStore>((set, get) => {
     dragStart: (payload: DragStartActionPayload) => {
       const state = get();
       set({
-        ...state,
         draggable: {
           ...state.draggable,
           initialCoordinates: payload.initialCoordinates,
@@ -37,7 +36,6 @@ export const useDndKitStore = create<DndKitStore>((set, get) => {
         return;
       }
       set({
-        ...state,
         draggable: {
           ...state.draggable,
           translate: {
@@ -50,7 +48,6 @@ export const useDndKitStore = create<DndKitStore>((set, get) => {
     dragEnd: () => {
       const state = get();
       set({
-        ...state,
         draggable: {
           ...state.draggable,
           active: null,
@@ -67,7 +64,6 @@ export const useDndKitStore = create<DndKitStore>((set, get) => {
       containers.set(id, element);
 
       set({
-        ...state,
         droppable: {
           ...state.droppable,
           containers,
@@ -90,7 +86,6 @@ export const useDndKitStore = create<DndKitStore>((set, get) => {
       });
 
       set({
-        ...state,
         droppable: {
           ...state.droppable,
           containers,
@@ -110,7 +105,6 @@ export const useDndKitStore = create<DndKitStore>((set, get) => {
       containers.delete(id);
 
       set({
-        ...state,
         droppable: {
           ...state.droppable,
           containers,

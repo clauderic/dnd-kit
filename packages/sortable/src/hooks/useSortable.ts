@@ -4,6 +4,7 @@ import {
   UseDraggableArguments,
   UseDroppableArguments,
   Data,
+  useInternalContextStore,
 } from '@schuchertmanagementberatung/dnd-kit-core';
 import {
   CSS,
@@ -81,8 +82,8 @@ export function useSortable({
       ...resizeObserverConfig,
     },
   });
+  const active = useInternalContextStore((state) => state.active);
   const {
-    active,
     activatorEvent,
     attributes,
     setNodeRef: setDraggableNodeRef,
