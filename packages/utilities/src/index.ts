@@ -8,6 +8,7 @@ export {
   useNodeRef,
   usePrevious,
   useUniqueId,
+  usePassiveNodeRef,
 } from './hooks';
 
 export {add, subtract} from './adjustment';

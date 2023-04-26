@@ -1,19 +1,19 @@
-import {useMemo} from 'react';
+import { useCallback, useMemo } from 'react';
 import {
-  Transform,
-  useNodeRef,
   useIsomorphicLayoutEffect,
   useLatestValue,
   useUniqueId,
+  usePassiveNodeRef,
 } from '@schuchertmanagementberatung/dnd-kit-utilities';
-import type {Data} from '../store';
-import type {UniqueIdentifier} from '../types';
-import {useSyntheticListeners, SyntheticListenerMap} from './utilities';
+import type { Data } from '../store';
+import type { UniqueIdentifier } from '../types';
+import { useSyntheticListeners, SyntheticListenerMap } from './utilities';
 import {
+  ActiveDraggableContextStore,
   useActiveDraggableContextStore,
   useInternalContextStore,
 } from '../store/new-store';
-import {shallow} from 'zustand/shallow';
+import { shallow } from 'zustand/shallow';
 
 export interface UseDraggableArguments {
   id: UniqueIdentifier;
@@ -72,18 +72,27 @@ export function useDraggable({
     tabIndex = 0,
   } = attributes ?? {};
   const isDragging = activeId === id;
-  const activeDraggableTransform = useActiveDraggableContextStore();
-  const transform: Transform | null = isDragging
-    ? activeDraggableTransform
-    : null;
-  const [node, setNodeRef] = useNodeRef();
-  const [activatorNode, setActivatorNodeRef] = useNodeRef();
+  const activeDraggableSelector = useCallback(
+    (state: ActiveDraggableContextStore) => {
+      if (isDragging) {
+        return state;
+      }
+      return null;
+    },
+    [isDragging]
+  );
+  const transform = useActiveDraggableContextStore(
+    activeDraggableSelector,
+    shallow
+  );
+  const [node, setNodeRef] = usePassiveNodeRef();
+  const [activatorNode, setActivatorNodeRef] = usePassiveNodeRef();
   const listeners = useSyntheticListeners(activators, id);
   const dataRef = useLatestValue(data);
 
   useIsomorphicLayoutEffect(
     () => {
-      draggableNodes.set(id, {id, key, node, activatorNode, data: dataRef});
+      draggableNodes.set(id, { id, key, node, activatorNode, data: dataRef });
 
       return () => {
         const node = draggableNodes.get(id);
