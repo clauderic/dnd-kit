@@ -80,7 +80,7 @@ The HTML5 Drag and drop API has some severe **limitations**. It does not support
 
 While there are workarounds to some of these issues, those workarounds typically increase the complexity of the codebase and the overall bundle size of the library, and lead to inconsistencies between the mouse, touch and keyboard layers because they're powered by entirely different implementations.
 
-The main **tradeoff** with not using the HTML5 Drag and drop API is that you won't be able to drag from the desktop or between windows. If the drag and drop use-case you have in mind involves this kind of functionality, you'll definitely want to use a library that's built on top of the HTML 5 Drag and drop API. We highly recommend you check out [react-dnd](https://github.com/react-dnd/react-dnd/) for a React library that's has a native HTML 5 Drag and drop backend.
+The main **tradeoff** with not using the HTML5 Drag and drop API is that you won't be able to drag from the desktop or between windows. If the drag and drop use-case you have in mind involves this kind of functionality, you'll definitely want to use a library that's built on top of the HTML 5 Drag and drop API. We highly recommend you check out [react-dnd](https://github.com/react-dnd/react-dnd/) for a React library that has a native HTML 5 Drag and drop backend.
 
 ### Performance
 
