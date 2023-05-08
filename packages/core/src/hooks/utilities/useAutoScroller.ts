@@ -100,7 +100,7 @@ export function useAutoScroller({
     const scrollLeft = scrollSpeed.current.x * scrollDirection.current.x;
     const scrollTop = scrollSpeed.current.y * scrollDirection.current.y;
 
-    scrollContainer.scrollBy(scrollLeft, scrollTop);
+    scrollContainer.scrollBy(Math.ceil(scrollLeft), Math.ceil(scrollTop));
   }, []);
   const sortedScrollableAncestors = useMemo(
     () =>
