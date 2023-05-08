@@ -65,8 +65,8 @@ export function useLayoutShiftScrollCompensation({
 
       if (firstScrollableAncestor) {
         firstScrollableAncestor.scrollBy({
-          top: rectDelta.y,
-          left: rectDelta.x,
+          top: Math.ceil(rectDelta.y),
+          left: Math.ceil(rectDelta.x),
         });
       }
     }
