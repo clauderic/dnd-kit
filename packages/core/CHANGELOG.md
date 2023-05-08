@@ -1,5 +1,11 @@
 # @schuchertmanagementberatung/dnd-kit-core
 
+## 9.5.0
+
+### Minor Changes
+
+- [`22f343b`](https://github.com/clauderic/dnd-kit/commit/22f343b60012c68a0fd9b3a6cd1d250bb59cde41) Thanks [@5ebastianMeier](https://github.com/5ebastianMeier)! - Fix auto-scroll stop responding on too little scroll steps
+
 ## 9.4.0
 
 ### Minor Changes
