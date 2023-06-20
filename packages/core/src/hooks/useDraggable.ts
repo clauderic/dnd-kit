@@ -9,9 +9,7 @@ import type {Data} from '../store';
 import type {UniqueIdentifier} from '../types';
 import {useSyntheticListeners, SyntheticListenerMap} from './utilities';
 import {
-  ActiveDraggableContextStore,
   InternalContextStore,
-  useActiveDraggableContextStore,
   useInternalContextStore,
 } from '../store/new-store';
 import {shallow} from 'zustand/shallow';
@@ -73,19 +71,7 @@ export function useDraggable({
     roleDescription = 'draggable',
     tabIndex = 0,
   } = attributes ?? {};
-  const activeDraggableSelector = useCallback(
-    (state: ActiveDraggableContextStore) => {
-      if (isDragging) {
-        return state;
-      }
-      return null;
-    },
-    [isDragging]
-  );
-  const transform = useActiveDraggableContextStore(
-    activeDraggableSelector,
-    shallow
-  );
+
   const [node, setNodeRef] = usePassiveNodeRef();
   const [activatorNode, setActivatorNodeRef] = usePassiveNodeRef();
   const listeners = useSyntheticListeners(activators, id);
@@ -134,6 +120,5 @@ export function useDraggable({
     node,
     setNodeRef,
     setActivatorNodeRef,
-    transform,
   };
 }
