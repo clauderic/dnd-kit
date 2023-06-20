@@ -1,5 +1,12 @@
 # @schuchertmanagementberatung/dnd-kit-modifiers
 
+## 15.0.0
+
+### Patch Changes
+
+- Updated dependencies [[`9b081a8`](https://github.com/clauderic/dnd-kit/commit/9b081a8b953c5eecd72bc2fff6a8f7ec84f4fbd1)]:
+  - @schuchertmanagementberatung/dnd-kit-core@10.0.0
+
 ## 14.0.0
 
 ### Patch Changes
