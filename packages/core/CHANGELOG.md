@@ -1,5 +1,11 @@
 # @schuchertmanagementberatung/dnd-kit-core
 
+## 10.0.0
+
+### Major Changes
+
+- [`9b081a8`](https://github.com/clauderic/dnd-kit/commit/9b081a8b953c5eecd72bc2fff6a8f7ec84f4fbd1) Thanks [@5ebastianMeier](https://github.com/5ebastianMeier)! - Remove obsolete transform from draggable
+
 ## 9.5.0
 
 ### Minor Changes
