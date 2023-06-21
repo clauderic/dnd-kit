@@ -1,5 +1,11 @@
 # @schuchertmanagementberatung/dnd-kit-core
 
+## 10.1.0
+
+### Minor Changes
+
+- [`9763167`](https://github.com/clauderic/dnd-kit/commit/9763167d3b8a12154d4b54992eb8ab6a02566fb8) Thanks [@5ebastianMeier](https://github.com/5ebastianMeier)! - Make activator event in useDraggable hook optional
+
 ## 10.0.0
 
 ### Major Changes
