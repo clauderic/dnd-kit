@@ -156,3 +156,36 @@ Important Safety Tip: When adding/altering packages in the playground, use `alia
 ### Running Cypress
 
 (In a third terminal) you can run Cypress and it will run the integration tests against storybook.
+
+### Development Pipeline
+
+#### Preparing a PR for a release
+
+When developing a feature use a regular feature branch and open a pull request as you would on any other repository.
+
+Once you've finished work you can use the following commands to lint and build the changes to ensure the pipeline succeeds.
+
+You can run these commands in the root folder and Lerna will run the for each package in the mono repo individually:
+
+```
+yarn run lint
+yarn run build
+```
+
+If everything looks good you can add a Lerna changeset to describe the changes you made. The content of this changeset will be included in the release notes automatically.
+
+Running this command will start the CLI and ask you which package versions should be modified:
+
+```
+yarn run changeset
+```
+
+When the changeset was successfully created by the CLI command, commit the resulting changeset file.
+
+#### Performing a release
+
+Github Actions will automatically create a "Version Packages" pull request.
+This pull request gets either created or updated when a pull request with changesets is merged.
+There's always just one "Version Packages" pull request and every time it is updated the resulting package versions are published under the `next` tag.
+
+Once the "Version Packages" pull request contains every feature we want to include in the release, we simply merge the PR and the Github Actions pipeline will build and release the resulting new package versions under the `latest` tag.
