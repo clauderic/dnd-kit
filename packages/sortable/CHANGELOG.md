@@ -1,5 +1,12 @@
 # @schuchertmanagementberatung/dnd-kit-sortable
 
+## 17.0.0
+
+### Patch Changes
+
+- Updated dependencies [[`9763167`](https://github.com/clauderic/dnd-kit/commit/9763167d3b8a12154d4b54992eb8ab6a02566fb8)]:
+  - @schuchertmanagementberatung/dnd-kit-core@10.1.0
+
 ## 16.0.0
 
 ### Patch Changes
