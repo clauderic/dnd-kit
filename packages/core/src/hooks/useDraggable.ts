@@ -23,6 +23,7 @@ export interface UseDraggableArguments {
     roleDescription?: string;
     tabIndex?: number;
   };
+  includeActivatorEvent?: boolean;
 }
 
 export interface DraggableAttributes {
@@ -45,19 +46,23 @@ export function useDraggable({
   data,
   disabled = false,
   attributes,
+  includeActivatorEvent = true,
 }: UseDraggableArguments) {
   const key = useUniqueId(ID_PREFIX);
   const internalContextSelector = useCallback(
     (state: InternalContextStore) => {
       return {
         activators: state.activators,
-        activatorEvent: state.activatorEvent,
+        // this prevents rerenders in cases where we don't care about the ActivatorEvent
+        activatorEvent: includeActivatorEvent
+          ? state.activatorEvent
+          : undefined,
         ariaDescribedByIdDraggable: state.ariaDescribedById?.draggable,
         draggableNodes: state.draggableNodes,
         isDragging: state.active?.id === id,
       };
     },
-    [id]
+    [id, includeActivatorEvent]
   );
   const {
     activators,
