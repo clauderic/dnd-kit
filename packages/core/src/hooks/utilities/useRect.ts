@@ -5,7 +5,7 @@ import type {ClientRect} from '../../types';
 import {getClientRect, Rect} from '../../utilities';
 
 import {useMutationObserver} from './useMutationObserver';
-import {useResizeObserver} from './useResizeObserver';
+import useResizeObserver from '@react-hook/resize-observer';
 
 function defaultMeasure(element: HTMLElement) {
   return new Rect(getClientRect(element), element);
@@ -38,19 +38,17 @@ export function useRect(
       }
     },
   });
-  const resizeObserver = useResizeObserver({callback: measureRect});
+  useResizeObserver(element, measureRect);
 
   useIsomorphicLayoutEffect(() => {
     measureRect();
 
     if (element) {
-      resizeObserver?.observe(element);
       mutationObserver?.observe(document.body, {
         childList: true,
         subtree: true,
       });
     } else {
-      resizeObserver?.disconnect();
       mutationObserver?.disconnect();
     }
   }, [element]);
