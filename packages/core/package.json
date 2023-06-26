@@ -1,6 +1,6 @@
 {
   "name": "@schuchertmanagementberatung/dnd-kit-core",
-  "version": "10.1.0",
+  "version": "11.0.0",
   "description": "dnd kit – a lightweight React library for building performant and accessible drag and drop experiences",
   "author": "Claudéric Demers",
   "license": "MIT",
@@ -33,7 +33,7 @@
     "tslib": "^2.0.0",
     "zustand": "^4.3.7",
     "@schuchertmanagementberatung/dnd-kit-accessibility": "^3.0.3",
-    "@schuchertmanagementberatung/dnd-kit-utilities": "^5.1.0"
+    "@schuchertmanagementberatung/dnd-kit-utilities": "^6.0.0"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"

@@ -1,5 +1,16 @@
 # @schuchertmanagementberatung/dnd-kit-core
 
+## 11.0.0
+
+### Major Changes
+
+- [`aca72b7`](https://github.com/clauderic/dnd-kit/commit/aca72b7e6e4b3cd74961896cc5f764d0c9b8ec45) Thanks [@5ebastianMeier](https://github.com/5ebastianMeier)! - Use optimized resize observer
+
+### Patch Changes
+
+- Updated dependencies [[`aca72b7`](https://github.com/clauderic/dnd-kit/commit/aca72b7e6e4b3cd74961896cc5f764d0c9b8ec45)]:
+  - @schuchertmanagementberatung/dnd-kit-utilities@6.0.0
+
 ## 10.1.0
 
 ### Minor Changes
