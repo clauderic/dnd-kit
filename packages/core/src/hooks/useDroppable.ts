@@ -60,9 +60,8 @@ export function useDroppable({
       }),
       shallow
     );
-  const {isActive, measureDroppableContainers} = useInternalContextStore(
+  const {measureDroppableContainers} = useInternalContextStore(
     (state: InternalContextStore) => ({
-      isActive: !!state.active,
       measureDroppableContainers: state.measureDroppableContainers,
     }),
     shallow
@@ -96,7 +95,7 @@ export function useDroppable({
     [resizeObserverTimeout]
   );
   const [nodeRef, setNodeRef] = useNodeRef();
-  const isResizeObserverDisabled = resizeObserverDisabled || !isActive;
+  const isResizeObserverDisabled = resizeObserverDisabled;
   useResizeObserver(nodeRef, isResizeObserverDisabled ? noop : handleResize);
   const dataRef = useLatestValue(data);
 
