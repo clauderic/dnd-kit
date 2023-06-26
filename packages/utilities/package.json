@@ -26,6 +26,7 @@
     "dist"
   ],
   "dependencies": {
+    "@react-hook/resize-observer": "^1.2.6",
     "tslib": "^2.0.0"
   },
   "peerDependencies": {

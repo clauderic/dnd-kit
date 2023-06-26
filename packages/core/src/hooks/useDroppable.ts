@@ -9,13 +9,15 @@ import {
 import type {Data} from '../store';
 import type {ClientRect, UniqueIdentifier} from '../types';
 
-import {useResizeObserver} from './utilities';
+// import {useResizeObserver} from './utilities';
 import {
   InternalContextStore,
   useDndKitStore,
   useInternalContextStore,
 } from '../store/new-store';
 import {shallow} from 'zustand/shallow';
+import useResizeObserver from '@react-hook/resize-observer';
+import {noop} from '../utilities';
 
 interface ResizeObserverConfig {
   /** Whether the ResizeObserver should be disabled entirely */
@@ -66,7 +68,6 @@ export function useDroppable({
     shallow
   );
   const previous = useRef({disabled});
-  const resizeObserverConnected = useRef(false);
   const rect = useRef<ClientRect | null>(null);
   const callbackId = useRef<NodeJS.Timeout | null>(null);
   const {
@@ -80,13 +81,6 @@ export function useDroppable({
   const ids = useLatestValue(updateMeasurementsFor ?? id);
   const handleResize = useCallback(
     () => {
-      if (!resizeObserverConnected.current) {
-        // ResizeObserver invokes the `handleResize` callback as soon as `observe` is called,
-        // assuming the element is rendered and displayed.
-        resizeObserverConnected.current = true;
-        return;
-      }
-
       if (callbackId.current != null) {
         clearTimeout(callbackId.current);
       }
@@ -101,39 +95,10 @@ export function useDroppable({
     //eslint-disable-next-line react-hooks/exhaustive-deps
     [resizeObserverTimeout]
   );
-  const resizeObserver = useResizeObserver({
-    callback: handleResize,
-    disabled: resizeObserverDisabled || !isActive,
-  });
-  const handleNodeChange = useCallback(
-    (newElement: HTMLElement | null, previousElement: HTMLElement | null) => {
-      if (!resizeObserver) {
-        return;
-      }
-
-      if (previousElement) {
-        resizeObserver.unobserve(previousElement);
-        resizeObserverConnected.current = false;
-      }
-
-      if (newElement) {
-        resizeObserver.observe(newElement);
-      }
-    },
-    [resizeObserver]
-  );
-  const [nodeRef, setNodeRef] = useNodeRef(handleNodeChange);
+  const [nodeRef, setNodeRef] = useNodeRef();
+  const isResizeObserverDisabled = resizeObserverDisabled || !isActive;
+  useResizeObserver(nodeRef, isResizeObserverDisabled ? noop : handleResize);
   const dataRef = useLatestValue(data);
-
-  useEffect(() => {
-    if (!resizeObserver || !nodeRef.current) {
-      return;
-    }
-
-    resizeObserver.disconnect();
-    resizeObserverConnected.current = false;
-    resizeObserver.observe(nodeRef.current);
-  }, [nodeRef, resizeObserver]);
 
   useIsomorphicLayoutEffect(
     () => {
