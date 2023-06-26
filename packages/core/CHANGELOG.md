@@ -1,5 +1,16 @@
 # @schuchertmanagementberatung/dnd-kit-core
 
+## 12.0.0
+
+### Major Changes
+
+- [`b0eb431`](https://github.com/clauderic/dnd-kit/commit/b0eb431497c4ecf0215ddd84a553966bd881928e) Thanks [@5ebastianMeier](https://github.com/5ebastianMeier)! - Remove usage of active in useDroppable
+
+### Patch Changes
+
+- Updated dependencies [[`b0eb431`](https://github.com/clauderic/dnd-kit/commit/b0eb431497c4ecf0215ddd84a553966bd881928e)]:
+  - @schuchertmanagementberatung/dnd-kit-utilities@7.0.0
+
 ## 11.0.0
 
 ### Major Changes
