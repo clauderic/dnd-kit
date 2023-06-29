@@ -567,6 +567,7 @@ export const DndContext = memo(function DndContext({
       };
 
       unstable_batchedUpdates(() => {
+        sensorContext.current.over = over;
         setOver(over);
         onDragOver?.(event);
         dispatchMonitorEvent({type: 'onDragOver', event});
