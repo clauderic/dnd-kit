@@ -1,10 +1,10 @@
 import {effect} from '@dnd-kit/state';
+import {Sensor} from '@dnd-kit/abstract';
 import type {CleanupFunction} from '@dnd-kit/types';
 import {getOwnerDocument, Listeners} from '@dnd-kit/dom-utilities';
 
 import type {DragDropManager} from '../../manager';
 import type {Draggable} from '../../nodes';
-// import type {DOMSensor} from '../types';
 
 interface ActivationConstraint {}
 
@@ -13,15 +13,20 @@ export interface PointerSensorOptions {
 }
 
 /**
- * The PointerSensor class is a DOMSensor that handles Pointer events,
+ * The PointerSensor class is an input sensor that handles Pointer events,
  * such as mouse, touch and pen interactions.
  */
-export class PointerSensor {
+export class PointerSensor extends Sensor<
+  DragDropManager,
+  PointerSensorOptions
+> {
   private listeners = new Listeners();
 
   private cleanup: CleanupFunction | undefined;
 
-  constructor(private manager: DragDropManager) {
+  constructor(protected manager: DragDropManager) {
+    super(manager);
+
     // Adding a non-capture and non-passive `touchmove` listener in order
     // to force `event.preventDefault()` calls to work in dynamically added
     // touchmove event handlers. This is required for iOS Safari.
@@ -35,8 +40,7 @@ export class PointerSensor {
     });
   }
 
-  // TODO: Replace `any` with Draggable
-  public bind(source: any, options?: PointerSensorOptions) {
+  public bind(source: Draggable, options?: PointerSensorOptions) {
     const unbind = effect(() => {
       const target = source.activator ?? source.element;
       const listener: EventListener = (event: Event) => {

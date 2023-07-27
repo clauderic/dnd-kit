@@ -11,7 +11,6 @@ import type {CollisionDetector} from '@dnd-kit/collision';
 import {effect, reactive} from '@dnd-kit/state';
 
 import {DOMRectangle} from '../../shapes';
-import type {DragDropManager} from '../../manager';
 
 type OptionalInput = 'collisionDetector';
 

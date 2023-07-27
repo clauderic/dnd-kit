@@ -4,7 +4,6 @@ import type {CleanupFunction} from '@dnd-kit/types';
 
 import type {DragDropManager} from '../../manager';
 import type {Draggable} from '../../nodes';
-import type {DOMSensor} from '../types';
 
 import {encode, decode} from './encoding';
 

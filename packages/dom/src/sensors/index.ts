@@ -1,5 +1,5 @@
 export {DragSensor} from './drag';
 
-export {PointerSensor} from './pointer';
+export {KeyboardSensor} from './keyboard';
 
-export type {DOMSensor} from './types';
+export {PointerSensor} from './pointer';

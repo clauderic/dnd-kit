@@ -23,6 +23,16 @@ const AUTOSCROLL_INTERVAL = 5;
 export class AutoScroller extends Plugin<DragDropManager> {
   public destroy: CleanupFunction;
 
+  private disabled = false;
+
+  public disable() {
+    this.disabled = true;
+  }
+
+  public enable() {
+    this.disabled = false;
+  }
+
   constructor(manager: DragDropManager, _options?: Options) {
     super(manager);
 
@@ -56,7 +66,7 @@ export class AutoScroller extends Plugin<DragDropManager> {
         const {position} = dragOperation;
         const currentPosition = position?.current;
 
-        if (currentPosition) {
+        if (!this.disabled && currentPosition) {
           const scrollIntent = scrollIntentTracker.peek();
 
           for (const scrollableElement of elements) {

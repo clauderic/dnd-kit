@@ -59,10 +59,7 @@ class Registry<T> {
   public subscribe = this.pubSub.subscribe;
 }
 
-export class DragDropRegistry<
-  T extends Draggable = Draggable,
-  U extends Droppable = Droppable
-> {
+export class DragDropRegistry<T extends Draggable, U extends Droppable> {
   public draggable: Registry<T> = new Registry();
   public droppable: Registry<U> = new Registry();
 
