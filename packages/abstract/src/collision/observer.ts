@@ -1,5 +1,4 @@
-import {ShapeGroup} from '@dnd-kit/geometry';
-import {computed, ReadonlyProxyState} from '@dnd-kit/state';
+import {computed, ReadonlySignal} from '@dnd-kit/state';
 import {isEqual} from '@dnd-kit/utilities';
 
 import type {DragOperation, DragDropRegistry} from '../manager';
@@ -9,7 +8,7 @@ import {sortCollisions} from './utilities';
 
 export type Input<
   T extends Draggable = Draggable,
-  U extends Droppable = Droppable
+  U extends Droppable = Droppable,
 > = {
   dragOperation: DragOperation<T, U>;
   registry: DragDropRegistry<T, U>;
@@ -17,37 +16,32 @@ export type Input<
 
 export class CollisionObserver<
   T extends Draggable = Draggable,
-  U extends Droppable = Droppable
+  U extends Droppable = Droppable,
 > {
   constructor({registry, dragOperation}: Input<T, U>) {
-    this._computed = computed(() => {
-      const {active, position} = dragOperation;
-      const pointerCoordinates = position.current;
+    this.__computedCollisions = computed(() => {
+      const {source, shape, initialized} = dragOperation;
 
-      if (!active?.length) {
+      if (!initialized || !shape) {
         return null;
       }
 
-      const shapes = pick(active, 'shape');
-      const types = pick(active, 'type');
-      const shape = new ShapeGroup(...shapes);
+      const type = source?.type;
       const collisions: Collision[] = [];
 
-      for (const droppable of registry.droppable) {
-        if (droppable.disabled) {
+      for (const entry of registry.droppable) {
+        if (entry.disabled) {
           continue;
         }
 
-        if (!droppable.compatibleWith(types)) {
+        if (type != null && !entry.accepts(type)) {
           continue;
         }
 
-        const {collisionDetector} = droppable;
+        const {collisionDetector} = entry;
         const collision = collisionDetector({
-          shape,
-          droppable,
+          droppable: entry,
           dragOperation,
-          pointerCoordinates,
         });
 
         if (collision) {
@@ -62,20 +56,8 @@ export class CollisionObserver<
   }
 
   public get collisions() {
-    return this._computed.value;
+    return this.__computedCollisions.value;
   }
 
-  private _computed: ReadonlyProxyState<Collisions>;
-}
-
-function pick<T extends Object, U extends keyof T>(objects: T[], key: U) {
-  return objects.reduce<NonNullable<T[U]>[]>((accumulator, entry) => {
-    const value = entry[key];
-
-    if (value != null) {
-      accumulator.push(value);
-    }
-
-    return accumulator;
-  }, []);
+  private __computedCollisions: ReadonlySignal<Collisions>;
 }

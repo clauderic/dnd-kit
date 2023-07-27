@@ -1,3 +1,4 @@
+import {CleanupFunction} from '@dnd-kit/types';
 import type {DragDropManager} from '../manager';
 
 export abstract class Plugin<
@@ -9,5 +10,5 @@ export abstract class Plugin<
     this.manager = manager;
   }
 
-  public abstract destroy(): void;
+  public abstract destroy: CleanupFunction;
 }

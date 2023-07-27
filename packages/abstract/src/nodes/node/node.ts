@@ -1,4 +1,3 @@
-import {Shape} from '@dnd-kit/geometry';
 import {reactive} from '@dnd-kit/state';
 import type {UniqueIdentifier} from '@dnd-kit/types';
 
@@ -20,14 +19,13 @@ export class Node<T extends Data = Data> {
   }
 
   @reactive
-  id: UniqueIdentifier;
+  public id: UniqueIdentifier;
 
   @reactive
-  data: Data | null;
+  public data: Data | null;
 
   @reactive
-  disabled: boolean;
+  public disabled: boolean;
 
-  @reactive
-  public shape: Shape | null = null;
+  public destroy() {}
 }

@@ -1,4 +1,5 @@
 import {Plugin} from '@dnd-kit/abstract';
+import type {CleanupFunction} from '@dnd-kit/types';
 import {
   getBoundingRectangle,
   getScrollableAncestors,
@@ -20,7 +21,7 @@ interface Options {}
 const AUTOSCROLL_INTERVAL = 5;
 
 export class AutoScroller extends Plugin<DragDropManager> {
-  public destroy: () => void;
+  public destroy: CleanupFunction;
 
   constructor(manager: DragDropManager, _options?: Options) {
     super(manager);
@@ -49,65 +50,62 @@ export class AutoScroller extends Plugin<DragDropManager> {
     const scrollIntentTracker = ScrollIntentTracker(manager);
 
     this.destroy = effect(() => {
-      if (interval) {
-        clearInterval(interval);
-        interval = null;
-      }
-
       const elements = scrollableElements.value;
 
-      if (!elements) {
-        return;
-      }
+      if (elements) {
+        const {position} = dragOperation;
+        const currentPosition = position?.current;
 
-      const {position} = dragOperation;
-      const currentPosition = position?.current;
+        if (currentPosition) {
+          const scrollIntent = scrollIntentTracker.peek();
 
-      if (!currentPosition) {
-        return;
-      }
+          for (const scrollableElement of elements) {
+            const rect = isDocumentScrollingElement(scrollableElement)
+              ? getViewportBoundingRectangle(scrollableElement)
+              : getBoundingRectangle(scrollableElement);
 
-      const scrollIntent = scrollIntentTracker.peek();
+            const {direction, speed} = getScrollDirectionAndSpeed(
+              scrollableElement,
+              rect,
+              {
+                width: 0,
+                height: 0,
+                top: currentPosition.y,
+                bottom: currentPosition.y,
+                left: currentPosition.x,
+                right: currentPosition.x,
+              }
+            );
 
-      for (const scrollableElement of elements) {
-        const rect = isDocumentScrollingElement(scrollableElement)
-          ? getViewportBoundingRectangle(scrollableElement)
-          : getBoundingRectangle(scrollableElement);
+            if (scrollIntent) {
+              for (const axis of Axes) {
+                if (scrollIntent[axis].isLocked(direction[axis])) {
+                  speed[axis] = 0;
+                  direction[axis] = ScrollDirection.Idle;
+                }
+              }
+            }
 
-        const {direction, speed} = getScrollDirectionAndSpeed(
-          scrollableElement,
-          rect,
-          {
-            width: 0,
-            height: 0,
-            top: currentPosition.y,
-            bottom: currentPosition.y,
-            left: currentPosition.x,
-            right: currentPosition.x,
-          }
-        );
+            if (speed.x > 0 || speed.y > 0) {
+              const autoScroll = () => {
+                const scrollLeft = speed.x * direction.x;
+                const scrollTop = speed.y * direction.y;
 
-        if (scrollIntent) {
-          for (const axis of Axes) {
-            if (scrollIntent[axis].isLocked(direction[axis])) {
-              speed[axis] = 0;
-              direction[axis] = ScrollDirection.Idle;
+                scrollableElement.scrollBy(scrollLeft, scrollTop);
+              };
+
+              interval = setInterval(autoScroll, AUTOSCROLL_INTERVAL);
             }
           }
         }
-
-        if (speed.x > 0 || speed.y > 0) {
-          const autoScroll = () => {
-            const scrollLeft = speed.x * direction.x;
-            const scrollTop = speed.y * direction.y;
-
-            scrollableElement.scrollBy(scrollLeft, scrollTop);
-          };
-
-          interval = setInterval(autoScroll, AUTOSCROLL_INTERVAL);
-          return;
-        }
       }
+
+      return () => {
+        if (interval) {
+          clearInterval(interval);
+          interval = null;
+        }
+      };
     });
   }
 }

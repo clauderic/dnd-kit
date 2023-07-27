@@ -1,11 +1,12 @@
-import {Position} from '@dnd-kit/geometry';
+import {Position, type Shape} from '@dnd-kit/geometry';
 import type {Coordinates} from '@dnd-kit/geometry';
 import type {UniqueIdentifier} from '@dnd-kit/types';
-import {batch, computed, proxy, reactive} from '@dnd-kit/state';
+import {batch, computed, signal} from '@dnd-kit/state';
 
 import type {Draggable, Droppable} from '../nodes';
 
 import type {DragDropRegistry} from './registry';
+import type {DragDropMonitor} from './manager';
 
 export enum Status {
   Idle = 'idle',
@@ -15,116 +16,125 @@ export enum Status {
 
 export interface Input<
   T extends Draggable = Draggable,
-  U extends Droppable = Droppable
+  U extends Droppable = Droppable,
 > {
   registry: DragDropRegistry<T, U>;
+  monitor: DragDropMonitor;
 }
 
 export type DragOperationManager<
   T extends Draggable = Draggable,
-  U extends Droppable = Droppable
+  U extends Droppable = Droppable,
 > = ReturnType<typeof DragOperationManager<T, U>>;
 
-class Store<T> {
-  private store = proxy<Set<T> | null>(null);
-
-  set value(input: T | T[] | null) {
-    const identifiers = normalize(input);
-    this.store.value = identifiers ? new Set(identifiers) : null;
-  }
-
-  get value(): T[] | null {
-    const current = this.store.value;
-
-    return current ? Array.from(current.values()) : null;
-  }
-}
+export type Serializable = {
+  [key: string]: string | number | null | Serializable | Serializable[];
+};
 
 export interface DragOperation<
   T extends Draggable = Draggable,
-  U extends Droppable = Droppable
+  U extends Droppable = Droppable,
 > {
   status: Status;
   position: Position;
-  active: T[] | null;
-  over: U[] | null;
+  initialized: boolean;
+  shape: Shape | null;
+  source: T | null;
+  target: U | null;
+  data?: Serializable;
 }
 
 export function DragOperationManager<
   T extends Draggable = Draggable,
-  U extends Droppable = Droppable
->({registry: {draggable, droppable}}: Input<T, U>) {
-  const status = proxy<Status>(Status.Idle);
+  U extends Droppable = Droppable,
+>({registry: {draggable, droppable}, monitor}: Input<T, U>) {
+  const status = signal<Status>(Status.Idle);
+  const shape = signal<Shape | null>(null);
   const position = new Position({x: 0, y: 0});
-  const activeIdentifiers = new Store<UniqueIdentifier>();
-  const overIdentifiers = new Store<UniqueIdentifier>();
-  const isDragging = () => status.value === Status.Dragging;
-  const active = computed(() => {
-    const identifiers = activeIdentifiers.value;
-
-    return identifiers ? draggable.pick(...identifiers) : null;
+  const sourceIdentifier = signal<UniqueIdentifier | null>(null);
+  const targetIdentifier = signal<UniqueIdentifier | null>(null);
+  const source = computed(() => {
+    const identifier = sourceIdentifier.value;
+    return identifier ? draggable.get(identifier) : null;
   });
-  const over = computed(() => {
-    const identifiers = overIdentifiers.value;
-
-    return identifiers ? droppable.pick(...identifiers) : null;
+  const target = computed(() => {
+    const identifier = targetIdentifier.value;
+    return identifier ? droppable.get(identifier) : null;
   });
+  const dragging = computed(() => status.value === Status.Dragging);
+
+  const operation: DragOperation<T, U> = {
+    get source() {
+      return source.value ?? null;
+    },
+    get target() {
+      return target.value ?? null;
+    },
+    get status() {
+      return status.value;
+    },
+    get initialized() {
+      return status.value !== Status.Idle;
+    },
+    get shape() {
+      return shape.value;
+    },
+    set shape(value: Shape | null) {
+      shape.value = value;
+    },
+    position,
+  };
 
   return {
-    operation: {
-      get active() {
-        return active.value ?? null;
-      },
-      get over() {
-        return over.value ?? null;
-      },
-      get status() {
-        return status.value;
-      },
-      position,
-    },
+    operation,
     actions: {
-      start(
-        identifiers: UniqueIdentifier | UniqueIdentifier[],
-        coordinates: Coordinates
-      ) {
+      setDragSource(identifier: UniqueIdentifier) {
+        sourceIdentifier.value = identifier;
+      },
+      setDropTarget(identifier: UniqueIdentifier | null) {
+        if (!dragging.peek()) {
+          return;
+        }
+
+        targetIdentifier.value = identifier;
+      },
+      start(coordinates: Coordinates) {
         batch(() => {
           status.value = Status.Dragging;
-          activeIdentifiers.value = identifiers;
           position.reset(coordinates);
         });
+
+        monitor.dispatch('dragstart', {});
       },
       move(coordinates: Coordinates) {
-        if (!isDragging()) {
+        if (!dragging.peek()) {
           return;
         }
 
         position.update(coordinates);
-      },
-      over(input: UniqueIdentifier | UniqueIdentifier[] | null) {
-        if (!isDragging()) {
-          return;
-        }
 
-        const identifiers = normalize(input);
-
-        overIdentifiers.value = identifiers;
+        monitor.dispatch('dragmove', {});
       },
       cancel() {
         // TO-DO
+        monitor.dispatch('dragend', {
+          operation: snapshot(operation),
+          canceled: true,
+        });
       },
       stop() {
-        if (!isDragging()) {
-          return;
-        }
-
         status.value = Status.Dropping;
+
+        monitor.dispatch('dragend', {
+          operation: snapshot(operation),
+          canceled: false,
+        });
 
         requestAnimationFrame(() => {
           batch(() => {
             status.value = Status.Idle;
-            activeIdentifiers.value = null;
-            overIdentifiers.value = null;
+            sourceIdentifier.value = null;
+            targetIdentifier.value = null;
             position.reset({x: 0, y: 0});
           });
         });
@@ -133,17 +143,8 @@ export function DragOperationManager<
   };
 }
 
-function normalize<T>(
-  input: T
-): T extends null ? null : T extends Array<any> ? T : T[];
-function normalize<T>(input: T | null): T | T[] | null {
-  if (input == null) {
-    return null;
-  }
-
-  if (Array.isArray(input)) {
-    return input;
-  }
-
-  return [input];
+function snapshot<T extends Record<string, any>>(obj: T): T {
+  return {
+    ...obj,
+  };
 }

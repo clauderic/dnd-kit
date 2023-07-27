@@ -2,19 +2,17 @@ type ExtractStringProperties<T> = {
   [K in keyof T]?: T[K] extends string ? string : never;
 };
 
-export type StyleDeclaration = ExtractStringProperties<CSSStyleDeclaration>;
+export type StyleDeclaration = ExtractStringProperties<CSSStyleDeclaration> & {
+  viewTransitionName?: string;
+};
 
-export class Styles {
+export class InlineStyles {
   private initial = new Map<string, string>();
 
-  constructor(private element: Element) {}
+  constructor(private element: HTMLElement) {}
 
   public set(styles: StyleDeclaration) {
     const {element} = this;
-
-    if (!(element instanceof HTMLElement || element instanceof SVGElement)) {
-      return;
-    }
 
     for (const [key, value] of Object.entries(styles)) {
       if (!this.initial.has(key)) {
@@ -27,10 +25,6 @@ export class Styles {
 
   public reset() {
     const {element} = this;
-
-    if (!(element instanceof HTMLElement || element instanceof SVGElement)) {
-      return;
-    }
 
     for (const [key, value] of this.initial) {
       element.style[key as any] = value;

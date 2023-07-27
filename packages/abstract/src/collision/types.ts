@@ -1,6 +1,5 @@
 import type {Point, Shape} from '@dnd-kit/geometry';
 import type {UniqueIdentifier} from '@dnd-kit/types';
-import type {ReadonlyProxyState} from '@dnd-kit/state';
 
 import type {DragOperation} from '../manager';
 import type {Draggable, Droppable} from '../nodes';
@@ -23,9 +22,7 @@ export interface CollisionDetectorInput<
   T extends Draggable = Draggable,
   U extends Droppable = Droppable
 > {
-  shape: Shape;
   droppable: U;
-  pointerCoordinates: Point | null;
   dragOperation: DragOperation<T, U>;
 }
 

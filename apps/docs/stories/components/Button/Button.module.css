@@ -1,0 +1,28 @@
+.Button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border: none;
+  background-color: #181a22;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f6f8ff;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.4s;
+
+  &:hover,
+  &:focus {
+    background-color: #1b1d26;
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 3px #4c9ffe;
+  }
+}
+
+.shadow {
+  box-shadow: -1px 0 15px 0 rgba(34, 33, 81, 0.01), 0px 15px 15px 0 rgba(34, 33, 81, 0.25);
+}

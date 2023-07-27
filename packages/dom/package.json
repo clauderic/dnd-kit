@@ -26,9 +26,9 @@
   "devDependencies": {
     "@dnd-kit/config-eslint": "*",
     "@dnd-kit/config-ts": "*",
-    "eslint": "^8.15.0",
-    "tsup": "^5.10.1",
-    "typescript": "^4.8.3"
+    "eslint": "^8.38.0",
+    "tsup": "^6.7.0",
+    "typescript": "^5.0.4"
   },
   "publishConfig": {
     "access": "public"

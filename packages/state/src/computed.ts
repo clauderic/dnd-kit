@@ -1,11 +1,12 @@
-import {computed as computedSignal, ReadonlySignal} from '@preact/signals-core';
-
-export interface ReadonlyProxyState<T> extends ReadonlySignal<T> {}
+import {
+  computed as computedSignal,
+  type ReadonlySignal,
+} from '@preact/signals-core';
 
 export function computed<T>(
   compute: () => T,
   comparator?: (a: T, b: T) => boolean
-): ReadonlyProxyState<T> {
+): ReadonlySignal<T> {
   if (comparator) {
     let previousValue: T | undefined;
 

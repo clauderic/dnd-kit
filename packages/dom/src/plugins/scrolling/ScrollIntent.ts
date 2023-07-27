@@ -1,4 +1,4 @@
-import {batch, effect, proxy} from '@dnd-kit/state';
+import {batch, effect, signal} from '@dnd-kit/state';
 import {Axes} from '@dnd-kit/geometry';
 import type {Coordinates} from '@dnd-kit/geometry';
 import {ScrollDirection} from '@dnd-kit/dom-utilities';
@@ -15,7 +15,7 @@ class ScrollIntent {
 }
 
 export function ScrollIntentTracker(manager: DragDropManager) {
-  const scrollIntent = proxy<ScrollIntent | null>(null);
+  const scrollIntent = signal<ScrollIntent | null>(null);
   let previousDelta: Coordinates | null = null;
 
   effect(() => {

@@ -5,11 +5,14 @@ import {
 } from '@dnd-kit/abstract';
 
 import type {Draggable, Droppable} from '../nodes';
-import {AutoScroller, ScrollManager} from '../plugins';
+import {AutoScroller, DraggablePlaceholder, ScrollManager} from '../plugins';
 
 export interface Input extends DragDropManagerInput {}
 
-const defaultPlugins: PluginConstructor<DragDropManager>[] = [AutoScroller];
+const defaultPlugins: PluginConstructor<DragDropManager>[] = [
+  AutoScroller,
+  DraggablePlaceholder,
+];
 
 export class DragDropManager extends AbstractDragDropManager<
   Draggable,

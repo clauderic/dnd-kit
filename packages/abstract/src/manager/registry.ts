@@ -1,10 +1,12 @@
+import {signal} from '@dnd-kit/state';
 import type {UniqueIdentifier} from '@dnd-kit/types';
-import {proxy} from '@dnd-kit/state';
+import {PubSub} from '@dnd-kit/utilities';
 
 import {Draggable, Droppable} from '../nodes';
 
 class Registry<T> {
-  private map = proxy<Map<UniqueIdentifier, T>>(new Map());
+  private map = signal<Map<UniqueIdentifier, T>>(new Map());
+  private pubSub = new PubSub();
 
   public [Symbol.iterator]() {
     return this.map.value.values();
@@ -36,6 +38,8 @@ class Registry<T> {
 
     this.map.value = updatedMap;
 
+    this.pubSub.notify('register', {key, value});
+
     return () => this.unregister(key, value);
   };
 
@@ -48,7 +52,11 @@ class Registry<T> {
     updatedMap.delete(key);
 
     this.map.value = updatedMap;
+
+    this.pubSub.notify('unregister', {key, value});
   };
+
+  public subscribe = this.pubSub.subscribe;
 }
 
 export class DragDropRegistry<
@@ -66,6 +74,8 @@ export class DragDropRegistry<
     if (instance instanceof Droppable) {
       return this.droppable.register(instance.id, instance);
     }
+
+    throw new Error('Invalid instance type');
   }
 
   public unregister(instance: T | U) {

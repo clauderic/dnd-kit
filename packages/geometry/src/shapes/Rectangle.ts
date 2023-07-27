@@ -39,7 +39,7 @@ export class Rectangle implements Shape {
     ];
   }
 
-  public get centroid(): Point {
+  public get center(): Point {
     const [p1, p2] = this.vertices;
 
     return new Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);

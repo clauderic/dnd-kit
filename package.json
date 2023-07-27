@@ -15,10 +15,13 @@
     "release": "turbo run build --filter=docs^... && changeset publish"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.22.0",
-    "eslint": "^8.15.0",
+    "@changesets/cli": "^2.26.2",
+    "eslint": "^8.45.0",
     "@dnd-kit/config-eslint": "*",
-    "prettier": "^2.5.1",
-    "turbo": "latest"
+    "prettier": "^3.0.0",
+    "turbo": "1.10.12"
+  },
+  "resolutions": {
+    "@babel/core": "^7.22.9"
   }
 }

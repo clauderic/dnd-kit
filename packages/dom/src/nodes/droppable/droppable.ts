@@ -24,28 +24,16 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
   @reactive
   public element: Element | undefined;
 
-  constructor(
-    {collisionDetector = defaultCollisionDetection, ...input}: Input<T>,
-    manager: DragDropManager
-  ) {
+  constructor({
+    collisionDetector = defaultCollisionDetection,
+    ...input
+  }: Input<T>) {
     super({...input, collisionDetector});
 
-    effect(() => {
-      const {dragOperation} = manager;
-
-      if (dragOperation.status !== DragOperationStatus.Dragging) {
-        return;
-      }
-
-      this.update();
-
-      if (this.element) {
-        return manager.scrollManager.subscribe(this.update);
-      }
-    });
+    this.destroy = effect(this.update);
   }
 
-  private update = () => {
+  public update = () => {
     const {disabled, element} = this;
 
     this.shape = element && !disabled ? new DOMRectangle(element) : null;

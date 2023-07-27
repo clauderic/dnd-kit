@@ -23,11 +23,11 @@
     "@dnd-kit/config-ts": "*",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.4",
-    "eslint": "^8.15.0",
+    "eslint": "^8.38.0",
     "@dnd-kit/config-eslint": "*",
     "react": "^18.1.0",
-    "tsup": "^5.10.1",
-    "typescript": "^4.5.3"
+    "tsup": "^6.7.0",
+    "typescript": "^5.0.4"
   },
   "publishConfig": {
     "access": "public"

@@ -3,13 +3,21 @@ import type {CollisionDetector} from '@dnd-kit/abstract';
 import {Point} from '@dnd-kit/geometry';
 
 /**
- * Returns the rectangles that has the greatest intersection area with a given
- * rectangle in an array of rectangles.
+ * Collision detection algorithm that detects whether the pointer intersects
+ * with a given droppable element.
+ *
+ * Returns the distance between the pointer coordinates and the center of the
+ * droppable element if the pointer is within the droppable element.
+ *
+ * Returns null if the pointer is outside of the droppable element.
  */
 export const pointerIntersection: CollisionDetector = ({
-  pointerCoordinates,
+  dragOperation,
   droppable,
 }) => {
+  // TODO: Should dragOperation expose pointer coordinates?
+  const pointerCoordinates = dragOperation.position.current;
+
   if (!pointerCoordinates) {
     return null;
   }
@@ -26,7 +34,7 @@ export const pointerIntersection: CollisionDetector = ({
      * colliding rectangles, we measure the distance between
      * the pointer and the center of the intersecting rectangle
      */
-    const value = Point.distance(droppable.shape.centroid, pointerCoordinates);
+    const value = Point.distance(droppable.shape.center, pointerCoordinates);
 
     return {
       id,

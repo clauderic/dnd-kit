@@ -1,15 +1,67 @@
+import {effect} from '@dnd-kit/state';
+import type {CleanupFunction} from '@dnd-kit/types';
+import {getOwnerDocument, Listeners} from '@dnd-kit/dom-utilities';
+
 import type {DragDropManager} from '../../manager';
+import type {Draggable} from '../../nodes';
+// import type {DOMSensor} from '../types';
 
+interface ActivationConstraint {}
+
+export interface PointerSensorOptions {
+  activationConstraints?: ActivationConstraint[];
+}
+
+/**
+ * The PointerSensor class is a DOMSensor that handles Pointer events,
+ * such as mouse, touch and pen interactions.
+ */
 export class PointerSensor {
-  constructor(private manager: DragDropManager) {
-    this.manager = manager;
+  private listeners = new Listeners();
 
-    document.addEventListener('pointerdown', this.handlePointerDown, {
-      capture: true,
+  private cleanup: CleanupFunction | undefined;
+
+  constructor(private manager: DragDropManager) {
+    // Adding a non-capture and non-passive `touchmove` listener in order
+    // to force `event.preventDefault()` calls to work in dynamically added
+    // touchmove event handlers. This is required for iOS Safari.
+    this.listeners.bind(window, {
+      type: 'touchmove',
+      listener() {},
+      options: {
+        capture: false,
+        passive: false,
+      },
     });
   }
 
-  handlePointerDown = (event: PointerEvent) => {
+  // TODO: Replace `any` with Draggable
+  public bind(source: any, options?: PointerSensorOptions) {
+    const unbind = effect(() => {
+      const target = source.activator ?? source.element;
+      const listener: EventListener = (event: Event) => {
+        if (event instanceof PointerEvent) {
+          this.handlePointerDown(event, source, options);
+        }
+      };
+
+      if (target) {
+        target.addEventListener('pointerdown', listener);
+
+        return () => {
+          target.removeEventListener('pointerdown', listener);
+        };
+      }
+    });
+
+    return unbind;
+  }
+
+  private handlePointerDown = (
+    event: PointerEvent,
+    source: Draggable,
+    options?: PointerSensorOptions
+  ) => {
     if (!event.isPrimary || event.button !== 0) {
       return;
     }
@@ -18,33 +70,44 @@ export class PointerSensor {
       return;
     }
 
-    const {registry} = this.manager;
-
-    for (const node of registry.draggable) {
-      const element = node.activator ?? node.element;
-
-      if (
-        element &&
-        (element === event.target || element.contains(event.target))
-      ) {
-        this.manager.actions.start(['test-1', 'test-2'], {
-          x: event.clientX,
-          y: event.clientY,
-        });
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        document.addEventListener('pointermove', this.handlePointerMove);
-        document.addEventListener('pointerup', this.handlePointerUp);
-        break;
-      }
+    if (source.disabled === true) {
+      return;
     }
+
+    this.manager.actions.setDragSource(source.id);
+
+    event.stopImmediatePropagation();
+
+    const ownerDocument = getOwnerDocument(event.target);
+
+    this.cleanup = this.listeners.bind(ownerDocument, [
+      {
+        type: 'pointermove',
+        listener: this.handlePointerMove,
+      },
+      {
+        type: 'pointerup',
+        listener: this.handlePointerUp,
+      },
+      {
+        // Prevent scrolling on touch devices
+        type: 'touchmove',
+        listener: preventDefault,
+      },
+    ]);
   };
 
-  handlePointerMove = (event: PointerEvent) => {
+  private handlePointerMove = (event: PointerEvent) => {
     event.preventDefault();
     event.stopPropagation();
+
+    if (this.manager.dragOperation.status === 'idle') {
+      this.manager.actions.start({
+        x: event.clientX,
+        y: event.clientY,
+      });
+      return;
+    }
 
     this.manager.actions.move({
       x: event.clientX,
@@ -52,13 +115,24 @@ export class PointerSensor {
     });
   };
 
-  handlePointerUp = (event: PointerEvent) => {
+  private handlePointerUp = (event: PointerEvent) => {
+    // Prevent the default behaviour of the event
     event.preventDefault();
     event.stopPropagation();
 
+    // End the drag and drop operation
     this.manager.actions.stop();
 
-    document.removeEventListener('pointermove', this.handlePointerMove);
-    document.removeEventListener('pointerup', this.handlePointerUp);
+    // Remove the pointer move and up event listeners
+    this.cleanup?.();
   };
+
+  public destroy() {
+    // Remove all event listeners
+    this.listeners.clear();
+  }
+}
+
+function preventDefault(event: Event) {
+  event.preventDefault();
 }

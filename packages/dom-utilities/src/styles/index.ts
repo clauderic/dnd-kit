@@ -1,1 +1,1 @@
-export {Styles} from './Styles';
+export {InlineStyles} from './InlineStyles';

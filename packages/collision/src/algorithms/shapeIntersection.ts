@@ -5,12 +5,16 @@ import type {CollisionDetector} from '@dnd-kit/abstract';
  * Returns the droppable with the greatest intersection area with
  * the collision shape.
  */
-export const shapeIntersection: CollisionDetector = ({shape, droppable}) => {
+export const shapeIntersection: CollisionDetector = ({
+  dragOperation,
+  droppable,
+}) => {
   if (!droppable.shape) {
     return null;
   }
 
-  const intersectionArea = shape.intersectionArea(droppable.shape);
+  const {shape} = dragOperation;
+  const intersectionArea = shape?.intersectionArea(droppable.shape);
 
   if (intersectionArea) {
     return {

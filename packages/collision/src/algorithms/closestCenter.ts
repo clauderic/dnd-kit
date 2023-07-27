@@ -10,7 +10,9 @@ import {defaultCollisionDetection} from './default';
  * collision shape.
  */
 export const closestCenter: CollisionDetector = (input) => {
-  const {shape, pointerCoordinates, droppable} = input;
+  // TODO: Should dragOperation expose pointer coordinates?
+  const {dragOperation, droppable} = input;
+  const {shape, position} = dragOperation;
 
   if (!droppable.shape) {
     return null;
@@ -23,8 +25,8 @@ export const closestCenter: CollisionDetector = (input) => {
   }
 
   const distance = Point.distance(
-    droppable.shape.centroid,
-    pointerCoordinates ?? shape.centroid
+    droppable.shape.center,
+    shape?.center ?? position.current
   );
 
   const value = 1 / distance;
