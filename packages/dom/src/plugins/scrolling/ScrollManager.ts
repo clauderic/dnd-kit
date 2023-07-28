@@ -1,6 +1,6 @@
 import {DragOperationStatus, Plugin} from '@dnd-kit/abstract';
 import {PubSub} from '@dnd-kit/utilities';
-import {effect} from '@dnd-kit/state';
+import {batch, effect} from '@dnd-kit/state';
 
 import type {DragDropManager} from '../../manager';
 import {CleanupFunction} from '@dnd-kit/types';
@@ -50,9 +50,11 @@ export class ScrollManager extends Plugin<DragDropManager> {
       this.animationFrame = requestAnimationFrame(() => {
         this.pubSub.notify();
 
-        for (const droppable of this.manager.registry.droppable) {
-          droppable.update();
-        }
+        batch(() => {
+          for (const droppable of this.manager.registry.droppable) {
+            droppable.updateShape();
+          }
+        });
 
         this.animationFrame = null;
       });

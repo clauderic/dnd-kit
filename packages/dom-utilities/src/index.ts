@@ -10,8 +10,9 @@ export {cloneElement} from './element';
 export {Listeners} from './event-listeners';
 
 export {
+  canScroll,
+  shouldScroll,
   getScrollableAncestors,
-  getScrollDirectionAndSpeed,
   isDocumentScrollingElement,
   ScrollDirection,
 } from './scroll';

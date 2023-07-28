@@ -4,9 +4,15 @@ import {
   PluginConstructor,
   SensorConstructor,
 } from '@dnd-kit/abstract';
+import {batch, effect} from '@dnd-kit/state';
 
 import type {Draggable, Droppable} from '../nodes';
-import {AutoScroller, DraggablePlaceholder, ScrollManager} from '../plugins';
+import {
+  AutoScroller,
+  DraggablePlaceholder,
+  ScrollManager,
+  Scroller,
+} from '../plugins';
 import {PointerSensor} from '../sensors';
 
 export interface Input extends DragDropManagerInput<DragDropManager> {}
@@ -22,7 +28,7 @@ export class DragDropManager<
   T extends Draggable = Draggable,
   U extends Droppable = Droppable,
 > extends AbstractDragDropManager<Draggable, Droppable> {
-  public scrollManager: ScrollManager;
+  public scroller: Scroller;
 
   constructor({
     plugins = defaultPlugins,
@@ -31,11 +37,30 @@ export class DragDropManager<
   }: Input = {}) {
     super({...input, plugins, sensors});
 
-    this.scrollManager = new ScrollManager(this);
+    const scrollManager = new ScrollManager(this);
+    this.scroller = new Scroller(this);
+
+    const effectCleanup = effect(() => {
+      if (this.dragOperation.status === 'initializing') {
+        batch(() => {
+          for (const droppable of this.registry.droppable) {
+            droppable.updateShape();
+          }
+        });
+      }
+    });
+
+    const {destroy} = this;
+
+    this.destroy = () => {
+      effectCleanup();
+      scrollManager.destroy();
+      destroy();
+    };
   }
 
-  public destroy() {
+  public destroy = () => {
     super.destroy();
-    this.scrollManager.destroy();
-  }
+    this.scroller.destroy();
+  };
 }

@@ -1,13 +1,11 @@
+export {canScroll} from './canScroll';
 export {
   getFirstScrollableAncestor,
   getScrollableAncestors,
 } from './getScrollableAncestors';
 export {getScrollableElement} from './getScrollableElement';
 export {getScrollCoordinates} from './getScrollCoordinates';
-export {
-  getScrollDirectionAndSpeed,
-  ScrollDirection,
-} from './getScrollDirectionAndSpeed';
+export {shouldScroll, ScrollDirection} from './shouldScroll';
 export {
   getScrollOffsets,
   getScrollXOffset,

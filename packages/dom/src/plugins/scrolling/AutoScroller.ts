@@ -1,16 +1,8 @@
 import {Plugin} from '@dnd-kit/abstract';
 import type {CleanupFunction} from '@dnd-kit/types';
-import {
-  getBoundingRectangle,
-  getScrollableAncestors,
-  getScrollDirectionAndSpeed,
-  getViewportBoundingRectangle,
-  isDocumentScrollingElement,
-  ScrollDirection,
-} from '@dnd-kit/dom-utilities';
+import {shouldScroll} from '@dnd-kit/dom-utilities';
 import {Axes} from '@dnd-kit/geometry';
-import {computed, effect} from '@dnd-kit/state';
-import {isEqual} from '@dnd-kit/utilities';
+import {effect} from '@dnd-kit/state';
 
 import type {DragDropManager} from '../../manager';
 
@@ -23,75 +15,34 @@ const AUTOSCROLL_INTERVAL = 5;
 export class AutoScroller extends Plugin<DragDropManager> {
   public destroy: CleanupFunction;
 
-  private disabled = false;
-
-  public disable() {
-    this.disabled = true;
-  }
-
-  public enable() {
-    this.disabled = false;
-  }
-
   constructor(manager: DragDropManager, _options?: Options) {
     super(manager);
 
     const {dragOperation} = manager;
-    const elementFromPoint = computed(() => {
-      const {position} = dragOperation;
-
-      if (!position) {
-        return null;
-      }
-
-      const {x, y} = position.current;
-
-      return document.elementFromPoint(x, y);
-    });
-    const scrollableElements = computed(() => {
-      const element = elementFromPoint.value;
-
-      return element
-        ? getScrollableAncestors(element, {excludeElement: false})
-        : null;
-    }, isEqual);
 
     let interval: NodeJS.Timer | null = null;
     const scrollIntentTracker = ScrollIntentTracker(manager);
 
     this.destroy = effect(() => {
-      const elements = scrollableElements.value;
+      const {position, status} = manager.dragOperation;
 
-      if (elements) {
-        const {position} = dragOperation;
-        const currentPosition = position?.current;
+      if (!this.disabled && status === 'dragging') {
+        const scrollIntent = scrollIntentTracker.peek();
+        const scrollableElements =
+          this.manager.scroller.getScrollableElements();
 
-        if (!this.disabled && currentPosition) {
-          const scrollIntent = scrollIntentTracker.peek();
-
-          for (const scrollableElement of elements) {
-            const rect = isDocumentScrollingElement(scrollableElement)
-              ? getViewportBoundingRectangle(scrollableElement)
-              : getBoundingRectangle(scrollableElement);
-
-            const {direction, speed} = getScrollDirectionAndSpeed(
+        if (scrollableElements) {
+          for (const scrollableElement of scrollableElements) {
+            const {speed, direction} = shouldScroll(
               scrollableElement,
-              rect,
-              {
-                width: 0,
-                height: 0,
-                top: currentPosition.y,
-                bottom: currentPosition.y,
-                left: currentPosition.x,
-                right: currentPosition.x,
-              }
+              position.current
             );
 
             if (scrollIntent) {
               for (const axis of Axes) {
                 if (scrollIntent[axis].isLocked(direction[axis])) {
                   speed[axis] = 0;
-                  direction[axis] = ScrollDirection.Idle;
+                  direction[axis] = 0;
                 }
               }
             }
@@ -105,6 +56,7 @@ export class AutoScroller extends Plugin<DragDropManager> {
               };
 
               interval = setInterval(autoScroll, AUTOSCROLL_INTERVAL);
+              break;
             }
           }
         }

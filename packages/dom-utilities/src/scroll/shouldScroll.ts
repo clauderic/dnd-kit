@@ -1,4 +1,4 @@
-import type {Axis, BoundingRectangle} from '@dnd-kit/geometry';
+import type {Axis, BoundingRectangle, Coordinates} from '@dnd-kit/geometry';
 
 import {getScrollPosition} from './getScrollPosition';
 
@@ -13,15 +13,19 @@ const defaultThreshold: Record<Axis, number> = {
   y: 0.2,
 };
 
-export function getScrollDirectionAndSpeed(
-  scrollContainer: Element,
-  scrollContainerRect: BoundingRectangle,
-  rect: BoundingRectangle,
+export function shouldScroll(
+  scrollableElement: Element,
+  coordinates: Coordinates,
   acceleration = 10,
   thresholdPercentage = defaultThreshold
 ) {
-  const {top, left, bottom, right} = rect;
-  const {isTop, isBottom, isLeft, isRight} = getScrollPosition(scrollContainer);
+  const {
+    rect: scrollContainerRect,
+    isTop,
+    isBottom,
+    isLeft,
+    isRight,
+  } = getScrollPosition(scrollableElement);
 
   const direction: Record<Axis, ScrollDirection> = {
     x: ScrollDirection.Idle,
@@ -36,43 +40,52 @@ export function getScrollDirectionAndSpeed(
     width: scrollContainerRect.width * thresholdPercentage.x,
   };
 
-  if (!isTop && top <= scrollContainerRect.top + threshold.height) {
+  if (!isTop && coordinates.y <= scrollContainerRect.top + threshold.height) {
     // Scroll Up
     direction.y = ScrollDirection.Reverse;
     speed.y =
       acceleration *
       Math.abs(
-        (scrollContainerRect.top + threshold.height - top) / threshold.height
+        (scrollContainerRect.top + threshold.height - coordinates.y) /
+          threshold.height
       );
   } else if (
     !isBottom &&
-    bottom >= scrollContainerRect.bottom - threshold.height
+    coordinates.y >= scrollContainerRect.bottom - threshold.height
   ) {
     // Scroll Down
     direction.y = ScrollDirection.Forward;
     speed.y =
       acceleration *
       Math.abs(
-        (scrollContainerRect.bottom - threshold.height - bottom) /
+        (scrollContainerRect.bottom - threshold.height - coordinates.y) /
           threshold.height
       );
   }
 
-  if (!isRight && right >= scrollContainerRect.right - threshold.width) {
+  if (
+    !isRight &&
+    coordinates.x >= scrollContainerRect.right - threshold.width
+  ) {
     // Scroll Right
     direction.x = ScrollDirection.Forward;
     speed.x =
       acceleration *
       Math.abs(
-        (scrollContainerRect.right - threshold.width - right) / threshold.width
+        (scrollContainerRect.right - threshold.width - coordinates.x) /
+          threshold.width
       );
-  } else if (!isLeft && left <= scrollContainerRect.left + threshold.width) {
+  } else if (
+    !isLeft &&
+    coordinates.x <= scrollContainerRect.left + threshold.width
+  ) {
     // Scroll Left
     direction.x = ScrollDirection.Reverse;
     speed.x =
       acceleration *
       Math.abs(
-        (scrollContainerRect.left + threshold.width - left) / threshold.width
+        (scrollContainerRect.left + threshold.width - coordinates.x) /
+          threshold.width
       );
   }
 

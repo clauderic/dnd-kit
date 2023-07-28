@@ -9,7 +9,7 @@ class Registry<T> {
   private pubSub = new PubSub();
 
   public [Symbol.iterator]() {
-    return this.map.value.values();
+    return this.map.peek().values();
   }
 
   public get(identifier: UniqueIdentifier): T | undefined {

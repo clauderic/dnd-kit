@@ -10,6 +10,7 @@ import type {DragDropMonitor} from './manager';
 
 export enum Status {
   Idle = 'idle',
+  Initializing = 'initializing',
   Dragging = 'dragging',
   Dropping = 'dropped',
 }
@@ -99,6 +100,8 @@ export function DragOperationManager<
         targetIdentifier.value = identifier;
       },
       start(coordinates: Coordinates) {
+        status.value = Status.Initializing;
+
         batch(() => {
           status.value = Status.Dragging;
           position.reset(coordinates);

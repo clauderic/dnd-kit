@@ -51,6 +51,21 @@ export class Rectangle implements Shape {
     return width * height;
   }
 
+  public equals(shape: Shape): boolean {
+    if (!(shape instanceof Rectangle)) {
+      return false;
+    }
+
+    const {left, top, width, height} = this;
+
+    return (
+      left === shape.left &&
+      top === shape.top &&
+      width === shape.width &&
+      height === shape.height
+    );
+  }
+
   public containsPoint(point: Point): boolean {
     const {top, left, bottom, right} = this;
 

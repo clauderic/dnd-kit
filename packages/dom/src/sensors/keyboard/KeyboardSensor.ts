@@ -48,15 +48,15 @@ export class KeyboardSensor extends Sensor<
       const target = source.activator ?? source.element;
       const listener: EventListener = (event: Event) => {
         if (event instanceof KeyboardEvent) {
-          this.handleKeyUp(event, source, options);
+          this.handleKeyDown(event, source, options);
         }
       };
 
       if (target) {
-        target.addEventListener('keyup', listener);
+        target.addEventListener('keydown', listener);
 
         return () => {
-          target.removeEventListener('keyup', listener);
+          target.removeEventListener('keydown', listener);
         };
       }
     });
@@ -64,7 +64,7 @@ export class KeyboardSensor extends Sensor<
     return unbind;
   }
 
-  private handleKeyUp = (
+  private handleKeyDown = (
     event: KeyboardEvent,
     source: Draggable,
     options: KeyboardSensorOptions
@@ -83,13 +83,13 @@ export class KeyboardSensor extends Sensor<
       return;
     }
 
+    if (this.manager.dragOperation.status !== 'idle') {
+      return;
+    }
+
     const {center} = new DOMRectangle(source.element);
 
-    const autoScroller = this.manager.plugins.get(AutoScroller);
-
-    if (autoScroller) {
-      autoScroller.disable();
-    }
+    const cleanupSideEffects = this.sideEffects();
 
     this.manager.actions.setDragSource(source.id);
     this.manager.actions.start({
@@ -97,6 +97,7 @@ export class KeyboardSensor extends Sensor<
       y: center.y,
     });
 
+    event.preventDefault();
     event.stopImmediatePropagation();
 
     const ownerDocument = getOwnerDocument(source.element);
@@ -106,6 +107,7 @@ export class KeyboardSensor extends Sensor<
 
         this.manager.actions.stop();
         this.cleanup?.();
+        cleanupSideEffects();
 
         setTimeout(() => {
           const draggable = this.manager.registry.draggable.get(source.id);
@@ -122,43 +124,63 @@ export class KeyboardSensor extends Sensor<
       }
 
       const {center} = new DOMRectangle(source.element);
+      const factor = event.shiftKey ? 5 : 1;
+      const offset = {
+        x: 0,
+        y: 0,
+      };
 
       switch (event.code) {
-        case 'ArrowUp':
-          event.preventDefault();
+        case 'ArrowUp': {
+          offset.y = -DEFAULT_OFFSET * factor;
+          break;
+        }
+        case 'ArrowDown': {
+          offset.y = DEFAULT_OFFSET * factor;
+          break;
+        }
+        case 'ArrowLeft': {
+          offset.x = -DEFAULT_OFFSET * factor;
+          break;
+        }
+        case 'ArrowRight': {
+          offset.x = DEFAULT_OFFSET * factor;
+          break;
+        }
+      }
+
+      if (offset.x || offset.y) {
+        event.preventDefault();
+
+        if (!this.manager.scroller.scrollBy(offset.x, offset.y)) {
           this.manager.actions.move({
-            x: center.x,
-            y: center.y - DEFAULT_OFFSET,
+            x: center.x + offset.x,
+            y: center.y + offset.y,
           });
-          return;
-        case 'ArrowDown':
-          event.preventDefault();
-          this.manager.actions.move({
-            x: center.x,
-            y: center.y + DEFAULT_OFFSET,
-          });
-          return;
-        case 'ArrowLeft':
-          event.preventDefault();
-          this.manager.actions.move({
-            x: center.x - DEFAULT_OFFSET,
-            y: center.y,
-          });
-          return;
-        case 'ArrowRight':
-          event.preventDefault();
-          this.manager.actions.move({
-            x: center.x + DEFAULT_OFFSET,
-            y: center.y,
-          });
-          return;
+        }
       }
     };
 
     this.cleanup = this.listeners.bind(ownerDocument, [
-      {type: 'keydown', listener: onKeyUp, options: {capture: true}},
+      {type: 'keydown', listener: onKeyUp},
     ]);
   };
+
+  private sideEffects(): CleanupFunction {
+    const effectCleanupFns: CleanupFunction[] = [];
+
+    const autoScroller = this.manager.plugins.get(AutoScroller);
+
+    if (autoScroller?.disabled === false) {
+      autoScroller.disable();
+
+      effectCleanupFns.push(() => {
+        autoScroller.enable();
+      });
+    }
+
+    return () => effectCleanupFns.forEach((cleanup) => cleanup());
+  }
 
   public destroy() {
     // Remove all event listeners

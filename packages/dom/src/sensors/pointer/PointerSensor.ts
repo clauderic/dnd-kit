@@ -80,6 +80,13 @@ export class PointerSensor extends Sensor<
 
     this.manager.actions.setDragSource(source.id);
 
+    if (this.manager.dragOperation.status === 'idle') {
+      this.manager.actions.start({
+        x: event.clientX,
+        y: event.clientY,
+      });
+    }
+
     event.stopImmediatePropagation();
 
     const ownerDocument = getOwnerDocument(event.target);
@@ -104,14 +111,6 @@ export class PointerSensor extends Sensor<
   private handlePointerMove = (event: PointerEvent) => {
     event.preventDefault();
     event.stopPropagation();
-
-    if (this.manager.dragOperation.status === 'idle') {
-      this.manager.actions.start({
-        x: event.clientX,
-        y: event.clientY,
-      });
-      return;
-    }
 
     this.manager.actions.move({
       x: event.clientX,

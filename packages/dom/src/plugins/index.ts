@@ -1,2 +1,2 @@
 export {DraggableClone, DraggablePlaceholder} from './feedback';
-export {AutoScroller, ScrollManager} from './scrolling';
+export {AutoScroller, Scroller, ScrollManager} from './scrolling';

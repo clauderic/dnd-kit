@@ -1,35 +1,45 @@
 import {isDocumentScrollingElement} from './documentScrollingElement';
+import {
+  getViewportBoundingRectangle,
+  getBoundingRectangle,
+} from '../bounding-rectangle';
 
-export function getScrollPosition(scrollingContainer: Element) {
-  const minScroll = {
-    x: 0,
-    y: 0,
-  };
-  const dimensions = isDocumentScrollingElement(scrollingContainer)
+export function getScrollPosition(scrollableElement: Element) {
+  const rect = isDocumentScrollingElement(scrollableElement)
+    ? getViewportBoundingRectangle(scrollableElement)
+    : getBoundingRectangle(scrollableElement);
+
+  const dimensions = isDocumentScrollingElement(scrollableElement)
     ? {
         height: window.innerHeight,
         width: window.innerWidth,
       }
     : {
-        height: scrollingContainer.clientHeight,
-        width: scrollingContainer.clientWidth,
+        height: scrollableElement.clientHeight,
+        width: scrollableElement.clientWidth,
       };
-  const maxScroll = {
-    x: scrollingContainer.scrollWidth - dimensions.width,
-    y: scrollingContainer.scrollHeight - dimensions.height,
+  const position = {
+    current: {
+      x: scrollableElement.scrollLeft,
+      y: scrollableElement.scrollTop,
+    },
+    max: {
+      x: scrollableElement.scrollWidth - dimensions.width,
+      y: scrollableElement.scrollHeight - dimensions.height,
+    },
   };
 
-  const isTop = scrollingContainer.scrollTop <= minScroll.y;
-  const isLeft = scrollingContainer.scrollLeft <= minScroll.x;
-  const isBottom = scrollingContainer.scrollTop >= maxScroll.y;
-  const isRight = scrollingContainer.scrollLeft >= maxScroll.x;
+  const isTop = position.current.y <= 0;
+  const isLeft = position.current.x <= 0;
+  const isBottom = position.current.y >= position.max.y;
+  const isRight = position.current.x >= position.max.x;
 
   return {
+    rect,
+    position,
     isTop,
     isLeft,
     isBottom,
     isRight,
-    maxScroll,
-    minScroll,
   };
 }

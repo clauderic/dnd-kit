@@ -6,6 +6,7 @@ import type {
   Data,
   DroppableInput as AbstractDroppableInput,
 } from '@dnd-kit/abstract';
+import {Shape} from '@dnd-kit/geometry';
 import {defaultCollisionDetection} from '@dnd-kit/collision';
 import type {CollisionDetector} from '@dnd-kit/collision';
 import {effect, reactive} from '@dnd-kit/state';
@@ -17,6 +18,7 @@ type OptionalInput = 'collisionDetector';
 export interface Input<T extends Data = Data>
   extends Omit<AbstractDroppableInput<T>, OptionalInput> {
   collisionDetector?: CollisionDetector;
+  shape?: Shape;
 }
 
 export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
@@ -29,12 +31,23 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
   }: Input<T>) {
     super({...input, collisionDetector});
 
-    this.destroy = effect(this.update);
+    this.destroy = effect(this.updateShape);
   }
 
-  public update = () => {
+  public updateShape = () => {
     const {disabled, element} = this;
 
-    this.shape = element && !disabled ? new DOMRectangle(element) : null;
+    if (!element || disabled) {
+      this.shape = null;
+      return;
+    }
+
+    const updatedShape = new DOMRectangle(element);
+
+    if (this.shape?.equals(updatedShape)) {
+      return;
+    }
+
+    this.shape = updatedShape;
   };
 }
