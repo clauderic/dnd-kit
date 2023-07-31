@@ -4,7 +4,7 @@ import type {UniqueIdentifier} from '@dnd-kit/types';
 import {DndContext, useDraggable, useDroppable} from '@dnd-kit/react';
 import {closestCenter, CollisionDetector} from '@dnd-kit/collision';
 
-import {Button} from '../components';
+import {Button, Dropzone} from '../components';
 import {DraggableIcon} from '../icons';
 
 const items = [
@@ -90,20 +90,8 @@ function Droppable({
   const {ref, isOver} = useDroppable({id, accept, collisionDetector});
 
   return (
-    <div
-      ref={ref}
-      style={{
-        width: 300,
-        height: 300,
-        border: '1px solid #DEDEDE',
-        borderRadius: 10,
-        margin: 10,
-        backgroundColor: isOver ? 'green' : undefined,
-      }}
-    >
-      <div>Container: {id}</div>
-
-      <div>{children}</div>
-    </div>
+    <Dropzone ref={ref} highlight={isOver}>
+      {children}
+    </Dropzone>
   );
 }

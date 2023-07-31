@@ -13,9 +13,15 @@ const defaultThreshold: Record<Axis, number> = {
   y: 0.2,
 };
 
+interface ScrollIntent {
+  x: ScrollDirection;
+  y: ScrollDirection;
+}
+
 export function shouldScroll(
   scrollableElement: Element,
   coordinates: Coordinates,
+  intent?: ScrollIntent,
   acceleration = 10,
   thresholdPercentage = defaultThreshold
 ) {
@@ -40,7 +46,11 @@ export function shouldScroll(
     width: scrollContainerRect.width * thresholdPercentage.x,
   };
 
-  if (!isTop && coordinates.y <= scrollContainerRect.top + threshold.height) {
+  if (
+    !isTop &&
+    coordinates.y <= scrollContainerRect.top + threshold.height &&
+    intent?.y !== ScrollDirection.Forward
+  ) {
     // Scroll Up
     direction.y = ScrollDirection.Reverse;
     speed.y =
@@ -51,7 +61,8 @@ export function shouldScroll(
       );
   } else if (
     !isBottom &&
-    coordinates.y >= scrollContainerRect.bottom - threshold.height
+    coordinates.y >= scrollContainerRect.bottom - threshold.height &&
+    intent?.y !== ScrollDirection.Reverse
   ) {
     // Scroll Down
     direction.y = ScrollDirection.Forward;
@@ -65,7 +76,8 @@ export function shouldScroll(
 
   if (
     !isRight &&
-    coordinates.x >= scrollContainerRect.right - threshold.width
+    coordinates.x >= scrollContainerRect.right - threshold.width &&
+    intent?.x !== ScrollDirection.Reverse
   ) {
     // Scroll Right
     direction.x = ScrollDirection.Forward;
@@ -77,7 +89,8 @@ export function shouldScroll(
       );
   } else if (
     !isLeft &&
-    coordinates.x <= scrollContainerRect.left + threshold.width
+    coordinates.x <= scrollContainerRect.left + threshold.width &&
+    intent?.x !== ScrollDirection.Forward
   ) {
     // Scroll Left
     direction.x = ScrollDirection.Reverse;

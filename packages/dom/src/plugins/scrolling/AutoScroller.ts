@@ -18,8 +18,6 @@ export class AutoScroller extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager, _options?: Options) {
     super(manager);
 
-    const {dragOperation} = manager;
-
     let interval: NodeJS.Timer | null = null;
     const scrollIntentTracker = ScrollIntentTracker(manager);
 

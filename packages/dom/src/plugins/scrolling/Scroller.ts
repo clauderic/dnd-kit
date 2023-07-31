@@ -3,6 +3,7 @@ import {
   canScroll,
   shouldScroll,
   getScrollableAncestors,
+  ScrollDirection,
 } from '@dnd-kit/dom-utilities';
 import {computed} from '@dnd-kit/state';
 import {isEqual} from '@dnd-kit/utilities';
@@ -53,21 +54,34 @@ export class Scroller extends Plugin<DragDropManager> {
       for (const scrollableElement of elements) {
         const elementCanScroll = canScroll(scrollableElement, {x, y});
 
-        if (elementCanScroll.x || elementCanScroll.y) {
+        if ((x && elementCanScroll.x) || (y && elementCanScroll.y)) {
           const shouldScrollElement = shouldScroll(
             scrollableElement,
-            currentPosition
+            currentPosition,
+            {
+              x: getScrollIntent(x),
+              y: getScrollIntent(y),
+            }
           );
 
           if (
             shouldScrollElement.direction.x ||
             shouldScrollElement.direction.y
           ) {
-            const scrollLeft = x * shouldScrollElement.speed.x;
-            const scrollTop = y * shouldScrollElement.speed.y;
+            const scrollLeftBy = x * shouldScrollElement.speed.x;
+            const scrollTopBy = y * shouldScrollElement.speed.y;
 
-            scrollableElement.scrollBy(scrollLeft, scrollTop);
-            return true;
+            if (scrollLeftBy || scrollTopBy) {
+              const {scrollTop, scrollLeft} = scrollableElement;
+              scrollableElement.scrollBy(scrollLeftBy, scrollTopBy);
+
+              if (
+                scrollTop !== scrollableElement.scrollTop ||
+                scrollLeft !== scrollableElement.scrollLeft
+              ) {
+                return true;
+              }
+            }
           }
         }
       }
@@ -75,4 +89,16 @@ export class Scroller extends Plugin<DragDropManager> {
 
     return false;
   }
+}
+
+function getScrollIntent(value: number) {
+  if (value > 0) {
+    return ScrollDirection.Forward;
+  }
+
+  if (value < 0) {
+    return ScrollDirection.Reverse;
+  }
+
+  return ScrollDirection.Idle;
 }
