@@ -6,6 +6,7 @@ import {closestCenter, CollisionDetector} from '@dnd-kit/collision';
 
 import {Button, Dropzone} from '../components';
 import {DraggableIcon} from '../icons';
+import {cloneDeep} from '../utilities';
 
 export function DroppableExample() {
   const [items, setItems] = useState({
@@ -31,6 +32,7 @@ export function DroppableExample() {
       C4: [],
     },
   });
+  const snapshot = useRef(cloneDeep(items));
 
   return (
     <DndContext
@@ -61,6 +63,13 @@ export function DroppableExample() {
           }
         }
       }}
+      onDragEnd={(event) => {
+        if (event.canceled) {
+          setItems(snapshot.current);
+        } else {
+          snapshot.current = cloneDeep(items);
+        }
+      }}
     >
       <div style={{display: 'flex', flexDirection: 'row', gap: 20}}>
         {Object.entries(items).map(([columnId, items]) => (
@@ -76,7 +85,12 @@ export function DroppableExample() {
                 collisionDetector={closestCenter}
               >
                 {children.map((child) => (
-                  <Draggable id={child.id} type={child.type} parent={rowId} />
+                  <Draggable
+                    key={child.id}
+                    id={child.id}
+                    type={child.type}
+                    parent={rowId}
+                  />
                 ))}
               </Droppable>
             ))}

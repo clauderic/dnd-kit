@@ -1,15 +1,35 @@
 import {effect} from '@dnd-kit/state';
 import {Sensor} from '@dnd-kit/abstract';
+import type {Axis, Coordinates} from '@dnd-kit/geometry';
 import type {CleanupFunction} from '@dnd-kit/types';
 import {getOwnerDocument, Listeners} from '@dnd-kit/dom-utilities';
 
 import type {DragDropManager} from '../../manager';
 import type {Draggable} from '../../nodes';
 
-interface ActivationConstraint {}
+export type DistanceMeasurement =
+  | number
+  | Coordinates
+  | Pick<Coordinates, Axis.Horizontal>
+  | Pick<Coordinates, Axis.Vertical>;
+
+export interface DelayConstraint {
+  value: number;
+  tolerance: DistanceMeasurement;
+}
+
+export interface DistanceConstraint {
+  value: DistanceMeasurement;
+  tolerance?: DistanceMeasurement;
+}
+
+export interface ActivationConstraints {
+  distance?: DistanceConstraint;
+  delay?: DelayConstraint;
+}
 
 export interface PointerSensorOptions {
-  activationConstraints?: ActivationConstraint[];
+  activationConstraints?: ActivationConstraints;
 }
 
 /**
@@ -20,9 +40,13 @@ export class PointerSensor extends Sensor<
   DragDropManager,
   PointerSensorOptions
 > {
-  private listeners = new Listeners();
+  protected listeners = new Listeners();
 
   private cleanup: CleanupFunction | undefined;
+
+  private clearTimeout: CleanupFunction | undefined;
+
+  private initialCoordinates: Coordinates | undefined;
 
   constructor(protected manager: DragDropManager) {
     super(manager);
@@ -61,11 +85,11 @@ export class PointerSensor extends Sensor<
     return unbind;
   }
 
-  private handlePointerDown = (
+  protected handlePointerDown(
     event: PointerEvent,
     source: Draggable,
-    options?: PointerSensorOptions
-  ) => {
+    options: PointerSensorOptions = {}
+  ) {
     if (!event.isPrimary || event.button !== 0) {
       return;
     }
@@ -78,47 +102,109 @@ export class PointerSensor extends Sensor<
       return;
     }
 
-    this.manager.actions.setDragSource(source.id);
+    this.initialCoordinates = {
+      x: event.clientX,
+      y: event.clientY,
+    };
 
-    if (this.manager.dragOperation.status === 'idle') {
-      this.manager.actions.start({
-        x: event.clientX,
-        y: event.clientY,
-      });
+    const {activationConstraints} = options;
+
+    if (!activationConstraints?.delay && !activationConstraints?.distance) {
+      this.handleStart(source);
+      event.stopImmediatePropagation();
+    } else {
+      const {delay} = activationConstraints;
+
+      if (delay) {
+        const timeout = setTimeout(() => this.handleStart(source), delay.value);
+
+        this.clearTimeout = () => {
+          clearTimeout(timeout);
+          this.clearTimeout = undefined;
+        };
+      }
     }
-
-    event.stopImmediatePropagation();
 
     const ownerDocument = getOwnerDocument(event.target);
 
-    this.cleanup = this.listeners.bind(ownerDocument, [
+    const unbindListeners = this.listeners.bind(ownerDocument, [
       {
         type: 'pointermove',
-        listener: this.handlePointerMove,
+        listener: (event: PointerEvent) =>
+          this.handlePointerMove(event, source, options),
       },
       {
         type: 'pointerup',
-        listener: this.handlePointerUp,
+        listener: this.handlePointerUp.bind(this),
       },
       {
         // Prevent scrolling on touch devices
         type: 'touchmove',
         listener: preventDefault,
       },
+      {
+        type: 'keydown',
+        listener: this.handleKeyDown.bind(this),
+      },
     ]);
-  };
 
-  private handlePointerMove = (event: PointerEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
+    this.cleanup = () => {
+      unbindListeners();
 
-    this.manager.actions.move({
+      this.clearTimeout?.();
+      this.initialCoordinates = undefined;
+    };
+  }
+
+  protected handlePointerMove(
+    event: PointerEvent,
+    source: Draggable,
+    options: PointerSensorOptions
+  ) {
+    const coordinates = {
       x: event.clientX,
       y: event.clientY,
-    });
-  };
+    };
 
-  private handlePointerUp = (event: PointerEvent) => {
+    if (this.manager.dragOperation.status === 'dragging') {
+      event.preventDefault();
+      event.stopPropagation();
+
+      this.manager.actions.move(coordinates);
+      return;
+    }
+
+    if (!this.initialCoordinates) {
+      return;
+    }
+
+    const delta = {
+      x: coordinates.x - this.initialCoordinates.x,
+      y: coordinates.y - this.initialCoordinates.y,
+    };
+    const {activationConstraints} = options;
+    const {distance, delay} = activationConstraints ?? {};
+
+    if (distance) {
+      if (
+        distance.tolerance != null &&
+        hasExceededDistance(delta, distance.tolerance)
+      ) {
+        return this.handleCancel();
+      }
+      if (hasExceededDistance(delta, distance.value)) {
+        return this.handleStart(source);
+      }
+    }
+
+    if (delay) {
+      if (hasExceededDistance(delta, delay.tolerance)) {
+        return this.handleCancel();
+      }
+    }
+  }
+
+  private handlePointerUp(event: PointerEvent) {
     // Prevent the default behaviour of the event
     event.preventDefault();
     event.stopPropagation();
@@ -128,7 +214,37 @@ export class PointerSensor extends Sensor<
 
     // Remove the pointer move and up event listeners
     this.cleanup?.();
-  };
+  }
+
+  protected handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.handleCancel();
+    }
+  }
+
+  protected handleStart(source: Draggable) {
+    this.clearTimeout?.();
+
+    if (
+      !this.initialCoordinates ||
+      this.manager.dragOperation.status !== 'idle'
+    ) {
+      return;
+    }
+
+    this.manager.actions.setDragSource(source.id);
+    this.manager.actions.start(this.initialCoordinates);
+  }
+
+  protected handleCancel() {
+    if (this.manager.dragOperation.status !== 'idle') {
+      this.manager.actions.cancel();
+    }
+
+    // Remove the pointer move and up event listeners
+    this.cleanup?.();
+  }
 
   public destroy() {
     // Remove all event listeners
@@ -138,4 +254,30 @@ export class PointerSensor extends Sensor<
 
 function preventDefault(event: Event) {
   event.preventDefault();
+}
+
+export function hasExceededDistance(
+  delta: Coordinates,
+  measurement: DistanceMeasurement
+): boolean {
+  const dx = Math.abs(delta.x);
+  const dy = Math.abs(delta.y);
+
+  if (typeof measurement === 'number') {
+    return Math.sqrt(dx ** 2 + dy ** 2) > measurement;
+  }
+
+  if ('x' in measurement && 'y' in measurement) {
+    return dx > measurement.x && dy > measurement.y;
+  }
+
+  if ('x' in measurement) {
+    return dx > measurement.x;
+  }
+
+  if ('y' in measurement) {
+    return dy > measurement.y;
+  }
+
+  return false;
 }

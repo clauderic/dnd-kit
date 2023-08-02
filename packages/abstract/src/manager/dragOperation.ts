@@ -111,6 +111,18 @@ export function DragOperationManager<
     position,
   };
 
+  const reset = () =>
+    requestAnimationFrame(() => {
+      batch(() => {
+        status.value = Status.Idle;
+        sourceIdentifier.value = null;
+        targetIdentifier.value = null;
+        shape.value = null;
+        position.reset({x: 0, y: 0});
+      });
+    });
+
+
   return {
     operation,
     actions: {
@@ -148,11 +160,14 @@ export function DragOperationManager<
         monitor.dispatch('dragmove', {});
       },
       cancel() {
-        // TO-DO
+        status.value = Status.Dropping;
+
         monitor.dispatch('dragend', {
           operation: snapshot(operation),
           canceled: true,
         });
+
+        reset()
       },
       stop() {
         status.value = Status.Dropping;
@@ -162,15 +177,7 @@ export function DragOperationManager<
           canceled: false,
         });
 
-        requestAnimationFrame(() => {
-          batch(() => {
-            status.value = Status.Idle;
-            sourceIdentifier.value = null;
-            targetIdentifier.value = null;
-            shape.value = null;
-            position.reset({x: 0, y: 0});
-          });
-        });
+        reset();
       },
     },
   };

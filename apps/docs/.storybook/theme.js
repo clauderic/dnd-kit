@@ -1,8 +1,8 @@
 import {create} from '@storybook/theming/create';
+import {default as brandImage} from './assets/dnd-kit-banner.svg';
 
 export const theme = create({
   base: 'light',
-  brandImage:
-    'https://raw.githubusercontent.com/clauderic/dnd-kit/master/.storybook/assets/dnd-kit-banner.svg',
+  brandImage,
   appBg: '#F9F9F9',
 });

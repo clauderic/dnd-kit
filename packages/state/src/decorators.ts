@@ -19,7 +19,7 @@ export function reactive(target: Object, propertyKey: string) {
     set(value: any) {
       const stored = store.get(this);
 
-      if (stored) {
+      if (stored && stored.peek() !== value) {
         stored.value = value;
         return;
       }

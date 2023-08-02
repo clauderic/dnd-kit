@@ -8,11 +8,11 @@ export function useConnectSensors(
   draggable: Draggable
 ) {
   useIsomorphicLayoutEffect(() => {
-    const unbindFunctions = sensors.map(({sensor}) => {
+    const unbindFunctions = sensors.map(({sensor, options}) => {
       const sensorInstance =
         manager.sensors.get(sensor) ?? manager.sensors.register(sensor);
 
-      const unbind = sensorInstance.bind(draggable, manager);
+      const unbind = sensorInstance.bind(draggable, options);
       return unbind;
     });
 

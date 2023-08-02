@@ -6,6 +6,7 @@ import {useDndContext} from '../context';
 import {useComputed, useConstant, useIsomorphicLayoutEffect} from '../hooks';
 import {useConnectSensors} from '../sensors';
 import {getCurrentValue, type RefOrValue} from '../utilities';
+import {useEffect} from 'react';
 
 export interface UseDraggableInput<T extends Data = Data>
   extends DraggableInput<T> {
@@ -15,7 +16,15 @@ export interface UseDraggableInput<T extends Data = Data>
 }
 
 const defaultSensors: SensorDescriptor<DragDropManager>[] = [
-  {sensor: PointerSensor},
+  {
+    sensor: PointerSensor,
+    options: {
+      activationConstraints: {
+        delay: {value: 250, tolerance: 10},
+        distance: {value: 5},
+      },
+    },
+  },
   {sensor: KeyboardSensor},
 ];
 
@@ -23,7 +32,7 @@ export function useDraggable<T extends Data = Data>(
   input: UseDraggableInput<T>
 ) {
   const manager = useDndContext();
-  const {disabled, sensors = defaultSensors} = input;
+  const {disabled, sensors = defaultSensors, id} = input;
   const draggable = useConstant(() => new Draggable(input));
   const activator = getCurrentValue(input.activator);
   const element = getCurrentValue(input.element);
@@ -36,23 +45,29 @@ export function useDraggable<T extends Data = Data>(
   useIsomorphicLayoutEffect(() => {
     draggable.activator = activator;
     draggable.element = element;
-  }, [activator, element]);
+    draggable.disabled = Boolean(disabled);
+  }, [activator, disabled, element, id]);
 
   useIsomorphicLayoutEffect(() => {
     const {registry} = manager;
+
+    if (draggable.id !== id) {
+      draggable.id = id;
+    }
+
     const unregister = registry.register(draggable);
 
     return () => {
       unregister();
-      draggable.destroy();
     };
-  }, [manager]);
-
-  useIsomorphicLayoutEffect(() => {
-    draggable.disabled = Boolean(disabled);
-  }, [disabled]);
+  }, [manager, id]);
 
   useConnectSensors(sensors, manager, draggable);
+
+  useEffect(() => {
+    // Cleanup on unmount
+    return draggable.destroy;
+  }, [draggable]);
 
   return {
     get isDragging() {
