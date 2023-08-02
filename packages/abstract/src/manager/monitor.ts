@@ -1,8 +1,11 @@
 import type {AnyFunction} from '@dnd-kit/types';
 
+import type {DragDropManager} from './manager';
+import type {DragOperation} from './dragOperation';
+
 export type Events = Record<string, {} | undefined>;
 
-export class Monitor<T extends Events> {
+class Monitor<T extends Events> {
   private registry = new Map<keyof T, Set<AnyFunction>>();
 
   public addEventListener(name: keyof T, handler: AnyFunction) {
@@ -32,5 +35,27 @@ export class Monitor<T extends Events> {
     for (const listener of listeners) {
       listener(event);
     }
+  }
+}
+
+export type DragDropEvents = {
+  dragstart: {};
+  dragmove: {};
+  dragover: {operation: DragOperation};
+  dragend: {operation: DragOperation; canceled: boolean};
+};
+
+export class DragDropMonitor<
+  T extends DragDropManager<any, any> = DragDropManager<any, any>,
+> extends Monitor<DragDropEvents> {
+  constructor(private manager: T) {
+    super();
+  }
+
+  public dispatch<T extends keyof DragDropEvents>(
+    type: T,
+    event: DragDropEvents[T]
+  ) {
+    super.dispatch(type, event);
   }
 }

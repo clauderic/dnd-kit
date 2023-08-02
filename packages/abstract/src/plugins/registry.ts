@@ -4,26 +4,30 @@ import type {Plugin} from './plugin';
 import type {PluginConstructor} from './types';
 
 export class PluginRegistry<
-  T extends DragDropManager<any, any> = DragDropManager<any, any>,
+  T extends DragDropManager<any, any>,
+  U extends Plugin<T> = Plugin<T>,
+  V extends PluginConstructor<T, U> = PluginConstructor<T, U>,
 > {
-  private instances: Map<PluginConstructor<T>, Plugin<T>> = new Map();
+  private instances: Map<V, U> = new Map();
 
   constructor(private manager: T) {}
 
-  public get<S extends PluginConstructor<T>>(
-    plugin: S
-  ): InstanceType<S> | undefined {
-    const instance = this.instances.get(plugin);
-
-    return instance as InstanceType<S> | undefined;
+  public [Symbol.iterator]() {
+    return this.instances.values();
   }
 
-  public register<S extends PluginConstructor<T>>(plugin: S): InstanceType<S> {
+  public get(plugin: V): U | undefined {
+    const instance = this.instances.get(plugin);
+
+    return instance;
+  }
+
+  public register(plugin: V): U {
     const instance = new plugin(this.manager);
 
     this.instances.set(plugin, instance);
 
-    return instance as InstanceType<S>;
+    return instance;
   }
 
   public destroy() {

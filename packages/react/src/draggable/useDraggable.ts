@@ -4,6 +4,7 @@ import type {DragDropManager, DraggableInput} from '@dnd-kit/dom';
 
 import {useDndContext} from '../context';
 import {useComputed, useConstant, useIsomorphicLayoutEffect} from '../hooks';
+import {useConnectSensors} from '../sensors';
 import {getCurrentValue, type RefOrValue} from '../utilities';
 
 export interface UseDraggableInput<T extends Data = Data>
@@ -48,22 +49,10 @@ export function useDraggable<T extends Data = Data>(
   }, [manager]);
 
   useIsomorphicLayoutEffect(() => {
-    const unbindFunctions = sensors.map(({sensor}) => {
-      const sensorInstance =
-        manager.sensors.get(sensor) ?? manager.sensors.register(sensor);
-
-      const unbind = sensorInstance.bind(draggable, manager);
-      return unbind;
-    });
-
-    return function cleanup() {
-      unbindFunctions.forEach((unbind) => unbind());
-    };
-  }, [sensors, manager, draggable]);
-
-  useIsomorphicLayoutEffect(() => {
     draggable.disabled = Boolean(disabled);
   }, [disabled]);
+
+  useConnectSensors(sensors, manager, draggable);
 
   return {
     get isDragging() {

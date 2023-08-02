@@ -4,11 +4,11 @@ import {effect} from '@dnd-kit/state';
 import {cloneElement} from '@dnd-kit/dom-utilities';
 
 import type {DragDropManager} from '../../manager';
-import {createOverlay} from './DraggableOverlay';
+import {createOverlay} from './Overlay';
 
 interface Options {}
 
-export class DraggableClone extends Plugin<DragDropManager> {
+export class PlaceholderFeedback extends Plugin<DragDropManager> {
   public destroy: CleanupFunction;
 
   constructor(manager: DragDropManager, _options?: Options) {
@@ -19,18 +19,32 @@ export class DraggableClone extends Plugin<DragDropManager> {
       const {status, source} = dragOperation;
       const isDragging = status === 'dragging';
 
-      if (!isDragging || !source || !source.feedback || !source.element) {
+      if (
+        !isDragging ||
+        !source ||
+        !source.element ||
+        source.feedback !== 'placeholder'
+      ) {
         return;
       }
 
       const {element} = source;
       const overlay = createOverlay(manager, element);
-      const clonedElement = cloneElement(element);
+      const placeholder = document.createElement('div');
+      const {width, height} = element.getBoundingClientRect();
 
-      overlay.appendChild(clonedElement);
+      placeholder.style.width = `${width}px`;
+      placeholder.style.height = `${height}px`;
+
+      element.replaceWith(placeholder);
+      overlay.appendChild(element);
       document.body.appendChild(overlay);
+      console.log('mount overlay');
 
       return () => {
+        const clone = cloneElement(element);
+        element.replaceWith(clone);
+        placeholder.replaceWith(element);
         overlay.remove();
       };
     });

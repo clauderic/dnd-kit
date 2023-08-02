@@ -9,17 +9,20 @@ import {batch, effect} from '@dnd-kit/state';
 import type {Draggable, Droppable} from '../nodes';
 import {
   AutoScroller,
-  DraggablePlaceholder,
+  CloneFeedback,
+  PlaceholderFeedback,
   ScrollManager,
   Scroller,
 } from '../plugins';
 import {PointerSensor} from '../sensors';
+import {DragSourceDeltaModifier} from '../modifiers';
 
 export interface Input extends DragDropManagerInput<DragDropManager> {}
 
 const defaultPlugins: PluginConstructor<DragDropManager>[] = [
   AutoScroller,
-  DraggablePlaceholder,
+  CloneFeedback,
+  PlaceholderFeedback,
 ];
 
 const defaultSensors: SensorConstructor<DragDropManager>[] = [PointerSensor];
@@ -33,9 +36,15 @@ export class DragDropManager<
   constructor({
     plugins = defaultPlugins,
     sensors = defaultSensors,
+    modifiers = [],
     ...input
   }: Input = {}) {
-    super({...input, plugins, sensors});
+    super({
+      ...input,
+      plugins,
+      sensors,
+      modifiers: [DragSourceDeltaModifier, ...modifiers],
+    });
 
     const scrollManager = new ScrollManager(this);
     this.scroller = new Scroller(this);

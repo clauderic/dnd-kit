@@ -1,7 +1,9 @@
 .Dropzone {
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  justify-content: flex-start;
   position: relative;
   padding-top: 80px;
   text-align: center;

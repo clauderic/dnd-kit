@@ -2,62 +2,59 @@ import type {Draggable, Droppable} from '../nodes';
 import {CollisionObserver} from '../collision';
 
 import {DragDropRegistry} from './registry';
-import {DragOperationManager} from './dragOperation';
-import type {DragOperation} from './dragOperation';
-import {Monitor} from './monitor';
+import {
+  DragOperationManager,
+  type DragOperation,
+  type DragActions,
+} from './dragOperation';
+import {DragDropMonitor} from './monitor';
 import {PluginRegistry, type PluginConstructor} from '../plugins';
-import type {SensorConstructor} from '../sensors';
+import type {Sensor, SensorConstructor} from '../sensors';
+import type {Modifier, ModifierConstructor} from '../modifiers';
 
 export interface DragDropConfiguration<T extends DragDropManager<any, any>> {
   plugins: PluginConstructor<T>[];
   sensors: SensorConstructor<T>[];
+  modifiers: ModifierConstructor<T>[];
 }
 
 export type DragDropManagerInput<T extends DragDropManager<any, any>> = Partial<
   DragDropConfiguration<T>
 >;
 
-export type DragDropEvents = {
-  dragstart: {};
-  dragmove: {};
-  dragend: {operation: DragOperation; canceled: boolean};
-};
-
-export class DragDropMonitor<
-  T extends DragDropManager<any, any> = DragDropManager<any, any>,
-> extends Monitor<DragDropEvents> {
-  constructor(private manager: T) {
-    super();
-  }
-
-  public dispatch<T extends keyof DragDropEvents>(
-    type: T,
-    event: DragDropEvents[T]
-  ) {
-    super.dispatch(type, event);
-  }
-}
-
 export class DragDropManager<
   T extends Draggable = Draggable,
   U extends Droppable = Droppable,
 > {
-  public actions: DragOperationManager<T, U>['actions'];
+  public actions: DragActions<T, U, DragDropManager<T, U>>;
   public collisionObserver: CollisionObserver<T, U>;
   public dragOperation: DragOperation<T, U>;
   public registry: DragDropRegistry<T, U>;
   public monitor: DragDropMonitor<DragDropManager<T, U>>;
   public plugins: PluginRegistry<DragDropManager<T, U>>;
-  public sensors: PluginRegistry<DragDropManager<T, U>>;
+  public sensors: PluginRegistry<
+    DragDropManager<T, U>,
+    Sensor<DragDropManager<T, U>>
+  >;
+  public modifiers: PluginRegistry<
+    DragDropManager<T, U>,
+    Modifier<DragDropManager<T, U>>
+  >;
 
   constructor(config?: DragDropManagerInput<DragDropManager<T, U>>) {
-    const {plugins = [], sensors = []} = config ?? {};
-    const monitor = new DragDropMonitor(this);
+    type V = DragDropManager<T, U>;
+
+    const {plugins = [], sensors = [], modifiers = []} = config ?? {};
+    const monitor = new DragDropMonitor<V>(this);
     const registry = new DragDropRegistry<T, U>();
-    const {actions, operation} = DragOperationManager<T, U>({
-      registry,
-      monitor,
-    });
+
+    this.registry = registry;
+    this.monitor = monitor;
+    this.plugins = new PluginRegistry<V>(this);
+    this.sensors = new PluginRegistry<V, Sensor<V>>(this);
+    this.modifiers = new PluginRegistry<V, Modifier<V>>(this);
+
+    const {actions, operation} = DragOperationManager<T, U, V>(this);
     const collisionObserver = new CollisionObserver<T, U>({
       dragOperation: operation,
       registry,
@@ -65,11 +62,11 @@ export class DragDropManager<
 
     this.actions = actions;
     this.collisionObserver = collisionObserver;
-    this.registry = registry;
     this.dragOperation = operation;
-    this.monitor = monitor;
-    this.plugins = new PluginRegistry(this);
-    this.sensors = new PluginRegistry(this);
+
+    for (const modifier of modifiers) {
+      this.modifiers.register(modifier);
+    }
 
     for (const plugin of plugins) {
       this.plugins.register(plugin);

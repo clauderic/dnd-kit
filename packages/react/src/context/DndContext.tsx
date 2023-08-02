@@ -8,20 +8,24 @@ import {DragDropContext} from './context';
 
 export interface Props {
   onDragStart?(event: DragDropEvents['dragstart']): void;
+  onDragOver?(event: DragDropEvents['dragover']): void;
   onDragEnd?(event: DragDropEvents['dragend']): void;
 }
 
 export function DndContext({
   children,
   onDragStart,
+  onDragOver,
   onDragEnd,
 }: PropsWithChildren<Props>) {
   const manager = useConstant(() => new DragDropManager());
   const handleDragStart = useEvent(onDragStart);
+  const handleDragOver = useEvent(onDragOver);
   const handleDragEnd = useEvent(onDragEnd);
 
   useEffect(() => {
     manager.monitor.addEventListener('dragstart', handleDragStart);
+    manager.monitor.addEventListener('dragover', handleDragOver);
     manager.monitor.addEventListener('dragend', handleDragEnd);
 
     return () => {

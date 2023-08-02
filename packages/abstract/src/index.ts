@@ -9,11 +9,14 @@ export type {
 export {CollisionPriority} from './collision';
 export type {Collision, CollisionDetector} from './collision';
 
-export {Plugin} from './plugins';
-export type {PluginConstructor} from './plugins';
+export {Modifier} from './modifiers';
+export type {ModifierConstructor} from './modifiers';
 
 export {Draggable, Droppable} from './nodes';
 export type {Data, Node, DraggableInput, DroppableInput} from './nodes';
+
+export {Plugin} from './plugins';
+export type {PluginConstructor} from './plugins';
 
 export {Sensor} from './sensors';
 export type {

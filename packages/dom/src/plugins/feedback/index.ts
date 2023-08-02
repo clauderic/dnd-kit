@@ -1,2 +1,2 @@
-export {DraggableClone} from './DraggableClone';
-export {DraggablePlaceholder} from './DraggablePlaceholder';
+export {CloneFeedback} from './CloneFeedback';
+export {PlaceholderFeedback} from './PlaceholderFeedback';

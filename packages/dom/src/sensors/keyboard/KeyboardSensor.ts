@@ -119,11 +119,13 @@ export class KeyboardSensor extends Sensor<
         return;
       }
 
-      if (!source.element) {
+      const {shape} = this.manager.dragOperation;
+
+      if (!shape) {
         return;
       }
 
-      const {center} = new DOMRectangle(source.element);
+      const {center} = shape;
       const factor = event.shiftKey ? 5 : 1;
       const offset = {
         x: 0,

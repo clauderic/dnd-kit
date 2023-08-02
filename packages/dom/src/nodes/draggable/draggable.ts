@@ -7,7 +7,7 @@ import {reactive} from '@dnd-kit/state';
 
 export interface Input<T extends Data = Data> extends DraggableInput<T> {}
 
-export type DraggableFeedback = 'none' | 'clone' | 'move';
+export type DraggableFeedback = 'none' | 'clone' | 'move' | 'placeholder';
 
 export class Draggable<T extends Data = Data> extends AbstractDraggable<T> {
   @reactive
@@ -17,7 +17,7 @@ export class Draggable<T extends Data = Data> extends AbstractDraggable<T> {
   public element: Element | undefined;
 
   @reactive
-  public feedback: boolean = true;
+  public feedback: string = 'placeholder';
 
   constructor(input: Input<T>) {
     super(input);
