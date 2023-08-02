@@ -9,27 +9,27 @@ import {DraggableIcon} from '../icons';
 
 export function DroppableExample() {
   const [items, setItems] = useState({
-    A: [
-      {id: 'A1', children: [{id: 'A1', type: 'A'}]},
-      {id: 'A2', children: []},
-      {id: 'A3', children: []},
-      {id: 'A4', children: []},
-      {id: 'A5', children: []},
-      {id: 'A6', children: []},
-      {id: 'A7', children: []},
-    ],
-    B: [
-      {id: 'B1', children: []},
-      {id: 'B2', children: [{id: 'A2', type: 'A'}]},
-      {id: 'B3', children: []},
-      {id: 'B4', children: []},
-    ],
-    C: [
-      {id: 'C1', children: []},
-      {id: 'C2', children: []},
-      {id: 'C3', children: []},
-      {id: 'C4', children: []},
-    ],
+    A: {
+      A1: [{id: 'A1', type: 'A'}],
+      A2: [],
+      A3: [],
+      A4: [],
+      A5: [],
+      A6: [],
+      A7: [],
+    },
+    B: {
+      B1: [],
+      B2: [{id: 'A2', type: 'A'}],
+      B3: [],
+      B4: [],
+    },
+    C: {
+      C1: [],
+      C2: [],
+      C3: [],
+      C4: [],
+    },
   });
 
   return (
@@ -38,87 +38,45 @@ export function DroppableExample() {
         const {source, target} = event.operation;
 
         if (source && target) {
-          const [targetParentId] = String(target.id);
-          const [currentParentId] = String(source.data!.parent);
+          const targetRowId = target.id;
+          const currentRowId = source.data!.parent;
+          const [targetColumnId] = String(target.id);
+          const [currentColumnId] = String(currentRowId);
 
-          if (source.data!.parent !== target.id) {
+          if (currentRowId !== targetRowId) {
             setItems((items) => {
-              if (targetParentId !== currentParentId) {
-                return {
-                  ...items,
-                  [currentParentId]: items[currentParentId].map((item) => {
-                    if (item.id === source.data!.parent) {
-                      return {
-                        ...item,
-                        children: item.children.filter(
-                          (child) => child.id !== source.id
-                        ),
-                      };
-                    }
+              const newItems = {...items};
 
-                    return item;
-                  }),
-                  [targetParentId]: items[targetParentId].map((item) => {
-                    if (item.id === target.id) {
-                      return {
-                        ...item,
-                        children: [
-                          ...item.children,
-                          {id: source.id, type: source.type},
-                        ],
-                      };
-                    }
+              newItems[currentColumnId][currentRowId] = newItems[
+                currentColumnId
+              ][currentRowId].filter((child) => child.id !== source.id);
 
-                    return item;
-                  }),
-                };
-              } else {
-                return {
-                  ...items,
-                  [targetParentId]: items[targetParentId].map((item) => {
-                    if (item.id === target.id) {
-                      return {
-                        ...item,
-                        children: [
-                          ...item.children,
-                          {id: source.id, type: source.type},
-                        ],
-                      };
-                    }
+              newItems[targetColumnId][targetRowId] = [
+                ...newItems[targetColumnId][targetRowId],
+                {id: source.id, type: source.type},
+              ];
 
-                    if (item.id === source.data!.parent) {
-                      return {
-                        ...item,
-                        children: item.children.filter(
-                          (child) => child.id !== source.id
-                        ),
-                      };
-                    }
-
-                    return item;
-                  }),
-                };
-              }
+              return newItems;
             });
           }
         }
       }}
     >
       <div style={{display: 'flex', flexDirection: 'row', gap: 20}}>
-        {Object.entries(items).map(([id, items]) => (
+        {Object.entries(items).map(([columnId, items]) => (
           <div
-            key={id}
+            key={columnId}
             style={{display: 'flex', flexDirection: 'column', gap: 20}}
           >
-            {items.map((item) => (
+            {Object.entries(items).map(([rowId, children]) => (
               <Droppable
-                key={item.id}
-                id={item.id}
+                key={rowId}
+                id={rowId}
                 accept={['A']}
                 collisionDetector={closestCenter}
               >
-                {item.children.map((child) => (
-                  <Draggable id={child.id} type={child.type} parent={item.id} />
+                {children.map((child) => (
+                  <Draggable id={child.id} type={child.type} parent={rowId} />
                 ))}
               </Droppable>
             ))}
