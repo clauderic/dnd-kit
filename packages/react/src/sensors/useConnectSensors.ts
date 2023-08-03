@@ -1,16 +1,21 @@
 import type {DragDropManager, Draggable} from '@dnd-kit/dom';
+import {Sensor, descriptor, type Sensors} from '@dnd-kit/abstract';
 import {useIsomorphicLayoutEffect} from '../hooks';
-import {SensorDescriptor} from '@dnd-kit/abstract';
 
 export function useConnectSensors(
-  sensors: SensorDescriptor[],
+  localSensors: Sensors | undefined,
   manager: DragDropManager,
   draggable: Draggable
 ) {
   useIsomorphicLayoutEffect(() => {
-    const unbindFunctions = sensors.map(({sensor, options}) => {
+    const sensors = localSensors?.map(descriptor) ?? [...manager.sensors];
+    const unbindFunctions = sensors.map((entry) => {
       const sensorInstance =
-        manager.sensors.get(sensor) ?? manager.sensors.register(sensor);
+        entry instanceof Sensor
+          ? entry
+          : manager.sensors.get(entry.plugin) ??
+            manager.sensors.register(entry.plugin);
+      const options = entry instanceof Sensor ? undefined : entry.options;
 
       const unbind = sensorInstance.bind(draggable, options);
       return unbind;
@@ -19,5 +24,5 @@ export function useConnectSensors(
     return function cleanup() {
       unbindFunctions.forEach((unbind) => unbind());
     };
-  }, [sensors, manager, draggable]);
+  }, [localSensors, manager, draggable]);
 }

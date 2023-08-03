@@ -1,7 +1,7 @@
 import {DragDropManager} from '../manager';
 
 import type {Plugin} from './plugin';
-import type {PluginConstructor} from './types';
+import type {PluginConstructor, PluginOptions} from './types';
 
 export class PluginRegistry<
   T extends DragDropManager<any, any>,
@@ -22,8 +22,8 @@ export class PluginRegistry<
     return instance;
   }
 
-  public register(plugin: V): U {
-    const instance = new plugin(this.manager);
+  public register(plugin: V, options?: PluginOptions): U {
+    const instance = new plugin(this.manager, options);
 
     this.instances.set(plugin, instance);
 

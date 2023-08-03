@@ -15,11 +15,17 @@ export type {ModifierConstructor} from './modifiers';
 export {Draggable, Droppable} from './nodes';
 export type {Data, Node, DraggableInput, DroppableInput} from './nodes';
 
-export {Plugin} from './plugins';
-export type {PluginConstructor} from './plugins';
+export {Plugin, configure, descriptor} from './plugins';
+export type {
+  Plugins,
+  PluginConstructor,
+  PluginDescriptor,
+  PluginOptions,
+} from './plugins';
 
 export {Sensor} from './sensors';
 export type {
+  Sensors,
   SensorConstructor,
   SensorDescriptor,
   SensorOptions,

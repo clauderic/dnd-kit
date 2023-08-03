@@ -8,13 +8,13 @@ import {
   type DragActions,
 } from './dragOperation';
 import {DragDropMonitor} from './monitor';
-import {PluginRegistry, type PluginConstructor} from '../plugins';
-import type {Sensor, SensorConstructor} from '../sensors';
+import {PluginRegistry, descriptor, type Plugins} from '../plugins';
+import type {Sensor, SensorConstructor, Sensors} from '../sensors';
 import type {Modifier, ModifierConstructor} from '../modifiers';
 
 export interface DragDropConfiguration<T extends DragDropManager<any, any>> {
-  plugins: PluginConstructor<T>[];
-  sensors: SensorConstructor<T>[];
+  plugins: Plugins<T>;
+  sensors: Sensors<T>;
   modifiers: ModifierConstructor<T>[];
 }
 
@@ -68,12 +68,14 @@ export class DragDropManager<
       this.modifiers.register(modifier);
     }
 
-    for (const plugin of plugins) {
-      this.plugins.register(plugin);
+    for (const entry of plugins) {
+      const {plugin, options} = descriptor(entry);
+      this.plugins.register(plugin, options);
     }
 
-    for (const sensor of sensors) {
-      this.sensors.register(sensor);
+    for (const entry of sensors) {
+      const {plugin, options} = descriptor(entry);
+      this.sensors.register(plugin as SensorConstructor, options);
     }
   }
 

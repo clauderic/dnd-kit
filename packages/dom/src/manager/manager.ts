@@ -1,8 +1,9 @@
 import {
   DragDropManager as AbstractDragDropManager,
   DragDropManagerInput,
-  PluginConstructor,
-  SensorConstructor,
+  configure,
+  type Plugins,
+  type Sensors,
 } from '@dnd-kit/abstract';
 import {batch, effect} from '@dnd-kit/state';
 
@@ -14,18 +15,26 @@ import {
   ScrollManager,
   Scroller,
 } from '../plugins';
-import {PointerSensor} from '../sensors';
+import {KeyboardSensor, PointerSensor} from '../sensors';
 import {DragSourceDeltaModifier} from '../modifiers';
 
 export interface Input extends DragDropManagerInput<DragDropManager> {}
 
-const defaultPlugins: PluginConstructor<DragDropManager>[] = [
+const defaultPlugins: Plugins<DragDropManager> = [
   AutoScroller,
   CloneFeedback,
   PlaceholderFeedback,
 ];
 
-const defaultSensors: SensorConstructor<DragDropManager>[] = [PointerSensor];
+const defaultSensors: Sensors<DragDropManager> = [
+  configure(PointerSensor, {
+    activationConstraints: {
+      delay: {value: 200, tolerance: 10},
+      distance: {value: 5},
+    },
+  }),
+  KeyboardSensor,
+];
 
 export class DragDropManager<
   T extends Draggable = Draggable,

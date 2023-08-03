@@ -48,7 +48,10 @@ export class PointerSensor extends Sensor<
 
   private initialCoordinates: Coordinates | undefined;
 
-  constructor(protected manager: DragDropManager) {
+  constructor(
+    protected manager: DragDropManager,
+    public options?: PointerSensorOptions
+  ) {
     super(manager);
 
     // Adding a non-capture and non-passive `touchmove` listener in order
@@ -64,7 +67,7 @@ export class PointerSensor extends Sensor<
     });
   }
 
-  public bind(source: Draggable, options?: PointerSensorOptions) {
+  public bind(source: Draggable, options = this.options) {
     const unbind = effect(() => {
       const target = source.activator ?? source.element;
       const listener: EventListener = (event: Event) => {

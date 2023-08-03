@@ -1,5 +1,5 @@
-import type {Data, SensorDescriptor} from '@dnd-kit/abstract';
-import {Draggable, KeyboardSensor, PointerSensor} from '@dnd-kit/dom';
+import type {Data, Sensors} from '@dnd-kit/abstract';
+import {Draggable} from '@dnd-kit/dom';
 import type {DragDropManager, DraggableInput} from '@dnd-kit/dom';
 
 import {useDndContext} from '../context';
@@ -12,27 +12,14 @@ export interface UseDraggableInput<T extends Data = Data>
   extends DraggableInput<T> {
   activator?: RefOrValue<Element>;
   element: RefOrValue<Element>;
-  sensors?: SensorDescriptor<DragDropManager>[];
+  sensors?: Sensors<DragDropManager>;
 }
-
-const defaultSensors: SensorDescriptor<DragDropManager>[] = [
-  {
-    sensor: PointerSensor,
-    options: {
-      activationConstraints: {
-        delay: {value: 250, tolerance: 10},
-        distance: {value: 5},
-      },
-    },
-  },
-  {sensor: KeyboardSensor},
-];
 
 export function useDraggable<T extends Data = Data>(
   input: UseDraggableInput<T>
 ) {
   const manager = useDndContext();
-  const {disabled, sensors = defaultSensors, id} = input;
+  const {disabled, sensors, id} = input;
   const draggable = useConstant(() => new Draggable(input));
   const activator = getCurrentValue(input.activator);
   const element = getCurrentValue(input.element);
