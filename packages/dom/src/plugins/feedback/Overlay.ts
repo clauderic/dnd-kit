@@ -4,13 +4,15 @@ import type {CleanupFunction} from '@dnd-kit/types';
 
 import {DragDropManager} from '../../manager';
 import {DOMRectangle} from '../../shapes';
+import {BoundingRectangle} from '@dnd-kit/geometry';
 
 const VIEW_TRANSITION_NAME = 'dnd-kit--drop-animation';
 
-class Overlay extends HTMLElement {
+class Overlay {
   private destroy: CleanupFunction;
+  private element: HTMLDialogElement;
 
-  private dropAnimation: () => void;
+  private dropAnimation: () => Promise<void>;
   private transform = {
     x: 0,
     y: 0,
@@ -18,18 +20,26 @@ class Overlay extends HTMLElement {
 
   constructor(
     private manager: DragDropManager,
-    element: Element
+    boundingRectangle: BoundingRectangle
   ) {
-    super();
+    const {top, left, width, height} = boundingRectangle;
+    const element = document.createElement('dialog');
+    const style = document.createElement('style');
 
-    const {top, left, width, height} = element.getBoundingClientRect();
+    element.style.setProperty('all', 'initial');
+    element.style.pointerEvents = 'none';
+    element.style.setProperty('position', 'fixed');
+    element.style.setProperty('top', `${top}px`);
+    element.style.setProperty('left', `${left}px`);
+    element.style.setProperty('width', `${width}px`);
+    element.style.setProperty('height', `${height}px`);
+    element.style.setProperty('overlay', 'auto');
 
-    this.style.pointerEvents = 'none';
-    this.style.setProperty('position', 'fixed');
-    this.style.setProperty('top', `${top}px`);
-    this.style.setProperty('left', `${left}px`);
-    this.style.setProperty('width', `${width}px`);
-    this.style.setProperty('height', `${height}px`);
+    element.setAttribute('data-dnd-kit-overlay', '');
+    style.innerText = `dialog[data-dnd-kit-overlay]::backdrop {display: none;}`;
+    element.appendChild(style);
+
+    this.element = element;
 
     const effectCleanup = effect(() => {
       const {dragOperation} = manager;
@@ -37,11 +47,14 @@ class Overlay extends HTMLElement {
       const {x, y} = transform;
 
       if (initialized) {
-        this.style.setProperty('transform', `translate3d(${x}px, ${y}px, 0)`);
         this.transform = transform;
+        element.style.setProperty(
+          'transform',
+          `translate3d(${x}px, ${y}px, 0)`
+        );
 
-        if (this.isConnected) {
-          dragOperation.shape = new DOMRectangle(this);
+        if (this.element.isConnected) {
+          dragOperation.shape = new DOMRectangle(this.element);
         }
       }
     });
@@ -52,89 +65,105 @@ class Overlay extends HTMLElement {
 
     const id = manager.dragOperation.source?.id;
 
-    this.dropAnimation = () => {
-      if (manager.dragOperation.status === 'dragging') {
-        super.remove();
-        return;
-      }
-
-      requestAnimationFrame(() => {
-        const draggable =
-          id != null ? manager.registry.draggable.get(id) : null;
-        const element = draggable?.element;
-        const elementStyles =
-          element instanceof HTMLElement ? new InlineStyles(element) : null;
-        const onFinish = () => {
-          elementStyles?.reset();
-          super.remove();
-        };
-
-        elementStyles?.set({
-          visibility: 'hidden',
-        });
-
-        if (supportsViewTransition(document)) {
-          this.style.setProperty('view-transition-name', VIEW_TRANSITION_NAME);
-
-          const transition = document.startViewTransition(() => {
-            super.remove();
-            elementStyles?.set({
-              visibility: 'visible',
-              viewTransitionName: VIEW_TRANSITION_NAME,
-            });
-          });
-
-          transition.finished.then(() => {
-            elementStyles?.reset();
-          });
+    this.dropAnimation = () =>
+      new Promise((resolve) => {
+        if (manager.dragOperation.status === 'dragging') {
+          this.element.remove();
+          resolve();
           return;
         }
 
-        if (element) {
-          const {top, left} = this.getBoundingClientRect();
-          const {top: elementTop, left: elementLeft} =
-            element.getBoundingClientRect();
-          const delta = {
-            x: left - elementLeft,
-            y: top - elementTop,
-          };
-          const finalTransform = {
-            x: this.transform.x - delta.x,
-            y: this.transform.y - delta.y,
+        requestAnimationFrame(() => {
+          const draggable =
+            id != null ? manager.registry.draggable.get(id) : null;
+          const element = draggable?.element;
+          const elementStyles =
+            element instanceof HTMLElement ? new InlineStyles(element) : null;
+          const onFinish = () => {
+            elementStyles?.reset();
+            this.element.remove();
+            resolve();
           };
 
-          if (
-            this.transform.x !== finalTransform.x ||
-            this.transform.y !== finalTransform.y
-          ) {
-            this.animate(
-              {
-                transform: [
-                  this.style.transform,
-                  `translate3d(${finalTransform.x}px, ${finalTransform.y}px, 0)`,
-                ],
-              },
-              {
-                duration: 250,
-                easing: 'ease',
-              }
-            ).finished.then(onFinish);
+          elementStyles?.set({
+            visibility: 'hidden',
+          });
+
+          if (supportsViewTransition(document)) {
+            this.element.style.setProperty(
+              'view-transition-name',
+              VIEW_TRANSITION_NAME
+            );
+
+            const transition = document.startViewTransition(() => {
+              elementStyles?.set({
+                visibility: 'visible',
+                viewTransitionName: VIEW_TRANSITION_NAME,
+              });
+              this.element.remove();
+            });
+
+            transition.finished.then(onFinish);
             return;
           }
-        }
 
-        onFinish();
+          if (element) {
+            const {top, left} = this.element.getBoundingClientRect();
+            const {top: elementTop, left: elementLeft} =
+              element.getBoundingClientRect();
+            const delta = {
+              x: left - elementLeft,
+              y: top - elementTop,
+            };
+            const finalTransform = {
+              x: this.transform.x - delta.x,
+              y: this.transform.y - delta.y,
+            };
+
+            if (
+              this.transform.x !== finalTransform.x ||
+              this.transform.y !== finalTransform.y
+            ) {
+              this.element
+                .animate(
+                  {
+                    transform: [
+                      this.element.style.transform,
+                      `translate3d(${finalTransform.x}px, ${finalTransform.y}px, 0)`,
+                    ],
+                  },
+                  {
+                    duration: 250,
+                    easing: 'ease',
+                  }
+                )
+                .finished.then(onFinish);
+              return;
+            }
+          }
+
+          onFinish();
+        });
       });
-    };
   }
 
-  connectedCallback() {
-    this.manager.dragOperation.shape = new DOMRectangle(this);
+  private connectedCallback() {
+    this.element.showModal();
+    this.manager.dragOperation.shape = new DOMRectangle(this.element);
   }
 
-  remove() {
+  public remove() {
     this.destroy();
     this.dropAnimation();
+  }
+
+  public appendTo(element: Element) {
+    element.appendChild(this.element);
+    this.connectedCallback();
+  }
+
+  public appendChild(element: Element) {
+    this.element.appendChild(element);
   }
 }
 
@@ -142,9 +171,7 @@ export function createOverlay(
   manager: DragDropManager,
   element: Element
 ): Overlay {
-  if (customElements.get('draggable-overlay') == null) {
-    customElements.define('draggable-overlay', Overlay);
-  }
+  const boundingRectangle = element.getBoundingClientRect();
 
-  return new Overlay(manager, element);
+  return new Overlay(manager, boundingRectangle);
 }

@@ -1,0 +1,41 @@
+.Action {
+  display: flex;
+  width: 12px;
+  padding: 15px;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  touch-action: none;
+  cursor: var(--cursor, pointer);
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  appearance: none;
+  background-color: transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.Action:hover, .Action:active {
+  background-color: var(--background, rgba(0, 0, 0, 0.05));
+}
+
+.Action:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0), inset 0 0px 0px 2.5px #4c9ffe;
+}
+
+.Action svg {
+  flex: 0 0 auto;
+  margin: auto;
+  height: 100%;
+  overflow: visible;
+  fill: #919eab;
+}
+
+.Action:active svg, .Action:hover svg {
+  fill: #6f7b88;
+}
+
+.light {
+  --background: rgba(255, 255, 255, 0.1);
+}

@@ -14,6 +14,10 @@ export type KeyboardCodes = {
   start: KeyCode[];
   cancel: KeyCode[];
   end: KeyCode[];
+  up: KeyCode[];
+  down: KeyCode[];
+  left: KeyCode[];
+  right: KeyCode[];
 };
 
 export interface KeyboardSensorOptions {
@@ -24,6 +28,10 @@ const DEFAULT_KEYBOARD_CODES: KeyboardCodes = {
   start: ['Space', 'Enter'],
   cancel: ['Escape'],
   end: ['Space', 'Enter'],
+  up: ['ArrowUp'],
+  down: ['ArrowDown'],
+  left: ['ArrowLeft'],
+  right: ['ArrowRight'],
 };
 
 const DEFAULT_OFFSET = 10;
@@ -35,7 +43,10 @@ export class KeyboardSensor extends Sensor<
   DragDropManager,
   KeyboardSensorOptions
 > {
-  constructor(protected manager: DragDropManager) {
+  constructor(
+    protected manager: DragDropManager,
+    protected options?: KeyboardSensorOptions
+  ) {
     super(manager);
   }
 
@@ -43,7 +54,7 @@ export class KeyboardSensor extends Sensor<
 
   private cleanup: CleanupFunction | undefined;
 
-  public bind(source: Draggable, options: KeyboardSensorOptions) {
+  public bind(source: Draggable, options = this.options) {
     const unbind = effect(() => {
       const target = source.activator ?? source.element;
       const listener: EventListener = (event: Event) => {
@@ -67,17 +78,21 @@ export class KeyboardSensor extends Sensor<
   private handleKeyDown = (
     event: KeyboardEvent,
     source: Draggable,
-    options: KeyboardSensorOptions
+    options: KeyboardSensorOptions | undefined
   ) => {
+    if (this.disabled) {
+      return;
+    }
+
     if (!(event.target instanceof Element)) {
       return;
     }
 
-    if (source.disabled === true || !source.element) {
+    if (source.disabled || !source.element) {
       return;
     }
 
-    const {keyboardCodes = DEFAULT_KEYBOARD_CODES} = options;
+    const {keyboardCodes = DEFAULT_KEYBOARD_CODES} = options ?? {};
 
     if (!keyboardCodes.start.includes(event.code)) {
       return;
@@ -93,29 +108,26 @@ export class KeyboardSensor extends Sensor<
 
     this.manager.actions.setDragSource(source.id);
     this.manager.actions.start({
-      x: center.x,
-      y: center.y,
+      coordinates: {
+        x: center.x,
+        y: center.y,
+      },
     });
 
     event.preventDefault();
     event.stopImmediatePropagation();
 
     const ownerDocument = getOwnerDocument(source.element);
-    const onKeyUp = (event: KeyboardEvent) => {
-      if (keyboardCodes.end.includes(event.code)) {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (isKeycode(event, [...keyboardCodes.end, ...keyboardCodes.cancel])) {
         event.preventDefault();
 
-        this.manager.actions.stop();
+        this.manager.actions.stop({
+          canceled: isKeycode(event, keyboardCodes.cancel),
+        });
+
         this.cleanup?.();
         cleanupSideEffects();
-
-        setTimeout(() => {
-          const draggable = this.manager.registry.draggable.get(source.id);
-
-          if (draggable?.element instanceof HTMLElement) {
-            draggable.element.focus();
-          }
-        }, 50);
         return;
       }
 
@@ -132,23 +144,16 @@ export class KeyboardSensor extends Sensor<
         y: 0,
       };
 
-      switch (event.code) {
-        case 'ArrowUp': {
-          offset.y = -DEFAULT_OFFSET * factor;
-          break;
-        }
-        case 'ArrowDown': {
-          offset.y = DEFAULT_OFFSET * factor;
-          break;
-        }
-        case 'ArrowLeft': {
-          offset.x = -DEFAULT_OFFSET * factor;
-          break;
-        }
-        case 'ArrowRight': {
-          offset.x = DEFAULT_OFFSET * factor;
-          break;
-        }
+      if (isKeycode(event, keyboardCodes.up)) {
+        offset.y = -DEFAULT_OFFSET * factor;
+      } else if (isKeycode(event, keyboardCodes.down)) {
+        offset.y = DEFAULT_OFFSET * factor;
+      }
+
+      if (isKeycode(event, keyboardCodes.left)) {
+        offset.x = -DEFAULT_OFFSET * factor;
+      } else if (isKeycode(event, keyboardCodes.right)) {
+        offset.x = DEFAULT_OFFSET * factor;
       }
 
       if (offset.x || offset.y) {
@@ -156,15 +161,17 @@ export class KeyboardSensor extends Sensor<
 
         if (!this.manager.scroller.scrollBy(offset.x, offset.y)) {
           this.manager.actions.move({
-            x: center.x + offset.x,
-            y: center.y + offset.y,
+            coordinates: {
+              x: center.x + offset.x,
+              y: center.y + offset.y,
+            },
           });
         }
       }
     };
 
     this.cleanup = this.listeners.bind(ownerDocument, [
-      {type: 'keydown', listener: onKeyUp},
+      {type: 'keydown', listener: onKeyDown, options: {capture: true}},
     ]);
   };
 
@@ -188,4 +195,8 @@ export class KeyboardSensor extends Sensor<
     // Remove all event listeners
     this.listeners.clear();
   }
+}
+
+function isKeycode(event: KeyboardEvent, codes: KeyCode[]) {
+  return codes.includes(event.code);
 }

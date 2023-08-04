@@ -4,14 +4,14 @@ import type {UniqueIdentifier} from '@dnd-kit/types';
 import {DndContext, useDraggable, useDroppable} from '@dnd-kit/react';
 import {closestCenter, CollisionDetector} from '@dnd-kit/collision';
 
-import {Button, Dropzone} from '../components';
+import {Button, Dropzone, Handle} from '../components';
 import {DraggableIcon} from '../icons';
 import {cloneDeep} from '../utilities';
 
 export function DroppableExample() {
   const [items, setItems] = useState({
     A: {
-      A1: [{id: 'A1', type: 'A'}],
+      A1: [{id: 0, type: 'A'}],
       A2: [],
       A3: [],
       A4: [],
@@ -21,7 +21,7 @@ export function DroppableExample() {
     },
     B: {
       B1: [],
-      B2: [{id: 'A2', type: 'A'}],
+      B2: [{id: 1, type: 'B'}],
       B3: [],
       B4: [],
     },
@@ -36,8 +36,15 @@ export function DroppableExample() {
 
   return (
     <DndContext
+      onDragStart={() => {
+        snapshot.current = cloneDeep(items);
+      }}
       onDragOver={(event) => {
         const {source, target} = event.operation;
+
+        // if (event.canceled) {
+        //   return;
+        // }
 
         if (source && target) {
           const targetRowId = target.id;
@@ -66,12 +73,18 @@ export function DroppableExample() {
       onDragEnd={(event) => {
         if (event.canceled) {
           setItems(snapshot.current);
-        } else {
-          snapshot.current = cloneDeep(items);
         }
       }}
     >
-      <div style={{display: 'flex', flexDirection: 'row', gap: 20}}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 20,
+          position: 'relative',
+          zIndex: 999999999,
+        }}
+      >
         {Object.entries(items).map(([columnId, items]) => (
           <div
             key={columnId}
@@ -81,7 +94,7 @@ export function DroppableExample() {
               <Droppable
                 key={rowId}
                 id={rowId}
-                accept={['A']}
+                accept={['A', 'B']}
                 collisionDetector={closestCenter}
               >
                 {children.map((child) => (
@@ -120,7 +133,11 @@ function Draggable({id, parent, type}: DraggableProps) {
   });
 
   return (
-    <Button ref={setElement} shadow={isDragging}>
+    <Button
+      ref={setElement}
+      shadow={isDragging}
+      actions={type === 'B' ? <Handle ref={activatorRef} light /> : undefined}
+    >
       <DraggableIcon />
     </Button>
   );

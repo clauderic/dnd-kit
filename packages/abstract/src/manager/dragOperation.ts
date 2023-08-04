@@ -55,11 +55,11 @@ export function DragOperationManager<
   const targetIdentifier = signal<UniqueIdentifier | null>(null);
   const source = computed(() => {
     const identifier = sourceIdentifier.value;
-    return identifier ? draggable.get(identifier) : null;
+    return identifier != null ? draggable.get(identifier) : null;
   });
   const target = computed(() => {
     const identifier = targetIdentifier.value;
-    return identifier ? droppable.get(identifier) : null;
+    return identifier != null ? droppable.get(identifier) : null;
   });
   const dragging = computed(() => status.value === Status.Dragging);
 
@@ -122,7 +122,6 @@ export function DragOperationManager<
       });
     });
 
-
   return {
     operation,
     actions: {
@@ -140,7 +139,7 @@ export function DragOperationManager<
           operation: snapshot(operation),
         });
       },
-      start(coordinates: Coordinates) {
+      start({coordinates}: {coordinates: Coordinates}) {
         status.value = Status.Initializing;
 
         batch(() => {
@@ -150,7 +149,7 @@ export function DragOperationManager<
 
         monitor.dispatch('dragstart', {});
       },
-      move(coordinates: Coordinates) {
+      move({coordinates}: {coordinates: Coordinates}) {
         if (!dragging.peek()) {
           return;
         }
@@ -159,22 +158,12 @@ export function DragOperationManager<
 
         monitor.dispatch('dragmove', {});
       },
-      cancel() {
+      stop({canceled = false}: {canceled?: boolean} = {}) {
         status.value = Status.Dropping;
 
         monitor.dispatch('dragend', {
           operation: snapshot(operation),
-          canceled: true,
-        });
-
-        reset()
-      },
-      stop() {
-        status.value = Status.Dropping;
-
-        monitor.dispatch('dragend', {
-          operation: snapshot(operation),
-          canceled: false,
+          canceled,
         });
 
         reset();

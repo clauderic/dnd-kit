@@ -1,3 +1,4 @@
+import {Sensor} from '@dnd-kit/abstract';
 import {effect} from '@dnd-kit/state';
 import {Listeners} from '@dnd-kit/dom-utilities';
 import type {CleanupFunction} from '@dnd-kit/types';
@@ -10,26 +11,30 @@ import {encode, decode} from './encoding';
 interface DragSensorOptions {}
 
 /**
- * The DragSensor class is a DOMSensor that handles HTML drag and drop events
+ * The DragSensor class is a Sensor that handles native HTML drag and drop events
  */
-export class DragSensor {
-  // implements DOMSensor<DragSensorOptions> {
+export class DragSensor extends Sensor<DragDropManager, DragSensorOptions> {
   private listeners = new Listeners();
   private unbind: CleanupFunction | undefined;
 
-  constructor(options: DragSensorOptions) {
+  constructor(
+    manager: DragDropManager,
+    protected options: DragSensorOptions
+  ) {
+    super(manager);
+
     this.listeners.bind(document, [
-      {type: 'dragenter', listener: this.handleDragEnter},
-      {type: 'dragleave', listener: this.handleDragLeave},
+      {type: 'dragenter', listener: this.handleDragEnter.bind(this)},
+      {type: 'dragleave', listener: this.handleDragLeave.bind(this)},
     ]);
   }
 
-  public bind(source: Draggable, manager: DragDropManager) {
+  public bind(source: Draggable, options: DragSensorOptions) {
     const unbind = effect(() => {
       const target = source.activator ?? source.element;
       const listener: EventListener = (event: Event) => {
         if (event instanceof DragEvent) {
-          this.handleDragStart(event, source, manager);
+          this.handleDragStart(event, source, options);
         }
       };
 
@@ -48,7 +53,7 @@ export class DragSensor {
   private handleDragStart = (
     event: DragEvent,
     source: Draggable,
-    manager: DragDropManager
+    options: DragSensorOptions
   ) => {
     if (!(event.target instanceof Element)) {
       return;
@@ -64,7 +69,7 @@ export class DragSensor {
       return;
     }
 
-    manager.actions.setDragSource(source.id);
+    this.manager.actions.setDragSource(source.id);
 
     event.stopImmediatePropagation();
 
@@ -83,21 +88,21 @@ export class DragSensor {
     this.unbind = this.listeners.bind(document, [
       {
         type: 'drag',
-        listener: (event: DragEvent) => this.handlePointerMove(event, manager),
+        listener: this.handlePointerMove.bind(this),
       },
       {
         type: 'dragover',
-        listener: (event: DragEvent) => this.handleDragOver(event, manager),
+        listener: this.handleDragOver.bind(this),
       },
       {
         type: 'dragend',
-        listener: (event: DragEvent) => this.handlePointerUp(event, manager),
+        listener: this.handlePointerUp.bind(this),
       },
     ]);
   };
 
-  private handleDragEnter = (event: DragEvent) => {
-    if (event.relatedTarget) {
+  private handleDragEnter(event: DragEvent) {
+    if (this.disabled || event.relatedTarget) {
       return;
     }
 
@@ -115,47 +120,51 @@ export class DragSensor {
         // no-op
       }
     }
-  };
+  }
 
-  private handleDragLeave = (event: DragEvent) => {
+  private handleDragLeave(event: DragEvent) {
     if (event.relatedTarget) {
       return;
     }
-  };
+  }
 
-  private handleDragOver = (event: DragEvent, manager: DragDropManager) => {
+  private handleDragOver(event: DragEvent) {
     event.preventDefault();
 
     if (event.dataTransfer) {
       event.dataTransfer.dropEffect = 'move';
     }
-  };
+  }
 
-  private handlePointerMove = (event: DragEvent, manager: DragDropManager) => {
+  private handlePointerMove(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();
 
-    if (manager.dragOperation.status === 'idle') {
-      manager.actions.start({
-        x: event.clientX,
-        y: event.clientY,
+    if (this.manager.dragOperation.status === 'idle') {
+      this.manager.actions.start({
+        coordinates: {
+          x: event.clientX,
+          y: event.clientY,
+        },
       });
       return;
     }
 
-    manager.actions.move({
-      x: event.clientX,
-      y: event.clientY,
+    this.manager.actions.move({
+      coordinates: {
+        x: event.clientX,
+        y: event.clientY,
+      },
     });
-  };
+  }
 
-  private handlePointerUp = (event: DragEvent, manager: DragDropManager) => {
+  private handlePointerUp(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();
 
-    manager.actions.stop();
+    this.manager.actions.stop();
     this.unbind?.();
-  };
+  }
 
   public destroy() {
     this.listeners.clear();

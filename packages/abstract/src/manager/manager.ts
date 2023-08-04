@@ -30,7 +30,7 @@ export class DragDropManager<
   public collisionObserver: CollisionObserver<T, U>;
   public dragOperation: DragOperation<T, U>;
   public registry: DragDropRegistry<T, U>;
-  public monitor: DragDropMonitor<DragDropManager<T, U>>;
+  public monitor: DragDropMonitor<T, U, DragDropManager<T, U>>;
   public plugins: PluginRegistry<DragDropManager<T, U>>;
   public sensors: PluginRegistry<
     DragDropManager<T, U>,
@@ -45,7 +45,7 @@ export class DragDropManager<
     type V = DragDropManager<T, U>;
 
     const {plugins = [], sensors = [], modifiers = []} = config ?? {};
-    const monitor = new DragDropMonitor<V>(this);
+    const monitor = new DragDropMonitor<T, U, V>(this);
     const registry = new DragDropRegistry<T, U>();
 
     this.registry = registry;

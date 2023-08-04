@@ -12,6 +12,7 @@ import {
   AutoScroller,
   CloneFeedback,
   PlaceholderFeedback,
+  RestoreFocus,
   ScrollManager,
   Scroller,
 } from '../plugins';
@@ -24,6 +25,7 @@ const defaultPlugins: Plugins<DragDropManager> = [
   AutoScroller,
   CloneFeedback,
   PlaceholderFeedback,
+  RestoreFocus,
 ];
 
 const defaultSensors: Sensors<DragDropManager> = [

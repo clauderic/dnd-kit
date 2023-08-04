@@ -38,7 +38,7 @@ export class PlaceholderFeedback extends Plugin<DragDropManager> {
 
       element.replaceWith(placeholder);
       overlay.appendChild(element);
-      document.body.appendChild(overlay);
+      overlay.appendTo(document.body);
 
       return () => {
         const clone = cloneElement(element);

@@ -1,15 +1,17 @@
 import {PropsWithChildren, useEffect} from 'react';
 import type {DragDropEvents} from '@dnd-kit/abstract';
-import {DragDropManager} from '@dnd-kit/dom';
+import {DragDropManager, type Draggable, type Droppable} from '@dnd-kit/dom';
 
 import {useComputed, useConstant, useEvent} from '../hooks';
 
 import {DragDropContext} from './context';
 
+type Events = DragDropEvents<Draggable, Droppable>;
+
 export interface Props {
-  onDragStart?(event: DragDropEvents['dragstart']): void;
-  onDragOver?(event: DragDropEvents['dragover']): void;
-  onDragEnd?(event: DragDropEvents['dragend']): void;
+  onDragStart?(event: Events['dragstart']): void;
+  onDragOver?(event: Events['dragover']): void;
+  onDragEnd?(event: Events['dragend']): void;
 }
 
 export function DndContext({

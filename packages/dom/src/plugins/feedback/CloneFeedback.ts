@@ -33,7 +33,7 @@ export class CloneFeedback extends Plugin<DragDropManager> {
       const clonedElement = cloneElement(element);
 
       overlay.appendChild(clonedElement);
-      document.body.appendChild(overlay);
+      overlay.appendTo(document.body);
 
       return () => {
         overlay.remove();

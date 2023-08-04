@@ -1,26 +1,24 @@
 import {effect} from '@dnd-kit/state';
 import {Sensor} from '@dnd-kit/abstract';
-import type {Axis, Coordinates} from '@dnd-kit/geometry';
+import {
+  exceedsDistance,
+  type Distance,
+  type Coordinates,
+} from '@dnd-kit/geometry';
 import type {CleanupFunction} from '@dnd-kit/types';
 import {getOwnerDocument, Listeners} from '@dnd-kit/dom-utilities';
 
 import type {DragDropManager} from '../../manager';
 import type {Draggable} from '../../nodes';
 
-export type DistanceMeasurement =
-  | number
-  | Coordinates
-  | Pick<Coordinates, Axis.Horizontal>
-  | Pick<Coordinates, Axis.Vertical>;
-
 export interface DelayConstraint {
   value: number;
-  tolerance: DistanceMeasurement;
+  tolerance: Distance;
 }
 
 export interface DistanceConstraint {
-  value: DistanceMeasurement;
-  tolerance?: DistanceMeasurement;
+  value: Distance;
+  tolerance?: Distance;
 }
 
 export interface ActivationConstraints {
@@ -93,15 +91,19 @@ export class PointerSensor extends Sensor<
     source: Draggable,
     options: PointerSensorOptions = {}
   ) {
-    if (!event.isPrimary || event.button !== 0) {
+    if (this.disabled) {
       return;
     }
 
-    if (!(event.target instanceof Element)) {
+    if (
+      !event.isPrimary ||
+      event.button !== 0 ||
+      !(event.target instanceof Element)
+    ) {
       return;
     }
 
-    if (source.disabled === true) {
+    if (source.disabled) {
       return;
     }
 
@@ -173,7 +175,7 @@ export class PointerSensor extends Sensor<
       event.preventDefault();
       event.stopPropagation();
 
-      this.manager.actions.move(coordinates);
+      this.manager.actions.move({coordinates});
       return;
     }
 
@@ -191,17 +193,17 @@ export class PointerSensor extends Sensor<
     if (distance) {
       if (
         distance.tolerance != null &&
-        hasExceededDistance(delta, distance.tolerance)
+        exceedsDistance(delta, distance.tolerance)
       ) {
         return this.handleCancel();
       }
-      if (hasExceededDistance(delta, distance.value)) {
+      if (exceedsDistance(delta, distance.value)) {
         return this.handleStart(source);
       }
     }
 
     if (delay) {
-      if (hasExceededDistance(delta, delay.tolerance)) {
+      if (exceedsDistance(delta, delay.tolerance)) {
         return this.handleCancel();
       }
     }
@@ -237,12 +239,12 @@ export class PointerSensor extends Sensor<
     }
 
     this.manager.actions.setDragSource(source.id);
-    this.manager.actions.start(this.initialCoordinates);
+    this.manager.actions.start({coordinates: this.initialCoordinates});
   }
 
   protected handleCancel() {
     if (this.manager.dragOperation.status !== 'idle') {
-      this.manager.actions.cancel();
+      this.manager.actions.stop({canceled: true});
     }
 
     // Remove the pointer move and up event listeners
@@ -257,30 +259,4 @@ export class PointerSensor extends Sensor<
 
 function preventDefault(event: Event) {
   event.preventDefault();
-}
-
-export function hasExceededDistance(
-  delta: Coordinates,
-  measurement: DistanceMeasurement
-): boolean {
-  const dx = Math.abs(delta.x);
-  const dy = Math.abs(delta.y);
-
-  if (typeof measurement === 'number') {
-    return Math.sqrt(dx ** 2 + dy ** 2) > measurement;
-  }
-
-  if ('x' in measurement && 'y' in measurement) {
-    return dx > measurement.x && dy > measurement.y;
-  }
-
-  if ('x' in measurement) {
-    return dx > measurement.x;
-  }
-
-  if ('y' in measurement) {
-    return dy > measurement.y;
-  }
-
-  return false;
 }

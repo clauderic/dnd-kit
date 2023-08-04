@@ -38,7 +38,7 @@ class Registry<T> {
 
     this.map.value = updatedMap;
 
-    this.pubSub.notify('register', {key, value});
+    this.pubSub.notify({type: 'register', key, value});
 
     return () => this.unregister(key, value);
   };
@@ -53,7 +53,7 @@ class Registry<T> {
 
     this.map.value = updatedMap;
 
-    this.pubSub.notify('unregister', {key, value});
+    this.pubSub.notify({type: 'unregister', key, value});
   };
 
   public subscribe = this.pubSub.subscribe;
