@@ -365,7 +365,7 @@ export const DndContext = memo(function DndContext({
             setStatus(Status.Initializing);
             activeAndOverAPI.setActive(id);
             dispatch({
-              type: Action.SetInitiailCoordinates,
+              type: Action.SetInitialCoordinates,
               initialCoordinates,
             });
             dispatchMonitorEvent({type: 'onDragStart', event});

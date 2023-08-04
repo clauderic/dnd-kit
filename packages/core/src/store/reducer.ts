@@ -16,7 +16,7 @@ export function getInitialState(): State {
 
 export function reducer(state: State, action: Actions): State {
   switch (action.type) {
-    case Action.SetInitiailCoordinates:
+    case Action.SetInitialCoordinates:
       return {
         ...state,
         draggable: {
