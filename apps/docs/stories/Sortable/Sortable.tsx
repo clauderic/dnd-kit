@@ -89,7 +89,7 @@ function Droppable({
   collisionDetector,
   children,
 }: PropsWithChildren<DroppableProps>) {
-  const {ref, isOver} = useDroppable({id, accept, collisionDetector});
+  const {ref, isDropTarget} = useDroppable({id, accept, collisionDetector});
 
   return (
     <div
@@ -100,7 +100,7 @@ function Droppable({
         border: '1px solid #DEDEDE',
         borderRadius: 10,
         margin: 10,
-        backgroundColor: isOver ? 'green' : undefined,
+        backgroundColor: isDropTarget ? 'green' : undefined,
       }}
     >
       <div>Container: {id}</div>

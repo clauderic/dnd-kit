@@ -18,8 +18,8 @@ export class DragSensor extends Sensor<DragDropManager, DragSensorOptions> {
   private unbind: CleanupFunction | undefined;
 
   constructor(
-    manager: DragDropManager,
-    protected options: DragSensorOptions
+    protected manager: DragDropManager,
+    public options: DragSensorOptions
   ) {
     super(manager);
 
@@ -53,7 +53,7 @@ export class DragSensor extends Sensor<DragDropManager, DragSensorOptions> {
   private handleDragStart = (
     event: DragEvent,
     source: Draggable,
-    options: DragSensorOptions
+    _options: DragSensorOptions
   ) => {
     if (!(event.target instanceof Element)) {
       return;

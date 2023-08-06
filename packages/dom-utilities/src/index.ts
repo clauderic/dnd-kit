@@ -11,11 +11,13 @@ export {Listeners} from './event-listeners';
 
 export {
   canScroll,
-  shouldScroll,
+  detectScrollIntent,
   getScrollableAncestors,
   isDocumentScrollingElement,
   ScrollDirection,
 } from './scroll';
+
+export {scheduler, Scheduler} from './scheduler';
 
 export {InlineStyles} from './styles';
 

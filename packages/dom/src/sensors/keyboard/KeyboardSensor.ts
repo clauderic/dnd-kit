@@ -45,7 +45,7 @@ export class KeyboardSensor extends Sensor<
 > {
   constructor(
     protected manager: DragDropManager,
-    protected options?: KeyboardSensorOptions
+    public options?: KeyboardSensorOptions
   ) {
     super(manager);
   }
@@ -159,7 +159,7 @@ export class KeyboardSensor extends Sensor<
       if (offset.x || offset.y) {
         event.preventDefault();
 
-        if (!this.manager.scroller.scrollBy(offset.x, offset.y)) {
+        if (!this.manager.scroller.scroll({by: offset})) {
           this.manager.actions.move({
             coordinates: {
               x: center.x + offset.x,
@@ -178,7 +178,7 @@ export class KeyboardSensor extends Sensor<
   private sideEffects(): CleanupFunction {
     const effectCleanupFns: CleanupFunction[] = [];
 
-    const autoScroller = this.manager.plugins.get(AutoScroller);
+    const autoScroller = this.manager.plugins.get(AutoScroller as any);
 
     if (autoScroller?.disabled === false) {
       autoScroller.disable();

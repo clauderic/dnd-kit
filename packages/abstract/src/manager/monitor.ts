@@ -3,6 +3,7 @@ import type {AnyFunction} from '@dnd-kit/types';
 import type {DragDropManager} from './manager';
 import type {DragOperation} from './dragOperation';
 import type {Draggable, Droppable} from '../nodes';
+import type {Collisions} from '../collision';
 
 export type Events = Record<string, {} | undefined>;
 
@@ -30,7 +31,7 @@ class Monitor<T extends Events> {
     registry.set(name, listeners);
   }
 
-  public dispatch<U extends keyof T>(name: U, event?: T[U]) {
+  public dispatch<U extends keyof T>(name: U, event?: T[U], ...args: any[]) {
     const {registry} = this;
     const listeners = registry.get(name);
 
@@ -39,12 +40,13 @@ class Monitor<T extends Events> {
     }
 
     for (const listener of listeners) {
-      listener(event);
+      listener(event, ...args);
     }
   }
 }
 
 export type DragDropEvents<T extends Draggable, U extends Droppable> = {
+  collision: {collisions: Collisions};
   dragstart: {};
   dragmove: {};
   dragover: {operation: DragOperation<T, U>};
@@ -64,6 +66,6 @@ export class DragDropMonitor<
     type: Key,
     event: DragDropEvents<T, U>[Key]
   ) {
-    super.dispatch(type, event);
+    super.dispatch(type, event, this.manager);
   }
 }

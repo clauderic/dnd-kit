@@ -1,16 +1,12 @@
 import {Plugin} from '@dnd-kit/abstract';
 import type {CleanupFunction} from '@dnd-kit/types';
-import {shouldScroll} from '@dnd-kit/dom-utilities';
-import {Axes} from '@dnd-kit/geometry';
 import {effect} from '@dnd-kit/state';
 
 import type {DragDropManager} from '../../manager';
 
-import {ScrollIntentTracker} from './ScrollIntent';
-
 interface Options {}
 
-const AUTOSCROLL_INTERVAL = 5;
+const AUTOSCROLL_INTERVAL = 10;
 
 export class AutoScroller extends Plugin<DragDropManager> {
   public destroy: CleanupFunction;
@@ -18,54 +14,29 @@ export class AutoScroller extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager, _options?: Options) {
     super(manager);
 
-    let interval: NodeJS.Timer | null = null;
-    const scrollIntentTracker = ScrollIntentTracker(manager);
-
     this.destroy = effect(() => {
-      const {position, status} = manager.dragOperation;
-
-      if (!this.disabled && status === 'dragging') {
-        const scrollIntent = scrollIntentTracker.peek();
-        const scrollableElements =
-          this.manager.scroller.getScrollableElements();
-
-        if (scrollableElements) {
-          for (const scrollableElement of scrollableElements) {
-            const {speed, direction} = shouldScroll(
-              scrollableElement,
-              position.current
-            );
-
-            if (scrollIntent) {
-              for (const axis of Axes) {
-                if (scrollIntent[axis].isLocked(direction[axis])) {
-                  speed[axis] = 0;
-                  direction[axis] = 0;
-                }
-              }
-            }
-
-            if (speed.x > 0 || speed.y > 0) {
-              const autoScroll = () => {
-                const scrollLeft = speed.x * direction.x;
-                const scrollTop = speed.y * direction.y;
-
-                scrollableElement.scrollBy(scrollLeft, scrollTop);
-              };
-
-              interval = setInterval(autoScroll, AUTOSCROLL_INTERVAL);
-              break;
-            }
-          }
-        }
+      if (this.disabled) {
+        return;
       }
 
-      return () => {
-        if (interval) {
-          clearInterval(interval);
-          interval = null;
+      // We consume the position from the drag operation
+      // so that this effect is run when the position changes
+      const {position: _, status} = manager.dragOperation;
+
+      if (status === 'dragging') {
+        const canScroll = manager.scroller.scroll();
+
+        if (canScroll) {
+          const interval = setInterval(
+            manager.scroller.scroll,
+            AUTOSCROLL_INTERVAL
+          );
+
+          return () => {
+            clearInterval(interval);
+          };
         }
-      };
+      }
     });
   }
 }

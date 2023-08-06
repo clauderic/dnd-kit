@@ -1,9 +1,9 @@
 import {DragOperationStatus, Plugin} from '@dnd-kit/abstract';
 import {PubSub} from '@dnd-kit/utilities';
 import {batch, effect} from '@dnd-kit/state';
+import type {CleanupFunction} from '@dnd-kit/types';
 
 import type {DragDropManager} from '../../manager';
-import {CleanupFunction} from '@dnd-kit/types';
 
 const listenerOptions: AddEventListenerOptions = {
   capture: true,
@@ -21,7 +21,7 @@ export class ScrollManager extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager) {
     super(manager);
 
-    const {dragOperation, registry} = this.manager;
+    const {dragOperation} = this.manager;
 
     const effectCleanup = effect(() => {
       const enabled = dragOperation.status === DragOperationStatus.Dragging;
@@ -50,9 +50,13 @@ export class ScrollManager extends Plugin<DragDropManager> {
       this.animationFrame = requestAnimationFrame(() => {
         this.pubSub.notify();
 
+        const source = this.manager.dragOperation.source;
+
         batch(() => {
           for (const droppable of this.manager.registry.droppable) {
-            droppable.updateShape();
+            if (!source?.type || droppable.accepts(source.type)) {
+              droppable.updateShape();
+            }
           }
         });
 

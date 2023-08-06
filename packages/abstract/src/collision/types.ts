@@ -16,11 +16,11 @@ export interface Collision {
   value: number;
 }
 
-export type Collisions = Collision[] | null;
+export type Collisions = Collision[];
 
 export interface CollisionDetectorInput<
   T extends Draggable = Draggable,
-  U extends Droppable = Droppable
+  U extends Droppable = Droppable,
 > {
   droppable: U;
   dragOperation: DragOperation<T, U>;
@@ -28,7 +28,7 @@ export interface CollisionDetectorInput<
 
 export type CollisionDetector = <
   T extends Draggable = Draggable,
-  U extends Droppable = Droppable
+  U extends Droppable = Droppable,
 >(
   input: CollisionDetectorInput<T, U>
 ) => Collision | null;

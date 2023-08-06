@@ -1,5 +1,5 @@
 import {effect} from '@dnd-kit/state';
-import {Sensor} from '@dnd-kit/abstract';
+import {Sensor, SensorConstructor} from '@dnd-kit/abstract';
 import {
   exceedsDistance,
   type Distance,
@@ -146,6 +146,9 @@ export class PointerSensor extends Sensor<
         // Prevent scrolling on touch devices
         type: 'touchmove',
         listener: preventDefault,
+        options: {
+          passive: false,
+        },
       },
       {
         type: 'keydown',

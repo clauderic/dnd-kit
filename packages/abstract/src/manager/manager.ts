@@ -1,5 +1,5 @@
 import type {Draggable, Droppable} from '../nodes';
-import {CollisionObserver} from '../collision';
+import {CollisionObserver, CollisionNotifier} from '../collision';
 
 import {DragDropRegistry} from './registry';
 import {
@@ -9,8 +9,8 @@ import {
 } from './dragOperation';
 import {DragDropMonitor} from './monitor';
 import {PluginRegistry, descriptor, type Plugins} from '../plugins';
-import type {Sensor, SensorConstructor, Sensors} from '../sensors';
-import type {Modifier, ModifierConstructor} from '../modifiers';
+import type {SensorConstructor, Sensors} from '../sensors';
+import type {ModifierConstructor} from '../modifiers';
 
 export interface DragDropConfiguration<T extends DragDropManager<any, any>> {
   plugins: Plugins<T>;
@@ -34,25 +34,26 @@ export class DragDropManager<
   public plugins: PluginRegistry<DragDropManager<T, U>>;
   public sensors: PluginRegistry<
     DragDropManager<T, U>,
-    Sensor<DragDropManager<T, U>>
+    SensorConstructor<DragDropManager<T, U>>
   >;
   public modifiers: PluginRegistry<
     DragDropManager<T, U>,
-    Modifier<DragDropManager<T, U>>
+    ModifierConstructor<DragDropManager<T, U>>
   >;
 
-  constructor(config?: DragDropManagerInput<DragDropManager<T, U>>) {
+  constructor(config?: DragDropManagerInput<any>) {
     type V = DragDropManager<T, U>;
 
-    const {plugins = [], sensors = [], modifiers = []} = config ?? {};
+    const {sensors = [], modifiers = []} = config ?? {};
+    const plugins = [CollisionNotifier, ...(config?.plugins ?? [])];
     const monitor = new DragDropMonitor<T, U, V>(this);
     const registry = new DragDropRegistry<T, U>();
 
     this.registry = registry;
     this.monitor = monitor;
     this.plugins = new PluginRegistry<V>(this);
-    this.sensors = new PluginRegistry<V, Sensor<V>>(this);
-    this.modifiers = new PluginRegistry<V, Modifier<V>>(this);
+    this.sensors = new PluginRegistry(this);
+    this.modifiers = new PluginRegistry(this);
 
     const {actions, operation} = DragOperationManager<T, U, V>(this);
     const collisionObserver = new CollisionObserver<T, U>({
@@ -75,7 +76,7 @@ export class DragDropManager<
 
     for (const entry of sensors) {
       const {plugin, options} = descriptor(entry);
-      this.sensors.register(plugin as SensorConstructor, options);
+      this.sensors.register(plugin, options);
     }
   }
 

@@ -5,7 +5,7 @@ export {
 } from './getScrollableAncestors';
 export {getScrollableElement} from './getScrollableElement';
 export {getScrollCoordinates} from './getScrollCoordinates';
-export {shouldScroll, ScrollDirection} from './shouldScroll';
+export {detectScrollIntent, ScrollDirection} from './detectScrollIntent';
 export {
   getScrollOffsets,
   getScrollXOffset,

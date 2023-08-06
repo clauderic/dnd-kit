@@ -4,6 +4,8 @@ import {effect} from '@dnd-kit/state';
 import {cloneElement} from '@dnd-kit/dom-utilities';
 
 import type {DragDropManager} from '../../manager';
+import {DOMRectangle} from '../../shapes';
+
 import {createOverlay} from './Overlay';
 
 interface Options {}
@@ -29,12 +31,12 @@ export class PlaceholderFeedback extends Plugin<DragDropManager> {
       }
 
       const {element} = source;
-      const overlay = createOverlay(manager, element);
+      const {boundingRectangle} = new DOMRectangle(element);
+      const overlay = createOverlay(manager, boundingRectangle);
       const placeholder = document.createElement('div');
-      const {width, height} = element.getBoundingClientRect();
 
-      placeholder.style.width = `${width}px`;
-      placeholder.style.height = `${height}px`;
+      placeholder.style.width = `${boundingRectangle.width}px`;
+      placeholder.style.height = `${boundingRectangle.height}px`;
 
       element.replaceWith(placeholder);
       overlay.appendChild(element);

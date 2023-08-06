@@ -1,4 +1,4 @@
-import type {Axis, BoundingRectangle, Coordinates} from '@dnd-kit/geometry';
+import type {Axis, Coordinates} from '@dnd-kit/geometry';
 
 import {getScrollPosition} from './getScrollPosition';
 
@@ -18,11 +18,11 @@ interface ScrollIntent {
   y: ScrollDirection;
 }
 
-export function shouldScroll(
+export function detectScrollIntent(
   scrollableElement: Element,
   coordinates: Coordinates,
   intent?: ScrollIntent,
-  acceleration = 10,
+  acceleration = 12,
   thresholdPercentage = defaultThreshold
 ) {
   const {

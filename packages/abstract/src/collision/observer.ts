@@ -14,6 +14,8 @@ export type Input<
   registry: DragDropRegistry<T, U>;
 };
 
+const DEFAULT_VALUE: Collisions = [];
+
 export class CollisionObserver<
   T extends Draggable = Draggable,
   U extends Droppable = Droppable,
@@ -23,7 +25,7 @@ export class CollisionObserver<
       const {source, shape, initialized} = dragOperation;
 
       if (!initialized || !shape) {
-        return null;
+        return DEFAULT_VALUE;
       }
 
       const type = source?.type;

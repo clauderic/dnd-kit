@@ -1,19 +1,25 @@
 import {Plugin} from '@dnd-kit/abstract';
+import {computed} from '@dnd-kit/state';
 import {
   canScroll,
-  shouldScroll,
+  detectScrollIntent,
   getScrollableAncestors,
   ScrollDirection,
+  scheduler,
 } from '@dnd-kit/dom-utilities';
-import {computed} from '@dnd-kit/state';
+import {Axes, type Coordinates} from '@dnd-kit/geometry';
 import {isEqual} from '@dnd-kit/utilities';
 
 import type {DragDropManager} from '../../manager';
+
+import {ScrollIntentTracker} from './ScrollIntent';
 
 interface Options {}
 
 export class Scroller extends Plugin<DragDropManager> {
   public getScrollableElements: () => Element[] | null;
+
+  private scrollIntentTracker: ScrollIntentTracker;
 
   constructor(manager: DragDropManager, _options?: Options) {
     super(manager);
@@ -38,12 +44,18 @@ export class Scroller extends Plugin<DragDropManager> {
     }, isEqual);
 
     this.getScrollableElements = () => scrollableElements.value;
+
+    this.scrollIntentTracker = new ScrollIntentTracker(manager);
   }
 
-  public scrollBy(x: number, y: number): boolean {
+  public scroll = (options?: {by: Coordinates}): boolean => {
+    if (this.disabled) {
+      return false;
+    }
+
     const elements = this.getScrollableElements();
 
-    if (!elements || this.disabled) {
+    if (!elements) {
       return false;
     }
 
@@ -51,36 +63,51 @@ export class Scroller extends Plugin<DragDropManager> {
     const currentPosition = position?.current;
 
     if (currentPosition) {
-      for (const scrollableElement of elements) {
-        const elementCanScroll = canScroll(scrollableElement, {x, y});
+      const {by} = options ?? {};
+      const intent = by
+        ? {
+            x: getScrollIntent(by.x),
+            y: getScrollIntent(by.y),
+          }
+        : undefined;
+      const trackedScrollIntent = intent
+        ? undefined
+        : this.scrollIntentTracker.current;
 
-        if ((x && elementCanScroll.x) || (y && elementCanScroll.y)) {
-          const shouldScrollElement = shouldScroll(
+      if (trackedScrollIntent?.isLocked()) {
+        return false;
+      }
+
+      for (const scrollableElement of elements) {
+        const elementCanScroll = canScroll(scrollableElement, by);
+
+        if (elementCanScroll.x || elementCanScroll.y) {
+          const {speed, direction} = detectScrollIntent(
             scrollableElement,
             currentPosition,
-            {
-              x: getScrollIntent(x),
-              y: getScrollIntent(y),
-            }
+            intent
           );
 
-          if (
-            shouldScrollElement.direction.x ||
-            shouldScrollElement.direction.y
-          ) {
-            const scrollLeftBy = x * shouldScrollElement.speed.x;
-            const scrollTopBy = y * shouldScrollElement.speed.y;
+          if (trackedScrollIntent) {
+            for (const axis of Axes) {
+              if (trackedScrollIntent[axis].isLocked(direction[axis])) {
+                speed[axis] = 0;
+                direction[axis] = 0;
+              }
+            }
+          }
+
+          if (direction.x || direction.y) {
+            const {x, y} = by ?? direction;
+            const scrollLeftBy = x * speed.x;
+            const scrollTopBy = y * speed.y;
 
             if (scrollLeftBy || scrollTopBy) {
-              const {scrollTop, scrollLeft} = scrollableElement;
-              scrollableElement.scrollBy(scrollLeftBy, scrollTopBy);
+              scheduler.schedule(() => {
+                scrollableElement.scrollBy(scrollLeftBy, scrollTopBy);
+              });
 
-              if (
-                scrollTop !== scrollableElement.scrollTop ||
-                scrollLeft !== scrollableElement.scrollLeft
-              ) {
-                return true;
-              }
+              return true;
             }
           }
         }
@@ -88,7 +115,7 @@ export class Scroller extends Plugin<DragDropManager> {
     }
 
     return false;
-  }
+  };
 }
 
 function getScrollIntent(value: number) {

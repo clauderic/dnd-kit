@@ -4,6 +4,8 @@ import {effect} from '@dnd-kit/state';
 import {cloneElement} from '@dnd-kit/dom-utilities';
 
 import type {DragDropManager} from '../../manager';
+import {DOMRectangle} from '../../shapes';
+
 import {createOverlay} from './Overlay';
 
 interface Options {}
@@ -29,7 +31,8 @@ export class CloneFeedback extends Plugin<DragDropManager> {
       }
 
       const {element} = source;
-      const overlay = createOverlay(manager, element);
+      const {boundingRectangle} = new DOMRectangle(element);
+      const overlay = createOverlay(manager, boundingRectangle);
       const clonedElement = cloneElement(element);
 
       overlay.appendChild(clonedElement);

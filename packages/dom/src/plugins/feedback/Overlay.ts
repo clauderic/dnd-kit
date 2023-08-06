@@ -1,5 +1,9 @@
 import {effect} from '@dnd-kit/state';
-import {InlineStyles, supportsViewTransition} from '@dnd-kit/dom-utilities';
+import {
+  InlineStyles,
+  supportsViewTransition,
+  scheduler,
+} from '@dnd-kit/dom-utilities';
 import type {CleanupFunction} from '@dnd-kit/types';
 
 import {DragDropManager} from '../../manager';
@@ -7,6 +11,8 @@ import {DOMRectangle} from '../../shapes';
 import {BoundingRectangle} from '@dnd-kit/geometry';
 
 const VIEW_TRANSITION_NAME = 'dnd-kit--drop-animation';
+
+const INSIGNIFICANT_DELTA = 1;
 
 class Overlay {
   private destroy: CleanupFunction;
@@ -33,7 +39,7 @@ class Overlay {
     element.style.setProperty('left', `${left}px`);
     element.style.setProperty('width', `${width}px`);
     element.style.setProperty('height', `${height}px`);
-    element.style.setProperty('overlay', 'auto');
+    element.style.setProperty('touch-action', 'none');
 
     element.setAttribute('data-dnd-kit-overlay', '');
     style.innerText = `dialog[data-dnd-kit-overlay]::backdrop {display: none;}`;
@@ -44,18 +50,20 @@ class Overlay {
     const effectCleanup = effect(() => {
       const {dragOperation} = manager;
       const {initialized, transform} = dragOperation;
-      const {x, y} = transform;
 
       if (initialized) {
         this.transform = transform;
-        element.style.setProperty(
-          'transform',
-          `translate3d(${x}px, ${y}px, 0)`
-        );
 
-        if (this.element.isConnected) {
-          dragOperation.shape = new DOMRectangle(this.element);
-        }
+        scheduler.schedule(() => {
+          const {x, y} = this.transform;
+
+          element.style.setProperty(
+            'transform',
+            `translate3d(${x}px, ${y}px, 0)`
+          );
+
+          dragOperation.shape = new DOMRectangle(element);
+        });
       }
     });
 
@@ -108,22 +116,22 @@ class Overlay {
           }
 
           if (element) {
-            const {top, left} = this.element.getBoundingClientRect();
-            const {top: elementTop, left: elementLeft} =
-              element.getBoundingClientRect();
+            const {center} = new DOMRectangle(this.element);
+            const {center: elementCenter} = new DOMRectangle(element);
             const delta = {
-              x: left - elementLeft,
-              y: top - elementTop,
-            };
-            const finalTransform = {
-              x: this.transform.x - delta.x,
-              y: this.transform.y - delta.y,
+              x: center.x - elementCenter.x,
+              y: center.y - elementCenter.y,
             };
 
             if (
-              this.transform.x !== finalTransform.x ||
-              this.transform.y !== finalTransform.y
+              Math.abs(delta.x) > INSIGNIFICANT_DELTA ||
+              Math.abs(delta.y) > INSIGNIFICANT_DELTA
             ) {
+              const finalTransform = {
+                x: this.transform.x - delta.x,
+                y: this.transform.y - delta.y,
+              };
+
               this.element
                 .animate(
                   {
@@ -169,9 +177,7 @@ class Overlay {
 
 export function createOverlay(
   manager: DragDropManager,
-  element: Element
+  boundingRectangle: BoundingRectangle
 ): Overlay {
-  const boundingRectangle = element.getBoundingClientRect();
-
   return new Overlay(manager, boundingRectangle);
 }

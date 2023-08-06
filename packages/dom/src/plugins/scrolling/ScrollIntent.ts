@@ -1,4 +1,5 @@
-import {batch, effect, signal} from '@dnd-kit/state';
+import {batch, effect, signal, type Signal} from '@dnd-kit/state';
+import {Plugin} from '@dnd-kit/abstract';
 import {Axes} from '@dnd-kit/geometry';
 import type {Coordinates} from '@dnd-kit/geometry';
 import {ScrollDirection} from '@dnd-kit/dom-utilities';
@@ -12,48 +13,62 @@ const DIRECTIONS = [ScrollDirection.Forward, ScrollDirection.Reverse];
 class ScrollIntent {
   public x = new ScrollLock();
   public y = new ScrollLock();
+
+  public isLocked(): boolean {
+    return this.x.isLocked() && this.y.isLocked();
+  }
 }
 
-export function ScrollIntentTracker(manager: DragDropManager) {
-  const scrollIntent = signal<ScrollIntent | null>(null);
-  let previousDelta: Coordinates | null = null;
+export class ScrollIntentTracker extends Plugin<DragDropManager> {
+  private signal: Signal<ScrollIntent | null>;
 
-  effect(() => {
-    const {position} = manager.dragOperation;
+  constructor(manager: DragDropManager) {
+    super(manager);
 
-    if (!position) {
-      previousDelta = null;
-      scrollIntent.value = null;
-      return;
-    }
+    const scrollIntent = signal<ScrollIntent | null>(null);
+    let previousDelta: Coordinates | null = null;
 
-    const {delta} = position;
+    this.signal = scrollIntent;
 
-    if (previousDelta) {
-      const directions = {
-        x: getDirection(delta.x, previousDelta.x),
-        y: getDirection(delta.y, previousDelta.y),
-      };
+    effect(() => {
+      const {position} = manager.dragOperation;
 
-      const intent = scrollIntent.peek() ?? new ScrollIntent();
+      if (!position) {
+        previousDelta = null;
+        scrollIntent.value = null;
+        return;
+      }
 
-      batch(() => {
-        for (const axis of Axes) {
-          for (const direction of DIRECTIONS) {
-            if (directions[axis] === direction) {
-              intent[axis].unlock(direction);
+      const {delta} = position;
+
+      if (previousDelta) {
+        const directions = {
+          x: getDirection(delta.x, previousDelta.x),
+          y: getDirection(delta.y, previousDelta.y),
+        };
+
+        const intent = scrollIntent.peek() ?? new ScrollIntent();
+
+        batch(() => {
+          for (const axis of Axes) {
+            for (const direction of DIRECTIONS) {
+              if (directions[axis] === direction) {
+                intent[axis].unlock(direction);
+              }
             }
           }
-        }
 
-        scrollIntent.value = intent;
-      });
-    }
+          scrollIntent.value = intent;
+        });
+      }
 
-    previousDelta = delta;
-  });
+      previousDelta = delta;
+    });
+  }
 
-  return scrollIntent;
+  get current(): ScrollIntent | null {
+    return this.signal.peek();
+  }
 }
 
 function getDirection(a: number, b: number): ScrollDirection {

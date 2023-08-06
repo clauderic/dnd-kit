@@ -11,7 +11,7 @@ export function useDroppable<T extends Data = Data>(input: DroppableInput<T>) {
   const {disabled} = input;
   const {registry} = manager;
   const droppable = useConstant(() => new Droppable(input));
-  const isOver = useComputed(() => {
+  const isDropTarget = useComputed(() => {
     const {dragOperation} = manager;
 
     return dragOperation.target === droppable;
@@ -32,8 +32,8 @@ export function useDroppable<T extends Data = Data>(input: DroppableInput<T>) {
 
   return {
     disabled: droppable.disabled,
-    get isOver() {
-      return isOver.value;
+    get isDropTarget() {
+      return isDropTarget.value;
     },
     ref: useCallback(
       (element: Element | null) => {

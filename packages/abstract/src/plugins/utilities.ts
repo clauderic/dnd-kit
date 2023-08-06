@@ -1,31 +1,22 @@
-import type {DragDropManager} from '../manager';
-
-import {Plugin} from './plugin';
 import type {
-  Plugins,
-  PluginOptions,
   PluginConstructor,
   PluginDescriptor,
+  InferPluginOptions,
 } from './types';
 
-export function configure<
-  T extends DragDropManager<any, any>,
-  U extends PluginOptions,
-  V extends Plugin<T, U>,
-  W extends PluginConstructor<T, V>,
->(plugin: W, options?: U): PluginDescriptor<T, U, W> {
+export function configure<T extends PluginConstructor<any, any, any>>(
+  plugin: T,
+  options: InferPluginOptions<T>
+): PluginDescriptor<any, any, T> {
   return {
     plugin,
     options,
   };
 }
 
-export function descriptor<
-  T extends DragDropManager<any, any>,
-  U extends PluginOptions,
-  V extends Plugin<T, U>,
-  W extends PluginConstructor<T, V>,
->(plugin: W | PluginDescriptor<T, U, W>): PluginDescriptor<T, U, W> {
+export function descriptor<T extends PluginConstructor<any, any, any>>(
+  plugin: T | PluginDescriptor<any, any, T>
+): PluginDescriptor<any, any, T> {
   if (typeof plugin === 'function') {
     return {
       plugin,

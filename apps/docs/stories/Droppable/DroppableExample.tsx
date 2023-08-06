@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import type {PropsWithChildren} from 'react';
 import type {UniqueIdentifier} from '@dnd-kit/types';
 import {DndContext, useDraggable, useDroppable} from '@dnd-kit/react';
@@ -39,12 +39,16 @@ export function DroppableExample() {
       onDragStart={() => {
         snapshot.current = cloneDeep(items);
       }}
-      onDragOver={(event) => {
+      onCollision={(event, manager) => {
+        const [firstCollision] = event.collisions;
+        manager.actions.setDropTarget(firstCollision?.id);
+      }}
+      onDragEnd={(event) => {
         const {source, target} = event.operation;
 
-        // if (event.canceled) {
-        //   return;
-        // }
+        if (event.canceled) {
+          return;
+        }
 
         if (source && target) {
           const targetRowId = target.id;
@@ -61,7 +65,9 @@ export function DroppableExample() {
               ][currentRowId].filter((child) => child.id !== source.id);
 
               newItems[targetColumnId][targetRowId] = [
-                ...newItems[targetColumnId][targetRowId],
+                ...newItems[targetColumnId][targetRowId].filter(
+                  (child) => child.id !== source.id
+                ),
                 {id: source.id, type: source.type},
               ];
 
@@ -70,19 +76,17 @@ export function DroppableExample() {
           }
         }
       }}
-      onDragEnd={(event) => {
-        if (event.canceled) {
-          setItems(snapshot.current);
-        }
-      }}
+      // onDragEnd={(event) => {
+      //   if (event.canceled) {
+      //     setItems(snapshot.current);
+      //   }
+      // }}
     >
       <div
         style={{
           display: 'flex',
           flexDirection: 'row',
           gap: 20,
-          position: 'relative',
-          zIndex: 999999999,
         }}
       >
         {Object.entries(items).map(([columnId, items]) => (
@@ -155,10 +159,10 @@ function Droppable({
   collisionDetector,
   children,
 }: PropsWithChildren<DroppableProps>) {
-  const {ref, isOver} = useDroppable({id, accept, collisionDetector});
+  const {ref, isDropTarget} = useDroppable({id, accept, collisionDetector});
 
   return (
-    <Dropzone ref={ref} highlight={isOver}>
+    <Dropzone ref={ref} highlight={isDropTarget}>
       {children}
     </Dropzone>
   );

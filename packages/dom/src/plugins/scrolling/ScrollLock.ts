@@ -1,26 +1,32 @@
-import {ScrollDirection} from '@dnd-kit/dom-utilities';
 import {reactive} from '@dnd-kit/state';
+import {ScrollDirection as Direction} from '@dnd-kit/dom-utilities';
+
+const LOCKED = true;
+const UNLOCKED = false;
 
 export class ScrollLock {
-  @reactive private [ScrollDirection.Forward] = ScrollLock.Locked;
-  @reactive private [ScrollDirection.Reverse] = ScrollLock.Locked;
+  @reactive private [Direction.Forward] = LOCKED;
+  @reactive private [Direction.Reverse] = LOCKED;
 
-  public isLocked(direction: ScrollDirection) {
-    if (direction === ScrollDirection.Idle) {
+  public isLocked(direction?: Direction): boolean {
+    if (direction === Direction.Idle) {
+      return false;
+    }
+
+    if (direction == null) {
+      return (
+        this[Direction.Forward] === LOCKED && this[Direction.Reverse] === LOCKED
+      );
+    }
+
+    return this[direction] === LOCKED;
+  }
+
+  public unlock(direction: Direction) {
+    if (direction === Direction.Idle) {
       return;
     }
 
-    return this[direction] === ScrollLock.Locked;
+    this[direction] = UNLOCKED;
   }
-
-  public unlock(direction: ScrollDirection) {
-    if (direction === ScrollDirection.Idle) {
-      return;
-    }
-
-    this[direction] = ScrollLock.Unlocked;
-  }
-
-  static Locked = true;
-  static Unlocked = false;
 }

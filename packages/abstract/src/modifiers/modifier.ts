@@ -5,7 +5,7 @@ import {Plugin, type PluginConstructor} from '../plugins';
 import type {DragDropManager, DragOperation} from '../manager';
 
 export class Modifier<T extends DragDropManager<any, any>> extends Plugin<T> {
-  constructor(manager: T) {
+  constructor(protected manager: T) {
     super(manager);
   }
 
