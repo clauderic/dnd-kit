@@ -128,12 +128,16 @@ export function DragOperationManager<
       setDragSource(identifier: UniqueIdentifier) {
         sourceIdentifier.value = identifier;
       },
-      setDropTarget(identifier: UniqueIdentifier | null) {
+      setDropTarget(identifier: UniqueIdentifier | null | undefined) {
         if (!dragging.peek()) {
           return;
         }
 
-        targetIdentifier.value = identifier;
+        if (targetIdentifier.peek() === identifier) {
+          return;
+        }
+
+        targetIdentifier.value = identifier ?? null;
 
         monitor.dispatch('dragover', {
           operation: snapshot(operation),
@@ -159,14 +163,37 @@ export function DragOperationManager<
         monitor.dispatch('dragmove', {});
       },
       stop({canceled = false}: {canceled?: boolean} = {}) {
-        status.value = Status.Dropping;
+        const end = () => {
+          status.value = Status.Dropping;
+          reset();
+        };
+        let promise: Promise<void> | undefined;
+
+        const suspend = () => {
+          const output = {
+            resume: () => {},
+            abort: () => {},
+          };
+
+          promise = new Promise<void>((resolve, reject) => {
+            output.resume = resolve;
+            output.abort = reject;
+          });
+
+          return output;
+        };
 
         monitor.dispatch('dragend', {
           operation: snapshot(operation),
           canceled,
+          suspend,
         });
 
-        reset();
+        if (promise) {
+          promise.then(end).catch(reset);
+        } else {
+          end();
+        }
       },
     },
   };

@@ -46,11 +46,15 @@ class Monitor<T extends Events> {
 }
 
 export type DragDropEvents<T extends Draggable, U extends Droppable> = {
-  collision: {collisions: Collisions};
+  collision: {collisions: Collisions; preventDefault(): void};
   dragstart: {};
   dragmove: {};
   dragover: {operation: DragOperation<T, U>};
-  dragend: {operation: DragOperation<T, U>; canceled: boolean};
+  dragend: {
+    operation: DragOperation<T, U>;
+    canceled: boolean;
+    suspend(): {resume(): void; abort(): void};
+  };
 };
 
 export class DragDropMonitor<

@@ -39,16 +39,21 @@ export function DroppableExample() {
       onDragStart={() => {
         snapshot.current = cloneDeep(items);
       }}
-      onCollision={(event, manager) => {
-        const [firstCollision] = event.collisions;
-        manager.actions.setDropTarget(firstCollision?.id);
-      }}
+      // onCollision={(event, manager) => {
+      //   const [_, secondCollision] = event.collisions;
+
+      //   event.preventDefault();
+      //   manager.actions.setDropTarget(secondCollision?.id);
+      // }}
       onDragEnd={(event) => {
         const {source, target} = event.operation;
 
         if (event.canceled) {
           return;
         }
+
+        const {resume} = event.suspend();
+        resume();
 
         if (source && target) {
           const targetRowId = target.id;

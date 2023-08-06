@@ -75,7 +75,7 @@ class Overlay {
 
     this.dropAnimation = () =>
       new Promise((resolve) => {
-        if (manager.dragOperation.status === 'dragging') {
+        if (manager.dragOperation.status !== 'dropped') {
           this.element.remove();
           resolve();
           return;
