@@ -15,50 +15,51 @@ import {
   RestoreFocus,
   ScrollManager,
   Scroller,
+  Debug,
 } from '../plugins';
 import {KeyboardSensor, PointerSensor} from '../sensors';
 import {DragSourceDeltaModifier} from '../modifiers';
 
-export interface Input extends DragDropManagerInput<DragDropManager> {}
+export interface Input extends DragDropManagerInput<any> {}
 
-const defaultPlugins: Plugins<DragDropManager> = [
-  AutoScroller,
-  CloneFeedback,
-  PlaceholderFeedback,
-  RestoreFocus,
-];
-
-const defaultSensors: Sensors<DragDropManager> = [
-  configure(PointerSensor, {
-    activationConstraints: {
-      delay: {value: 200, tolerance: 10},
-      distance: {value: 5},
-    },
-  }),
-  KeyboardSensor,
-];
+export const defaultPreset: {
+  plugins: Plugins<DragDropManager>;
+  sensors: Sensors<DragDropManager>;
+} = {
+  plugins: [
+    // Debug,
+    AutoScroller,
+    CloneFeedback,
+    PlaceholderFeedback,
+    RestoreFocus,
+  ],
+  sensors: [
+    configure(PointerSensor, {
+      activationConstraints: {
+        delay: {value: 200, tolerance: 10},
+        distance: {value: 5},
+      },
+    }),
+    KeyboardSensor,
+  ],
+};
 
 export class DragDropManager<
   T extends Draggable = Draggable,
   U extends Droppable = Droppable,
 > extends AbstractDragDropManager<Draggable, Droppable> {
-  public scroller: Scroller;
-
   constructor({
-    plugins = defaultPlugins,
-    sensors = defaultSensors,
+    plugins = defaultPreset.plugins,
+    sensors = defaultPreset.sensors,
     modifiers = [],
     ...input
   }: Input = {}) {
     super({
       ...input,
-      plugins,
+      plugins: [ScrollManager, Scroller, ...plugins],
       sensors,
       modifiers: [DragSourceDeltaModifier, ...modifiers],
     });
-
-    const scrollManager = new ScrollManager(this);
-    this.scroller = new Scroller(this);
 
     const effectCleanup = effect(() => {
       if (this.dragOperation.status === 'initializing') {
@@ -70,17 +71,9 @@ export class DragDropManager<
       }
     });
 
-    const {destroy} = this;
-
     this.destroy = () => {
       effectCleanup();
-      scrollManager.destroy();
-      destroy();
+      super.destroy();
     };
   }
-
-  public destroy = () => {
-    super.destroy();
-    this.scroller.destroy();
-  };
 }

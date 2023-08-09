@@ -20,7 +20,7 @@ export default {
     });
   },
   docs: {
-    autodocs: true,
+    autodocs: 'tag',
   },
 };
 

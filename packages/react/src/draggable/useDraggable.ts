@@ -1,55 +1,45 @@
-import type {Data, Sensors} from '@dnd-kit/abstract';
-import {Draggable} from '@dnd-kit/dom';
-import type {DragDropManager, DraggableInput} from '@dnd-kit/dom';
+import {useCallback, useEffect} from 'react';
+import type {Data} from '@dnd-kit/abstract';
+import {CloneFeedback, Draggable} from '@dnd-kit/dom';
+import type {DraggableInput} from '@dnd-kit/dom';
 
-import {useDndContext} from '../context';
-import {useComputed, useConstant, useIsomorphicLayoutEffect} from '../hooks';
-import {useConnectSensors} from '../sensors';
+import {useDragDropManager} from '../context';
+import {
+  useComputed,
+  useConstant,
+  useIsomorphicLayoutEffect,
+  useOnValueChange,
+} from '../hooks';
 import {getCurrentValue, type RefOrValue} from '../utilities';
-import {useEffect} from 'react';
 
 export interface UseDraggableInput<T extends Data = Data>
-  extends DraggableInput<T> {
+  extends Omit<DraggableInput<T>, 'activator' | 'element'> {
   activator?: RefOrValue<Element>;
-  element: RefOrValue<Element>;
-  sensors?: Sensors<DragDropManager>;
+  element?: RefOrValue<Element>;
 }
 
 export function useDraggable<T extends Data = Data>(
   input: UseDraggableInput<T>
 ) {
-  const manager = useDndContext();
-  const {disabled, sensors, id} = input;
-  const draggable = useConstant(() => new Draggable(input));
+  const manager = useDragDropManager();
+  const {disabled, id, sensors, feedback = CloneFeedback} = input;
   const activator = getCurrentValue(input.activator);
   const element = getCurrentValue(input.element);
-  const isDragging = useComputed(() => {
-    const {dragOperation} = manager;
+  const draggable = useConstant(
+    () => new Draggable({...input, activator, element, feedback: null}, manager)
+  );
+  const isDragSource = useComputed(() => draggable.isDragSource).value;
 
-    return dragOperation.source?.id === draggable.id;
-  });
+  useOnValueChange(id, () => (draggable.id = id));
+  useOnValueChange(activator, () => (draggable.activator = activator));
+  useOnValueChange(element, () => (draggable.element = element));
+  useOnValueChange(disabled, () => (draggable.disabled = disabled === true));
+  useOnValueChange(sensors, () => (draggable.sensors = sensors));
 
   useIsomorphicLayoutEffect(() => {
-    draggable.activator = activator;
-    draggable.element = element;
-    draggable.disabled = Boolean(disabled);
-  }, [activator, disabled, element, id]);
-
-  useIsomorphicLayoutEffect(() => {
-    const {registry} = manager;
-
-    if (draggable.id !== id) {
-      draggable.id = id;
-    }
-
-    const unregister = registry.register(draggable);
-
-    return () => {
-      unregister();
-    };
-  }, [manager, id]);
-
-  useConnectSensors(sensors, manager, draggable);
+    // Wait until React has had a chance to re-render before updating the feedback
+    draggable.feedback = isDragSource ? feedback ?? null : null;
+  }, [isDragSource]);
 
   useEffect(() => {
     // Cleanup on unmount
@@ -57,8 +47,12 @@ export function useDraggable<T extends Data = Data>(
   }, [draggable]);
 
   return {
-    get isDragging() {
-      return isDragging.value;
-    },
+    isDragSource,
+    ref: useCallback(
+      (element: Element | null) => {
+        draggable.element = element ?? undefined;
+      },
+      [draggable]
+    ),
   };
 }

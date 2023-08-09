@@ -8,11 +8,16 @@ import {
   type DragActions,
 } from './dragOperation';
 import {DragDropMonitor} from './monitor';
-import {PluginRegistry, descriptor, type Plugins} from '../plugins';
+import {
+  PluginRegistry,
+  descriptor,
+  type Plugins,
+  PluginConstructor,
+} from '../plugins';
 import type {SensorConstructor, Sensors} from '../sensors';
 import type {ModifierConstructor} from '../modifiers';
 
-export interface DragDropConfiguration<T extends DragDropManager<any, any>> {
+export interface DragDropConfiguration<T extends DragDropManager> {
   plugins: Plugins<T>;
   sensors: Sensors<T>;
   modifiers: ModifierConstructor<T>[];
@@ -31,7 +36,10 @@ export class DragDropManager<
   public dragOperation: DragOperation<T, U>;
   public registry: DragDropRegistry<T, U>;
   public monitor: DragDropMonitor<T, U, DragDropManager<T, U>>;
-  public plugins: PluginRegistry<DragDropManager<T, U>>;
+  public plugins: PluginRegistry<
+    DragDropManager<T, U>,
+    PluginConstructor<DragDropManager<T, U>>
+  >;
   public sensors: PluginRegistry<
     DragDropManager<T, U>,
     SensorConstructor<DragDropManager<T, U>>
@@ -51,9 +59,9 @@ export class DragDropManager<
 
     this.registry = registry;
     this.monitor = monitor;
-    this.plugins = new PluginRegistry<V>(this);
-    this.sensors = new PluginRegistry(this);
-    this.modifiers = new PluginRegistry(this);
+    this.plugins = new PluginRegistry<V, PluginConstructor<V>>(this);
+    this.sensors = new PluginRegistry<V, SensorConstructor<V>>(this);
+    this.modifiers = new PluginRegistry<V, ModifierConstructor<V>>(this);
 
     const {actions, operation} = DragOperationManager<T, U, V>(this);
     const collisionObserver = new CollisionObserver<T, U>({
@@ -71,7 +79,7 @@ export class DragDropManager<
 
     for (const entry of plugins) {
       const {plugin, options} = descriptor(entry);
-      this.plugins.register(plugin, options);
+      this.plugins.register(plugin as PluginConstructor<V>, options);
     }
 
     for (const entry of sensors) {

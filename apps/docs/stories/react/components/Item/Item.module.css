@@ -1,0 +1,55 @@
+.Item {
+  --box-shadow: 0 0 0 calc(1px / var(--scale-x, 1)) rgba(63, 63, 68, 0.05), 0 1px calc(3px / var(--scale-x, 1)) 0 rgba(34, 33, 81, 0.15);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 10px 20px;
+  border: none;
+  gap: 10px;
+  background-color: #FFFFFF;
+  border-radius: 8px;
+  font-size: 14px !important;
+  font-weight: 600;
+  color: #333333;
+  cursor: grab;
+  outline: none;
+  transition: background 0.4s ease, box-shadow 0.3s ease, transform 0.25s ease;
+  min-height: 62px;
+  box-shadow: var(--box-shadow);
+  font-family: sans-serif !important;
+  font-weight: 300;
+  width: 100%;
+  max-width: 300px;
+}
+
+.Item:focus-visible:not(.shadow) {
+  --box-shadow: inset 0 0 0 3px #4c9ffe;
+  transition: background 0.4s ease;
+}
+
+.shadow {
+  animation: fadeShadowIn 0.3s ease;
+  transform: scale(1.03);
+  --box-shadow: -1px 0 15px 0 rgba(34, 33, 81, 0.01), 0px 15px 15px 0 rgba(34, 33, 81, 0.25);
+}
+
+.hasActions {
+  padding-right: 10px;
+}
+
+.Item:not(.hasActions) {
+  touch-action: none;
+}
+
+@keyframes fadeShadowIn {
+  from {
+    transform: scale(1);
+    box-shadow: none;
+  }
+  to {
+    transform: scale(1.03);
+    box-shadow: var(--box-shadow);
+  }
+}

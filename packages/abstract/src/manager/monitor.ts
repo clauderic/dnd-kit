@@ -5,15 +5,12 @@ import type {DragOperation} from './dragOperation';
 import type {Draggable, Droppable} from '../nodes';
 import type {Collisions} from '../collision';
 
-export type Events = Record<string, {} | undefined>;
+export type Events = Record<string, (...args: any[]) => void>;
 
 class Monitor<T extends Events> {
-  private registry = new Map<keyof T, Set<AnyFunction>>();
+  private registry = new Map<keyof T, Set<T[keyof T]>>();
 
-  public addEventListener<U extends keyof T>(
-    name: U,
-    handler: (event: T[U]) => void
-  ) {
+  public addEventListener<U extends keyof T>(name: U, handler: T[U]) {
     const {registry} = this;
     const listeners = new Set(registry.get(name));
 
@@ -23,7 +20,7 @@ class Monitor<T extends Events> {
     return () => this.removeEventListener(name, handler);
   }
 
-  public removeEventListener(name: keyof T, handler: AnyFunction) {
+  public removeEventListener(name: keyof T, handler: T[keyof T]) {
     const {registry} = this;
     const listeners = new Set(registry.get(name));
 
@@ -31,7 +28,7 @@ class Monitor<T extends Events> {
     registry.set(name, listeners);
   }
 
-  public dispatch<U extends keyof T>(name: U, event?: T[U], ...args: any[]) {
+  protected __dispatch<U extends keyof T>(name: U, ...args: Parameters<T[U]>) {
     const {registry} = this;
     const listeners = registry.get(name);
 
@@ -40,36 +37,57 @@ class Monitor<T extends Events> {
     }
 
     for (const listener of listeners) {
-      listener(event, ...args);
+      listener(...args);
     }
   }
 }
 
-export type DragDropEvents<T extends Draggable, U extends Droppable> = {
-  collision: {collisions: Collisions; preventDefault(): void};
-  dragstart: {};
-  dragmove: {};
-  dragover: {operation: DragOperation<T, U>};
-  dragend: {
-    operation: DragOperation<T, U>;
-    canceled: boolean;
-    suspend(): {resume(): void; abort(): void};
-  };
+type DragDropEvent<
+  T extends Draggable,
+  U extends Droppable,
+  V extends DragDropManager<T, U>,
+> = (event: Record<string, any>, manager: V) => void;
+
+export type DragDropEvents<
+  T extends Draggable,
+  U extends Droppable,
+  V extends DragDropManager<T, U>,
+> = {
+  collision(
+    event: {collisions: Collisions; preventDefault(): void},
+    manager: V
+  ): void;
+  dragstart(event: {}, manager: V): void;
+  dragmove(event: {}, manager: V): void;
+  dragover(event: {operation: DragOperation<T, U>}, manager: V): void;
+  dragend(
+    event: {
+      operation: DragOperation<T, U>;
+      canceled: boolean;
+      suspend(): {resume(): void; abort(): void};
+    },
+    manager: V
+  ): void;
 };
 
 export class DragDropMonitor<
   T extends Draggable,
   U extends Droppable,
   V extends DragDropManager<T, U>,
-> extends Monitor<DragDropEvents<T, U>> {
+> extends Monitor<DragDropEvents<T, U, V>> {
   constructor(private manager: V) {
     super();
   }
 
-  public dispatch<Key extends keyof DragDropEvents<T, U>>(
+  public dispatch<Key extends keyof DragDropEvents<T, U, V>>(
     type: Key,
-    event: DragDropEvents<T, U>[Key]
+    event: Parameters<DragDropEvents<T, U, V>[Key]>[0]
   ) {
-    super.dispatch(type, event, this.manager);
+    const args = [event, this.manager] as any;
+
+    super.__dispatch(
+      type,
+      ...(args as Parameters<DragDropEvents<T, U, V>[Key]>)
+    );
   }
 }

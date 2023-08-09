@@ -1,0 +1,10 @@
+.Preview {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 25px;
+  margin: 25px 0 40px;
+  border-radius: 4px;
+  background: #FFFFFF;
+  box-shadow: rgba(0, 0, 0, 0.10) 0 1px 3px 0;
+  border: 1px solid hsla(203, 50%, 30%, 0.15);
+}

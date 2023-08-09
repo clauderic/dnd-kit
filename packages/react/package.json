@@ -20,6 +20,10 @@
     "@dnd-kit/dom": "*",
     "@dnd-kit/state": "*"
   },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
   "devDependencies": {
     "@dnd-kit/config-ts": "*",
     "@types/react": "^18.0.9",

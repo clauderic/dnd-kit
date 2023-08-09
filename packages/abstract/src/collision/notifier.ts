@@ -1,4 +1,5 @@
 import {effect} from '@dnd-kit/state';
+
 import {DragDropManager} from '../manager';
 import {Plugin} from '../plugins';
 
@@ -14,7 +15,6 @@ export class CollisionNotifier extends Plugin {
       monitor.dispatch('collision', {
         collisions,
         preventDefault() {
-          console.log('prevent default');
           defaultPrevented = true;
         },
       });

@@ -5,7 +5,7 @@ import {Listeners, getOwnerDocument} from '@dnd-kit/dom-utilities';
 
 import type {DragDropManager} from '../../manager';
 import type {Draggable} from '../../nodes';
-import {AutoScroller} from '../../plugins';
+import {AutoScroller, Scroller} from '../../plugins';
 import {DOMRectangle} from '../../shapes';
 
 export type KeyCode = KeyboardEvent['code'];
@@ -159,7 +159,9 @@ export class KeyboardSensor extends Sensor<
       if (offset.x || offset.y) {
         event.preventDefault();
 
-        if (!this.manager.scroller.scroll({by: offset})) {
+        const scroller = this.manager.plugins.get(Scroller);
+
+        if (!scroller?.scroll({by: offset})) {
           this.manager.actions.move({
             coordinates: {
               x: center.x + offset.x,

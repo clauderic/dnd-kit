@@ -1,15 +1,13 @@
-import {
-  DragOperationStatus,
-  Droppable as AbstractDroppable,
-} from '@dnd-kit/abstract';
+import {Droppable as AbstractDroppable} from '@dnd-kit/abstract';
 import type {
   Data,
   DroppableInput as AbstractDroppableInput,
+  DragDropManager as AbstractDragDropManager,
 } from '@dnd-kit/abstract';
-import {Shape} from '@dnd-kit/geometry';
 import {defaultCollisionDetection} from '@dnd-kit/collision';
 import type {CollisionDetector} from '@dnd-kit/collision';
 import {effect, reactive} from '@dnd-kit/state';
+import type {Shape} from '@dnd-kit/geometry';
 
 import {DOMRectangle} from '../../shapes';
 
@@ -18,36 +16,51 @@ type OptionalInput = 'collisionDetector';
 export interface Input<T extends Data = Data>
   extends Omit<AbstractDroppableInput<T>, OptionalInput> {
   collisionDetector?: CollisionDetector;
-  shape?: Shape;
+  element?: Element;
+  ignoreTransform?: boolean;
 }
 
 export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
   @reactive
   public element: Element | undefined;
 
-  constructor({
-    collisionDetector = defaultCollisionDetection,
-    ...input
-  }: Input<T>) {
-    super({...input, collisionDetector});
+  @reactive
+  public ignoreTransform: boolean;
 
+  constructor(
+    {
+      collisionDetector = defaultCollisionDetection,
+      element,
+      ignoreTransform = false,
+      ...input
+    }: Input<T>,
+    protected manager: AbstractDragDropManager<any, any>
+  ) {
+    super({...input, collisionDetector}, manager);
+
+    this.element = element;
+    this.ignoreTransform = ignoreTransform;
+    this.updateShape = this.updateShape.bind(this);
     this.destroy = effect(this.updateShape);
   }
 
-  public updateShape = () => {
+  public updateShape(): Shape | null {
     const {disabled, element} = this;
 
     if (!element || disabled) {
       this.shape = null;
-      return;
+      return null;
     }
 
-    const updatedShape = new DOMRectangle(element);
+    const {shape} = this;
+    const updatedShape = new DOMRectangle(element, this.ignoreTransform);
 
-    if (this.shape?.equals(updatedShape)) {
-      return;
+    if (shape?.equals(updatedShape)) {
+      return shape;
     }
 
     this.shape = updatedShape;
-  };
+
+    return updatedShape;
+  }
 }

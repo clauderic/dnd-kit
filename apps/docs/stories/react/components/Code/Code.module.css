@@ -1,0 +1,30 @@
+.Code {
+  --background-color: #263038;
+  --border-radius: 10px;
+
+  max-width: 100%;
+  margin: 30px 0;
+  background-color: var(--background-color);
+  border-radius: var(--border-radius);
+  color: #fff;
+  transition: box-shadow 250ms ease,
+    transform 300ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+@media (prefers-color-scheme:  dark) {
+  .Code {
+    --background-color: #1b1f27;
+  }
+}
+
+@media (max-width: 540px) {
+  .Code {
+    margin: 0 -0.8rem;
+  }
+}
+
+.TabContent {
+  padding: 20px 0;
+  padding-right: 20px;
+  overflow: auto;
+}

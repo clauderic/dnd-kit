@@ -33,7 +33,7 @@ class Overlay {
     const style = document.createElement('style');
 
     element.style.setProperty('all', 'initial');
-    element.style.pointerEvents = 'none';
+    element.style.setProperty('pointer-events', 'none');
     element.style.setProperty('position', 'fixed');
     element.style.setProperty('top', `${top}px`);
     element.style.setProperty('left', `${left}px`);

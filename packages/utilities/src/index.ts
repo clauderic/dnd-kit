@@ -1,2 +1,5 @@
-export * from './math';
-export * from './other';
+export {arrayMove} from './array';
+
+export {add, subtract} from './math';
+
+export {debounce, isEqual, PubSub} from './other';

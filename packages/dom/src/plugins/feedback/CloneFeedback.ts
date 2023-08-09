@@ -25,7 +25,7 @@ export class CloneFeedback extends Plugin<DragDropManager> {
         !isDragging ||
         !source ||
         !source.element ||
-        source.feedback !== 'clone'
+        source.feedback !== CloneFeedback
       ) {
         return;
       }
@@ -33,13 +33,21 @@ export class CloneFeedback extends Plugin<DragDropManager> {
       const {element} = source;
       const {boundingRectangle} = new DOMRectangle(element);
       const overlay = createOverlay(manager, boundingRectangle);
-      const clonedElement = cloneElement(element);
 
+      const clonedElement = cloneElement(element);
       overlay.appendChild(clonedElement);
       overlay.appendTo(document.body);
 
+      if (element instanceof HTMLElement) {
+        element.style.visibility = 'hidden';
+      }
+
       return () => {
         overlay.remove();
+
+        if (element instanceof HTMLElement) {
+          element.style.visibility = '';
+        }
       };
     });
   }

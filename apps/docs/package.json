@@ -13,9 +13,12 @@
     "@dnd-kit/dom": "*",
     "@dnd-kit/react": "*",
     "@dnd-kit/utilities": "*",
+    "prismjs": "^1.29.0",
+    "clipboard": "^2.0.11",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "use-pan-and-zoom": "^0.6.5"
+    "use-pan-and-zoom": "^0.6.5",
+    "@tanstack/react-virtual": "^3.0.0-beta.54"
   },
   "devDependencies": {
     "@dnd-kit/abstract": "*",

@@ -1,13 +1,27 @@
 import {
   Draggable as AbstractDraggable,
-  DraggableInput,
+  Sensor,
+  descriptor,
 } from '@dnd-kit/abstract';
-import type {Data} from '@dnd-kit/abstract';
-import {reactive} from '@dnd-kit/state';
+import type {
+  Data,
+  DraggableInput,
+  DragDropManager as AbstractDragDropManager,
+  PluginConstructor,
+} from '@dnd-kit/abstract';
+import {effect, reactive} from '@dnd-kit/state';
 
-export interface Input<T extends Data = Data> extends DraggableInput<T> {}
+import {CloneFeedback} from '../../plugins';
+import type {Sensors} from '../../sensors';
 
-export type DraggableFeedback = 'none' | 'clone' | 'move' | 'placeholder';
+export interface Input<T extends Data = Data> extends DraggableInput<T> {
+  activator?: Element;
+  element?: Element;
+  feedback?: DraggableFeedback;
+  sensors?: Sensors;
+}
+
+export type DraggableFeedback = PluginConstructor | null;
 
 export class Draggable<T extends Data = Data> extends AbstractDraggable<T> {
   @reactive
@@ -17,9 +31,46 @@ export class Draggable<T extends Data = Data> extends AbstractDraggable<T> {
   public element: Element | undefined;
 
   @reactive
-  public feedback: string = 'placeholder';
+  public feedback: DraggableFeedback;
 
-  constructor(input: Input<T>) {
-    super(input);
+  @reactive
+  public sensors: Sensors | undefined;
+
+  constructor(
+    {activator, element, feedback = CloneFeedback, sensors, ...input}: Input<T>,
+    protected manager: AbstractDragDropManager<any, any>
+  ) {
+    super(input, manager);
+
+    this.activator = activator;
+    this.element = element;
+    this.feedback = feedback;
+    this.sensors = sensors;
+
+    const effectCleanup = effect(() => {
+      const sensors = this.sensors?.map(descriptor) ?? [...manager.sensors];
+      const unbindFunctions = sensors.map((entry) => {
+        const sensorInstance =
+          entry instanceof Sensor
+            ? entry
+            : manager.sensors.get(entry.plugin) ??
+              manager.sensors.register(entry.plugin);
+        const options = entry instanceof Sensor ? undefined : entry.options;
+
+        const unbind = sensorInstance.bind(this, options);
+        return unbind;
+      });
+
+      return function cleanup() {
+        unbindFunctions.forEach((unbind) => unbind());
+      };
+    });
+
+    const {destroy} = this;
+
+    this.destroy = () => {
+      effectCleanup();
+      destroy();
+    };
   }
 }

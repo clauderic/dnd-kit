@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap');
+
+:root {
+  --mono-font-stack: 'Roboto Mono', Consolas, 'Andale Mono WT', 'Andale Mono',
+    'Lucida Console', 'Lucida Sans Typewriter', 'DejaVu Sans Mono',
+    'Bitstream Vera Sans Mono', 'Liberation Mono', 'Nimbus Mono L', Monaco,
+    'Courier New', Courier, monospace;
+}
+
+.CodeHighlighter {
+  position: relative;
+  font-size: 0.9rem;
+}
+
+.CodeHighlighter > pre {
+  position: relative;
+  overflow-y: hidden;
+  overflow-x: auto;
+  display: flex;
+  margin: 0;
+  padding-left: 50px;
+  padding-right: 20px;
+}
+
+.CodeHighlighter code {
+  flex-shrink: 0;
+  -webkit-text-size-adjust: none;
+  text-rendering: optimizeLegibility;
+}
+
+.CodeHighlighter code,
+.LineNumbers {
+  font-weight: 500;
+  font-family: var(--mono-font-stack);
+}
+
+.Copy {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  padding: 20px;
+  outline: none;
+  appearance: none;
+  border: none;
+  background: var(--background-color);
+  cursor: pointer;
+}
+
+.Copy img {
+  opacity: 0.5;
+}
+
+.Copy:active {
+  cursor: pointer;
+}
+
+.Copy:hover img {
+  opacity: 1;
+}
+
+.LineNumbers {
+  position: absolute;
+  left: 20px;
+  color: rgba(255, 255, 255, 0.2);
+  font-weight: 300;
+  user-select: none;
+}
+
+.CodeHighlighter :global .tag .token.spread .attr-value {
+  color: #fff;
+}
+
+.CodeHighlighter :global .token.parameter {
+  color: orange;
+}
+
+.CodeHighlighter :global .keyword,
+.CodeHighlighter :global .operator,
+.CodeHighlighter :global .tag .script.language-javascript .punctuation:not(.parentheses),
+.CodeHighlighter :global .tag .token.spread .punctuation {
+  color: #eb2b78;
+}
+
+.CodeHighlighter :global .comment {
+  color: #959595;
+}
+
+.CodeHighlighter :global .keyword.function,
+.CodeHighlighter :global .keyword.const,
+.CodeHighlighter :global .class-name,
+.CodeHighlighter :global .operator.arrow-function {
+  color: #70dcee;
+}
+
+.CodeHighlighter :global .operator + .keyword,
+.CodeHighlighter :global .boolean,
+.CodeHighlighter :global .token.keyword.null,
+.CodeHighlighter :global .number,
+.CodeHighlighter :global .token.token.punctuation.braces,
+.CodeHighlighter :global .token.token.punctuation.braces + .token.punctuation.parentheses,
+.CodeHighlighter :global .token.token.punctuation.parentheses.opening + .token.punctuation.parentheses.opening,
+.CodeHighlighter :global .token.token.punctuation.parentheses + .token.parameter + .token.punctuation.parentheses  {
+  color: #fc8bf5;
+}
+
+.CodeHighlighter :global .string,
+.CodeHighlighter :global .tag .attr-value {
+  color: #fdf0a2;
+}
+
+.CodeHighlighter :global .token.function + .punctuation,
+.CodeHighlighter :global .script.language-javascript .token.punctuation.braces,
+.CodeHighlighter :global .token.punctuation.parentheses,
+.CodeHighlighter :global .token.function ~ .token.punctuation.parentheses,
+.CodeHighlighter :global .token.token.punctuation.parentheses + .token.parameter + .token.punctuation.parentheses:has(+ .token.braces.opening) {
+  color: #ffd602;
+}
+
+.CodeHighlighter :global .function,
+.CodeHighlighter :global .attr-name {
+  color: #4bff83;
+}
+
+.CodeHighlighter :global .punctuation,
+.CodeHighlighter :global .script.language-javascript .token.punctuation.semicolon,
+.CodeHighlighter :global .tag .script.language-javascript {
+  color: #f9f9f4;
+}
+
+.CodeHighlighter :global .tag {
+  color: #fa2b7d;
+}
+
+.CodeHighlighter :global .token.punctuation.parentheses:where(+ .semicolon) {
+  color: #ffd602 !important;
+}

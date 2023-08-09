@@ -1,0 +1,40 @@
+import {Canvas} from '@storybook/blocks';
+
+import {Code, Preview} from '../../components';
+import {BasicSetup} from '../Sortable.stories';
+import BasicSetupSource from '../SortableExample?raw';
+import {Example} from './examples/QuickStart';
+import QuickStartSource from './examples/QuickStart?raw';
+import image from './assets/useSortable.png';
+
+# Sortable
+
+> The sortable plugin provides the building blocks to build sortable interfaces.
+
+<Preview of={BasicSetup} />
+
+## Installation
+
+To get started, install the `@dnd-kit/react` package.
+
+## Getting started
+
+<Preview>
+  <Example />
+</Preview>
+
+<Code>{QuickStartSource}</Code>
+
+To create a vertical list, we can simply update the CSS value for `flex-direction` to `column`, without any other configuration changes.
+
+<Preview>
+  <Example vertical />
+</Preview>
+
+## Architecture
+
+The sortable plugin composes the `Draggable` and `Droppable` nodes to provide a simple API for building sortable interfaces.
+
+The `useSortable` hook is an abstraction that composes the `useDroppable` and `useDraggable` hooks:
+
+<img src={image} width="70%" />

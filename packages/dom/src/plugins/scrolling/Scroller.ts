@@ -38,12 +38,22 @@ export class Scroller extends Plugin<DragDropManager> {
     const scrollableElements = computed(() => {
       const element = elementFromPoint.value;
 
+      if (!element || element === document.documentElement) {
+        const targetElement = manager.dragOperation.target?.element;
+
+        if (targetElement) {
+          return getScrollableAncestors(targetElement, {excludeElement: false});
+        }
+      }
+
       return element
         ? getScrollableAncestors(element, {excludeElement: false})
         : null;
     }, isEqual);
 
-    this.getScrollableElements = () => scrollableElements.value;
+    this.getScrollableElements = () => {
+      return scrollableElements.value;
+    };
 
     this.scrollIntentTracker = new ScrollIntentTracker(manager);
   }

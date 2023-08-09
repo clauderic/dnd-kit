@@ -39,7 +39,11 @@ export function getScrollableAncestors(
       return scrollParents;
     }
 
-    if (!isHTMLElement(node) || isSVGElement(node)) {
+    if (!isHTMLElement(node)) {
+      if (isSVGElement(node)) {
+        return findScrollableAncestors(node.parentElement);
+      }
+
       return scrollParents;
     }
 

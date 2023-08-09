@@ -22,3 +22,5 @@ export {scheduler, Scheduler} from './scheduler';
 export {InlineStyles} from './styles';
 
 export {supportsViewTransition} from './type-guards';
+
+export {inverseTransform} from './transform';

@@ -1,6 +1,7 @@
 export {
   batch,
   effect,
+  untracked,
   signal,
   Signal,
   type ReadonlySignal,

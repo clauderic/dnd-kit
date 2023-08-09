@@ -5,8 +5,8 @@ import type {InferPluginOptions, PluginConstructor} from './types';
 
 export class PluginRegistry<
   T extends DragDropManager<any, any>,
-  W extends PluginConstructor = PluginConstructor,
-  U extends Plugin = InstanceType<W>,
+  W extends PluginConstructor<T> = PluginConstructor<T>,
+  U extends Plugin<T> = InstanceType<W>,
 > {
   private instances: Map<W, U> = new Map();
 
@@ -16,18 +16,21 @@ export class PluginRegistry<
     return this.instances.values();
   }
 
-  public get(plugin: W): U | undefined {
+  public get<X extends W>(plugin: X): InstanceType<X> | undefined {
     const instance = this.instances.get(plugin);
 
-    return instance;
+    return instance as any;
   }
 
-  public register(plugin: W, options?: InferPluginOptions<W>): U {
+  public register<X extends W>(
+    plugin: X,
+    options?: InferPluginOptions<X>
+  ): InstanceType<X> {
     const instance = new plugin(this.manager, options) as U;
 
     this.instances.set(plugin, instance);
 
-    return instance;
+    return instance as InstanceType<X>;
   }
 
   public destroy() {

@@ -1,11 +1,12 @@
 import type {Type} from '@dnd-kit/types';
-import {reactive} from '@dnd-kit/state';
+import {derived, reactive} from '@dnd-kit/state';
 import type {Shape} from '@dnd-kit/geometry';
 
 import {Node} from '../node';
 import type {NodeInput, Data} from '../node';
 
 import type {CollisionDetector} from '../../collision';
+import type {DragDropManager} from '../../manager';
 
 export interface Input<T extends Data = Data> extends NodeInput<T> {
   accept?: Type[];
@@ -13,8 +14,11 @@ export interface Input<T extends Data = Data> extends NodeInput<T> {
 }
 
 export class Droppable<T extends Data = Data> extends Node<T> {
-  constructor({accept, collisionDetector, ...input}: Input<T>) {
-    super(input);
+  constructor(
+    {accept, collisionDetector, ...input}: Input<T>,
+    protected manager: DragDropManager
+  ) {
+    super(input, manager);
 
     this.accept = accept;
     this.collisionDetector = collisionDetector;
@@ -51,4 +55,9 @@ export class Droppable<T extends Data = Data> extends Node<T> {
 
   @reactive
   public shape: Shape | null = null;
+
+  @derived
+  public get isDropTarget() {
+    return this.manager.dragOperation.target?.id === this.id;
+  }
 }

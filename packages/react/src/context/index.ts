@@ -1,2 +1,2 @@
-export {DndContext} from './DndContext';
-export {useDndContext} from './hook';
+export {DragDropProvider} from './DragDropProvider';
+export {useDragDropManager} from './hook';
