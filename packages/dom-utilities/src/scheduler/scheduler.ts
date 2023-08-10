@@ -2,8 +2,12 @@ export class Scheduler {
   private animationFrame: number | undefined;
   private tasks: (() => void)[] = [];
 
-  public schedule(task: () => void) {
-    this.tasks.push(task);
+  public schedule(task: () => void, unshift = false) {
+    if (unshift) {
+      this.tasks.unshift(task);
+    } else {
+      this.tasks.push(task);
+    }
 
     if (!this.animationFrame) {
       this.animationFrame = requestAnimationFrame(this.flush);

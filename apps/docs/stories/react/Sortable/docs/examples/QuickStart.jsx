@@ -30,7 +30,7 @@ function Sortable({id, index}) {
   const {ref} = useSortable({id, index});
 
   return (
-    <button ref={ref} style={{padding: '10px 20px'}}>
+    <button ref={ref}>
       Item {id}
     </button>
   );

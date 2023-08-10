@@ -13,27 +13,17 @@ class Registry<T> {
   }
 
   public get(identifier: UniqueIdentifier): T | undefined {
-    return this.map.peek().get(identifier);
-  }
-
-  public pick(...identifiers: UniqueIdentifier[]): T[] | undefined {
-    const map = this.map.peek();
-
-    return identifiers.map((identifier) => {
-      const entry = map.get(identifier);
-
-      if (!entry) {
-        throw new Error(
-          `No registered entry found for identifier: ${identifier}`
-        );
-      }
-
-      return entry;
-    });
+    return this.map.value.get(identifier);
   }
 
   public register = (key: UniqueIdentifier, value: T) => {
-    const updatedMap = new Map(this.map.peek());
+    const current = this.map.peek();
+
+    if (current.get(key) === value) {
+      return;
+    }
+
+    const updatedMap = new Map(current);
     updatedMap.set(key, value);
 
     this.map.value = updatedMap;
@@ -44,11 +34,13 @@ class Registry<T> {
   };
 
   public unregister = (key: UniqueIdentifier, value: T) => {
-    if (this.get(key) !== value) {
+    const current = this.map.peek();
+
+    if (current.get(key) !== value) {
       return;
     }
 
-    const updatedMap = new Map(this.map.peek());
+    const updatedMap = new Map(current);
     updatedMap.delete(key);
 
     this.map.value = updatedMap;

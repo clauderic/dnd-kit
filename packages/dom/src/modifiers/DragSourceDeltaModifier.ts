@@ -5,6 +5,7 @@ import {derived, effect, reactive} from '@dnd-kit/state';
 import {DragDropManager} from '../manager';
 import {DOMRectangle} from '../shapes';
 
+// TODO: Need to account for scroll delta
 export class DragSourceDeltaModifier extends Modifier<DragDropManager> {
   constructor(manager: DragDropManager) {
     super(manager);
@@ -55,6 +56,8 @@ export class DragSourceDeltaModifier extends Modifier<DragDropManager> {
     if (!boundingRectangleDelta) {
       return transform;
     }
+
+    // console.log(boundingRectangleDelta);
 
     return {
       x: transform.x - boundingRectangleDelta.left,

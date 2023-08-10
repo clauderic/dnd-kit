@@ -19,7 +19,7 @@ export interface UseSortableInput<T extends Data = Data>
 }
 
 export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
-  const {id, index, disabled, feedback = CloneFeedback, sensors} = input;
+  const {id, data, index, disabled, feedback = CloneFeedback, sensors} = input;
   const activator = getCurrentValue(input.activator);
   const element = getCurrentValue(input.element);
   const manager = useDragDropManager();
@@ -32,6 +32,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
   const isDragSource = useComputed(() => sortable.isDragSource).value;
 
   useOnValueChange(id, () => (sortable.id = id));
+  useOnValueChange(data, () => (sortable.data = data ?? null));
   useOnValueChange(index, () => (sortable.index = index));
   useOnValueChange(activator, () => (sortable.activator = activator));
   useOnValueChange(element, () => (sortable.element = element));
@@ -56,6 +57,12 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     get isDropTarget() {
       return isDropTarget.value;
     },
+    activatorRef: useCallback(
+      (element: Element | null) => {
+        sortable.activator = element ?? undefined;
+      },
+      [sortable]
+    ),
     ref: useCallback(
       (element: Element | null) => {
         sortable.element = element ?? undefined;

@@ -26,6 +26,12 @@ export class PluginRegistry<
     plugin: X,
     options?: InferPluginOptions<X>
   ): InstanceType<X> {
+    const existingInstance = this.instances.get(plugin);
+
+    if (existingInstance) {
+      return existingInstance as InstanceType<X>;
+    }
+
     const instance = new plugin(this.manager, options) as U;
 
     this.instances.set(plugin, instance);

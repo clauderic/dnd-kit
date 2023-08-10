@@ -1,7 +1,7 @@
 import {Position, type Shape} from '@dnd-kit/geometry';
 import type {Coordinates} from '@dnd-kit/geometry';
 import type {UniqueIdentifier} from '@dnd-kit/types';
-import {batch, computed, signal} from '@dnd-kit/state';
+import {batch, effect, computed, signal} from '@dnd-kit/state';
 
 import type {Draggable, Droppable} from '../nodes';
 
@@ -22,6 +22,7 @@ export interface DragOperation<
   T extends Draggable = Draggable,
   U extends Droppable = Droppable,
 > {
+  activatorEvent: Event | null;
   status: Status;
   position: Position;
   transform: Coordinates;
@@ -51,6 +52,7 @@ export function DragOperationManager<
   const status = signal<Status>(Status.Idle);
   const shape = signal<Shape | null>(null);
   const position = new Position({x: 0, y: 0});
+  const activatorEvent = signal<Event | null>(null);
   const sourceIdentifier = signal<UniqueIdentifier | null>(null);
   const targetIdentifier = signal<UniqueIdentifier | null>(null);
   const source = computed(() => {
@@ -66,7 +68,8 @@ export function DragOperationManager<
   const transform = computed(() => {
     const {x, y} = position.delta;
     let transform = {x, y};
-    const operation = {
+    const operation: Omit<DragOperation<T, U>, 'transform'> = {
+      activatorEvent: activatorEvent.peek(),
       source: source.peek() ?? null,
       target: target.peek() ?? null,
       initialized: status.peek() !== Status.Idle,
@@ -83,6 +86,9 @@ export function DragOperationManager<
   });
 
   const operation: DragOperation<T, U> = {
+    get activatorEvent() {
+      return activatorEvent.value;
+    },
     get source() {
       return source.value ?? null;
     },
@@ -143,8 +149,9 @@ export function DragOperationManager<
           operation: snapshot(operation),
         });
       },
-      start({coordinates}: {coordinates: Coordinates}) {
+      start({event, coordinates}: {event: Event; coordinates: Coordinates}) {
         status.value = Status.Initializing;
+        activatorEvent.value = event;
 
         batch(() => {
           status.value = Status.Dragging;
@@ -153,14 +160,46 @@ export function DragOperationManager<
 
         monitor.dispatch('dragstart', {});
       },
-      move({coordinates}: {coordinates: Coordinates}) {
+      move({
+        by,
+        to,
+        cancelable = true,
+      }:
+        | {by: Coordinates; to?: undefined; cancelable?: boolean}
+        | {by?: undefined; to: Coordinates; cancelable?: boolean}) {
         if (!dragging.peek()) {
           return;
         }
 
-        position.update(coordinates);
+        let defaultPrevented = false;
 
-        monitor.dispatch('dragmove', {});
+        monitor.dispatch('dragmove', {
+          operation: snapshot(operation),
+          by,
+          to,
+          cancelable,
+          get defaultPrevented() {
+            return defaultPrevented;
+          },
+          preventDefault() {
+            if (!cancelable) {
+              return;
+            }
+
+            defaultPrevented = true;
+          },
+        });
+
+        if (defaultPrevented) {
+          return;
+        }
+
+        const coordinates = to ?? {
+          x: position.current.x + by.x,
+          y: position.current.y + by.y,
+        };
+
+        position.update(coordinates);
       },
       stop({canceled = false}: {canceled?: boolean} = {}) {
         const end = () => {

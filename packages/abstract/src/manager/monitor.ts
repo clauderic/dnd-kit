@@ -1,4 +1,4 @@
-import type {AnyFunction} from '@dnd-kit/types';
+import type {Coordinates} from '@dnd-kit/geometry';
 
 import type {DragDropManager} from './manager';
 import type {DragOperation} from './dragOperation';
@@ -42,23 +42,31 @@ class Monitor<T extends Events> {
   }
 }
 
-type DragDropEvent<
-  T extends Draggable,
-  U extends Droppable,
-  V extends DragDropManager<T, U>,
-> = (event: Record<string, any>, manager: V) => void;
-
 export type DragDropEvents<
   T extends Draggable,
   U extends Droppable,
   V extends DragDropManager<T, U>,
 > = {
   collision(
-    event: {collisions: Collisions; preventDefault(): void},
+    event: {
+      collisions: Collisions;
+      defaultPrevented: boolean;
+      preventDefault(): void;
+    },
     manager: V
   ): void;
   dragstart(event: {}, manager: V): void;
-  dragmove(event: {}, manager: V): void;
+  dragmove(
+    event: {
+      operation: DragOperation<T, U>;
+      to?: Coordinates;
+      by?: Coordinates;
+      cancelable: boolean;
+      defaultPrevented: boolean;
+      preventDefault(): void;
+    },
+    manager: V
+  ): void;
   dragover(event: {operation: DragOperation<T, U>}, manager: V): void;
   dragend(
     event: {

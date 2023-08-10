@@ -1,2 +1,7 @@
 export type {CollisionDetector} from '@dnd-kit/abstract';
-export * from './algorithms';
+export {
+  closestCenter,
+  defaultCollisionDetection,
+  pointerIntersection,
+  shapeIntersection,
+} from './algorithms';

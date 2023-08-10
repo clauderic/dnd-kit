@@ -1,6 +1,7 @@
 import {effect} from '@dnd-kit/state';
 import {
   InlineStyles,
+  isKeyboardEvent,
   supportsViewTransition,
   scheduler,
 } from '@dnd-kit/dom-utilities';
@@ -33,6 +34,9 @@ class Overlay {
     const style = document.createElement('style');
 
     element.style.setProperty('all', 'initial');
+    element.style.setProperty('display', 'flex');
+    element.style.setProperty('align-items', 'stretch');
+    element.style.setProperty('justify-content', 'stretch');
     element.style.setProperty('pointer-events', 'none');
     element.style.setProperty('position', 'fixed');
     element.style.setProperty('top', `${top}px`);
@@ -40,12 +44,40 @@ class Overlay {
     element.style.setProperty('width', `${width}px`);
     element.style.setProperty('height', `${height}px`);
     element.style.setProperty('touch-action', 'none');
+    element.style.setProperty('z-index', '9999');
+
+    if (isKeyboardEvent(manager.dragOperation.activatorEvent)) {
+      element.style.setProperty('transition', 'transform 150ms ease');
+    }
 
     element.setAttribute('data-dnd-kit-overlay', '');
     style.innerText = `dialog[data-dnd-kit-overlay]::backdrop {display: none;}`;
     element.appendChild(style);
 
     this.element = element;
+
+    effect(() => {
+      const {source} = manager.dragOperation;
+
+      if (!source || !source.element) {
+        return;
+      }
+
+      const resizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const {target} = entry;
+          const {width, height} = target.getBoundingClientRect();
+
+          element.style.setProperty('width', `${width}px`);
+          element.style.setProperty('height', `${height}px`);
+        }
+      });
+      resizeObserver.observe(source.element);
+
+      return () => {
+        resizeObserver.disconnect();
+      };
+    });
 
     const effectCleanup = effect(() => {
       const {dragOperation} = manager;
@@ -57,12 +89,11 @@ class Overlay {
         scheduler.schedule(() => {
           const {x, y} = this.transform;
 
+          dragOperation.shape = new DOMRectangle(element, true).translate(x, y);
           element.style.setProperty(
             'transform',
             `translate3d(${x}px, ${y}px, 0)`
           );
-
-          dragOperation.shape = new DOMRectangle(element);
         });
       }
     });

@@ -9,31 +9,43 @@ import {classNames, createRange} from '../../../../../utilities';
 
 interface Props {
   children: string;
+  language?: string;
 }
 
-export function CodeHighlighter({children = ''}: Props) {
+export function CodeHighlighter({children = '', language = 'jsx'}: Props) {
+  const lineCount = children.split('\n').length - 1;
   const nodeRef = useRef<HTMLButtonElement>();
   const highlightedCode = useMemo(
     () =>
-      syntaxReplacements(Prism.highlight(children.trim(), Prism.languages.jsx)),
+      syntaxReplacements(
+        Prism.highlight(
+          children.trim(),
+          Prism.languages[language] ?? Prism.languages.txt,
+          language
+        )
+      ),
     [children]
   );
 
   useEffect(() => {
-    const clipboard = new Clipboard(nodeRef.current as any);
+    const clipboard = new Clipboard(nodeRef.current as Element);
     return () => clipboard.destroy();
   }, []);
 
   return (
-    <div className={classNames(styles.CodeHighlighter, 'sb-unstyled')}>
+    <div
+      className={classNames(styles.CodeHighlighter, 'sb-unstyled', language)}
+    >
       <pre>
         <div aria-hidden="true" className={styles.LineNumbers}>
-          {lineNumbers.map((line) => (
-            <React.Fragment key={line}>
-              {line}
-              <br />
-            </React.Fragment>
-          ))}
+          {lineCount > 1
+            ? createRange(lineCount).map((line) => (
+                <React.Fragment key={line}>
+                  {line + 1}
+                  <br />
+                </React.Fragment>
+              ))
+            : null}
         </div>
         <code dangerouslySetInnerHTML={{__html: highlightedCode}} />
       </pre>
@@ -72,5 +84,3 @@ function syntaxReplacements(value: string) {
     value
   );
 }
-
-const lineNumbers = createRange(50);

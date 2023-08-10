@@ -11,17 +11,15 @@
   background-color: #FFFFFF;
   border-radius: 8px;
   font-size: 14px !important;
-  font-weight: 600;
-  color: #333333;
-  cursor: grab;
+  color: #555;
   outline: none;
   transition: background 0.4s ease, box-shadow 0.3s ease, transform 0.25s ease;
   min-height: 62px;
   box-shadow: var(--box-shadow);
-  font-family: sans-serif !important;
-  font-weight: 300;
+  font-family: var(--font-family);
   width: 100%;
   max-width: 300px;
+  white-space: nowrap;
 }
 
 .Item:focus-visible:not(.shadow) {
@@ -40,6 +38,7 @@
 }
 
 .Item:not(.hasActions) {
+  cursor: grab;
   touch-action: none;
 }
 

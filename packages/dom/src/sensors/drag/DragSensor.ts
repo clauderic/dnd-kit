@@ -142,6 +142,7 @@ export class DragSensor extends Sensor<DragDropManager, DragSensorOptions> {
 
     if (this.manager.dragOperation.status === 'idle') {
       this.manager.actions.start({
+        event,
         coordinates: {
           x: event.clientX,
           y: event.clientY,
@@ -151,7 +152,7 @@ export class DragSensor extends Sensor<DragDropManager, DragSensorOptions> {
     }
 
     this.manager.actions.move({
-      coordinates: {
+      to: {
         x: event.clientX,
         y: event.clientY,
       },

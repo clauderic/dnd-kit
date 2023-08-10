@@ -8,7 +8,7 @@ import {useWindowVirtualizer} from '@tanstack/react-virtual';
 import {Item, Handle} from '../../components';
 import {createRange, cloneDeep} from '../../../utilities';
 
-export function VirtualizedSortableExample() {
+export function ReactVirtualExample() {
   const [items, setItems] = useState<UniqueIdentifier[]>(createRange(1000));
   const snapshot = useRef(cloneDeep(items));
 

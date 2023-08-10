@@ -1,5 +1,6 @@
 export {isDocument} from './isDocument';
 export {isHTMLElement} from './isHTMLElement';
+export {isKeyboardEvent} from './isKeyboardEvent';
 export {isNode} from './isNode';
 export {isSVGElement} from './isSVGElement';
 export {isWindow} from './isWindow';

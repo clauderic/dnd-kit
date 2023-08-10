@@ -113,8 +113,6 @@ export class PlaceholderFeedback extends Plugin<DragDropManager> {
           if (Array.from(mutation.addedNodes).includes(element)) {
             ignoreNextMutation = true;
 
-            console.log(mutation);
-
             element.replaceWith(placeholder);
             overlay.appendChild(element);
 

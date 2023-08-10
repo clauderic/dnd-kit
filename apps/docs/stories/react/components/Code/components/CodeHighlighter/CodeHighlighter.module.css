@@ -30,7 +30,7 @@
 
 .CodeHighlighter code,
 .LineNumbers {
-  font-weight: 500;
+  font-weight: 400;
   font-family: var(--mono-font-stack);
 }
 

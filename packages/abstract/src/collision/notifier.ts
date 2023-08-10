@@ -1,4 +1,4 @@
-import {effect} from '@dnd-kit/state';
+import {effect, untracked} from '@dnd-kit/state';
 
 import {DragDropManager} from '../manager';
 import {Plugin} from '../plugins';
@@ -10,10 +10,18 @@ export class CollisionNotifier extends Plugin {
     this.destroy = effect(() => {
       const {collisionObserver, monitor} = manager;
       const {collisions} = collisionObserver;
+
+      if (collisionObserver.isDisabled()) {
+        return;
+      }
+
       let defaultPrevented = false;
 
       monitor.dispatch('collision', {
         collisions,
+        get defaultPrevented() {
+          return defaultPrevented;
+        },
         preventDefault() {
           defaultPrevented = true;
         },

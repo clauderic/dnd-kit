@@ -1,60 +1,63 @@
 import {computed, ReadonlySignal} from '@dnd-kit/state';
 import {isEqual} from '@dnd-kit/utilities';
 
-import type {DragOperation, DragDropRegistry} from '../manager';
+import type {DragDropManager} from '../manager';
 import type {Draggable, Droppable} from '../nodes';
-import type {Collision, Collisions} from './types';
+import {Plugin} from '../plugins';
+import type {Collision, CollisionDetector, Collisions} from './types';
 import {sortCollisions} from './utilities';
-
-export type Input<
-  T extends Draggable = Draggable,
-  U extends Droppable = Droppable,
-> = {
-  dragOperation: DragOperation<T, U>;
-  registry: DragDropRegistry<T, U>;
-};
 
 const DEFAULT_VALUE: Collisions = [];
 
 export class CollisionObserver<
   T extends Draggable = Draggable,
   U extends Droppable = Droppable,
-> {
-  constructor({registry, dragOperation}: Input<T, U>) {
-    this.__computedCollisions = computed(() => {
-      const {source, shape, initialized} = dragOperation;
+  V extends DragDropManager<T, U> = DragDropManager<T, U>,
+> extends Plugin<V> {
+  constructor(manager: V) {
+    super(manager);
 
-      if (!initialized || !shape) {
-        return DEFAULT_VALUE;
+    this.computeCollisions = this.computeCollisions.bind(this);
+    this.__computedCollisions = computed(this.computeCollisions, isEqual);
+  }
+
+  public computeCollisions(
+    entries?: Droppable[],
+    collisionDetector?: CollisionDetector
+  ) {
+    const {registry, dragOperation} = this.manager;
+    const {source, shape, initialized} = dragOperation;
+
+    if (!initialized || !shape) {
+      return DEFAULT_VALUE;
+    }
+
+    const type = source?.type;
+    const collisions: Collision[] = [];
+
+    for (const entry of entries ?? registry.droppable) {
+      if (entry.disabled) {
+        continue;
       }
 
-      const type = source?.type;
-      const collisions: Collision[] = [];
-
-      for (const entry of registry.droppable) {
-        if (entry.disabled) {
-          continue;
-        }
-
-        if (type != null && !entry.accepts(type)) {
-          continue;
-        }
-
-        const {collisionDetector} = entry;
-        const collision = collisionDetector({
-          droppable: entry,
-          dragOperation,
-        });
-
-        if (collision) {
-          collisions.push(collision);
-        }
+      if (type != null && !entry.accepts(type)) {
+        continue;
       }
 
-      collisions.sort(sortCollisions);
+      const detectCollision = collisionDetector ?? entry.collisionDetector;
+      const collision = detectCollision({
+        droppable: entry,
+        dragOperation,
+      });
 
-      return collisions;
-    }, isEqual);
+      if (collision) {
+        collisions.push(collision);
+      }
+    }
+
+    collisions.sort(sortCollisions);
+
+    return collisions;
   }
 
   public get collisions() {

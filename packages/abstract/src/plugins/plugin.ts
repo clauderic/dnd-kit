@@ -1,3 +1,4 @@
+import {reactive, untracked} from '@dnd-kit/state';
 import type {DragDropManager} from '../manager';
 
 import type {PluginOptions} from './types';
@@ -17,11 +18,14 @@ export class Plugin<
 
   /**
    * Whether the plugin instance is disabled.
+   * Triggers effects when accessed.
    */
+  @reactive
   public disabled: boolean = false;
 
   /**
    * Enable a disabled plugin instance.
+   * Triggers effects.
    */
   public enable() {
     this.disabled = false;
@@ -29,9 +33,20 @@ export class Plugin<
 
   /**
    * Disable an enabled plugin instance.
+   * Triggers effects.
    */
   public disable() {
     this.disabled = true;
+  }
+
+  /**
+   * Whether the plugin instance is disabled.
+   * Does not trigger effects when accessed.
+   */
+  public isDisabled() {
+    return untracked(() => {
+      return this.disabled;
+    });
   }
 
   /**

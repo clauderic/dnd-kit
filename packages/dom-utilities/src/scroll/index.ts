@@ -15,3 +15,4 @@ export {getScrollPosition} from './getScrollPosition';
 export {isDocumentScrollingElement} from './documentScrollingElement';
 export {isScrollable} from './isScrollable';
 export {isFixed} from './isFixed';
+export {scrollIntoViewIfNeeded} from './scrollIntoViewIfNeeded';

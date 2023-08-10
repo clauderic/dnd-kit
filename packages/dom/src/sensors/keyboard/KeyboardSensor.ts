@@ -7,6 +7,7 @@ import type {DragDropManager} from '../../manager';
 import type {Draggable} from '../../nodes';
 import {AutoScroller, Scroller} from '../../plugins';
 import {DOMRectangle} from '../../shapes';
+import {Coordinates} from '@dnd-kit/geometry';
 
 export type KeyCode = KeyboardEvent['code'];
 
@@ -108,6 +109,7 @@ export class KeyboardSensor extends Sensor<
 
     this.manager.actions.setDragSource(source.id);
     this.manager.actions.start({
+      event,
       coordinates: {
         x: center.x,
         y: center.y,
@@ -131,44 +133,16 @@ export class KeyboardSensor extends Sensor<
         return;
       }
 
-      const {shape} = this.manager.dragOperation;
-
-      if (!shape) {
-        return;
-      }
-
-      const {center} = shape;
-      const factor = event.shiftKey ? 5 : 1;
-      const offset = {
-        x: 0,
-        y: 0,
-      };
-
       if (isKeycode(event, keyboardCodes.up)) {
-        offset.y = -DEFAULT_OFFSET * factor;
+        this.handleMove('up', event);
       } else if (isKeycode(event, keyboardCodes.down)) {
-        offset.y = DEFAULT_OFFSET * factor;
+        this.handleMove('down', event);
       }
 
       if (isKeycode(event, keyboardCodes.left)) {
-        offset.x = -DEFAULT_OFFSET * factor;
+        this.handleMove('left', event);
       } else if (isKeycode(event, keyboardCodes.right)) {
-        offset.x = DEFAULT_OFFSET * factor;
-      }
-
-      if (offset.x || offset.y) {
-        event.preventDefault();
-
-        const scroller = this.manager.plugins.get(Scroller);
-
-        if (!scroller?.scroll({by: offset})) {
-          this.manager.actions.move({
-            coordinates: {
-              x: center.x + offset.x,
-              y: center.y + offset.y,
-            },
-          });
-        }
+        this.handleMove('right', event);
       }
     };
 
@@ -176,6 +150,45 @@ export class KeyboardSensor extends Sensor<
       {type: 'keydown', listener: onKeyDown, options: {capture: true}},
     ]);
   };
+
+  protected handleMove(
+    direction: 'up' | 'down' | 'left' | 'right',
+    event: KeyboardEvent
+  ) {
+    const {shape} = this.manager.dragOperation;
+    const factor = event.shiftKey ? 5 : 1;
+    let offset = {
+      x: 0,
+      y: 0,
+    };
+
+    if (!shape) {
+      return;
+    }
+
+    switch (direction) {
+      case 'up':
+        offset = {x: 0, y: -DEFAULT_OFFSET * factor};
+        break;
+      case 'down':
+        offset = {x: 0, y: DEFAULT_OFFSET * factor};
+        break;
+      case 'left':
+        offset = {x: -DEFAULT_OFFSET * factor, y: 0};
+        break;
+      case 'right':
+        offset = {x: DEFAULT_OFFSET * factor, y: 0};
+        break;
+    }
+
+    if (offset?.x || offset?.y) {
+      event.preventDefault();
+
+      this.manager.actions.move({
+        by: offset,
+      });
+    }
+  }
 
   private sideEffects(): CleanupFunction {
     const effectCleanupFns: CleanupFunction[] = [];

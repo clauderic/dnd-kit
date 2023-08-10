@@ -115,13 +115,16 @@ export class PointerSensor extends Sensor<
     const {activationConstraints} = options;
 
     if (!activationConstraints?.delay && !activationConstraints?.distance) {
-      this.handleStart(source);
+      this.handleStart(source, event);
       event.stopImmediatePropagation();
     } else {
       const {delay} = activationConstraints;
 
       if (delay) {
-        const timeout = setTimeout(() => this.handleStart(source), delay.value);
+        const timeout = setTimeout(
+          () => this.handleStart(source, event),
+          delay.value
+        );
 
         this.clearTimeout = () => {
           clearTimeout(timeout);
@@ -183,7 +186,7 @@ export class PointerSensor extends Sensor<
       event.preventDefault();
       event.stopPropagation();
 
-      this.manager.actions.move({coordinates});
+      this.manager.actions.move({to: coordinates});
       return;
     }
 
@@ -206,7 +209,7 @@ export class PointerSensor extends Sensor<
         return this.handleCancel();
       }
       if (exceedsDistance(delta, distance.value)) {
-        return this.handleStart(source);
+        return this.handleStart(source, event);
       }
     }
 
@@ -236,7 +239,7 @@ export class PointerSensor extends Sensor<
     }
   }
 
-  protected handleStart(source: Draggable) {
+  protected handleStart(source: Draggable, event: PointerEvent) {
     this.clearTimeout?.();
 
     if (
@@ -247,7 +250,7 @@ export class PointerSensor extends Sensor<
     }
 
     this.manager.actions.setDragSource(source.id);
-    this.manager.actions.start({coordinates: this.initialCoordinates});
+    this.manager.actions.start({coordinates: this.initialCoordinates, event});
   }
 
   protected handleCancel() {

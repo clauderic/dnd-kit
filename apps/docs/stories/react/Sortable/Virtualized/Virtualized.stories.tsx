@@ -1,15 +1,15 @@
 import type {Meta, StoryObj} from '@storybook/react';
 
-import {VirtualizedSortableExample} from './VirtualizedSortableExample';
+import {ReactVirtualExample} from './ReactVirtualExample';
 
-const meta: Meta<typeof VirtualizedSortableExample> = {
-  component: VirtualizedSortableExample,
+const meta: Meta<typeof ReactVirtualExample> = {
+  component: ReactVirtualExample,
 };
 
 export default meta;
-type Story = StoryObj<typeof VirtualizedSortableExample>;
+type Story = StoryObj<typeof ReactVirtualExample>;
 
 export const ReactVirtual: Story = {
   name: 'react-virtual',
-  render: VirtualizedSortableExample,
+  render: ReactVirtualExample,
 };

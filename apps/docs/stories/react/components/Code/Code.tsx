@@ -1,25 +1,46 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Unstyled} from '@storybook/blocks';
 
 import {CodeHighlighter} from './components';
 import styles from './Code.module.css';
 
 interface Props {
-  children: string;
+  children: string | string[];
+  tabs?: string[];
+  className?: string;
 }
 
 export function Code(props: Props) {
-  const {children} = props;
+  const {children, className} = props;
+  const [selectedTab, setSelectedTab] = useState(0);
+  const contents = Array.isArray(children) ? children[selectedTab] : children;
 
-  return children.includes('\n') ? (
+  return Array.isArray(children) || children.includes('\n') ? (
     <Unstyled>
       <div className={styles.Code}>
+        {props.tabs ? (
+          <div className={styles.Tabs} role="tablist">
+            {props.tabs.map((tab, index) => (
+              <button
+                key={tab}
+                className={styles.Tab}
+                role="tab"
+                aria-selected={index === selectedTab}
+                onClick={() => setSelectedTab(index)}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+        ) : null}
         <div className={styles.TabContent} role="tabpanel">
-          <CodeHighlighter>{children}</CodeHighlighter>
+          <CodeHighlighter language={className?.replace('language-', '')}>
+            {contents}
+          </CodeHighlighter>
         </div>
       </div>
     </Unstyled>
   ) : (
-    <code>{children}</code>
+    <code className={styles.InlineCode}>{children}</code>
   );
 }

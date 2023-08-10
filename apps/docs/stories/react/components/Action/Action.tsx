@@ -16,7 +16,6 @@ export const Action = forwardRef<HTMLButtonElement, Props>(
         ref={ref}
         {...props}
         className={classNames(styles.Action, styles[variant], className)}
-        tabIndex={0}
         style={
           {
             ...style,

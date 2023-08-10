@@ -6,6 +6,7 @@ import {
   getScrollableAncestors,
   ScrollDirection,
   scheduler,
+  isKeyboardEvent,
 } from '@dnd-kit/dom-utilities';
 import {Axes, type Coordinates} from '@dnd-kit/geometry';
 import {isEqual} from '@dnd-kit/utilities';
@@ -56,6 +57,22 @@ export class Scroller extends Plugin<DragDropManager> {
     };
 
     this.scrollIntentTracker = new ScrollIntentTracker(manager);
+
+    this.destroy = manager.monitor.addEventListener('dragmove', (event) => {
+      if (
+        this.disabled ||
+        event.defaultPrevented ||
+        !isKeyboardEvent(manager.dragOperation.activatorEvent) ||
+        !event.by
+      ) {
+        return;
+      }
+
+      // Prevent the move event if we can scroll to the new coordinates
+      if (this.scroll({by: event.by})) {
+        event.preventDefault();
+      }
+    });
   }
 
   public scroll = (options?: {by: Coordinates}): boolean => {

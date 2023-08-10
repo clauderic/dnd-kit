@@ -2,8 +2,9 @@ import type {
   Data,
   DragDropManager as AbstractDragDropManager,
 } from '@dnd-kit/abstract';
-import {effect, reactive, untracked} from '@dnd-kit/state';
+import {batch, effect, reactive, untracked} from '@dnd-kit/state';
 import type {Type, UniqueIdentifier} from '@dnd-kit/types';
+import {scheduler} from '@dnd-kit/dom-utilities';
 
 import {Draggable, Droppable} from '../../nodes';
 import type {
@@ -12,7 +13,9 @@ import type {
   DroppableInput,
 } from '../../nodes';
 import type {Sensors} from '../../sensors';
-import {DOMRectangle} from '../../shapes';
+
+import {SortableKeyboardPlugin} from './SortableKeyboardPlugin';
+import {SortableRegistry} from './registry';
 
 export interface SortableInput<T extends Data>
   extends DraggableInput<T>,
@@ -28,11 +31,19 @@ export class Sortable<T extends Data = Data> {
   index: number;
 
   constructor(
-    {index, ...input}: SortableInput<T>,
+    {index, sensors, ...input}: SortableInput<T>,
     protected manager: AbstractDragDropManager<any, any>
   ) {
-    this.draggable = new Draggable(input, manager);
-    this.droppable = new Droppable({...input, ignoreTransform: true}, manager);
+    this.draggable = new Draggable<T>({...input, sensors}, manager);
+    this.droppable = new Droppable<T>(
+      {...input, ignoreTransform: true},
+      manager
+    );
+
+    SortableRegistry.add(this.draggable);
+    SortableRegistry.add(this.droppable);
+
+    manager.plugins.register(SortableKeyboardPlugin);
 
     let previousIndex = index;
 
@@ -60,15 +71,17 @@ export class Sortable<T extends Data = Data> {
       };
 
       if (delta.x || delta.y) {
-        element.animate(
-          {
-            transform: [
-              `translate3d(${delta.x}px, ${delta.y}px, 0)`,
-              'translate3d(0, 0, 0)',
-            ],
-          },
-          {duration: 150, easing: 'ease'}
-        );
+        scheduler.schedule(() => {
+          element.animate(
+            {
+              transform: [
+                `translate3d(${delta.x}px, ${delta.y}px, 0)`,
+                'translate3d(0, 0, 0)',
+              ],
+            },
+            {duration: 150, easing: 'ease'}
+          );
+        });
       }
     };
 
@@ -100,8 +113,17 @@ export class Sortable<T extends Data = Data> {
   }
 
   public set disabled(value: boolean) {
-    this.draggable.disabled = value;
-    this.droppable.disabled = value;
+    batch(() => {
+      this.draggable.disabled = value;
+      this.droppable.disabled = value;
+    });
+  }
+
+  public set data(data: T | null) {
+    batch(() => {
+      this.draggable.data = data;
+      this.droppable.data = data;
+    });
   }
 
   public set activator(activator: Element | undefined) {
@@ -109,13 +131,17 @@ export class Sortable<T extends Data = Data> {
   }
 
   public set element(element: Element | undefined) {
-    this.draggable.element = element;
-    this.droppable.element = element;
+    batch(() => {
+      this.draggable.element = element;
+      this.droppable.element = element;
+    });
   }
 
   public set id(id: UniqueIdentifier) {
-    this.draggable.id = id;
-    this.droppable.id = id;
+    batch(() => {
+      this.draggable.id = id;
+      this.droppable.id = id;
+    });
   }
 
   public set sensors(value: Sensors | undefined) {
@@ -147,5 +173,3 @@ export class Sortable<T extends Data = Data> {
     this.droppable.destroy();
   }
 }
-
-function noop() {}

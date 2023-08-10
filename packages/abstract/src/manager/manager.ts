@@ -64,14 +64,10 @@ export class DragDropManager<
     this.modifiers = new PluginRegistry<V, ModifierConstructor<V>>(this);
 
     const {actions, operation} = DragOperationManager<T, U, V>(this);
-    const collisionObserver = new CollisionObserver<T, U>({
-      dragOperation: operation,
-      registry,
-    });
 
     this.actions = actions;
-    this.collisionObserver = collisionObserver;
     this.dragOperation = operation;
+    this.collisionObserver = new CollisionObserver<T, U, V>(this);
 
     for (const modifier of modifiers) {
       this.modifiers.register(modifier);

@@ -48,6 +48,12 @@ export function useDraggable<T extends Data = Data>(
 
   return {
     isDragSource,
+    activatorRef: useCallback(
+      (element: Element | null) => {
+        draggable.activator = element ?? undefined;
+      },
+      [draggable]
+    ),
     ref: useCallback(
       (element: Element | null) => {
         draggable.element = element ?? undefined;

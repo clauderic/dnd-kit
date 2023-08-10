@@ -6,7 +6,7 @@ export type {
   DragDropEvents,
 } from './manager';
 
-export {CollisionPriority} from './collision';
+export {CollisionPriority, sortCollisions} from './collision';
 export type {Collision, CollisionDetector} from './collision';
 
 export {Modifier} from './modifiers';

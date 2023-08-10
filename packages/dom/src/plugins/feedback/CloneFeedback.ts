@@ -1,6 +1,6 @@
 import {Plugin} from '@dnd-kit/abstract';
 import type {CleanupFunction} from '@dnd-kit/types';
-import {effect} from '@dnd-kit/state';
+import {effect, untracked} from '@dnd-kit/state';
 import {cloneElement} from '@dnd-kit/dom-utilities';
 
 import type {DragDropManager} from '../../manager';
@@ -21,16 +21,16 @@ export class CloneFeedback extends Plugin<DragDropManager> {
       const {status, source} = dragOperation;
       const isDragging = status === 'dragging';
 
-      if (
-        !isDragging ||
-        !source ||
-        !source.element ||
-        source.feedback !== CloneFeedback
-      ) {
+      if (!isDragging || !source || source.feedback !== CloneFeedback) {
         return;
       }
 
-      const {element} = source;
+      const element = untracked(() => source.element);
+
+      if (!element) {
+        return;
+      }
+
       const {boundingRectangle} = new DOMRectangle(element);
       const overlay = createOverlay(manager, boundingRectangle);
 

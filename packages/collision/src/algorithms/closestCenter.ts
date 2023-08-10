@@ -5,12 +5,9 @@ import {Point} from '@dnd-kit/geometry';
 import {defaultCollisionDetection} from './default';
 
 /**
- * Returns the closest droppable shape to the pointer coordinates.
- * In the absence of pointer coordinates, return the closest shape to the
- * collision shape.
+ * Returns the distance between the droppable shape and the drag operation coordinates.
  */
 export const closestCenter: CollisionDetector = (input) => {
-  // TODO: Should dragOperation expose pointer coordinates?
   const {dragOperation, droppable} = input;
   const {shape, position} = dragOperation;
 

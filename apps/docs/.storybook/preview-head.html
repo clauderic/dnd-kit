@@ -1,0 +1,76 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --font-family: "Nunito Sans",-apple-system,".SFNSText-Regular","San Francisco",BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+
+    font-family: var(--font-family);
+    background-color: #FCFCFC;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .sb-main-padded {
+    padding-top: 3rem !important;
+  }
+
+  h1 {
+    font-size: 40px !important;
+  }
+
+  h2 {
+    margin-top: 40px !important;
+    font-size: 30px !important;
+    border-bottom: none !important;
+  }
+
+  p {
+    font-size: 17px !important;
+    line-height: 2 !important;
+  }
+
+  h1 + p {
+    font-size: 20px !important;
+  }
+
+  button:not([class]) {
+    appearance: none;
+    cursor: grab;
+    background-color: #FFF;
+    color: #666;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 15px;
+    outline: none;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.10), inset 0 0 1px hsla(203, 50%, 30%, 0.5);
+    white-space: nowrap;
+  }
+
+  button:not([class]):hover {
+    background-color: #F9F9F9;
+  }
+
+  button:not([class]):focus-visible {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.10), inset 0 0 1px hsla(203, 50%, 30%, 0.5), inset 0 0 0 2px #4c9ffe;
+  }
+
+  section {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 700px;
+    margin: 0 auto;
+    gap: 20px;
+  }
+
+  section > * {
+    width: calc(50% - 10px);
+  }
+</style>
