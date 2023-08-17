@@ -1,8 +1,7 @@
 import {effect, reactive} from '@dnd-kit/state';
-import type {CleanupFunction, UniqueIdentifier} from '@dnd-kit/types';
 
 import type {DragDropManager} from '../../manager';
-import type {Data} from './types';
+import type {Data, UniqueIdentifier} from './types';
 
 export interface Input<T extends Data = Data> {
   id: UniqueIdentifier;
@@ -21,12 +20,18 @@ export class Node<T extends Data = Data> {
     this.data = data;
     this.disabled = disabled;
 
+    // Make sure all properties are set before registering the node
+    for (const [key, value] of Object.entries(input)) {
+      if (value === undefined) continue;
+      this[key as keyof this] = value;
+    }
+
     this.destroy = effect(() => {
       // Re-run this effect whenever the `id` changes
       const {id: _} = this;
-      const unregister = manager.registry.register(this);
+      manager.registry.register(this);
 
-      return unregister;
+      return () => manager.registry.unregister(this);
     });
   }
 
@@ -39,5 +44,5 @@ export class Node<T extends Data = Data> {
   @reactive
   public disabled: boolean;
 
-  public destroy: CleanupFunction;
+  public destroy() {}
 }

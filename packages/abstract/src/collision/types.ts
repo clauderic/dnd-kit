@@ -1,8 +1,5 @@
-import type {Point, Shape} from '@dnd-kit/geometry';
-import type {UniqueIdentifier} from '@dnd-kit/types';
-
 import type {DragOperation} from '../manager';
-import type {Draggable, Droppable} from '../nodes';
+import type {Draggable, Droppable, UniqueIdentifier} from '../nodes';
 
 export enum CollisionPriority {
   Low,

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Unstyled, Title} from '@storybook/blocks';
+import {Unstyled} from '@storybook/blocks';
 
 import {Code} from '../stories/react/components';
 
@@ -15,3 +15,15 @@ export const parameters = {
     },
   },
 };
+
+const preview = {
+  parameters: {
+    options: {
+      storySort: {
+        order: ['Docs', ['Docs']],
+      },
+    },
+  },
+};
+
+export default preview;

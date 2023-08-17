@@ -1,5 +1,5 @@
-import {Plugin} from '@dnd-kit/abstract';
-import {computed} from '@dnd-kit/state';
+import {CorePlugin} from '@dnd-kit/abstract';
+import {computed, deepEqual} from '@dnd-kit/state';
 import {
   canScroll,
   detectScrollIntent,
@@ -9,22 +9,20 @@ import {
   isKeyboardEvent,
 } from '@dnd-kit/dom-utilities';
 import {Axes, type Coordinates} from '@dnd-kit/geometry';
-import {isEqual} from '@dnd-kit/utilities';
 
 import type {DragDropManager} from '../../manager';
 
 import {ScrollIntentTracker} from './ScrollIntent';
 
-interface Options {}
-
-export class Scroller extends Plugin<DragDropManager> {
+export class Scroller extends CorePlugin<DragDropManager> {
   public getScrollableElements: () => Element[] | null;
 
   private scrollIntentTracker: ScrollIntentTracker;
 
-  constructor(manager: DragDropManager, _options?: Options) {
+  constructor(manager: DragDropManager) {
     super(manager);
 
+    let previousElementFromPoint: Element | null = null;
     const elementFromPoint = computed(() => {
       const {position} = manager.dragOperation;
 
@@ -33,14 +31,20 @@ export class Scroller extends Plugin<DragDropManager> {
       }
 
       const {x, y} = position.current;
+      const element = document.elementFromPoint(x, y);
 
-      return document.elementFromPoint(x, y);
+      if (element) {
+        previousElementFromPoint = element;
+      }
+
+      return document.elementFromPoint(x, y) ?? previousElementFromPoint;
     });
     const scrollableElements = computed(() => {
       const element = elementFromPoint.value;
 
       if (!element || element === document.documentElement) {
-        const targetElement = manager.dragOperation.target?.element;
+        const {target} = manager.dragOperation;
+        const targetElement = target?.element;
 
         if (targetElement) {
           return getScrollableAncestors(targetElement, {excludeElement: false});
@@ -50,7 +54,7 @@ export class Scroller extends Plugin<DragDropManager> {
       return element
         ? getScrollableAncestors(element, {excludeElement: false})
         : null;
-    }, isEqual);
+    }, deepEqual);
 
     this.getScrollableElements = () => {
       return scrollableElements.value;
@@ -74,6 +78,18 @@ export class Scroller extends Plugin<DragDropManager> {
       }
     });
   }
+
+  #meta: {element: Element; by: Coordinates} | undefined;
+
+  #scroll = () => {
+    if (!this.#meta) {
+      return;
+    }
+
+    const {element, by} = this.#meta;
+
+    element.scrollBy(by.x, by.y);
+  };
 
   public scroll = (options?: {by: Coordinates}): boolean => {
     if (this.disabled) {
@@ -130,9 +146,15 @@ export class Scroller extends Plugin<DragDropManager> {
             const scrollTopBy = y * speed.y;
 
             if (scrollLeftBy || scrollTopBy) {
-              scheduler.schedule(() => {
-                scrollableElement.scrollBy(scrollLeftBy, scrollTopBy);
-              });
+              this.#meta = {
+                element: scrollableElement,
+                by: {
+                  x: scrollLeftBy,
+                  y: scrollTopBy,
+                },
+              };
+
+              scheduler.schedule(this.#scroll);
 
               return true;
             }

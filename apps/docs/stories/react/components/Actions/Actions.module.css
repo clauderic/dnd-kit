@@ -1,3 +1,7 @@
+.Actions {
+  display: flex;
+}
+
 .Action {
   display: flex;
   width: 12px;
@@ -13,6 +17,8 @@
   appearance: none;
   background-color: transparent;
   -webkit-tap-highlight-color: transparent;
+
+  --fill: #919eab;
 }
 
 .Action:hover, .Action:active {
@@ -29,13 +35,27 @@
   margin: auto;
   height: 100%;
   overflow: visible;
-  fill: #919eab;
+  fill: var(--fill);
 }
 
-.Action:active svg, .Action:hover svg {
-  fill: #6f7b88;
+.Action:active, .Action:hover {
+  --fill: #6f7b88;
 }
 
 .dark {
   --background: rgba(255, 255, 255, 0.1);
+}
+
+.destructive {
+  visibility: hidden;
+}
+
+.destructive:hover {
+  --fill: rgba(255, 70, 70, 0.95);
+  --background: rgba(255, 70, 70, 0.1);
+}
+
+
+*:hover > .Actions .destructive {
+  visibility: visible;
 }

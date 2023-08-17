@@ -16,10 +16,19 @@ export class Rectangle implements Shape {
     y: 1,
   };
 
-  public translate(x: number, y: number): Rectangle {
-    const {top, left, width, height} = this;
+  public get inverseScale() {
+    return {
+      x: 1 / this.scale.x,
+      y: 1 / this.scale.y,
+    };
+  }
 
-    return new Rectangle(left + x, top + y, width, height);
+  public translate(x: number, y: number): Rectangle {
+    const {top, left, width, height, scale} = this;
+    const newShape = new Rectangle(left + x, top + y, width, height);
+    newShape.scale = {...scale};
+
+    return newShape;
   }
 
   public get boundingRectangle(): BoundingRectangle {

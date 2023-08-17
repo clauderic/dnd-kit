@@ -16,7 +16,7 @@ export class InlineStyles {
 
     for (const [key, value] of Object.entries(styles)) {
       if (!this.initial.has(key)) {
-        this.initial.set(key, element.style.getPropertyValue(key));
+        this.initial.set(key, element.style[key as any]);
       }
 
       element.style[key as any] = value ?? '';

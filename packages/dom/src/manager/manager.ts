@@ -1,24 +1,19 @@
 import {
   DragDropManager as AbstractDragDropManager,
   DragDropManagerInput,
-  configure,
   type Plugins,
   type Sensors,
 } from '@dnd-kit/abstract';
-import {batch, effect} from '@dnd-kit/state';
 
 import type {Draggable, Droppable} from '../nodes';
 import {
   AutoScroller,
-  CloneFeedback,
-  PlaceholderFeedback,
+  DraggableFeedback,
   RestoreFocus,
-  ScrollManager,
   Scroller,
-  Debug,
+  ScrollListener,
 } from '../plugins';
 import {KeyboardSensor, PointerSensor} from '../sensors';
-import {DragSourceDeltaModifier} from '../modifiers';
 
 export interface Input extends DragDropManagerInput<any> {}
 
@@ -26,18 +21,24 @@ export const defaultPreset: {
   plugins: Plugins<DragDropManager>;
   sensors: Sensors<DragDropManager>;
 } = {
-  plugins: [
-    // Debug,
-    AutoScroller,
-    CloneFeedback,
-    PlaceholderFeedback,
-    RestoreFocus,
-  ],
+  plugins: [AutoScroller, DraggableFeedback, RestoreFocus],
   sensors: [
-    configure(PointerSensor, {
-      activationConstraints: {
-        delay: {value: 200, tolerance: 10},
-        distance: {value: 5},
+    PointerSensor.configure({
+      activationConstraints(event, source) {
+        const {pointerType, target} = event;
+
+        if (
+          pointerType === 'mouse' &&
+          target instanceof Element &&
+          (source.activator === target || source.activator?.contains(target))
+        ) {
+          return undefined;
+        }
+
+        return {
+          delay: {value: 200, tolerance: 10},
+          distance: {value: 5},
+        };
       },
     }),
     KeyboardSensor,
@@ -56,24 +57,9 @@ export class DragDropManager<
   }: Input = {}) {
     super({
       ...input,
-      plugins: [ScrollManager, Scroller, ...plugins],
+      plugins: [ScrollListener, Scroller, ...plugins],
       sensors,
-      modifiers: [DragSourceDeltaModifier, ...modifiers],
+      modifiers,
     });
-
-    const effectCleanup = effect(() => {
-      if (this.dragOperation.status === 'initializing') {
-        batch(() => {
-          for (const droppable of this.registry.droppable) {
-            droppable.updateShape();
-          }
-        });
-      }
-    });
-
-    this.destroy = () => {
-      effectCleanup();
-      super.destroy();
-    };
   }
 }

@@ -1,13 +1,9 @@
 export class Scheduler {
   private animationFrame: number | undefined;
-  private tasks: (() => void)[] = [];
+  private tasks: Set<() => void> = new Set();
 
-  public schedule(task: () => void, unshift = false) {
-    if (unshift) {
-      this.tasks.unshift(task);
-    } else {
-      this.tasks.push(task);
-    }
+  public schedule(task: () => void) {
+    this.tasks.add(task);
 
     if (!this.animationFrame) {
       this.animationFrame = requestAnimationFrame(this.flush);
@@ -18,7 +14,7 @@ export class Scheduler {
     const tasks = this.tasks;
 
     this.animationFrame = undefined;
-    this.tasks = [];
+    this.tasks = new Set();
 
     for (const task of tasks) {
       task();

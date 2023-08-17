@@ -1,5 +1,6 @@
 import {effect} from '@dnd-kit/state';
-import {Plugin, type Node} from '@dnd-kit/abstract';
+import {Plugin} from '@dnd-kit/abstract';
+import type {UniqueIdentifier} from '@dnd-kit/abstract';
 
 import {DragDropManager} from '../../manager';
 
@@ -7,32 +8,33 @@ export class Debug extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager) {
     super(manager);
 
-    const elements = new Map<Node, HTMLElement>();
+    const elements = new Map<UniqueIdentifier, HTMLElement>();
+    let draggableElement: HTMLElement | null = null;
 
     this.destroy = effect(() => {
       const {dragOperation} = manager;
-      const {status} = dragOperation;
-      const isDragging = status === 'dragging';
+      const {dragging} = dragOperation.status;
 
-      if (!isDragging) {
-        return () => {
-          for (const element of elements.values()) {
-            element.remove();
-          }
+      if (!dragging) {
+        draggableElement?.remove();
+        draggableElement = null;
 
-          elements.clear();
-        };
+        for (const element of elements.values()) {
+          element.remove();
+        }
+
+        elements.clear();
+        return;
       }
 
       const draggable = dragOperation.source;
 
       if (draggable && dragOperation.shape) {
-        const draggableElement = elements.get(draggable);
         const element = draggableElement ?? document.createElement('dialog');
         const {boundingRectangle} = dragOperation.shape;
 
         if (!draggableElement) {
-          elements.set(draggable, element);
+          draggableElement = element;
 
           const style = document.createElement('style');
           style.innerText = `dialog[data-dnd-kit-debug]::backdrop {display: none;}`;
@@ -66,20 +68,26 @@ export class Debug extends Plugin<DragDropManager> {
         element.style.height = `${boundingRectangle.height}px`;
       }
 
-      for (const droppable of manager.registry.droppable) {
-        const element = elements.get(droppable);
+      for (const [id, element] of elements) {
+        if (!manager.registry.droppables.has(id)) {
+          element.remove();
+          elements.delete(id);
+        }
+      }
+
+      for (const droppable of manager.registry.droppables) {
+        const element = elements.get(droppable.id);
 
         if (droppable.shape) {
           const {boundingRectangle} = droppable.shape;
           const debugElement = element ?? document.createElement('div');
 
           if (!element) {
-            elements.set(droppable, debugElement);
+            elements.set(droppable.id, debugElement);
             debugElement.style.position = 'fixed';
             debugElement.style.display = 'flex';
             debugElement.style.alignItems = 'center';
             debugElement.style.justifyContent = 'center';
-            debugElement.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
             debugElement.style.border = '1px solid rgba(0, 0, 0, 0.1)';
             debugElement.style.boxSizing = 'border-box';
             debugElement.style.pointerEvents = 'none';
@@ -89,6 +97,10 @@ export class Debug extends Plugin<DragDropManager> {
             document.body.appendChild(debugElement);
           }
 
+          debugElement.style.backgroundColor = droppable.isDropTarget
+            ? 'rgba(13, 210, 36, 0.6)'
+            : 'rgba(0, 0, 0, 0.1)';
+
           debugElement.style.top = `${boundingRectangle.top}px`;
           debugElement.style.left = `${boundingRectangle.left}px`;
           debugElement.style.width = `${boundingRectangle.width}px`;
@@ -96,7 +108,7 @@ export class Debug extends Plugin<DragDropManager> {
           debugElement.innerText = `${droppable.id}`;
         } else if (element) {
           element.remove();
-          elements.delete(droppable);
+          elements.delete(droppable.id);
         }
       }
     });

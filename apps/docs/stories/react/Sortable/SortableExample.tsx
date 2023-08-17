@@ -1,32 +1,36 @@
 import React, {useRef, useState} from 'react';
 import type {PropsWithChildren} from 'react';
-import type {UniqueIdentifier} from '@dnd-kit/types';
+import {move} from '@dnd-kit/utilities';
+import type {UniqueIdentifier} from '@dnd-kit/abstract';
 import {DragDropProvider, useSortable} from '@dnd-kit/react';
-import {arrayMove} from '@dnd-kit/utilities';
+import {Debug, FeedbackType, defaultPreset} from '@dnd-kit/dom';
 
 import {Item, Handle} from '../components';
 import {createRange, cloneDeep} from '../../utilities';
 
 interface Props {
+  debug?: boolean;
+  ghost?: boolean;
+  heights?: number | Record<UniqueIdentifier, number>;
   horizontal?: boolean;
   itemCount?: number;
-  heights?: number | Record<UniqueIdentifier, number>;
   widths?: number | Record<UniqueIdentifier, number>;
 }
 
 export function SortableExample({
+  debug,
   itemCount = 15,
+  ghost,
   horizontal,
   heights,
   widths,
 }: Props) {
-  const [items, setItems] = useState<UniqueIdentifier[]>(
-    createRange(itemCount)
-  );
+  const [items, setItems] = useState(createRange(itemCount));
   const snapshot = useRef(cloneDeep(items));
 
   return (
     <DragDropProvider
+      plugins={debug ? [Debug, ...defaultPreset.plugins] : undefined}
       onDragStart={() => {
         snapshot.current = cloneDeep(items);
       }}
@@ -37,12 +41,7 @@ export function SortableExample({
           return;
         }
 
-        const sourceIndex = items.indexOf(source.id);
-        const targetIndex = items.indexOf(target.id);
-
-        if (sourceIndex !== targetIndex) {
-          setItems((items) => arrayMove(items, sourceIndex, targetIndex));
-        }
+        setItems((items) => move(items, source, target));
       }}
       onDragEnd={(event) => {
         if (event.canceled) {
@@ -61,7 +60,13 @@ export function SortableExample({
         }}
       >
         {items.map((id, index) => (
-          <Sortable key={id} id={id} index={index} style={getStyle(id)} />
+          <Sortable
+            key={id}
+            id={id}
+            index={index}
+            style={getStyle(id)}
+            feedback={ghost ? 'clone' : 'default'}
+          />
         ))}
       </div>
     </DragDropProvider>
@@ -84,10 +89,16 @@ export function SortableExample({
 interface SortableProps {
   id: UniqueIdentifier;
   index: number;
+  feedback?: FeedbackType;
   style?: React.CSSProperties;
 }
 
-function Sortable({id, index, style}: PropsWithChildren<SortableProps>) {
+function Sortable({
+  id,
+  index,
+  feedback,
+  style,
+}: PropsWithChildren<SortableProps>) {
   const [element, setElement] = useState<Element | null>(null);
   const activatorRef = useRef<HTMLButtonElement | null>(null);
 
@@ -95,14 +106,15 @@ function Sortable({id, index, style}: PropsWithChildren<SortableProps>) {
     id,
     index,
     element,
+    feedback,
     activator: activatorRef,
   });
 
   return (
     <Item
       ref={setElement}
-      shadow={isDragSource}
       actions={<Handle ref={activatorRef} />}
+      shadow={isDragSource}
       style={style}
     >
       {id}

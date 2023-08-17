@@ -1,9 +1,8 @@
 import {derived, reactive} from '@dnd-kit/state';
-import type {Type} from '@dnd-kit/types';
 
 import type {DragDropManager} from '../../manager';
 import {Node} from '../node';
-import type {NodeInput, Data} from '../node';
+import type {NodeInput, Data, Type} from '../node';
 
 export interface Input<T extends Data = Data> extends NodeInput<T> {
   type?: Type;
@@ -12,11 +11,9 @@ export interface Input<T extends Data = Data> extends NodeInput<T> {
 export class Draggable<T extends Data = Data> extends Node<T> {
   constructor(
     {type, ...input}: Input<T>,
-    protected manager: DragDropManager
+    public manager: DragDropManager
   ) {
     super(input, manager);
-
-    this.type = type;
   }
 
   @reactive
@@ -24,6 +21,8 @@ export class Draggable<T extends Data = Data> extends Node<T> {
 
   @derived
   public get isDragSource() {
-    return this.manager.dragOperation.source?.id === this.id;
+    const {dragOperation} = this.manager;
+
+    return dragOperation.source?.id === this.id;
   }
 }

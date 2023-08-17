@@ -2,10 +2,10 @@ import React, {forwardRef, CSSProperties, Ref} from 'react';
 
 import {classNames} from '../../../utilities';
 
-import styles from './Action.module.css';
+import styles from './Actions.module.css';
 
 export interface Props extends React.HTMLAttributes<HTMLButtonElement> {
-  variant?: 'light' | 'dark';
+  variant?: 'light' | 'dark' | 'destructive';
   cursor?: CSSProperties['cursor'];
 }
 

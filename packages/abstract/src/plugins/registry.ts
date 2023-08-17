@@ -1,7 +1,8 @@
 import {DragDropManager} from '../manager';
 
-import type {Plugin} from './plugin';
-import type {InferPluginOptions, PluginConstructor} from './types';
+import {CorePlugin, type Plugin} from './plugin';
+import type {InferPluginOptions, PluginConstructor, Plugins} from './types';
+import {descriptor} from './utilities';
 
 export class PluginRegistry<
   T extends DragDropManager<any, any>,
@@ -12,8 +13,31 @@ export class PluginRegistry<
 
   constructor(private manager: T) {}
 
-  public [Symbol.iterator]() {
-    return this.instances.values();
+  public get values(): U[] {
+    return Array.from(this.instances.values());
+  }
+
+  #previousValues: PluginConstructor<T>[] = [];
+
+  public set values(entries: Plugins<T>) {
+    const descriptos = entries.map(descriptor);
+    const constructors = descriptos.map(({plugin}) => plugin);
+
+    for (const plugin of this.#previousValues) {
+      if (!constructors.includes(plugin)) {
+        if (plugin.prototype instanceof CorePlugin) {
+          continue;
+        }
+
+        this.unregister(plugin as W);
+      }
+    }
+
+    for (const {plugin, options} of descriptos) {
+      this.register(plugin as W, options as InferPluginOptions<W>);
+    }
+
+    this.#previousValues = constructors;
   }
 
   public get<X extends W>(plugin: X): InstanceType<X> | undefined {
@@ -37,6 +61,15 @@ export class PluginRegistry<
     this.instances.set(plugin, instance);
 
     return instance as InstanceType<X>;
+  }
+
+  public unregister<X extends W>(plugin: X) {
+    const instance = this.instances.get(plugin);
+
+    if (instance) {
+      instance.destroy();
+      this.instances.delete(plugin);
+    }
   }
 
   public destroy() {

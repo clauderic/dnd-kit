@@ -15,7 +15,6 @@ export const pointerIntersection: CollisionDetector = ({
   dragOperation,
   droppable,
 }) => {
-  // TODO: Should dragOperation expose pointer coordinates?
   const pointerCoordinates = dragOperation.position.current;
 
   if (!pointerCoordinates) {

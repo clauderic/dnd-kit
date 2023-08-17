@@ -1,4 +1,4 @@
-export {Plugin} from './plugin';
+export {Plugin, CorePlugin} from './plugin';
 export {PluginRegistry} from './registry';
 export type {
   Plugins,
@@ -6,4 +6,4 @@ export type {
   PluginDescriptor,
   PluginOptions,
 } from './types';
-export {configure, descriptor} from './utilities';
+export {configure, configurator, descriptor} from './utilities';

@@ -8,19 +8,28 @@ import {
   type DragActions,
 } from './dragOperation';
 import {DragDropMonitor} from './monitor';
-import {
-  PluginRegistry,
-  descriptor,
-  type Plugins,
-  PluginConstructor,
-} from '../plugins';
-import type {SensorConstructor, Sensors} from '../sensors';
-import type {ModifierConstructor} from '../modifiers';
+import type {Plugins, Plugin} from '../plugins';
+import type {Sensor, Sensors} from '../sensors';
+import type {Modifier, Modifiers} from '../modifiers';
+
+interface Renderer {
+  get rendering(): Promise<void>;
+}
+
+const defaultRenderer: Renderer = {
+  get rendering() {
+    return Promise.resolve();
+  },
+};
 
 export interface DragDropConfiguration<T extends DragDropManager> {
+  core?: {
+    plugins: Plugins<T>;
+  };
   plugins: Plugins<T>;
   sensors: Sensors<T>;
-  modifiers: ModifierConstructor<T>[];
+  modifiers: Modifiers<T>;
+  renderer: Renderer;
 }
 
 export type DragDropManagerInput<T extends DragDropManager<any, any>> = Partial<
@@ -34,57 +43,61 @@ export class DragDropManager<
   public actions: DragActions<T, U, DragDropManager<T, U>>;
   public collisionObserver: CollisionObserver<T, U>;
   public dragOperation: DragOperation<T, U>;
-  public registry: DragDropRegistry<T, U>;
   public monitor: DragDropMonitor<T, U, DragDropManager<T, U>>;
-  public plugins: PluginRegistry<
-    DragDropManager<T, U>,
-    PluginConstructor<DragDropManager<T, U>>
-  >;
-  public sensors: PluginRegistry<
-    DragDropManager<T, U>,
-    SensorConstructor<DragDropManager<T, U>>
-  >;
-  public modifiers: PluginRegistry<
-    DragDropManager<T, U>,
-    ModifierConstructor<DragDropManager<T, U>>
-  >;
+  public registry: DragDropRegistry<T, U, DragDropManager<T, U>>;
+  public renderer: Renderer;
 
   constructor(config?: DragDropManagerInput<any>) {
     type V = DragDropManager<T, U>;
 
-    const {sensors = [], modifiers = []} = config ?? {};
-    const plugins = [CollisionNotifier, ...(config?.plugins ?? [])];
+    const {
+      plugins = [],
+      sensors = [],
+      modifiers = [],
+      renderer = defaultRenderer,
+    } = config ?? {};
     const monitor = new DragDropMonitor<T, U, V>(this);
-    const registry = new DragDropRegistry<T, U>();
+    const registry = new DragDropRegistry<T, U, V>(this);
 
     this.registry = registry;
     this.monitor = monitor;
-    this.plugins = new PluginRegistry<V, PluginConstructor<V>>(this);
-    this.sensors = new PluginRegistry<V, SensorConstructor<V>>(this);
-    this.modifiers = new PluginRegistry<V, ModifierConstructor<V>>(this);
+    this.renderer = renderer;
 
     const {actions, operation} = DragOperationManager<T, U, V>(this);
 
     this.actions = actions;
     this.dragOperation = operation;
     this.collisionObserver = new CollisionObserver<T, U, V>(this);
+    this.plugins = [CollisionNotifier, ...plugins];
+    this.modifiers = modifiers;
+    this.sensors = sensors;
+  }
 
-    for (const modifier of modifiers) {
-      this.modifiers.register(modifier);
-    }
+  get plugins(): Plugin<any>[] {
+    return this.registry.plugins.values;
+  }
 
-    for (const entry of plugins) {
-      const {plugin, options} = descriptor(entry);
-      this.plugins.register(plugin as PluginConstructor<V>, options);
-    }
+  set plugins(plugins: Plugins<any>) {
+    this.registry.plugins.values = plugins;
+  }
 
-    for (const entry of sensors) {
-      const {plugin, options} = descriptor(entry);
-      this.sensors.register(plugin, options);
-    }
+  get modifiers(): Modifier<any>[] {
+    return this.registry.modifiers.values;
+  }
+
+  set modifiers(modifiers: Modifiers<any>) {
+    this.registry.modifiers.values = modifiers;
+  }
+
+  get sensors(): Sensor<any>[] {
+    return this.registry.sensors.values;
+  }
+
+  set sensors(sensors: Sensors<any>) {
+    this.registry.sensors.values = sensors;
   }
 
   public destroy() {
-    this.plugins.destroy();
+    this.registry.destroy();
   }
 }

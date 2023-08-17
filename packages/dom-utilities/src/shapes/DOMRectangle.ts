@@ -1,9 +1,8 @@
 import {Rectangle} from '@dnd-kit/geometry';
-import {
-  getWindow,
-  getBoundingRectangle,
-  inverseTransform,
-} from '@dnd-kit/dom-utilities';
+
+import {inverseTransform} from '../transform';
+import {getBoundingRectangle} from '../bounding-rectangle';
+import {getWindow} from '../execution-context';
 
 export class DOMRectangle extends Rectangle {
   constructor(element: Element, ignoreTransforms = false) {

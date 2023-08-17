@@ -1,5 +1,11 @@
-import {computed, ReadonlySignal} from '@dnd-kit/state';
-import {isEqual} from '@dnd-kit/utilities';
+import {
+  batch,
+  computed,
+  deepEqual,
+  signal,
+  untracked,
+  type ReadonlySignal,
+} from '@dnd-kit/state';
 
 import type {DragDropManager} from '../manager';
 import type {Draggable, Droppable} from '../nodes';
@@ -18,7 +24,27 @@ export class CollisionObserver<
     super(manager);
 
     this.computeCollisions = this.computeCollisions.bind(this);
-    this.__computedCollisions = computed(this.computeCollisions, isEqual);
+    this.#collisions = computed(this.computeCollisions, deepEqual);
+  }
+
+  #forceUpdate = signal(0);
+
+  public forceUpdate() {
+    untracked(() => {
+      const type = this.manager.dragOperation.source?.type;
+
+      batch(() => {
+        for (const droppable of this.manager.registry.droppables) {
+          if (type != null && !droppable.accepts(type)) {
+            continue;
+          }
+
+          droppable.refreshShape();
+        }
+
+        this.#forceUpdate.value++;
+      });
+    });
   }
 
   public computeCollisions(
@@ -26,17 +52,19 @@ export class CollisionObserver<
     collisionDetector?: CollisionDetector
   ) {
     const {registry, dragOperation} = this.manager;
-    const {source, shape, initialized} = dragOperation;
+    const {source, shape, status} = dragOperation;
 
-    if (!initialized || !shape) {
+    if (!status.initialized || !shape) {
       return DEFAULT_VALUE;
     }
 
     const type = source?.type;
     const collisions: Collision[] = [];
 
-    for (const entry of entries ?? registry.droppable) {
-      if (entry.disabled) {
+    this.#forceUpdate.value;
+
+    for (const entry of entries ?? registry.droppables) {
+      if (entry.disabled || !entry.shape) {
         continue;
       }
 
@@ -45,10 +73,12 @@ export class CollisionObserver<
       }
 
       const detectCollision = collisionDetector ?? entry.collisionDetector;
-      const collision = detectCollision({
-        droppable: entry,
-        dragOperation,
-      });
+      const collision = untracked(() =>
+        detectCollision({
+          droppable: entry,
+          dragOperation,
+        })
+      );
 
       if (collision) {
         collisions.push(collision);
@@ -61,8 +91,8 @@ export class CollisionObserver<
   }
 
   public get collisions() {
-    return this.__computedCollisions.value;
+    return this.#collisions.value;
   }
 
-  private __computedCollisions: ReadonlySignal<Collisions>;
+  #collisions: ReadonlySignal<Collisions>;
 }

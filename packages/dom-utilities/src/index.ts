@@ -5,7 +5,7 @@ export {
 
 export {canUseDOM, getOwnerDocument, getWindow} from './execution-context';
 
-export {cloneElement} from './element';
+export {cloneElement, createPlaceholder} from './element';
 
 export {Listeners} from './event-listeners';
 
@@ -19,6 +19,8 @@ export {
 } from './scroll';
 
 export {scheduler, Scheduler} from './scheduler';
+
+export {DOMRectangle} from './shapes';
 
 export {InlineStyles} from './styles';
 

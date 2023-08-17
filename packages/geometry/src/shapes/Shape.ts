@@ -32,6 +32,12 @@ export abstract class Shape {
   abstract get scale(): {x: number; y: number};
 
   /**
+   * Get the inverse scale transformation of the shape on the 2D plane.
+   * @returns The inverse scale of the shape.
+   */
+  abstract get inverseScale(): {x: number; y: number};
+
+  /**
    * Returns whether or not this shape is equal to another shape.
    *
    * @param shape The other shape to compare with.

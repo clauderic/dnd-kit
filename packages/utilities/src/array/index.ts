@@ -1,1 +1,0 @@
-export {arrayMove} from './arrayMove';

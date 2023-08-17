@@ -2,6 +2,7 @@ import {reactive, untracked} from '@dnd-kit/state';
 import type {DragDropManager} from '../manager';
 
 import type {PluginOptions} from './types';
+import {configure} from './utilities';
 
 /**
  * An abstract plugin class that can be extended to implement custom
@@ -65,4 +66,18 @@ export class Plugin<
      * destroy method to clean up effects and listeners
      */
   }
+
+  /**
+   * Configure a plugin constructor with options.
+   * This method is used to configure the options that the
+   * plugin constructor will use to create plugin instances.
+   */
+  static configure(options: PluginOptions) {
+    return configure(this as any, options);
+  }
 }
+
+export class CorePlugin<
+  T extends DragDropManager<any, any> = DragDropManager<any, any>,
+  U extends PluginOptions | undefined = PluginOptions,
+> extends Plugin<T, U> {}

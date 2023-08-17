@@ -6,10 +6,13 @@ import type {
 } from '@dnd-kit/abstract';
 import {defaultCollisionDetection} from '@dnd-kit/collision';
 import type {CollisionDetector} from '@dnd-kit/collision';
-import {effect, reactive} from '@dnd-kit/state';
+import {effects, reactive, signal} from '@dnd-kit/state';
 import type {Shape} from '@dnd-kit/geometry';
-
-import {DOMRectangle} from '../../shapes';
+import {
+  DOMRectangle,
+  getOwnerDocument,
+  scheduler,
+} from '@dnd-kit/dom-utilities';
 
 type OptionalInput = 'collisionDetector';
 
@@ -17,45 +20,112 @@ export interface Input<T extends Data = Data>
   extends Omit<AbstractDroppableInput<T>, OptionalInput> {
   collisionDetector?: CollisionDetector;
   element?: Element;
-  ignoreTransform?: boolean;
 }
 
 export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
-  @reactive
-  public element: Element | undefined;
-
-  @reactive
-  public ignoreTransform: boolean;
-
   constructor(
     {
       collisionDetector = defaultCollisionDetection,
       element,
-      ignoreTransform = false,
       ...input
     }: Input<T>,
-    protected manager: AbstractDragDropManager<any, any>
+    public manager: AbstractDragDropManager<any, any>
   ) {
     super({...input, collisionDetector}, manager);
 
-    this.element = element;
-    this.ignoreTransform = ignoreTransform;
-    this.updateShape = this.updateShape.bind(this);
-    this.destroy = effect(this.updateShape);
+    const {destroy} = this;
+
+    this.refreshShape = this.refreshShape.bind(this);
+
+    /*
+     * If a droppable target mounts during a drag operation, assume it is visible
+     * so that we can update its shape immediately.
+     */
+    if (manager.dragOperation.status.initialized) {
+      this.visible = true;
+    }
+
+    const cleanup = effects(
+      () => {
+        const {element} = this;
+        const {dragOperation} = manager;
+
+        if (element && dragOperation.status.initialized) {
+          let timeout: NodeJS.Timeout | undefined;
+
+          const intersectionObserver = new IntersectionObserver(
+            (entries) => {
+              const [entry] = entries.slice(-1);
+
+              if (this.visible == null) {
+                this.visible = entry.isIntersecting;
+                return;
+              }
+
+              if (timeout) {
+                clearTimeout(timeout);
+              }
+
+              timeout = setTimeout(() => {
+                this.visible = entry.isIntersecting;
+                timeout = undefined;
+              }, 50);
+            },
+            {
+              root: getOwnerDocument(element),
+              rootMargin: '40%',
+            }
+          );
+
+          intersectionObserver.observe(element);
+
+          return () => {
+            this.visible = undefined;
+            intersectionObserver.disconnect();
+          };
+        }
+      },
+      () => {
+        if (manager.dragOperation.status.dragging) {
+          scheduler.schedule(this.refreshShape);
+        }
+      }
+    );
+
+    this.destroy = () => {
+      cleanup();
+      destroy();
+    };
   }
 
-  public updateShape(): Shape | null {
-    const {disabled, element} = this;
+  @reactive
+  visible: Boolean | undefined;
 
-    if (!element || disabled) {
-      this.shape = null;
-      return null;
+  #element = signal<Element | undefined>(undefined);
+
+  @reactive
+  public placeholder: Element | undefined;
+
+  public set element(value: Element | undefined) {
+    this.#element.value = value;
+  }
+
+  public get element() {
+    return this.placeholder ?? this.#element.value;
+  }
+
+  public refreshShape(ignoreTransform?: boolean): Shape | undefined {
+    const {element} = this;
+
+    if (!element || this.disabled || this.visible === false) {
+      this.shape = undefined;
+      return undefined;
     }
 
     const {shape} = this;
-    const updatedShape = new DOMRectangle(element, this.ignoreTransform);
+    const updatedShape = new DOMRectangle(element, ignoreTransform);
 
-    if (shape?.equals(updatedShape)) {
+    if (updatedShape && shape?.equals(updatedShape)) {
       return shape;
     }
 

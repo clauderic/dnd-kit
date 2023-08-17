@@ -1,11 +1,11 @@
 import {effect} from '@dnd-kit/state';
-import {Sensor, SensorConstructor} from '@dnd-kit/abstract';
+import type {CleanupFunction} from '@dnd-kit/state';
+import {Sensor, configurator} from '@dnd-kit/abstract';
 import {
   exceedsDistance,
   type Distance,
   type Coordinates,
 } from '@dnd-kit/geometry';
-import type {CleanupFunction} from '@dnd-kit/types';
 import {getOwnerDocument, Listeners} from '@dnd-kit/dom-utilities';
 
 import type {DragDropManager} from '../../manager';
@@ -27,7 +27,12 @@ export interface ActivationConstraints {
 }
 
 export interface PointerSensorOptions {
-  activationConstraints?: ActivationConstraints;
+  activationConstraints?:
+    | ActivationConstraints
+    | ((
+        event: PointerEvent,
+        source: Draggable
+      ) => ActivationConstraints | undefined);
 }
 
 /**
@@ -113,12 +118,16 @@ export class PointerSensor extends Sensor<
     };
 
     const {activationConstraints} = options;
+    const constraints =
+      typeof activationConstraints === 'function'
+        ? activationConstraints(event, source)
+        : activationConstraints;
 
-    if (!activationConstraints?.delay && !activationConstraints?.distance) {
+    if (!constraints?.delay && !constraints?.distance) {
       this.handleStart(source, event);
       event.stopImmediatePropagation();
     } else {
-      const {delay} = activationConstraints;
+      const {delay} = constraints;
 
       if (delay) {
         const timeout = setTimeout(
@@ -182,7 +191,7 @@ export class PointerSensor extends Sensor<
       y: event.clientY,
     };
 
-    if (this.manager.dragOperation.status === 'dragging') {
+    if (this.manager.dragOperation.status.dragging) {
       event.preventDefault();
       event.stopPropagation();
 
@@ -199,7 +208,11 @@ export class PointerSensor extends Sensor<
       y: coordinates.y - this.initialCoordinates.y,
     };
     const {activationConstraints} = options;
-    const {distance, delay} = activationConstraints ?? {};
+    const constraints =
+      typeof activationConstraints === 'function'
+        ? activationConstraints(event, source)
+        : activationConstraints;
+    const {distance, delay} = constraints ?? {};
 
     if (distance) {
       if (
@@ -244,7 +257,7 @@ export class PointerSensor extends Sensor<
 
     if (
       !this.initialCoordinates ||
-      this.manager.dragOperation.status !== 'idle'
+      this.manager.dragOperation.status.initialized
     ) {
       return;
     }
@@ -254,7 +267,7 @@ export class PointerSensor extends Sensor<
   }
 
   protected handleCancel() {
-    if (this.manager.dragOperation.status !== 'idle') {
+    if (this.manager.dragOperation.status.initialized) {
       this.manager.actions.stop({canceled: true});
     }
 
@@ -266,6 +279,8 @@ export class PointerSensor extends Sensor<
     // Remove all event listeners
     this.listeners.clear();
   }
+
+  static configure = configurator(PointerSensor);
 }
 
 function preventDefault(event: Event) {

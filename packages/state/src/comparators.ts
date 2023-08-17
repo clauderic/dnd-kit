@@ -1,4 +1,4 @@
-export function isEqual<T>(a: T, b: T) {
+export function deepEqual<T>(a: T, b: T) {
   if (a === b) {
     return true;
   }
@@ -13,7 +13,7 @@ export function isEqual<T>(a: T, b: T) {
     }
 
     const hasDifferentValues = a.some(
-      (value, index) => !isEqual(value, b[index])
+      (value, index) => !deepEqual(value, b[index])
     );
 
     return !hasDifferentValues;

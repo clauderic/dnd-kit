@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {DragDropProvider, useSortable} from '@dnd-kit/react';
-import {arrayMove} from '@dnd-kit/utilities';
+import {move} from '@dnd-kit/utilities';
 
 export function Example({vertical}) {
   const [items, setItems] = useState([0, 1, 2, 3]);
@@ -10,9 +10,9 @@ export function Example({vertical}) {
       onDragOver={(event) => {
         const {source, target} = event.operation;
 
-        if (source && target && source.id !== target.id) {
+        if (source && target) {
           setItems((items) =>
-            arrayMove(items, items.indexOf(source.id), items.indexOf(target.id))
+            move(items, source.id, target.id)
           );
         }
       }}

@@ -1,5 +1,6 @@
 import type {CollisionDetector} from '@dnd-kit/abstract';
 
+// import {pointerDistance} from './pointerDistance';
 import {pointerIntersection} from './pointerIntersection';
 import {shapeIntersection} from './shapeIntersection';
 

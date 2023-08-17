@@ -1,4 +1,4 @@
-import {CleanupFunction} from '@dnd-kit/types';
+import {CleanupFunction} from '@dnd-kit/state';
 
 import type {DragDropManager} from '../manager';
 import type {Draggable} from '../nodes';

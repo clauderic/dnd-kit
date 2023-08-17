@@ -5,7 +5,7 @@ import {Point} from '@dnd-kit/geometry';
 import {defaultCollisionDetection} from './default';
 
 /**
- * Returns the distance between the droppable shape and the drag operation coordinates.
+ * Returns the distance between the droppable shape and the drag operation shape.
  */
 export const closestCenter: CollisionDetector = (input) => {
   const {dragOperation, droppable} = input;

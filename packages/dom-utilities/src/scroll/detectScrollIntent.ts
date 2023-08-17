@@ -22,7 +22,7 @@ export function detectScrollIntent(
   scrollableElement: Element,
   coordinates: Coordinates,
   intent?: ScrollIntent,
-  acceleration = 12,
+  acceleration = 25,
   thresholdPercentage = defaultThreshold
 ) {
   const {

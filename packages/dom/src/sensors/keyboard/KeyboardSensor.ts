@@ -1,13 +1,15 @@
 import {Sensor} from '@dnd-kit/abstract';
 import {effect} from '@dnd-kit/state';
-import type {CleanupFunction} from '@dnd-kit/types';
-import {Listeners, getOwnerDocument} from '@dnd-kit/dom-utilities';
+import type {CleanupFunction} from '@dnd-kit/state';
+import {
+  DOMRectangle,
+  getOwnerDocument,
+  Listeners,
+} from '@dnd-kit/dom-utilities';
 
 import type {DragDropManager} from '../../manager';
 import type {Draggable} from '../../nodes';
 import {AutoScroller, Scroller} from '../../plugins';
-import {DOMRectangle} from '../../shapes';
-import {Coordinates} from '@dnd-kit/geometry';
 
 export type KeyCode = KeyboardEvent['code'];
 
@@ -99,7 +101,7 @@ export class KeyboardSensor extends Sensor<
       return;
     }
 
-    if (this.manager.dragOperation.status !== 'idle') {
+    if (this.manager.dragOperation.status.initialized) {
       return;
     }
 
@@ -193,7 +195,7 @@ export class KeyboardSensor extends Sensor<
   private sideEffects(): CleanupFunction {
     const effectCleanupFns: CleanupFunction[] = [];
 
-    const autoScroller = this.manager.plugins.get(AutoScroller as any);
+    const autoScroller = this.manager.registry.plugins.get(AutoScroller as any);
 
     if (autoScroller?.disabled === false) {
       autoScroller.disable();

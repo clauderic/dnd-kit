@@ -1,14 +1,19 @@
 import React, {forwardRef, useLayoutEffect, useRef, useState} from 'react';
 import type {PropsWithChildren} from 'react';
-import type {UniqueIdentifier} from '@dnd-kit/types';
+import type {UniqueIdentifier} from '@dnd-kit/abstract';
 import {DragDropProvider, useSortable} from '@dnd-kit/react';
-import {arrayMove} from '@dnd-kit/utilities';
+import {Debug, defaultPreset} from '@dnd-kit/dom';
+import {move} from '@dnd-kit/utilities';
 import {useWindowVirtualizer} from '@tanstack/react-virtual';
 
 import {Item, Handle} from '../../components';
 import {createRange, cloneDeep} from '../../../utilities';
 
-export function ReactVirtualExample() {
+interface Props {
+  debug?: boolean;
+}
+
+export function ReactVirtualExample({debug}: Props) {
   const [items, setItems] = useState<UniqueIdentifier[]>(createRange(1000));
   const snapshot = useRef(cloneDeep(items));
 
@@ -29,6 +34,7 @@ export function ReactVirtualExample() {
 
   return (
     <DragDropProvider
+      plugins={debug ? [Debug, ...defaultPreset.plugins] : undefined}
       onDragStart={() => {
         snapshot.current = cloneDeep(items);
       }}
@@ -39,12 +45,7 @@ export function ReactVirtualExample() {
           return;
         }
 
-        const sourceIndex = items.indexOf(source.id);
-        const targetIndex = items.indexOf(target.id);
-
-        if (sourceIndex !== targetIndex) {
-          setItems((items) => arrayMove(items, sourceIndex, targetIndex));
-        }
+        setItems((items) => move(items, source, target));
       }}
       onDragEnd={(event) => {
         if (event.canceled) {
@@ -105,6 +106,7 @@ const Sortable = forwardRef<Element, PropsWithChildren<SortableProps>>(
       id,
       index,
       element,
+      feedback: 'clone',
       activator: activatorRef,
     });
 
@@ -119,9 +121,9 @@ const Sortable = forwardRef<Element, PropsWithChildren<SortableProps>>(
 
           setElement(el);
         }}
-        shadow={isDragSource}
         actions={<Handle ref={activatorRef} />}
         data-index={index}
+        shadow={isDragSource}
       >
         {id}
       </Item>

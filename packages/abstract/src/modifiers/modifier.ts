@@ -1,11 +1,23 @@
 import type {Coordinates} from '@dnd-kit/geometry';
 
-import {Plugin, type PluginConstructor} from '../plugins';
+import {
+  Plugin,
+  PluginOptions,
+  type PluginConstructor,
+  type PluginDescriptor,
+} from '../plugins';
 
 import type {DragDropManager, DragOperation} from '../manager';
 
-export class Modifier<T extends DragDropManager<any, any>> extends Plugin<T> {
-  constructor(protected manager: T) {
+export type ModifierOptions = PluginOptions;
+
+export class Modifier<
+  T extends DragDropManager<any, any> = DragDropManager<any, any>,
+> extends Plugin<T> {
+  constructor(
+    protected manager: T,
+    public options?: ModifierOptions
+  ) {
     super(manager);
   }
 
@@ -14,5 +26,14 @@ export class Modifier<T extends DragDropManager<any, any>> extends Plugin<T> {
   }
 }
 
-export type ModifierConstructor<T extends DragDropManager<any, any>> =
-  PluginConstructor<T, Modifier<T>>;
+export type ModifierConstructor<
+  T extends DragDropManager<any, any> = DragDropManager<any, any>,
+> = PluginConstructor<T, Modifier<T>>;
+
+export type ModifierDescriptor<
+  T extends DragDropManager<any, any> = DragDropManager<any, any>,
+> = PluginDescriptor<T, Modifier<T>, ModifierConstructor<T>>;
+
+export type Modifiers<
+  T extends DragDropManager<any, any> = DragDropManager<any, any>,
+> = (ModifierConstructor<T> | ModifierDescriptor<T>)[];

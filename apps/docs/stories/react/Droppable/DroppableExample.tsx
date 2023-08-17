@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import type {PropsWithChildren} from 'react';
-import type {UniqueIdentifier} from '@dnd-kit/types';
+import type {UniqueIdentifier} from '@dnd-kit/abstract';
 import {DragDropProvider, useDraggable, useDroppable} from '@dnd-kit/react';
 
 import {Button, Dropzone} from '../components';

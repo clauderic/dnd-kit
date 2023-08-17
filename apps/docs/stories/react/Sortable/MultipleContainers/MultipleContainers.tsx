@@ -1,17 +1,19 @@
-import React, {useRef, useState} from 'react';
+import React, {useRef, useState, useTransition} from 'react';
 import type {PropsWithChildren} from 'react';
-import type {UniqueIdentifier} from '@dnd-kit/types';
+import type {UniqueIdentifier} from '@dnd-kit/abstract';
 import {DragDropProvider, useSortable} from '@dnd-kit/react';
-import {arrayMove} from '@dnd-kit/utilities';
+import {move} from '@dnd-kit/utilities';
+import {Debug, defaultPreset} from '@dnd-kit/dom';
 
-import {Item, Handle} from '../../components';
+import {Actions, Item, Handle, Remove} from '../../components';
 import {createRange, cloneDeep} from '../../../utilities';
 
 interface Props {
-  itemCount?: number;
+  debug?: boolean;
+  itemCount: number;
 }
 
-export function MultipleContainers({itemCount = 5}: Props) {
+export function MultipleContainers({debug, itemCount}: Props) {
   const [items, setItems] = useState<Record<string, UniqueIdentifier[]>>({
     A: createRange(itemCount).map((id) => `A${id}`),
     B: createRange(itemCount).map((id) => `B${id}`),
@@ -21,42 +23,18 @@ export function MultipleContainers({itemCount = 5}: Props) {
 
   return (
     <DragDropProvider
+      plugins={debug ? [...defaultPreset.plugins, Debug] : undefined}
       onDragStart={() => {
         snapshot.current = cloneDeep(items);
       }}
-      onDragOver={(event, manager) => {
+      onDragOver={(event) => {
         const {source, target} = event.operation;
 
-        if (!source?.data || !target?.data) {
+        if (!source || !target) {
           return;
         }
 
-        const {column} = source.data;
-        const {column: targetColumn} = target.data;
-
-        const sourceIndex = items[column].indexOf(source.id);
-        const targetIndex = items[targetColumn].indexOf(target.id);
-
-        if (column !== targetColumn) {
-          setItems((items) => ({
-            ...items,
-            [column]: items[column].filter((item) => item !== source.id),
-            [targetColumn]: [
-              ...items[targetColumn]
-                .filter((item) => item !== source.id)
-                .slice(0, targetIndex),
-              source.id,
-              ...items[targetColumn]
-                .filter((item) => item !== source.id)
-                .slice(targetIndex),
-            ],
-          }));
-        } else if (sourceIndex !== targetIndex) {
-          setItems((items) => ({
-            ...items,
-            [column]: arrayMove(items[column], sourceIndex, targetIndex),
-          }));
-        }
+        setItems((items) => move(items, source, target));
       }}
       onDragEnd={(event) => {
         if (event.canceled) {
@@ -74,10 +52,22 @@ export function MultipleContainers({itemCount = 5}: Props) {
               alignItems: 'center',
               gap: 20,
               padding: '0 30px',
+              width: 300,
             }}
           >
             {rows.map((id, index) => (
-              <Sortable key={id} id={id} column={column} index={index} />
+              <Sortable
+                key={id}
+                id={id}
+                column={column}
+                index={index}
+                onRemove={(id) => {
+                  setItems((items) => ({
+                    ...items,
+                    [column]: items[column].filter((item) => item !== id),
+                  }));
+                }}
+              />
             ))}
           </div>
         ))}
@@ -90,11 +80,26 @@ interface SortableProps {
   id: UniqueIdentifier;
   column: string;
   index: number;
+  onRemove?: (id: UniqueIdentifier) => void;
 }
 
-function Sortable({id, column, index}: PropsWithChildren<SortableProps>) {
+const COLORS = {
+  A: '#7193f1',
+  B: '#FF851B',
+  C: '#2ECC40',
+};
+
+function Sortable({
+  id,
+  column,
+  index,
+  onRemove,
+}: PropsWithChildren<SortableProps>) {
   const {activatorRef, ref, isDragSource} = useSortable({
     id,
+    accept: ['item'],
+    type: 'item',
+    feedback: 'clone',
     data: {column},
     index,
   });
@@ -102,9 +107,14 @@ function Sortable({id, column, index}: PropsWithChildren<SortableProps>) {
   return (
     <Item
       ref={ref}
+      actions={
+        <Actions>
+          {onRemove ? <Remove onClick={() => onRemove(id)} /> : null}
+          <Handle ref={activatorRef} />
+        </Actions>
+      }
+      accentColor={COLORS[column]}
       shadow={isDragSource}
-      actions={<Handle ref={activatorRef} />}
-      style={{width: 250}}
     >
       {id}
     </Item>

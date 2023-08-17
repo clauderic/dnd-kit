@@ -1,15 +1,10 @@
 import {useCallback, useEffect} from 'react';
 import type {Data} from '@dnd-kit/abstract';
-import {CloneFeedback, Draggable} from '@dnd-kit/dom';
+import {DraggableFeedback, Draggable} from '@dnd-kit/dom';
 import type {DraggableInput} from '@dnd-kit/dom';
 
 import {useDragDropManager} from '../context';
-import {
-  useComputed,
-  useConstant,
-  useIsomorphicLayoutEffect,
-  useOnValueChange,
-} from '../hooks';
+import {useComputed, useConstant, useOnValueChange} from '../hooks';
 import {getCurrentValue, type RefOrValue} from '../utilities';
 
 export interface UseDraggableInput<T extends Data = Data>
@@ -21,14 +16,14 @@ export interface UseDraggableInput<T extends Data = Data>
 export function useDraggable<T extends Data = Data>(
   input: UseDraggableInput<T>
 ) {
+  const {disabled, id, sensors} = input;
   const manager = useDragDropManager();
-  const {disabled, id, sensors, feedback = CloneFeedback} = input;
   const activator = getCurrentValue(input.activator);
   const element = getCurrentValue(input.element);
   const draggable = useConstant(
-    () => new Draggable({...input, activator, element, feedback: null}, manager)
+    () => new Draggable({...input, activator, element}, manager)
   );
-  const isDragSource = useComputed(() => draggable.isDragSource).value;
+  const isDragSource = useComputed(() => draggable.isDragSource);
 
   useOnValueChange(id, () => (draggable.id = id));
   useOnValueChange(activator, () => (draggable.activator = activator));
@@ -36,18 +31,15 @@ export function useDraggable<T extends Data = Data>(
   useOnValueChange(disabled, () => (draggable.disabled = disabled === true));
   useOnValueChange(sensors, () => (draggable.sensors = sensors));
 
-  useIsomorphicLayoutEffect(() => {
-    // Wait until React has had a chance to re-render before updating the feedback
-    draggable.feedback = isDragSource ? feedback ?? null : null;
-  }, [isDragSource]);
-
   useEffect(() => {
     // Cleanup on unmount
     return draggable.destroy;
   }, [draggable]);
 
   return {
-    isDragSource,
+    get isDragSource() {
+      return isDragSource.value;
+    },
     activatorRef: useCallback(
       (element: Element | null) => {
         draggable.activator = element ?? undefined;

@@ -13,9 +13,23 @@ export {Modifier} from './modifiers';
 export type {ModifierConstructor} from './modifiers';
 
 export {Draggable, Droppable} from './nodes';
-export type {Data, Node, DraggableInput, DroppableInput} from './nodes';
+export type {
+  Data,
+  DraggableInput,
+  DroppableInput,
+  Node,
+  Type,
+  UniqueIdentifier,
+} from './nodes';
 
-export {Plugin, PluginRegistry, configure, descriptor} from './plugins';
+export {
+  Plugin,
+  PluginRegistry,
+  CorePlugin,
+  configure,
+  configurator,
+  descriptor,
+} from './plugins';
 export type {
   Plugins,
   PluginConstructor,

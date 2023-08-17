@@ -1,5 +1,6 @@
 import React, {
   forwardRef,
+  type CSSProperties,
   type HTMLAttributes,
   type PropsWithChildren,
 } from 'react';
@@ -11,10 +12,14 @@ import styles from './Item.module.css';
 export interface Props extends HTMLAttributes<HTMLElement> {
   actions?: React.ReactNode;
   shadow?: boolean;
+  accentColor?: string;
 }
 
 export const Item = forwardRef<HTMLElement, PropsWithChildren<Props>>(
-  function Button({actions, children, shadow, ...props}, ref) {
+  function Button(
+    {actions, accentColor, children, shadow, style, ...props},
+    ref
+  ) {
     const Element = actions ? 'div' : 'button';
 
     return (
@@ -23,8 +28,15 @@ export const Item = forwardRef<HTMLElement, PropsWithChildren<Props>>(
         className={classNames(
           styles.Item,
           shadow && styles.shadow,
-          actions ? styles.hasActions : undefined
+          actions ? styles.withActions : undefined,
+          accentColor ? styles.withBorder : undefined
         )}
+        style={
+          {
+            ...style,
+            '--accent-color': accentColor,
+          } as CSSProperties
+        }
         ref={ref as any}
       >
         {children}

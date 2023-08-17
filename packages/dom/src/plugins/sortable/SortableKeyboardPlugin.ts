@@ -2,18 +2,19 @@ import {batch, effect} from '@dnd-kit/state';
 import {Plugin} from '@dnd-kit/abstract';
 import {closestCenter} from '@dnd-kit/collision';
 import {
-  scheduler,
   isKeyboardEvent,
+  scheduler,
   scrollIntoViewIfNeeded,
 } from '@dnd-kit/dom-utilities';
 import type {Coordinates} from '@dnd-kit/geometry';
 
 import type {Droppable} from '../../nodes';
 import {DragDropManager} from '../../manager';
-import {DOMRectangle} from '../../shapes';
-
-import {isSortable} from './registry';
 import {Scroller} from '../scrolling';
+
+import {isSortable} from './utilities';
+
+const TOLERANCE = 10;
 
 export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager) {
@@ -30,8 +31,8 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
         return;
       }
 
-      if (dragOperation.initialized) {
-        const scroller = manager.plugins.get(Scroller);
+      if (dragOperation.status.initialized) {
+        const scroller = manager.registry.plugins.get(Scroller);
 
         if (scroller) {
           scroller.disable();
@@ -70,10 +71,10 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
         }
 
         const direction = getDirection(by);
-        const {boundingRectangle} = dragOperation.shape;
+        const {center} = dragOperation.shape;
         const potentialTargets: Droppable[] = [];
 
-        for (const droppable of registry.droppable) {
+        for (const droppable of registry.droppables) {
           const {shape, id} = droppable;
 
           if (
@@ -85,22 +86,22 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
 
           switch (direction) {
             case 'down':
-              if (boundingRectangle.top < shape.boundingRectangle.top) {
+              if (center.y + TOLERANCE < shape.center.y) {
                 potentialTargets.push(droppable);
               }
               break;
             case 'up':
-              if (boundingRectangle.top > shape.boundingRectangle.top) {
+              if (center.y - TOLERANCE > shape.center.y) {
                 potentialTargets.push(droppable);
               }
               break;
             case 'left':
-              if (boundingRectangle.left > shape.boundingRectangle.left) {
+              if (center.x - TOLERANCE > shape.center.x) {
                 potentialTargets.push(droppable);
               }
               break;
             case 'right':
-              if (boundingRectangle.left < shape.boundingRectangle.left) {
+              if (center.x + TOLERANCE < shape.center.x) {
                 potentialTargets.push(droppable);
               }
               break;
@@ -122,37 +123,42 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
 
         const {id} = firstCollision;
 
-        actions.setDropTarget(id);
+        actions.setDropTarget(id).then(() => {
+          const {source} = dragOperation;
 
-        scheduler.schedule(() => {
-          const {shape, source} = dragOperation;
-
-          if (!shape || !source?.element) {
+          if (!source) {
             return;
           }
 
-          scrollIntoViewIfNeeded(source.element);
+          const droppable = registry.droppables.get(source.id);
+
+          if (!droppable?.element) {
+            return;
+          }
+
+          const {element} = droppable;
+          scrollIntoViewIfNeeded(element);
 
           scheduler.schedule(() => {
-            if (!source.element) {
+            const shape = droppable.refreshShape();
+
+            if (!shape) {
               return;
             }
-
-            const {center} = new DOMRectangle(source.element, true);
 
             batch(() => {
               actions.setDropTarget(source.id);
               actions.move({
                 to: {
-                  x: center.x,
-                  y: center.y,
+                  x: shape.center.x,
+                  y: shape.center.y,
                 },
               });
             });
 
             collisionObserver.enable();
           });
-        }, true);
+        });
       }
     );
 

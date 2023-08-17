@@ -1,5 +1,4 @@
 import type {Coordinates} from '@dnd-kit/geometry';
-import {add} from '@dnd-kit/utilities';
 
 import {
   getScrollCoordinates,
@@ -17,7 +16,12 @@ export function getScrollOffsets(
   }
 
   return scrollableAncestors.reduce((acc, node) => {
-    return add(acc, getScrollCoordinates(node));
+    const {x, y} = getScrollCoordinates(node);
+
+    return {
+      x: acc.x + x,
+      y: acc.y + y,
+    };
   }, defaultCoordinates);
 }
 

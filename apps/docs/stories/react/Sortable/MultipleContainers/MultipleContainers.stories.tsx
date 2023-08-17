@@ -11,4 +11,8 @@ type Story = StoryObj<typeof MultipleContainers>;
 
 export const BasicSetup: Story = {
   name: 'Basic setup',
+  args: {
+    debug: false,
+    itemCount: 6,
+  },
 };

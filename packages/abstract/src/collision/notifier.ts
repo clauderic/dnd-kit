@@ -1,9 +1,9 @@
 import {effect, untracked} from '@dnd-kit/state';
 
 import {DragDropManager} from '../manager';
-import {Plugin} from '../plugins';
+import {CorePlugin} from '../plugins';
 
-export class CollisionNotifier extends Plugin {
+export class CollisionNotifier extends CorePlugin {
   constructor(manager: DragDropManager) {
     super(manager);
 

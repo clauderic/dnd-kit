@@ -11,5 +11,7 @@ type Story = StoryObj<typeof ReactVirtualExample>;
 
 export const ReactVirtual: Story = {
   name: 'react-virtual',
-  render: ReactVirtualExample,
+  args: {
+    debug: false,
+  },
 };

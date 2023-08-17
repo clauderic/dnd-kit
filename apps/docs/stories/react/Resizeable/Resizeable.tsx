@@ -7,7 +7,7 @@ import React, {
   useRef,
 } from 'react';
 import type {PropsWithChildren} from 'react';
-import type {UniqueIdentifier} from '@dnd-kit/types';
+import type {UniqueIdentifier} from '@dnd-kit/abstract';
 import {DragDropProvider, useDraggable} from '@dnd-kit/react';
 
 import './Resizeable.css';

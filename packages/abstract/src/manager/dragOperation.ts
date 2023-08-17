@@ -1,9 +1,8 @@
 import {Position, type Shape} from '@dnd-kit/geometry';
 import type {Coordinates} from '@dnd-kit/geometry';
-import type {UniqueIdentifier} from '@dnd-kit/types';
-import {batch, effect, computed, signal} from '@dnd-kit/state';
+import {batch, computed, signal} from '@dnd-kit/state';
 
-import type {Draggable, Droppable} from '../nodes';
+import type {Draggable, Droppable, UniqueIdentifier} from '../nodes';
 
 import type {DragDropManager} from './manager';
 
@@ -11,7 +10,7 @@ export enum Status {
   Idle = 'idle',
   Initializing = 'initializing',
   Dragging = 'dragging',
-  Dropping = 'dropped',
+  Dropping = 'dropping',
 }
 
 export type Serializable = {
@@ -23,10 +22,16 @@ export interface DragOperation<
   U extends Droppable = Droppable,
 > {
   activatorEvent: Event | null;
-  status: Status;
   position: Position;
   transform: Coordinates;
-  initialized: boolean;
+  status: {
+    current: Status;
+    initialized: boolean;
+    initializing: boolean;
+    dragging: boolean;
+    dropping: boolean;
+    idle: boolean;
+  };
   shape: Shape | null;
   source: T | null;
   target: U | null;
@@ -45,7 +50,7 @@ export function DragOperationManager<
   V extends DragDropManager<T, U>,
 >(manager: V) {
   const {
-    registry: {draggable, droppable},
+    registry: {draggables, droppables},
     monitor,
     modifiers,
   } = manager;
@@ -55,25 +60,46 @@ export function DragOperationManager<
   const activatorEvent = signal<Event | null>(null);
   const sourceIdentifier = signal<UniqueIdentifier | null>(null);
   const targetIdentifier = signal<UniqueIdentifier | null>(null);
-  const source = computed(() => {
-    const identifier = sourceIdentifier.value;
-    return identifier != null ? draggable.get(identifier) : null;
-  });
-  const target = computed(() => {
-    const identifier = targetIdentifier.value;
-    return identifier != null ? droppable.get(identifier) : null;
-  });
   const dragging = computed(() => status.value === Status.Dragging);
+  const initialized = computed(() => status.value !== Status.Idle);
+  const initializing = computed(() => status.value === Status.Initializing);
+  const idle = computed(() => status.value === Status.Idle);
+  const dropping = computed(() => status.value === Status.Dropping);
+  let previousSource: T | undefined;
+  const source = computed<T | null>(() => {
+    const identifier = sourceIdentifier.value;
+
+    if (identifier == null) return null;
+
+    const value = draggables.get(identifier);
+
+    if (value) {
+      // It's possible for the source to unmount during the drag operation
+      previousSource = value;
+    }
+
+    return value ?? previousSource ?? null;
+  });
+  const target = computed<U | null>(() => {
+    const identifier = targetIdentifier.value;
+    return identifier != null ? droppables.get(identifier) ?? null : null;
+  });
 
   const transform = computed(() => {
     const {x, y} = position.delta;
     let transform = {x, y};
     const operation: Omit<DragOperation<T, U>, 'transform'> = {
       activatorEvent: activatorEvent.peek(),
-      source: source.peek() ?? null,
-      target: target.peek() ?? null,
-      initialized: status.peek() !== Status.Idle,
-      status: status.peek(),
+      source: source.peek(),
+      target: target.peek(),
+      status: {
+        current: status.peek(),
+        idle: idle.peek(),
+        initializing: initializing.peek(),
+        initialized: initialized.peek(),
+        dragging: dragging.peek(),
+        dropping: dropping.peek(),
+      },
       shape: shape.peek(),
       position,
     };
@@ -90,16 +116,30 @@ export function DragOperationManager<
       return activatorEvent.value;
     },
     get source() {
-      return source.value ?? null;
+      return source.value;
     },
     get target() {
-      return target.value ?? null;
+      return target.value;
     },
-    get status() {
-      return status.value;
-    },
-    get initialized() {
-      return status.value !== Status.Idle;
+    status: {
+      get current() {
+        return status.value;
+      },
+      get idle() {
+        return idle.value;
+      },
+      get initializing() {
+        return initializing.value;
+      },
+      get initialized() {
+        return initialized.value;
+      },
+      get dragging() {
+        return dragging.value;
+      },
+      get dropping() {
+        return dropping.value;
+      },
     },
     get shape() {
       return shape.value;
@@ -117,16 +157,15 @@ export function DragOperationManager<
     position,
   };
 
-  const reset = () =>
-    requestAnimationFrame(() => {
-      batch(() => {
-        status.value = Status.Idle;
-        sourceIdentifier.value = null;
-        targetIdentifier.value = null;
-        shape.value = null;
-        position.reset({x: 0, y: 0});
-      });
+  const reset = () => {
+    batch(() => {
+      status.value = Status.Idle;
+      sourceIdentifier.value = null;
+      targetIdentifier.value = null;
+      shape.value = null;
+      position.reset({x: 0, y: 0});
     });
+  };
 
   return {
     operation,
@@ -134,31 +173,43 @@ export function DragOperationManager<
       setDragSource(identifier: UniqueIdentifier) {
         sourceIdentifier.value = identifier;
       },
-      setDropTarget(identifier: UniqueIdentifier | null | undefined) {
+      setDropTarget(
+        identifier: UniqueIdentifier | null | undefined
+      ): Promise<void> {
+        const resolve = Promise.resolve();
+
         if (!dragging.peek()) {
-          return;
+          return resolve;
         }
 
-        if (targetIdentifier.peek() === identifier) {
-          return;
+        const id = identifier ?? null;
+
+        if (targetIdentifier.peek() === id) {
+          return resolve;
         }
 
-        targetIdentifier.value = identifier ?? null;
+        targetIdentifier.value = id;
 
         monitor.dispatch('dragover', {
           operation: snapshot(operation),
         });
+
+        return manager.renderer.rendering;
       },
       start({event, coordinates}: {event: Event; coordinates: Coordinates}) {
-        status.value = Status.Initializing;
-        activatorEvent.value = event;
-
         batch(() => {
-          status.value = Status.Dragging;
-          position.reset(coordinates);
+          status.value = Status.Initializing;
+          activatorEvent.value = event;
         });
 
-        monitor.dispatch('dragstart', {});
+        requestAnimationFrame(() => {
+          batch(() => {
+            status.value = Status.Dragging;
+            position.reset(coordinates);
+          });
+
+          monitor.dispatch('dragstart', {});
+        });
       },
       move({
         by,
@@ -202,12 +253,12 @@ export function DragOperationManager<
         position.update(coordinates);
       },
       stop({canceled = false}: {canceled?: boolean} = {}) {
+        let promise: Promise<void> | undefined;
         const end = () => {
           status.value = Status.Dropping;
-          reset();
-        };
-        let promise: Promise<void> | undefined;
 
+          manager.renderer.rendering.then(reset);
+        };
         const suspend = () => {
           const output = {
             resume: () => {},

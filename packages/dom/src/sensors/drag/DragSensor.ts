@@ -1,7 +1,7 @@
 import {Sensor} from '@dnd-kit/abstract';
 import {effect} from '@dnd-kit/state';
+import type {CleanupFunction} from '@dnd-kit/state';
 import {Listeners} from '@dnd-kit/dom-utilities';
-import type {CleanupFunction} from '@dnd-kit/types';
 
 import type {DragDropManager} from '../../manager';
 import type {Draggable} from '../../nodes';
@@ -140,7 +140,7 @@ export class DragSensor extends Sensor<DragDropManager, DragSensorOptions> {
     event.preventDefault();
     event.stopPropagation();
 
-    if (this.manager.dragOperation.status === 'idle') {
+    if (this.manager.dragOperation.status.idle) {
       this.manager.actions.start({
         event,
         coordinates: {
