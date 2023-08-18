@@ -14,7 +14,8 @@ import type {Sensors} from '../../sensors';
 
 export type FeedbackType = 'default' | 'move' | 'clone' | 'custom';
 
-export interface Input<T extends Data = Data> extends DraggableInput<T> {
+export interface Input<T extends Data = Data>
+  extends DraggableInput<T, Draggable<T>> {
   activator?: Element;
   element?: Element;
   feedback?: FeedbackType | null;

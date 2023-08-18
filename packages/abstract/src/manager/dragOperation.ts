@@ -198,17 +198,20 @@ export function DragOperationManager<
       },
       start({event, coordinates}: {event: Event; coordinates: Coordinates}) {
         batch(() => {
-          status.value = Status.Initializing;
           activatorEvent.value = event;
+          position.reset(coordinates);
         });
 
-        requestAnimationFrame(() => {
-          batch(() => {
-            status.value = Status.Dragging;
-            position.reset(coordinates);
-          });
+        monitor.dispatch('beforedragstart', {operation: snapshot(operation)});
 
-          monitor.dispatch('dragstart', {});
+        manager.renderer.rendering.then(() => {
+          status.value = Status.Initializing;
+
+          requestAnimationFrame(() => {
+            status.value = Status.Dragging;
+
+            monitor.dispatch('dragstart', {operation: snapshot(operation)});
+          });
         });
       },
       move({
@@ -254,11 +257,6 @@ export function DragOperationManager<
       },
       stop({canceled = false}: {canceled?: boolean} = {}) {
         let promise: Promise<void> | undefined;
-        const end = () => {
-          status.value = Status.Dropping;
-
-          manager.renderer.rendering.then(reset);
-        };
         const suspend = () => {
           const output = {
             resume: () => {},
@@ -271,6 +269,13 @@ export function DragOperationManager<
           });
 
           return output;
+        };
+        const end = () => {
+          manager.renderer.rendering.then(() => {
+            status.value = Status.Dropping;
+
+            manager.renderer.rendering.then(reset);
+          });
         };
 
         monitor.dispatch('dragend', {

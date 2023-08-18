@@ -1,11 +1,11 @@
 import type {BoundingRectangle} from '@dnd-kit/geometry';
 
-import {getOwnerDocument} from '../execution-context';
+import {getDocument} from '../execution-context';
 
 export function getViewportBoundingRectangle(
   element: Element
 ): BoundingRectangle {
-  const {documentElement} = getOwnerDocument(element);
+  const {documentElement} = getDocument(element);
   const width = documentElement.clientWidth;
   const height = documentElement.clientHeight;
 

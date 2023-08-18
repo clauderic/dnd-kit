@@ -3,7 +3,7 @@ import type {PropsWithChildren} from 'react';
 import type {UniqueIdentifier} from '@dnd-kit/abstract';
 import {DragDropProvider, useSortable} from '@dnd-kit/react';
 import {Debug, defaultPreset} from '@dnd-kit/dom';
-import {move} from '@dnd-kit/utilities';
+import {move} from '@dnd-kit/state-management';
 import {useWindowVirtualizer} from '@tanstack/react-virtual';
 
 import {Item, Handle} from '../../components';

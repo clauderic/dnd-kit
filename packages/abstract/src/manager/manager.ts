@@ -11,16 +11,7 @@ import {DragDropMonitor} from './monitor';
 import type {Plugins, Plugin} from '../plugins';
 import type {Sensor, Sensors} from '../sensors';
 import type {Modifier, Modifiers} from '../modifiers';
-
-interface Renderer {
-  get rendering(): Promise<void>;
-}
-
-const defaultRenderer: Renderer = {
-  get rendering() {
-    return Promise.resolve();
-  },
-};
+import {defaultRenderer, type Renderer} from './renderer';
 
 export interface DragDropConfiguration<T extends DragDropManager> {
   core?: {
@@ -99,5 +90,6 @@ export class DragDropManager<
 
   public destroy() {
     this.registry.destroy();
+    this.collisionObserver.destroy();
   }
 }

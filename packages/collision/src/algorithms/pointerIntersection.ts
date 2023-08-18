@@ -1,10 +1,10 @@
 import {CollisionPriority} from '@dnd-kit/abstract';
 import type {CollisionDetector} from '@dnd-kit/abstract';
-import {Point} from '@dnd-kit/geometry';
+import {Point, Rectangle} from '@dnd-kit/geometry';
 
 /**
- * Collision detection algorithm that detects whether the pointer intersects
- * with a given droppable element.
+ * A hich precision collision detection algorithm that detects
+ *  whether the pointer intersects with a given droppable element.
  *
  * Returns the distance between the pointer coordinates and the center of the
  * droppable element if the pointer is within the droppable element.
@@ -39,6 +39,27 @@ export const pointerIntersection: CollisionDetector = ({
       id,
       value,
       priority: CollisionPriority.High,
+    };
+  }
+
+  const {shape} = dragOperation;
+  const {x, y} = pointerCoordinates;
+  const size = shape
+    ? {
+        width: Math.min(Math.abs(shape.boundingRectangle.right - x), 30),
+        height: Math.min(Math.abs(shape.boundingRectangle.bottom - y), 30),
+      }
+    : {width: 30, height: 30};
+  const pointerShape = new Rectangle(x, y, size.width, size.height);
+  const intersectionArea = droppable.shape.intersectionArea(pointerShape);
+
+  if (intersectionArea) {
+    const distance = Point.distance(droppable.shape.center, pointerCoordinates);
+
+    return {
+      id,
+      value: 1 / distance,
+      priority: CollisionPriority.Medium,
     };
   }
 

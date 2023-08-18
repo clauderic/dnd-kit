@@ -16,8 +16,7 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
-    "@dnd-kit/geometry": "*",
-    "@dnd-kit/utilities": "*"
+    "@dnd-kit/geometry": "*"
   },
   "devDependencies": {
     "@dnd-kit/config-eslint": "*",

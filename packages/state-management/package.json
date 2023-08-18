@@ -1,5 +1,5 @@
 {
-  "name": "@dnd-kit/utilities",
+  "name": "@dnd-kit/state-management",
   "version": "0.0.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

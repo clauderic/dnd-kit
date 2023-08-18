@@ -1,12 +1,13 @@
-import {effect, reactive} from '@dnd-kit/state';
+import {effect, effects, reactive, type Effect} from '@dnd-kit/state';
 
 import type {DragDropManager} from '../../manager';
 import type {Data, UniqueIdentifier} from './types';
 
-export interface Input<T extends Data = Data> {
+export interface Input<T extends Data = Data, U extends Node<T> = Node<T>> {
   id: UniqueIdentifier;
   data?: T | null;
   disabled?: boolean;
+  effects?: <Instance extends U>(instance: Instance) => Effect[];
 }
 
 export class Node<T extends Data = Data> {
@@ -14,7 +15,7 @@ export class Node<T extends Data = Data> {
     input: Input<T>,
     protected manager: DragDropManager
   ) {
-    const {id, data = null, disabled = false} = input;
+    const {effects: inputEffects, id, data = null, disabled = false} = input;
 
     this.id = id;
     this.data = data;
@@ -26,13 +27,16 @@ export class Node<T extends Data = Data> {
       this[key as keyof this] = value;
     }
 
-    this.destroy = effect(() => {
-      // Re-run this effect whenever the `id` changes
-      const {id: _} = this;
-      manager.registry.register(this);
+    this.destroy = effects(
+      () => {
+        // Re-run this effect whenever the `id` changes
+        const {id: _} = this;
+        manager.registry.register(this);
 
-      return () => manager.registry.unregister(this);
-    });
+        return () => manager.registry.unregister(this);
+      },
+      ...(inputEffects?.(this) ?? [])
+    );
   }
 
   @reactive

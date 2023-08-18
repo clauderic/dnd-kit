@@ -3,13 +3,14 @@ import {effect} from '@dnd-kit/state';
 import type {CleanupFunction} from '@dnd-kit/state';
 import {
   DOMRectangle,
-  getOwnerDocument,
+  getDocument,
+  getWindow,
   Listeners,
 } from '@dnd-kit/dom-utilities';
 
 import type {DragDropManager} from '../../manager';
 import type {Draggable} from '../../nodes';
-import {AutoScroller, Scroller} from '../../plugins';
+import {AutoScroller} from '../../plugins';
 
 export type KeyCode = KeyboardEvent['code'];
 
@@ -53,16 +54,16 @@ export class KeyboardSensor extends Sensor<
     super(manager);
   }
 
-  private listeners = new Listeners();
+  #cleanupFunctions: CleanupFunction[] = [];
 
-  private cleanup: CleanupFunction | undefined;
+  protected listeners = new Listeners();
 
   public bind(source: Draggable, options = this.options) {
     const unbind = effect(() => {
       const target = source.activator ?? source.element;
       const listener: EventListener = (event: Event) => {
         if (event instanceof KeyboardEvent) {
-          this.handleKeyDown(event, source, options);
+          this.handleSourceKeyDown(event, source, options);
         }
       };
 
@@ -78,7 +79,7 @@ export class KeyboardSensor extends Sensor<
     return unbind;
   }
 
-  private handleKeyDown = (
+  protected handleSourceKeyDown = (
     event: KeyboardEvent,
     source: Draggable,
     options: KeyboardSensorOptions | undefined
@@ -105,9 +106,21 @@ export class KeyboardSensor extends Sensor<
       return;
     }
 
+    this.handleStart(event, source, options);
+  };
+
+  protected handleStart(
+    event: KeyboardEvent,
+    source: Draggable,
+    options: KeyboardSensorOptions | undefined
+  ) {
+    if (!source.element) {
+      throw new Error('Source draggable does not have an associated element');
+    }
+
     const {center} = new DOMRectangle(source.element);
 
-    const cleanupSideEffects = this.sideEffects();
+    this.sideEffects();
 
     this.manager.actions.setDragSource(source.id);
     this.manager.actions.start({
@@ -121,37 +134,61 @@ export class KeyboardSensor extends Sensor<
     event.preventDefault();
     event.stopImmediatePropagation();
 
-    const ownerDocument = getOwnerDocument(source.element);
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (isKeycode(event, [...keyboardCodes.end, ...keyboardCodes.cancel])) {
-        event.preventDefault();
+    const sourceDocument = getDocument(source.element);
+    const sourceWindow = getWindow(sourceDocument);
 
-        this.manager.actions.stop({
-          canceled: isKeycode(event, keyboardCodes.cancel),
-        });
+    const listeners = [
+      this.listeners.bind(sourceDocument, [
+        {
+          type: 'keydown',
+          listener: (event: KeyboardEvent) =>
+            this.handleKeyDown(event, source, options),
+          options: {capture: true},
+        },
+      ]),
+      this.listeners.bind(sourceWindow, [
+        {type: 'resize', listener: () => this.handleEnd(true)},
+      ]),
+    ];
 
-        this.cleanup?.();
-        cleanupSideEffects();
-        return;
-      }
+    this.#cleanupFunctions.push(...listeners);
+  }
 
-      if (isKeycode(event, keyboardCodes.up)) {
-        this.handleMove('up', event);
-      } else if (isKeycode(event, keyboardCodes.down)) {
-        this.handleMove('down', event);
-      }
+  protected handleKeyDown(
+    event: KeyboardEvent,
+    _source: Draggable,
+    options: KeyboardSensorOptions | undefined
+  ) {
+    const {keyboardCodes = DEFAULT_KEYBOARD_CODES} = options ?? {};
 
-      if (isKeycode(event, keyboardCodes.left)) {
-        this.handleMove('left', event);
-      } else if (isKeycode(event, keyboardCodes.right)) {
-        this.handleMove('right', event);
-      }
-    };
+    if (isKeycode(event, [...keyboardCodes.end, ...keyboardCodes.cancel])) {
+      event.preventDefault();
+      const canceled = isKeycode(event, keyboardCodes.cancel);
 
-    this.cleanup = this.listeners.bind(ownerDocument, [
-      {type: 'keydown', listener: onKeyDown, options: {capture: true}},
-    ]);
-  };
+      this.handleEnd(canceled);
+      return;
+    }
+
+    if (isKeycode(event, keyboardCodes.up)) {
+      this.handleMove('up', event);
+    } else if (isKeycode(event, keyboardCodes.down)) {
+      this.handleMove('down', event);
+    }
+
+    if (isKeycode(event, keyboardCodes.left)) {
+      this.handleMove('left', event);
+    } else if (isKeycode(event, keyboardCodes.right)) {
+      this.handleMove('right', event);
+    }
+  }
+
+  protected handleEnd(canceled: boolean) {
+    this.manager.actions.stop({
+      canceled,
+    });
+
+    this.cleanup();
+  }
 
   protected handleMove(
     direction: 'up' | 'down' | 'left' | 'right',
@@ -192,23 +229,24 @@ export class KeyboardSensor extends Sensor<
     }
   }
 
-  private sideEffects(): CleanupFunction {
-    const effectCleanupFns: CleanupFunction[] = [];
-
+  private sideEffects() {
     const autoScroller = this.manager.registry.plugins.get(AutoScroller as any);
 
     if (autoScroller?.disabled === false) {
       autoScroller.disable();
 
-      effectCleanupFns.push(() => {
+      this.#cleanupFunctions.push(() => {
         autoScroller.enable();
       });
     }
+  }
 
-    return () => effectCleanupFns.forEach((cleanup) => cleanup());
+  protected cleanup() {
+    this.#cleanupFunctions.forEach((cleanup) => cleanup());
   }
 
   public destroy() {
+    this.cleanup();
     // Remove all event listeners
     this.listeners.clear();
   }

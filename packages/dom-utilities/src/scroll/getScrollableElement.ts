@@ -1,4 +1,4 @@
-import {canUseDOM, getOwnerDocument} from '../execution-context';
+import {canUseDOM, getDocument} from '../execution-context';
 import {isHTMLElement, isDocument, isNode, isWindow} from '../type-guards';
 
 export function getScrollableElement(element: EventTarget | null) {
@@ -16,7 +16,7 @@ export function getScrollableElement(element: EventTarget | null) {
 
   if (
     isDocument(element) ||
-    element === getOwnerDocument(element).scrollingElement
+    element === getDocument(element).scrollingElement
   ) {
     return window;
   }

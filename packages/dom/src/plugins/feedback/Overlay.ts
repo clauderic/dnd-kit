@@ -8,6 +8,7 @@ import {
 } from '@dnd-kit/dom-utilities';
 
 import {DragDropManager} from '../../manager';
+import {Rectangle} from '@dnd-kit/geometry';
 
 const ATTRIBUTE = 'data-dnd-kit-overlay';
 
@@ -15,17 +16,21 @@ const css = `
   [${ATTRIBUTE}] {
     all: initial;
     position: fixed;
-    display: flex;
-    align-items: stretch;
-    justify-content: stretch;
     pointer-events: none;
     touch-action: none;
     z-index: 999999;
   }
+  [${ATTRIBUTE}] > * {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
   dialog[${ATTRIBUTE}]::backdrop {
     display: none
   }
-`;
+`
+  .trim()
+  .replace(/\n|\s/g, '');
 
 const INSIGNIFICANT_DELTA = 1;
 
@@ -36,14 +41,14 @@ export class Overlay {
     boundingRectangle = new DOMRectangle(anchor),
     tagName = 'dialog'
   ) {
-    const id = manager.dragOperation.source?.id;
     const {top, left, width, height} = boundingRectangle;
     const element = document.createElement(tagName);
     const style = document.createElement('style');
-    style.innerText = css.trim().replace(/\n|\s/g, '');
+    style.innerText = css;
 
     element.style.setProperty('top', `${top}px`);
     element.style.setProperty('left', `${left}px`);
+
     element.style.setProperty('width', `${width}px`);
     element.style.setProperty('height', `${height}px`);
 
@@ -70,6 +75,8 @@ export class Overlay {
 
           element.style.setProperty('width', `${width}px`);
           element.style.setProperty('height', `${height}px`);
+
+          updatePosition();
         }
       });
       resizeObserver.observe(source.element);
@@ -140,69 +147,77 @@ export class Overlay {
   }
 
   public dropAnimation() {
-    const {manager} = this;
-    const {source} = manager.dragOperation;
-
-    if (!source || !manager.dragOperation.status.dropping) {
-      this.element.remove();
-      return;
-    }
-
-    const {id} = source;
-    const draggable = id != null ? manager.registry.draggables.get(id) : null;
-    const element = draggable?.element;
-    const currentShape = manager.dragOperation.shape;
-    const onFinish = () => {
-      this.element.remove();
-    };
-
-    if (element && currentShape) {
-      const {center} = currentShape;
-      const shape = new DOMRectangle(element, true);
-      const delta = {
-        x: center.x - shape.center.x,
-        y: center.y - shape.center.y,
+    return new Promise<void>((resolve) => {
+      const {manager} = this;
+      const {source} = manager.dragOperation;
+      const unmount = () => {
+        this.element.remove();
+        resolve();
       };
 
-      if (
-        Math.abs(delta.x) > INSIGNIFICANT_DELTA ||
-        Math.abs(delta.y) > INSIGNIFICANT_DELTA
-      ) {
-        const finalTransform = {
-          x: this.transform.x - delta.x,
-          y: this.transform.y - delta.y,
-        };
-        const placeholder = createPlaceholder(
-          element,
-          shape,
-          draggable.feedback === 'clone'
-        );
-
-        element.replaceWith(placeholder);
-        this.element.appendChild(element);
-
-        this.element
-          .animate(
-            {
-              transform: [
-                this.element.style.transform,
-                `translate3d(${finalTransform.x}px, ${finalTransform.y}px, 0)`,
-              ],
-            },
-            {
-              duration: 250,
-              easing: 'ease',
-            }
-          )
-          .finished.then(() => {
-            placeholder.replaceWith(element);
-            onFinish();
-          });
+      if (!source || !manager.dragOperation.status.dropping) {
+        unmount();
         return;
       }
-    }
 
-    onFinish();
+      const {id} = source;
+      const draggable = id != null ? manager.registry.draggables.get(id) : null;
+      const element = draggable?.element;
+      const currentShape = manager.dragOperation.shape;
+
+      if (element && currentShape) {
+        const shape = new DOMRectangle(element, true);
+        const {center} = new Rectangle(
+          currentShape.boundingRectangle.left,
+          currentShape.boundingRectangle.top,
+          shape.width,
+          shape.height
+        );
+        const delta = {
+          x: center.x - shape.center.x,
+          y: center.y - shape.center.y,
+        };
+
+        if (
+          Math.abs(delta.x) > INSIGNIFICANT_DELTA ||
+          Math.abs(delta.y) > INSIGNIFICANT_DELTA
+        ) {
+          const finalTransform = {
+            x: this.transform.x - delta.x,
+            y: this.transform.y - delta.y,
+          };
+          const placeholder = createPlaceholder(
+            element,
+            shape,
+            draggable.feedback === 'clone'
+          );
+
+          element.replaceWith(placeholder);
+          this.element.appendChild(element);
+
+          this.element
+            .animate(
+              {
+                transform: [
+                  this.element.style.transform,
+                  `translate3d(${finalTransform.x}px, ${finalTransform.y}px, 0)`,
+                ],
+              },
+              {
+                duration: 250,
+                easing: 'ease',
+              }
+            )
+            .finished.then(() => {
+              placeholder.replaceWith(element);
+              unmount();
+            });
+          return;
+        }
+      }
+
+      unmount();
+    });
   }
 
   public remove() {

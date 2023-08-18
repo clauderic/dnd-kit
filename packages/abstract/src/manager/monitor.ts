@@ -28,7 +28,7 @@ class Monitor<T extends Events> {
     registry.set(name, listeners);
   }
 
-  protected __dispatch<U extends keyof T>(name: U, ...args: Parameters<T[U]>) {
+  protected dispatch<U extends keyof T>(name: U, ...args: any[]) {
     const {registry} = this;
     const listeners = registry.get(name);
 
@@ -55,7 +55,13 @@ export type DragDropEvents<
     },
     manager: V
   ): void;
-  dragstart(event: {}, manager: V): void;
+  beforedragstart(event: {operation: DragOperation<T, U>}, manager: V): void;
+  dragstart(
+    event: {
+      operation: DragOperation<T, U>;
+    },
+    manager: V
+  ): void;
   dragmove(
     event: {
       operation: DragOperation<T, U>;
@@ -93,9 +99,6 @@ export class DragDropMonitor<
   ) {
     const args = [event, this.manager] as any;
 
-    super.__dispatch(
-      type,
-      ...(args as Parameters<DragDropEvents<T, U, V>[Key]>)
-    );
+    super.dispatch(type, ...args);
   }
 }

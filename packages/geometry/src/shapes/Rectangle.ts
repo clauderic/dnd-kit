@@ -37,19 +37,15 @@ export class Rectangle implements Shape {
     return {width, height, left, top, right, bottom};
   }
 
-  public get vertices(): [Point, Point, Point, Point] {
-    const {left, top, right, bottom} = this;
-
-    return [
-      new Point(left, top),
-      new Point(right, top),
-      new Point(left, bottom),
-      new Point(right, bottom),
-    ];
-  }
-
   public get center(): Point {
-    const [p1, p2] = this.vertices;
+    const p1 = {
+      x: this.left,
+      y: this.top,
+    };
+    const p2 = {
+      x: this.right,
+      y: this.bottom,
+    };
 
     return new Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
   }

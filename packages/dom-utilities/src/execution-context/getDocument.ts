@@ -1,6 +1,6 @@
 import {isWindow, isHTMLElement, isDocument, isNode} from '../type-guards';
 
-export function getOwnerDocument(target: Event['target']): Document {
+export function getDocument(target: Event['target']): Document {
   if (!target) {
     return document;
   }

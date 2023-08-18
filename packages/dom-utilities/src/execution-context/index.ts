@@ -1,3 +1,3 @@
 export {canUseDOM} from './canUseDOM';
-export {getOwnerDocument} from './getOwnerDocument';
+export {getDocument} from './getDocument';
 export {getWindow} from './getWindow';

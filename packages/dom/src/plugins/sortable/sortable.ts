@@ -4,7 +4,11 @@ import type {
   Type,
   UniqueIdentifier,
 } from '@dnd-kit/abstract';
-import {batch, effects, reactive, untracked} from '@dnd-kit/state';
+import {batch, effects, reactive, untracked, type Effect} from '@dnd-kit/state';
+import {
+  defaultCollisionDetection,
+  type CollisionDetector,
+} from '@dnd-kit/collision';
 
 import {Draggable, Droppable} from '../../nodes';
 import type {DraggableInput, FeedbackType, DroppableInput} from '../../nodes';
@@ -14,11 +18,38 @@ import {SortableKeyboardPlugin} from './SortableKeyboardPlugin';
 import {Shape} from '@dnd-kit/geometry';
 import {scheduler} from '@dnd-kit/dom-utilities';
 
-export interface SortableInput<T extends Data>
-  extends DraggableInput<T>,
-    DroppableInput<T> {
-  index: number;
+export interface Transition {
+  /**
+   * Whether the sortable item should transition when its index changes even if there is no
+   * drag operation in progress.
+   * @default true
+   **/
+  idle?: boolean;
+  /**
+   * The duration of the transition in milliseconds.
+   * @default 200
+   */
+  duration?: number;
+  /**
+   * The easing function to use for the transition.
+   * @default 'ease-in-out'
+   */
+  easing?: string;
 }
+
+export interface SortableInput<T extends Data>
+  extends Omit<DraggableInput<T>, 'effects'>,
+    Omit<DroppableInput<T>, 'effects'> {
+  index: number;
+  transition?: Transition | null;
+  effects?: (instance: Sortable<T>) => Effect[];
+}
+
+const defaultTransition: Transition = {
+  idle: true,
+  duration: 200,
+  easing: 'ease-in-out',
+};
 
 export class Sortable<T extends Data = Data> {
   protected draggable: Draggable<T>;
@@ -27,8 +58,16 @@ export class Sortable<T extends Data = Data> {
   @reactive
   index: number;
 
+  transition: Transition | null;
+
   constructor(
-    {index, sensors, ...input}: SortableInput<T>,
+    {
+      index,
+      sensors,
+      effects: inputEffects,
+      transition = defaultTransition,
+      ...input
+    }: SortableInput<T>,
     protected manager: AbstractDragDropManager<any, any>
   ) {
     this.draggable = new SortableDraggable<T>({...input, sensors}, manager);
@@ -39,48 +78,9 @@ export class Sortable<T extends Data = Data> {
     let previousIndex = index;
 
     this.index = index;
+    this.transition = transition;
 
     const {destroy} = this;
-
-    const animate = () => {
-      const {shape} = this.droppable;
-
-      if (!shape) {
-        return;
-      }
-
-      scheduler.schedule(() => {
-        const {element} = this.droppable;
-
-        if (!element) {
-          return;
-        }
-
-        this.droppable.refreshShape();
-        const updatedShape = this.droppable.shape;
-
-        if (!updatedShape) {
-          return;
-        }
-
-        const delta = {
-          x: shape.boundingRectangle.left - updatedShape.boundingRectangle.left,
-          y: shape.boundingRectangle.top - updatedShape.boundingRectangle.top,
-        };
-
-        if (delta.x || delta.y) {
-          element.animate(
-            {
-              transform: [
-                `translate3d(${delta.x}px, ${delta.y}px, 0)`,
-                'translate3d(0, 0, 0)',
-              ],
-            },
-            {duration: 200, easing: 'ease-in-out'}
-          );
-        }
-      });
-    };
 
     const cleanup = effects(
       () => {
@@ -93,7 +93,7 @@ export class Sortable<T extends Data = Data> {
 
         previousIndex = index;
 
-        untracked(animate);
+        this.animate();
       },
       () => {
         const {target} = this;
@@ -120,13 +120,64 @@ export class Sortable<T extends Data = Data> {
         const element = untracked(() => this.element);
 
         this.draggable.element = !source && element ? element : source;
-      }
+      },
+      ...(inputEffects?.(this) ?? [])
     );
 
     this.destroy = () => {
       destroy.bind(this)();
       cleanup();
     };
+  }
+
+  protected animate() {
+    untracked(() => {
+      const {manager, transition} = this;
+      const {shape} = this.droppable;
+      const {idle} = manager.dragOperation.status;
+
+      if (!shape || !transition || (!transition.idle && idle)) {
+        return;
+      }
+
+      scheduler.schedule(() => {
+        const {element} = this.droppable;
+
+        if (!element) {
+          return;
+        }
+
+        this.droppable.refreshShape();
+        const updatedShape = this.droppable.shape;
+
+        if (!updatedShape) {
+          return;
+        }
+
+        const delta = {
+          x: shape.boundingRectangle.left - updatedShape.boundingRectangle.left,
+          y: shape.boundingRectangle.top - updatedShape.boundingRectangle.top,
+        };
+
+        if (delta.x || delta.y) {
+          element
+            .animate(
+              {
+                transform: [
+                  `translate3d(${delta.x}px, ${delta.y}px, 0)`,
+                  'translate3d(0, 0, 0)',
+                ],
+              },
+              transition
+            )
+            .finished.then(() => {
+              if (idle) {
+                this.droppable.shape = undefined;
+              }
+            });
+        }
+      });
+    });
   }
 
   public get disabled() {
@@ -175,11 +226,20 @@ export class Sortable<T extends Data = Data> {
     this.draggable.sensors = value;
   }
 
-  public set type(type: Type | undefined) {
-    this.draggable.type = type;
+  public set collisionPriority(value: number | undefined) {
+    this.droppable.collisionPriority = value;
   }
 
-  public set accept(value: Type[] | undefined) {
+  public set collisionDetector(value: CollisionDetector | undefined) {
+    this.droppable.collisionDetector = value ?? defaultCollisionDetection;
+  }
+
+  public set type(type: Type | undefined) {
+    this.draggable.type = type;
+    this.droppable.type = type;
+  }
+
+  public set accept(value: Type | Type[] | undefined) {
     this.droppable.accept = value;
   }
 

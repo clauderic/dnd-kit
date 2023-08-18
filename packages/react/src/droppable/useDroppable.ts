@@ -6,6 +6,7 @@ import type {DroppableInput} from '@dnd-kit/dom';
 import {useDragDropManager} from '../context';
 import {useComputed, useConstant, useOnValueChange} from '../hooks';
 import {getCurrentValue, type RefOrValue} from '../utilities';
+import {deepEqual} from '@dnd-kit/state';
 
 export interface UseDroppableInput<T extends Data = Data>
   extends Omit<DroppableInput<T>, 'element'> {
@@ -16,7 +17,7 @@ export function useDroppable<T extends Data = Data>(
   input: UseDroppableInput<T>
 ) {
   const manager = useDragDropManager();
-  const {disabled, id} = input;
+  const {collisionDetector, disabled, id, accept, type} = input;
   const element = getCurrentValue(input.element);
   const droppable = useConstant(
     () => new Droppable({...input, element}, manager)
@@ -25,8 +26,11 @@ export function useDroppable<T extends Data = Data>(
   const isDropTarget = useComputed(() => droppable.isDropTarget);
 
   useOnValueChange(id, () => (droppable.id = id));
-  useOnValueChange(element, () => (droppable.element = element));
+  useOnValueChange(accept, () => (droppable.id = id), undefined, deepEqual);
+  useOnValueChange(collisionDetector, () => (droppable.id = id));
   useOnValueChange(disabled, () => (droppable.disabled = disabled === true));
+  useOnValueChange(element, () => (droppable.element = element));
+  useOnValueChange(type, () => (droppable.id = id));
 
   useEffect(() => {
     // Cleanup on unmount

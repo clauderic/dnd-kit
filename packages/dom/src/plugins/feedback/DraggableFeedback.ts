@@ -8,10 +8,17 @@ import type {DragDropManager} from '../../manager';
 import {Overlay} from './Overlay';
 import {patchElement} from './utilities';
 
+interface DraggableFeedbackOptions {
+  tagName?: string;
+}
+
 export class DraggableFeedback extends CorePlugin<DragDropManager> {
   public destroy: CleanupFunction;
 
-  constructor(manager: DragDropManager) {
+  constructor(
+    manager: DragDropManager,
+    options: DraggableFeedbackOptions = {}
+  ) {
     super(manager);
 
     let overlay: Overlay | undefined;
@@ -56,7 +63,24 @@ export class DraggableFeedback extends CorePlugin<DragDropManager> {
 
         setPlaceholderElement(undefined);
 
-        overlay?.remove();
+        const id = manager.dragOperation.source?.id;
+        const restoreFocus = () => {
+          if (id == null) {
+            return;
+          }
+
+          const draggable = manager.registry.draggables.get(id);
+          const element = draggable?.activator ?? draggable?.element;
+
+          if (element instanceof HTMLElement) {
+            element.focus();
+          }
+        };
+
+        overlay?.remove().then(() => {
+          restoreFocus();
+          manager.dragOperation.shape = null;
+        });
 
         overlay = undefined;
       });
@@ -64,7 +88,7 @@ export class DraggableFeedback extends CorePlugin<DragDropManager> {
     const effects = [
       effect(() => {
         if (manager.dragOperation.status.dropping) {
-          manager.renderer.rendering.then(unmount);
+          unmount();
         }
       }),
       effect(() => {
@@ -93,11 +117,27 @@ export class DraggableFeedback extends CorePlugin<DragDropManager> {
           overlay.appendTo(document.body);
         }
 
-        let mutationObserver: MutationObserver | undefined;
         const feedbackType = feedback.peek();
 
+        const mutationObserver = new MutationObserver((mutations) => {
+          for (const mutation of mutations) {
+            if (Array.from(mutation.addedNodes).includes(currentElement)) {
+              if (overlay && !overlay.contains(currentElement)) {
+                currentElement.replaceWith(placeholderElement);
+              }
+            }
+          }
+        });
+
+        mutationObserver.observe(document, {
+          childList: true,
+          subtree: true,
+        });
+
+        const mutationObservers: MutationObserver[] = [mutationObserver];
+
         if (feedbackType === 'clone') {
-          mutationObserver = new MutationObserver(() => {
+          const mutationObserver = new MutationObserver(() => {
             if (currentElement && placeholderElement) {
               const newPlacholder = createPlaceholder(
                 currentElement,
@@ -122,10 +162,12 @@ export class DraggableFeedback extends CorePlugin<DragDropManager> {
             attributes: true,
             characterData: true,
           });
+
+          mutationObservers.push(mutationObserver);
         }
 
         return () => {
-          mutationObserver?.disconnect();
+          mutationObservers.forEach((observer) => observer.disconnect());
           upatch?.();
         };
       }),
@@ -150,7 +192,8 @@ export class DraggableFeedback extends CorePlugin<DragDropManager> {
             manager,
             currentElement,
             shape,
-            currentElement.parentElement?.tagName.toLowerCase()
+            options.tagName ||
+              currentElement.parentElement?.tagName.toLowerCase()
           );
         }
 

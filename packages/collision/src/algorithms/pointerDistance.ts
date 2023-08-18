@@ -14,7 +14,6 @@ export const pointerDistance: CollisionDetector = (input) => {
   }
 
   const distance = Point.distance(droppable.shape.center, position.current);
-
   const value = 1 / distance;
 
   return {

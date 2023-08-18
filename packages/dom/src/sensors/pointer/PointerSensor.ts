@@ -6,7 +6,7 @@ import {
   type Distance,
   type Coordinates,
 } from '@dnd-kit/geometry';
-import {getOwnerDocument, Listeners} from '@dnd-kit/dom-utilities';
+import {getDocument, Listeners} from '@dnd-kit/dom-utilities';
 
 import type {DragDropManager} from '../../manager';
 import type {Draggable} from '../../nodes';
@@ -45,11 +45,13 @@ export class PointerSensor extends Sensor<
 > {
   protected listeners = new Listeners();
 
-  private cleanup: CleanupFunction | undefined;
+  protected cleanup: CleanupFunction | undefined;
 
-  private clearTimeout: CleanupFunction | undefined;
+  protected initialCoordinates: Coordinates | undefined;
 
-  private initialCoordinates: Coordinates | undefined;
+  #clearTimeout: CleanupFunction | undefined;
+
+  #document: Document | undefined;
 
   constructor(
     protected manager: DragDropManager,
@@ -135,14 +137,16 @@ export class PointerSensor extends Sensor<
           delay.value
         );
 
-        this.clearTimeout = () => {
+        this.#clearTimeout = () => {
           clearTimeout(timeout);
-          this.clearTimeout = undefined;
+          this.#clearTimeout = undefined;
         };
       }
     }
 
-    const ownerDocument = getOwnerDocument(event.target);
+    const ownerDocument = getDocument(event.target);
+
+    this.#document = ownerDocument;
 
     const unbindListeners = this.listeners.bind(ownerDocument, [
       {
@@ -176,9 +180,13 @@ export class PointerSensor extends Sensor<
     this.cleanup = () => {
       unbindListeners();
 
-      this.clearTimeout?.();
+      this.#clearTimeout?.();
       this.initialCoordinates = undefined;
     };
+  }
+
+  protected sideEffects() {
+    this.#document?.getSelection()?.removeAllRanges();
   }
 
   protected handlePointerMove(
@@ -253,7 +261,7 @@ export class PointerSensor extends Sensor<
   }
 
   protected handleStart(source: Draggable, event: PointerEvent) {
-    this.clearTimeout?.();
+    this.#clearTimeout?.();
 
     if (
       !this.initialCoordinates ||
@@ -264,6 +272,8 @@ export class PointerSensor extends Sensor<
 
     this.manager.actions.setDragSource(source.id);
     this.manager.actions.start({coordinates: this.initialCoordinates, event});
+
+    this.sideEffects();
   }
 
   protected handleCancel() {

@@ -1,9 +1,9 @@
-import {canUseDOM, getOwnerDocument} from '../execution-context';
+import {canUseDOM, getDocument} from '../execution-context';
 
 export function isDocumentScrollingElement(element: Element | null) {
   if (!canUseDOM || !element) {
     return false;
   }
 
-  return element === getOwnerDocument(element).scrollingElement;
+  return element === getDocument(element).scrollingElement;
 }

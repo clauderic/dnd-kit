@@ -4,6 +4,7 @@ export type {
   DragDropConfiguration,
   DragOperationManager,
   DragDropEvents,
+  Renderer,
 } from './manager';
 
 export {CollisionPriority, sortCollisions} from './collision';

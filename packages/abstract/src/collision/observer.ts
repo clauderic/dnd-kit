@@ -5,6 +5,7 @@ import {
   signal,
   untracked,
   type ReadonlySignal,
+  effect,
 } from '@dnd-kit/state';
 
 import type {DragDropManager} from '../manager';
@@ -25,21 +26,31 @@ export class CollisionObserver<
 
     this.computeCollisions = this.computeCollisions.bind(this);
     this.#collisions = computed(this.computeCollisions, deepEqual);
+
+    this.destroy = effect(() => {
+      const {dragOperation} = this.manager;
+
+      if (dragOperation.status.initializing) {
+        this.forceUpdate();
+      }
+    });
   }
 
   #forceUpdate = signal(0);
 
-  public forceUpdate() {
+  public forceUpdate(refresh = true) {
     untracked(() => {
       const type = this.manager.dragOperation.source?.type;
 
       batch(() => {
-        for (const droppable of this.manager.registry.droppables) {
-          if (type != null && !droppable.accepts(type)) {
-            continue;
-          }
+        if (refresh) {
+          for (const droppable of this.manager.registry.droppables) {
+            if (type != null && !droppable.accepts(type)) {
+              continue;
+            }
 
-          droppable.refreshShape();
+            droppable.refreshShape();
+          }
         }
 
         this.#forceUpdate.value++;
@@ -64,7 +75,7 @@ export class CollisionObserver<
     this.#forceUpdate.value;
 
     for (const entry of entries ?? registry.droppables) {
-      if (entry.disabled || !entry.shape) {
+      if (entry.disabled) {
         continue;
       }
 
@@ -81,6 +92,10 @@ export class CollisionObserver<
       );
 
       if (collision) {
+        if (entry.collisionPriority != null) {
+          collision.priority = entry.collisionPriority;
+        }
+
         collisions.push(collision);
       }
     }

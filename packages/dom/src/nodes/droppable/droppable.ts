@@ -6,18 +6,19 @@ import type {
 } from '@dnd-kit/abstract';
 import {defaultCollisionDetection} from '@dnd-kit/collision';
 import type {CollisionDetector} from '@dnd-kit/collision';
-import {effects, reactive, signal} from '@dnd-kit/state';
+import {Signal, effects, reactive, signal} from '@dnd-kit/state';
 import type {Shape} from '@dnd-kit/geometry';
 import {
   DOMRectangle,
-  getOwnerDocument,
+  getDocument,
   scheduler,
+  getScrollableAncestors,
 } from '@dnd-kit/dom-utilities';
 
 type OptionalInput = 'collisionDetector';
 
 export interface Input<T extends Data = Data>
-  extends Omit<AbstractDroppableInput<T>, OptionalInput> {
+  extends Omit<AbstractDroppableInput<T, Droppable<T>>, OptionalInput> {
   collisionDetector?: CollisionDetector;
   element?: Element;
 }
@@ -37,6 +38,10 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
 
     this.refreshShape = this.refreshShape.bind(this);
 
+    this.#internal = {
+      element: signal(element),
+    };
+
     /*
      * If a droppable target mounts during a drag operation, assume it is visible
      * so that we can update its shape immediately.
@@ -52,7 +57,9 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
 
         if (element && dragOperation.status.initialized) {
           let timeout: NodeJS.Timeout | undefined;
-
+          const [scrollableAncestor] = getScrollableAncestors(element, {
+            limit: 1,
+          });
           const intersectionObserver = new IntersectionObserver(
             (entries) => {
               const [entry] = entries.slice(-1);
@@ -72,7 +79,7 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
               }, 50);
             },
             {
-              root: getOwnerDocument(element),
+              root: scrollableAncestor ?? getDocument(element),
               rootMargin: '40%',
             }
           );
@@ -80,14 +87,29 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
           intersectionObserver.observe(element);
 
           return () => {
+            this.shape = undefined;
             this.visible = undefined;
             intersectionObserver.disconnect();
           };
         }
       },
       () => {
-        if (manager.dragOperation.status.dragging) {
+        const {dragOperation} = manager;
+        const {source, status} = dragOperation;
+
+        if (status.dragging) {
+          if (source?.type != null && !this.accepts(source.type)) {
+            return;
+          }
+
           scheduler.schedule(this.refreshShape);
+        }
+      },
+      () => {
+        if (manager.dragOperation.status.initialized) {
+          return () => {
+            this.shape = undefined;
+          };
         }
       }
     );
@@ -101,17 +123,15 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
   @reactive
   visible: Boolean | undefined;
 
-  #element = signal<Element | undefined>(undefined);
-
   @reactive
   public placeholder: Element | undefined;
 
   public set element(value: Element | undefined) {
-    this.#element.value = value;
+    this.#internal.element.value = value;
   }
 
   public get element() {
-    return this.placeholder ?? this.#element.value;
+    return this.placeholder ?? this.#internal.element.value;
   }
 
   public refreshShape(ignoreTransform?: boolean): Shape | undefined {
@@ -133,4 +153,8 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
 
     return updatedShape;
   }
+
+  #internal: {
+    element: Signal<Element | undefined>;
+  };
 }

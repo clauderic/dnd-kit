@@ -20,8 +20,7 @@
     "@dnd-kit/collision": "*",
     "@dnd-kit/dom-utilities": "*",
     "@dnd-kit/geometry": "*",
-    "@dnd-kit/state": "*",
-    "@dnd-kit/utilities": "*"
+    "@dnd-kit/state": "*"
   },
   "devDependencies": {
     "@dnd-kit/config-eslint": "*",

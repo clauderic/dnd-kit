@@ -7,6 +7,8 @@ export class CollisionNotifier extends CorePlugin {
   constructor(manager: DragDropManager) {
     super(manager);
 
+    let timeout: NodeJS.Timeout | undefined;
+
     this.destroy = effect(() => {
       const {collisionObserver, monitor} = manager;
       const {collisions} = collisionObserver;
@@ -33,7 +35,22 @@ export class CollisionNotifier extends CorePlugin {
 
       const [firstCollision] = collisions;
 
-      manager.actions.setDropTarget(firstCollision?.id);
+      untracked(() => {
+        if (firstCollision?.id !== manager.dragOperation.target?.id) {
+          if (timeout) {
+            return;
+          }
+
+          timeout = setTimeout(() => {
+            collisionObserver.disable();
+
+            manager.actions.setDropTarget(firstCollision?.id).then(() => {
+              collisionObserver.enable();
+            });
+            timeout = undefined;
+          }, 50);
+        }
+      });
     });
   }
 }

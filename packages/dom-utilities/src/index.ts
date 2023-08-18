@@ -3,7 +3,7 @@ export {
   getViewportBoundingRectangle,
 } from './bounding-rectangle';
 
-export {canUseDOM, getOwnerDocument, getWindow} from './execution-context';
+export {canUseDOM, getDocument, getWindow} from './execution-context';
 
 export {cloneElement, createPlaceholder} from './element';
 

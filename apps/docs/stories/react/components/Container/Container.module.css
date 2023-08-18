@@ -1,0 +1,56 @@
+.Container {
+  display: flex;
+  flex-direction: column;
+  grid-auto-rows: max-content;
+  overflow: hidden;
+  box-sizing: border-box;
+  appearance: none;
+  outline: none;
+  min-width: 300px;
+  margin: 20px;
+  border-radius: 5px;
+  min-height: 200px;
+  transition-property: transform, background, box-shadow;
+  transition-duration: 250ms;
+  transition-timing-function: ease;
+  background-color: rgba(246, 246, 246, 1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  font-size: 1em;
+}
+
+.shadow {
+  transform: scale(1.01);
+  box-shadow: -1px 0 15px 0 rgba(34, 33, 81, 0.01), 0px 15px 15px 0 rgba(34, 33, 81, 0.25);
+}
+
+.Container:hover, .shadow {
+  background-color: rgb(240, 240, 240);
+}
+
+
+.Container > ul {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(var(--columns, 1), 1fr);
+  list-style: none;
+  padding: 15px;
+  margin: 0;
+}
+
+.scrollable > ul {
+  max-height: calc(80vh - 100px);
+  overflow-y: auto;
+}
+
+.Header {
+  display: flex;
+  padding: 8px 20px;
+  padding-right: 8px;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  font-family: var(--font-family);
+}

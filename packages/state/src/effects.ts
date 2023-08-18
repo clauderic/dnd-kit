@@ -1,9 +1,8 @@
 import {effect} from '@preact/signals-core';
 
-type Effect = Parameters<typeof effect>[0];
-type EffectCleanup = ReturnType<typeof effect>;
+import type {Effect, CleanupFunction} from './types';
 
-export function effects(...entries: Effect[]): EffectCleanup {
+export function effects(...entries: Effect[]): CleanupFunction {
   const effects = entries.map(effect);
 
   return () => effects.forEach((cleanup) => cleanup());

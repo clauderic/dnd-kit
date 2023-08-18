@@ -1,9 +1,10 @@
 import React, {useRef, useState} from 'react';
 import type {PropsWithChildren} from 'react';
-import {move} from '@dnd-kit/utilities';
 import type {UniqueIdentifier} from '@dnd-kit/abstract';
 import {DragDropProvider, useSortable} from '@dnd-kit/react';
 import {Debug, FeedbackType, defaultPreset} from '@dnd-kit/dom';
+import {directionBiased} from '@dnd-kit/collision';
+import {move} from '@dnd-kit/state-management';
 
 import {Item, Handle} from '../components';
 import {createRange, cloneDeep} from '../../utilities';
@@ -108,6 +109,7 @@ function Sortable({
     element,
     feedback,
     activator: activatorRef,
+    collisionDetector: directionBiased,
   });
 
   return (

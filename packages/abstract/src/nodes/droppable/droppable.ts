@@ -1,4 +1,4 @@
-import {derived, reactive} from '@dnd-kit/state';
+import {derived, effects, reactive, type Effect} from '@dnd-kit/state';
 import type {Shape} from '@dnd-kit/geometry';
 
 import {Node} from '../node';
@@ -7,26 +7,42 @@ import type {NodeInput, Data, Type} from '../node';
 import type {CollisionDetector} from '../../collision';
 import type {DragDropManager} from '../../manager';
 
-export interface Input<T extends Data = Data> extends NodeInput<T> {
-  accept?: Type[];
+export interface Input<
+  T extends Data = Data,
+  U extends Droppable<T> = Droppable<T>,
+> extends NodeInput<T, U> {
+  accept?: Type | Type[];
+  collisionPriority?: number;
   collisionDetector: CollisionDetector;
+  type?: Type;
 }
 
 export class Droppable<T extends Data = Data> extends Node<T> {
   constructor(
-    input: Input<T>,
+    {collisionDetector, ...input}: Input<T>,
     public manager: DragDropManager
   ) {
     super(input, manager);
+    const {destroy} = this;
 
-    this.collisionDetector = input.collisionDetector;
+    this.collisionDetector = collisionDetector;
+
+    this.destroy = () => {
+      destroy();
+    };
   }
 
   /**
    * An array of types that are compatible with the droppable.
    */
   @reactive
-  public accept: Type[] | undefined;
+  public accept: Type | Type[] | undefined;
+
+  /**
+   * The type of the droppable.
+   */
+  @reactive
+  public type: Type | undefined;
 
   /**
    * Checks whether or not the droppable accepts a given type.
@@ -41,15 +57,20 @@ export class Droppable<T extends Data = Data> extends Node<T> {
       return true;
     }
 
+    const acceptedTypes = Array.isArray(accept) ? accept : [accept];
+
     if (Array.isArray(types)) {
-      return types.some((type) => accept.includes(type));
+      return types.some((type) => acceptedTypes.includes(type));
     }
 
-    return accept.includes(types);
+    return acceptedTypes.includes(types);
   }
 
   @reactive
   public collisionDetector: CollisionDetector;
+
+  @reactive
+  public collisionPriority: number | undefined;
 
   @reactive
   public shape: Shape | undefined;

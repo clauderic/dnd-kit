@@ -15,11 +15,11 @@ export const closestCenter: CollisionDetector = (input) => {
     return null;
   }
 
-  const collision = defaultCollisionDetection(input);
+  // const collision = defaultCollisionDetection(input);
 
-  if (collision) {
-    return collision;
-  }
+  // if (collision) {
+  //   return collision;
+  // }
 
   const distance = Point.distance(
     droppable.shape.center,

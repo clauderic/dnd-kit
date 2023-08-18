@@ -90,6 +90,22 @@ function mutate<
     }
   }
 
+  const {dragOperation} = source.manager;
+  const position = dragOperation.position.current;
+
+  if (targetParent == null) {
+    if (target.id in items) {
+      const insertionIndex =
+        target.shape && position.y > target.shape.center.y
+          ? items[target.id].length
+          : 0;
+
+      // The target does not have any matching children, but appears to be a valid target
+      targetParent = target.id;
+      targetIndex = insertionIndex;
+    }
+  }
+
   if (sourceParent == null || targetParent == null) {
     return items;
   }
@@ -101,13 +117,8 @@ function mutate<
     };
   }
 
-  const {dragOperation} = source.manager;
-  const operationShape = dragOperation.shape;
-  const targetShape = target.shape;
   const isBelowTarget =
-    operationShape &&
-    targetShape &&
-    operationShape.center.y > targetShape.center.y;
+    target.shape && position.y > target.shape.boundingRectangle.bottom;
   const modifier = isBelowTarget ? 1 : 0;
   const sourceItem = items[sourceParent][sourceIndex];
 

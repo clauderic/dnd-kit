@@ -4,13 +4,16 @@ import type {DragDropManager} from '../../manager';
 import {Node} from '../node';
 import type {NodeInput, Data, Type} from '../node';
 
-export interface Input<T extends Data = Data> extends NodeInput<T> {
+export interface Input<
+  T extends Data = Data,
+  U extends Draggable<T> = Draggable<T>,
+> extends NodeInput<T, U> {
   type?: Type;
 }
 
 export class Draggable<T extends Data = Data> extends Node<T> {
   constructor(
-    {type, ...input}: Input<T>,
+    input: Input<T>,
     public manager: DragDropManager
   ) {
     super(input, manager);

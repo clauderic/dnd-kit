@@ -71,6 +71,7 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
         }
 
         const direction = getDirection(by);
+        const {source} = dragOperation;
         const {center} = dragOperation.shape;
         const potentialTargets: Droppable[] = [];
 
@@ -79,7 +80,8 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
 
           if (
             !shape ||
-            (id === dragOperation.source?.id && isSortable(droppable))
+            (id === source?.id && isSortable(droppable)) ||
+            (source?.type != null && !droppable.accepts(source.type))
           ) {
             continue;
           }

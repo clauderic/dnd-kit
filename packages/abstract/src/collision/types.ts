@@ -2,9 +2,11 @@ import type {DragOperation} from '../manager';
 import type {Draggable, Droppable, UniqueIdentifier} from '../nodes';
 
 export enum CollisionPriority {
+  Lowest,
   Low,
   Medium,
   High,
+  Highest,
 }
 
 export interface Collision {
