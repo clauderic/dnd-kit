@@ -52,7 +52,6 @@ export function DragOperationManager<
   const {
     registry: {draggables, droppables},
     monitor,
-    modifiers,
   } = manager;
   const status = signal<Status>(Status.Idle);
   const shape = signal<Shape | null>(null);
@@ -87,6 +86,7 @@ export function DragOperationManager<
 
   const transform = computed(() => {
     const {x, y} = position.delta;
+    const {modifiers} = manager;
     let transform = {x, y};
     const operation: Omit<DragOperation<T, U>, 'transform'> = {
       activatorEvent: activatorEvent.peek(),
@@ -176,16 +176,10 @@ export function DragOperationManager<
       setDropTarget(
         identifier: UniqueIdentifier | null | undefined
       ): Promise<void> {
-        const resolve = Promise.resolve();
-
-        if (!dragging.peek()) {
-          return resolve;
-        }
-
         const id = identifier ?? null;
 
         if (targetIdentifier.peek() === id) {
-          return resolve;
+          return Promise.resolve();
         }
 
         targetIdentifier.value = id;

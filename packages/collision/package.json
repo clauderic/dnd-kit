@@ -17,10 +17,10 @@
   },
   "dependencies": {
     "@dnd-kit/abstract": "*",
-    "@dnd-kit/geometry": "*"
+    "@dnd-kit/geometry": "*",
+    "tslib": "^2.6.2"
   },
   "devDependencies": {
-    "@dnd-kit/config-ts": "*",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.4",
     "eslint": "^8.38.0",

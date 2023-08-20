@@ -1,8 +1,14 @@
 import React, {useRef, useState} from 'react';
-import type {PropsWithChildren} from 'react';
-import type {UniqueIdentifier} from '@dnd-kit/abstract';
-import {DragDropProvider, useSortable} from '@dnd-kit/react';
-import {Debug, FeedbackType, defaultPreset} from '@dnd-kit/dom';
+import type {CSSProperties, PropsWithChildren} from 'react';
+import type {
+  CollisionDetector,
+  Modifiers,
+  UniqueIdentifier,
+} from '@dnd-kit/abstract';
+import {DragDropProvider} from '@dnd-kit/react';
+import {useSortable} from '@dnd-kit/react/sortable';
+import {FeedbackType, defaultPreset} from '@dnd-kit/dom';
+import {Debug} from '@dnd-kit/dom/plugins/debug';
 import {directionBiased} from '@dnd-kit/collision';
 import {move} from '@dnd-kit/state-management';
 
@@ -11,20 +17,24 @@ import {createRange, cloneDeep} from '../../utilities';
 
 interface Props {
   debug?: boolean;
-  ghost?: boolean;
-  heights?: number | Record<UniqueIdentifier, number>;
-  horizontal?: boolean;
+  dragHandle?: boolean;
+  feedback?: FeedbackType;
+  modifiers?: Modifiers;
+  layout?: 'vertical' | 'horizontal' | 'grid';
   itemCount?: number;
-  widths?: number | Record<UniqueIdentifier, number>;
+  collisionDetector?: CollisionDetector;
+  getItemStyle?(id: UniqueIdentifier, index: number): CSSProperties;
 }
 
 export function SortableExample({
   debug,
   itemCount = 15,
-  ghost,
-  horizontal,
-  heights,
-  widths,
+  collisionDetector,
+  dragHandle,
+  feedback,
+  layout = 'vertical',
+  modifiers,
+  getItemStyle,
 }: Props) {
   const [items, setItems] = useState(createRange(itemCount));
   const snapshot = useRef(cloneDeep(items));
@@ -32,6 +42,7 @@ export function SortableExample({
   return (
     <DragDropProvider
       plugins={debug ? [Debug, ...defaultPreset.plugins] : undefined}
+      modifiers={modifiers}
       onDragStart={() => {
         snapshot.current = cloneDeep(items);
       }}
@@ -50,53 +61,37 @@ export function SortableExample({
         }
       }}
     >
-      <div
-        style={{
-          display: horizontal ? 'inline-flex' : 'flex',
-          flexDirection: horizontal ? 'row' : 'column',
-          alignItems: horizontal ? 'stretch' : 'center',
-          height: horizontal ? 180 : undefined,
-          gap: 20,
-          padding: '0 30px',
-        }}
-      >
+      <Wrapper layout={layout}>
         {items.map((id, index) => (
-          <Sortable
+          <SortableItem
             key={id}
             id={id}
             index={index}
-            style={getStyle(id)}
-            feedback={ghost ? 'clone' : 'default'}
+            collisionDetector={collisionDetector}
+            dragHandle={dragHandle}
+            feedback={feedback}
+            style={getItemStyle?.(id, index)}
           />
         ))}
-      </div>
+      </Wrapper>
     </DragDropProvider>
   );
-
-  function getStyle(id: UniqueIdentifier) {
-    return {
-      width:
-        typeof widths === 'number'
-          ? widths
-          : widths?.[id] ?? widths?.['default'],
-      height:
-        typeof heights === 'number'
-          ? heights
-          : heights?.[id] ?? heights?.['default'],
-    };
-  }
 }
 
 interface SortableProps {
   id: UniqueIdentifier;
   index: number;
+  dragHandle?: boolean;
   feedback?: FeedbackType;
+  collisionDetector?: CollisionDetector;
   style?: React.CSSProperties;
 }
 
-function Sortable({
+function SortableItem({
   id,
   index,
+  collisionDetector = directionBiased,
+  dragHandle,
   feedback,
   style,
 }: PropsWithChildren<SortableProps>) {
@@ -109,17 +104,58 @@ function Sortable({
     element,
     feedback,
     activator: activatorRef,
-    collisionDetector: directionBiased,
+    collisionDetector,
   });
 
   return (
     <Item
       ref={setElement}
-      actions={<Handle ref={activatorRef} />}
+      actions={dragHandle ? <Handle ref={activatorRef} /> : null}
       shadow={isDragSource}
       style={style}
     >
       {id}
     </Item>
   );
+}
+
+function Wrapper({
+  layout,
+  children,
+}: PropsWithChildren<{layout: 'vertical' | 'horizontal' | 'grid'}>) {
+  return <div style={getWrapperStyles(layout)}>{children}</div>;
+}
+
+function getWrapperStyles(
+  layout: 'vertical' | 'horizontal' | 'grid'
+): CSSProperties {
+  const baseStyles: CSSProperties = {
+    gap: 20,
+    padding: '0 30px',
+  };
+
+  switch (layout) {
+    case 'grid':
+      return {
+        ...baseStyles,
+        display: 'grid',
+        gridTemplateColumns: 'repeat(5, max-content)',
+        justifyContent: 'center',
+      };
+    case 'horizontal':
+      return {
+        ...baseStyles,
+        display: 'inline-flex',
+        flexDirection: 'row',
+        alignItems: 'stretch',
+        height: 180,
+      };
+    case 'vertical':
+      return {
+        ...baseStyles,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      };
+  }
 }

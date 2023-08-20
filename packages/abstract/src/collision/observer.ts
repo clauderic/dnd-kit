@@ -30,7 +30,7 @@ export class CollisionObserver<
     this.destroy = effect(() => {
       const {dragOperation} = this.manager;
 
-      if (dragOperation.status.initializing) {
+      if (dragOperation.status.initialized) {
         this.forceUpdate();
       }
     });

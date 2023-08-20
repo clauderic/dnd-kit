@@ -12,6 +12,7 @@ export interface Props {
   scrollable?: boolean;
   shadow?: boolean;
   style?: React.CSSProperties;
+  transitionId?: string;
 }
 
 export const Container = forwardRef<HTMLDivElement, Props>(
@@ -24,6 +25,7 @@ export const Container = forwardRef<HTMLDivElement, Props>(
       style,
       scrollable,
       shadow,
+      transitionId,
       ...props
     }: Props,
     ref
@@ -35,6 +37,7 @@ export const Container = forwardRef<HTMLDivElement, Props>(
         style={
           {
             ...style,
+            viewTransitionName: transitionId,
             '--columns': columns,
           } as React.CSSProperties
         }

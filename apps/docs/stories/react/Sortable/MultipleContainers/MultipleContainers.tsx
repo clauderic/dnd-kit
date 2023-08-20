@@ -1,12 +1,16 @@
 import React, {useRef, useState} from 'react';
 import type {PropsWithChildren} from 'react';
-import {DragDropProvider, useSortable} from '@dnd-kit/react';
+import {CollisionPriority} from '@dnd-kit/abstract';
+import {DragDropProvider} from '@dnd-kit/react';
+import {useSortable} from '@dnd-kit/react/sortable';
 import {move} from '@dnd-kit/state-management';
-import {Debug, DragDropManager, defaultPreset} from '@dnd-kit/dom';
+import {DragDropManager, defaultPreset} from '@dnd-kit/dom';
+import {Debug} from '@dnd-kit/dom/plugins/debug';
+import {supportsViewTransition} from '@dnd-kit/dom/utilities';
 
 import {Actions, Container, Item, Handle, Remove} from '../../components';
 import {createRange, cloneDeep} from '../../../utilities';
-import {CollisionPriority} from '@dnd-kit/abstract';
+import {flushSync} from 'react-dom';
 
 interface Props {
   debug?: boolean;
@@ -85,12 +89,7 @@ export function MultipleContainers({
                 id={id}
                 column={column}
                 index={index}
-                onRemove={(id) => {
-                  setItems((items) => ({
-                    ...items,
-                    [column]: items[column].filter((item) => item !== id),
-                  }));
-                }}
+                onRemove={handleRemoveItem}
                 style={grid ? {height: 100} : undefined}
               />
             ))}
@@ -99,6 +98,22 @@ export function MultipleContainers({
       </div>
     </DragDropProvider>
   );
+
+  function handleRemoveItem(id: string, column: string) {
+    const remove = () =>
+      setItems((items) => ({
+        ...items,
+        [column]: items[column].filter((item) => item !== id),
+      }));
+
+    if (supportsViewTransition(document)) {
+      document.startViewTransition(() => {
+        flushSync(remove);
+      });
+    } else {
+      remove();
+    }
+  }
 }
 
 interface SortableItemProps {
@@ -106,7 +121,7 @@ interface SortableItemProps {
   column: string;
   index: number;
   style?: React.CSSProperties;
-  onRemove?: (id: string) => void;
+  onRemove?: (id: string, column: string) => void;
 }
 
 const COLORS = {
@@ -137,7 +152,7 @@ function SortableItem({
       actions={
         <Actions>
           {onRemove && !isDragSource ? (
-            <Remove onClick={() => onRemove(id)} />
+            <Remove onClick={() => onRemove(id, column)} />
           ) : null}
           <Handle ref={activatorRef} />
         </Actions>
@@ -145,6 +160,7 @@ function SortableItem({
       accentColor={COLORS[column]}
       shadow={isDragSource}
       style={style}
+      transitionId={`sortable-${column}-${id}`}
     >
       {id}
     </Item>
@@ -168,7 +184,7 @@ function SortableColumn({
   const {activatorRef, isDragSource, ref} = useSortable({
     id,
     accept: ['column', 'item'],
-    // Prioritize item collisions over column collisions.
+    /* Prioritize item collisions over column collisions. */
     collisionPriority: CollisionPriority.Lowest,
     type: 'column',
     index,
@@ -178,14 +194,15 @@ function SortableColumn({
     <Container
       ref={ref}
       label={`${id}`}
-      columns={columns}
       actions={
         <Actions>
           <Handle ref={activatorRef} />
         </Actions>
       }
+      columns={columns}
       shadow={isDragSource}
       scrollable={scrollable}
+      transitionId={`sortable-column-${id}`}
     >
       {children}
     </Container>

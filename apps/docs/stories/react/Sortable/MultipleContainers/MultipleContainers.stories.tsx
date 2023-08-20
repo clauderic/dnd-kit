@@ -3,6 +3,7 @@ import type {Meta, StoryObj} from '@storybook/react';
 import {MultipleContainers} from './MultipleContainers';
 
 const meta: Meta<typeof MultipleContainers> = {
+  title: 'React/Sortable/Multiple containers',
   component: MultipleContainers,
 };
 

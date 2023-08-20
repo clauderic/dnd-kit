@@ -1,8 +1,7 @@
 import {effect} from '@dnd-kit/state';
 import {Plugin} from '@dnd-kit/abstract';
 import type {UniqueIdentifier} from '@dnd-kit/abstract';
-
-import {DragDropManager} from '../../manager';
+import type {DragDropManager} from '@dnd-kit/dom';
 
 export class Debug extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager) {

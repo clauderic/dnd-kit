@@ -1,18 +1,17 @@
 import {useCallback, useEffect} from 'react';
 import {deepEqual} from '@dnd-kit/state';
 import type {Data} from '@dnd-kit/abstract';
-import {Sortable} from '@dnd-kit/dom';
-import type {SortableInput} from '@dnd-kit/dom';
-
-import {useDragDropManager} from '../context';
+import {Sortable, defaultSortableTransition} from '@dnd-kit/dom/sortable';
+import type {SortableInput} from '@dnd-kit/dom/sortable';
+import {useDragDropManager} from '@dnd-kit/react';
 import {
   useComputed,
   useConstant,
   useOnValueChange,
-  useIsomorphicLayoutEffect as layoutEffect,
   useImmediateEffect as immediateEffect,
-} from '../hooks';
-import {getCurrentValue, type RefOrValue} from '../utilities';
+  useIsomorphicLayoutEffect as layoutEffect,
+} from '@dnd-kit/react/hooks';
+import {getCurrentValue, type RefOrValue} from '@dnd-kit/react/utilities';
 
 export interface UseSortableInput<T extends Data = Data>
   extends Omit<SortableInput<T>, 'activator' | 'element'> {
@@ -30,6 +29,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     index,
     disabled,
     sensors,
+    transition = defaultSortableTransition,
     type,
   } = input;
   const manager = useDragDropManager();
@@ -63,7 +63,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
   useOnValueChange(
     index,
     () => {
-      if (manager.dragOperation.status.idle) {
+      if (manager.dragOperation.status.idle && transition) {
         sortable.refreshShape();
       }
     },
@@ -82,6 +82,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     collisionPriority,
     () => (sortable.collisionPriority = collisionPriority)
   );
+  useOnValueChange(transition, () => (sortable.transition = transition));
 
   useEffect(() => {
     // Cleanup on unmount

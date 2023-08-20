@@ -1,0 +1,72 @@
+import type {Meta, StoryObj} from '@storybook/react';
+import {Modifier} from '@dnd-kit/abstract';
+
+import {SortableExample} from '../SortableExample';
+
+const meta: Meta<typeof SortableExample> = {
+  title: 'React/Sortable/Horizontal',
+  component: SortableExample,
+};
+
+export default meta;
+type Story = StoryObj<typeof SortableExample>;
+
+const defaultArgs = {
+  debug: false,
+  layout: 'horizontal',
+  getItemStyle() {
+    return {width: 180};
+  },
+} as const;
+
+export const Horizontal: Story = {
+  name: 'Basic setup',
+  args: defaultArgs,
+};
+
+export const DragHandle: Story = {
+  name: 'Drag handle',
+  args: {
+    ...defaultArgs,
+    dragHandle: true,
+  },
+};
+
+export const VariableWidths: Story = {
+  name: 'Variable widths',
+  args: {
+    ...defaultArgs,
+    getItemStyle(id) {
+      const widths = {0: 140, 2: 120, 4: 140, 5: 240, 8: 100, 12: 150};
+
+      return {
+        width: widths[id] ?? 180,
+      };
+    },
+  },
+};
+
+export const Clone: Story = {
+  name: 'Clone feedback',
+  args: {
+    ...defaultArgs,
+    feedback: 'clone',
+  },
+};
+
+class HorizontalModifier extends Modifier {
+  apply({transform}) {
+    return {
+      ...transform,
+      y: 0,
+    };
+  }
+}
+
+export const CustomDragLayer: Story = {
+  name: 'Restrict axis',
+  args: {
+    ...defaultArgs,
+    modifiers: [HorizontalModifier],
+  },
+};

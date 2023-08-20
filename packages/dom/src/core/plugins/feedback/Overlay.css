@@ -1,0 +1,17 @@
+[data-dnd-kit-overlay] {
+  all: initial;
+  position: fixed;
+  pointer-events: none;
+  touch-action: none;
+  z-index: 999999;
+}
+
+[data-dnd-kit-overlay] > * {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+dialog[data-dnd-kit-overlay]::backdrop {
+  display: none
+}

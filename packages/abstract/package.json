@@ -17,11 +17,11 @@
   },
   "dependencies": {
     "@dnd-kit/geometry": "*",
-    "@dnd-kit/state": "*"
+    "@dnd-kit/state": "*",
+    "tslib": "^2.6.2"
   },
   "devDependencies": {
     "@dnd-kit/config-eslint": "*",
-    "@dnd-kit/config-ts": "*",
     "eslint": "^8.38.0",
     "tsup": "^6.7.0",
     "typescript": "^5.0.4"

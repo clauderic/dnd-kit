@@ -1,5 +1,0 @@
-{
-  "extends": "@dnd-kit/config-ts/vanilla-library.json",
-  "include": ["."],
-  "exclude": ["dist", "build", "node_modules"]
-}

@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
-import {DragDropProvider, useSortable} from '@dnd-kit/react';
+import {DragDropProvider} from '@dnd-kit/react';
+import {useSortable} from '@dnd-kit/react/sortable';
 import {move} from '@dnd-kit/state-management';
 
 export function Example({vertical}) {

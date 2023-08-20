@@ -9,10 +9,11 @@ export function Droppable({id, children}) {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      width: 335,
-      height: 335,
-      background: isDropTarget ? 'lightgreen' : '#FFF',
-      border: '2px solid rgba(0,0,0,0.2)',
+      width: 300,
+      height: 300,
+      backgroundColor: '##FFF',
+      border: '2px solid',
+      borderColor: isDropTarget ? 'lightgreen' : 'rgba(0,0,0,0.2)',
       borderRadius: 10,
     }}>
       {children}

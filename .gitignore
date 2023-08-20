@@ -12,6 +12,12 @@ yalc.lock
 /build
 dist
 **/storybook-static
+/packages/**/*.js
+/packages/**/*.js.map
+/packages/**/*.cjs
+/packages/**/*.cjs.map
+/packages/**/*.d.ts
+/packages/**/*.d.cts
 
 # testing
 coverage

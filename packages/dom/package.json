@@ -1,33 +1,79 @@
 {
   "name": "@dnd-kit/dom",
   "version": "0.0.0",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "type": "module",
+  "main": "./index.cjs",
+  "module": "./index.js",
+  "types": "./index.d.ts",
   "sideEffects": false,
   "license": "MIT",
   "files": [
-    "dist/**"
+    "LICENSE",
+    "README.md",
+    "index.js",
+    "index.js.map",
+    "index.d.ts",
+    "index.d.cts",
+    "index.cjs",
+    "index.cjs.map",
+    "plugins/*",
+    "sortable.js",
+    "sortable.js.map",
+    "sortable.d.ts",
+    "sortable.d.cts",
+    "sortable.cjs",
+    "sortable.cjs.map",
+    "utilities.js",
+    "utilities.js.map",
+    "utilities.d.ts",
+    "utilities.d.cts",
+    "utilities.cjs",
+    "utilities.cjs.map"
   ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js",
+      "require": "./index.cjs"
+    },
+    "./plugins/*": {
+      "types": "./plugins/*.d.ts",
+      "import": "./plugins/*.js",
+      "require": "./plugins/*.cjs"
+    },
+    "./sortable": {
+      "types": "./sortable.d.ts",
+      "import": "./sortable.js",
+      "require": "./sortable.cjs"
+    },
+    "./utilities": {
+      "types": "./utilities.d.ts",
+      "import": "./utilities.js",
+      "require": "./utilities.cjs"
+    }
+  },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --external react",
-    "dev": "tsup src/index.ts --format esm,cjs --watch --dts --external react",
+    "build": "yarn build:utilities && yarn build:core && yarn build:sortable && yarn build:plugins",
+    "build:core": "tsup src/core/index.ts",
+    "build:plugins": "tsup --entry.debug src/plugins/debug/index.ts --outDir ./plugins",
+    "build:sortable": "tsup --entry.sortable src/sortable/index.ts",
+    "build:utilities": "tsup --entry.utilities src/utilities/index.ts",
+    "dev": "yarn build:utilities --watch & yarn build:core --watch & yarn build:sortable --watch & yarn build:plugins --watch",
     "lint": "TIMING=1 eslint src/**/*.ts* --fix",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
     "@dnd-kit/abstract": "*",
     "@dnd-kit/collision": "*",
-    "@dnd-kit/dom-utilities": "*",
     "@dnd-kit/geometry": "*",
-    "@dnd-kit/state": "*"
+    "@dnd-kit/state": "*",
+    "tslib": "^2.6.2"
   },
   "devDependencies": {
     "@dnd-kit/config-eslint": "*",
-    "@dnd-kit/config-ts": "*",
     "eslint": "^8.38.0",
-    "tsup": "^6.7.0",
-    "typescript": "^5.0.4"
+    "tsup": "^7.2.0",
+    "typescript": "^5.1.6"
   },
   "publishConfig": {
     "access": "public"

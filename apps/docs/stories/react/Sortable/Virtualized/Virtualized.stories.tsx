@@ -3,6 +3,7 @@ import type {Meta, StoryObj} from '@storybook/react';
 import {ReactVirtualExample} from './ReactVirtualExample';
 
 const meta: Meta<typeof ReactVirtualExample> = {
+  title: 'React/Sortable/Virtualized',
   component: ReactVirtualExample,
 };
 

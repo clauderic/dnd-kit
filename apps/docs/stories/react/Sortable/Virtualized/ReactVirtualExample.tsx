@@ -1,8 +1,10 @@
 import React, {forwardRef, useLayoutEffect, useRef, useState} from 'react';
 import type {PropsWithChildren} from 'react';
 import type {UniqueIdentifier} from '@dnd-kit/abstract';
-import {DragDropProvider, useSortable} from '@dnd-kit/react';
-import {Debug, defaultPreset} from '@dnd-kit/dom';
+import {DragDropProvider} from '@dnd-kit/react';
+import {useSortable} from '@dnd-kit/react/sortable';
+import {defaultPreset} from '@dnd-kit/dom';
+import {Debug} from '@dnd-kit/dom/plugins/debug';
 import {move} from '@dnd-kit/state-management';
 import {useWindowVirtualizer} from '@tanstack/react-virtual';
 

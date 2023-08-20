@@ -7,7 +7,6 @@
   appearance: none;
   outline: none;
   min-width: 300px;
-  margin: 20px;
   border-radius: 5px;
   min-height: 200px;
   transition-property: transform, background, box-shadow;

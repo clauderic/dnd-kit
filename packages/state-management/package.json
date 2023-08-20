@@ -15,9 +15,11 @@
     "lint": "TIMING=1 eslint src/**/*.ts* --fix",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
+  "dependencies": {
+    "tslib": "^2.6.2"
+  },
   "devDependencies": {
     "@dnd-kit/config-eslint": "*",
-    "@dnd-kit/config-ts": "*",
     "eslint": "^8.38.0",
     "tsup": "^6.7.0",
     "typescript": "^5.0.4"

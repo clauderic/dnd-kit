@@ -1,5 +1,5 @@
 {
-  "extends": "@dnd-kit/config-ts/react-library.json",
+  "extends": "../../config/typescript/react.json",
   "include": ["."],
   "exclude": ["dist", "build", "node_modules"]
 }

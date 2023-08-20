@@ -1,38 +1,78 @@
 {
   "name": "@dnd-kit/react",
   "version": "0.0.0",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "main": "./index.cjs",
+  "module": "./index.js",
+  "type": "module",
+  "types": "./index.d.ts",
   "sideEffects": false,
   "license": "MIT",
   "files": [
-    "dist/**"
+    "LICENSE",
+    "README.md",
+    "index.js",
+    "index.d.ts",
+    "index.cjs",
+    "hooks.js",
+    "hooks.d.ts",
+    "hooks.cjs",
+    "sortable.js",
+    "sortable.d.ts",
+    "sortable.cjs",
+    "utilities.js",
+    "utilities.d.ts",
+    "utilities.cjs"
   ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js",
+      "require": "./index.cjs"
+    },
+    "./hooks": {
+      "types": "./hooks.d.ts",
+      "import": "./hooks.js",
+      "require": "./hooks.cjs"
+    },
+    "./sortable": {
+      "types": "./sortable.d.ts",
+      "import": "./sortable.js",
+      "require": "./sortable.cjs"
+    },
+    "./utilities": {
+      "types": "./utilities.d.ts",
+      "import": "./utilities.js",
+      "require": "./utilities.cjs"
+    }
+  },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --external react",
-    "dev": "tsup src/index.ts --format esm,cjs --watch --dts --external react",
+    "build": "yarn build:hooks && yarn build:utilities && yarn build:core && yarn build:sortable",
+    "build:core": "tsup src/core/index.ts",
+    "build:hooks": "tsup --entry.hooks src/hooks/index.ts",
+    "build:sortable": "tsup --entry.sortable src/sortable/index.ts",
+    "build:utilities": "tsup --entry.utilities src/utilities/index.ts",
+    "dev": "yarn build:hooks --watch & yarn build:utilities --watch & yarn build:core --watch & yarn build:sortable --watch",
     "lint": "TIMING=1 eslint src/**/*.ts* --fix",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
     "@dnd-kit/abstract": "*",
     "@dnd-kit/dom": "*",
-    "@dnd-kit/state": "*"
+    "@dnd-kit/state": "*",
+    "tslib": "^2.6.2"
   },
   "peerDependencies": {
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },
   "devDependencies": {
-    "@dnd-kit/config-ts": "*",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.4",
     "eslint": "^8.38.0",
     "@dnd-kit/config-eslint": "*",
     "react": "^18.1.0",
-    "tsup": "^6.7.0",
-    "typescript": "^5.0.4"
+    "tsup": "^7.2.0",
+    "typescript": "^5.1.6"
   },
   "publishConfig": {
     "access": "public"

@@ -1,6 +1,6 @@
 import {useCallback} from 'react';
 
-import {useLatest} from './useLatest';
+import {useLatest} from './useLatest.js';
 
 export function useEvent<T extends Function>(handler: T | undefined) {
   const handlerRef = useLatest(handler);

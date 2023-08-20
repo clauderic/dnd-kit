@@ -11,13 +11,14 @@ import styles from './Item.module.css';
 
 export interface Props extends HTMLAttributes<HTMLElement> {
   actions?: React.ReactNode;
-  shadow?: boolean;
   accentColor?: string;
+  shadow?: boolean;
+  transitionId?: string;
 }
 
 export const Item = forwardRef<HTMLElement, PropsWithChildren<Props>>(
   function Button(
-    {actions, accentColor, children, shadow, style, ...props},
+    {actions, accentColor, children, shadow, style, transitionId, ...props},
     ref
   ) {
     const Element = actions ? 'div' : 'button';
@@ -34,6 +35,7 @@ export const Item = forwardRef<HTMLElement, PropsWithChildren<Props>>(
         style={
           {
             ...style,
+            viewTransitionName: transitionId,
             '--accent-color': accentColor,
           } as CSSProperties
         }

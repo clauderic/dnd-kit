@@ -5,6 +5,7 @@ import {KitchenSinkExample} from './KitchenSinkExample';
 import docs from './docs/DroppableDocs.mdx';
 
 const meta: Meta<typeof DroppableExample> = {
+  title: 'React/Droppable',
   component: DroppableExample,
   tags: ['autodocs'],
   parameters: {

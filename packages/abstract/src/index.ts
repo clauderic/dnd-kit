@@ -11,7 +11,7 @@ export {CollisionPriority, sortCollisions} from './collision';
 export type {Collision, CollisionDetector} from './collision';
 
 export {Modifier} from './modifiers';
-export type {ModifierConstructor} from './modifiers';
+export type {Modifiers, ModifierConstructor} from './modifiers';
 
 export {Draggable, Droppable} from './nodes';
 export type {
