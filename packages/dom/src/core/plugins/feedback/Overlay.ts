@@ -6,22 +6,38 @@ import {
   scheduler,
   createPlaceholder,
 } from '@dnd-kit/dom/utilities';
-import {Rectangle} from '@dnd-kit/geometry';
+import {BoundingRectangle, Rectangle} from '@dnd-kit/geometry';
 
 import {DragDropManager} from '../../manager/index.js';
+import type {Transition} from './types.js';
 import css from './Overlay.css';
 
 const INSIGNIFICANT_DELTA = 1;
 
+interface Options {
+  anchor: Element;
+  boundingRectangle?: BoundingRectangle;
+  tagName?: string;
+  transition?: Transition | null;
+}
+
+const defaultTransition: Transition = {
+  duration: 250,
+  easing: 'ease',
+};
+
 export class Overlay {
   constructor(
     private manager: DragDropManager,
-    anchor: Element,
-    boundingRectangle = new DOMRectangle(anchor),
-    tagName = 'dialog'
+    private options: Options
   ) {
+    const {
+      anchor,
+      boundingRectangle = new DOMRectangle(anchor),
+      tagName = anchor.parentElement?.tagName.toLowerCase(),
+    } = options;
     const {top, left, width, height} = boundingRectangle;
-    const element = document.createElement(tagName);
+    const element = document.createElement(tagName || 'dialog');
     const style = document.createElement('style');
     style.innerText = css.trim().replace(/\s+/g, '');
 
@@ -49,7 +65,7 @@ export class Overlay {
     };
 
     effect(() => {
-      const {source, position} = manager.dragOperation;
+      const {source} = manager.dragOperation;
 
       if (!source || !source.element) {
         return;
@@ -157,13 +173,14 @@ export class Overlay {
   public dropAnimation() {
     return new Promise<void>((resolve) => {
       const {manager} = this;
+      const {transition = defaultTransition} = this.options;
       const {source} = manager.dragOperation;
       const unmount = () => {
         this.element.remove();
         resolve();
       };
 
-      if (!source || !manager.dragOperation.status.dropping) {
+      if (!transition || !source || !manager.dragOperation.status.dropping) {
         unmount();
         return;
       }
@@ -211,8 +228,8 @@ export class Overlay {
                 ],
               },
               {
-                duration: 250,
-                easing: 'ease',
+                duration: transition.duration,
+                easing: transition.easing,
               }
             )
             .finished.then(() => {

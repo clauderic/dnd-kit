@@ -24,12 +24,12 @@ import {SortableKeyboardPlugin} from './SortableKeyboardPlugin.js';
 export interface SortableTransition {
   /**
    * The duration of the transition in milliseconds.
-   * @default 200
+   * @default 300
    */
   duration?: number;
   /**
    * The easing function to use for the transition.
-   * @default 'ease-in-out'
+   * @default 'cubic-bezier(0.25, 1, 0.5, 1)'
    */
   easing?: string;
   /**
@@ -49,8 +49,8 @@ export interface SortableInput<T extends Data>
 }
 
 export const defaultSortableTransition: SortableTransition = {
-  duration: 200,
-  easing: 'ease-in-out',
+  duration: 300,
+  easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
   idle: false,
 };
 
@@ -62,8 +62,6 @@ export class Sortable<T extends Data = Data> {
   index: number;
 
   transition: SortableTransition | null;
-
-  #test: any = null;
 
   constructor(
     {
@@ -141,7 +139,7 @@ export class Sortable<T extends Data = Data> {
       const {shape} = this.droppable;
       const {idle} = manager.dragOperation.status;
 
-      if (!shape || !transition) {
+      if (!shape || !transition || (idle && !transition.idle)) {
         return;
       }
 
@@ -194,8 +192,6 @@ export class Sortable<T extends Data = Data> {
   }
 
   public set disabled(value: boolean) {
-    this.#test = 'blah';
-
     batch(() => {
       this.draggable.disabled = value;
       this.droppable.disabled = value;

@@ -247,7 +247,12 @@ export class PointerSensor extends Sensor<
     event.stopPropagation();
 
     // End the drag and drop operation
-    this.manager.actions.stop();
+    const {status} = this.manager.dragOperation;
+
+    if (!status.idle) {
+      const canceled = !status.initialized;
+      this.manager.actions.stop({canceled});
+    }
 
     // Remove the pointer move and up event listeners
     this.cleanup?.();
@@ -277,7 +282,9 @@ export class PointerSensor extends Sensor<
   }
 
   protected handleCancel() {
-    if (this.manager.dragOperation.status.initialized) {
+    const {dragOperation} = this.manager;
+
+    if (dragOperation.status.initialized) {
       this.manager.actions.stop({canceled: true});
     }
 

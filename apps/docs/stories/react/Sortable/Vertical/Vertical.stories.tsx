@@ -66,3 +66,24 @@ export const CustomDragLayer: Story = {
     modifiers: [VerticalModifier],
   },
 };
+
+export const CustomTransition: Story = {
+  name: 'Custom transition',
+  args: {
+    debug: false,
+    transition: {
+      duration: 300,
+      easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+    },
+  },
+};
+
+export const DisableTransition: Story = {
+  name: 'Disable transition',
+  args: {
+    debug: false,
+    transition: {
+      duration: 0,
+    },
+  },
+};

@@ -5,12 +5,13 @@ import type {
   Modifiers,
   UniqueIdentifier,
 } from '@dnd-kit/abstract';
+import {FeedbackType, defaultPreset} from '@dnd-kit/dom';
+import type {SortableTransition} from '@dnd-kit/dom/sortable';
 import {DragDropProvider} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
-import {FeedbackType, defaultPreset} from '@dnd-kit/dom';
-import {Debug} from '@dnd-kit/dom/plugins/debug';
 import {directionBiased} from '@dnd-kit/collision';
 import {move} from '@dnd-kit/state-management';
+import {Debug} from '@dnd-kit/dom/plugins/debug';
 
 import {Item, Handle} from '../components';
 import {createRange, cloneDeep} from '../../utilities';
@@ -21,6 +22,7 @@ interface Props {
   feedback?: FeedbackType;
   modifiers?: Modifiers;
   layout?: 'vertical' | 'horizontal' | 'grid';
+  transition?: SortableTransition;
   itemCount?: number;
   collisionDetector?: CollisionDetector;
   getItemStyle?(id: UniqueIdentifier, index: number): CSSProperties;
@@ -34,6 +36,7 @@ export function SortableExample({
   feedback,
   layout = 'vertical',
   modifiers,
+  transition,
   getItemStyle,
 }: Props) {
   const [items, setItems] = useState(createRange(itemCount));
@@ -70,6 +73,7 @@ export function SortableExample({
             collisionDetector={collisionDetector}
             dragHandle={dragHandle}
             feedback={feedback}
+            transition={transition}
             style={getItemStyle?.(id, index)}
           />
         ))}
@@ -81,9 +85,10 @@ export function SortableExample({
 interface SortableProps {
   id: UniqueIdentifier;
   index: number;
+  collisionDetector?: CollisionDetector;
   dragHandle?: boolean;
   feedback?: FeedbackType;
-  collisionDetector?: CollisionDetector;
+  transition?: SortableTransition;
   style?: React.CSSProperties;
 }
 
@@ -93,6 +98,7 @@ function SortableItem({
   collisionDetector = directionBiased,
   dragHandle,
   feedback,
+  transition,
   style,
 }: PropsWithChildren<SortableProps>) {
   const [element, setElement] = useState<Element | null>(null);
@@ -103,6 +109,7 @@ function SortableItem({
     index,
     element,
     feedback,
+    transition,
     activator: activatorRef,
     collisionDetector,
   });

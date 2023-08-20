@@ -46,31 +46,28 @@ export class Draggable<T extends Data = Data> extends AbstractDraggable<T> {
 
     this.feedback = feedback;
 
-    const effects = [
-      // Bind sensors
-      effect(() => {
-        const sensors = this.sensors?.map(descriptor) ?? [...manager.sensors];
-        const unbindFunctions = sensors.map((entry) => {
-          const sensorInstance =
-            entry instanceof Sensor
-              ? entry
-              : manager.registry.register(entry.plugin);
-          const options = entry instanceof Sensor ? undefined : entry.options;
+    const effectCleanup = effect(() => {
+      const sensors = this.sensors?.map(descriptor) ?? [...manager.sensors];
+      const unbindFunctions = sensors.map((entry) => {
+        const sensorInstance =
+          entry instanceof Sensor
+            ? entry
+            : manager.registry.register(entry.plugin);
+        const options = entry instanceof Sensor ? undefined : entry.options;
 
-          const unbind = sensorInstance.bind(this, options);
-          return unbind;
-        });
+        const unbind = sensorInstance.bind(this, options);
+        return unbind;
+      });
 
-        return function cleanup() {
-          unbindFunctions.forEach((unbind) => unbind());
-        };
-      }),
-    ];
+      return function cleanup() {
+        unbindFunctions.forEach((unbind) => unbind());
+      };
+    });
 
     const {destroy} = this;
 
     this.destroy = () => {
-      effects.forEach((cleanup) => cleanup());
+      effectCleanup();
       destroy();
     };
   }

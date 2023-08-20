@@ -7,9 +7,11 @@ import type {DragDropManager} from '../../manager/index.js';
 
 import {Overlay} from './Overlay.js';
 import {patchElement} from './utilities.js';
+import type {Transition} from './types.js';
 
 interface DraggableFeedbackOptions {
   tagName?: string;
+  transition?: Transition | null;
 }
 
 export class DraggableFeedback extends CorePlugin<DragDropManager> {
@@ -189,16 +191,13 @@ export class DraggableFeedback extends CorePlugin<DragDropManager> {
 
         const clone = source.feedback === 'clone';
         const currentElement = source.element;
-        const shape = new DOMRectangle(currentElement);
 
         if (!overlay) {
-          overlay = new Overlay(
-            manager,
-            currentElement,
-            shape,
-            options.tagName ||
-              currentElement.parentElement?.tagName.toLowerCase()
-          );
+          overlay = new Overlay(manager, {
+            anchor: currentElement,
+            tagName: options.tagName,
+            transition: options.transition,
+          });
         }
 
         const currentPlaceholder = placeholder.peek();
@@ -227,16 +226,3 @@ export class DraggableFeedback extends CorePlugin<DragDropManager> {
     };
   }
 }
-
-// const resizeObserver = new ResizeObserver((entries) => {
-//   const [entry] = entries;
-//   const [size] = entry.borderBoxSize;
-//   const {blockSize, inlineSize} = size;
-
-//   placeholder.style.width = `${inlineSize}px`;
-//   placeholder.style.height = `${blockSize}px`;
-// });
-
-// resizeObserver.observe(element, {box: 'border-box'});
-
-// cleanupFns.push(() => resizeObserver.disconnect());

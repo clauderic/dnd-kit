@@ -17,3 +17,4 @@ export {
   Scroller,
   ScrollListener,
 } from './plugins/index.js';
+export type {Transition} from './plugins/index.js';
