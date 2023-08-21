@@ -2,7 +2,7 @@ import {CollisionPriority} from '@dnd-kit/abstract';
 import type {CollisionDetector} from '@dnd-kit/abstract';
 import {Point} from '@dnd-kit/geometry';
 
-import {defaultCollisionDetection} from './default';
+import {defaultCollisionDetection} from './default.js';
 
 /**
  * Returns the distance between the droppable shape and the drag operation shape.
@@ -23,7 +23,7 @@ export const closestCenter: CollisionDetector = (input) => {
 
   const distance = Point.distance(
     droppable.shape.center,
-    shape?.center ?? position.current
+    shape?.current.center ?? position.current
   );
 
   const value = 1 / distance;

@@ -1,5 +1,5 @@
 import type {Meta, StoryObj} from '@storybook/react';
-import {Modifier} from '@dnd-kit/abstract';
+import {RestrictToVerticalAxis} from '@dnd-kit/abstract/modifiers';
 
 import {SortableExample} from '../SortableExample';
 
@@ -50,20 +50,11 @@ export const Clone: Story = {
   },
 };
 
-class VerticalModifier extends Modifier {
-  apply({transform}) {
-    return {
-      ...transform,
-      x: 0,
-    };
-  }
-}
-
 export const CustomDragLayer: Story = {
   name: 'Restrict axis',
   args: {
     debug: false,
-    modifiers: [VerticalModifier],
+    modifiers: [RestrictToVerticalAxis],
   },
 };
 

@@ -81,11 +81,11 @@ export class Overlay {
 
         const {target} = entries[0];
         const {width, height} = new DOMRectangle(target, true);
-        const {x, y} = this.delta;
         const currentWidth = parseInt(element.style.width, 10);
         const currentHeight = parseInt(element.style.height, 10);
         const deltaX = currentWidth - width;
         const deltaY = currentHeight - height;
+        const {x, y} = this.delta;
 
         this.delta = {
           x: x + deltaX * transformOrigin.x,
@@ -95,7 +95,7 @@ export class Overlay {
         element.style.setProperty('width', `${width}px`);
         element.style.setProperty('height', `${height}px`);
 
-        updatePosition();
+        untracked(updatePosition);
       });
       resizeObserver.observe(source.element);
 
@@ -105,23 +105,23 @@ export class Overlay {
     });
 
     const updatePosition = () => {
-      const x = this.transform.x + this.delta.x;
-      const y = this.transform.y + this.delta.y;
+      const transform = manager.dragOperation.transform;
+      const x = transform.x + this.delta.x;
+      const y = transform.y + this.delta.y;
 
-      manager.dragOperation.shape = new DOMRectangle(element, true).translate(
-        x,
-        y
-      );
+      manager.dragOperation.shape = new DOMRectangle(
+        element.firstElementChild ?? element
+      ).translate(x - this.transform.x, y - this.transform.y);
       element.style.setProperty('transform', `translate3d(${x}px, ${y}px, 0)`);
+
+      this.transform = {x, y};
     };
 
     this.destroy = effect(() => {
       const {dragOperation} = manager;
-      const {status, transform} = dragOperation;
+      const {status, transform: _} = dragOperation;
 
       if (status.initialized) {
-        this.transform = transform;
-
         scheduler.schedule(updatePosition);
       }
     });
@@ -188,16 +188,11 @@ export class Overlay {
       const {id} = source;
       const draggable = id != null ? manager.registry.draggables.get(id) : null;
       const element = draggable?.element;
-      const currentShape = manager.dragOperation.shape;
+      const currentShape = manager.dragOperation.shape?.current;
 
       if (element && currentShape) {
-        const shape = new DOMRectangle(element, true);
-        const {center} = new Rectangle(
-          currentShape.boundingRectangle.left,
-          currentShape.boundingRectangle.top,
-          shape.width,
-          shape.height
-        );
+        const shape = new DOMRectangle(element);
+        const {center} = currentShape;
         const centerDelta = {
           x: center.x - shape.center.x,
           y: center.y - shape.center.y,
@@ -208,8 +203,8 @@ export class Overlay {
           Math.abs(centerDelta.y) > INSIGNIFICANT_DELTA
         ) {
           const finalTransform = {
-            x: this.transform.x - centerDelta.x + this.delta.x,
-            y: this.transform.y - centerDelta.y + this.delta.y,
+            x: this.transform.x - centerDelta.x,
+            y: this.transform.y - centerDelta.y,
           };
           const placeholder = createPlaceholder(
             element,

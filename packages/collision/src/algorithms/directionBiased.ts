@@ -2,7 +2,7 @@ import {CollisionPriority} from '@dnd-kit/abstract';
 import type {CollisionDetector} from '@dnd-kit/abstract';
 import {Point} from '@dnd-kit/geometry';
 
-import {defaultCollisionDetection} from './default';
+import {defaultCollisionDetection} from './default.js';
 
 export const directionBiased: CollisionDetector = ({
   dragOperation,
@@ -23,19 +23,20 @@ export const directionBiased: CollisionDetector = ({
     return defaultCollisionDetection({dragOperation, droppable});
   }
 
+  const {center, boundingRectangle} = shape.current;
+
   if (
     (direction === 'down' &&
-      shape.boundingRectangle.bottom >= droppable.shape.center.y) ||
-    (direction === 'up' &&
-      shape.boundingRectangle.top <= droppable.shape.center.y) ||
+      boundingRectangle.bottom >= droppable.shape.center.y) ||
+    (direction === 'up' && boundingRectangle.top <= droppable.shape.center.y) ||
     (direction === 'left' &&
-      shape.boundingRectangle.left <= droppable.shape.center.x) ||
+      boundingRectangle.left <= droppable.shape.center.x) ||
     (direction === 'right' &&
-      shape.boundingRectangle.right >= droppable.shape.center.x)
+      boundingRectangle.right >= droppable.shape.center.x)
   ) {
     return {
       id: droppable.id,
-      value: 1 / Point.distance(droppable.shape.center, shape.center),
+      value: 1 / Point.distance(droppable.shape.center, center),
       priority: CollisionPriority.Medium,
     };
   }

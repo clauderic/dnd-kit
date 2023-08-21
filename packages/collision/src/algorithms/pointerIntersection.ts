@@ -46,8 +46,14 @@ export const pointerIntersection: CollisionDetector = ({
   const {x, y} = pointerCoordinates;
   const size = shape
     ? {
-        width: Math.min(Math.abs(shape.boundingRectangle.right - x), 30),
-        height: Math.min(Math.abs(shape.boundingRectangle.bottom - y), 30),
+        width: Math.min(
+          Math.abs(shape.current.boundingRectangle.right - x),
+          30
+        ),
+        height: Math.min(
+          Math.abs(shape.current.boundingRectangle.bottom - y),
+          30
+        ),
       }
     : {width: 30, height: 30};
   const pointerShape = new Rectangle(x, y, size.width, size.height);

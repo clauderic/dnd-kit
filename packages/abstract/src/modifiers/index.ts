@@ -1,8 +1,3 @@
-export {Modifier} from './modifier';
+export {RestrictToHorizontalAxis, RestrictToVerticalAxis} from './axis.js';
 
-export type {
-  Modifiers,
-  ModifierConstructor,
-  ModifierDescriptor,
-  ModifierOptions,
-} from './modifier';
+export {restrictShapeToBoundingRectangle} from './boundingRectangle.js';

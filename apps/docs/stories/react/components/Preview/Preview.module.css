@@ -20,6 +20,10 @@
 }
 
 .hero {
+  display: grid;
+  align-items: center;
+
+  min-height: 200px;
   max-height: 400px;
   background: linear-gradient(65deg, #56fff410, #001AFF10, #5F6AF210, #F25FD010, #56FFF510, #F25FD010, #001AFF10, #56fff410);
   animation: gradient 16s linear infinite;

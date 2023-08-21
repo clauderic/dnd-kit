@@ -22,7 +22,7 @@ export class Debug extends Plugin<DragDropManager> {
 
         if (draggable && dragOperation.shape) {
           const element = draggableElement ?? createDebugElement('dialog');
-          const {boundingRectangle} = dragOperation.shape;
+          const {boundingRectangle} = dragOperation.shape.current;
 
           if (!draggableElement) {
             draggableElement = element;

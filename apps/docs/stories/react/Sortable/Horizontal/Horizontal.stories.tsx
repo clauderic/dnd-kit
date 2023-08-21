@@ -1,5 +1,5 @@
 import type {Meta, StoryObj} from '@storybook/react';
-import {Modifier} from '@dnd-kit/abstract';
+import {RestrictToHorizontalAxis} from '@dnd-kit/abstract/modifiers';
 
 import {SortableExample} from '../SortableExample';
 
@@ -54,19 +54,10 @@ export const Clone: Story = {
   },
 };
 
-class HorizontalModifier extends Modifier {
-  apply({transform}) {
-    return {
-      ...transform,
-      y: 0,
-    };
-  }
-}
-
 export const CustomDragLayer: Story = {
   name: 'Restrict axis',
   args: {
     ...defaultArgs,
-    modifiers: [HorizontalModifier],
+    modifiers: [RestrictToHorizontalAxis],
   },
 };

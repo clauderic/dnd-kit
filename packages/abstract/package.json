@@ -1,17 +1,45 @@
 {
   "name": "@dnd-kit/abstract",
   "version": "0.0.0",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "type": "module",
+  "main": "./index.cjs",
+  "module": "./index.js",
+  "types": "./index.d.ts",
   "sideEffects": false,
   "license": "MIT",
   "files": [
-    "dist/**"
+    "LICENSE",
+    "README.md",
+    "index.js",
+    "index.js.map",
+    "index.d.ts",
+    "index.d.cts",
+    "index.cjs",
+    "index.cjs.map",
+    "modifiers.js",
+    "modifiers.js.map",
+    "modifiers.d.ts",
+    "modifiers.d.cts",
+    "modifiers.cjs",
+    "modifiers.cjs.map"
   ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js",
+      "require": "./index.cjs"
+    },
+    "./modifiers": {
+      "types": "./modifiers.d.ts",
+      "import": "./modifiers.js",
+      "require": "./modifiers.cjs"
+    }
+  },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --external react",
-    "dev": "tsup src/index.ts --format esm,cjs --watch --dts --external react",
+    "build": "yarn build:core && yarn build:modifiers",
+    "build:core": "tsup src/core/index.ts",
+    "build:modifiers": "tsup --entry.modifiers src/modifiers/index.ts",
+    "dev": "yarn build:core --watch & yarn build:modifiers --watch",
     "lint": "TIMING=1 eslint src/**/*.ts* --fix",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },

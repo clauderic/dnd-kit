@@ -1,1 +1,1 @@
-export {move, swap} from './move';
+export {move, swap} from './move.js';
