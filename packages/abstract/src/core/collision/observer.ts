@@ -36,7 +36,7 @@ export class CollisionObserver<
     });
   }
 
-  #forceUpdate = signal(0);
+  forceUpdateCount = signal(0);
 
   public forceUpdate(refresh = true) {
     untracked(() => {
@@ -53,7 +53,7 @@ export class CollisionObserver<
           }
         }
 
-        this.#forceUpdate.value++;
+        this.forceUpdateCount.value++;
       });
     });
   }
@@ -72,7 +72,7 @@ export class CollisionObserver<
     const type = source?.type;
     const collisions: Collision[] = [];
 
-    this.#forceUpdate.value;
+    this.forceUpdateCount.value;
 
     for (const entry of entries ?? registry.droppables) {
       if (entry.disabled) {

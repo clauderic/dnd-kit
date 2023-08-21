@@ -121,7 +121,7 @@ export class Overlay {
       const {dragOperation} = manager;
       const {status, transform: _} = dragOperation;
 
-      if (status.initialized) {
+      if (status.dragging) {
         scheduler.schedule(updatePosition);
       }
     });

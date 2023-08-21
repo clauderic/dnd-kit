@@ -1,7 +1,6 @@
-export {Modifier, createModifier} from './modifier.js';
+export {Modifier} from './modifier.js';
 
 export type {
-  ApplyModifier,
   Modifiers,
   ModifierConstructor,
   ModifierDescriptor,

@@ -42,17 +42,12 @@ export class RestrictToWindow extends Modifier<DragDropManager> {
     }
 
     const {initial, current} = shape;
-    const currentHeight = current.boundingRectangle.height;
-    const currentWidth = current.boundingRectangle.width;
-    const left =
-      initial.boundingRectangle.left -
-      (currentWidth - initial.boundingRectangle.width);
-    const top =
-      initial.boundingRectangle.top -
-      (currentHeight - initial.boundingRectangle.height);
+    const {height, width} = current.boundingRectangle;
+    const left = initial.center.x - width / 2;
+    const top = initial.center.y - height / 2;
 
     const restrictedTransform = restrictShapeToBoundingRectangle(
-      new Rectangle(left, top, currentWidth, currentHeight),
+      new Rectangle(left, top, width, height),
       transform,
       this.windowBoundingRectangle
     );

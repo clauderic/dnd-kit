@@ -1,8 +1,9 @@
-import {derived, reactive} from '@dnd-kit/state';
+import {derived, effect, reactive} from '@dnd-kit/state';
 
 import type {DragDropManager} from '../../manager/index.js';
 import {Node} from '../node/index.js';
 import type {NodeInput, Data, Type} from '../node/index.js';
+import type {Modifiers} from '../../modifiers/index.js';
 
 export interface Input<
   T extends Data = Data,

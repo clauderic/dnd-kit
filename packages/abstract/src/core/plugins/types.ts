@@ -6,7 +6,7 @@ export type PluginOptions = Record<string, any>;
 export interface PluginConstructor<
   T extends DragDropManager<any, any> = DragDropManager<any, any>,
   U extends Plugin<T> = Plugin<T>,
-  V extends PluginOptions | undefined = InferPluginOptions<U>,
+  V extends PluginOptions = InferPluginOptions<U>,
 > {
   new (manager: T, options?: V): U;
 }

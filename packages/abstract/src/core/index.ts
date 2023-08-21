@@ -11,12 +11,8 @@ export type {
 export {CollisionPriority, sortCollisions} from './collision/index.js';
 export type {Collision, CollisionDetector} from './collision/index.js';
 
-export {Modifier, createModifier} from './modifiers/index.js';
-export type {
-  ApplyModifier,
-  Modifiers,
-  ModifierConstructor,
-} from './modifiers/index.js';
+export {Modifier} from './modifiers/index.js';
+export type {Modifiers, ModifierConstructor} from './modifiers/index.js';
 
 export {Draggable, Droppable} from './nodes/index.js';
 export type {

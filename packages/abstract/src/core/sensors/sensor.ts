@@ -13,13 +13,13 @@ export type SensorOptions = PluginOptions;
 
 export abstract class Sensor<
   T extends DragDropManager<any, any> = DragDropManager,
-  U extends SensorOptions | undefined = SensorOptions,
+  U extends SensorOptions = SensorOptions,
 > extends Plugin<T, U> {
   constructor(
     protected manager: T,
     public options?: U
   ) {
-    super(manager);
+    super(manager, options);
   }
 
   /**

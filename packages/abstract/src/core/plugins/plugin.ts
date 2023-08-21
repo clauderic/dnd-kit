@@ -10,7 +10,7 @@ import {configure} from './utilities.js';
  */
 export class Plugin<
   T extends DragDropManager<any, any> = DragDropManager<any, any>,
-  U extends PluginOptions | undefined = PluginOptions,
+  U extends PluginOptions = PluginOptions,
 > {
   constructor(
     protected manager: T,
@@ -79,5 +79,5 @@ export class Plugin<
 
 export class CorePlugin<
   T extends DragDropManager<any, any> = DragDropManager<any, any>,
-  U extends PluginOptions | undefined = PluginOptions,
+  U extends PluginOptions = PluginOptions,
 > extends Plugin<T, U> {}

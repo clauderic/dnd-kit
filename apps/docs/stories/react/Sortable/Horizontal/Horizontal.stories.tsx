@@ -54,7 +54,7 @@ export const Clone: Story = {
   },
 };
 
-export const CustomDragLayer: Story = {
+export const HorizontalAxis: Story = {
   name: 'Restrict axis',
   args: {
     ...defaultArgs,

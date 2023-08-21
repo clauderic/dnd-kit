@@ -3,7 +3,7 @@ import {
   RestrictToHorizontalAxis,
   RestrictToVerticalAxis,
 } from '@dnd-kit/abstract/modifiers';
-import {RestrictToWindow} from '@dnd-kit/dom/modifiers';
+import {RestrictToElement, RestrictToWindow} from '@dnd-kit/dom/modifiers';
 
 import {DraggableExample} from '../DraggableExample';
 
@@ -33,5 +33,19 @@ export const WindowModifier: Story = {
   name: 'Restrict to window',
   args: {
     modifiers: [RestrictToWindow],
+  },
+};
+
+export const ContainerModifier: Story = {
+  name: 'Restrict to container',
+  args: {
+    container: true,
+    modifiers: [
+      RestrictToElement.configure({
+        getElement() {
+          return document.querySelector('[data-container]');
+        },
+      }),
+    ],
   },
 };
