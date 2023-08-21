@@ -18,7 +18,7 @@ export class DragSensor extends Sensor<DragDropManager, DragSensorOptions> {
   private unbind: CleanupFunction | undefined;
 
   constructor(
-    protected manager: DragDropManager,
+    public manager: DragDropManager,
     public options: DragSensorOptions
   ) {
     super(manager);

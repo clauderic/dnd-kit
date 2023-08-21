@@ -71,7 +71,7 @@ export class Sortable<T extends Data = Data> {
       transition = defaultSortableTransition,
       ...input
     }: SortableInput<T>,
-    protected manager: AbstractDragDropManager<any, any>
+    public manager: AbstractDragDropManager<any, any>
   ) {
     this.draggable = new SortableDraggable<T>({...input, sensors}, manager);
     this.droppable = new SortableDroppable<T>(input, manager);

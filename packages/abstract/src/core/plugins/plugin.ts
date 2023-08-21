@@ -13,7 +13,7 @@ export class Plugin<
   U extends PluginOptions = PluginOptions,
 > {
   constructor(
-    protected manager: T,
+    public manager: T,
     public options?: U
   ) {}
 

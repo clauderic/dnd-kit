@@ -93,7 +93,7 @@ export function DragOperationManager<
 
   const transform = computed(() => {
     const {x, y} = position.delta;
-    const {modifiers} = manager;
+    const modifiers = source?.value?.modifiers ?? manager.modifiers;
 
     let transform = {x, y};
     const initialShape = shape.initial.peek();

@@ -54,7 +54,7 @@ export class PointerSensor extends Sensor<
   #document: Document | undefined;
 
   constructor(
-    protected manager: DragDropManager,
+    public manager: DragDropManager,
     public options?: PointerSensorOptions
   ) {
     super(manager);

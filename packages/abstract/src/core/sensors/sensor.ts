@@ -16,7 +16,7 @@ export abstract class Sensor<
   U extends SensorOptions = SensorOptions,
 > extends Plugin<T, U> {
   constructor(
-    protected manager: T,
+    public manager: T,
     public options?: U
   ) {
     super(manager, options);

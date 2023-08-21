@@ -13,7 +13,7 @@ export interface Input<T extends Data = Data, U extends Node<T> = Node<T>> {
 export class Node<T extends Data = Data> {
   constructor(
     input: Input<T>,
-    protected manager: DragDropManager
+    public manager: DragDropManager
   ) {
     const {effects: inputEffects, id, data = null, disabled = false} = input;
 

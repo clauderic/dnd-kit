@@ -15,7 +15,7 @@ export class Modifier<
   U extends ModifierOptions = ModifierOptions,
 > extends Plugin<T, U> {
   constructor(
-    protected manager: T,
+    public manager: T,
     public options?: U
   ) {
     super(manager, options);

@@ -14,9 +14,9 @@ export function DraggableExample({container, modifiers}: Props) {
   const Wrapper = container ? Container : 'div';
 
   return (
-    <DragDropProvider modifiers={modifiers}>
+    <DragDropProvider>
       <Wrapper>
-        <Draggable id="draggable" />
+        <Draggable id="draggable" modifiers={modifiers} />
       </Wrapper>
     </DragDropProvider>
   );
@@ -24,13 +24,15 @@ export function DraggableExample({container, modifiers}: Props) {
 
 interface DraggableProps {
   id: UniqueIdentifier;
+  modifiers?: Modifiers;
 }
 
-function Draggable({id}: DraggableProps) {
+function Draggable({id, modifiers}: DraggableProps) {
   const [element, setElement] = useState<Element | null>(null);
 
   const {isDragSource} = useDraggable({
     id,
+    modifiers,
     element,
   });
 

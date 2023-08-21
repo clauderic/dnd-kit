@@ -48,7 +48,7 @@ export class KeyboardSensor extends Sensor<
   KeyboardSensorOptions
 > {
   constructor(
-    protected manager: DragDropManager,
+    public manager: DragDropManager,
     public options?: KeyboardSensorOptions
   ) {
     super(manager);
