@@ -4,7 +4,8 @@ import type {Transform} from '@dnd-kit/utilities';
 export function restrictToBoundingRect(
   transform: Transform,
   rect: ClientRect,
-  boundingRect: ClientRect
+  boundingRect: ClientRect,
+  gridSize = 1
 ): Transform {
   const value = {
     ...transform,
@@ -13,7 +14,7 @@ export function restrictToBoundingRect(
   if (rect.top + transform.y <= boundingRect.top) {
     value.y = boundingRect.top - rect.top;
   } else if (
-    rect.bottom + transform.y >=
+    rect.bottom + transform.y + rect.width % gridSize >=
     boundingRect.top + boundingRect.height
   ) {
     value.y = boundingRect.top + boundingRect.height - rect.bottom;
@@ -22,7 +23,7 @@ export function restrictToBoundingRect(
   if (rect.left + transform.x <= boundingRect.left) {
     value.x = boundingRect.left - rect.left;
   } else if (
-    rect.right + transform.x >=
+    rect.right + transform.x + rect.width % gridSize >=
     boundingRect.left + boundingRect.width
   ) {
     value.x = boundingRect.left + boundingRect.width - rect.right;
