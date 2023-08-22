@@ -6,7 +6,7 @@ import type {
 } from '@dnd-kit/abstract';
 import {defaultCollisionDetection} from '@dnd-kit/collision';
 import type {CollisionDetector} from '@dnd-kit/collision';
-import {Signal, effects, reactive, signal} from '@dnd-kit/state';
+import {Signal, effects, reactive, signal, untracked} from '@dnd-kit/state';
 import type {Shape} from '@dnd-kit/geometry';
 import {
   DOMRectangle,
@@ -39,7 +39,6 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
     this.internal = {
       element: signal(element),
     };
-    this.element = element;
 
     /*
      * If a droppable target mounts during a drag operation, assume it is visible
@@ -97,9 +96,10 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
       },
       () => {
         const {dragOperation} = manager;
-        const {source, status} = dragOperation;
+        const {status} = dragOperation;
+        const source = untracked(() => dragOperation.source);
 
-        if (status.dragging) {
+        if (status.initialized) {
           if (source?.type != null && !this.accepts(source.type)) {
             return;
           }
