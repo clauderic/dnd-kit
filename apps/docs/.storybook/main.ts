@@ -22,12 +22,6 @@ export default {
   docs: {
     autodocs: 'tag',
   },
-  refs: {
-    vue: {
-      title: 'Vue',
-      url: 'http://localhost:6007',
-    },
-  },
 };
 
 /**
