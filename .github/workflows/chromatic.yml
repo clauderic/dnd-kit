@@ -12,4 +12,4 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMATIC_TOKEN }}
-          buildScriptName: 'build:storybook'
+          buildScriptName: 'build'
