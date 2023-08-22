@@ -1,0 +1,40 @@
+.Button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 10px 20px;
+  border: none;
+  gap: 10px;
+  background-color: #181a22;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f6f8ff;
+  cursor: grab;
+  outline: none;
+  transition: background 0.4s ease, box-shadow 0.3s ease, transform 0.25s ease;
+  min-height: 62px;
+  box-shadow: var(--box-shadow);
+  touch-action: none;
+}
+
+.Button:hover, .Button:focus {
+  background-color: #1e202a;
+}
+
+.Button:focus-visible:not(.shadow) {
+  --box-shadow: inset 0 0 0 3px #4c9ffe;
+  transition: background 0.4s ease;
+}
+
+.Button[data-shadow="true"] {
+  transform: scale(1.03);
+  --box-shadow: -1px 0 15px 0 rgba(34, 33, 81, 0.01), 0px 15px 15px 0 rgba(34, 33, 81, 0.25);
+}
+
+.Button:has(> button) {
+  padding-right: 10px;
+  touch-action: auto;
+}
+

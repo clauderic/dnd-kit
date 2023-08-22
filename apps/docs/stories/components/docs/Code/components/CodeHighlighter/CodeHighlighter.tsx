@@ -5,7 +5,7 @@ import 'prismjs/components/prism-jsx.min';
 
 import copy from './copy.svg';
 import styles from './CodeHighlighter.module.css';
-import {classNames, createRange} from '../../../../utilities';
+import {classNames, createRange} from '../../../../../utilities';
 
 interface Props {
   children: string;

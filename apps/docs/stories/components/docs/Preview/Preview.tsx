@@ -2,7 +2,7 @@ import React from 'react';
 import {Story, Unstyled} from '@storybook/blocks';
 import {type StoryFn} from '@storybook/react';
 
-import {classNames} from '../../utilities';
+import {classNames} from '../../../utilities';
 import {Code} from '../Code';
 import styles from './Preview.module.css';
 

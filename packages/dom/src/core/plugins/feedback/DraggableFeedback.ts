@@ -136,6 +136,14 @@ export class DraggableFeedback extends CorePlugin<DragDropManager> {
           subtree: true,
         });
 
+        const initialInilineStyles =
+          currentElement instanceof HTMLElement
+            ? {
+                width: currentElement.style.width,
+                height: currentElement.style.height,
+              }
+            : undefined;
+
         const resizeObserver = new ResizeObserver(() => {
           const {width, height} = new DOMRectangle(placeholderElement, true);
 
@@ -176,6 +184,21 @@ export class DraggableFeedback extends CorePlugin<DragDropManager> {
           resizeObserver.disconnect();
           mutationObservers.forEach((observer) => observer.disconnect());
           upatch?.();
+
+          if (initialInilineStyles && currentElement instanceof HTMLElement) {
+            currentElement.style.setProperty(
+              'width',
+              initialInilineStyles.width
+            );
+            currentElement.style.setProperty(
+              'height',
+              initialInilineStyles.height
+            );
+
+            if (currentElement.getAttribute('style') === '') {
+              currentElement.removeAttribute('style');
+            }
+          }
         };
       }),
       effect(() => {

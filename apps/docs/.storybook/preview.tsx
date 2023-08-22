@@ -1,7 +1,7 @@
 import React from 'react';
 import {Unstyled} from '@storybook/blocks';
 
-import {Code} from '../stories/components';
+import {Button, Code} from '../stories/components';
 
 const preview = {
   parameters: {
