@@ -17,17 +17,6 @@ import {KeyboardSensor, PointerSensor} from '../sensors/index.js';
 
 export interface Input extends DragDropManagerInput<any> {}
 
-const test: Sensors = [
-  PointerSensor.configure({
-    activationConstraints: {
-      delay: {
-        value: 200,
-        tolerance: 10,
-      },
-    },
-  }),
-];
-
 export const defaultPreset: {
   plugins: Plugins<DragDropManager>;
   sensors: Sensors<DragDropManager>;

@@ -1,4 +1,4 @@
-import {Code, Preview} from '../../components';
+import {Code, Preview} from '../../../components';
 import {Demo} from '../Sortable.stories';
 import BasicSetupSource from '../SortableExample?raw';
 import {Example} from './examples/QuickStart';
@@ -38,3 +38,16 @@ The sortable plugin composes the `Draggable` and `Droppable` nodes to provide a 
 The `useSortable` hook is an abstraction that composes the `useDroppable` and `useDraggable` hooks:
 
 <img src={image} width="70%" />
+
+As a result, the `useSortable` hook accepts all of the props that the `useDraggable` and `useDroppable` hooks accept.
+
+## Modifiers
+
+Because the `useSortable` hook invokes the `useDraggable` hook under the hood, we can pass local `modifiers` to the `useSortable` hook just as we would with the `useDraggable` hook:
+
+```jsx
+const sortable = useSortable({
+  id,
+  modifiers: [RestrictToVerticalAxis],
+});
+```

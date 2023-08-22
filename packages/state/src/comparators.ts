@@ -19,5 +19,9 @@ export function deepEqual<T>(a: T, b: T) {
     return !hasDifferentValues;
   }
 
-  return JSON.stringify(a) === JSON.stringify(b);
+  try {
+    return JSON.stringify(a) === JSON.stringify(b);
+  } catch (e) {
+    return false;
+  }
 }

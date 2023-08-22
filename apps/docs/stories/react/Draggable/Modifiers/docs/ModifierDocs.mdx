@@ -1,0 +1,68 @@
+import {RestrictToElement} from '@dnd-kit/dom/modifiers';
+
+import {Info, Preview} from '../../../../components';
+import {DraggableExample} from '../../DraggableExample';
+
+# Modifiers
+
+Modify or restrict the behavior of draggable elements.
+
+<Preview id="modifier-hero" hero>
+  <DraggableExample
+    modifiers={[
+      RestrictToElement.configure({
+        element() {
+          return document.getElementById('modifier-hero');
+        },
+      }),
+    ]}
+  />
+</Preview>
+
+Modifiers let you dynamically modify the movement coordinates that are detected by sensors. They can be used for a wide range of use cases, for example:
+
+- Restricting motion to a single axis
+- Restricting motion to the draggable node container's bounding rectangle
+- Restricting motion to the draggable node's scroll container bounding rectangle
+- Applying resistance or clamping the motion
+
+## Usage
+
+Modifiers can be applied globally or to individual draggable elements.
+
+### Global modifiers
+
+Modifiers can be applied globally by passing them to the `<DragDropProvider>` component.
+
+```jsx
+import {DragDropProvider} from '@dnd-kit/react';
+import {RestrictToVerticalAxis} from '@dnd-kit/abstract/modifiers';
+import {RestrictToWindow} from '@dnd-kit/dom/modifiers';
+
+function App() {
+  return (
+    <DragDropProvider modifiers={[RestrictToWindow, RestrictToVerticalAxis]}>
+      {...}
+    </DragDropProvider>
+  )
+}
+```
+
+### Local modifiers
+
+<Info>Local modifiers take precedence over global modifiers.</Info>
+
+Modifiers can also be applied to individual draggable elements by passing them to the `modifiers` prop.
+
+```jsx
+import {useDraggable} from '@dnd-kit/react';
+import {RestrictToVerticalAxis} from '@dnd-kit/abstract/modifiers';
+import {RestrictToWindow} from '@dnd-kit/dom/modifiers';
+
+function Draggable({id}) {
+  const {ref} = useDraggable({
+    id,
+    modifiers: [RestrictToVerticalAxis, RestrictToWindow],
+  });
+}
+```

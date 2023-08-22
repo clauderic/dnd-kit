@@ -1,3 +1,4 @@
+import React, {type PropsWithChildren} from 'react';
 import type {Meta, StoryObj} from '@storybook/react';
 import {
   RestrictToHorizontalAxis,
@@ -5,11 +6,18 @@ import {
 } from '@dnd-kit/abstract/modifiers';
 import {RestrictToElement, RestrictToWindow} from '@dnd-kit/dom/modifiers';
 
+import docs from './docs/ModifierDocs.mdx';
 import {DraggableExample} from '../DraggableExample';
 
 const meta: Meta<typeof DraggableExample> = {
   title: 'React/Draggable/Modifiers',
   component: DraggableExample,
+  tags: ['autodocs'],
+  parameters: {
+    docs: {
+      page: docs,
+    },
+  },
 };
 
 export default meta;
@@ -39,10 +47,31 @@ export const WindowModifier: Story = {
 export const ContainerModifier: Story = {
   name: 'Restrict to container',
   args: {
-    container: true,
+    container({children}) {
+      return (
+        <div
+          style={{
+            display: 'flex',
+            width: '60%',
+            minWidth: 300,
+            margin: '40px 80px',
+            height: 350,
+            outline: '3px solid rgba(0,0,0,0.2)',
+            background: '#FFF',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 30,
+            borderRadius: 8,
+          }}
+          data-container
+        >
+          {children}
+        </div>
+      );
+    },
     modifiers: [
       RestrictToElement.configure({
-        getElement() {
+        element() {
           return document.querySelector('[data-container]');
         },
       }),

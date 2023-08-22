@@ -1,0 +1,21 @@
+.Info {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: stretch;
+  padding: 16px 24px;
+  color: rgba(0,37,158, 0.9);
+  background-color: rgba(1,68,255,0.059);
+  border: 1px solid rgb(0 37 158 / 17%);
+  border-radius: 10px;
+}
+
+.Info > p {
+  color: inherit;
+  margin: 0;
+}
+
+.Info > svg {
+  width: 20px;
+  height: 20px;
+}

@@ -6,8 +6,10 @@ import type {DragDropManager} from '@dnd-kit/dom';
 import {getBoundingRectangle} from '@dnd-kit/dom/utilities';
 
 interface Options {
-  element?: Element | null;
-  getElement?(operation: DragDropManager['dragOperation']): Element | null;
+  element?:
+    | Element
+    | null
+    | ((operation: DragDropManager['dragOperation']) => Element | null);
 }
 
 export class RestrictToElement extends Modifier<DragDropManager, Options> {
@@ -25,8 +27,9 @@ export class RestrictToElement extends Modifier<DragDropManager, Options> {
       const {status} = dragOperation;
 
       if (status.initialized) {
-        const {element, getElement} = this.options;
-        const target = element ?? getElement?.(dragOperation);
+        const {element} = this.options;
+        const target =
+          typeof element === 'function' ? element(dragOperation) : element;
 
         if (!target) {
           return;
