@@ -1,4 +1,4 @@
-import {effect} from '@dnd-kit/state';
+import {batch, effect} from '@dnd-kit/state';
 import type {CleanupFunction} from '@dnd-kit/state';
 import {Sensor, configurator} from '@dnd-kit/abstract';
 import {
@@ -266,17 +266,18 @@ export class PointerSensor extends Sensor<
   }
 
   protected handleStart(source: Draggable, event: PointerEvent) {
+    const {manager, initialCoordinates} = this;
+
     this.#clearTimeout?.();
 
-    if (
-      !this.initialCoordinates ||
-      this.manager.dragOperation.status.initialized
-    ) {
+    if (!initialCoordinates || manager.dragOperation.status.initialized) {
       return;
     }
 
-    this.manager.actions.setDragSource(source.id);
-    this.manager.actions.start({coordinates: this.initialCoordinates, event});
+    batch(() => {
+      manager.actions.setDragSource(source.id);
+      manager.actions.start({coordinates: initialCoordinates, event});
+    });
 
     this.sideEffects();
   }

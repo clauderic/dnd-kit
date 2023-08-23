@@ -1,5 +1,5 @@
 import {Sensor} from '@dnd-kit/abstract';
-import {effect} from '@dnd-kit/state';
+import {batch, effect} from '@dnd-kit/state';
 import type {CleanupFunction} from '@dnd-kit/state';
 import {
   DOMRectangle,
@@ -114,27 +114,31 @@ export class KeyboardSensor extends Sensor<
     source: Draggable,
     options: KeyboardSensorOptions | undefined
   ) {
-    if (!source.element) {
+    const {element} = source;
+
+    if (!element) {
       throw new Error('Source draggable does not have an associated element');
     }
-
-    const {center} = new DOMRectangle(source.element);
-
-    this.sideEffects();
-
-    this.manager.actions.setDragSource(source.id);
-    this.manager.actions.start({
-      event,
-      coordinates: {
-        x: center.x,
-        y: center.y,
-      },
-    });
 
     event.preventDefault();
     event.stopImmediatePropagation();
 
-    const sourceDocument = getDocument(source.element);
+    const {center} = new DOMRectangle(element);
+
+    batch(() => {
+      this.manager.actions.setDragSource(source.id);
+      this.manager.actions.start({
+        event,
+        coordinates: {
+          x: center.x,
+          y: center.y,
+        },
+      });
+    });
+
+    this.sideEffects();
+
+    const sourceDocument = getDocument(element);
     const sourceWindow = getWindow(sourceDocument);
 
     const listeners = [

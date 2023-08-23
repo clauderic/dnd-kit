@@ -1,7 +1,11 @@
 import {CorePlugin} from '@dnd-kit/abstract';
 import {batch, computed, effect, signal, untracked} from '@dnd-kit/state';
 import type {CleanupFunction} from '@dnd-kit/state';
-import {createPlaceholder, DOMRectangle} from '@dnd-kit/dom/utilities';
+import {
+  createPlaceholder,
+  DOMRectangle,
+  scrollIntoViewIfNeeded,
+} from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.js';
 
@@ -136,21 +140,10 @@ export class DraggableFeedback extends CorePlugin<DragDropManager> {
           subtree: true,
         });
 
-        const initialInilineStyles =
-          currentElement instanceof HTMLElement
-            ? {
-                width: currentElement.style.width,
-                height: currentElement.style.height,
-              }
-            : undefined;
-
         const resizeObserver = new ResizeObserver(() => {
           const {width, height} = new DOMRectangle(placeholderElement, true);
 
-          if (currentElement instanceof HTMLElement) {
-            currentElement.style.setProperty('width', `${width}px`);
-            currentElement.style.setProperty('height', `${height}px`);
-          }
+          overlay?.resize(width, height);
         });
         resizeObserver.observe(placeholderElement);
 
@@ -184,21 +177,6 @@ export class DraggableFeedback extends CorePlugin<DragDropManager> {
           resizeObserver.disconnect();
           mutationObservers.forEach((observer) => observer.disconnect());
           upatch?.();
-
-          if (initialInilineStyles && currentElement instanceof HTMLElement) {
-            currentElement.style.setProperty(
-              'width',
-              initialInilineStyles.width
-            );
-            currentElement.style.setProperty(
-              'height',
-              initialInilineStyles.height
-            );
-
-            if (currentElement.getAttribute('style') === '') {
-              currentElement.removeAttribute('style');
-            }
-          }
         };
       }),
       effect(() => {
@@ -216,6 +194,8 @@ export class DraggableFeedback extends CorePlugin<DragDropManager> {
         const currentElement = source.element;
 
         if (!overlay) {
+          scrollIntoViewIfNeeded(currentElement);
+
           overlay = new Overlay(manager, {
             anchor: currentElement,
             tagName: options.tagName,

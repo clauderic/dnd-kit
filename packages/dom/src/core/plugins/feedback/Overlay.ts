@@ -1,4 +1,4 @@
-import {effect, untracked} from '@dnd-kit/state';
+import {effects, untracked} from '@dnd-kit/state';
 import type {CleanupFunction} from '@dnd-kit/state';
 import {
   isKeyboardEvent,
@@ -6,7 +6,6 @@ import {
   scheduler,
   createPlaceholder,
 } from '@dnd-kit/dom/utilities';
-import {BoundingRectangle, Rectangle} from '@dnd-kit/geometry';
 
 import {DragDropManager} from '../../manager/index.js';
 import type {Transition} from './types.js';
@@ -16,7 +15,6 @@ const INSIGNIFICANT_DELTA = 1;
 
 interface Options {
   anchor: Element;
-  boundingRectangle?: BoundingRectangle;
   tagName?: string;
   transition?: Transition | null;
 }
@@ -31,12 +29,10 @@ export class Overlay {
     private manager: DragDropManager,
     private options: Options
   ) {
-    const {
-      anchor,
-      boundingRectangle = new DOMRectangle(anchor),
-      tagName = anchor.parentElement?.tagName.toLowerCase(),
-    } = options;
-    const {top, left, width, height} = boundingRectangle;
+    const {anchor, tagName = anchor.parentElement?.tagName.toLowerCase()} =
+      options;
+    const shape = new DOMRectangle(anchor);
+    const {top, left, width, height} = shape.boundingRectangle;
     const element = document.createElement(tagName || 'dialog');
     const style = document.createElement('style');
     style.innerText = css.trim().replace(/\s+/g, '');
@@ -55,6 +51,7 @@ export class Overlay {
     element.setAttribute('data-dnd-kit-overlay', '');
 
     this.element = element;
+    this.updatePosition = this.updatePosition.bind(this);
 
     const currentPosition = untracked(
       () => manager.dragOperation.position.current
@@ -64,67 +61,47 @@ export class Overlay {
       y: (currentPosition.y - top) / height,
     };
 
-    effect(() => {
-      const {source} = manager.dragOperation;
+    this.destroy = effects(
+      () => {
+        const {dragOperation} = manager;
+        const {status, transform: _} = dragOperation;
 
-      if (!source || !source.element) {
-        return;
-      }
+        if (status.dragging) {
+          scheduler.schedule(this.updatePosition);
+        }
+      },
+      () => {
+        const {source} = manager.dragOperation;
 
-      let isFirstEvent = true;
-
-      const resizeObserver = new ResizeObserver((entries) => {
-        if (isFirstEvent) {
-          isFirstEvent = false;
+        if (!source?.element) {
           return;
         }
 
-        const {target} = entries[0];
-        const {width, height} = new DOMRectangle(target, true);
-        const currentWidth = parseInt(element.style.width, 10);
-        const currentHeight = parseInt(element.style.height, 10);
-        const deltaX = currentWidth - width;
-        const deltaY = currentHeight - height;
-        const {x, y} = this.delta;
+        const resizeObserver = new ResizeObserver((entries) => {
+          const {target} = entries[0];
+          const {width, height} = new DOMRectangle(target, true);
+          const deltaX = parseFloat(
+            (shape.boundingRectangle.width - width).toFixed(2)
+          );
+          const deltaY = parseFloat(
+            (shape.boundingRectangle.height - height).toFixed(2)
+          );
 
-        this.delta = {
-          x: x + deltaX * transformOrigin.x,
-          y: y + deltaY * transformOrigin.y,
+          this.delta = {
+            x: deltaX * transformOrigin.x,
+            y: deltaY * transformOrigin.y,
+          };
+
+          this.resize(width, height);
+        });
+
+        resizeObserver.observe(source.element);
+
+        return () => {
+          resizeObserver.disconnect();
         };
-
-        element.style.setProperty('width', `${width}px`);
-        element.style.setProperty('height', `${height}px`);
-
-        untracked(updatePosition);
-      });
-      resizeObserver.observe(source.element);
-
-      return () => {
-        resizeObserver.disconnect();
-      };
-    });
-
-    const updatePosition = () => {
-      const transform = manager.dragOperation.transform;
-      const x = transform.x + this.delta.x;
-      const y = transform.y + this.delta.y;
-
-      manager.dragOperation.shape = new DOMRectangle(
-        element.firstElementChild ?? element
-      ).translate(x - this.transform.x, y - this.transform.y);
-      element.style.setProperty('transform', `translate3d(${x}px, ${y}px, 0)`);
-
-      this.transform = {x, y};
-    };
-
-    this.destroy = effect(() => {
-      const {dragOperation} = manager;
-      const {status, transform: _} = dragOperation;
-
-      if (status.dragging) {
-        scheduler.schedule(updatePosition);
       }
-    });
+    );
   }
 
   public isConnected = false;
@@ -170,6 +147,39 @@ export class Overlay {
     return this.element.contains(element);
   }
 
+  public resize(width: number, height: number) {
+    const {element} = this;
+
+    const transition = element.style.getPropertyValue('transition');
+
+    if (transition) {
+      element.style.setProperty('transition', '');
+    }
+
+    element.style.setProperty('width', `${width}px`);
+    element.style.setProperty('height', `${height}px`);
+    this.updatePosition();
+
+    if (transition) {
+      element.style.setProperty('transition', transition);
+    }
+  }
+
+  private updatePosition() {
+    const {manager, element} = this;
+
+    const transform = manager.dragOperation.transform;
+    const x = transform.x + this.delta.x;
+    const y = transform.y + this.delta.y;
+
+    manager.dragOperation.shape = new DOMRectangle(
+      element.firstElementChild ?? element
+    ).translate(x - this.transform.x, y - this.transform.y);
+    element.style.setProperty('transform', `translate3d(${x}px, ${y}px, 0)`);
+
+    this.transform = {x, y};
+  }
+
   public dropAnimation() {
     return new Promise<void>((resolve) => {
       const {manager} = this;
@@ -188,7 +198,7 @@ export class Overlay {
       const {id} = source;
       const draggable = id != null ? manager.registry.draggables.get(id) : null;
       const element = draggable?.element;
-      const currentShape = manager.dragOperation.shape?.current;
+      const currentShape = new DOMRectangle(this.element);
 
       if (element && currentShape) {
         const shape = new DOMRectangle(element);
@@ -218,7 +228,7 @@ export class Overlay {
             .animate(
               {
                 transform: [
-                  this.element.style.transform,
+                  `translate3d(${this.transform.x}px, ${this.transform.y}px, 0)`,
                   `translate3d(${finalTransform.x}px, ${finalTransform.y}px, 0)`,
                 ],
               },
