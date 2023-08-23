@@ -2443,6 +2443,23 @@
     memoizerific "^1.11.3"
     prop-types "^15.7.2"
 
+"@storybook/addons@^7.0.0":
+  version "7.3.2"
+  resolved "https://registry.yarnpkg.com/@storybook/addons/-/addons-7.3.2.tgz#5e78757e67a414e4ae444cda5d7f39ceff6e12f7"
+  integrity sha512-qYwHniTJzfR7jKh5juYCjU9ukG7l1YAAt7BpnouItgRutxU/+UoC2iAFooQW+i74SxDoovqnEp9TkG7TAFOLxQ==
+  dependencies:
+    "@storybook/manager-api" "7.3.2"
+    "@storybook/preview-api" "7.3.2"
+    "@storybook/types" "7.3.2"
+
+"@storybook/api@^7.0.0":
+  version "7.3.2"
+  resolved "https://registry.yarnpkg.com/@storybook/api/-/api-7.3.2.tgz#9869c971f05f2e249df51f3fac844da32915d291"
+  integrity sha512-HAiaEl9uFQJM3AC5LhdnUbqr+7BVMaCNzhbUg1sWfO7sTFXPO0P1BAz9UuDKPlndwaVGcGpypRw9P/bdpuWLfA==
+  dependencies:
+    "@storybook/client-logger" "7.3.2"
+    "@storybook/manager-api" "7.3.2"
+
 "@storybook/blocks@7.3.2":
   version "7.3.2"
   resolved "https://registry.npmjs.org/@storybook/blocks/-/blocks-7.3.2.tgz"
@@ -2623,7 +2640,7 @@
     prettier "^2.8.0"
     recast "^0.23.1"
 
-"@storybook/components@7.3.2":
+"@storybook/components@7.3.2", "@storybook/components@^7.0.0":
   version "7.3.2"
   resolved "https://registry.npmjs.org/@storybook/components/-/components-7.3.2.tgz"
   integrity sha512-hsa1OJx4yEtLHTzrCxq8G9U5MTbcTuItj9yp1gsW9RTNc/V1n/rReQv4zE/k+//2hDsLrS62o3yhZ9VksRhLNw==
@@ -2704,7 +2721,7 @@
     resolve-from "^5.0.0"
     ts-dedent "^2.0.0"
 
-"@storybook/core-events@7.3.2":
+"@storybook/core-events@7.3.2", "@storybook/core-events@^7.0.0":
   version "7.3.2"
   resolved "https://registry.npmjs.org/@storybook/core-events/-/core-events-7.3.2.tgz"
   integrity sha512-DCrM3s+sxLKS8vl0zB+1tZEtcl5XQTOGl46XgRRV/SIBabFbsC0l5pQPswWkTUsIqdREtiT0YUHcXB1+YDyFvA==
@@ -3001,7 +3018,7 @@
     fs-extra "^11.1.0"
     read-pkg-up "^7.0.1"
 
-"@storybook/theming@7.3.2", "@storybook/theming@^7.3.2":
+"@storybook/theming@7.3.2", "@storybook/theming@^7.0.0", "@storybook/theming@^7.3.2":
   version "7.3.2"
   resolved "https://registry.npmjs.org/@storybook/theming/-/theming-7.3.2.tgz"
   integrity sha512-npVsnmNAtqGwl1K7vLC/hcVhL8tBC8G0vdZXEcufF0jHdQmRCUs9ZVrnR6W0LCrtmIHDaDoO7PqJVSzu2wgVxw==
@@ -8321,6 +8338,20 @@ store2@^2.14.2:
   version "2.14.2"
   resolved "https://registry.npmjs.org/store2/-/store2-2.14.2.tgz"
   integrity sha512-siT1RiqlfQnGqgT/YzXVUNsom9S0H1OX+dpdGN1xkyYATo4I6sep5NmsRD/40s3IIOvlCq6akxkqG82urIZW1w==
+
+storybook-dark-mode@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/storybook-dark-mode/-/storybook-dark-mode-3.0.1.tgz#b79e8809fc89da9c06edb5d2d20cba163c256adc"
+  integrity sha512-3V6XBhkUq63BF6KzyDBbfV5/8sYtF4UtVccH1tK+Lrd4p0tF8k7yHOvVDhFL9hexnKXcLEnbC+42YDTPvjpK+A==
+  dependencies:
+    "@storybook/addons" "^7.0.0"
+    "@storybook/api" "^7.0.0"
+    "@storybook/components" "^7.0.0"
+    "@storybook/core-events" "^7.0.0"
+    "@storybook/global" "^5.0.0"
+    "@storybook/theming" "^7.0.0"
+    fast-deep-equal "^3.1.3"
+    memoizerific "^1.11.3"
 
 storybook@next:
   version "7.4.0-alpha.0"

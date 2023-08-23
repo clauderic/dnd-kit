@@ -47,6 +47,16 @@
   }
 }
 
+:global(.dark) {
+  .Dropzone {
+    box-shadow: none;
+  }
+
+  .highlight {
+    box-shadow: inset #1eb99d 0 0 0 3px, rgba(0, 0, 0, 0.1) 20px 14px 24px;
+  }
+}
+
 .dropped > svg {
   opacity: 0.2;
   transform: translate3d(-50%, 100%, 0) scale(0.8);

@@ -9,7 +9,7 @@ import {
 import {getDocument, Listeners} from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.js';
-import type {Draggable} from '../../nodes/index.js';
+import type {Draggable} from '../../entities/index.js';
 
 export interface DelayConstraint {
   value: number;

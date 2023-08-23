@@ -9,7 +9,7 @@ import {
 } from '@dnd-kit/state';
 
 import type {DragDropManager} from '../manager/index.js';
-import type {Draggable, Droppable} from '../nodes/index.js';
+import type {Draggable, Droppable} from '../entities/index.js';
 import {Plugin} from '../plugins/index.js';
 import type {Collision, CollisionDetector, Collisions} from './types.js';
 import {sortCollisions} from './utilities.js';

@@ -2,7 +2,11 @@ import {Position, type Shape} from '@dnd-kit/geometry';
 import type {Coordinates} from '@dnd-kit/geometry';
 import {batch, computed, signal} from '@dnd-kit/state';
 
-import type {Draggable, Droppable, UniqueIdentifier} from '../nodes/index.js';
+import type {
+  Draggable,
+  Droppable,
+  UniqueIdentifier,
+} from '../entities/index.js';
 
 import type {DragDropManager} from './manager.js';
 

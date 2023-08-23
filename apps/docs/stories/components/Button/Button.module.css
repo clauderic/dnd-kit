@@ -1,4 +1,6 @@
 .Button {
+  --background: #181a22;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -6,7 +8,7 @@
   padding: 10px 20px;
   border: none;
   gap: 10px;
-  background-color: #181a22;
+  background-color: var(--background);
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
@@ -20,7 +22,7 @@
 }
 
 .Button:hover, .Button:focus {
-  background-color: #1e202a;
+  background-color: #111;
 }
 
 .Button:focus-visible:not(.shadow) {
@@ -38,3 +40,10 @@
   touch-action: auto;
 }
 
+:global(.dark) .Button {
+  --background: #000;
+}
+
+:global(.dark) .Button[data-shadow="true"] {
+  --box-shadow: -1px 0 15px 0 rgba(0, 0, 0, 0.1), 0px 15px 15px 0 rgba(0, 0, 0, 0.25);
+}

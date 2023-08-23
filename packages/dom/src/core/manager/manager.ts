@@ -5,7 +5,7 @@ import {
   type Sensors,
 } from '@dnd-kit/abstract';
 
-import type {Draggable, Droppable} from '../nodes/index.js';
+import type {Draggable, Droppable} from '../entities/index.js';
 import {
   AutoScroller,
   Cursor,

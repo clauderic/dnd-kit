@@ -34,6 +34,7 @@
     "@storybook/react": "^7.3.2",
     "@storybook/react-vite": "^7.3.2",
     "@storybook/theming": "^7.3.2",
+    "storybook-dark-mode": "^3.0.1",
     "@vitejs/plugin-react": "^4.0.3",
     "eslint-plugin-storybook": "^0.6.13",
     "serve": "^13.0.2",

@@ -1,24 +1,36 @@
 .Code {
   --background-color: #263038;
   --border-radius: 8px;
+  --border-color: transparent;
+  --box-shadow:  0 1px 3px 0 rgba(0, 0, 0, 0.10), inset 0 0 1px hsla(203, 50%, 30%, 0.5);
 
   max-width: 100%;
   margin: 30px 0;
+  border: 1px solid var(--border-color);
   background-color: var(--background-color);
   border-radius: var(--border-radius);
   color: #fff;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.10), inset 0 0 1px hsla(203, 50%, 30%, 0.5);
+  box-shadow: var(--box-shadow);
 }
 
 .InlineCode {
+  padding: 0.4em 0.6em !important;
+  border-radius: 4px !important;
   color: rgba(0,37,158,0.797) !important;
   background-color: rgba(1,68,255,0.059) !important;
 }
 
-@media (prefers-color-scheme:  dark) {
-  .Code {
-    --background-color: #1b1f27;
-  }
+
+:global(.dark) .Code {
+  --background-color: #2a2c2e;
+  --border-color: rgba(255,255,255,0.1);
+  --box-shadow: none;
+}
+
+:global(.dark) .InlineCode {
+  color: rgb(135 163 255 / 90%) !important;
+  background-color: #2a2c2e !important;
+  border-color: rgba(255,255,255,0.1);
 }
 
 .TabContent {
@@ -31,6 +43,10 @@
   display: flex;
   overflow-x: auto;
   background-color: #1e272d;
+}
+
+:global(.dark) .Tabs {
+  background-color: #222425;
 }
 
 .Tab {

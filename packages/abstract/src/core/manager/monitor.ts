@@ -1,6 +1,6 @@
 import type {Coordinates} from '@dnd-kit/geometry';
 
-import type {Draggable, Droppable} from '../nodes/index.js';
+import type {Draggable, Droppable} from '../entities/index.js';
 import type {Collisions} from '../collision/index.js';
 import type {DragDropManager} from './manager.js';
 import type {DragOperation} from './dragOperation.js';

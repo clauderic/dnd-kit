@@ -53,3 +53,14 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   font-family: var(--font-family);
 }
+
+:global(.dark) .Container {
+  border: none;
+  background-color: rgb(67 69 70);
+
+  &:hover, .shadow {
+    background-color: rgb(89, 92, 93);
+  }
+}
+
+

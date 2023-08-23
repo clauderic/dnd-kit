@@ -1,0 +1,18 @@
+.Container {
+  display: flex;
+  width: 60%;
+  min-width: 300px;
+  margin: 40px 80px;
+  height: 350px;
+  outline: 3px solid rgba(0,0,0,0.2);
+  background: #FFF;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  border-radius: 8px;
+}
+
+:global(.dark) .Container {
+  outline: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.05);
+}

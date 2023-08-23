@@ -15,6 +15,9 @@ const preview = {
         code: Code,
       },
     },
+    darkMode: {
+      stylePreview: true,
+    },
     options: {
       storySort: {
         order: [

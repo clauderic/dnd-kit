@@ -14,15 +14,15 @@ export type {Collision, CollisionDetector} from './collision/index.js';
 export {Modifier} from './modifiers/index.js';
 export type {Modifiers, ModifierConstructor} from './modifiers/index.js';
 
-export {Draggable, Droppable} from './nodes/index.js';
+export {Draggable, Droppable} from './entities/index.js';
 export type {
   Data,
   DraggableInput,
   DroppableInput,
-  Node,
+  Entity,
   Type,
   UniqueIdentifier,
-} from './nodes/index.js';
+} from './entities/index.js';
 
 export {
   Plugin,

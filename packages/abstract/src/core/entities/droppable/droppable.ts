@@ -1,23 +1,22 @@
 import {derived, effects, reactive, type Effect} from '@dnd-kit/state';
 import type {Shape} from '@dnd-kit/geometry';
 
-import {Node} from '../node/index.js';
-import type {NodeInput, Data, Type} from '../node/index.js';
-
+import {Entity} from '../entity/index.js';
+import type {EntityInput, Data, Type} from '../entity/index.js';
 import type {CollisionDetector} from '../../collision/index.js';
 import type {DragDropManager} from '../../manager/index.js';
 
 export interface Input<
   T extends Data = Data,
   U extends Droppable<T> = Droppable<T>,
-> extends NodeInput<T, U> {
+> extends EntityInput<T, U> {
   accept?: Type | Type[];
   collisionPriority?: number;
   collisionDetector: CollisionDetector;
   type?: Type;
 }
 
-export class Droppable<T extends Data = Data> extends Node<T> {
+export class Droppable<T extends Data = Data> extends Entity<T> {
   constructor(
     {collisionDetector, ...input}: Input<T>,
     public manager: DragDropManager

@@ -8,6 +8,7 @@ import {RestrictToElement, RestrictToWindow} from '@dnd-kit/dom/modifiers';
 
 import docs from './docs/ModifierDocs.mdx';
 import {DraggableExample} from '../DraggableExample';
+import styles from './styles.module.css';
 
 const meta: Meta<typeof DraggableExample> = {
   title: 'React/Draggable/Modifiers',
@@ -49,22 +50,7 @@ export const ContainerModifier: Story = {
   args: {
     container({children}) {
       return (
-        <div
-          style={{
-            display: 'flex',
-            width: '60%',
-            minWidth: 300,
-            margin: '40px 80px',
-            height: 350,
-            outline: '3px solid rgba(0,0,0,0.2)',
-            background: '#FFF',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 30,
-            borderRadius: 8,
-          }}
-          data-container
-        >
+        <div className={styles.Container} data-container>
           {children}
         </div>
       );

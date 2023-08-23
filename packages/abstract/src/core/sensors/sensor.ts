@@ -1,7 +1,7 @@
 import {CleanupFunction} from '@dnd-kit/state';
 
 import type {DragDropManager} from '../manager/index.js';
-import type {Draggable} from '../nodes/index.js';
+import type {Draggable} from '../entities/index.js';
 import {
   Plugin,
   type PluginConstructor,

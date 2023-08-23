@@ -4,7 +4,7 @@ import type {CleanupFunction} from '@dnd-kit/state';
 import {Listeners} from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.js';
-import type {Draggable} from '../../nodes/index.js';
+import type {Draggable} from '../../entities/index.js';
 
 import {encode, decode} from './encoding.js';
 

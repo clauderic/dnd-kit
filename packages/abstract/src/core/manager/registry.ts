@@ -1,6 +1,11 @@
 import type {CleanupFunction} from '@dnd-kit/state';
 
-import {Draggable, Droppable, Node, NodeRegistry} from '../nodes/index.js';
+import {
+  Draggable,
+  Droppable,
+  Entity,
+  EntityRegistry,
+} from '../entities/index.js';
 import {
   PluginRegistry,
   Plugin,
@@ -26,13 +31,13 @@ export class DragDropRegistry<
     this.modifiers = new PluginRegistry<V, ModifierConstructor<V>>(manager);
   }
 
-  public draggables = new NodeRegistry<T>();
-  public droppables = new NodeRegistry<U>();
+  public draggables = new EntityRegistry<T>();
+  public droppables = new EntityRegistry<U>();
   public plugins: PluginRegistry<V, PluginConstructor<V>>;
   public sensors: PluginRegistry<V, SensorConstructor<V>>;
   public modifiers: PluginRegistry<V, ModifierConstructor<V>>;
 
-  public register(input: Node): Node;
+  public register(input: Entity): Entity;
   public register(input: Draggable): Draggable;
   public register(input: Droppable): Droppable;
   public register(input: SensorConstructor, options?: SensorOptions): Sensor;
@@ -62,14 +67,14 @@ export class DragDropRegistry<
     throw new Error('Invalid instance type');
   }
 
-  public unregister(input: Node): CleanupFunction;
+  public unregister(input: Entity): CleanupFunction;
   public unregister(input: Draggable): CleanupFunction;
   public unregister(input: Droppable): CleanupFunction;
   public unregister(input: SensorConstructor): CleanupFunction;
   public unregister(input: ModifierConstructor): CleanupFunction;
   public unregister(input: PluginConstructor): CleanupFunction;
   public unregister(input: any) {
-    if (input instanceof Node) {
+    if (input instanceof Entity) {
       if (input instanceof Draggable) {
         return this.draggables.unregister(input.id, input as T);
       }

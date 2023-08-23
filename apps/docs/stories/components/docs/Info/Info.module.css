@@ -4,10 +4,14 @@
   align-items: center;
   justify-content: stretch;
   padding: 16px 24px;
-  color: rgba(0,37,158, 0.9);
-  background-color: rgba(1,68,255,0.059);
-  border: 1px solid rgb(0 37 158 / 17%);
+  color: #333;
+  background-color: #f9f9f9;
+  border: 1px solid #57595a42;
   border-radius: 10px;
+}
+
+:global(.dark) .Info {
+  background-color: #ffffff05;
 }
 
 .Info > p {
@@ -16,6 +20,7 @@
 }
 
 .Info > svg {
+  color: #2196F3;
   width: 20px;
   height: 20px;
 }

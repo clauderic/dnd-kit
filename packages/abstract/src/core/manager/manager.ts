@@ -1,4 +1,4 @@
-import type {Draggable, Droppable} from '../nodes/index.js';
+import type {Draggable, Droppable} from '../entities/index.js';
 import {CollisionObserver, CollisionNotifier} from '../collision/index.js';
 import type {Plugins, Plugin} from '../plugins/index.js';
 import type {Sensor, Sensors} from '../sensors/index.js';

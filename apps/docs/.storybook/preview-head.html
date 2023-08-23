@@ -7,7 +7,40 @@
     --font-family: "Nunito Sans",-apple-system,".SFNSText-Regular","San Francisco",BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
 
     font-family: var(--font-family);
+  }
+
+  body {
     background-color: #FCFCFC;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body:not(.light), .sb-preparing-story {
+      background-color: #2a2c2e;
+    }
+
+    .sb-preparing-docs {
+      background-color: #222425;
+    }
+
+    .sb-previewBlock, .sb-argstableBlock[aria-hidden="true"] {
+      filter: invert(0.9);
+    }
+  }
+
+  body.dark {
+    background-color: #2a2c2e;
+  }
+
+  .dark .sbdocs {
+    background-color: #222425
+  }
+
+  .dark .sbdocs :is(h1, h2, h3, h4, h5, h6) {
+    color: rgba(255,255,255,0.98);
+  }
+
+  .dark .sbdocs :is(p, li) {
+    color: rgba(255,255,255,0.9);
   }
 
   * {
@@ -72,6 +105,10 @@
 
   a {
     color: #3a58ed !important;
+  }
+
+  .dark a {
+    color: #8ea1ff !important;
   }
 
   section {

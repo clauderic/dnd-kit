@@ -20,17 +20,62 @@
 }
 
 .hero {
+  position: relative;
+  --gradient: linear-gradient(65deg, #56fff410, #001AFF10, #5F6AF210, #F25FD010, #56FFF510, #F25FD010, #001AFF10, #56fff410);
+  background: transparent;
   display: grid;
   align-items: center;
-
   min-height: 200px;
   max-height: 400px;
-  background: linear-gradient(65deg, #56fff410, #001AFF10, #5F6AF210, #F25FD010, #56FFF510, #F25FD010, #001AFF10, #56fff410);
+}
+
+.hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--gradient);
   animation: gradient 16s linear infinite;
   animation-direction: alternate;
   background-size: 600% 100%;
+  opacity: 0.9;
 }
 
+:global(.dark) .hero {
+  --gradient: linear-gradient(65deg, #56fff480, #001AFF80, #5F6AF280, #F25FD080, #56FFF580, #F25FD080, #001AFF80, #56fff480);
+
+  animation: background 16s linear infinite;
+}
+
+:global(.dark) .Preview {
+  background-color: #38393c;
+}
+
+@keyframes background {
+  0% {
+    background-color: #ff0000;
+  }
+  25% {
+    background-color: #7f00ff;
+  }
+  50% {
+    background-color: #00affa;
+  }
+  75% {
+    background-color: #00f594;
+  }
+  100% {
+    background-color: #ff0000
+  }
+}
 
 
 @keyframes gradient {
