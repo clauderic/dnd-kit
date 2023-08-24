@@ -94,8 +94,6 @@ export class Accessibility extends Plugin<DragDropManager> {
             activator.setAttribute('role', defaultAttributes.role);
           }
 
-          activator.setAttribute('aria-disabled', String(draggable.disabled));
-
           if (!activator.hasAttribute('role-description')) {
             activator.setAttribute(
               'aria-roledescription',
@@ -106,6 +104,13 @@ export class Accessibility extends Plugin<DragDropManager> {
           if (!activator.hasAttribute('aria-describedby')) {
             activator.setAttribute('aria-describedby', descriptionId);
           }
+
+          activator.setAttribute(
+            'aria-pressed',
+            String(draggable.isDragSource)
+          );
+
+          activator.setAttribute('aria-disabled', String(draggable.disabled));
         }
       }
 
