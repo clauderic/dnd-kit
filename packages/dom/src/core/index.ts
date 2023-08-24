@@ -12,6 +12,7 @@ export {PointerSensor, KeyboardSensor} from './sensors/index.js';
 export type {Sensors} from './sensors/index.js';
 
 export {
+  Accessibility,
   AutoScroller,
   DraggableFeedback,
   Scroller,

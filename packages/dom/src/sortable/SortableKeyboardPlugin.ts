@@ -19,7 +19,7 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager) {
     super(manager);
 
-    const effectCleanup = effect(() => {
+    const cleanupEffect = effect(() => {
       const {dragOperation} = manager;
 
       if (!isKeyboardEvent(dragOperation.activatorEvent)) {
@@ -165,7 +165,7 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
 
     this.destroy = () => {
       unsubscribe();
-      effectCleanup();
+      cleanupEffect();
     };
   }
 }

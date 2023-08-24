@@ -21,7 +21,7 @@ export class Cursor extends Plugin<DragDropManager> {
     const style = document.createElement('style');
     document.head.appendChild(style);
 
-    const effectCleanup = effect(() => {
+    const cleanupEffect = effect(() => {
       const {dragOperation} = this.manager;
       const {cursor = 'grabbing'} = this.options ?? {};
 
@@ -33,7 +33,7 @@ export class Cursor extends Plugin<DragDropManager> {
     });
 
     this.destroy = () => {
-      effectCleanup();
+      cleanupEffect();
       style.remove();
     };
   }

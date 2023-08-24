@@ -46,7 +46,7 @@ export class Draggable<T extends Data = Data> extends AbstractDraggable<T> {
 
     this.feedback = feedback;
 
-    const effectCleanup = effect(() => {
+    const cleanupEffect = effect(() => {
       const sensors = this.sensors?.map(descriptor) ?? [...manager.sensors];
       const unbindFunctions = sensors.map((entry) => {
         const sensorInstance =
@@ -67,7 +67,7 @@ export class Draggable<T extends Data = Data> extends AbstractDraggable<T> {
     const {destroy} = this;
 
     this.destroy = () => {
-      effectCleanup();
+      cleanupEffect();
       destroy();
     };
   }

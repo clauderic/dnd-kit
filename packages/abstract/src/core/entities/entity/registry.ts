@@ -19,6 +19,10 @@ export class EntityRegistry<T extends Entity> {
     return this.map.peek().values();
   }
 
+  public get value() {
+    return this.map.value.values();
+  }
+
   /**
    * Checks if a entity with the given identifier exists in the registry.
    * @param identifier - The unique identifier of the entity.

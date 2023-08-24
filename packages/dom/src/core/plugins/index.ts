@@ -1,3 +1,5 @@
+export {Accessibility} from './accessibility/index.js';
+
 export {Cursor} from './cursor/index.js';
 
 export {DraggableFeedback} from './feedback/index.js';

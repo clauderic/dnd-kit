@@ -5,10 +5,6 @@ export class Button extends HTMLElement {
     super();
   }
   connectedCallback() {
-    if (!this.querySelector('button')) {
-      this.tabIndex = 1;
-    }
-
     this.classList.add(styles.Button);
   }
 }

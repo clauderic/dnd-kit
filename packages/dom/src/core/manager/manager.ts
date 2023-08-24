@@ -7,6 +7,7 @@ import {
 
 import type {Draggable, Droppable} from '../entities/index.js';
 import {
+  Accessibility,
   AutoScroller,
   Cursor,
   DraggableFeedback,
@@ -21,7 +22,7 @@ export const defaultPreset: {
   plugins: Plugins<DragDropManager>;
   sensors: Sensors<DragDropManager>;
 } = {
-  plugins: [AutoScroller, Cursor, DraggableFeedback],
+  plugins: [Accessibility, AutoScroller, Cursor, DraggableFeedback],
   sensors: [
     PointerSensor.configure({
       activationConstraints(event, source) {
