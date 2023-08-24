@@ -25,21 +25,21 @@ export class ScrollIntentTracker extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager) {
     super(manager);
 
-    const scrollIntent = signal<ScrollIntent | null>(null);
+    const scrollIntent = signal<ScrollIntent>(new ScrollIntent());
     let previousDelta: Coordinates | null = null;
 
     this.signal = scrollIntent;
 
     effect(() => {
-      const {position} = manager.dragOperation;
+      const {status} = manager.dragOperation;
 
-      if (!position) {
+      if (!status.initialized) {
         previousDelta = null;
-        scrollIntent.value = null;
+        scrollIntent.value = new ScrollIntent();
         return;
       }
 
-      const {delta} = position;
+      const {delta} = manager.dragOperation.position;
 
       if (previousDelta) {
         const directions = {
@@ -47,7 +47,7 @@ export class ScrollIntentTracker extends Plugin<DragDropManager> {
           y: getDirection(delta.y, previousDelta.y),
         };
 
-        const intent = scrollIntent.peek() ?? new ScrollIntent();
+        const intent = scrollIntent.peek();
 
         batch(() => {
           for (const axis of Axes) {
