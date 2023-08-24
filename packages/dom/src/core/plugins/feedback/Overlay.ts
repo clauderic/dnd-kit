@@ -29,8 +29,7 @@ export class Overlay {
     private manager: DragDropManager,
     private options: Options
   ) {
-    const {anchor, tagName = anchor.parentElement?.tagName.toLowerCase()} =
-      options;
+    const {anchor, tagName = getTagName(anchor.parentElement)} = options;
     const shape = new DOMRectangle(anchor);
     const {top, left, width, height} = shape.boundingRectangle;
     const element = document.createElement(tagName || 'dialog');
@@ -254,4 +253,14 @@ export class Overlay {
 
     return this.dropAnimation();
   }
+}
+
+function getTagName(element: Element | null) {
+  const parentTagName = element?.tagName.toLowerCase();
+
+  if (['ul', 'ol', 'dl', 'dialog'].includes(parentTagName)) {
+    return parentTagName;
+  }
+
+  return 'div';
 }

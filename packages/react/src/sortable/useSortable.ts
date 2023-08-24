@@ -14,8 +14,8 @@ import {
 import {getCurrentValue, type RefOrValue} from '@dnd-kit/react/utilities';
 
 export interface UseSortableInput<T extends Data = Data>
-  extends Omit<SortableInput<T>, 'activator' | 'element'> {
-  activator?: RefOrValue<Element>;
+  extends Omit<SortableInput<T>, 'handle' | 'element'> {
+  handle?: RefOrValue<Element>;
   element?: RefOrValue<Element>;
 }
 
@@ -33,14 +33,14 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     type,
   } = input;
   const manager = useDragDropManager();
-  const activator = getCurrentValue(input.activator);
+  const handle = getCurrentValue(input.handle);
   const element = getCurrentValue(input.element);
   const sortable = useConstant(
     () =>
       new Sortable(
         {
           ...input,
-          activator,
+          handle,
           element,
         },
         manager
@@ -70,7 +70,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     immediateEffect
   );
   useOnValueChange(index, () => (sortable.index = index), layoutEffect);
-  useOnValueChange(activator, () => (sortable.activator = activator));
+  useOnValueChange(handle, () => (sortable.handle = handle));
   useOnValueChange(element, () => (sortable.element = element));
   useOnValueChange(disabled, () => (sortable.disabled = disabled === true));
   useOnValueChange(sensors, () => (sortable.sensors = sensors));
@@ -99,9 +99,9 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     get isDropTarget() {
       return isDropTarget.value;
     },
-    activatorRef: useCallback(
+    handleRef: useCallback(
       (element: Element | null) => {
-        sortable.activator = element ?? undefined;
+        sortable.handle = element ?? undefined;
       },
       [sortable]
     ),

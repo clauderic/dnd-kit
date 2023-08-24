@@ -205,8 +205,8 @@ export class Sortable<T extends Data = Data> {
     });
   }
 
-  public set activator(activator: Element | undefined) {
-    this.draggable.activator = activator;
+  public set handle(handle: Element | undefined) {
+    this.draggable.handle = handle;
   }
 
   @reactive

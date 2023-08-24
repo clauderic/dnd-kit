@@ -74,7 +74,7 @@ export class PointerSensor extends Sensor<
 
   public bind(source: Draggable, options = this.options) {
     const unbind = effect(() => {
-      const target = source.activator ?? source.element;
+      const target = source.handle ?? source.element;
       const listener: EventListener = (event: Event) => {
         if (event instanceof PointerEvent) {
           this.handlePointerDown(event, source, options);

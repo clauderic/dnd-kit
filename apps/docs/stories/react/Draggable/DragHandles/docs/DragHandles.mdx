@@ -1,0 +1,52 @@
+import {RestrictToElement} from '@dnd-kit/dom/modifiers';
+
+import {Info, Preview} from '../../../../components';
+import {DragHandle} from '../DragHandles.stories.tsx';
+
+# Drag handles
+
+Restrict dragging to a specific element within a draggable element.
+
+<Preview id="modifier-hero" hero of={DragHandle} />
+
+## Usage
+
+To create a drag handle, provide a `handle` element to the `useDraggable` hook by consuming the `handleRef` from the output object of the `useDraggable` hook.
+
+```jsx
+import {useDraggable} from '@dnd-kit/core';
+
+function Draggable(props) {
+  const {handleRef, ref} = useDraggable({
+    id: props.id,
+  });
+
+  return (
+    <div ref={ref}>
+      {props.children}
+      <button ref={handleRef}>Drag handle</button>
+    </div>
+  );
+}
+```
+
+Alternatively, you can also pass an `Element` or `ref` to an element as an argument to the `handle` option of `useDraggable`:
+
+```jsx
+import {useDraggable} from '@dnd-kit/core';
+
+function Draggable(props) {
+  const handleRef = useRef(null);
+  const {ref} = useDraggable({
+    id: props.id,
+    handle: handleRef,
+  });
+
+  return (
+    <div ref={ref}>
+      {props.children}
+      <button ref={handle}>Drag handle</button>
+    </div>
+  );
+}
+```

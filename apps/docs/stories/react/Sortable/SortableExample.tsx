@@ -102,7 +102,7 @@ function SortableItem({
   style,
 }: PropsWithChildren<SortableProps>) {
   const [element, setElement] = useState<Element | null>(null);
-  const activatorRef = useRef<HTMLButtonElement | null>(null);
+  const handleRef = useRef<HTMLButtonElement | null>(null);
 
   const {isDragSource} = useSortable({
     id,
@@ -110,14 +110,14 @@ function SortableItem({
     element,
     feedback,
     transition,
-    activator: activatorRef,
+    handle: handleRef,
     collisionDetector,
   });
 
   return (
     <Item
       ref={setElement}
-      actions={dragHandle ? <Handle ref={activatorRef} /> : null}
+      actions={dragHandle ? <Handle ref={handleRef} /> : null}
       shadow={isDragSource}
       style={style}
     >

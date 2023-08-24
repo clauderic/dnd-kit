@@ -243,7 +243,7 @@ function GridItem({
 }: PropsWithChildren<GridItemProps>) {
   const [ref, setRef] = useState<HTMLElement | null>(null);
   const {transform} = useDraggable({
-    activator: ref,
+    handle: ref,
     element: null,
     id,
   });
@@ -329,7 +329,7 @@ interface HandleProps {
 function Handle({direction, onResize}: HandleProps) {
   const ref = useRef<HTMLSpanElement | null>(null);
   const {transform} = useDraggable({
-    activator: ref,
+    handle: ref,
     element: null,
     id: direction,
     type: 'handle',

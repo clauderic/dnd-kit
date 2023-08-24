@@ -8,8 +8,8 @@ import {getCurrentValue, type RefOrValue} from '@dnd-kit/react/utilities';
 import {useDragDropManager} from '../context/index.js';
 
 export interface UseDraggableInput<T extends Data = Data>
-  extends Omit<DraggableInput<T>, 'activator' | 'element'> {
-  activator?: RefOrValue<Element>;
+  extends Omit<DraggableInput<T>, 'handle' | 'element'> {
+  handle?: RefOrValue<Element>;
   element?: RefOrValue<Element>;
 }
 
@@ -18,15 +18,15 @@ export function useDraggable<T extends Data = Data>(
 ) {
   const {disabled, id, sensors} = input;
   const manager = useDragDropManager();
-  const activator = getCurrentValue(input.activator);
+  const handle = getCurrentValue(input.handle);
   const element = getCurrentValue(input.element);
   const draggable = useConstant(
-    () => new Draggable({...input, activator, element}, manager)
+    () => new Draggable({...input, handle, element}, manager)
   );
   const isDragSource = useComputed(() => draggable.isDragSource);
 
   useOnValueChange(id, () => (draggable.id = id));
-  useOnValueChange(activator, () => (draggable.activator = activator));
+  useOnValueChange(handle, () => (draggable.handle = handle));
   useOnValueChange(element, () => (draggable.element = element));
   useOnValueChange(disabled, () => (draggable.disabled = disabled === true));
   useOnValueChange(sensors, () => (draggable.sensors = sensors));
@@ -40,9 +40,9 @@ export function useDraggable<T extends Data = Data>(
     get isDragSource() {
       return isDragSource.value;
     },
-    activatorRef: useCallback(
+    handleRef: useCallback(
       (element: Element | null) => {
-        draggable.activator = element ?? undefined;
+        draggable.handle = element ?? undefined;
       },
       [draggable]
     ),

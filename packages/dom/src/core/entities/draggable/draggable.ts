@@ -16,7 +16,7 @@ export type FeedbackType = 'default' | 'move' | 'clone' | 'none';
 
 export interface Input<T extends Data = Data>
   extends DraggableInput<T, Draggable<T>> {
-  activator?: Element;
+  handle?: Element;
   element?: Element;
   feedback?: FeedbackType;
   sensors?: Sensors;
@@ -24,7 +24,7 @@ export interface Input<T extends Data = Data>
 
 export class Draggable<T extends Data = Data> extends AbstractDraggable<T> {
   @reactive
-  public activator: Element | undefined;
+  public handle: Element | undefined;
 
   @reactive
   public element: Element | undefined;

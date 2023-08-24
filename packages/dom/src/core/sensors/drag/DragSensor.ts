@@ -31,7 +31,7 @@ export class DragSensor extends Sensor<DragDropManager, DragSensorOptions> {
 
   public bind(source: Draggable, options: DragSensorOptions) {
     const unbind = effect(() => {
-      const target = source.activator ?? source.element;
+      const target = source.handle ?? source.element;
       const listener: EventListener = (event: Event) => {
         if (event instanceof DragEvent) {
           this.handleDragStart(event, source, options);
@@ -63,7 +63,7 @@ export class DragSensor extends Sensor<DragDropManager, DragSensorOptions> {
       return;
     }
 
-    const element = source.activator ?? source.element;
+    const element = source.handle ?? source.element;
 
     if (!element) {
       return;

@@ -76,7 +76,7 @@ export class DraggableFeedback extends CorePlugin<DragDropManager> {
           }
 
           const draggable = manager.registry.draggables.get(id);
-          const element = draggable?.activator ?? draggable?.element;
+          const element = draggable?.handle ?? draggable?.element;
 
           if (element instanceof HTMLElement) {
             element.focus();

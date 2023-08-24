@@ -138,7 +138,7 @@ function SortableItem({
   style,
   onRemove,
 }: PropsWithChildren<SortableItemProps>) {
-  const {activatorRef, ref, isDragSource} = useSortable({
+  const {handleRef, ref, isDragSource} = useSortable({
     id,
     accept: 'item',
     type: 'item',
@@ -154,7 +154,7 @@ function SortableItem({
           {onRemove && !isDragSource ? (
             <Remove onClick={() => onRemove(id, column)} />
           ) : null}
-          <Handle ref={activatorRef} />
+          <Handle ref={handleRef} />
         </Actions>
       }
       accentColor={COLORS[column]}
@@ -181,7 +181,7 @@ function SortableColumn({
   index,
   scrollable,
 }: PropsWithChildren<SortableColumnProps>) {
-  const {activatorRef, isDragSource, ref} = useSortable({
+  const {handleRef, isDragSource, ref} = useSortable({
     id,
     accept: ['column', 'item'],
     /* Prioritize item collisions over column collisions. */
@@ -196,7 +196,7 @@ function SortableColumn({
       label={`${id}`}
       actions={
         <Actions>
-          <Handle ref={activatorRef} />
+          <Handle ref={handleRef} />
         </Actions>
       }
       columns={columns}

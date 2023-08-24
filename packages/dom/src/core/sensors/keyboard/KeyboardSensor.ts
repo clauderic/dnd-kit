@@ -60,7 +60,7 @@ export class KeyboardSensor extends Sensor<
 
   public bind(source: Draggable, options = this.options) {
     const unbind = effect(() => {
-      const target = source.activator ?? source.element;
+      const target = source.handle ?? source.element;
       const listener: EventListener = (event: Event) => {
         if (event instanceof KeyboardEvent) {
           this.handleSourceKeyDown(event, source, options);

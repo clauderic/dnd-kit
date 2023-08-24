@@ -30,7 +30,7 @@ export const defaultPreset: {
         if (
           pointerType === 'mouse' &&
           target instanceof Element &&
-          (source.activator === target || source.activator?.contains(target))
+          (source.handle === target || source.handle?.contains(target))
         ) {
           return undefined;
         }

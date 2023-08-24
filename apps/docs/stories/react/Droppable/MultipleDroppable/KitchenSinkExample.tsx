@@ -122,13 +122,13 @@ interface DraggableProps {
 
 function Draggable({id, parent, type}: DraggableProps) {
   const [element, setElement] = useState<Element | null>(null);
-  const activatorRef = useRef<HTMLButtonElement | null>(null);
+  const handleRef = useRef<HTMLButtonElement | null>(null);
 
   const {isDragSource} = useDraggable({
     id,
     data: {parent},
     element,
-    activator: activatorRef,
+    handle: handleRef,
     type,
   });
 
@@ -137,7 +137,7 @@ function Draggable({id, parent, type}: DraggableProps) {
       ref={setElement}
       shadow={isDragSource}
       actions={
-        type === 'B' ? <Handle ref={activatorRef} variant="dark" /> : undefined
+        type === 'B' ? <Handle ref={handleRef} variant="dark" /> : undefined
       }
     >
       <DraggableIcon />

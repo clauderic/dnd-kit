@@ -102,14 +102,14 @@ interface SortableProps {
 const Sortable = forwardRef<Element, PropsWithChildren<SortableProps>>(
   function Sortable({id, index}, ref) {
     const [element, setElement] = useState<Element | null>(null);
-    const activatorRef = useRef<HTMLButtonElement | null>(null);
+    const handleRef = useRef<HTMLButtonElement | null>(null);
 
     const {isDragSource} = useSortable({
       id,
       index,
       element,
       feedback: 'clone',
-      activator: activatorRef,
+      handle: handleRef,
     });
 
     return (
@@ -123,7 +123,7 @@ const Sortable = forwardRef<Element, PropsWithChildren<SortableProps>>(
 
           setElement(el);
         }}
-        actions={<Handle ref={activatorRef} />}
+        actions={<Handle ref={handleRef} />}
         data-index={index}
         shadow={isDragSource}
       >

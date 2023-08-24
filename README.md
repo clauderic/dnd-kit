@@ -4,7 +4,7 @@
   </a>
 </p>
 
-- **Feature packed:** customizable collision detection algorithms, multiple activators, custom drag feedback, drag handles, auto-scrolling, activation constraints, and so much more.
+- **Feature packed:** customizable collision detection algorithms, custom drag feedback, drag handles, auto-scrolling, activation constraints, and so much more.
 - **Framework agnostic:** The `@dnd-kit/abstract` library is meant to work with any framework and in any environment. Currently, DOM and React are the two supported targets, with more to come later.
 - **Supports a wide range of use cases:** lists, grids, multiple containers, nested contexts, variable sized items, virtualized lists, 2D Games, and more.
 - **Built-in support for multiple input methods:** Pointer, mouse, touch and keyboard sensors.

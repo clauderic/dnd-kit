@@ -8,8 +8,7 @@ export class Button extends HTMLElement {
     if (!this.querySelector('button')) {
       this.tabIndex = 1;
     }
+
     this.classList.add(styles.Button);
   }
 }
-
-customElements.define('button-component', Button);
