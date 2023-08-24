@@ -44,3 +44,11 @@ export const VerticalSetup: Story = {
     vertical: true,
   },
 };
+
+export const Debug: Story = {
+  name: 'Debug',
+  args: {
+    debug: true,
+    itemCount: 6,
+  },
+};

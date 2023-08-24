@@ -61,3 +61,11 @@ export const HorizontalAxis: Story = {
     modifiers: [RestrictToHorizontalAxis],
   },
 };
+
+export const Debug: Story = {
+  name: 'Debug',
+  args: {
+    ...defaultArgs,
+    debug: true,
+  },
+};

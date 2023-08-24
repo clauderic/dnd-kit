@@ -86,3 +86,10 @@ export const DisableTransition: Story = {
     },
   },
 };
+
+export const Debug: Story = {
+  name: 'Debug',
+  args: {
+    debug: true,
+  },
+};

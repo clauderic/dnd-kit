@@ -19,4 +19,8 @@ type Story = StoryObj<typeof DroppableExample>;
 
 export const BasicSetup: Story = {
   name: 'Example',
+  args: {
+    droppableCount: 1,
+    debug: false,
+  },
 };

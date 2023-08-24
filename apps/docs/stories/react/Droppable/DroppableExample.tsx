@@ -2,20 +2,25 @@ import React, {useState} from 'react';
 import type {PropsWithChildren} from 'react';
 import type {UniqueIdentifier} from '@dnd-kit/abstract';
 import {DragDropProvider, useDraggable, useDroppable} from '@dnd-kit/react';
+import {defaultPreset} from '@dnd-kit/dom';
+import {Debug} from '@dnd-kit/dom/plugins/debug';
 
+import {createRange} from '../../utilities';
 import {Button, Dropzone} from '../components';
 import {DraggableIcon} from '../icons';
 
 interface Props {
-  parents?: UniqueIdentifier[];
+  droppableCount?: number;
+  debug?: boolean;
 }
 
-export function DroppableExample({parents = ['A']}: Props) {
+export function DroppableExample({droppableCount = 1, debug}: Props) {
   const [parent, setParent] = useState<UniqueIdentifier | undefined>();
   const draggable = <Draggable id="draggable" />;
 
   return (
     <DragDropProvider
+      plugins={debug ? [...defaultPreset.plugins, Debug] : undefined}
       onDragEnd={(event) => {
         const {target} = event.operation;
 
@@ -30,7 +35,7 @@ export function DroppableExample({parents = ['A']}: Props) {
         <div style={{display: 'flex', justifyContent: 'center'}}>
           {parent == null ? draggable : null}
         </div>
-        {parents.map((id) => (
+        {createRange(droppableCount).map((id) => (
           <Droppable key={id} id={id}>
             {parent === id ? draggable : null}
           </Droppable>

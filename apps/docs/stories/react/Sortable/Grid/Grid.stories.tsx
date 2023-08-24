@@ -104,3 +104,11 @@ export const Clone: Story = {
     feedback: 'clone',
   },
 };
+
+export const Debug: Story = {
+  name: 'Debug',
+  args: {
+    ...defaultArgs,
+    debug: true,
+  },
+};
