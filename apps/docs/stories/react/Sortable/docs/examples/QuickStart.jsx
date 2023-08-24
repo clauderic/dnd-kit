@@ -3,7 +3,9 @@ import {DragDropProvider} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
 import {move} from '@dnd-kit/state-management';
 
-export function Example({vertical}) {
+const styles = {display: 'inline-flex', flexDirection: 'row', gap: 20};
+
+export function Example({style = styles}) {
   const [items, setItems] = useState([0, 1, 2, 3]);
 
   return (
@@ -19,7 +21,7 @@ export function Example({vertical}) {
         }
       }}
     >
-      <div style={{display: 'inline-flex', flexDirection: vertical ? 'column' : 'row', gap: 20}}>
+      <div style={style}>
         {items.map((id, index) => (
           <Sortable key={id} id={id} index={index} />
         ))}

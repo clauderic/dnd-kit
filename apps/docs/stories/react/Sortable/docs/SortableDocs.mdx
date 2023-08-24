@@ -28,7 +28,20 @@ npm install @dnd-kit/react
 To create a vertical list, we can simply update the of the `flex-direction` property to `column`, without any other configuration changes.
 
 <Preview>
-  <Example vertical />
+  <Example style={{display: 'inline-flex', flexDirection: 'column', gap: 20}} />
+</Preview>
+
+To create a grid list, we can update the of the `display` property to `grid`, and set the `grid-template-columns` property to the desired number of columns.
+
+<Preview>
+  <Example
+    style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(2, 150px)',
+      gridAutoRows: '150px',
+      gap: 20,
+    }}
+  />
 </Preview>
 
 ## Architecture
