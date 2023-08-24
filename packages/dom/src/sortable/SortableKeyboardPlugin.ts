@@ -44,7 +44,7 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
     const unsubscribe = manager.monitor.addEventListener(
       'dragmove',
       (event, manager) => {
-        if (this.disabled) {
+        if (this.disabled || event.defaultPrevented) {
           return;
         }
 
