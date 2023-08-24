@@ -139,7 +139,7 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
   public refreshShape(ignoreTransform?: boolean): Shape | undefined {
     const {element} = this;
 
-    if (!element || this.disabled || this.visible === false) {
+    if (!element || this.visible === false) {
       this.shape = undefined;
       return undefined;
     }
