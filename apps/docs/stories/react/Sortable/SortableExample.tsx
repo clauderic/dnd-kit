@@ -19,6 +19,7 @@ import {createRange, cloneDeep} from '../../utilities';
 interface Props {
   debug?: boolean;
   dragHandle?: boolean;
+  disabled?: UniqueIdentifier[];
   feedback?: FeedbackType;
   modifiers?: Modifiers;
   layout?: 'vertical' | 'horizontal' | 'grid';
@@ -32,6 +33,7 @@ export function SortableExample({
   debug,
   itemCount = 15,
   collisionDetector,
+  disabled,
   dragHandle,
   feedback,
   layout = 'vertical',
@@ -71,6 +73,7 @@ export function SortableExample({
             id={id}
             index={index}
             collisionDetector={collisionDetector}
+            disabled={disabled?.includes(id)}
             dragHandle={dragHandle}
             feedback={feedback}
             transition={transition}
@@ -86,6 +89,7 @@ interface SortableProps {
   id: UniqueIdentifier;
   index: number;
   collisionDetector?: CollisionDetector;
+  disabled?: boolean;
   dragHandle?: boolean;
   feedback?: FeedbackType;
   transition?: SortableTransition;
@@ -96,6 +100,7 @@ function SortableItem({
   id,
   index,
   collisionDetector = directionBiased,
+  disabled,
   dragHandle,
   feedback,
   transition,
@@ -111,6 +116,7 @@ function SortableItem({
     feedback,
     transition,
     handle: handleRef,
+    disabled,
     collisionDetector,
   });
 
@@ -137,7 +143,7 @@ function getWrapperStyles(
   layout: 'vertical' | 'horizontal' | 'grid'
 ): CSSProperties {
   const baseStyles: CSSProperties = {
-    gap: 20,
+    gap: 18,
     padding: '0 30px',
   };
 

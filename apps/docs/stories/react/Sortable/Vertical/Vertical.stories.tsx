@@ -50,11 +50,19 @@ export const Clone: Story = {
   },
 };
 
-export const CustomDragLayer: Story = {
+export const RestrictAxis: Story = {
   name: 'Restrict axis',
   args: {
     debug: false,
     modifiers: [RestrictToVerticalAxis],
+  },
+};
+
+export const DisabledItems: Story = {
+  name: 'Disabled items',
+  args: {
+    debug: false,
+    disabled: [2, 3, 8, 12],
   },
 };
 

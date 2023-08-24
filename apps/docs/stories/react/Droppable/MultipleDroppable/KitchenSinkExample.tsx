@@ -80,6 +80,7 @@ export function KitchenSinkExample() {
         style={{
           display: 'flex',
           flexDirection: 'row',
+          justifyContent: 'center',
           gap: 20,
         }}
       >

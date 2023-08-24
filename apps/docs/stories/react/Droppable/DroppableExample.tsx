@@ -27,7 +27,9 @@ export function DroppableExample({parents = ['A']}: Props) {
       }}
     >
       <section>
-        <div>{parent == null ? draggable : null}</div>
+        <div style={{display: 'flex', justifyContent: 'center'}}>
+          {parent == null ? draggable : null}
+        </div>
         {parents.map((id) => (
           <Droppable key={id} id={id}>
             {parent === id ? draggable : null}

@@ -57,6 +57,31 @@ export const LargeFirstTile: Story = {
   },
 };
 
+export const VariableSizes: Story = {
+  name: 'Variable sizes',
+  args: {
+    ...defaultArgs,
+    itemCount: 14,
+    collisionDetector: pointerIntersection,
+    getItemStyle(id) {
+      if (id === 0 || id === 10) {
+        return {
+          width: 320,
+          height: 320,
+          maxWidth: 'initial',
+          gridRowStart: 'span 2',
+          gridColumnStart: 'span 2',
+        };
+      }
+
+      return {
+        height: 150,
+        width: 150,
+      };
+    },
+  },
+};
+
 export const Clone: Story = {
   name: 'Clone feedback',
   args: {

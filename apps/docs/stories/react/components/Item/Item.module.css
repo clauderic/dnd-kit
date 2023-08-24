@@ -35,6 +35,11 @@
   opacity: 0.5;
 }
 
+.Item[aria-disabled="true"] {
+  opacity: 0.8;
+  background-color: #EEE;
+}
+
 .shadow:not([aria-hidden="true"]) {
   transform-origin: 50% 50%;
   transform: scale(1.03);

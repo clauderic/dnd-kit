@@ -28,7 +28,7 @@
 }
 
 :global(.dark) .InlineCode {
-  color: rgb(135 163 255 / 90%) !important;
+  color: rgb(135 163 255) !important;
   background-color: #2a2c2e !important;
   border-color: rgba(255,255,255,0.1);
 }

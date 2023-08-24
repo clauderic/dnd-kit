@@ -7,6 +7,6 @@ export const DraggableIcon = () => (
     src={draggableIcon}
     width="140"
     alt="Draggable"
-    style={{pointerEvents: 'none'}}
+    style={{pointerEvents: 'none', userSelect: 'none'}}
   />
 );
