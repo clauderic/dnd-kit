@@ -10,9 +10,10 @@ import {
   Accessibility,
   AutoScroller,
   Cursor,
-  DraggableFeedback,
+  Feedback,
   Scroller,
   ScrollListener,
+  PreventSelection,
 } from '../plugins/index.js';
 import {KeyboardSensor, PointerSensor} from '../sensors/index.js';
 
@@ -22,7 +23,7 @@ export const defaultPreset: {
   plugins: Plugins<DragDropManager>;
   sensors: Sensors<DragDropManager>;
 } = {
-  plugins: [Accessibility, AutoScroller, Cursor, DraggableFeedback],
+  plugins: [Accessibility, AutoScroller, Cursor, Feedback, PreventSelection],
   sensors: [
     PointerSensor.configure({
       activationConstraints(event, source) {

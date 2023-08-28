@@ -85,11 +85,22 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
             }
           );
 
+          const mutationObserver = new MutationObserver(() =>
+            scheduler.schedule(this.refreshShape)
+          );
+
+          if (element.parentElement) {
+            mutationObserver.observe(element.parentElement, {
+              childList: true,
+            });
+          }
+
           intersectionObserver.observe(element);
 
           return () => {
             this.shape = undefined;
             this.visible = undefined;
+            mutationObserver.disconnect();
             intersectionObserver.disconnect();
           };
         }

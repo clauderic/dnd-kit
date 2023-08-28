@@ -1,17 +1,24 @@
 import type {Meta, StoryObj} from '@storybook/react';
 
-import {MultipleContainers} from './MultipleContainers';
+import {MultipleLists} from './MultipleLists';
+import docs from './docs/MultipleLists.mdx';
 
-const meta: Meta<typeof MultipleContainers> = {
-  title: 'React/Sortable/Multiple containers',
-  component: MultipleContainers,
+const meta: Meta<typeof MultipleLists> = {
+  title: 'React/Sortable/Multiple lists',
+  component: MultipleLists,
+  tags: ['autodocs'],
+  parameters: {
+    docs: {
+      page: docs,
+    },
+  },
 };
 
 export default meta;
-type Story = StoryObj<typeof MultipleContainers>;
+type Story = StoryObj<typeof MultipleLists>;
 
-export const BasicSetup: Story = {
-  name: 'Basic setup',
+export const Example: Story = {
+  name: 'Example',
   args: {
     debug: false,
     itemCount: 6,

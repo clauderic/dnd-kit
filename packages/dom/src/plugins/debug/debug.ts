@@ -37,10 +37,10 @@ export class Debug extends Plugin<DragDropManager> {
             element.style.color = 'rgba(0,0,0,0.9)';
 
             document.body.appendChild(element);
+          }
 
-            if (element instanceof HTMLDialogElement) {
-              element.showModal();
-            }
+          if (element instanceof HTMLDialogElement) {
+            element.showModal();
           }
 
           element.style.top = `${boundingRectangle.top}px`;

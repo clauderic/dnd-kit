@@ -4,7 +4,7 @@ import {RestrictToVerticalAxis} from '@dnd-kit/abstract/modifiers';
 import {SortableExample} from '../SortableExample';
 
 const meta: Meta<typeof SortableExample> = {
-  title: 'React/Sortable/Vertical',
+  title: 'React/Sortable/Vertical list',
   component: SortableExample,
 };
 

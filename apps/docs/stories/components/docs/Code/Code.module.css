@@ -16,7 +16,7 @@
 .InlineCode {
   padding: 0.4em 0.6em !important;
   border-radius: 4px !important;
-  color: rgba(0,37,158,0.797) !important;
+  color: rgb(0,37,158) !important;
   background-color: rgba(1,68,255,0.059) !important;
 }
 

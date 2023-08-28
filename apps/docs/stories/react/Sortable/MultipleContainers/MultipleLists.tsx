@@ -15,24 +15,28 @@ import {flushSync} from 'react-dom';
 interface Props {
   debug?: boolean;
   grid?: boolean;
+  defaultItems?: Record<string, string[]>;
   itemCount: number;
   scrollable?: boolean;
   vertical?: boolean;
 }
 
-export function MultipleContainers({
+export function MultipleLists({
   debug,
+  defaultItems,
   grid,
   itemCount,
   scrollable,
   vertical,
 }: Props) {
-  const [items, setItems] = useState({
-    A: createRange(itemCount).map((id) => `A${id}`),
-    B: createRange(itemCount).map((id) => `B${id}`),
-    C: createRange(itemCount).map((id) => `C${id}`),
-    D: [],
-  });
+  const [items, setItems] = useState(
+    defaultItems ?? {
+      A: createRange(itemCount).map((id) => `A${id}`),
+      B: createRange(itemCount).map((id) => `B${id}`),
+      C: createRange(itemCount).map((id) => `C${id}`),
+      D: [],
+    }
+  );
   const [columns, setColumns] = useState(Object.keys(items));
   const manager = useRef<DragDropManager>(null);
   const snapshot = useRef(cloneDeep(items));
@@ -162,7 +166,7 @@ function SortableItem({
       style={style}
       transitionId={`sortable-${column}-${id}`}
     >
-      {id}
+      {id} {index}
     </Item>
   );
 }

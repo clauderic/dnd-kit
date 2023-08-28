@@ -31,7 +31,7 @@ const preview = {
             'Draggable',
             'Droppable',
             'Sortable',
-            ['Vertical', 'Horizontal', 'Grid'],
+            ['Vertical list', 'Horizontal list', 'Grid'],
           ],
         ],
       },

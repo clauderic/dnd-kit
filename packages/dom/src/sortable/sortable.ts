@@ -16,7 +16,7 @@ import type {
   DroppableInput,
   Sensors,
 } from '@dnd-kit/dom';
-import {scheduler} from '@dnd-kit/dom/utilities';
+import {animateTransform, scheduler} from '@dnd-kit/dom/utilities';
 import {Shape} from '@dnd-kit/geometry';
 
 import {SortableKeyboardPlugin} from './SortableKeyboardPlugin.js';
@@ -151,6 +151,7 @@ export class Sortable<T extends Data = Data> {
         }
 
         this.droppable.refreshShape();
+
         const updatedShape = this.droppable.shape;
 
         if (!updatedShape) {
@@ -163,21 +164,18 @@ export class Sortable<T extends Data = Data> {
         };
 
         if (delta.x || delta.y) {
-          element
-            .animate(
-              {
-                transform: [
-                  `translate3d(${delta.x}px, ${delta.y}px, 0)`,
-                  'translate3d(0, 0, 0)',
-                ],
-              },
-              transition
-            )
-            .finished.then(() => {
+          animateTransform({
+            element,
+            keyframes: {
+              translate: [`${delta.x}px ${delta.y}px 0`, '0px 0px 0'],
+            },
+            options: transition,
+            onFinish: () => {
               if (idle) {
                 this.droppable.shape = undefined;
               }
-            });
+            },
+          });
         }
       });
     });

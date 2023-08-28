@@ -1,0 +1,22 @@
+[data-dnd-kit-feedback] {
+  position: fixed !important;
+  pointer-events: none;
+  touch-action: none;
+  z-index: 999999;
+  will-change: transform;
+  top: var(--dnd-kit-feedback-top, 0px) !important;
+  left: var(--dnd-kit-feedback-left, 0px) !important;
+  width: var(--dnd-kit-feedback-width, auto) !important;
+  height: var(--dnd-kit-feedback-height, auto) !important;
+  margin: var(--dnd-kit-feedback-margin, 0px) !important;
+  padding: var(--dnd-kit-feedback-padding, 0px) !important;
+}
+
+[data-dnd-kit-feedback][style*="--dnd-kit-feedback-translate"] {
+  transition: var(--dnd-kit-feedback-transition) !important;
+  translate: var(--dnd-kit-feedback-translate) !important;
+}
+
+[data-dnd-kit-feedback]::backdrop {
+  display: none
+}

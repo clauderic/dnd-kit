@@ -55,7 +55,7 @@ export function ReactVirtualExample({debug}: Props) {
         }
       }}
     >
-      <div ref={parentRef} className="List">
+      <div ref={parentRef}>
         <div
           style={{
             height: virtualizer.getTotalSize(),

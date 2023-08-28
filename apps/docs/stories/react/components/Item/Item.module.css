@@ -22,13 +22,8 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-:global(.dark) .Item {
-  background-color:
-}
-
-.Item:focus-visible:not(.shadow) {
-  --box-shadow: inset 0 0 0 3px #4c9ffe;
-  transition: background 0.4s ease;
+.Item:focus-visible {
+  box-shadow: inset 0 0 0 3px #4c9ffe, var(--box-shadow);
 }
 
 .Item[aria-hidden="true"] {
@@ -41,7 +36,6 @@
 }
 
 .shadow:not([aria-hidden="true"]) {
-  transform-origin: 50% 50%;
   transform: scale(1.03);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(10px);

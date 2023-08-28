@@ -5,6 +5,7 @@ import {
   createPlaceholder,
   DOMRectangle,
   scrollIntoViewIfNeeded,
+  supportsStyle,
 } from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.js';
@@ -207,7 +208,7 @@ export class DraggableFeedback extends CorePlugin<DragDropManager> {
         const placeholderElement = createPlaceholder(currentElement, clone);
 
         if (source.feedback === 'move') {
-          if (placeholderElement instanceof HTMLElement) {
+          if (supportsStyle(placeholderElement)) {
             placeholderElement.style.display = 'none';
           }
         }

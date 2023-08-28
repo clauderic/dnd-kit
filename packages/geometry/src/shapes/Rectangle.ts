@@ -38,16 +38,9 @@ export class Rectangle implements Shape {
   }
 
   public get center(): Point {
-    const p1 = {
-      x: this.left,
-      y: this.top,
-    };
-    const p2 = {
-      x: this.right,
-      y: this.bottom,
-    };
+    const {left, top, right, bottom} = this;
 
-    return new Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
+    return new Point((left + right) / 2, (top + bottom) / 2);
   }
 
   public get area(): number {

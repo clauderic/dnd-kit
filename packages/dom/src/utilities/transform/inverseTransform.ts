@@ -1,20 +1,13 @@
 import type {BoundingRectangle} from '@dnd-kit/geometry';
 
-import {parseTransform} from './parseTransform.js';
+import {type Transform} from './parseTransform.js';
 
 export function inverseTransform(
   rect: BoundingRectangle,
-  transform: string,
+  parsedTransform: Transform,
   transformOrigin: string
 ): BoundingRectangle {
-  const parsedTransform = parseTransform(transform);
-
-  if (!parsedTransform) {
-    return rect;
-  }
-
   const {scaleX, scaleY, x: translateX, y: translateY} = parsedTransform;
-
   const x = rect.left - translateX - (1 - scaleX) * parseFloat(transformOrigin);
   const y =
     rect.top -

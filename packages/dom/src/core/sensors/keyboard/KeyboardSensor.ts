@@ -5,6 +5,7 @@ import {
   DOMRectangle,
   getDocument,
   getWindow,
+  scrollIntoViewIfNeeded,
   Listeners,
 } from '@dnd-kit/dom/utilities';
 
@@ -84,7 +85,7 @@ export class KeyboardSensor extends Sensor<
     source: Draggable,
     options: KeyboardSensorOptions | undefined
   ) => {
-    if (this.disabled) {
+    if (this.disabled || event.defaultPrevented) {
       return;
     }
 
@@ -102,7 +103,7 @@ export class KeyboardSensor extends Sensor<
       return;
     }
 
-    if (this.manager.dragOperation.status.initialized) {
+    if (!this.manager.dragOperation.status.idle) {
       return;
     }
 
@@ -122,6 +123,8 @@ export class KeyboardSensor extends Sensor<
 
     event.preventDefault();
     event.stopImmediatePropagation();
+
+    scrollIntoViewIfNeeded(element);
 
     const {center} = new DOMRectangle(element);
 

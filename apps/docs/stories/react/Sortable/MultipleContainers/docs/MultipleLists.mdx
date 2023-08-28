@@ -1,0 +1,21 @@
+import {Code, Preview} from '../../../../components';
+
+import {MultipleLists} from '../MultipleLists.tsx';
+
+# Multiple lists
+
+Reorder sortable elements across multiple lists.
+
+<Preview hero>
+  <div
+    style={{display: 'flex', justifyContent: 'center', '--min-width': '270px'}}
+  >
+    <MultipleLists
+      defaultItems={{
+        A: ['A1', 'A2'],
+        B: ['B1', 'B2'],
+        C: [],
+      }}
+    />
+  </div>
+</Preview>

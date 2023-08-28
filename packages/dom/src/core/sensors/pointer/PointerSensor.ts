@@ -185,10 +185,6 @@ export class PointerSensor extends Sensor<
     };
   }
 
-  protected sideEffects() {
-    this.#document?.getSelection()?.removeAllRanges();
-  }
-
   protected handlePointerMove(
     event: PointerEvent,
     source: Draggable,
@@ -278,8 +274,6 @@ export class PointerSensor extends Sensor<
       manager.actions.setDragSource(source.id);
       manager.actions.start({coordinates: initialCoordinates, event});
     });
-
-    this.sideEffects();
   }
 
   protected handleCancel() {

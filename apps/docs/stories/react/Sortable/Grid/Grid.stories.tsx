@@ -35,36 +35,14 @@ export const DragHandle: Story = {
   },
 };
 
-export const LargeFirstTile: Story = {
-  name: 'Large first tile',
-  args: {
-    ...defaultArgs,
-    collisionDetector: pointerIntersection,
-    getItemStyle(_, index) {
-      if (index === 0) {
-        return {
-          maxWidth: 'initial',
-          gridRowStart: 'span 2',
-          gridColumnStart: 'span 2',
-        };
-      }
-
-      return {
-        height: 150,
-        width: 150,
-      };
-    },
-  },
-};
-
 export const VariableSizes: Story = {
   name: 'Variable sizes',
   args: {
     ...defaultArgs,
     itemCount: 14,
     collisionDetector: pointerIntersection,
-    getItemStyle(id) {
-      if (id === 0 || id === 10) {
+    getItemStyle(_, index) {
+      if (index === 0 || index === 10) {
         return {
           width: 320,
           height: 320,
@@ -88,7 +66,7 @@ export const Clone: Story = {
     ...defaultArgs,
     collisionDetector: pointerIntersection,
     getItemStyle(_, index) {
-      if (index === 0) {
+      if (index === 0 || index === 2) {
         return {
           maxWidth: 'initial',
           gridRowStart: 'span 2',

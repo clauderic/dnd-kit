@@ -4,7 +4,7 @@ import {RestrictToHorizontalAxis} from '@dnd-kit/abstract/modifiers';
 import {SortableExample} from '../SortableExample';
 
 const meta: Meta<typeof SortableExample> = {
-  title: 'React/Sortable/Horizontal',
+  title: 'React/Sortable/Horizontal list',
   component: SortableExample,
 };
 

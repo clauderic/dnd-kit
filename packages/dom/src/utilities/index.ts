@@ -23,8 +23,19 @@ export {scheduler, Scheduler} from './scheduler/index.js';
 
 export {DOMRectangle} from './shapes/index.js';
 
-export {InlineStyles} from './styles/index.js';
+export {Styles} from './styles/index.js';
 
-export {supportsViewTransition, isKeyboardEvent} from './type-guards/index.js';
+export {
+  supportsViewTransition,
+  supportsPopover,
+  supportsStyle,
+  isKeyboardEvent,
+} from './type-guards/index.js';
 
-export {inverseTransform} from './transform/index.js';
+export {
+  animateTransform,
+  inverseTransform,
+  parseTransform,
+  stringifyTransform,
+} from './transform/index.js';
+export type {Transform} from './transform/index.js';

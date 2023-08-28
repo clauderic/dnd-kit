@@ -1,1 +1,1 @@
-export {InlineStyles} from './InlineStyles.js';
+export {Styles} from './Styles.js';

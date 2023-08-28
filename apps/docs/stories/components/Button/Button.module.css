@@ -16,9 +16,12 @@
   cursor: grab;
   outline: none;
   transition: background 0.4s ease, box-shadow 0.3s ease, transform 0.25s ease;
+  transform-origin: 50% 50%;
   min-height: 62px;
   box-shadow: var(--box-shadow);
   touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .Button:hover, .Button:focus {

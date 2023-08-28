@@ -5,3 +5,5 @@ export {isNode} from './isNode.js';
 export {isSVGElement} from './isSVGElement.js';
 export {isWindow} from './isWindow.js';
 export {supportsViewTransition} from './supportsViewTransition.js';
+export {supportsPopover} from './supportsPopover.js';
+export {supportsStyle} from './supportsStyle.js';

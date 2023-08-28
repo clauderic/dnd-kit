@@ -84,6 +84,11 @@ export class CollisionObserver<
       }
 
       const detectCollision = collisionDetector ?? entry.collisionDetector;
+
+      if (!detectCollision) {
+        continue;
+      }
+
       const collision = untracked(() =>
         detectCollision({
           droppable: entry,

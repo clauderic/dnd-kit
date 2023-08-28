@@ -6,7 +6,7 @@
   box-sizing: border-box;
   appearance: none;
   outline: none;
-  min-width: 300px;
+  min-width: var(--min-width, 300px);
   border-radius: 5px;
   min-height: 200px;
   transition-property: transform, background, box-shadow;
@@ -24,6 +24,10 @@
 
 .Container:hover, .shadow {
   background-color: rgb(240, 240, 240);
+}
+
+.Container[aria-hidden="true"] {
+  opacity: 0.5;
 }
 
 
@@ -56,10 +60,10 @@
 
 :global(.dark) .Container {
   border: none;
-  background-color: rgb(67 69 70);
+  background-color: rgb(76, 79, 80);
 
-  &:hover, .shadow {
-    background-color: rgb(89, 92, 93);
+  &:hover, &.shadow {
+    background-color: rgb(67 69 70);
   }
 }
 

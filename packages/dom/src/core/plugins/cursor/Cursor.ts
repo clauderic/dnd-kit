@@ -18,23 +18,19 @@ export class Cursor extends Plugin<DragDropManager> {
   ) {
     super(manager, options);
 
-    const style = document.createElement('style');
-    document.head.appendChild(style);
-
-    const cleanupEffect = effect(() => {
+    this.destroy = effect(() => {
       const {dragOperation} = this.manager;
       const {cursor = 'grabbing'} = this.options ?? {};
 
       if (dragOperation.status.initialized) {
+        const style = document.createElement('style');
         style.innerText = `* { cursor: ${cursor} !important; }`;
-      } else {
-        style.innerText = '';
+        document.head.appendChild(style);
+
+        return () => {
+          style.remove();
+        };
       }
     });
-
-    this.destroy = () => {
-      cleanupEffect();
-      style.remove();
-    };
   }
 }

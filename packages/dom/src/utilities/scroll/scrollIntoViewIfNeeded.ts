@@ -1,3 +1,4 @@
+import {getWindow} from '../execution-context/getWindow.js';
 import {getScrollableAncestors} from './getScrollableAncestors.js';
 
 function supportsScrollIntoViewIfNeeded(
@@ -27,7 +28,7 @@ export function scrollIntoViewIfNeeded(el: Element, centerIfNeeded = false) {
     return;
   }
 
-  const parentComputedStyle = window.getComputedStyle(parent, null),
+  const parentComputedStyle = getWindow(parent).getComputedStyle(parent, null),
     parentBorderTopWidth = parseInt(
       parentComputedStyle.getPropertyValue('border-top-width')
     ),

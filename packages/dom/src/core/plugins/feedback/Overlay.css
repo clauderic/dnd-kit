@@ -4,6 +4,7 @@
   pointer-events: none;
   touch-action: none;
   z-index: 999999;
+  will-change: transform;
 }
 
 [data-dnd-kit-overlay] > * {
