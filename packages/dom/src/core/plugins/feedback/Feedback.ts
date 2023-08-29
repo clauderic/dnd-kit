@@ -16,9 +16,8 @@ import {Coordinates} from '@dnd-kit/geometry';
 
 import {DragDropManager} from '../../manager/index.js';
 
-import css from './Feedback.css';
-
 const CSS_PREFIX = '--dnd-kit-feedback-';
+const css = `[data-dnd-kit-feedback] {position: fixed !important;pointer-events: none;touch-action: none;z-index: 999999;will-change: transform;top: var(${CSS_PREFIX}top, 0px) !important;left: var(${CSS_PREFIX}left, 0px) !important;width: var(${CSS_PREFIX}width, auto) !important;height: var(${CSS_PREFIX}height, auto) !important;margin: var(${CSS_PREFIX}margin, 0px) !important;padding: var(${CSS_PREFIX}padding, 0px) !important;}[data-dnd-kit-feedback][style*="${CSS_PREFIX}translate"] {transition: var(${CSS_PREFIX}transition) !important;translate: var(${CSS_PREFIX}translate) !important;}[data-dnd-kit-feedback][popover] {background: var(${CSS_PREFIX}background, inherit) !important;border: var(${CSS_PREFIX}border, inherit) !important;overflow: visible;}[data-dnd-kit-feedback]::backdrop {display: none}`;
 const ATTRIBUTE = 'data-dnd-kit-feedback';
 const IGNORED_ATTRIBUTES = [ATTRIBUTE, 'popover'];
 const IGNORED_STYLES = ['view-transition-name'];
