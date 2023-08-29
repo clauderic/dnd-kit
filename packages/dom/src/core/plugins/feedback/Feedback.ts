@@ -172,7 +172,7 @@ export class Feedback extends Plugin<DragDropManager> {
       /* Initialize drag operation shape */
       dragOperation.shape = shape;
 
-      // resizeObserver.observe(placeholder);
+      resizeObserver.observe(placeholder);
 
       const elementMutationObserver = new MutationObserver(() => {
         for (const attribute of Array.from(element.attributes)) {
