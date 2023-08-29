@@ -17,6 +17,12 @@
   translate: var(--dnd-kit-feedback-translate) !important;
 }
 
+[data-dnd-kit-feedback][popover] {
+  background: var(--dnd-kit-feedback-background, inherit) !important;
+  border: var(--dnd-kit-feedback-border, inherit) !important;
+  overflow: visible;
+}
+
 [data-dnd-kit-feedback]::backdrop {
   display: none
 }

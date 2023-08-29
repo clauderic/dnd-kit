@@ -6,6 +6,7 @@ import {
   DOMRectangle,
   getWindow,
   isKeyboardEvent,
+  showPopover,
   supportsPopover,
   supportsStyle,
   Styles,
@@ -30,6 +31,7 @@ export class Feedback extends Plugin<DragDropManager> {
     let initialCoordinates: Coordinates | undefined;
     let currentTransform: Transform | undefined;
     let transformOrigin: Coordinates | undefined;
+    let moved = false;
 
     const styleInjectionCleanup = effect(() => {
       if (!style && manager.dragOperation.status.initialized) {
@@ -49,6 +51,7 @@ export class Feedback extends Plugin<DragDropManager> {
         initialCoordinates = undefined;
         currentTransform = undefined;
         transformOrigin = undefined;
+        moved = false;
         return;
       }
 
@@ -61,7 +64,7 @@ export class Feedback extends Plugin<DragDropManager> {
       const shape = new DOMRectangle(element, true);
       const {width, height, top, left} = shape;
       const styles = new Styles(element);
-      const {padding, margin, transition} =
+      const {border, background, padding, margin, transition} =
         getWindow(element).getComputedStyle(element);
       const droppable = manager.registry.droppables.get(source.id);
       const clone = feedback === 'clone';
@@ -94,7 +97,6 @@ export class Feedback extends Plugin<DragDropManager> {
         left: left + delta.x,
       };
 
-      element.parentElement?.insertBefore(placeholder, element);
       element.setAttribute(ATTRIBUTE, '');
       styles.set(
         {
@@ -102,18 +104,27 @@ export class Feedback extends Plugin<DragDropManager> {
           height: height,
           top: projected.top,
           left: projected.left,
-          padding: padding,
-          margin: margin,
+          padding,
+          margin,
+          border,
+          background,
+          translate: currentTransform
+            ? `${currentTransform.x}px ${currentTransform.y}px 0`
+            : '',
         },
         CSS_PREFIX
+      );
+      element.parentElement?.insertBefore(
+        placeholder,
+        element.nextElementSibling
       );
 
       if (supportsPopover(element)) {
         element.setAttribute('popover', '');
-        element.showPopover();
+        showPopover(element);
       }
 
-      const actual = new DOMRectangle(element);
+      const actual = new DOMRectangle(element, true);
       const offset = {
         top: projected.top - actual.top,
         left: projected.left - actual.left,
@@ -212,15 +223,13 @@ export class Feedback extends Plugin<DragDropManager> {
         for (const entry of entries) {
           if (Array.from(entry.addedNodes).includes(element)) {
             /* Update the position of the placeholder when the source element is moved */
-            entry.target.insertBefore(placeholder, element);
+            entry.target.insertBefore(placeholder, element.nextElementSibling);
 
-            if (supportsPopover(element)) {
-              /*
-               * Any update in DOM order that affects the source element hide the popover
-               * so we need to force the source element to be promoted to the top layer again
-               */
-              element.showPopover();
-            }
+            /*
+             * Any update in DOM order that affects the source element hide the popover
+             * so we need to force the source element to be promoted to the top layer again
+             */
+            showPopover(element);
           }
         }
       });
@@ -231,8 +240,6 @@ export class Feedback extends Plugin<DragDropManager> {
           childList: true,
         });
       }
-
-      let moved = false;
 
       const cleanupEffect = effect(function updateTransform() {
         const {transform, status} = dragOperation;
@@ -309,10 +316,8 @@ export class Feedback extends Plugin<DragDropManager> {
           }
 
           manager.renderer.rendering.then(() => {
-            if (supportsPopover(element)) {
-              /* Force the source element to be promoted to the top layer before animating it */
-              element.showPopover();
-            }
+            /* Force the source element to be promoted to the top layer before animating it */
+            showPopover(element);
 
             const shape = new DOMRectangle(placeholder, true);
             const currentShape = new DOMRectangle(element, true).translate(

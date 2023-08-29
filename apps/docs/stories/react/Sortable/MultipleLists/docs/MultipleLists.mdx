@@ -1,0 +1,42 @@
+import {Code, Preview} from '../../../../components';
+
+import {MultipleLists} from '../MultipleLists.tsx';
+import {Example} from './examples/QuickStart';
+import ExampleSource from './examples/QuickStart?raw';
+import ColumnSource from './examples/Column?raw';
+import ItemSource from './examples/Item?raw';
+
+# Multiple lists
+
+Reorder sortable elements across multiple lists.
+
+<Preview hero>
+  <div
+    style={{display: 'flex', justifyContent: 'center', '--min-width': '270px'}}
+  >
+    <MultipleLists
+      defaultItems={{
+        A: ['A1', 'A2'],
+        B: ['B1', 'B2'],
+        C: [],
+      }}
+    />
+  </div>
+</Preview>
+
+## Installation
+
+Before getting started, make sure to install the `@dnd-kit/react` package:
+
+```bash
+npm install @dnd-kit/react
+```
+
+## Getting started
+
+<Preview
+  tabs={['App.js', 'Item.js', 'Column.js']}
+  code={[ExampleSource, ItemSource, ColumnSource]}
+>
+  <Example />
+</Preview>

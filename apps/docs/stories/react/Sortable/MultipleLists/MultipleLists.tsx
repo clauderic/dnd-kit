@@ -166,7 +166,7 @@ function SortableItem({
       style={style}
       transitionId={`sortable-${column}-${id}`}
     >
-      {id} {index}
+      {id}
     </Item>
   );
 }

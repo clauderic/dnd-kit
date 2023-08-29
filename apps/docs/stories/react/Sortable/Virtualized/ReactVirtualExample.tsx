@@ -24,7 +24,7 @@ export function ReactVirtualExample({debug}: Props) {
 
   const virtualizer = useWindowVirtualizer({
     count: items.length,
-    estimateSize: () => 62,
+    estimateSize: () => 72,
     scrollMargin: parentOffsetRef.current,
     getItemKey: (index) => items[index],
   });

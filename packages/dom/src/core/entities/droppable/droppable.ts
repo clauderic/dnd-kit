@@ -34,11 +34,10 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
 
     const {destroy} = this;
 
-    this.refreshShape = this.refreshShape.bind(this);
-
     this.internal = {
       element: signal(element),
     };
+    this.refreshShape = this.refreshShape.bind(this);
 
     /*
      * If a droppable target mounts during a drag operation, assume it is visible
@@ -144,7 +143,7 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
   }
 
   public get element() {
-    return this.placeholder ?? this.internal.element.value;
+    return this.placeholder ?? this.internal?.element.value;
   }
 
   public refreshShape(ignoreTransform?: boolean): Shape | undefined {

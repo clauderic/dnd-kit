@@ -9,6 +9,8 @@ export {cloneElement, createPlaceholder} from './element/index.js';
 
 export {Listeners} from './event-listeners/index.js';
 
+export {showPopover, supportsPopover} from './popover/index.js';
+
 export {
   canScroll,
   detectScrollIntent,
@@ -27,7 +29,6 @@ export {Styles} from './styles/index.js';
 
 export {
   supportsViewTransition,
-  supportsPopover,
   supportsStyle,
   isKeyboardEvent,
 } from './type-guards/index.js';

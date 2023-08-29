@@ -140,6 +140,7 @@ export class Sortable<T extends Data = Data> {
       const {idle} = manager.dragOperation.status;
 
       if (!shape || !transition || (idle && !transition.idle)) {
+        console.log('animate');
         return;
       }
 
@@ -164,6 +165,8 @@ export class Sortable<T extends Data = Data> {
         };
 
         if (delta.x || delta.y) {
+          console.log('animate');
+
           animateTransform({
             element,
             keyframes: {
