@@ -1,4 +1,10 @@
-import {isWindow, isHTMLElement, isDocument, isNode} from '../type-guards';
+import {
+  isWindow,
+  isHTMLElement,
+  isDocument,
+  isNode,
+  isSVGElement,
+} from '../type-guards';
 
 export function getOwnerDocument(target: Event['target']): Document {
   if (!target) {
@@ -17,7 +23,7 @@ export function getOwnerDocument(target: Event['target']): Document {
     return target;
   }
 
-  if (isHTMLElement(target)) {
+  if (isHTMLElement(target) || isSVGElement(target)) {
     return target.ownerDocument;
   }
 
