@@ -16,14 +16,15 @@ import {Coordinates} from '@dnd-kit/geometry';
 
 import {DragDropManager} from '../../manager/index.js';
 
+const ATTR_PREFIX = 'data-dnd-kit-';
 const CSS_PREFIX = '--dnd-kit-feedback-';
-const css = `[data-dnd-kit-feedback] {position: fixed !important;pointer-events: none;touch-action: none;z-index: 999999;will-change: transform;top: var(${CSS_PREFIX}top, 0px) !important;left: var(${CSS_PREFIX}left, 0px) !important;width: var(${CSS_PREFIX}width, auto) !important;height: var(${CSS_PREFIX}height, auto) !important;margin: var(${CSS_PREFIX}margin, 0px) !important;padding: var(${CSS_PREFIX}padding, 0px) !important;}[data-dnd-kit-feedback][style*="${CSS_PREFIX}translate"] {transition: var(${CSS_PREFIX}transition) !important;translate: var(${CSS_PREFIX}translate) !important;}[data-dnd-kit-feedback][popover] {background: var(${CSS_PREFIX}background, inherit) !important;border: var(${CSS_PREFIX}border, inherit) !important;overflow: visible;}[data-dnd-kit-feedback]::backdrop {display: none}`;
-const ATTRIBUTE = 'data-dnd-kit-feedback';
+const cssRules = `[${ATTR_PREFIX}feedback] {position: fixed !important;pointer-events: none;touch-action: none;z-index: 999999;will-change: transform;top: var(${CSS_PREFIX}top, 0px) !important;left: var(${CSS_PREFIX}left, 0px) !important;width: var(${CSS_PREFIX}width, auto) !important;height: var(${CSS_PREFIX}height, auto) !important;margin: var(${CSS_PREFIX}margin, 0px) !important;padding: var(${CSS_PREFIX}padding, 0px) !important;}[${ATTR_PREFIX}feedback][style*="${CSS_PREFIX}translate"] {transition: var(${CSS_PREFIX}transition) !important;translate: var(${CSS_PREFIX}translate) !important;}[${ATTR_PREFIX}feedback][popover]{overflow:visible;}[popover]{background:unset;border:unset;}[${ATTR_PREFIX}feedback]::backdrop {display: none}`;
+const ATTRIBUTE = `${ATTR_PREFIX}feedback`;
 const IGNORED_ATTRIBUTES = [ATTRIBUTE, 'popover'];
 const IGNORED_STYLES = ['view-transition-name'];
 
 export class Feedback extends Plugin<DragDropManager> {
-  public constructor(manager: DragDropManager) {
+  constructor(manager: DragDropManager) {
     super(manager);
 
     let style: HTMLStyleElement | undefined;
@@ -35,8 +36,8 @@ export class Feedback extends Plugin<DragDropManager> {
     const styleInjectionCleanup = effect(() => {
       if (!style && manager.dragOperation.status.initialized) {
         style = document.createElement('style');
-        style.innerText = css;
-        document.head.appendChild(style);
+        style.innerText = cssRules;
+        document.head.prepend(style);
 
         return styleInjectionCleanup;
       }
@@ -63,7 +64,7 @@ export class Feedback extends Plugin<DragDropManager> {
       const shape = new DOMRectangle(element, true);
       const {width, height, top, left} = shape;
       const styles = new Styles(element);
-      const {border, background, padding, margin, transition} =
+      const {padding, margin, transition} =
         getWindow(element).getComputedStyle(element);
       const droppable = manager.registry.droppables.get(source.id);
       const clone = feedback === 'clone';
@@ -105,8 +106,6 @@ export class Feedback extends Plugin<DragDropManager> {
           left: projected.left,
           padding,
           margin,
-          border,
-          background,
           translate: currentTransform
             ? `${currentTransform.x}px ${currentTransform.y}px 0`
             : '',
@@ -218,7 +217,7 @@ export class Feedback extends Plugin<DragDropManager> {
         subtree: true,
       });
 
-      const parentMutationObserver = new MutationObserver((entries) => {
+      const documentMutationObserver = new MutationObserver((entries) => {
         for (const entry of entries) {
           if (Array.from(entry.addedNodes).includes(element)) {
             /* Update the position of the placeholder when the source element is moved */
@@ -229,16 +228,16 @@ export class Feedback extends Plugin<DragDropManager> {
              * so we need to force the source element to be promoted to the top layer again
              */
             showPopover(element);
+            return;
           }
         }
       });
 
-      if (element.parentElement) {
-        /* Observe mutations on the element's parent node */
-        parentMutationObserver.observe(element.parentElement, {
-          childList: true,
-        });
-      }
+      /* Observe mutations on the element's owner document body */
+      documentMutationObserver.observe(element.ownerDocument.body, {
+        childList: true,
+        subtree: true,
+      });
 
       const cleanupEffect = effect(function updateTransform() {
         const {transform, status} = dragOperation;
@@ -294,7 +293,7 @@ export class Feedback extends Plugin<DragDropManager> {
         cleanupEffect();
         dropEffectCleanup();
         elementMutationObserver.disconnect();
-        parentMutationObserver.disconnect();
+        documentMutationObserver.disconnect();
         resizeObserver.disconnect();
 
         if (droppable) {
