@@ -3,6 +3,7 @@ import classNames from 'classnames';
 
 import {Action, Handle, Remove} from '../../../../components';
 import styles from './TreeItem.module.css';
+import type {UniqueIdentifier} from '@dnd-kit/core';
 
 export interface Props extends Omit<HTMLAttributes<HTMLLIElement>, 'id'> {
   childCount?: number;
@@ -15,7 +16,7 @@ export interface Props extends Omit<HTMLAttributes<HTMLLIElement>, 'id'> {
   handleProps?: any;
   indicator?: boolean;
   indentationWidth: number;
-  value: string;
+  value: UniqueIdentifier;
   onCollapse?(): void;
   onRemove?(): void;
   wrapperRef?(node: HTMLLIElement): void;

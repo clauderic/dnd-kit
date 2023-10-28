@@ -2,10 +2,9 @@ import type {Coordinates, UniqueIdentifier} from '../types';
 import type {DroppableContainer} from './types';
 
 export enum Action {
-  DragStart = 'dragStart',
+  SetInitialCoordinates = 'setInitialCoordinates',
   DragMove = 'dragMove',
-  DragEnd = 'dragEnd',
-  DragCancel = 'dragCancel',
+  ClearCoordinates = 'clearCoordinates',
   DragOver = 'dragOver',
   RegisterDroppable = 'registerDroppable',
   SetDroppableDisabled = 'setDroppableDisabled',
@@ -14,13 +13,11 @@ export enum Action {
 
 export type Actions =
   | {
-      type: Action.DragStart;
-      active: UniqueIdentifier;
+      type: Action.SetInitialCoordinates;
       initialCoordinates: Coordinates;
     }
   | {type: Action.DragMove; coordinates: Coordinates}
-  | {type: Action.DragEnd}
-  | {type: Action.DragCancel}
+  | {type: Action.ClearCoordinates}
   | {
       type: Action.RegisterDroppable;
       element: DroppableContainer;

@@ -416,4 +416,26 @@ describe('Draggable', () => {
         });
     });
   });
+
+  describe('Multiple Draggables', () => {
+    it('should render only dragging element', () => {
+      cy.visitStory('core-draggable-draggablerenders--basic-setup')
+        .findFirstDraggableItem()
+
+        .mouseMoveBy(0, 100);
+
+      cy.get('[data-testid="draggable-status-1"]').should(
+        'have.text',
+        'updated'
+      );
+      cy.get('[data-testid="draggable-status-2"]').should(
+        'have.text',
+        'mounted'
+      );
+      cy.get('[data-testid="draggable-status-3"]').should(
+        'have.text',
+        'mounted'
+      );
+    });
+  });
 });

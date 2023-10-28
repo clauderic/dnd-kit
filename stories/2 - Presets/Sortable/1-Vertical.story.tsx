@@ -141,6 +141,7 @@ export const RerenderBeforeSorting = () => {
   return (
     <Sortable
       {...props}
+      usingGlobalActiveInStyle={true}
       wrapperStyle={({active}) => {
         return {
           height: active ? 100 : 80,

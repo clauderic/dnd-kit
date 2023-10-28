@@ -19,6 +19,7 @@ import {State} from './constants';
 import {Thumb} from './Thumb';
 import {Track} from './Track';
 import styles from './Switch.module.css';
+import type {UniqueIdentifier} from 'packages/core/dist';
 
 export interface Props {
   accessibilityLabel?: string;
@@ -44,7 +45,7 @@ export function Switch({
   checked,
   onChange,
 }: Props) {
-  const [overId, setOverId] = useState<string | null>(null);
+  const [overId, setOverId] = useState<UniqueIdentifier | null>(null);
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -104,7 +105,7 @@ export function Switch({
   }
 
   function handleDragOver({over}: DragOverEvent) {
-    setOverId(over?.id ?? null);
+    setOverId(over?.id || null);
   }
 
   function handleDragEnd({over}: DragEndEvent) {
