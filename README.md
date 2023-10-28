@@ -9,9 +9,8 @@
   <a href="https://github.com/clauderic/dnd-kit/actions"><img src="https://badgen.net/github/checks/clauderic/dnd-kit" alt="Build status" /></a>
   <a href="https://bundlephobia.com/result?p=@dnd-kit/core"><img alt="gzip size" src="https://badgen.net/bundlephobia/minzip/@dnd-kit/core?label=gzip%20size&color=green"/></a>
   <a href="./LICENSE"><img allt="MIT License" src="https://badgen.now.sh/badge/license/MIT"/></a>
-  <a href="https://twitter.com/intent/follow?screen_name=dndkit">
-    <img alt="Follow us on Twitter" src="https://img.shields.io/twitter/follow/dndkit?style=social">
-  </a>
+  <a href="https://join.slack.com/t/dnd-kit/shared_invite/zt-25zm6qn4k-Sx_NNVb3JQaPz9HnsWfjEQ"><img src="https://img.shields.io/badge/slack-%40dnd--kit-brightgreen.svg?logo=slack"></a>
+  <a href="https://twitter.com/intent/follow?screen_name=dndkit"><img alt="Follow us on Twitter" src="https://img.shields.io/twitter/follow/dndkit?style=social"></a>
 </p>
 
 - **Feature packed:** customizable collision detection algorithms, multiple activators, draggable overlay, drag handles, auto-scrolling, constraints, and so much more.
