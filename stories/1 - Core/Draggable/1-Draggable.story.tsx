@@ -112,15 +112,10 @@ function DraggableItem({
   handle,
   buttonStyle,
 }: DraggableItemProps) {
-  const {
-    attributes,
-    isDragging,
-    listeners,
-    setNodeRef,
-    transform,
-  } = useDraggable({
-    id: 'draggable',
-  });
+  const {attributes, isDragging, listeners, setNodeRef, transform} =
+    useDraggable({
+      id: 'draggable',
+    });
 
   return (
     <Draggable

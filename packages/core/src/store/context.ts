@@ -32,10 +32,7 @@ export const defaultPublicContext: PublicContextDescriptor = {
 };
 
 export const defaultInternalContext: InternalContextDescriptor = {
-  activatorEvent: null,
   activators: [],
-  active: null,
-  activeNodeRect: null,
   ariaDescribedById: {
     draggable: '',
   },
@@ -43,12 +40,18 @@ export const defaultInternalContext: InternalContextDescriptor = {
   draggableNodes: new Map(),
   over: null,
   measureDroppableContainers: noop,
+  useMyActive: () => null,
+  useGloablActive: () => null,
+  useHasActive: () => false,
+  useMyActivatorEvent: () => null,
+  useGlobalActivatorEvent: () => null,
+  useMyActiveNodeRect: () => null,
+  isDefaultContext: true,
 };
 
 export const InternalContext = createContext<InternalContextDescriptor>(
   defaultInternalContext
 );
 
-export const PublicContext = createContext<PublicContextDescriptor>(
-  defaultPublicContext
-);
+export const PublicContext =
+  createContext<PublicContextDescriptor>(defaultPublicContext);

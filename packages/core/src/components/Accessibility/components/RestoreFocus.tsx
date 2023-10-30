@@ -12,7 +12,11 @@ interface Props {
 }
 
 export function RestoreFocus({disabled}: Props) {
-  const {active, activatorEvent, draggableNodes} = useContext(InternalContext);
+  const {useGloablActive, useGlobalActivatorEvent, draggableNodes} =
+    useContext(InternalContext);
+  const active = useGloablActive();
+  const activatorEvent = useGlobalActivatorEvent();
+
   const previousActivatorEvent = usePrevious(activatorEvent);
   const previousActiveId = usePrevious(active?.id);
 

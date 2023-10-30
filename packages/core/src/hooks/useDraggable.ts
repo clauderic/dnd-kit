@@ -49,19 +49,23 @@ export function useDraggable({
   const key = useUniqueId(ID_PREFIX);
   const {
     activators,
-    activatorEvent,
-    active,
-    activeNodeRect,
+    useMyActivatorEvent,
+    useMyActive,
+    useMyActiveNodeRect,
     ariaDescribedById,
     draggableNodes,
     over,
+    isDefaultContext,
   } = useContext(InternalContext);
   const {
     role = defaultRole,
     roleDescription = 'draggable',
     tabIndex = 0,
   } = attributes ?? {};
-  const isDragging = active?.id === id;
+  const active = useMyActive(id);
+  const isDragging = active !== null;
+  const activatorEvent = useMyActivatorEvent(id);
+  const activeNodeRect = useMyActiveNodeRect(id);
   const transform: Transform | null = useContext(
     isDragging ? ActiveDraggableContext : NullContext
   );
@@ -106,6 +110,7 @@ export function useDraggable({
   );
 
   return {
+    //active and activatorEvent will by null if this isn't the active node
     active,
     activatorEvent,
     activeNodeRect,
@@ -117,5 +122,6 @@ export function useDraggable({
     setNodeRef,
     setActivatorNodeRef,
     transform,
+    isDefaultContext,
   };
 }

@@ -31,11 +31,9 @@ import {
 import {DndMonitorContext, useDndMonitorProvider} from '../DndMonitor';
 import {
   useAutoScroller,
-  useCachedNode,
   useCombineActivators,
   useDragOverlayMeasuring,
   useDroppableMeasuring,
-  useInitialRect,
   useRect,
   useRectDelta,
   useRects,
@@ -78,12 +76,14 @@ import {
   ScreenReaderInstructions,
 } from '../Accessibility';
 
-import {defaultData, defaultSensors} from './defaults';
+import {defaultSensors} from './defaults';
 import {
   useLayoutShiftScrollCompensation,
   useMeasuringConfiguration,
 } from './hooks';
 import type {MeasuringConfiguration} from './types';
+import {createActiveAPI} from './activeAPI';
+import {useActiveNodeDomValues} from './useActiveNodeDomValues';
 
 export interface Props {
   id?: string;
@@ -149,29 +149,23 @@ export const DndContext = memo(function DndContext({
   const [status, setStatus] = useState<Status>(Status.Uninitialized);
   const isInitialized = status === Status.Initialized;
   const {
-    draggable: {active: activeId, nodes: draggableNodes, translate},
+    draggable: {translate},
     droppable: {containers: droppableContainers},
   } = state;
-  const node = activeId ? draggableNodes.get(activeId) : null;
   const activeRects = useRef<Active['rect']['current']>({
     initial: null,
     translated: null,
   });
-  const active = useMemo<Active | null>(
-    () =>
-      activeId != null
-        ? {
-            id: activeId,
-            // It's possible for the active node to unmount while dragging
-            data: node?.data ?? defaultData,
-            rect: activeRects,
-          }
-        : null,
-    [activeId, node]
-  );
+
+  const activeAPI = useMemo(() => createActiveAPI(activeRects), []);
+  const draggableNodes = activeAPI.draggableNodes;
+  const active = activeAPI.useActive();
+  const activeId = active?.id || null;
+
+  const activatorEvent = activeAPI.useActivatorEvent();
+
   const activeRef = useRef<UniqueIdentifier | null>(null);
   const [activeSensor, setActiveSensor] = useState<SensorInstance | null>(null);
-  const [activatorEvent, setActivatorEvent] = useState<Event | null>(null);
   const latestProps = useLatestValue(props, Object.values(props));
   const draggableDescribedById = useUniqueId(`DndDescribedBy`, id);
   const enabledDroppableContainers = useMemo(
@@ -185,16 +179,25 @@ export const DndContext = memo(function DndContext({
       dependencies: [translate.x, translate.y],
       config: measuringConfiguration.droppable,
     });
-  const activeNode = useCachedNode(draggableNodes, activeId);
+
+  const activeNodeDomValues = useActiveNodeDomValues(
+    draggableNodes,
+    measuringConfiguration,
+    active?.id || null
+  );
+  const activeNode = activeNodeDomValues?.activeNode || null;
+  const initialActiveNodeRect =
+    activeNodeDomValues?.initialActiveNodeRect || null;
+  const activeNodeRect = activeNodeDomValues?.activeNodeRect || null;
+  const containerNodeRect = useRect(
+    activeNode ? activeNode.parentElement : null
+  );
+
   const activationCoordinates = useMemo(
     () => (activatorEvent ? getEventCoordinates(activatorEvent) : null),
     [activatorEvent]
   );
   const autoScrollOptions = getAutoScrollerOptions();
-  const initialActiveNodeRect = useInitialRect(
-    activeNode,
-    measuringConfiguration.draggable.measure
-  );
 
   useLayoutShiftScrollCompensation({
     activeNode: activeId ? draggableNodes.get(activeId) : null,
@@ -203,14 +206,6 @@ export const DndContext = memo(function DndContext({
     measure: measuringConfiguration.draggable.measure,
   });
 
-  const activeNodeRect = useRect(
-    activeNode,
-    measuringConfiguration.draggable.measure,
-    initialActiveNodeRect
-  );
-  const containerNodeRect = useRect(
-    activeNode ? activeNode.parentElement : null
-  );
   const sensorContext = useRef<SensorContext>({
     activatorEvent: null,
     active: null,
@@ -365,10 +360,10 @@ export const DndContext = memo(function DndContext({
           unstable_batchedUpdates(() => {
             onDragStart?.(event);
             setStatus(Status.Initializing);
+            activeAPI.setActive(id);
             dispatch({
-              type: Action.DragStart,
+              type: Action.SetInitiailCoordinates,
               initialCoordinates,
-              active: id,
             });
             dispatchMonitorEvent({type: 'onDragStart', event});
           });
@@ -379,16 +374,16 @@ export const DndContext = memo(function DndContext({
             coordinates,
           });
         },
-        onEnd: createHandler(Action.DragEnd),
-        onCancel: createHandler(Action.DragCancel),
+        onEnd: createHandler('DragEnd'),
+        onCancel: createHandler('DragCancel'),
       });
 
       unstable_batchedUpdates(() => {
         setActiveSensor(sensorInstance);
-        setActivatorEvent(event.nativeEvent);
+        activeAPI.setActivatorEvent(event.nativeEvent);
       });
 
-      function createHandler(type: Action.DragEnd | Action.DragCancel) {
+      function createHandler(type: 'DragEnd' | 'DragCancel') {
         return async function handler() {
           const {active, collisions, over, scrollAdjustedTranslate} =
             sensorContext.current;
@@ -405,11 +400,11 @@ export const DndContext = memo(function DndContext({
               over,
             };
 
-            if (type === Action.DragEnd && typeof cancelDrop === 'function') {
+            if (type === 'DragEnd' && typeof cancelDrop === 'function') {
               const shouldCancel = await Promise.resolve(cancelDrop(event));
 
               if (shouldCancel) {
-                type = Action.DragCancel;
+                type = 'DragCancel';
               }
             }
           }
@@ -417,14 +412,14 @@ export const DndContext = memo(function DndContext({
           activeRef.current = null;
 
           unstable_batchedUpdates(() => {
-            dispatch({type});
+            activeAPI.setActive(null);
+            dispatch({type: Action.ClearCoordinates});
             setStatus(Status.Uninitialized);
             setOver(null);
             setActiveSensor(null);
-            setActivatorEvent(null);
+            activeAPI.setActivatorEvent(null);
 
-            const eventName =
-              type === Action.DragEnd ? 'onDragEnd' : 'onDragCancel';
+            const eventName = type === 'DragEnd' ? 'onDragEnd' : 'onDragCancel';
 
             if (event) {
               const handler = latestProps.current[eventName];
@@ -665,10 +660,20 @@ export const DndContext = memo(function DndContext({
 
   const internalContext = useMemo(() => {
     const context: InternalContextDescriptor = {
-      activatorEvent,
+      useMyActive: activeAPI.useMyActive,
+      useHasActive: activeAPI.useHasActive,
+      useGloablActive: activeAPI.useActive,
+      useMyActivatorEvent: activeAPI.useMyActivatorEvent,
+      useGlobalActivatorEvent: activeAPI.useActivatorEvent,
+      useMyActiveNodeRect: (id: UniqueIdentifier) => {
+        const domValues = useActiveNodeDomValues(
+          draggableNodes,
+          measuringConfiguration,
+          id
+        );
+        return domValues?.activeNodeRect || null;
+      },
       activators,
-      active,
-      activeNodeRect,
       ariaDescribedById: {
         draggable: draggableDescribedById,
       },
@@ -676,19 +681,23 @@ export const DndContext = memo(function DndContext({
       draggableNodes,
       over,
       measureDroppableContainers,
+      isDefaultContext: false,
     };
 
     return context;
   }, [
-    activatorEvent,
+    activeAPI.useMyActive,
+    activeAPI.useHasActive,
+    activeAPI.useActive,
+    activeAPI.useMyActivatorEvent,
+    activeAPI.useActivatorEvent,
     activators,
-    active,
-    activeNodeRect,
-    dispatch,
     draggableDescribedById,
+    dispatch,
     draggableNodes,
     over,
     measureDroppableContainers,
+    measuringConfiguration,
   ]);
 
   return (

@@ -27,7 +27,7 @@ function getDocumentScroll() {
 }
 
 Cypress.Commands.add('findFirstDraggableItem', () => {
-  return cy.get(`[data-cypress="draggable-item"`);
+  return cy.get(`[data-cypress="draggable-item"]`).first();
 });
 
 Cypress.Commands.add(

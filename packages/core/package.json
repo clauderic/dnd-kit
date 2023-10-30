@@ -30,9 +30,10 @@
     "react-dom": ">=16.8.0"
   },
   "dependencies": {
-    "tslib": "^2.0.0",
     "@dnd-kit/accessibility": "^3.0.0",
-    "@dnd-kit/utilities": "^3.2.1"
+    "@dnd-kit/utilities": "^3.2.1",
+    "tslib": "^2.0.0",
+    "use-sync-external-store": "^1.2.0"
   },
   "publishConfig": {
     "access": "public"

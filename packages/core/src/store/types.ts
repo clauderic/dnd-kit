@@ -67,9 +67,7 @@ export interface State {
     containers: DroppableContainers;
   };
   draggable: {
-    active: UniqueIdentifier | null;
-    initialCoordinates: Coordinates;
-    nodes: DraggableNodes;
+    initialCoordinates: Coordinates | null;
     translate: Coordinates;
   };
 }
@@ -99,10 +97,13 @@ export interface PublicContextDescriptor {
 }
 
 export interface InternalContextDescriptor {
-  activatorEvent: Event | null;
   activators: SyntheticListeners;
-  active: Active | null;
-  activeNodeRect: ClientRect | null;
+  useMyActive: (id: UniqueIdentifier) => Active | null;
+  useGloablActive: () => Active | null;
+  useHasActive: () => boolean;
+  useMyActivatorEvent: (id: UniqueIdentifier) => Event | null;
+  useGlobalActivatorEvent: () => Event | null;
+  useMyActiveNodeRect: (id: UniqueIdentifier) => ClientRect | null;
   ariaDescribedById: {
     draggable: string;
   };
@@ -110,4 +111,7 @@ export interface InternalContextDescriptor {
   draggableNodes: DraggableNodes;
   over: Over | null;
   measureDroppableContainers(ids: UniqueIdentifier[]): void;
+  //this is a temparary solution, since we don't return general active element from useDraggable hook
+  //I added this to know if a sortable item is inside an overlay
+  isDefaultContext: boolean;
 }
