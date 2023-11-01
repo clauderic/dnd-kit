@@ -33,11 +33,11 @@ export const pointerIntersection: CollisionDetector = ({
      * colliding rectangles, we measure the distance between
      * the pointer and the center of the intersecting rectangle
      */
-    const value = Point.distance(droppable.shape.center, pointerCoordinates);
+    const distance = Point.distance(droppable.shape.center, pointerCoordinates);
 
     return {
       id,
-      value,
+      value: 1 / distance,
       priority: CollisionPriority.High,
     };
   }
