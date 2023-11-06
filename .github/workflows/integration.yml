@@ -10,6 +10,10 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
+      - name: Specify Node Version
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
