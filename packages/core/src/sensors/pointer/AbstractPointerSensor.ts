@@ -55,6 +55,9 @@ function isDelayConstraint(
 
 export interface AbstractPointerSensorOptions extends SensorOptions {
   activationConstraint?: PointerActivationConstraint;
+  bypassActivationConstraint?(
+    props: Pick<AbstractPointerSensorProps, 'activeNode' | 'event' | 'options'>
+  ): boolean;
   onActivation?({event}: {event: Event}): void;
 }
 
@@ -100,7 +103,7 @@ export class AbstractPointerSensor implements SensorInstance {
     const {
       events,
       props: {
-        options: {activationConstraint},
+        options: {activationConstraint, bypassActivationConstraint},
       },
     } = this;
 
@@ -113,6 +116,16 @@ export class AbstractPointerSensor implements SensorInstance {
     this.documentListeners.add(EventName.Keydown, this.handleKeydown);
 
     if (activationConstraint) {
+      if (
+        bypassActivationConstraint?.({
+          event: this.props.event,
+          activeNode: this.props.activeNode,
+          options: this.props.options,
+        })
+      ) {
+        return this.handleStart();
+      }
+
       if (isDelayConstraint(activationConstraint)) {
         this.timeoutId = setTimeout(
           this.handleStart,
