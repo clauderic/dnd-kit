@@ -1,5 +1,11 @@
 # @dnd-kit/accessibility
 
+## 3.1.0
+
+### Minor Changes
+
+- [#1229](https://github.com/clauderic/dnd-kit/pull/1229) [`aabb8bd`](https://github.com/clauderic/dnd-kit/commit/aabb8bd114cf1f0aed0f18e70b296d5905ff04d8) Thanks [@ayy-bc](https://github.com/ayy-bc)! - Introduce `ariaLiveType` prop on `<LiveRegion>` to allow consumers to configure the `aria-live` attribute to other values for announcements, such as `aria-live="polite"`.
+
 ## 3.0.1
 
 ### Patch Changes

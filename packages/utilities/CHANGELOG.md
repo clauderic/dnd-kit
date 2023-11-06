@@ -1,5 +1,11 @@
 # @dnd-kit/utilities
 
+## 3.2.2
+
+### Patch Changes
+
+- [#1239](https://github.com/clauderic/dnd-kit/pull/1239) [`f342d5e`](https://github.com/clauderic/dnd-kit/commit/f342d5efd98507f173b6a170b35bee1545d40311) Thanks [@petdud](https://github.com/petdud)! - Fix: getOwnerDocument should get correct document for SVG Elements
+
 ## 3.2.1
 
 ### Patch Changes
