@@ -1,5 +1,31 @@
 # @dnd-kit/core
 
+## 6.1.0
+
+### Minor Changes
+
+- [#1271](https://github.com/clauderic/dnd-kit/pull/1271) [`bc588c7`](https://github.com/clauderic/dnd-kit/commit/bc588c7f7b1124514b2834e14f9dad29ce49c8ce) Thanks [@clauderic](https://github.com/clauderic)! - Introduce `bypassActivationConstraint()` option for `PointerSensor`, `MouseSensor` and `TouchSensor`. This optional argument can be used to conditionally bypass activation constraints. An example use-case would be to bypass activation constraints when the activator event target is the `activatorNode` of a draggable source.
+
+  ```tsx
+  useSensor(PointerSensor, {
+    activationConstraint: {
+      delay: 250,
+      tolerance: 5,
+    },
+    bypassActivationConstraint({event, activeNode}) {
+      return activeNode.activatorNode.current?.contains(event.target);
+    },
+  });
+  ```
+
+- [#1269](https://github.com/clauderic/dnd-kit/pull/1269) [`b417f0f`](https://github.com/clauderic/dnd-kit/commit/b417f0f94bfd8097bdf34eec27b7051dc0f5aa2a) Thanks [@clauderic](https://github.com/clauderic)! - Allow `delay` and `distance` activation constraints to be used concurrently for `MouseSensor`, `TouchSensor` and `PointerSensor`.
+
+### Patch Changes
+
+- Updated dependencies [[`aabb8bd`](https://github.com/clauderic/dnd-kit/commit/aabb8bd114cf1f0aed0f18e70b296d5905ff04d8), [`f342d5e`](https://github.com/clauderic/dnd-kit/commit/f342d5efd98507f173b6a170b35bee1545d40311)]:
+  - @dnd-kit/accessibility@3.1.0
+  - @dnd-kit/utilities@3.2.2
+
 ## 6.0.8
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @dnd-kit/sortable
 
+## 8.0.0
+
+### Patch Changes
+
+- Updated dependencies [[`bc588c7`](https://github.com/clauderic/dnd-kit/commit/bc588c7f7b1124514b2834e14f9dad29ce49c8ce), [`b417f0f`](https://github.com/clauderic/dnd-kit/commit/b417f0f94bfd8097bdf34eec27b7051dc0f5aa2a), [`f342d5e`](https://github.com/clauderic/dnd-kit/commit/f342d5efd98507f173b6a170b35bee1545d40311)]:
+  - @dnd-kit/core@6.1.0
+  - @dnd-kit/utilities@3.2.2
+
 ## 7.0.2
 
 ### Patch Changes

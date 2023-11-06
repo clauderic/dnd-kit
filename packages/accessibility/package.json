@@ -1,6 +1,6 @@
 {
   "name": "@dnd-kit/accessibility",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "A generic toolkit to help with accessibility",
   "author": "Claudéric Demers",
   "license": "MIT",
