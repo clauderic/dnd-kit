@@ -36,11 +36,14 @@ export interface PointerEventHandlers {
   end: EventDescriptor;
 }
 
-export type PointerActivationConstraint = DistanceConstraint | DelayConstraint;
+export type PointerActivationConstraint =
+  | DelayConstraint
+  | DistanceConstraint
+  | (DelayConstraint & DistanceConstraint);
 
 function isDistanceConstraint(
   constraint: PointerActivationConstraint
-): constraint is DistanceConstraint {
+): constraint is PointerActivationConstraint & DistanceConstraint {
   return Boolean(constraint && 'distance' in constraint);
 }
 
@@ -55,7 +58,8 @@ export interface AbstractPointerSensorOptions extends SensorOptions {
   onActivation?({event}: {event: Event}): void;
 }
 
-export type AbstractPointerSensorProps = SensorProps<AbstractPointerSensorOptions>;
+export type AbstractPointerSensorProps =
+  SensorProps<AbstractPointerSensorOptions>;
 
 export class AbstractPointerSensor implements SensorInstance {
   public autoScrollEnabled = true;
@@ -109,15 +113,15 @@ export class AbstractPointerSensor implements SensorInstance {
     this.documentListeners.add(EventName.Keydown, this.handleKeydown);
 
     if (activationConstraint) {
-      if (isDistanceConstraint(activationConstraint)) {
-        return;
-      }
-
       if (isDelayConstraint(activationConstraint)) {
         this.timeoutId = setTimeout(
           this.handleStart,
           activationConstraint.delay
         );
+        return;
+      }
+
+      if (isDistanceConstraint(activationConstraint)) {
         return;
       }
     }
@@ -178,16 +182,8 @@ export class AbstractPointerSensor implements SensorInstance {
     const coordinates = getEventCoordinates(event) ?? defaultCoordinates;
     const delta = getCoordinatesDelta(initialCoordinates, coordinates);
 
+    // Constraint validation
     if (!activated && activationConstraint) {
-      // Constraint validation
-      if (isDelayConstraint(activationConstraint)) {
-        if (hasExceededDistance(delta, activationConstraint.tolerance)) {
-          return this.handleCancel();
-        }
-
-        return;
-      }
-
       if (isDistanceConstraint(activationConstraint)) {
         if (
           activationConstraint.tolerance != null &&
@@ -195,12 +191,19 @@ export class AbstractPointerSensor implements SensorInstance {
         ) {
           return this.handleCancel();
         }
+
         if (hasExceededDistance(delta, activationConstraint.distance)) {
           return this.handleStart();
         }
-
-        return;
       }
+
+      if (isDelayConstraint(activationConstraint)) {
+        if (hasExceededDistance(delta, activationConstraint.tolerance)) {
+          return this.handleCancel();
+        }
+      }
+
+      return;
     }
 
     if (event.cancelable) {
