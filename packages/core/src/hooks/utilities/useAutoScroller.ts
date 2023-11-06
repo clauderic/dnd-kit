@@ -177,6 +177,8 @@ export function useAutoScroller({
       JSON.stringify(threshold),
     ]
   );
+
+  useEffect(() => clearAutoScrollInterval, [clearAutoScrollInterval]);
 }
 
 interface ScrollIntent {
