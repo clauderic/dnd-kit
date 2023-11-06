@@ -5,7 +5,7 @@ import type {
 } from '@dnd-kit/core';
 
 export function getSortedRects(
-  items: UniqueIdentifier[],
+  items: ReadonlyArray<UniqueIdentifier>,
   rects: UseDndContextReturnValue['droppableRects']
 ) {
   return items.reduce<ClientRect[]>((accumulator, id, index) => {

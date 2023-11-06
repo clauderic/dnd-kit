@@ -10,8 +10,8 @@ export type AnimateLayoutChanges = (args: {
   isSorting: boolean;
   id: UniqueIdentifier;
   index: number;
-  items: UniqueIdentifier[];
-  previousItems: UniqueIdentifier[];
+  items: ReadonlyArray<UniqueIdentifier>;
+  previousItems: ReadonlyArray<UniqueIdentifier>;
   previousContainerId: UniqueIdentifier;
   newIndex: number;
   transition: SortableTransition | null;
@@ -20,7 +20,7 @@ export type AnimateLayoutChanges = (args: {
 
 export interface NewIndexGetterArguments {
   id: UniqueIdentifier;
-  items: UniqueIdentifier[];
+  items: ReadonlyArray<UniqueIdentifier>;
   activeIndex: number;
   overIndex: number;
 }
