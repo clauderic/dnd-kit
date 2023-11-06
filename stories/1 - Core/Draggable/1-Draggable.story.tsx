@@ -112,15 +112,10 @@ function DraggableItem({
   handle,
   buttonStyle,
 }: DraggableItemProps) {
-  const {
-    attributes,
-    isDragging,
-    listeners,
-    setNodeRef,
-    transform,
-  } = useDraggable({
-    id: 'draggable',
-  });
+  const {attributes, isDragging, listeners, setNodeRef, transform} =
+    useDraggable({
+      id: 'draggable',
+    });
 
   return (
     <Draggable
@@ -153,6 +148,21 @@ export const PressDelay = () => (
     }}
   />
 );
+
+PressDelay.storyName = 'Press delay';
+
+export const PressDelayOrDistance = () => (
+  <DraggableStory
+    label="Activated dragging 3px or holding 250ms"
+    activationConstraint={{
+      delay: 250,
+      distance: 3,
+      tolerance: 10,
+    }}
+  />
+);
+
+PressDelayOrDistance.storyName = 'Press delay or minimum distance';
 
 export const MinimumDistance = () => (
   <DraggableStory
