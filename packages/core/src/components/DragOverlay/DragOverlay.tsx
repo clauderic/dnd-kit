@@ -23,7 +23,7 @@ export interface Props
   dropAnimation?: DropAnimation | null | undefined;
   modifiers?: Modifiers;
   wrapperElement?: keyof JSX.IntrinsicElements;
-  zIndex?: number;
+  zIndex?: React.CSSProperties['zIndex'];
 }
 
 export const DragOverlay = React.memo(
