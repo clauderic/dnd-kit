@@ -1,4 +1,5 @@
-import React, {forwardRef} from 'react';
+import * as React from 'react';
+import {forwardRef} from 'react';
 import {CSS, isKeyboardEvent} from '@dnd-kit/utilities';
 
 import type {Transform} from '@dnd-kit/utilities';

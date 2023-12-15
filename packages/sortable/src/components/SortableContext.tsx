@@ -1,4 +1,5 @@
-import React, {useEffect, useMemo, useRef} from 'react';
+import * as React from 'react';
+import {useEffect, useMemo, useRef} from 'react';
 import {useDndContext, ClientRect, UniqueIdentifier} from '@dnd-kit/core';
 import {useIsomorphicLayoutEffect, useUniqueId} from '@dnd-kit/utilities';
 
