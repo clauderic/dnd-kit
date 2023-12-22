@@ -1,4 +1,9 @@
-import {KeyboardCoordinateGetter, KeyboardCode, KeyboardCodes} from './types';
+import {
+  KeyboardCoordinateGetter,
+  KeyboardCode,
+  KeyboardCodes,
+  type ScrollThreshold,
+} from './types';
 
 export const defaultKeyboardCodes: KeyboardCodes = {
   start: [KeyboardCode.Space, KeyboardCode.Enter],
@@ -35,3 +40,5 @@ export const defaultKeyboardCoordinateGetter: KeyboardCoordinateGetter = (
 
   return undefined;
 };
+
+export const defaultScrollThreshold: ScrollThreshold = {x: 0.5, y: 0.5};
