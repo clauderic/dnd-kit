@@ -1,5 +1,6 @@
 import {useContext, useEffect, useMemo, useRef} from 'react';
 import {
+  useDndContext,
   useDraggable,
   useDroppable,
   UseDraggableArguments,
@@ -47,6 +48,7 @@ export function useSortable({
   resizeObserverConfig,
   transition = defaultTransition,
 }: Arguments) {
+  const dndContext = useDndContext();
   const {
     items,
     containerId,
@@ -118,13 +120,16 @@ export function useSortable({
   const strategy = localStrategy ?? globalStrategy;
   const finalTransform = displaceItem
     ? dragSourceDisplacement ??
-      strategy({
-        rects: sortedRects,
-        activeNodeRect,
-        activeIndex,
-        overIndex,
-        index,
-      })
+      strategy(
+        {
+          rects: sortedRects,
+          activeNodeRect,
+          activeIndex,
+          overIndex,
+          index,
+        },
+        dndContext
+      )
     : null;
   const newIndex =
     isValidIndex(activeIndex) && isValidIndex(overIndex)
