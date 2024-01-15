@@ -15,3 +15,8 @@ export interface ScrollCoordinates {
   current: Coordinates;
   delta: Coordinates;
 }
+
+export interface DragCoordinates extends Coordinates {
+  initial: Coordinates;
+  delta: Coordinates;
+};

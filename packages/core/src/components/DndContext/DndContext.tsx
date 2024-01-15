@@ -277,7 +277,11 @@ export const DndContext = memo(function DndContext({
   });
 
   const pointerCoordinates = activationCoordinates
-    ? add(activationCoordinates, translate)
+    ? {
+        ...add(activationCoordinates, translate),
+        initial: activationCoordinates,
+        delta: translate,
+      }
     : null;
 
   const scrollOffsets = useScrollOffsets(scrollableAncestors);

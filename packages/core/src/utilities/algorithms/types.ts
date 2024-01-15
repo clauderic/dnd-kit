@@ -1,5 +1,5 @@
 import type {Active, Data, DroppableContainer, RectMap} from '../../store';
-import type {Coordinates, ClientRect, UniqueIdentifier} from '../../types';
+import type {DragCoordinates, ClientRect, UniqueIdentifier} from '../../types';
 
 export interface Collision {
   id: UniqueIdentifier;
@@ -19,5 +19,5 @@ export type CollisionDetection = (args: {
   collisionRect: ClientRect;
   droppableRects: RectMap;
   droppableContainers: DroppableContainer[];
-  pointerCoordinates: Coordinates | null;
+  pointerCoordinates: DragCoordinates | null;
 }) => Collision[];
