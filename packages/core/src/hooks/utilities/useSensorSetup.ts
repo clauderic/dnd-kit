@@ -3,7 +3,9 @@ import {canUseDOM} from '@dnd-kit/utilities';
 
 import type {SensorDescriptor} from '../../sensors';
 
-export function useSensorSetup(sensors: SensorDescriptor<any>[]) {
+export function useSensorSetup<DraggableData, DroppableData>(
+  sensors: SensorDescriptor<any, DraggableData, DroppableData>[]
+) {
   useEffect(
     () => {
       if (!canUseDOM) {

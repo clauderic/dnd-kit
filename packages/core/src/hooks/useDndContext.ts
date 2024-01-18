@@ -1,8 +1,13 @@
-import {ContextType, useContext} from 'react';
-import {PublicContext} from '../store';
+import {useContext} from 'react';
+import type {ContextType, Context} from 'react';
+import {PublicContext, PublicContextDescriptor} from '../store';
 
-export function useDndContext() {
-  return useContext(PublicContext);
+export function useDndContext<DraggableData, DroppableData>() {
+  return useContext(
+    PublicContext as Context<
+      PublicContextDescriptor<DraggableData, DroppableData>
+    >
+  );
 }
 
 export type UseDndContextReturnValue = ContextType<typeof PublicContext>;

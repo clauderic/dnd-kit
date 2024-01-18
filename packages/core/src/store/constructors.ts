@@ -3,19 +3,19 @@ import type {DroppableContainer} from './types';
 
 type Identifier = UniqueIdentifier | null | undefined;
 
-export class DroppableContainersMap extends Map<
+export class DroppableContainersMap<DroppableData> extends Map<
   UniqueIdentifier,
-  DroppableContainer
+  DroppableContainer<DroppableData>
 > {
   get(id: Identifier) {
     return id != null ? super.get(id) ?? undefined : undefined;
   }
 
-  toArray(): DroppableContainer[] {
+  toArray(): DroppableContainer<DroppableData>[] {
     return Array.from(this.values());
   }
 
-  getEnabled(): DroppableContainer[] {
+  getEnabled(): DroppableContainer<DroppableData>[] {
     return this.toArray().filter(({disabled}) => !disabled);
   }
 

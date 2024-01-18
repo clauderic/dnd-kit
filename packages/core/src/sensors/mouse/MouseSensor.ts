@@ -7,6 +7,7 @@ import {
   PointerEventHandlers,
   AbstractPointerSensorOptions,
 } from '../pointer';
+import type {AnyData} from '../../store';
 
 const events: PointerEventHandlers = {
   move: {name: 'mousemove'},
@@ -17,12 +18,19 @@ enum MouseButton {
   RightClick = 2,
 }
 
-export interface MouseSensorOptions extends AbstractPointerSensorOptions {}
+export interface MouseSensorOptions<DraggableData, DroppableData> extends AbstractPointerSensorOptions<DraggableData, DroppableData> {}
 
-export type MouseSensorProps = SensorProps<MouseSensorOptions>;
+export type MouseSensorProps<DraggableData, DroppableData> = SensorProps<
+  MouseSensorOptions<DraggableData, DroppableData>,
+  DraggableData,
+  DroppableData
+>;
 
-export class MouseSensor extends AbstractPointerSensor {
-  constructor(props: MouseSensorProps) {
+export class MouseSensor<
+  DraggableData,
+  DroppableData
+> extends AbstractPointerSensor<DraggableData, DroppableData> {
+  constructor(props: MouseSensorProps<DraggableData, DroppableData>) {
     super(props, events, getOwnerDocument(props.event.target));
   }
 
@@ -31,7 +39,7 @@ export class MouseSensor extends AbstractPointerSensor {
       eventName: 'onMouseDown' as const,
       handler: (
         {nativeEvent: event}: MouseEvent,
-        {onActivation}: MouseSensorOptions
+        {onActivation}: MouseSensorOptions<AnyData, AnyData>
       ) => {
         if (event.button === MouseButton.RightClick) {
           return false;

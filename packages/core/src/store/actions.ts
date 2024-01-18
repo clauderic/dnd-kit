@@ -12,7 +12,7 @@ export enum Action {
   UnregisterDroppable = 'unregisterDroppable',
 }
 
-export type Actions =
+export type Actions<DroppableData> =
   | {
       type: Action.DragStart;
       active: UniqueIdentifier;
@@ -23,7 +23,7 @@ export type Actions =
   | {type: Action.DragCancel}
   | {
       type: Action.RegisterDroppable;
-      element: DroppableContainer;
+      element: DroppableContainer<DroppableData>;
     }
   | {
       type: Action.SetDroppableDisabled;

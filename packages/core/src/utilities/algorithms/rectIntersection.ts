@@ -35,12 +35,12 @@ export function getIntersectionRatio(
  * Returns the rectangles that has the greatest intersection area with a given
  * rectangle in an array of rectangles.
  */
-export const rectIntersection: CollisionDetection = ({
+export const rectIntersection: CollisionDetection<unknown, unknown> = ({
   collisionRect,
   droppableRects,
   droppableContainers,
 }) => {
-  const collisions: CollisionDescriptor[] = [];
+  const collisions: CollisionDescriptor<unknown>[] = [];
 
   for (const droppableContainer of droppableContainers) {
     const {id} = droppableContainer;

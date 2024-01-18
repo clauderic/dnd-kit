@@ -1,6 +1,8 @@
-import type {Modifier} from '@dnd-kit/core';
+import type {AnyData, Modifier} from '@dnd-kit/core';
 
-export const restrictToVerticalAxis: Modifier = ({transform}) => {
+export const restrictToVerticalAxis: Modifier<AnyData, AnyData> = ({
+  transform,
+}) => {
   return {
     ...transform,
     x: 0,

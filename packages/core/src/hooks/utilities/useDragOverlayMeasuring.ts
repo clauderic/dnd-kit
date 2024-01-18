@@ -12,7 +12,7 @@ interface Arguments {
 
 export function useDragOverlayMeasuring({
   measure,
-}: Arguments): PublicContextDescriptor['dragOverlay'] {
+}: Arguments): PublicContextDescriptor<never, never>['dragOverlay'] {
   const [rect, setRect] = useState<ClientRect | null>(null);
   const handleResize = useCallback(
     (entries: ResizeObserverEntry[]) => {

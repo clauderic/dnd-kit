@@ -7,13 +7,13 @@ import {cornersOfRectangle, sortCollisionsAsc} from './helpers';
  * Returns the closest rectangles from an array of rectangles to the corners of
  * another rectangle.
  */
-export const closestCorners: CollisionDetection = ({
+export const closestCorners: CollisionDetection<unknown, unknown> = ({
   collisionRect,
   droppableRects,
   droppableContainers,
 }) => {
   const corners = cornersOfRectangle(collisionRect);
-  const collisions: CollisionDescriptor[] = [];
+  const collisions: CollisionDescriptor<unknown>[] = [];
 
   for (const droppableContainer of droppableContainers) {
     const {id} = droppableContainer;

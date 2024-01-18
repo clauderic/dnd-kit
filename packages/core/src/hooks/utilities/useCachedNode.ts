@@ -3,10 +3,10 @@ import {useLazyMemo} from '@dnd-kit/utilities';
 import type {DraggableNode, DraggableNodes} from '../../store';
 import type {UniqueIdentifier} from '../../types';
 
-export function useCachedNode(
-  draggableNodes: DraggableNodes,
+export function useCachedNode<DraggableData>(
+  draggableNodes: DraggableNodes<DraggableData>,
   id: UniqueIdentifier | null
-): DraggableNode['node']['current'] {
+): DraggableNode<DraggableData>['node']['current'] {
   const draggableNode = id !== null ? draggableNodes.get(id) : undefined;
   const node = draggableNode ? draggableNode.node.current : null;
 
