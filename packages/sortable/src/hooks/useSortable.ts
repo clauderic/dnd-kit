@@ -26,18 +26,18 @@ import type {
 } from './types';
 import {useDerivedTransform} from './utilities';
 
-export interface Arguments
-  extends Omit<UseDraggableArguments, 'disabled'>,
-    Pick<UseDroppableArguments, 'resizeObserverConfig'> {
-  animateLayoutChanges?: AnimateLayoutChanges;
+export interface Arguments<DraggableData, DroppableData>
+  extends Omit<UseDraggableArguments<DraggableData>, 'disabled'>,
+    Pick<UseDroppableArguments<DroppableData>, 'resizeObserverConfig'> {
+  animateLayoutChanges?: AnimateLayoutChanges<DraggableData>;
   disabled?: boolean | Disabled;
   getNewIndex?: NewIndexGetter;
   strategy?: SortingStrategy;
   transition?: SortableTransition | null;
 }
 
-export function useSortable({
-  animateLayoutChanges = defaultAnimateLayoutChanges,
+export function useSortable<DraggableData, DroppableData>({
+  animateLayoutChanges = defaultAnimateLayoutChanges as AnimateLayoutChanges<DraggableData>,
   attributes: userDefinedAttributes,
   disabled: localDisabled,
   data: customData,
@@ -46,7 +46,7 @@ export function useSortable({
   strategy: localStrategy,
   resizeObserverConfig,
   transition = defaultTransition,
-}: Arguments) {
+}: Arguments<DraggableData, DroppableData>) {
   const {
     items,
     containerId,
@@ -58,10 +58,10 @@ export function useSortable({
     useDragOverlay,
     strategy: globalStrategy,
   } = useContext(Context);
-  const disabled: Disabled = normalizeLocalDisabled(
-    localDisabled,
-    globalDisabled
-  );
+  const disabled: Disabled = normalizeLocalDisabled<
+    DraggableData,
+    DroppableData
+  >(localDisabled, globalDisabled);
   const index = items.indexOf(id);
   const data = useMemo<SortableData & Data>(
     () => ({sortable: {containerId, index, items}, ...customData}),
@@ -243,8 +243,8 @@ export function useSortable({
   }
 }
 
-function normalizeLocalDisabled(
-  localDisabled: Arguments['disabled'],
+function normalizeLocalDisabled<DraggableData, DroppableData>(
+  localDisabled: Arguments<DraggableData, DroppableData>['disabled'],
   globalDisabled: Disabled
 ) {
   if (typeof localDisabled === 'boolean') {

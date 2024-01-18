@@ -1,7 +1,7 @@
-import type {Modifier} from '@dnd-kit/core';
+import type {AnyData, Modifier} from '@dnd-kit/core';
 import {getEventCoordinates} from '@dnd-kit/utilities';
 
-export const snapCenterToCursor: Modifier = ({
+export const snapCenterToCursor: Modifier<AnyData, AnyData> = ({
   activatorEvent,
   draggingNodeRect,
   transform,

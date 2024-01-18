@@ -7,19 +7,19 @@ import type {ClientRect} from '../../../types';
 import type {DraggableNode} from '../../../store';
 import type {MeasuringFunction} from '../types';
 
-interface Options {
-  activeNode: DraggableNode | null | undefined;
+interface Options<DraggableData> {
+  activeNode: DraggableNode<DraggableData> | null | undefined;
   config: boolean | {x: boolean; y: boolean} | undefined;
   initialRect: ClientRect | null;
   measure: MeasuringFunction;
 }
 
-export function useLayoutShiftScrollCompensation({
+export function useLayoutShiftScrollCompensation<DraggableData>({
   activeNode,
   measure,
   initialRect,
   config = true,
-}: Options) {
+}: Options<DraggableData>) {
   const initialized = useRef(false);
   const {x, y} = typeof config === 'boolean' ? {x: config, y: config} : config;
 

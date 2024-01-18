@@ -7,8 +7,8 @@ import type {Collision, CollisionDescriptor} from './types';
  * Sort collisions from smallest to greatest value
  */
 export function sortCollisionsAsc(
-  {data: {value: a}}: CollisionDescriptor,
-  {data: {value: b}}: CollisionDescriptor
+  {data: {value: a}}: CollisionDescriptor<unknown>,
+  {data: {value: b}}: CollisionDescriptor<unknown>
 ) {
   return a - b;
 }
@@ -17,8 +17,8 @@ export function sortCollisionsAsc(
  * Sort collisions from greatest to smallest value
  */
 export function sortCollisionsDesc(
-  {data: {value: a}}: CollisionDescriptor,
-  {data: {value: b}}: CollisionDescriptor
+  {data: {value: a}}: CollisionDescriptor<unknown>,
+  {data: {value: b}}: CollisionDescriptor<unknown>
 ) {
   return b - a;
 }

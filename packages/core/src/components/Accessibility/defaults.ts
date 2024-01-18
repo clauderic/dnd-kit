@@ -1,3 +1,4 @@
+import type {AnyData} from '../../store/types';
 import type {Announcements, ScreenReaderInstructions} from './types';
 
 export const defaultScreenReaderInstructions: ScreenReaderInstructions = {
@@ -8,7 +9,7 @@ export const defaultScreenReaderInstructions: ScreenReaderInstructions = {
   `,
 };
 
-export const defaultAnnouncements: Announcements = {
+export const defaultAnnouncements: Announcements<AnyData, AnyData> = {
   onDragStart({active}) {
     return `Picked up draggable item ${active.id}.`;
   },

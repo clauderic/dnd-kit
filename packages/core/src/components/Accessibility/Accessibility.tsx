@@ -11,19 +11,22 @@ import {
   defaultScreenReaderInstructions,
 } from './defaults';
 
-interface Props {
-  announcements?: Announcements;
+interface Props<DraggableData, DroppableData> {
+  announcements?: Announcements<DraggableData, DroppableData>;
   container?: Element;
   screenReaderInstructions?: ScreenReaderInstructions;
   hiddenTextDescribedById: string;
 }
 
-export function Accessibility({
-  announcements = defaultAnnouncements,
+export function Accessibility<DraggableData, DroppableData>({
+  announcements = defaultAnnouncements as Announcements<
+    DraggableData,
+    DroppableData
+  >,
   container,
   hiddenTextDescribedById,
   screenReaderInstructions = defaultScreenReaderInstructions,
-}: Props) {
+}: Props<DraggableData, DroppableData>) {
   const {announce, announcement} = useAnnouncement();
   const liveRegionId = useUniqueId(`DndLiveRegion`);
   const [mounted, setMounted] = useState(false);
@@ -33,7 +36,7 @@ export function Accessibility({
   }, []);
 
   useDndMonitor(
-    useMemo<DndMonitorListener>(
+    useMemo<DndMonitorListener<DraggableData, DroppableData>>(
       () => ({
         onDragStart({active}) {
           announce(announcements.onDragStart({active}));

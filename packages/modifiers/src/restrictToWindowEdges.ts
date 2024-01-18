@@ -1,8 +1,8 @@
-import type {Modifier} from '@dnd-kit/core';
+import type {AnyData, Modifier} from '@dnd-kit/core';
 
 import {restrictToBoundingRect} from './utilities';
 
-export const restrictToWindowEdges: Modifier = ({
+export const restrictToWindowEdges: Modifier<AnyData, AnyData> = ({
   transform,
   draggingNodeRect,
   windowRect,

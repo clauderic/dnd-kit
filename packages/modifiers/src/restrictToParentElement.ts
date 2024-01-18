@@ -1,7 +1,7 @@
-import type {Modifier} from '@dnd-kit/core';
+import type {AnyData, Modifier} from '@dnd-kit/core';
 import {restrictToBoundingRect} from './utilities';
 
-export const restrictToParentElement: Modifier = ({
+export const restrictToParentElement: Modifier<AnyData, AnyData> = ({
   containerNodeRect,
   draggingNodeRect,
   transform,

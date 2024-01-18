@@ -53,18 +53,28 @@ function isDelayConstraint(
   return Boolean(constraint && 'delay' in constraint);
 }
 
-export interface AbstractPointerSensorOptions extends SensorOptions {
+export interface AbstractPointerSensorOptions<DraggableData, DroppableData>
+  extends SensorOptions {
   activationConstraint?: PointerActivationConstraint;
   bypassActivationConstraint?(
-    props: Pick<AbstractPointerSensorProps, 'activeNode' | 'event' | 'options'>
+    props: Pick<
+      AbstractPointerSensorProps<DraggableData, DroppableData>,
+      'activeNode' | 'event' | 'options'
+    >
   ): boolean;
   onActivation?({event}: {event: Event}): void;
 }
 
-export type AbstractPointerSensorProps =
-  SensorProps<AbstractPointerSensorOptions>;
+export type AbstractPointerSensorProps<DraggableData, DroppableData> =
+  SensorProps<
+    AbstractPointerSensorOptions<DraggableData, DroppableData>,
+    DraggableData,
+    DroppableData
+  >;
 
-export class AbstractPointerSensor implements SensorInstance {
+export class AbstractPointerSensor<DraggableData, DroppableData>
+  implements SensorInstance
+{
   public autoScrollEnabled = true;
   private document: Document;
   private activated: boolean = false;
@@ -75,7 +85,7 @@ export class AbstractPointerSensor implements SensorInstance {
   private windowListeners: Listeners;
 
   constructor(
-    private props: AbstractPointerSensorProps,
+    private props: AbstractPointerSensorProps<DraggableData, DroppableData>,
     private events: PointerEventHandlers,
     listenerTarget = getEventListenerTarget(props.event.target)
   ) {

@@ -3,7 +3,9 @@ import {useContext, useEffect} from 'react';
 import {DndMonitorContext} from './context';
 import type {DndMonitorListener} from './types';
 
-export function useDndMonitor(listener: DndMonitorListener) {
+export function useDndMonitor<DraggableData, DroppableData>(
+  listener: DndMonitorListener<DraggableData, DroppableData>
+) {
   const registerListener = useContext(DndMonitorContext);
 
   useEffect(() => {

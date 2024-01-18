@@ -7,6 +7,7 @@ import React, {
   useReducer,
   useRef,
   useState,
+  Context,
 } from 'react';
 import {unstable_batchedUpdates} from 'react-dom';
 import {
@@ -62,7 +63,7 @@ import {
   rectIntersection,
 } from '../../utilities';
 import {applyModifiers, Modifiers} from '../../modifiers';
-import type {Active, Over} from '../../store/types';
+import type {Active, AnyData, DataRef, Over} from '../../store/types';
 import type {
   DragStartEvent,
   DragCancelEvent,
@@ -85,37 +86,38 @@ import {
 } from './hooks';
 import type {MeasuringConfiguration} from './types';
 
-export interface Props {
+export interface Props<DraggableData, DroppableData> {
   id?: string;
   accessibility?: {
-    announcements?: Announcements;
+    announcements?: Announcements<DraggableData, DroppableData>;
     container?: Element;
     restoreFocus?: boolean;
     screenReaderInstructions?: ScreenReaderInstructions;
   };
   autoScroll?: boolean | AutoScrollOptions;
-  cancelDrop?: CancelDrop;
+  cancelDrop?: CancelDrop<DraggableData, DroppableData>;
   children?: React.ReactNode;
   collisionDetection?: CollisionDetection;
   measuring?: MeasuringConfiguration;
   modifiers?: Modifiers;
-  sensors?: SensorDescriptor<any>[];
-  onDragStart?(event: DragStartEvent): void;
-  onDragMove?(event: DragMoveEvent): void;
-  onDragOver?(event: DragOverEvent): void;
-  onDragEnd?(event: DragEndEvent): void;
-  onDragCancel?(event: DragCancelEvent): void;
+  sensors?: SensorDescriptor<any, DraggableData, DroppableData>[];
+  onDragStart?(event: DragStartEvent<DraggableData>): void;
+  onDragMove?(event: DragMoveEvent<DraggableData, DroppableData>): void;
+  onDragOver?(event: DragOverEvent<DraggableData, DroppableData>): void;
+  onDragEnd?(event: DragEndEvent<DraggableData, DroppableData>): void;
+  onDragCancel?(event: DragCancelEvent<DraggableData, DroppableData>): void;
 }
 
-export interface CancelDropArguments extends DragEndEvent {}
+export interface CancelDropArguments<DraggableData, DroppableData>
+  extends DragEndEvent<DraggableData, DroppableData> {}
 
-export type CancelDrop = (
-  args: CancelDropArguments
+export type CancelDrop<DraggableData = AnyData, DroppableData = AnyData> = (
+  args: CancelDropArguments<DraggableData, DroppableData>
 ) => boolean | Promise<boolean>;
 
-interface DndEvent extends Event {
+interface DndEvent<DraggableData, DroppableData> extends Event {
   dndKit?: {
-    capturedBy: Sensor<any>;
+    capturedBy: Sensor<any, DraggableData, DroppableData>;
   };
 }
 
@@ -131,7 +133,10 @@ enum Status {
   Initialized,
 }
 
-export const DndContext = memo(function DndContext({
+export const DndContext = memo(function DndContext<
+  DraggableData extends AnyData,
+  DroppableData extends AnyData
+>({
   id,
   accessibility,
   autoScroll = true,
@@ -141,8 +146,11 @@ export const DndContext = memo(function DndContext({
   measuring,
   modifiers,
   ...props
-}: Props) {
-  const store = useReducer(reducer, undefined, getInitialState);
+}: Props<DraggableData, DroppableData>) {
+  const typedReducer = reducer<DraggableData, DroppableData>
+  const typedGetInitialState = getInitialState<DraggableData, DroppableData>
+  const store = useReducer(typedReducer, undefined, typedGetInitialState);
+
   const [state, dispatch] = store;
   const [dispatchMonitorEvent, registerMonitorListener] =
     useDndMonitorProvider();
@@ -153,17 +161,18 @@ export const DndContext = memo(function DndContext({
     droppable: {containers: droppableContainers},
   } = state;
   const node = activeId ? draggableNodes.get(activeId) : null;
-  const activeRects = useRef<Active['rect']['current']>({
+  const activeRects = useRef<Active<DraggableData>['rect']['current']>({
     initial: null,
     translated: null,
   });
-  const active = useMemo<Active | null>(
+
+  const active = useMemo<Active<DraggableData> | null>(
     () =>
       activeId != null
         ? {
             id: activeId,
             // It's possible for the active node to unmount while dragging
-            data: node?.data ?? defaultData,
+            data: node?.data ?? defaultData as DataRef<DraggableData>,
             rect: activeRects,
           }
         : null,
@@ -211,7 +220,7 @@ export const DndContext = memo(function DndContext({
   const containerNodeRect = useRect(
     activeNode ? activeNode.parentElement : null
   );
-  const sensorContext = useRef<SensorContext>({
+  const sensorContext = useRef<SensorContext<DraggableData, DroppableData>>({
     activatorEvent: null,
     active: null,
     activeNode,
@@ -305,7 +314,7 @@ export const DndContext = memo(function DndContext({
         })
       : null;
   const overId = getFirstCollision(collisions, 'id');
-  const [over, setOver] = useState<Over | null>(null);
+  const [over, setOver] = useState<Over<DroppableData> | null>(null);
 
   // When there is no drag overlay used, we need to account for the
   // window scroll delta
@@ -322,7 +331,7 @@ export const DndContext = memo(function DndContext({
   const instantiateSensor = useCallback(
     (
       event: React.SyntheticEvent,
-      {sensor: Sensor, options}: SensorDescriptor<any>
+      {sensor: Sensor, options}: SensorDescriptor<any, DraggableData, DroppableData>
     ) => {
       if (activeRef.current == null) {
         return;
@@ -358,7 +367,7 @@ export const DndContext = memo(function DndContext({
           }
 
           const {onDragStart} = latestProps.current;
-          const event: DragStartEvent = {
+          const event: DragStartEvent<DraggableData> = {
             active: {id, data: draggableNode.data, rect: activeRects},
           };
 
@@ -392,7 +401,7 @@ export const DndContext = memo(function DndContext({
         return async function handler() {
           const {active, collisions, over, scrollAdjustedTranslate} =
             sensorContext.current;
-          let event: DragEndEvent | null = null;
+          let event: DragEndEvent<DraggableData, DroppableData> | null = null;
 
           if (active && scrollAdjustedTranslate) {
             const {cancelDrop} = latestProps.current;
@@ -442,11 +451,11 @@ export const DndContext = memo(function DndContext({
 
   const bindActivatorToSensorInstantiator = useCallback(
     (
-      handler: SensorActivatorFunction<any>,
-      sensor: SensorDescriptor<any>
+      handler: SensorActivatorFunction<any, DraggableData>,
+      sensor: SensorDescriptor<any, DraggableData, DroppableData>
     ): SyntheticListener['handler'] => {
       return (event, active) => {
-        const nativeEvent = event.nativeEvent as DndEvent;
+        const nativeEvent = event.nativeEvent as DndEvent<DraggableData, DroppableData>;
         const activeDraggableNode = draggableNodes.get(active);
 
         if (
@@ -483,7 +492,7 @@ export const DndContext = memo(function DndContext({
     [draggableNodes, instantiateSensor]
   );
 
-  const activators = useCombineActivators(
+  const activators = useCombineActivators<DraggableData, DroppableData>(
     sensors,
     bindActivatorToSensorInstantiator
   );
@@ -505,7 +514,7 @@ export const DndContext = memo(function DndContext({
         return;
       }
 
-      const event: DragMoveEvent = {
+      const event: DragMoveEvent<DraggableData, DroppableData> = {
         active,
         activatorEvent,
         collisions,
@@ -555,7 +564,7 @@ export const DndContext = memo(function DndContext({
               disabled: overContainer.disabled,
             }
           : null;
-      const event: DragOverEvent = {
+      const event: DragOverEvent<DraggableData, DroppableData> = {
         active,
         activatorEvent,
         collisions,
@@ -622,7 +631,7 @@ export const DndContext = memo(function DndContext({
   });
 
   const publicContext = useMemo(() => {
-    const context: PublicContextDescriptor = {
+    const context: PublicContextDescriptor<DraggableData, DroppableData> = {
       active,
       activeNode,
       activeNodeRect,
@@ -664,7 +673,7 @@ export const DndContext = memo(function DndContext({
   ]);
 
   const internalContext = useMemo(() => {
-    const context: InternalContextDescriptor = {
+    const context: InternalContextDescriptor<DraggableData, DroppableData> = {
       activatorEvent,
       activators,
       active,
@@ -691,16 +700,20 @@ export const DndContext = memo(function DndContext({
     measureDroppableContainers,
   ]);
 
+  const TypedInternalContext = InternalContext as Context<
+    InternalContextDescriptor<DraggableData, DroppableData>
+  >
+
   return (
     <DndMonitorContext.Provider value={registerMonitorListener}>
-      <InternalContext.Provider value={internalContext}>
+      <TypedInternalContext.Provider value={internalContext}>
         <PublicContext.Provider value={publicContext}>
           <ActiveDraggableContext.Provider value={transform}>
             {children}
           </ActiveDraggableContext.Provider>
         </PublicContext.Provider>
         <RestoreFocus disabled={accessibility?.restoreFocus === false} />
-      </InternalContext.Provider>
+      </TypedInternalContext.Provider>
       <Accessibility
         {...accessibility}
         hiddenTextDescribedById={draggableDescribedById}

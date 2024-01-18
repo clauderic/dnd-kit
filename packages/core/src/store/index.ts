@@ -7,6 +7,7 @@ export {
 export {reducer, getInitialState} from './reducer';
 export type {
   Active,
+  AnyData,
   Data,
   DataRef,
   DraggableElement,

@@ -4,12 +4,17 @@ import type {
   DroppableContainer,
   DraggableNode,
   Over,
+  AnyData,
 } from '@dnd-kit/core';
 
 import type {SortableData} from './data';
 
 export function hasSortableData<
-  T extends Active | Over | DraggableNode | DroppableContainer
+  T extends
+    | Active<AnyData>
+    | Over<AnyData>
+    | DraggableNode<AnyData>
+    | DroppableContainer<AnyData>
 >(
   entry: T | null | undefined
 ): entry is T & {data: {current: Data<SortableData>}} {

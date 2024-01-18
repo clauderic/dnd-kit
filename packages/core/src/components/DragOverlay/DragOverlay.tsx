@@ -15,19 +15,22 @@ import type {PositionedOverlayProps} from './components';
 import {useDropAnimation, useKey} from './hooks';
 import type {DropAnimation} from './hooks';
 
-export interface Props
+export interface Props<DraggableData, DroppableData>
   extends Pick<
     PositionedOverlayProps,
     'adjustScale' | 'children' | 'className' | 'style' | 'transition'
   > {
-  dropAnimation?: DropAnimation | null | undefined;
-  modifiers?: Modifiers;
+  dropAnimation?:
+    | DropAnimation<DraggableData, DroppableData>
+    | null
+    | undefined;
+  modifiers?: Modifiers<DraggableData, DroppableData>;
   wrapperElement?: keyof JSX.IntrinsicElements;
   zIndex?: number;
 }
 
 export const DragOverlay = React.memo(
-  ({
+  <DraggableData, DroppableData>({
     adjustScale = false,
     children,
     dropAnimation: dropAnimationConfig,
@@ -37,7 +40,7 @@ export const DragOverlay = React.memo(
     wrapperElement = 'div',
     className,
     zIndex = 999,
-  }: Props) => {
+  }: Props<DraggableData, DroppableData>) => {
     const {
       activatorEvent,
       active,
@@ -51,24 +54,27 @@ export const DragOverlay = React.memo(
       scrollableAncestors,
       scrollableAncestorRects,
       windowRect,
-    } = useDndContext();
+    } = useDndContext<DraggableData, DroppableData>();
     const transform = useContext(ActiveDraggableContext);
     const key = useKey(active?.id);
-    const modifiedTransform = applyModifiers(modifiers, {
-      activatorEvent,
-      active,
-      activeNodeRect,
-      containerNodeRect,
-      draggingNodeRect: dragOverlay.rect,
-      over,
-      overlayNodeRect: dragOverlay.rect,
-      scrollableAncestors,
-      scrollableAncestorRects,
-      transform,
-      windowRect,
-    });
+    const modifiedTransform = applyModifiers<DraggableData, DroppableData>(
+      modifiers,
+      {
+        activatorEvent,
+        active,
+        activeNodeRect,
+        containerNodeRect,
+        draggingNodeRect: dragOverlay.rect,
+        over,
+        overlayNodeRect: dragOverlay.rect,
+        scrollableAncestors,
+        scrollableAncestorRects,
+        transform,
+        windowRect,
+      }
+    );
     const initialRect = useInitialValue(activeNodeRect);
-    const dropAnimation = useDropAnimation({
+    const dropAnimation = useDropAnimation<DraggableData, DroppableData>({
       config: dropAnimationConfig,
       draggableNodes,
       droppableContainers,

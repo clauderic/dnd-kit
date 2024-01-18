@@ -27,23 +27,33 @@ import {
   defaultKeyboardCodes,
   defaultKeyboardCoordinateGetter,
 } from './defaults';
+import type {AnyData} from '../../store/types';
 
-export interface KeyboardSensorOptions extends SensorOptions {
+export interface KeyboardSensorOptions<DraggableData, DroppableData>
+  extends SensorOptions {
   keyboardCodes?: KeyboardCodes;
-  coordinateGetter?: KeyboardCoordinateGetter;
+  coordinateGetter?: KeyboardCoordinateGetter<DraggableData, DroppableData>;
   scrollBehavior?: ScrollBehavior;
   onActivation?({event}: {event: KeyboardEvent}): void;
 }
 
-export type KeyboardSensorProps = SensorProps<KeyboardSensorOptions>;
+export type KeyboardSensorProps<DraggableData, DroppableData> = SensorProps<
+  KeyboardSensorOptions<DraggableData, DroppableData>,
+  DraggableData,
+  DroppableData
+>;
 
-export class KeyboardSensor implements SensorInstance {
+export class KeyboardSensor<DraggableData = AnyData, DroppableData = AnyData>
+  implements SensorInstance
+{
   public autoScrollEnabled = false;
   private referenceCoordinates: Coordinates | undefined;
   private listeners: Listeners;
   private windowListeners: Listeners;
 
-  constructor(private props: KeyboardSensorProps) {
+  constructor(
+    private props: KeyboardSensorProps<DraggableData, DroppableData>
+  ) {
     const {
       event: {target},
     } = props;
@@ -82,7 +92,10 @@ export class KeyboardSensor implements SensorInstance {
       const {active, context, options} = this.props;
       const {
         keyboardCodes = defaultKeyboardCodes,
-        coordinateGetter = defaultKeyboardCoordinateGetter,
+        coordinateGetter = defaultKeyboardCoordinateGetter as KeyboardCoordinateGetter<
+          DraggableData,
+          DroppableData
+        >,
         scrollBehavior = 'smooth',
       } = options;
       const {code} = event;
@@ -274,7 +287,10 @@ export class KeyboardSensor implements SensorInstance {
     this.windowListeners.removeAll();
   }
 
-  static activators: Activators<KeyboardSensorOptions> = [
+  static activators: Activators<
+    KeyboardSensorOptions<AnyData, AnyData>,
+    AnyData
+  > = [
     {
       eventName: 'onKeyDown' as const,
       handler: (

@@ -6,16 +6,16 @@ import type {
   DragOverEvent,
 } from '../../types';
 
-export interface DndMonitorListener {
-  onDragStart?(event: DragStartEvent): void;
-  onDragMove?(event: DragMoveEvent): void;
-  onDragOver?(event: DragOverEvent): void;
-  onDragEnd?(event: DragEndEvent): void;
-  onDragCancel?(event: DragCancelEvent): void;
+export interface DndMonitorListener<DraggableData, DroppableData> {
+  onDragStart?(event: DragStartEvent<DraggableData>): void;
+  onDragMove?(event: DragMoveEvent<DraggableData, DroppableData>): void;
+  onDragOver?(event: DragOverEvent<DraggableData, DroppableData>): void;
+  onDragEnd?(event: DragEndEvent<DraggableData, DroppableData>): void;
+  onDragCancel?(event: DragCancelEvent<DraggableData, DroppableData>): void;
 }
 
 export interface DndMonitorEvent {
-  type: keyof DndMonitorListener;
+  type: keyof DndMonitorListener<never, never>;
   event:
     | DragStartEvent
     | DragMoveEvent
@@ -26,6 +26,6 @@ export interface DndMonitorEvent {
 
 export type UnregisterListener = () => void;
 
-export type RegisterListener = (
-  listener: DndMonitorListener
+export type RegisterListener<DraggableData, DroppableData> = (
+  listener: DndMonitorListener<DraggableData, DroppableData>
 ) => UnregisterListener;

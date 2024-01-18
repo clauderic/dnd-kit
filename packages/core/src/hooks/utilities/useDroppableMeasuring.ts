@@ -31,8 +31,8 @@ export interface DroppableMeasuring {
 
 const defaultValue: RectMap = new Map();
 
-export function useDroppableMeasuring(
-  containers: DroppableContainer[],
+export function useDroppableMeasuring<DroppableData>(
+  containers: DroppableContainer<DroppableData>[],
   {dragging, dependencies, config}: Arguments
 ) {
   const [queue, setQueue] = useState<UniqueIdentifier[] | null>(null);

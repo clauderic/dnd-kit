@@ -1,3 +1,4 @@
+import type {AnyData} from '../../store/types';
 import type {Coordinates, UniqueIdentifier} from '../../types';
 import type {SensorContext} from '../types';
 
@@ -17,11 +18,14 @@ export type KeyboardCodes = {
   end: KeyboardEvent['code'][];
 };
 
-export type KeyboardCoordinateGetter = (
+export type KeyboardCoordinateGetter<
+  DraggableData = AnyData,
+  DroppableData = AnyData
+> = (
   event: KeyboardEvent,
   args: {
     active: UniqueIdentifier;
     currentCoordinates: Coordinates;
-    context: SensorContext;
+    context: SensorContext<DraggableData, DroppableData>;
   }
 ) => Coordinates | void;

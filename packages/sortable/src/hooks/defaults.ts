@@ -7,6 +7,7 @@ import type {
   NewIndexGetter,
   SortableTransition,
 } from './types';
+import type {AnyData} from '@dnd-kit/core';
 
 export const defaultNewIndexGetter: NewIndexGetter = ({
   id,
@@ -15,7 +16,7 @@ export const defaultNewIndexGetter: NewIndexGetter = ({
   overIndex,
 }) => arrayMove(items, activeIndex, overIndex).indexOf(id);
 
-export const defaultAnimateLayoutChanges: AnimateLayoutChanges = ({
+export const defaultAnimateLayoutChanges: AnimateLayoutChanges<AnyData> = ({
   containerId,
   isSorting,
   wasDragging,

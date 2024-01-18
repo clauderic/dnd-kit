@@ -23,10 +23,10 @@ interface ResizeObserverConfig {
   timeout?: number;
 }
 
-export interface UseDroppableArguments {
+export interface UseDroppableArguments<DroppableData> {
   id: UniqueIdentifier;
   disabled?: boolean;
-  data?: Data;
+  data?: Data<DroppableData>;
   resizeObserverConfig?: ResizeObserverConfig;
 }
 
@@ -36,16 +36,15 @@ const defaultResizeObserverConfig = {
   timeout: 25,
 };
 
-export function useDroppable({
+export function useDroppable<DroppableData>({
   data,
   disabled = false,
   id,
   resizeObserverConfig,
-}: UseDroppableArguments) {
+}: UseDroppableArguments<DroppableData>) {
   const key = useUniqueId(ID_PREFIX);
-  const {active, dispatch, over, measureDroppableContainers} = useContext(
-    InternalContext
-  );
+  const {active, dispatch, over, measureDroppableContainers} =
+    useContext(InternalContext);
   const previous = useRef({disabled});
   const resizeObserverConnected = useRef(false);
   const rect = useRef<ClientRect | null>(null);

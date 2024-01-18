@@ -1,3 +1,4 @@
+import type {AnyData} from '../../store/types';
 import {KeyboardCoordinateGetter, KeyboardCode, KeyboardCodes} from './types';
 
 export const defaultKeyboardCodes: KeyboardCodes = {
@@ -6,10 +7,10 @@ export const defaultKeyboardCodes: KeyboardCodes = {
   end: [KeyboardCode.Space, KeyboardCode.Enter],
 };
 
-export const defaultKeyboardCoordinateGetter: KeyboardCoordinateGetter = (
-  event,
-  {currentCoordinates}
-) => {
+export const defaultKeyboardCoordinateGetter: KeyboardCoordinateGetter<
+  AnyData,
+  AnyData
+> = (event, {currentCoordinates}) => {
   switch (event.code) {
     case KeyboardCode.Right:
       return {
