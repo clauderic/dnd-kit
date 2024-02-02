@@ -36,6 +36,9 @@ export class Draggable<T extends Data = Data> extends Entity<T> {
   @reactive
   public type: Type | undefined;
 
+  /**
+   * A boolean indicating whether the draggable item is the source of a drag operation.
+   */
   @derived
   public get isDragSource() {
     const {dragOperation} = this.manager;

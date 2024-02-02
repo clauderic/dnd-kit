@@ -1,4 +1,4 @@
-import {batch, effect} from '@dnd-kit/state';
+import {effect} from '@dnd-kit/state';
 import {Plugin} from '@dnd-kit/abstract';
 import {closestCenter} from '@dnd-kit/collision';
 import {
@@ -44,120 +44,120 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
     const unsubscribe = manager.monitor.addEventListener(
       'dragmove',
       (event, manager) => {
-        if (this.disabled || event.defaultPrevented) {
-          return;
-        }
-
-        const {dragOperation} = manager;
-
-        if (!isKeyboardEvent(dragOperation.activatorEvent)) {
-          return;
-        }
-
-        if (!isSortable(dragOperation.source)) {
-          return;
-        }
-
-        if (!dragOperation.shape) {
-          return;
-        }
-
-        const {actions, collisionObserver, registry} = manager;
-        const {by} = event;
-
-        if (!by) {
-          return;
-        }
-
-        const direction = getDirection(by);
-        const {source} = dragOperation;
-        const {center} = dragOperation.shape.current;
-        const potentialTargets: Droppable[] = [];
-
-        for (const droppable of registry.droppables) {
-          const {shape, id} = droppable;
-
-          if (
-            !shape ||
-            (id === source?.id && isSortable(droppable)) ||
-            (source?.type != null && !droppable.accepts(source.type))
-          ) {
-            continue;
+        queueMicrotask(() => {
+          if (this.disabled || event.defaultPrevented) {
+            return;
           }
 
-          switch (direction) {
-            case 'down':
-              if (center.y + TOLERANCE < shape.center.y) {
-                potentialTargets.push(droppable);
-              }
-              break;
-            case 'up':
-              if (center.y - TOLERANCE > shape.center.y) {
-                potentialTargets.push(droppable);
-              }
-              break;
-            case 'left':
-              if (center.x - TOLERANCE > shape.center.x) {
-                potentialTargets.push(droppable);
-              }
-              break;
-            case 'right':
-              if (center.x + TOLERANCE < shape.center.x) {
-                potentialTargets.push(droppable);
-              }
-              break;
+          const {dragOperation} = manager;
+
+          if (!isKeyboardEvent(dragOperation.activatorEvent)) {
+            return;
           }
-        }
 
-        event.preventDefault();
-        collisionObserver.disable();
+          if (!isSortable(dragOperation.source)) {
+            return;
+          }
 
-        const collisions = collisionObserver.computeCollisions(
-          potentialTargets,
-          closestCenter
-        );
-        const [firstCollision] = collisions;
+          if (!dragOperation.shape) {
+            return;
+          }
 
-        if (!firstCollision) {
-          return;
-        }
+          const {actions, collisionObserver, registry} = manager;
+          const {by} = event;
 
-        const {id} = firstCollision;
+          if (!by) {
+            return;
+          }
 
-        actions.setDropTarget(id).then(() => {
+          const direction = getDirection(by);
           const {source} = dragOperation;
+          const {center} = dragOperation.shape.current;
+          const potentialTargets: Droppable[] = [];
 
-          if (!source) {
+          for (const droppable of registry.droppables) {
+            const {shape, id} = droppable;
+
+            if (
+              !shape ||
+              (id === source?.id && isSortable(droppable)) ||
+              (source?.type != null && !droppable.accepts(source.type))
+            ) {
+              continue;
+            }
+
+            switch (direction) {
+              case 'down':
+                if (center.y + TOLERANCE < shape.center.y) {
+                  potentialTargets.push(droppable);
+                }
+                break;
+              case 'up':
+                if (center.y - TOLERANCE > shape.center.y) {
+                  potentialTargets.push(droppable);
+                }
+                break;
+              case 'left':
+                if (center.x - TOLERANCE > shape.center.x) {
+                  potentialTargets.push(droppable);
+                }
+                break;
+              case 'right':
+                if (center.x + TOLERANCE < shape.center.x) {
+                  potentialTargets.push(droppable);
+                }
+                break;
+            }
+          }
+
+          event.preventDefault();
+          collisionObserver.disable();
+
+          const collisions = collisionObserver.computeCollisions(
+            potentialTargets,
+            closestCenter
+          );
+          const [firstCollision] = collisions;
+
+          if (!firstCollision) {
             return;
           }
 
-          const droppable = registry.droppables.get(source.id);
+          const {id} = firstCollision;
 
-          if (!droppable?.element) {
-            return;
-          }
+          actions.setDropTarget(id).then(() => {
+            const {source} = dragOperation;
 
-          const {element} = droppable;
-          scrollIntoViewIfNeeded(element);
-
-          scheduler.schedule(() => {
-            const shape = droppable.refreshShape();
-
-            if (!shape) {
+            if (!source) {
               return;
             }
 
-            batch(() => {
-              actions.setDropTarget(source.id);
+            const droppable = registry.droppables.get(source.id);
+
+            if (!droppable?.element) {
+              return;
+            }
+
+            const {element} = droppable;
+            scrollIntoViewIfNeeded(element);
+
+            scheduler.schedule(() => {
+              const shape = droppable.refreshShape();
+
+              if (!shape) {
+                return;
+              }
+
               actions.move({
                 to: {
                   x: shape.center.x,
                   y: shape.center.y,
                 },
               });
+              actions.setDropTarget(source.id).then(() => {
+                collisionObserver.enable();
+              });
             });
-
-            collisionObserver.enable();
           });
         });
       }

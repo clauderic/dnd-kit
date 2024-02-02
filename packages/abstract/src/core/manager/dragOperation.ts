@@ -235,13 +235,15 @@ export function DragOperationManager<
           });
         });
       },
-      move({
-        by,
-        to,
-        cancelable = true,
-      }:
-        | {by: Coordinates; to?: undefined; cancelable?: boolean}
-        | {by?: undefined; to: Coordinates; cancelable?: boolean}) {
+      move(
+        {
+          by,
+          to,
+          cancelable = true,
+        }:
+          | {by: Coordinates; to?: undefined; cancelable?: boolean}
+          | {by?: undefined; to: Coordinates; cancelable?: boolean}
+      ) {
         if (!dragging.peek()) {
           return;
         }

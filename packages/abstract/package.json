@@ -36,10 +36,10 @@
     }
   },
   "scripts": {
-    "build": "yarn build:core && yarn build:modifiers",
+    "build": "bun build:core && bun build:modifiers",
     "build:core": "tsup src/core/index.ts",
     "build:modifiers": "tsup --entry.modifiers src/modifiers/index.ts",
-    "dev": "yarn build:core --watch & yarn build:modifiers --watch",
+    "dev": "bun build:core --watch & bun build:modifiers --watch",
     "lint": "TIMING=1 eslint src/**/*.ts* --fix",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },

@@ -7,10 +7,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - run: yarn && yarn build
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install && bun run build
       - uses: chromaui/action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMATIC_TOKEN }}
-          buildScriptName: 'build:storybook'
+          buildScriptName: 'build'
           workingDir: 'apps/docs'

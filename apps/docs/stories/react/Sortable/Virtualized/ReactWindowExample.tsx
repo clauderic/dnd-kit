@@ -4,7 +4,7 @@ import {DragDropProvider} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
 import {defaultPreset} from '@dnd-kit/dom';
 import {Debug} from '@dnd-kit/dom/plugins/debug';
-import {move} from '@dnd-kit/state-management';
+import {move} from '@dnd-kit/helpers';
 import {FixedSizeList as List} from 'react-window';
 
 import {Item, Handle} from '../../components';
@@ -54,15 +54,17 @@ export function ReactWindowExample({debug}: Props) {
   );
 }
 
-function Row({
-  data,
-  index,
-  style,
-}: {
-  data: UniqueIdentifier[];
-  index: number;
-  style: React.CSSProperties;
-}) {
+function Row(
+  {
+    data,
+    index,
+    style,
+  }: {
+    data: UniqueIdentifier[];
+    index: number;
+    style: React.CSSProperties;
+  }
+) {
   return <Sortable id={data[index]} index={index} style={style} />;
 }
 
@@ -77,12 +79,6 @@ function Sortable({id, index, style}: SortableProps) {
     id,
     index,
   });
-
-  useEffect(() => {
-    return () => {
-      console.log('unmount', id);
-    };
-  }, [id]);
 
   return (
     <div

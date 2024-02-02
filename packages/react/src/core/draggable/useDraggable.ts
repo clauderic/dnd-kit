@@ -21,7 +21,8 @@ export function useDraggable<T extends Data = Data>(
   const handle = getCurrentValue(input.handle);
   const element = getCurrentValue(input.element);
   const draggable = useConstant(
-    () => new Draggable({...input, handle, element}, manager)
+    () => new Draggable({...input, handle, element}, manager),
+    manager
   );
   const isDragSource = useComputed(() => draggable.isDragSource);
 
@@ -30,6 +31,10 @@ export function useDraggable<T extends Data = Data>(
   useOnValueChange(element, () => (draggable.element = element));
   useOnValueChange(disabled, () => (draggable.disabled = disabled === true));
   useOnValueChange(sensors, () => (draggable.sensors = sensors));
+  useOnValueChange(
+    input.feedback,
+    () => (draggable.feedback = input.feedback ?? 'default')
+  );
 
   useEffect(() => {
     // Cleanup on unmount

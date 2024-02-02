@@ -49,7 +49,7 @@ export interface SortableInput<T extends Data>
 }
 
 export const defaultSortableTransition: SortableTransition = {
-  duration: 300,
+  duration: 250,
   easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
   idle: false,
 };
@@ -76,6 +76,7 @@ export class Sortable<T extends Data = Data> {
     this.draggable = new SortableDraggable<T>({...input, sensors}, manager);
     this.droppable = new SortableDroppable<T>(input, manager);
 
+    // TO-DO: Can this be done conditionally if consumers want to use their own plugin?
     manager.registry.register(SortableKeyboardPlugin);
 
     let previousIndex = index;
@@ -140,7 +141,6 @@ export class Sortable<T extends Data = Data> {
       const {idle} = manager.dragOperation.status;
 
       if (!shape || !transition || (idle && !transition.idle)) {
-        console.log('animate');
         return;
       }
 
@@ -165,8 +165,6 @@ export class Sortable<T extends Data = Data> {
         };
 
         if (delta.x || delta.y) {
-          console.log('animate');
-
           animateTransform({
             element,
             keyframes: {
@@ -251,6 +249,9 @@ export class Sortable<T extends Data = Data> {
     return this.droppable.isDropTarget;
   }
 
+  /**
+   * A boolean indicating whether the sortable item is the source of a drag operation.
+   */
   public get isDragSource() {
     return this.draggable.isDragSource;
   }

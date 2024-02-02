@@ -1,23 +1,16 @@
 import {defineConfig} from 'tsup';
-import esbuildPluginTsc from 'esbuild-plugin-tsc';
 
 export default defineConfig((options) => ({
   dts: true,
   outDir: './',
-  external: ['@dnd-kit/dom'],
-  loader: {
-    '.css': 'text',
-  },
+  external: ['@dnd-kit/abstract', '@dnd-kit/dom'],
   esbuildOptions(options) {
     options.target = 'esnext';
   },
-  esbuildPlugins: [
-    esbuildPluginTsc({
-      force: true,
-      tsx: true,
-    }),
-  ],
   format: ['esm', 'cjs'],
+  loader: {
+    '.css': 'text',
+  },
   sourcemap: true,
   treeshake: !options.watch,
 }));

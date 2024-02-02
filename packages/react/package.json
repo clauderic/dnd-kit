@@ -46,12 +46,12 @@
     }
   },
   "scripts": {
-    "build": "yarn build:hooks && yarn build:utilities && yarn build:core && yarn build:sortable",
+    "build": "bun build:hooks && bun build:utilities && bun build:core && bun build:sortable",
     "build:core": "tsup src/core/index.ts",
     "build:hooks": "tsup --entry.hooks src/hooks/index.ts",
     "build:sortable": "tsup --entry.sortable src/sortable/index.ts",
     "build:utilities": "tsup --entry.utilities src/utilities/index.ts",
-    "dev": "yarn build:hooks --watch & yarn build:utilities --watch & yarn build:core --watch & yarn build:sortable --watch",
+    "dev": "bun build:hooks --watch & bun build:utilities --watch & bun build:core --watch & bun build:sortable --watch",
     "lint": "TIMING=1 eslint src/**/*.ts* --fix",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },

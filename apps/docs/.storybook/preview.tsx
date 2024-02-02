@@ -1,11 +1,12 @@
 import React from 'react';
 import {Unstyled} from '@storybook/blocks';
 
-import {Button, Dropzone, Code} from '../stories/components';
+import {Button, Dropzone, Code, Item} from '../stories/components';
 
 // Register web components
 customElements.define('button-component', Button);
 customElements.define('dropzone-component', Dropzone);
+customElements.define('item-component', Item);
 
 const preview = {
   parameters: {

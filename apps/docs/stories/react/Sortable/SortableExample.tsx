@@ -10,7 +10,7 @@ import type {SortableTransition} from '@dnd-kit/dom/sortable';
 import {DragDropProvider} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
 import {directionBiased} from '@dnd-kit/collision';
-import {move} from '@dnd-kit/state-management';
+import {move} from '@dnd-kit/helpers';
 import {Debug} from '@dnd-kit/dom/plugins/debug';
 
 import {Item, Handle} from '../components';

@@ -5,7 +5,7 @@ import {DragDropProvider} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
 import {defaultPreset} from '@dnd-kit/dom';
 import {Debug} from '@dnd-kit/dom/plugins/debug';
-import {move} from '@dnd-kit/state-management';
+import {move} from '@dnd-kit/helpers';
 import {useWindowVirtualizer} from '@tanstack/react-virtual';
 
 import {Item, Handle} from '../../components';

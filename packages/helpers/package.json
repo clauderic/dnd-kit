@@ -1,5 +1,5 @@
 {
-  "name": "@dnd-kit/state-management",
+  "name": "@dnd-kit/helpers",
   "type": "module",
   "version": "0.0.0",
   "main": "./dist/index.cjs",

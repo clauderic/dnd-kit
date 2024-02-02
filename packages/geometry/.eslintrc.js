@@ -1,4 +1,3 @@
 module.exports = {
-  root: true,
-  extends: ['dnd-kit'],
+  extends: ["@dnd-kit/eslint-config/vanilla.js"],
 };

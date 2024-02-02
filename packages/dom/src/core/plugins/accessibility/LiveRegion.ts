@@ -3,7 +3,7 @@ export function createLiveRegion(id: string) {
 
   element.id = id;
   element.setAttribute('role', 'status');
-  element.setAttribute('aria-live', 'assertive');
+  element.setAttribute('aria-live', 'polite');
   element.setAttribute('aria-atomic', 'true');
   element.style.setProperty('position', 'fixed');
   element.style.setProperty('width', '1px');

@@ -20,7 +20,8 @@ export function useDroppable<T extends Data = Data>(
   const {collisionDetector, disabled, id, accept, type} = input;
   const element = getCurrentValue(input.element);
   const droppable = useConstant(
-    () => new Droppable({...input, element}, manager)
+    () => new Droppable({...input, element}, manager),
+    manager
   );
   const isDisabled = useComputed(() => droppable.disabled);
   const isDropTarget = useComputed(() => droppable.isDropTarget);

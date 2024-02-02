@@ -63,13 +63,13 @@
     }
   },
   "scripts": {
-    "build": "yarn build:utilities && yarn build:core && yarn build:sortable && yarn build:modifiers && yarn build:plugins",
+    "build": "bun build:utilities && bun build:core && bun build:sortable && bun build:modifiers && bun build:plugins",
     "build:core": "tsup src/core/index.ts",
     "build:modifiers": "tsup --entry.modifiers src/modifiers/index.ts",
     "build:plugins": "tsup --entry.debug src/plugins/debug/index.ts --outDir ./plugins",
     "build:sortable": "tsup --entry.sortable src/sortable/index.ts",
     "build:utilities": "tsup --entry.utilities src/utilities/index.ts",
-    "dev": "yarn build:utilities --watch & yarn build:core --watch & yarn build:sortable --watch & yarn build:modifiers --watch & yarn build:plugins --watch",
+    "dev": "bun build:utilities --watch & bun build:core --watch & bun build:sortable --watch & bun build:modifiers --watch & bun build:plugins --watch",
     "lint": "TIMING=1 eslint src/**/*.ts* --fix",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },

@@ -20,16 +20,16 @@ export function animateTransform({
 
   const properties = transitionProperty.split(', ');
 
-  // styles.set({
-  //   'transition-property': properties.length
-  //     ? properties
-  //         .filter(
-  //           (property) =>
-  //             !property.includes('transform') && !property.includes('translate')
-  //         )
-  //         .join(', ')
-  //     : 'none',
-  // });
+  styles.set({
+    'transition-property': properties.length
+      ? properties
+          .filter(
+            (property) =>
+              !property.includes('transform') && !property.includes('translate')
+          )
+          .join(', ')
+      : 'none',
+  });
 
   onReady?.();
 

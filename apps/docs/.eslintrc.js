@@ -1,4 +1,3 @@
 module.exports = {
-  root: true,
-  extends: ['dnd-kit', 'plugin:storybook/recommended']
+  extends: ['@dnd-kit/eslint-config'],
 };

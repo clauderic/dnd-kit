@@ -3,7 +3,7 @@ import type {PropsWithChildren} from 'react';
 import {CollisionPriority} from '@dnd-kit/abstract';
 import {DragDropProvider} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
-import {move} from '@dnd-kit/state-management';
+import {move} from '@dnd-kit/helpers';
 import {DragDropManager, defaultPreset} from '@dnd-kit/dom';
 import {Debug} from '@dnd-kit/dom/plugins/debug';
 import {supportsViewTransition} from '@dnd-kit/dom/utilities';

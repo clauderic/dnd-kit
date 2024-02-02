@@ -4,9 +4,9 @@
   "extends": "./base.json",
   "compilerOptions": {
     "lib": ["dom", "ES2015"],
-    "module": "ESNext",
     "target": "es6",
-    "moduleResolution": "nodenext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "importHelpers": true
   }
 }

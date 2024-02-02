@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {DragDropProvider} from '@dnd-kit/react';
-import {move} from '@dnd-kit/state-management';
+import {move} from '@dnd-kit/helpers';
 
 import {Column} from './Column';
 import {Item} from './Item';

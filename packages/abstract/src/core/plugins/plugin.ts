@@ -8,7 +8,7 @@ import {configure} from './utilities.js';
  * An abstract plugin class that can be extended to implement custom
  * functionality that augments the `DragDropManager`'s core capabilities.
  */
-export class Plugin<
+export abstract class Plugin<
   T extends DragDropManager<any, any> = DragDropManager<any, any>,
   U extends PluginOptions = PluginOptions,
 > {

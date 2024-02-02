@@ -5,10 +5,6 @@ import React, {
   type PropsWithChildren,
 } from 'react';
 
-import {classNames} from '../../../utilities';
-
-import styles from './Item.module.css';
-
 export interface Props extends HTMLAttributes<HTMLElement> {
   actions?: React.ReactNode;
   accentColor?: string;
@@ -26,12 +22,7 @@ export const Item = forwardRef<HTMLElement, PropsWithChildren<Props>>(
     return (
       <Element
         {...props}
-        className={classNames(
-          styles.Item,
-          shadow && styles.shadow,
-          actions ? styles.withActions : undefined,
-          accentColor ? styles.withBorder : undefined
-        )}
+        className={'Item'}
         style={
           {
             ...style,
@@ -39,6 +30,8 @@ export const Item = forwardRef<HTMLElement, PropsWithChildren<Props>>(
             '--accent-color': accentColor,
           } as CSSProperties
         }
+        data-shadow={shadow}
+        data-accent-color={accentColor}
         ref={ref as any}
       >
         {children}

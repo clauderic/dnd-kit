@@ -1,26 +1,23 @@
 {
-  "$schema": "https://turborepo.org/schema.json",
+  "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "build": {
       "outputs": [
+        "./packages/**/*.js",
+        "./packages/**/*.js.map",
+        "./packages/**/*.cjs",
+        "./packages/**/*.cjs.map",
+        "./packages/**/*.d.ts",
+        "./packages/**/*.d.cts",
         "dist/**",
-        ".next/**"
+        "storybook-static/**"
       ],
-      "dependsOn": [
-        "^build"
-      ]
+      "dependsOn": ["^build"]
     },
-    "test": {
-      "outputs": [
-        "coverage/**"
-      ],
-      "dependsOn": []
-    },
-    "lint": {
-      "outputs": []
-    },
+    "lint": {},
     "dev": {
-      "cache": false
+      "cache": false,
+      "persistent": true
     },
     "clean": {
       "cache": false

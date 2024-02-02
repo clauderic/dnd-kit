@@ -1,28 +1,23 @@
 {
   "private": true,
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev --no-cache --parallel --continue",
+    "dev": "turbo run dev",
     "lint": "turbo run lint",
     "clean": "turbo run clean && rm -rf node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "turbo run build --filter=docs^... && changeset publish"
+    "release": "turbo run build --filter=storybook^... && changeset publish"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.26.2",
-    "@dnd-kit/config-eslint": "*",
-    "esbuild-plugin-tsc": "^0.4.0",
-    "eslint": "^8.45.0",
-    "prettier": "^3.0.0",
-    "turbo": "1.10.12"
+    "@changesets/cli": "^2.27.1",
+    "prettier": "^3.1.1",
+    "turbo": "latest"
   },
-  "resolutions": {
-    "@babel/core": "^7.22.9"
-  }
+  "packageManager": "bun@1.0.25",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ]
 }

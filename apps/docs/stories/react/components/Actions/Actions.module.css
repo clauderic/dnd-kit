@@ -56,6 +56,6 @@
 }
 
 
-*:hover > .Actions .destructive {
+*:hover > .Actions .destructive, li:hover .destructive {
   visibility: visible;
 }

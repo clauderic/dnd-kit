@@ -14,9 +14,10 @@ import {
 import {getCurrentValue, type RefOrValue} from '@dnd-kit/react/utilities';
 
 export interface UseSortableInput<T extends Data = Data>
-  extends Omit<SortableInput<T>, 'handle' | 'element'> {
+  extends Omit<SortableInput<T>, 'handle' | 'element' | 'feedback'> {
   handle?: RefOrValue<Element>;
   element?: RefOrValue<Element>;
+  feedback?: 'move' | 'clone' | 'none' | (() => React.ReactNode);
 }
 
 export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
@@ -32,7 +33,11 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     transition = defaultSortableTransition,
     type,
   } = input;
+  const feedback =
+    typeof input.feedback === 'function' ? 'none' : input.feedback;
+
   const manager = useDragDropManager();
+
   const handle = getCurrentValue(input.handle);
   const element = getCurrentValue(input.element);
   const sortable = useConstant(
@@ -42,9 +47,11 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
           ...input,
           handle,
           element,
+          feedback,
         },
         manager
-      )
+      ),
+    manager
   );
 
   const isDisabled = useComputed(() => sortable.disabled);
@@ -81,6 +88,10 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
   useOnValueChange(
     collisionPriority,
     () => (sortable.collisionPriority = collisionPriority)
+  );
+  useOnValueChange(
+    input.feedback,
+    () => (sortable.feedback = feedback ?? 'default')
   );
   useOnValueChange(transition, () => (sortable.transition = transition));
 

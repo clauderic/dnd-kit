@@ -20,9 +20,11 @@ import {useRenderer} from './renderer.js';
 type Events = DragDropEvents<Draggable, Droppable, DragDropManager>;
 
 export interface Props extends DragDropManagerInput, PropsWithChildren {
+  manager?: DragDropManager;
   onBeforeDragStart?: Events['beforedragstart'];
   onCollision?: Events['collision'];
   onDragStart?: Events['dragstart'];
+  onDragMove?: Events['dragmove'];
   onDragOver?: Events['dragover'];
   onDragEnd?: Events['dragend'];
 }
@@ -34,6 +36,7 @@ export const DragDropProvider = forwardRef<DragDropManager, Props>(
       onCollision,
       onBeforeDragStart,
       onDragStart,
+      onDragMove,
       onDragOver,
       onDragEnd,
       ...input
@@ -41,13 +44,17 @@ export const DragDropProvider = forwardRef<DragDropManager, Props>(
     ref
   ) {
     const {renderer, trackRendering} = useRenderer();
-    const manager = useConstant(
-      () => new DragDropManager({...input, renderer})
-    );
+    const manager = useConstant(() => {
+      const instance = input.manager ?? new DragDropManager(input);
+      instance.renderer = renderer;
+
+      return instance;
+    });
     const {plugins, modifiers} = input;
     const handleBeforeDragStart = useLatest(onBeforeDragStart);
     const handleDragStart = useEvent(onDragStart);
     const handleDragOver = useLatest(onDragOver);
+    const handleDragMove = useLatest(onDragMove);
     const handleDragEnd = useLatest(onDragEnd);
     const handleCollision = useEvent(onCollision);
 
@@ -67,6 +74,13 @@ export const DragDropProvider = forwardRef<DragDropManager, Props>(
           trackRendering(() => callback(event, manager));
         }
       });
+      manager.monitor.addEventListener('dragmove', (event, manager) => {
+        const callback = handleDragMove.current;
+
+        if (callback) {
+          trackRendering(() => callback(event, manager));
+        }
+      });
       manager.monitor.addEventListener('dragend', (event, manager) => {
         const callback = handleDragEnd.current;
 
@@ -79,7 +93,7 @@ export const DragDropProvider = forwardRef<DragDropManager, Props>(
       return () => {
         manager.destroy();
       };
-    }, []);
+    }, [manager]);
 
     useOnValueChange(
       plugins,
