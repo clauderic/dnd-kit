@@ -3,7 +3,10 @@ import type {Shape} from '@dnd-kit/geometry';
 
 import {Entity} from '../entity/index.js';
 import type {EntityInput, Data, Type} from '../entity/index.js';
-import type {CollisionDetector} from '../../collision/index.js';
+import {
+  CollisionPriority,
+  type CollisionDetector,
+} from '../../collision/index.js';
 import type {DragDropManager} from '../../manager/index.js';
 
 export interface Input<
@@ -11,20 +14,25 @@ export interface Input<
   U extends Droppable<T> = Droppable<T>,
 > extends EntityInput<T, U> {
   accept?: Type | Type[];
-  collisionPriority?: number;
+  collisionPriority?: CollisionPriority | number;
   collisionDetector: CollisionDetector;
   type?: Type;
 }
 
 export class Droppable<T extends Data = Data> extends Entity<T> {
   constructor(
-    {collisionDetector, ...input}: Input<T>,
+    {
+      collisionDetector,
+      collisionPriority = CollisionPriority.Normal,
+      ...input
+    }: Input<T>,
     public manager: DragDropManager
   ) {
     super(input, manager);
     const {destroy} = this;
 
     this.collisionDetector = collisionDetector;
+    this.collisionPriority = collisionPriority;
 
     this.destroy = () => {
       destroy();
@@ -69,7 +77,7 @@ export class Droppable<T extends Data = Data> extends Entity<T> {
   public collisionDetector: CollisionDetector;
 
   @reactive
-  public collisionPriority: number | undefined;
+  public collisionPriority: number;
 
   @reactive
   public shape: Shape | undefined;
