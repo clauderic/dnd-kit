@@ -1,4 +1,5 @@
 import {batch, effects, reactive, untracked, type Effect} from '@dnd-kit/state';
+import {CollisionPriority} from '@dnd-kit/abstract';
 import type {
   Data,
   DragDropManager as AbstractDragDropManager,
@@ -228,8 +229,8 @@ export class Sortable<T extends Data = Data> {
     this.draggable.sensors = value;
   }
 
-  public set collisionPriority(value: number | undefined) {
-    this.droppable.collisionPriority = value;
+  public set collisionPriority(value: CollisionPriority | number | undefined) {
+    this.droppable.collisionPriority = value ?? CollisionPriority.Normal;
   }
 
   public set collisionDetector(value: CollisionDetector | undefined) {
@@ -241,7 +242,7 @@ export class Sortable<T extends Data = Data> {
     this.droppable.type = type;
   }
 
-  public set accept(value: Type | Type[] | undefined) {
+  public set accept(value: Droppable['accept']) {
     this.droppable.accept = value;
   }
 
@@ -260,8 +261,8 @@ export class Sortable<T extends Data = Data> {
     this.droppable.refreshShape();
   }
 
-  public accepts(types: Type | Type[]): boolean {
-    return this.droppable.accepts(types);
+  public accepts(draggable: Draggable): boolean {
+    return this.droppable.accepts(draggable);
   }
 
   public destroy() {

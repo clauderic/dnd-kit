@@ -116,7 +116,7 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
         const source = untracked(() => dragOperation.source);
 
         if (status.initialized) {
-          if (source?.type != null && !this.accepts(source.type)) {
+          if (source?.type != null && !this.accepts(source)) {
             return;
           }
 

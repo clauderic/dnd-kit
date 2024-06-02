@@ -8,7 +8,7 @@ import type {
 export enum CollisionPriority {
   Lowest,
   Low,
-  Medium,
+  Normal,
   High,
   Highest,
 }

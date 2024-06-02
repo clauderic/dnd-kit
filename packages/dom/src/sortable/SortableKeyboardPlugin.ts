@@ -81,7 +81,7 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
             if (
               !shape ||
               (id === source?.id && isSortable(droppable)) ||
-              (source?.type != null && !droppable.accepts(source.type))
+              (source?.type != null && !droppable.accepts(source))
             ) {
               continue;
             }
@@ -154,7 +154,9 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
                   y: shape.center.y,
                 },
               });
+
               actions.setDropTarget(source.id).then(() => {
+                dragOperation.shape = shape;
                 collisionObserver.enable();
               });
             });

@@ -1,4 +1,8 @@
-export {DragDropProvider, useDragDropManager} from './context/index.js';
+export {
+  DragDropProvider,
+  useDragDropManager,
+  useDragOperation,
+} from './context/index.js';
 
 export {useDraggable} from './draggable/index.js';
 

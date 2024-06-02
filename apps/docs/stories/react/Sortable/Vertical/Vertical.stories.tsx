@@ -42,6 +42,20 @@ export const VariableHeights: Story = {
   },
 };
 
+export const DynamicHeights: Story = {
+  name: 'Dynamic heights',
+  args: {
+    debug: false,
+    getItemStyle(_, index) {
+      const heights = {1: 100, 3: 150, 5: 200, 8: 100, 12: 150};
+
+      return {
+        height: heights[index],
+      };
+    },
+  },
+};
+
 export const Clone: Story = {
   name: 'Clone feedback',
   args: {

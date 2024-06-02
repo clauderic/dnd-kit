@@ -37,7 +37,7 @@ export const directionBiased: CollisionDetector = ({
     return {
       id: droppable.id,
       value: 1 / Point.distance(droppable.shape.center, center),
-      priority: CollisionPriority.Medium,
+      priority: CollisionPriority.Normal,
     };
   }
 

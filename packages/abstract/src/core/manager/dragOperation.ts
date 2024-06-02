@@ -267,16 +267,18 @@ export function DragOperationManager<
           },
         });
 
-        if (defaultPrevented) {
-          return;
-        }
+        queueMicrotask(() => {
+          if (defaultPrevented) {
+            return;
+          }
 
-        const coordinates = to ?? {
-          x: position.current.x + by.x,
-          y: position.current.y + by.y,
-        };
+          const coordinates = to ?? {
+            x: position.current.x + by.x,
+            y: position.current.y + by.y,
+          };
 
-        position.update(coordinates);
+          position.update(coordinates);
+        });
       },
       stop({canceled = false}: {canceled?: boolean} = {}) {
         let promise: Promise<void> | undefined;

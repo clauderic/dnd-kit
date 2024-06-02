@@ -11,10 +11,9 @@ import {Point, Rectangle} from '@dnd-kit/geometry';
  *
  * Returns null if the pointer is outside of the droppable element.
  */
-export const pointerIntersection: CollisionDetector = ({
-  dragOperation,
-  droppable,
-}) => {
+export const pointerIntersection: CollisionDetector = (
+  {dragOperation, droppable}
+) => {
   const pointerCoordinates = dragOperation.position.current;
 
   if (!pointerCoordinates) {

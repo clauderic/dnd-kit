@@ -13,8 +13,9 @@ import {directionBiased} from '@dnd-kit/collision';
 import {move} from '@dnd-kit/helpers';
 import {Debug} from '@dnd-kit/dom/plugins/debug';
 
-import {Item, Handle} from '../components';
-import {createRange, cloneDeep} from '../../utilities';
+import {Item, Handle} from '../components/index.js';
+import {createRange} from '../../utilities/createRange.js';
+import {cloneDeep} from '../../utilities/cloneDeep.js';
 
 interface Props {
   debug?: boolean;
@@ -29,18 +30,20 @@ interface Props {
   getItemStyle?(id: UniqueIdentifier, index: number): CSSProperties;
 }
 
-export function SortableExample({
-  debug,
-  itemCount = 15,
-  collisionDetector,
-  disabled,
-  dragHandle,
-  feedback,
-  layout = 'vertical',
-  modifiers,
-  transition,
-  getItemStyle,
-}: Props) {
+export function SortableExample(
+  {
+    debug,
+    itemCount = 15,
+    collisionDetector,
+    disabled,
+    dragHandle,
+    feedback,
+    layout = 'vertical',
+    modifiers,
+    transition,
+    getItemStyle,
+  }: Props
+) {
   const [items, setItems] = useState(createRange(itemCount));
   const snapshot = useRef(cloneDeep(items));
 
@@ -96,16 +99,18 @@ interface SortableProps {
   style?: React.CSSProperties;
 }
 
-function SortableItem({
-  id,
-  index,
-  collisionDetector = directionBiased,
-  disabled,
-  dragHandle,
-  feedback,
-  transition,
-  style,
-}: PropsWithChildren<SortableProps>) {
+function SortableItem(
+  {
+    id,
+    index,
+    collisionDetector = directionBiased,
+    disabled,
+    dragHandle,
+    feedback,
+    transition,
+    style,
+  }: PropsWithChildren<SortableProps>
+) {
   const [element, setElement] = useState<Element | null>(null);
   const handleRef = useRef<HTMLButtonElement | null>(null);
 
@@ -132,10 +137,12 @@ function SortableItem({
   );
 }
 
-function Wrapper({
-  layout,
-  children,
-}: PropsWithChildren<{layout: 'vertical' | 'horizontal' | 'grid'}>) {
+function Wrapper(
+  {
+    layout,
+    children,
+  }: PropsWithChildren<{layout: 'vertical' | 'horizontal' | 'grid'}>
+) {
   return <div style={getWrapperStyles(layout)}>{children}</div>;
 }
 

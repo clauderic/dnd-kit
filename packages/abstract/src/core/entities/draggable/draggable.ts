@@ -17,10 +17,12 @@ export interface Input<
 
 export class Draggable<T extends Data = Data> extends Entity<T> {
   constructor(
-    {modifiers, ...input}: Input<T>,
+    {modifiers, type, ...input}: Input<T>,
     public manager: DragDropManager
   ) {
     super(input, manager);
+
+    this.type = type;
 
     if (modifiers?.length) {
       this.modifiers = modifiers.map((modifier) => {

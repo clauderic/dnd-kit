@@ -1,3 +1,3 @@
-export {useDragDropManager} from './hook.js';
+export {useDragDropManager, useDragOperation} from './hooks.js';
 
 export {DragDropProvider} from './DragDropProvider.js';

@@ -33,24 +33,20 @@ export class Entity<T extends Data = Data> {
     this.data = data;
     this.disabled = disabled;
 
-    // Make sure all input properties are set on the instance before registering it
-    for (const [key, value] of Object.entries(input)) {
-      if (value === undefined) continue;
-      this[key as keyof this] = value;
-    }
+    queueMicrotask(() => {
+      const inputEffects = getInputEffects?.(this) ?? [];
 
-    const inputEffects = getInputEffects?.(this) ?? [];
+      this.destroy = effects(
+        () => {
+          // Re-run this effect whenever the `id` changes
+          const {id: _} = this;
+          manager.registry.register(this);
 
-    this.destroy = effects(
-      () => {
-        // Re-run this effect whenever the `id` changes
-        const {id: _} = this;
-        manager.registry.register(this);
-
-        return () => manager.registry.unregister(this);
-      },
-      ...inputEffects
-    );
+          return () => manager.registry.unregister(this);
+        },
+        ...inputEffects
+      );
+    });
   }
 
   /**

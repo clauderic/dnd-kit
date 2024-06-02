@@ -40,12 +40,12 @@ export class CollisionObserver<
 
   public forceUpdate(refresh = true) {
     untracked(() => {
-      const type = this.manager.dragOperation.source?.type;
+      const {source} = this.manager.dragOperation;
 
       batch(() => {
         if (refresh) {
           for (const droppable of this.manager.registry.droppables) {
-            if (type != null && !droppable.accepts(type)) {
+            if (source && !droppable.accepts(source)) {
               continue;
             }
 
@@ -69,7 +69,6 @@ export class CollisionObserver<
       return DEFAULT_VALUE;
     }
 
-    const type = source?.type;
     const collisions: Collision[] = [];
 
     this.forceUpdateCount.value;
@@ -79,7 +78,7 @@ export class CollisionObserver<
         continue;
       }
 
-      if (type != null && !entry.accepts(type)) {
+      if (source && !entry.accepts(source)) {
         continue;
       }
 

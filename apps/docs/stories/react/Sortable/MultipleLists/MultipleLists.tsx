@@ -1,15 +1,22 @@
 import React, {useRef, useState} from 'react';
 import type {PropsWithChildren} from 'react';
 import {CollisionPriority} from '@dnd-kit/abstract';
-import {DragDropProvider} from '@dnd-kit/react';
+import {DragDropProvider, useDragOperation} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
 import {move} from '@dnd-kit/helpers';
 import {DragDropManager, defaultPreset} from '@dnd-kit/dom';
 import {Debug} from '@dnd-kit/dom/plugins/debug';
 import {supportsViewTransition} from '@dnd-kit/dom/utilities';
 
-import {Actions, Container, Item, Handle, Remove} from '../../components';
-import {createRange, cloneDeep} from '../../../utilities';
+import {
+  Actions,
+  Container,
+  Item,
+  Handle,
+  Remove,
+} from '../../components/index.js';
+import {createRange} from '../../../utilities/createRange.js';
+import {cloneDeep} from '../../../utilities/cloneDeep.js';
 import {flushSync} from 'react-dom';
 
 interface Props {
@@ -21,14 +28,9 @@ interface Props {
   vertical?: boolean;
 }
 
-export function MultipleLists({
-  debug,
-  defaultItems,
-  grid,
-  itemCount,
-  scrollable,
-  vertical,
-}: Props) {
+export function MultipleLists(
+  {debug, defaultItems, grid, itemCount, scrollable, vertical}: Props
+) {
   const [items, setItems] = useState(
     defaultItems ?? {
       A: createRange(itemCount).map((id) => `A${id}`),
@@ -79,26 +81,34 @@ export function MultipleLists({
           gap: 20,
         }}
       >
-        {columns.map((column, columnIndex) => (
-          <SortableColumn
-            key={column}
-            id={column}
-            index={columnIndex}
-            columns={grid ? 2 : 1}
-            scrollable={scrollable}
-          >
-            {items[column].map((id, index) => (
-              <SortableItem
-                key={id}
-                id={id}
-                column={column}
-                index={index}
-                onRemove={handleRemoveItem}
-                style={grid ? {height: 100} : undefined}
-              />
-            ))}
-          </SortableColumn>
-        ))}
+        {columns.map((column, columnIndex) => {
+          const rows = items[column];
+          const children =
+            rows.length > 0
+              ? rows.map((id, index) => (
+                  <SortableItem
+                    key={id}
+                    id={id}
+                    column={column}
+                    index={index}
+                    onRemove={handleRemoveItem}
+                    style={grid ? {height: 100} : undefined}
+                  />
+                ))
+              : null;
+
+          return (
+            <SortableColumn
+              key={column}
+              id={column}
+              index={columnIndex}
+              columns={grid ? 2 : 1}
+              scrollable={scrollable}
+            >
+              {children}
+            </SortableColumn>
+          );
+        })}
       </div>
     </DragDropProvider>
   );
@@ -111,9 +121,7 @@ export function MultipleLists({
       }));
 
     if (supportsViewTransition(document)) {
-      document.startViewTransition(() => {
-        flushSync(remove);
-      });
+      document.startViewTransition(() => flushSync(remove));
     } else {
       remove();
     }
@@ -128,20 +136,16 @@ interface SortableItemProps {
   onRemove?: (id: string, column: string) => void;
 }
 
-const COLORS = {
+const COLORS: Record<string, string> = {
   A: '#7193f1',
   B: '#FF851B',
   C: '#2ECC40',
   D: '#ff3680',
 };
 
-function SortableItem({
-  id,
-  column,
-  index,
-  style,
-  onRemove,
-}: PropsWithChildren<SortableItemProps>) {
+function SortableItem(
+  {id, column, index, style, onRemove}: PropsWithChildren<SortableItemProps>
+) {
   const {handleRef, ref, isDragSource} = useSortable({
     id,
     accept: 'item',
@@ -178,18 +182,25 @@ interface SortableColumnProps {
   scrollable?: boolean;
 }
 
-function SortableColumn({
-  children,
-  columns,
-  id,
-  index,
-  scrollable,
-}: PropsWithChildren<SortableColumnProps>) {
+function SortableColumn(
+  {
+    children,
+    columns,
+    id,
+    index,
+    scrollable,
+  }: PropsWithChildren<SortableColumnProps>
+) {
+  const empty = !children;
+  const {source} = useDragOperation();
   const {handleRef, isDragSource, ref} = useSortable({
     id,
     accept: ['column', 'item'],
-    /* Prioritize item collisions over column collisions. */
-    collisionPriority: CollisionPriority.Lowest,
+    collisionPriority:
+      empty || source?.type === 'column'
+        ? CollisionPriority.Normal
+        : /* Prioritize item collisions over column collisions when the column has children. */
+          CollisionPriority.Lowest,
     type: 'column',
     index,
   });

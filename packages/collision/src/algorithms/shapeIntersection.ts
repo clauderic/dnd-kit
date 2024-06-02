@@ -32,7 +32,7 @@ export const shapeIntersection: CollisionDetector = ({
     return {
       id: droppable.id,
       value,
-      priority: CollisionPriority.Medium,
+      priority: CollisionPriority.Normal,
     };
   }
 

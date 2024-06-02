@@ -1,6 +1,6 @@
 import {useCallback, useEffect} from 'react';
 import {deepEqual} from '@dnd-kit/state';
-import type {Data} from '@dnd-kit/abstract';
+import {type Data} from '@dnd-kit/abstract';
 import {Sortable, defaultSortableTransition} from '@dnd-kit/dom/sortable';
 import type {SortableInput} from '@dnd-kit/dom/sortable';
 import {useDragDropManager} from '@dnd-kit/react';
@@ -12,12 +12,13 @@ import {
   useIsomorphicLayoutEffect as layoutEffect,
 } from '@dnd-kit/react/hooks';
 import {getCurrentValue, type RefOrValue} from '@dnd-kit/react/utilities';
+import {FeedbackType} from '@dnd-kit/dom';
 
 export interface UseSortableInput<T extends Data = Data>
   extends Omit<SortableInput<T>, 'handle' | 'element' | 'feedback'> {
   handle?: RefOrValue<Element>;
   element?: RefOrValue<Element>;
-  feedback?: 'move' | 'clone' | 'none' | (() => React.ReactNode);
+  feedback?: FeedbackType | (() => React.ReactNode);
 }
 
 export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
