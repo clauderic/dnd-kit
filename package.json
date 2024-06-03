@@ -9,8 +9,8 @@
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "turbo run build --filter=storybook^... && changeset publish",
-    "version-packages:experimental": "changeset version --snapshot experimental",
-    "release:experimental": "changeset publish --tag experimental"
+    "version-packages:beta": "changeset version --snapshot beta",
+    "release:beta": "changeset publish --tag beta"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
