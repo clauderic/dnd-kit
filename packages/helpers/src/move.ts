@@ -65,24 +65,17 @@ function mutate<
     if (sourceIndex === -1 || targetIndex === -1) {
       return items;
     }
+    const {dragOperation} = source.manager;
 
-    if (sourceIndex === targetIndex) {
-      const {dragOperation} = source.manager;
+    // Reconcile optimistic updates
+    if (
+      !dragOperation.canceled &&
+      'index' in source &&
+      typeof source.index === 'number'
+    ) {
+      const projectedSourceIndex = source.index;
 
-      // Handle optimistic updates
-      if (
-        !dragOperation.canceled &&
-        'index' in source &&
-        typeof source.index === 'number'
-      ) {
-        const projectedSourceIndex = source.index;
-
-        if (projectedSourceIndex === sourceIndex) {
-          return items;
-        }
-
-        console.log('Optimistic update');
-
+      if (projectedSourceIndex !== sourceIndex) {
         return mutation(items, sourceIndex, projectedSourceIndex);
       }
     }
