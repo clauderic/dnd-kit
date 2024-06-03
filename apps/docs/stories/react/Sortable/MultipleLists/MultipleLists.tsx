@@ -199,16 +199,10 @@ function SortableColumn({
   index,
   scrollable,
 }: PropsWithChildren<SortableColumnProps>) {
-  const empty = !children;
-  const {source} = useDragOperation();
   const {handleRef, isDragSource, ref} = useSortable({
     id,
     accept: ['column', 'item'],
-    collisionPriority:
-      empty || source?.type === 'column'
-        ? CollisionPriority.Normal
-        : /* Prioritize item collisions over column collisions when the column has children. */
-          CollisionPriority.Lowest,
+    collisionPriority: CollisionPriority.Low,
     type: 'column',
     index,
   });
