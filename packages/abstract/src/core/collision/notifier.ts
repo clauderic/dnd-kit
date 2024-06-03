@@ -2,6 +2,7 @@ import {effect, untracked} from '@dnd-kit/state';
 
 import {DragDropManager} from '../manager/index.js';
 import {CorePlugin} from '../plugins/index.js';
+import {defaultPreventable} from '../manager/events.js';
 
 export class CollisionNotifier extends CorePlugin {
   constructor(manager: DragDropManager) {
@@ -15,19 +16,13 @@ export class CollisionNotifier extends CorePlugin {
         return;
       }
 
-      let defaultPrevented = false;
-
-      monitor.dispatch('collision', {
+      const event = defaultPreventable({
         collisions,
-        get defaultPrevented() {
-          return defaultPrevented;
-        },
-        preventDefault() {
-          defaultPrevented = true;
-        },
       });
 
-      if (defaultPrevented) {
+      monitor.dispatch('collision', event);
+
+      if (event.defaultPrevented) {
         return;
       }
 

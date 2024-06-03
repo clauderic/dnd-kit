@@ -1,6 +1,6 @@
 {
   "name": "@dnd-kit/react",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "main": "./index.cjs",
   "module": "./index.js",
   "type": "module",
@@ -69,7 +69,7 @@
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.4",
     "eslint": "^8.38.0",
-    "@dnd-kit/config-eslint": "*",
+    "@dnd-kit/eslint-config": "*",
     "react": "^18.1.0",
     "tsup": "^7.2.0",
     "typescript": "^5.1.6"

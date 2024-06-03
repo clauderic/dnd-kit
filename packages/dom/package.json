@@ -1,6 +1,6 @@
 {
   "name": "@dnd-kit/dom",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "main": "./index.cjs",
   "module": "./index.js",
@@ -81,7 +81,7 @@
     "tslib": "^2.6.2"
   },
   "devDependencies": {
-    "@dnd-kit/config-eslint": "*",
+    "@dnd-kit/eslint-config": "*",
     "eslint": "^8.38.0",
     "tsup": "^7.2.0",
     "typescript": "^5.1.6"

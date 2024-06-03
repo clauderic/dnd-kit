@@ -14,4 +14,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMATIC_TOKEN }}
           buildScriptName: 'build'
-          workingDir: 'apps/docs'
+          workingDir: 'apps/stories'

@@ -14,7 +14,7 @@ export type {Sensors} from './sensors/index.js';
 export {
   Accessibility,
   AutoScroller,
-  DraggableFeedback,
+  Feedback,
   Scroller,
   ScrollListener,
 } from './plugins/index.js';

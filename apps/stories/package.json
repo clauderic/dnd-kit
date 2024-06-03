@@ -1,11 +1,11 @@
 {
-  "name": "@dnd-kit/storybook",
+  "name": "@dnd-kit/stories",
   "version": "0.0.0",
   "type": "module",
   "private": true,
   "scripts": {
     "dev": "storybook dev -p 6006",
-    "build": "storybook build --docs",
+    "build": "storybook build",
     "preview-storybook": "serve storybook-static",
     "clean": "rm -rf .turbo && rm -rf node_modules",
     "lint": "eslint ./stories/*.stories.tsx --max-warnings 0"
