@@ -4,7 +4,7 @@
   "commit": false,
   "linked": [],
   "access": "public",
-  "baseBranch": "master",
+  "baseBranch": "experimental",
   "updateInternalDependencies": "patch",
   "ignore": [],
   "snapshot": {
