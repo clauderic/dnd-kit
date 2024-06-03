@@ -10,10 +10,11 @@
     "version-packages": "changeset version",
     "release": "turbo run build --filter=storybook^... && changeset publish",
     "version-packages:beta": "changeset version --snapshot beta",
-    "release:beta": "changeset publish --tag beta"
+    "release:beta": "changeset publish --snapshot --tag beta"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
+    "@changesets/changelog-github": "^0.5.0",
     "prettier": "^3.1.1",
     "turbo": "latest"
   },
