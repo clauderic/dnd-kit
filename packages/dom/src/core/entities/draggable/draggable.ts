@@ -36,15 +36,15 @@ export class Draggable<T extends Data = Data> extends AbstractDraggable<T> {
   public sensors: Sensors | undefined;
 
   constructor(
-    input: Input<T>,
+    {element, handle, feedback = 'default', sensors, ...input}: Input<T>,
     public manager: AbstractDragDropManager<any, any>
   ) {
-    const {feedback = 'default'} = input;
-    const config = {...input, feedback};
+    super(input, manager);
 
-    super(config, manager);
-
+    this.element = element;
+    this.handle = handle;
     this.feedback = feedback;
+    this.sensors = sensors;
 
     const cleanupEffect = effect(() => {
       const sensors = this.sensors?.map(descriptor) ?? [...manager.sensors];

@@ -94,15 +94,6 @@ export class Sortable<T extends Data = Data> {
   @reactive
   group: UniqueIdentifier | undefined;
 
-  @reactive
-  element: Element | undefined;
-
-  @reactive
-  source: Element | undefined;
-
-  @reactive
-  target: Element | undefined;
-
   transition: SortableTransition | null;
 
   constructor(
@@ -167,24 +158,6 @@ export class Sortable<T extends Data = Data> {
           this.droppable.disabled = !target;
         }
       },
-      () => {
-        const {element} = this;
-
-        this.droppable.element = element;
-        this.draggable.element = element;
-      },
-      () => {
-        const {target} = this;
-        const element = untracked(() => this.element);
-
-        this.droppable.element = !target && element ? element : target;
-      },
-      () => {
-        const {source} = this;
-        const element = untracked(() => this.element);
-
-        this.draggable.element = !source && element ? element : source;
-      },
       ...(inputEffects?.(this) ?? [])
     );
 
@@ -241,6 +214,31 @@ export class Sortable<T extends Data = Data> {
         }
       });
     });
+  }
+
+  public set element(element: Element | undefined) {
+    this.draggable.element = element;
+    this.droppable.element = element;
+  }
+
+  public get element() {
+    return this.droppable.element ?? this.draggable.element;
+  }
+
+  public set target(target: Element | undefined) {
+    this.droppable.element = target;
+  }
+
+  public get target() {
+    return this.droppable.element;
+  }
+
+  public set source(source: Element | undefined) {
+    this.draggable.element = source;
+  }
+
+  public get source() {
+    return this.draggable.element;
   }
 
   public get disabled() {

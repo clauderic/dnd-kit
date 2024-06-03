@@ -10,7 +10,7 @@ export function Example({style = styles}) {
 
   return (
     <DragDropProvider
-      onDragOver={(event) => {
+      onDragEnd={(event) => {
         const {source, target} = event.operation;
 
         if (source && target) {

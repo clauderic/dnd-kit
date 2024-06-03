@@ -302,6 +302,11 @@ export class Feedback extends Plugin<DragDropManager> {
         resizeObserver.disconnect();
 
         styles.reset();
+
+        if (element.isConnected) {
+          placeholder.replaceWith(element);
+        }
+
         placeholder.remove();
         element.removeAttribute(ATTRIBUTE);
 
