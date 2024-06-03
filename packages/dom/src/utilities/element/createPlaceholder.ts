@@ -10,6 +10,7 @@ export function createPlaceholder(element: Element, clone = false): Element {
     }
   }
 
+  placeholder.setAttribute('inert', 'true');
   placeholder.setAttribute('tab-index', '-1');
   placeholder.setAttribute('aria-hidden', 'true');
 
