@@ -1,0 +1,22 @@
+name: Release experimental branch
+on:
+  push:
+    branches:
+      - experimental
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v1
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install && bun run build
+
+      - name: Publish packages on npm with @beta tag
+        run: |
+          bun run version-packages:beta
+          bun run release:beta
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
