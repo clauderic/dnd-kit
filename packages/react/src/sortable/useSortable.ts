@@ -30,7 +30,6 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     data,
     index,
     disabled,
-    optimistic,
     sensors,
     transition = defaultSortableTransition,
     type,
@@ -96,10 +95,6 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     () => (sortable.feedback = feedback ?? 'default')
   );
   useOnValueChange(transition, () => (sortable.transition = transition));
-  useOnValueChange(
-    optimistic,
-    () => (sortable.optimistic = optimistic === true)
-  );
 
   useEffect(() => {
     // Cleanup on unmount

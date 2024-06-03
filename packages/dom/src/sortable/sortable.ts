@@ -1,6 +1,11 @@
 import {batch, effects, reactive, untracked, type Effect} from '@dnd-kit/state';
 import {CollisionPriority} from '@dnd-kit/abstract';
-import type {Data, Type, UniqueIdentifier} from '@dnd-kit/abstract';
+import type {
+  Data,
+  PluginConstructor,
+  Type,
+  UniqueIdentifier,
+} from '@dnd-kit/abstract';
 import {
   defaultCollisionDetection,
   type CollisionDetector,
@@ -38,6 +43,11 @@ export interface SortableTransition {
   idle?: boolean;
 }
 
+const defaultPlugins: PluginConstructor[] = [
+  SortableKeyboardPlugin,
+  OptimisticSortingPlugin,
+];
+
 export interface SortableInput<T extends Data>
   extends Omit<DraggableInput<T>, 'effects'>,
     Omit<DroppableInput<T>, 'effects'> {
@@ -50,10 +60,6 @@ export interface SortableInput<T extends Data>
    */
   group?: UniqueIdentifier;
   /**
-   * Whether to optimistically update the position of the sortable item while dragging.
-   */
-  optimistic?: boolean;
-  /**
    * The transition configuration to use when the index of the sortable item changes.
    */
   transition?: SortableTransition | null;
@@ -61,6 +67,11 @@ export interface SortableInput<T extends Data>
    * Additional effects to set up when sortable item is instantiated.
    */
   effects?: (instance: Sortable<T>) => Effect[];
+  /**
+   * Plugins to register when sortable item is instantiated.
+   * @default [SortableKeyboardPlugin, OptimisticSortingPlugin]
+   */
+  plugins?: PluginConstructor[];
 }
 
 export const defaultSortableTransition: SortableTransition = {
@@ -76,26 +87,33 @@ export class Sortable<T extends Data = Data> {
   @reactive
   index: number;
 
-  @reactive
-  group: UniqueIdentifier | undefined;
-
-  transition: SortableTransition | null;
-
-  optimistic: boolean;
-
   previousIndex: number;
 
   initialIndex: number;
+
+  @reactive
+  group: UniqueIdentifier | undefined;
+
+  @reactive
+  element: Element | undefined;
+
+  @reactive
+  source: Element | undefined;
+
+  @reactive
+  target: Element | undefined;
+
+  transition: SortableTransition | null;
 
   constructor(
     {
       effects: inputEffects,
       group,
       index,
-      optimistic = true,
       sensors,
       type,
       transition = defaultSortableTransition,
+      plugins = defaultPlugins,
       ...input
     }: SortableInput<T>,
     public manager: DragDropManager<any, any>
@@ -107,16 +125,15 @@ export class Sortable<T extends Data = Data> {
     );
     this.droppable = new SortableDroppable<T>(input, manager, this);
 
-    // TO-DO: Can this be done conditionally if consumers want to use their own plugin?
-    manager.registry.register(SortableKeyboardPlugin);
-    manager.registry.register(OptimisticSortingPlugin);
+    for (const plugin of plugins) {
+      manager.registry.register(plugin);
+    }
 
     this.index = index;
     this.previousIndex = index;
     this.initialIndex = index;
     this.group = group;
     this.type = type;
-    this.optimistic = optimistic;
     this.transition = transition;
 
     const {destroy} = this;
@@ -251,15 +268,6 @@ export class Sortable<T extends Data = Data> {
   public set handle(handle: Element | undefined) {
     this.draggable.handle = handle;
   }
-
-  @reactive
-  element: Element | undefined;
-
-  @reactive
-  source: Element | undefined;
-
-  @reactive
-  target: Element | undefined;
 
   public set id(id: UniqueIdentifier) {
     batch(() => {

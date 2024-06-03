@@ -1,6 +1,6 @@
 export {DragDropManager} from './manager.js';
 export type {DragDropManagerInput, DragDropConfiguration} from './manager.js';
-export type {DragDropEvents} from './monitor.js';
+export type {DragDropEvents} from './events.js';
 export {Status as DragOperationStatus} from './dragOperation.js';
 export type {DragOperation, DragOperationManager} from './dragOperation.js';
 export type {DragDropRegistry} from './registry.js';

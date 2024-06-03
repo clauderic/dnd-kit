@@ -9,6 +9,7 @@ import type {
 } from '../entities/index.js';
 
 import type {DragDropManager} from './manager.js';
+import {defaultPreventable} from './events.js';
 
 export enum Status {
   Idle = 'idle',
@@ -217,9 +218,12 @@ export function DragOperationManager<
 
         targetIdentifier.value = id;
 
-        monitor.dispatch('dragover', {
-          operation: snapshot(operation),
-        });
+        monitor.dispatch(
+          'dragover',
+          defaultPreventable({
+            operation: snapshot(operation),
+          })
+        );
 
         return manager.renderer.rendering;
       },
@@ -230,15 +234,27 @@ export function DragOperationManager<
           position.reset(coordinates);
         });
 
-        monitor.dispatch('beforedragstart', {operation: snapshot(operation)});
+        const beforeStartEvent = defaultPreventable({
+          operation: snapshot(operation),
+        });
+
+        monitor.dispatch('beforedragstart', beforeStartEvent);
 
         manager.renderer.rendering.then(() => {
+          if (beforeStartEvent.defaultPrevented) {
+            reset();
+            return;
+          }
+
           status.value = Status.Initializing;
 
           requestAnimationFrame(() => {
             status.value = Status.Dragging;
 
-            monitor.dispatch('dragstart', {operation: snapshot(operation)});
+            monitor.dispatch('dragstart', {
+              operation: snapshot(operation),
+              cancelable: false,
+            });
           });
         });
       },
@@ -253,27 +269,19 @@ export function DragOperationManager<
           return;
         }
 
-        let defaultPrevented = false;
-
-        monitor.dispatch('dragmove', {
-          operation: snapshot(operation),
-          by,
-          to,
-          cancelable,
-          get defaultPrevented() {
-            return defaultPrevented;
+        const event = defaultPreventable(
+          {
+            operation: snapshot(operation),
+            by,
+            to,
           },
-          preventDefault() {
-            if (!cancelable) {
-              return;
-            }
+          cancelable
+        );
 
-            defaultPrevented = true;
-          },
-        });
+        monitor.dispatch('dragmove', event);
 
         queueMicrotask(() => {
-          if (defaultPrevented) {
+          if (event.defaultPrevented) {
             return;
           }
 
@@ -285,7 +293,7 @@ export function DragOperationManager<
           position.update(coordinates);
         });
       },
-      stop({canceled: isCanceled = false}: {canceled?: boolean} = {}) {
+      stop({canceled: eventCanceled = false}: {canceled?: boolean} = {}) {
         let promise: Promise<void> | undefined;
         const suspend = () => {
           const output = {
@@ -308,11 +316,11 @@ export function DragOperationManager<
           });
         };
 
-        canceled.value = isCanceled;
+        canceled.value = eventCanceled;
 
         monitor.dispatch('dragend', {
           operation: snapshot(operation),
-          canceled: isCanceled,
+          canceled: eventCanceled,
           suspend,
         });
 

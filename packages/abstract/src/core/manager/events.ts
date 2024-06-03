@@ -7,6 +7,12 @@ import type {DragOperation} from './dragOperation.js';
 
 export type Events = Record<string, (...args: any[]) => void>;
 
+export type Preventable<T> = T & {
+  cancelable: boolean;
+  defaultPrevented: boolean;
+  preventDefault(): void;
+};
+
 class Monitor<T extends Events> {
   private registry = new Map<keyof T, Set<T[keyof T]>>();
 
@@ -48,32 +54,36 @@ export type DragDropEvents<
   V extends DragDropManager<T, U>,
 > = {
   collision(
-    event: {
+    event: Preventable<{
       collisions: Collisions;
-      defaultPrevented: boolean;
-      preventDefault(): void;
-    },
+    }>,
     manager: V
   ): void;
-  beforedragstart(event: {operation: DragOperation<T, U>}, manager: V): void;
+  beforedragstart(
+    event: Preventable<{operation: DragOperation<T, U>}>,
+    manager: V
+  ): void;
   dragstart(
     event: {
+      cancelable: false;
       operation: DragOperation<T, U>;
     },
     manager: V
   ): void;
   dragmove(
-    event: {
+    event: Preventable<{
       operation: DragOperation<T, U>;
       to?: Coordinates;
       by?: Coordinates;
-      cancelable: boolean;
-      defaultPrevented: boolean;
-      preventDefault(): void;
-    },
+    }>,
     manager: V
   ): void;
-  dragover(event: {operation: DragOperation<T, U>}, manager: V): void;
+  dragover(
+    event: Preventable<{
+      operation: DragOperation<T, U>;
+    }>,
+    manager: V
+  ): void;
   dragend(
     event: {
       operation: DragOperation<T, U>;
@@ -101,4 +111,26 @@ export class DragDropMonitor<
 
     super.dispatch(type, ...args);
   }
+}
+
+export function defaultPreventable<T>(
+  event: T,
+  cancelable = true
+): Preventable<T> {
+  let defaultPrevented = false;
+
+  return {
+    ...event,
+    cancelable,
+    get defaultPrevented() {
+      return defaultPrevented;
+    },
+    preventDefault() {
+      if (!cancelable) {
+        return;
+      }
+
+      defaultPrevented = true;
+    },
+  };
 }

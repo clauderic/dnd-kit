@@ -10,7 +10,7 @@ import {
   type DragOperation,
   type DragActions,
 } from './dragOperation.js';
-import {DragDropMonitor} from './monitor.js';
+import {DragDropMonitor} from './events.js';
 import {defaultRenderer, type Renderer} from './renderer.js';
 
 export interface DragDropConfiguration<T extends DragDropManager> {

@@ -35,9 +35,9 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
     };
 
     const unsubscribe = [
-      manager.monitor.addEventListener('dragover', (_, manager) => {
+      manager.monitor.addEventListener('dragover', (event, manager) => {
         queueMicrotask(() => {
-          if (this.disabled) {
+          if (this.disabled || event.defaultPrevented) {
             return;
           }
 
@@ -49,10 +49,6 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
           }
 
           if (source.sortable === target.sortable) {
-            return;
-          }
-
-          if (!source.sortable.optimistic || !target.sortable.optimistic) {
             return;
           }
 

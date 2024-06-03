@@ -107,7 +107,6 @@ function SortableItem({
   disabled,
   dragHandle,
   feedback,
-  optimistic,
   transition,
   style,
 }: PropsWithChildren<SortableProps>) {
@@ -119,7 +118,6 @@ function SortableItem({
     element,
     feedback,
     transition,
-    optimistic,
     handle: handleRef,
     disabled,
     collisionDetector,
