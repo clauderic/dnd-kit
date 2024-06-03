@@ -8,14 +8,24 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20
+          # https://github.com/atlassian/changesets/issues/550#issuecomment-811245508
+          registry-url: https://registry.npmjs.org
+
       - uses: oven-sh/setup-bun@v1
       - run: bun install && bun run build
 
       - name: Publish packages on npm with @beta tag
         run: |
-          bun run version-packages:beta
-          bun run release:beta
+          npm run version-packages:beta
+          npm run release:beta
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
