@@ -53,7 +53,6 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
         const {dragOperation} = manager;
 
         if (element && dragOperation.status.initialized) {
-          let timeout: NodeJS.Timeout | undefined;
           const scrollableAncestor = getFirstScrollableAncestor(element);
           const doc = getDocument(element);
           const root =
@@ -63,20 +62,13 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
           const intersectionObserver = new IntersectionObserver(
             (entries) => {
               const [entry] = entries.slice(-1);
+              const {width, height} = entry.boundingClientRect;
 
-              if (this.visible == null) {
-                this.visible = entry.isIntersecting;
+              if (!width && !height) {
                 return;
               }
 
-              if (timeout) {
-                clearTimeout(timeout);
-              }
-
-              timeout = setTimeout(() => {
-                this.visible = entry.isIntersecting;
-                timeout = undefined;
-              }, 50);
+              this.visible = entry.isIntersecting;
             },
             {
               root: root ?? doc,

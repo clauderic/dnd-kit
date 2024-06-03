@@ -1,11 +1,6 @@
 import {batch, effects, reactive, untracked, type Effect} from '@dnd-kit/state';
 import {CollisionPriority} from '@dnd-kit/abstract';
-import type {
-  Data,
-  DragDropManager as AbstractDragDropManager,
-  Type,
-  UniqueIdentifier,
-} from '@dnd-kit/abstract';
+import type {Data, Type, UniqueIdentifier} from '@dnd-kit/abstract';
 import {
   defaultCollisionDetection,
   type CollisionDetector,
@@ -16,11 +11,13 @@ import type {
   FeedbackType,
   DroppableInput,
   Sensors,
+  DragDropManager,
 } from '@dnd-kit/dom';
 import {animateTransform, scheduler} from '@dnd-kit/dom/utilities';
 import {Shape} from '@dnd-kit/geometry';
 
 import {SortableKeyboardPlugin} from './SortableKeyboardPlugin.js';
+import {OptimisticSortingPlugin} from './OptimisticSortingPlugin.js';
 
 export interface SortableTransition {
   /**
@@ -44,8 +41,25 @@ export interface SortableTransition {
 export interface SortableInput<T extends Data>
   extends Omit<DraggableInput<T>, 'effects'>,
     Omit<DroppableInput<T>, 'effects'> {
+  /**
+   * The index of the sortable item within its group.
+   */
   index: number;
+  /**
+   * The optional unique identifier of the group that the sortable item belongs to.
+   */
+  group?: UniqueIdentifier;
+  /**
+   * Whether to optimistically update the position of the sortable item while dragging.
+   */
+  optimistic?: boolean;
+  /**
+   * The transition configuration to use when the index of the sortable item changes.
+   */
   transition?: SortableTransition | null;
+  /**
+   * Additional effects to set up when sortable item is instantiated.
+   */
   effects?: (instance: Sortable<T>) => Effect[];
 }
 
@@ -56,47 +70,75 @@ export const defaultSortableTransition: SortableTransition = {
 };
 
 export class Sortable<T extends Data = Data> {
-  protected draggable: Draggable<T>;
-  protected droppable: Droppable<T>;
+  public draggable: Draggable<T>;
+  public droppable: Droppable<T>;
 
   @reactive
   index: number;
 
+  @reactive
+  group: UniqueIdentifier | undefined;
+
   transition: SortableTransition | null;
+
+  optimistic: boolean;
+
+  previousIndex: number;
+
+  initialIndex: number;
 
   constructor(
     {
-      index,
-      sensors,
       effects: inputEffects,
+      group,
+      index,
+      optimistic = true,
+      sensors,
+      type,
       transition = defaultSortableTransition,
       ...input
     }: SortableInput<T>,
-    public manager: AbstractDragDropManager<any, any>
+    public manager: DragDropManager<any, any>
   ) {
-    this.draggable = new SortableDraggable<T>({...input, sensors}, manager);
-    this.droppable = new SortableDroppable<T>(input, manager);
+    this.draggable = new SortableDraggable<T>(
+      {...input, type, sensors},
+      manager,
+      this
+    );
+    this.droppable = new SortableDroppable<T>(input, manager, this);
 
     // TO-DO: Can this be done conditionally if consumers want to use their own plugin?
     manager.registry.register(SortableKeyboardPlugin);
-
-    let previousIndex = index;
+    manager.registry.register(OptimisticSortingPlugin);
 
     this.index = index;
+    this.previousIndex = index;
+    this.initialIndex = index;
+    this.group = group;
+    this.type = type;
+    this.optimistic = optimistic;
     this.transition = transition;
 
     const {destroy} = this;
 
+    const unsubscribe = this.manager.monitor.addEventListener(
+      'dragstart',
+      () => {
+        this.initialIndex = this.index;
+        this.previousIndex = this.index;
+      }
+    );
+
     const cleanup = effects(
       () => {
-        const {index} = this;
+        const {index, previousIndex} = this;
 
         // Re-run this effect whenever the index changes
         if (index === previousIndex) {
           return;
         }
 
-        previousIndex = index;
+        this.previousIndex = index;
 
         this.animate();
       },
@@ -131,6 +173,7 @@ export class Sortable<T extends Data = Data> {
 
     this.destroy = () => {
       destroy.bind(this)();
+      unsubscribe();
       cleanup();
     };
   }
@@ -152,7 +195,7 @@ export class Sortable<T extends Data = Data> {
           return;
         }
 
-        this.droppable.refreshShape();
+        this.refreshShape();
 
         const updatedShape = this.droppable.shape;
 
@@ -242,8 +285,16 @@ export class Sortable<T extends Data = Data> {
     this.droppable.type = type;
   }
 
+  public get type() {
+    return this.draggable.type;
+  }
+
   public set accept(value: Droppable['accept']) {
     this.droppable.accept = value;
+  }
+
+  public get accept() {
+    return this.droppable.accept;
   }
 
   public get isDropTarget() {
@@ -257,8 +308,8 @@ export class Sortable<T extends Data = Data> {
     return this.draggable.isDragSource;
   }
 
-  public refreshShape() {
-    this.droppable.refreshShape();
+  public refreshShape(ignoreTransforms = true) {
+    this.droppable.refreshShape(ignoreTransforms);
   }
 
   public accepts(draggable: Draggable): boolean {
@@ -271,10 +322,34 @@ export class Sortable<T extends Data = Data> {
   }
 }
 
-export class SortableDraggable<T extends Data> extends Draggable<T> {}
+export class SortableDraggable<T extends Data> extends Draggable<T> {
+  constructor(
+    input: DraggableInput<T>,
+    manager: DragDropManager,
+    public sortable: Sortable<T>
+  ) {
+    super(input, manager);
+  }
+
+  public get index() {
+    return this.sortable.index;
+  }
+}
 
 export class SortableDroppable<T extends Data> extends Droppable<T> {
-  public refreshShape(): Shape | undefined {
-    return super.refreshShape(true);
+  constructor(
+    input: DraggableInput<T>,
+    manager: DragDropManager,
+    public sortable: Sortable<T>
+  ) {
+    super(input, manager);
+  }
+
+  public refreshShape(ignoreTransforms = true): Shape | undefined {
+    return super.refreshShape(ignoreTransforms);
+  }
+
+  public get index() {
+    return this.sortable.index;
   }
 }

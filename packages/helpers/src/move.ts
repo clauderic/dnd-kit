@@ -3,7 +3,11 @@ import type {UniqueIdentifier, Draggable, Droppable} from '@dnd-kit/abstract';
 /**
  * Move an array item to a different position. Returns a new array with the item moved to the new position.
  */
-function arrayMove<T extends any[]>(array: T, from: number, to: number): T {
+export function arrayMove<T extends any[]>(
+  array: T,
+  from: number,
+  to: number
+): T {
   if (from === to) {
     return array;
   }
@@ -17,7 +21,11 @@ function arrayMove<T extends any[]>(array: T, from: number, to: number): T {
 /**
  * Move an array item to a different position. Returns a new array with the item moved to the new position.
  */
-function arraySwap<T extends any[]>(array: T, from: number, to: number): T {
+export function arraySwap<T extends any[]>(
+  array: T,
+  from: number,
+  to: number
+): T {
   if (from === to) {
     return array;
   }
@@ -39,11 +47,11 @@ function mutate<
   V extends Droppable,
 >(
   items: T,
-  source: U,
-  target: V,
+  source: U | null,
+  target: V | null,
   mutation: typeof arrayMove | typeof arraySwap
 ): T {
-  if (source.id === target.id) {
+  if (!source || !target) {
     return items;
   }
 
@@ -58,7 +66,32 @@ function mutate<
       return items;
     }
 
+    if (sourceIndex === targetIndex) {
+      const {dragOperation} = source.manager;
+
+      // Handle optimistic updates
+      if (
+        !dragOperation.canceled &&
+        'index' in source &&
+        typeof source.index === 'number'
+      ) {
+        const projectedSourceIndex = source.index;
+
+        if (projectedSourceIndex === sourceIndex) {
+          return items;
+        }
+
+        console.log('Optimistic update');
+
+        return mutation(items, sourceIndex, projectedSourceIndex);
+      }
+    }
+
     return mutation(items, sourceIndex, targetIndex);
+  }
+
+  if (source.id === target.id) {
+    return items;
   }
 
   const entries = Object.entries(items);
@@ -140,7 +173,7 @@ export function move<
   T extends Items | Record<UniqueIdentifier, Items>,
   U extends Draggable,
   V extends Droppable,
->(items: T, source: U, target: V) {
+>(items: T, source: U | null, target: V | null) {
   return mutate(items, source, target, arrayMove);
 }
 
@@ -148,6 +181,6 @@ export function swap<
   T extends Items | Record<UniqueIdentifier, Items>,
   U extends Draggable,
   V extends Droppable,
->(items: T, source: U, target: V) {
+>(items: T, source: U | null, target: V | null) {
   return mutate(items, source, target, arraySwap);
 }

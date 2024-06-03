@@ -1,5 +1,6 @@
 import React, {useRef, useState} from 'react';
 import type {PropsWithChildren} from 'react';
+import {flushSync} from 'react-dom';
 import {CollisionPriority} from '@dnd-kit/abstract';
 import {DragDropProvider, useDragOperation} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
@@ -17,7 +18,6 @@ import {
 } from '../../components/index.js';
 import {createRange} from '../../../utilities/createRange.js';
 import {cloneDeep} from '../../../utilities/cloneDeep.js';
-import {flushSync} from 'react-dom';
 
 interface Props {
   debug?: boolean;
@@ -28,9 +28,14 @@ interface Props {
   vertical?: boolean;
 }
 
-export function MultipleLists(
-  {debug, defaultItems, grid, itemCount, scrollable, vertical}: Props
-) {
+export function MultipleLists({
+  debug,
+  defaultItems,
+  grid,
+  itemCount,
+  scrollable,
+  vertical,
+}: Props) {
   const [items, setItems] = useState(
     defaultItems ?? {
       A: createRange(itemCount).map((id) => `A${id}`),
@@ -143,11 +148,16 @@ const COLORS: Record<string, string> = {
   D: '#ff3680',
 };
 
-function SortableItem(
-  {id, column, index, style, onRemove}: PropsWithChildren<SortableItemProps>
-) {
+function SortableItem({
+  id,
+  column,
+  index,
+  style,
+  onRemove,
+}: PropsWithChildren<SortableItemProps>) {
   const {handleRef, ref, isDragSource} = useSortable({
     id,
+    group: column,
     accept: 'item',
     type: 'item',
     feedback: 'clone',
@@ -182,15 +192,13 @@ interface SortableColumnProps {
   scrollable?: boolean;
 }
 
-function SortableColumn(
-  {
-    children,
-    columns,
-    id,
-    index,
-    scrollable,
-  }: PropsWithChildren<SortableColumnProps>
-) {
+function SortableColumn({
+  children,
+  columns,
+  id,
+  index,
+  scrollable,
+}: PropsWithChildren<SortableColumnProps>) {
   const empty = !children;
   const {source} = useDragOperation();
   const {handleRef, isDragSource, ref} = useSortable({

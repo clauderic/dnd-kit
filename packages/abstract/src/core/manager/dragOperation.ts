@@ -26,6 +26,7 @@ export interface DragOperation<
   U extends Droppable = Droppable,
 > {
   activatorEvent: Event | null;
+  canceled: boolean;
   position: Position;
   transform: Coordinates;
   status: {
@@ -66,6 +67,7 @@ export function DragOperationManager<
     initial: signal<Shape | null>(null),
     current: signal<Shape | null>(null),
   };
+  const canceled = signal<boolean>(false);
   const position = new Position({x: 0, y: 0});
   const activatorEvent = signal<Event | null>(null);
   const sourceIdentifier = signal<UniqueIdentifier | null>(null);
@@ -104,6 +106,7 @@ export function DragOperationManager<
     const currentShape = shape.current.peek();
     const operation: Omit<DragOperation<T, U>, 'transform'> = {
       activatorEvent: activatorEvent.peek(),
+      canceled: canceled.peek(),
       source: source.peek(),
       target: target.peek(),
       status: {
@@ -131,6 +134,9 @@ export function DragOperationManager<
   const operation: DragOperation<T, U> = {
     get activatorEvent() {
       return activatorEvent.value;
+    },
+    get canceled() {
+      return canceled.value;
     },
     get source() {
       return source.value;
@@ -219,6 +225,7 @@ export function DragOperationManager<
       },
       start({event, coordinates}: {event: Event; coordinates: Coordinates}) {
         batch(() => {
+          canceled.value = false;
           activatorEvent.value = event;
           position.reset(coordinates);
         });
@@ -235,15 +242,13 @@ export function DragOperationManager<
           });
         });
       },
-      move(
-        {
-          by,
-          to,
-          cancelable = true,
-        }:
-          | {by: Coordinates; to?: undefined; cancelable?: boolean}
-          | {by?: undefined; to: Coordinates; cancelable?: boolean}
-      ) {
+      move({
+        by,
+        to,
+        cancelable = true,
+      }:
+        | {by: Coordinates; to?: undefined; cancelable?: boolean}
+        | {by?: undefined; to: Coordinates; cancelable?: boolean}) {
         if (!dragging.peek()) {
           return;
         }
@@ -280,7 +285,7 @@ export function DragOperationManager<
           position.update(coordinates);
         });
       },
-      stop({canceled = false}: {canceled?: boolean} = {}) {
+      stop({canceled: isCanceled = false}: {canceled?: boolean} = {}) {
         let promise: Promise<void> | undefined;
         const suspend = () => {
           const output = {
@@ -303,9 +308,11 @@ export function DragOperationManager<
           });
         };
 
+        canceled.value = isCanceled;
+
         monitor.dispatch('dragend', {
           operation: snapshot(operation),
-          canceled,
+          canceled: isCanceled,
           suspend,
         });
 

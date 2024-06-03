@@ -282,7 +282,12 @@ export class Feedback extends Plugin<DragDropManager> {
       });
 
       let cleanup: CleanupFunction | undefined = () => {
+        elementMutationObserver.disconnect();
+        documentMutationObserver.disconnect();
+        resizeObserver.disconnect();
+
         styles.reset();
+        placeholder.replaceWith(element);
         placeholder.remove();
         element.removeAttribute(ATTRIBUTE);
 
@@ -290,11 +295,19 @@ export class Feedback extends Plugin<DragDropManager> {
           element.removeAttribute('popover');
         }
 
+        // Restore focus
+        setTimeout(() => {
+          if (
+            isKeyboardOperation &&
+            'focus' in element &&
+            typeof element.focus === 'function'
+          ) {
+            element.focus();
+          }
+        });
+
         cleanupEffect();
         dropEffectCleanup();
-        elementMutationObserver.disconnect();
-        documentMutationObserver.disconnect();
-        resizeObserver.disconnect();
 
         if (droppable) {
           droppable.placeholder = undefined;

@@ -32,8 +32,14 @@ export const VariableHeights: Story = {
   name: 'Variable heights',
   args: {
     debug: false,
-    getItemStyle(id) {
-      const heights = {1: 100, 3: 150, 5: 200, 8: 100, 12: 150};
+    getItemStyle(id: number) {
+      const heights: Record<number, number> = {
+        1: 100,
+        3: 150,
+        5: 200,
+        8: 100,
+        12: 150,
+      };
 
       return {
         height: heights[id],
@@ -46,8 +52,15 @@ export const DynamicHeights: Story = {
   name: 'Dynamic heights',
   args: {
     debug: false,
-    getItemStyle(_, index) {
-      const heights = {1: 100, 3: 150, 5: 200, 8: 100, 12: 150};
+    optimistic: false,
+    getItemStyle(_: number, index: number) {
+      const heights: Record<number, number> = {
+        1: 100,
+        3: 150,
+        5: 200,
+        8: 100,
+        12: 150,
+      };
 
       return {
         height: heights[index],

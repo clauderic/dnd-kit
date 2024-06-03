@@ -6,7 +6,7 @@ import type {
   UniqueIdentifier,
 } from '@dnd-kit/abstract';
 import {FeedbackType, defaultPreset} from '@dnd-kit/dom';
-import type {SortableTransition} from '@dnd-kit/dom/sortable';
+import {type SortableTransition} from '@dnd-kit/dom/sortable';
 import {DragDropProvider} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
 import {directionBiased} from '@dnd-kit/collision';
@@ -26,24 +26,24 @@ interface Props {
   layout?: 'vertical' | 'horizontal' | 'grid';
   transition?: SortableTransition;
   itemCount?: number;
+  optimistic?: boolean;
   collisionDetector?: CollisionDetector;
   getItemStyle?(id: UniqueIdentifier, index: number): CSSProperties;
 }
 
-export function SortableExample(
-  {
-    debug,
-    itemCount = 15,
-    collisionDetector,
-    disabled,
-    dragHandle,
-    feedback,
-    layout = 'vertical',
-    modifiers,
-    transition,
-    getItemStyle,
-  }: Props
-) {
+export function SortableExample({
+  debug,
+  itemCount = 15,
+  collisionDetector,
+  disabled,
+  dragHandle,
+  feedback,
+  layout = 'vertical',
+  optimistic = true,
+  modifiers,
+  transition,
+  getItemStyle,
+}: Props) {
   const [items, setItems] = useState(createRange(itemCount));
   const snapshot = useRef(cloneDeep(items));
 
@@ -51,22 +51,21 @@ export function SortableExample(
     <DragDropProvider
       plugins={debug ? [Debug, ...defaultPreset.plugins] : undefined}
       modifiers={modifiers}
-      onDragStart={() => {
-        snapshot.current = cloneDeep(items);
-      }}
       onDragOver={(event) => {
         const {source, target} = event.operation;
 
-        if (!source || !target) {
-          return;
-        }
+        if (optimistic) return;
 
         setItems((items) => move(items, source, target));
       }}
       onDragEnd={(event) => {
+        const {source, target} = event.operation;
+
         if (event.canceled) {
-          setItems(snapshot.current);
+          return;
         }
+
+        setItems((items) => move(items, source, target));
       }}
     >
       <Wrapper layout={layout}>
@@ -79,6 +78,7 @@ export function SortableExample(
             disabled={disabled?.includes(id)}
             dragHandle={dragHandle}
             feedback={feedback}
+            optimistic={optimistic}
             transition={transition}
             style={getItemStyle?.(id, index)}
           />
@@ -95,31 +95,31 @@ interface SortableProps {
   disabled?: boolean;
   dragHandle?: boolean;
   feedback?: FeedbackType;
+  optimistic?: boolean;
   transition?: SortableTransition;
   style?: React.CSSProperties;
 }
 
-function SortableItem(
-  {
-    id,
-    index,
-    collisionDetector = directionBiased,
-    disabled,
-    dragHandle,
-    feedback,
-    transition,
-    style,
-  }: PropsWithChildren<SortableProps>
-) {
+function SortableItem({
+  id,
+  index,
+  collisionDetector = directionBiased,
+  disabled,
+  dragHandle,
+  feedback,
+  optimistic,
+  transition,
+  style,
+}: PropsWithChildren<SortableProps>) {
   const [element, setElement] = useState<Element | null>(null);
   const handleRef = useRef<HTMLButtonElement | null>(null);
-
   const {isDragSource} = useSortable({
     id,
     index,
     element,
     feedback,
     transition,
+    optimistic,
     handle: handleRef,
     disabled,
     collisionDetector,
@@ -137,12 +137,10 @@ function SortableItem(
   );
 }
 
-function Wrapper(
-  {
-    layout,
-    children,
-  }: PropsWithChildren<{layout: 'vertical' | 'horizontal' | 'grid'}>
-) {
+function Wrapper({
+  layout,
+  children,
+}: PropsWithChildren<{layout: 'vertical' | 'horizontal' | 'grid'}>) {
   return <div style={getWrapperStyles(layout)}>{children}</div>;
 }
 
