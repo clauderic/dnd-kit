@@ -281,6 +281,21 @@ export class Feedback extends Plugin<DragDropManager> {
         }
       });
 
+      const id = manager.dragOperation.source?.id;
+
+      const restoreFocus = () => {
+        if (id == null) {
+          return;
+        }
+
+        const draggable = manager.registry.draggables.get(id);
+        const element = draggable?.handle ?? draggable?.element;
+
+        if (element instanceof HTMLElement) {
+          element.focus();
+        }
+      };
+
       let cleanup: CleanupFunction | undefined = () => {
         elementMutationObserver.disconnect();
         documentMutationObserver.disconnect();
@@ -293,17 +308,6 @@ export class Feedback extends Plugin<DragDropManager> {
         if (supportsPopover(element)) {
           element.removeAttribute('popover');
         }
-
-        // Restore focus
-        setTimeout(() => {
-          if (
-            isKeyboardOperation &&
-            'focus' in element &&
-            typeof element.focus === 'function'
-          ) {
-            element.focus();
-          }
-        });
 
         cleanupEffect();
         dropEffectCleanup();
@@ -360,6 +364,7 @@ export class Feedback extends Plugin<DragDropManager> {
                 styles.remove(['translate', 'transition'], CSS_PREFIX);
               },
               onFinish() {
+                requestAnimationFrame(restoreFocus);
                 onComplete?.();
               },
             });
