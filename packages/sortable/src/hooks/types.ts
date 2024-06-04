@@ -1,10 +1,10 @@
-import type {Active, UniqueIdentifier} from '@dnd-kit/core';
+import type {Active, AnyData, UniqueIdentifier} from '@dnd-kit/core';
 import type {Transition} from '@dnd-kit/utilities';
 
 export type SortableTransition = Pick<Transition, 'easing' | 'duration'>;
 
-export type AnimateLayoutChanges = (args: {
-  active: Active | null;
+export type AnimateLayoutChanges<DraggableData = AnyData> = (args: {
+  active: Active<DraggableData> | null;
   containerId: UniqueIdentifier;
   isDragging: boolean;
   isSorting: boolean;

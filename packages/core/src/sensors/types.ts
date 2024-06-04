@@ -6,6 +6,7 @@ import type {
   DraggableNodes,
   DroppableContainers,
   RectMap,
+  AnyData,
 } from '../store';
 import type {
   Coordinates,
@@ -22,30 +23,30 @@ export enum Response {
   End = 'end',
 }
 
-export type SensorContext = {
+export type SensorContext<DraggableData, DroppableData> = {
   activatorEvent: Event | null;
-  active: Active | null;
+  active: Active<DraggableData> | null;
   activeNode: HTMLElement | null;
   collisionRect: ClientRect | null;
   collisions: Collision[] | null;
-  draggableNodes: DraggableNodes;
+  draggableNodes: DraggableNodes<DraggableData>;
   draggingNode: HTMLElement | null;
   draggingNodeRect: ClientRect | null;
   droppableRects: RectMap;
-  droppableContainers: DroppableContainers;
-  over: Over | null;
+  droppableContainers: DroppableContainers<DroppableData>;
+  over: Over<DroppableData> | null;
   scrollableAncestors: Element[];
   scrollAdjustedTranslate: Translate | null;
 };
 
 export type SensorOptions = {};
 
-export interface SensorProps<T> {
+export interface SensorProps<Options, DraggableData, DroppableData> {
   active: UniqueIdentifier;
-  activeNode: DraggableNode;
+  activeNode: DraggableNode<DraggableData>;
   event: Event;
-  context: MutableRefObject<SensorContext>;
-  options: T;
+  context: MutableRefObject<SensorContext<DraggableData, DroppableData>>;
+  options: Options;
   onStart(coordinates: Coordinates): void;
   onCancel(): void;
   onMove(coordinates: Coordinates): void;
@@ -56,34 +57,40 @@ export type SensorInstance = {
   autoScrollEnabled: boolean;
 };
 
-export type SensorActivatorFunction<T> = (
+export type SensorActivatorFunction<Options, DraggableData> = (
   event: any,
-  options: T,
+  options: Options,
   context: {
-    active: DraggableNode;
+    active: DraggableNode<DraggableData>;
   }
 ) => boolean | undefined;
 
-export type Activator<T> = {
+export type Activator<Options, DraggableData> = {
   eventName: SyntheticEventName;
-  handler: SensorActivatorFunction<T>;
+  handler: SensorActivatorFunction<Options, DraggableData>;
 };
 
-export type Activators<T> = Activator<T>[];
+export type Activators<T, DraggableData> = Activator<T, DraggableData>[];
 
 type Teardown = () => void;
 
-export interface Sensor<T extends Object> {
-  new (props: SensorProps<T>): SensorInstance;
-  activators: Activators<T>;
+export interface Sensor<Options extends Object, DraggableData, DroppableData> {
+  new (
+    props: SensorProps<Options, DraggableData, DroppableData>
+  ): SensorInstance;
+  activators: Activators<Options, DraggableData>;
   setup?(): Teardown | undefined;
 }
 
-export type Sensors = Sensor<any>[];
+export type Sensors = Sensor<any, AnyData, AnyData>[];
 
-export type SensorDescriptor<T extends Object> = {
-  sensor: Sensor<T>;
-  options: T;
+export type SensorDescriptor<
+  Options extends Object,
+  DraggableData,
+  DroppableData
+> = {
+  sensor: Sensor<Options, DraggableData, DroppableData>;
+  options: Options;
 };
 
 export type SensorHandler = (

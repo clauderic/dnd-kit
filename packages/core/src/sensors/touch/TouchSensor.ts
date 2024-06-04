@@ -7,18 +7,27 @@ import {
   PointerSensorOptions,
 } from '../pointer';
 import type {SensorProps} from '../types';
+import type {AnyData} from '../../store';
 
 const events: PointerEventHandlers = {
   move: {name: 'touchmove'},
   end: {name: 'touchend'},
 };
 
-export interface TouchSensorOptions extends PointerSensorOptions {}
+export interface TouchSensorOptions<DraggableData, DroppableData>
+  extends PointerSensorOptions<DraggableData, DroppableData> {}
 
-export type TouchSensorProps = SensorProps<TouchSensorOptions>;
+export type TouchSensorProps<DraggableData, DroppableData> = SensorProps<
+  TouchSensorOptions<DraggableData, DroppableData>,
+  DraggableData,
+  DroppableData
+>;
 
-export class TouchSensor extends AbstractPointerSensor {
-  constructor(props: PointerSensorProps) {
+export class TouchSensor<
+  DraggableData,
+  DroppableData
+> extends AbstractPointerSensor<DraggableData, DroppableData> {
+  constructor(props: PointerSensorProps<DraggableData, DroppableData>) {
     super(props, events);
   }
 
@@ -27,7 +36,7 @@ export class TouchSensor extends AbstractPointerSensor {
       eventName: 'onTouchStart' as const,
       handler: (
         {nativeEvent: event}: TouchEvent,
-        {onActivation}: TouchSensorOptions
+        {onActivation}: TouchSensorOptions<AnyData, AnyData>
       ) => {
         const {touches} = event;
 

@@ -1,16 +1,33 @@
-import type {Active, Over} from '../../store';
+import type {Active, AnyData, Over} from '../../store';
 
-export interface Arguments {
-  active: Active;
-  over: Over | null;
+export interface Arguments<DraggableData, DroppableData> {
+  active: Active<DraggableData>;
+  over: Over<DroppableData> | null;
 }
 
-export interface Announcements {
-  onDragStart({active}: Pick<Arguments, 'active'>): string | undefined;
-  onDragMove?({active, over}: Arguments): string | undefined;
-  onDragOver({active, over}: Arguments): string | undefined;
-  onDragEnd({active, over}: Arguments): string | undefined;
-  onDragCancel({active, over}: Arguments): string | undefined;
+export interface Announcements<
+  DraggableData = AnyData,
+  DroppableData = AnyData
+> {
+  onDragStart({
+    active,
+  }: Pick<Arguments<DraggableData, never>, 'active'>): string | undefined;
+  onDragMove?({
+    active,
+    over,
+  }: Arguments<DraggableData, DroppableData>): string | undefined;
+  onDragOver({
+    active,
+    over,
+  }: Arguments<DraggableData, DroppableData>): string | undefined;
+  onDragEnd({
+    active,
+    over,
+  }: Arguments<DraggableData, DroppableData>): string | undefined;
+  onDragCancel({
+    active,
+    over,
+  }: Arguments<DraggableData, DroppableData>): string | undefined;
 }
 
 export interface ScreenReaderInstructions {

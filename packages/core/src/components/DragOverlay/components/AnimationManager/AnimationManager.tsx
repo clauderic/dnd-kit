@@ -14,10 +14,8 @@ export interface Props {
 }
 
 export function AnimationManager({animation, children}: Props) {
-  const [
-    clonedChildren,
-    setClonedChildren,
-  ] = useState<React.ReactElement | null>(null);
+  const [clonedChildren, setClonedChildren] =
+    useState<React.ReactElement | null>(null);
   const [element, setElement] = useState<HTMLElement | null>(null);
   const previousChildren = usePrevious(children);
 

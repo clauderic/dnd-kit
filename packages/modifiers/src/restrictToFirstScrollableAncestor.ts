@@ -1,7 +1,7 @@
-import type {Modifier} from '@dnd-kit/core';
+import type {AnyData, Modifier} from '@dnd-kit/core';
 import {restrictToBoundingRect} from './utilities';
 
-export const restrictToFirstScrollableAncestor: Modifier = ({
+export const restrictToFirstScrollableAncestor: Modifier<AnyData, AnyData> = ({
   draggingNodeRect,
   transform,
   scrollableAncestorRects,

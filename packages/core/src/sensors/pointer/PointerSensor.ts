@@ -7,18 +7,27 @@ import {
   AbstractPointerSensorOptions,
   PointerEventHandlers,
 } from './AbstractPointerSensor';
+import type {AnyData} from '../../store/types';
 
 const events: PointerEventHandlers = {
   move: {name: 'pointermove'},
   end: {name: 'pointerup'},
 };
 
-export interface PointerSensorOptions extends AbstractPointerSensorOptions {}
+export interface PointerSensorOptions<DraggableData, DroppableData>
+  extends AbstractPointerSensorOptions<DraggableData, DroppableData> {}
 
-export type PointerSensorProps = SensorProps<PointerSensorOptions>;
+export type PointerSensorProps<DraggableData, DroppableData> = SensorProps<
+  PointerSensorOptions<DraggableData, DroppableData>,
+  DraggableData,
+  DroppableData
+>;
 
-export class PointerSensor extends AbstractPointerSensor {
-  constructor(props: PointerSensorProps) {
+export class PointerSensor<
+  DraggableData,
+  DroppableData
+> extends AbstractPointerSensor<DraggableData, DroppableData> {
+  constructor(props: PointerSensorProps<DraggableData, DroppableData>) {
     const {event} = props;
     // Pointer events stop firing if the target is unmounted while dragging
     // Therefore we attach listeners to the owner document instead
@@ -32,7 +41,7 @@ export class PointerSensor extends AbstractPointerSensor {
       eventName: 'onPointerDown' as const,
       handler: (
         {nativeEvent: event}: PointerEvent,
-        {onActivation}: PointerSensorOptions
+        {onActivation}: PointerSensorOptions<AnyData, AnyData>
       ) => {
         if (!event.isPrimary || event.button !== 0) {
           return false;

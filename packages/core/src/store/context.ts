@@ -3,9 +3,13 @@ import {createContext} from 'react';
 import {noop} from '../utilities/other';
 import {defaultMeasuringConfiguration} from '../components/DndContext/defaults';
 import {DroppableContainersMap} from './constructors';
-import type {InternalContextDescriptor, PublicContextDescriptor} from './types';
+import type {
+  AnyData,
+  InternalContextDescriptor,
+  PublicContextDescriptor,
+} from './types';
 
-export const defaultPublicContext: PublicContextDescriptor = {
+export const defaultPublicContext: PublicContextDescriptor<AnyData, AnyData> = {
   activatorEvent: null,
   active: null,
   activeNode: null,
@@ -31,7 +35,10 @@ export const defaultPublicContext: PublicContextDescriptor = {
   measuringScheduled: false,
 };
 
-export const defaultInternalContext: InternalContextDescriptor = {
+export const defaultInternalContext: InternalContextDescriptor<
+  AnyData,
+  AnyData
+> = {
   activatorEvent: null,
   activators: [],
   active: null,
@@ -45,10 +52,11 @@ export const defaultInternalContext: InternalContextDescriptor = {
   measureDroppableContainers: noop,
 };
 
-export const InternalContext = createContext<InternalContextDescriptor>(
-  defaultInternalContext
-);
+export const InternalContext = createContext<
+  InternalContextDescriptor<AnyData, AnyData>
+>(defaultInternalContext);
 
-export const PublicContext = createContext<PublicContextDescriptor>(
-  defaultPublicContext
-);
+export const PublicContext =
+  createContext<PublicContextDescriptor<AnyData, AnyData>>(
+    defaultPublicContext
+  );

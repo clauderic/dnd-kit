@@ -12,9 +12,9 @@ import type {UniqueIdentifier} from '../types';
 import {ActiveDraggableContext} from '../components/DndContext';
 import {useSyntheticListeners, SyntheticListenerMap} from './utilities';
 
-export interface UseDraggableArguments {
+export interface UseDraggableArguments<DraggableData> {
   id: UniqueIdentifier;
-  data?: Data;
+  data?: Data<DraggableData>;
   disabled?: boolean;
   attributes?: {
     role?: string;
@@ -40,12 +40,12 @@ const defaultRole = 'button';
 
 const ID_PREFIX = 'Droppable';
 
-export function useDraggable({
+export function useDraggable<DraggableData>({
   id,
   data,
   disabled = false,
   attributes,
-}: UseDraggableArguments) {
+}: UseDraggableArguments<DraggableData>) {
   const key = useUniqueId(ID_PREFIX);
   const {
     activators,

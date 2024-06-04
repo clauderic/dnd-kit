@@ -18,7 +18,7 @@ function isPointWithinRect(point: Coordinates, rect: ClientRect): boolean {
 /**
  * Returns the rectangles that the pointer is hovering over
  */
-export const pointerWithin: CollisionDetection = ({
+export const pointerWithin: CollisionDetection<unknown, unknown> = ({
   droppableContainers,
   droppableRects,
   pointerCoordinates,
@@ -27,7 +27,7 @@ export const pointerWithin: CollisionDetection = ({
     return [];
   }
 
-  const collisions: CollisionDescriptor[] = [];
+  const collisions: CollisionDescriptor<unknown>[] = [];
 
   for (const droppableContainer of droppableContainers) {
     const {id} = droppableContainer;

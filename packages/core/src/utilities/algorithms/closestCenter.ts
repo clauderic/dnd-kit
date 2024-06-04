@@ -22,7 +22,7 @@ function centerOfRectangle(
  * Returns the closest rectangles from an array of rectangles to the center of a given
  * rectangle.
  */
-export const closestCenter: CollisionDetection = ({
+export const closestCenter: CollisionDetection<unknown, unknown> = ({
   collisionRect,
   droppableRects,
   droppableContainers,
@@ -32,7 +32,7 @@ export const closestCenter: CollisionDetection = ({
     collisionRect.left,
     collisionRect.top
   );
-  const collisions: CollisionDescriptor[] = [];
+  const collisions: CollisionDescriptor<unknown>[] = [];
 
   for (const droppableContainer of droppableContainers) {
     const {id} = droppableContainer;

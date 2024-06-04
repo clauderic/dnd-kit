@@ -6,11 +6,11 @@ import type {
   SyntheticListeners,
 } from './useSyntheticListeners';
 
-export function useCombineActivators(
-  sensors: SensorDescriptor<any>[],
+export function useCombineActivators<DraggableData, DroppableData>(
+  sensors: SensorDescriptor<any, DraggableData, DroppableData>[],
   getSyntheticHandler: (
-    handler: SensorActivatorFunction<any>,
-    sensor: SensorDescriptor<any>
+    handler: SensorActivatorFunction<any, DraggableData>,
+    sensor: SensorDescriptor<any, DraggableData, DroppableData>
   ) => SyntheticListener['handler']
 ): SyntheticListeners {
   return useMemo(

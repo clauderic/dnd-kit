@@ -1,4 +1,4 @@
-import type {Modifier, ClientRect} from '@dnd-kit/core';
+import type {Modifier, ClientRect, AnyData} from '@dnd-kit/core';
 import type {FirstArgument, Transform} from '@dnd-kit/utilities';
 
 import {restrictToHorizontalAxis, restrictToVerticalAxis} from '../src';
@@ -18,7 +18,7 @@ describe('@dnd-kit/modifiers', () => {
     scaleX: 1,
     scaleY: 1,
   };
-  const defaultArguments: FirstArgument<Modifier> = {
+  const defaultArguments: FirstArgument<Modifier<AnyData, AnyData>> = {
     activatorEvent: null,
     active: null,
     over: null,

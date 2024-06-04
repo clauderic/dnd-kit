@@ -80,6 +80,7 @@ export type {
 } from './sensors';
 
 export type {
+  AnyData,
   Active,
   Data,
   DataRef,

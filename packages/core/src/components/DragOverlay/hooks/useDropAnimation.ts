@@ -3,6 +3,7 @@ import type {DeepRequired, Transform} from '@dnd-kit/utilities';
 
 import type {
   Active,
+  AnyData,
   DraggableNode,
   DraggableNodes,
   DroppableContainers,
@@ -14,10 +15,10 @@ import {parseTransform} from '../../../utilities/transform';
 import type {MeasuringConfiguration} from '../../DndContext';
 import type {Animation} from '../components';
 
-interface SharedParameters {
+interface SharedParameters<DraggableData, DroppableData> {
   active: {
     id: UniqueIdentifier;
-    data: Active['data'];
+    data: Active<DraggableData>['data'];
     node: HTMLElement;
     rect: ClientRect;
   };
@@ -25,52 +26,59 @@ interface SharedParameters {
     node: HTMLElement;
     rect: ClientRect;
   };
-  draggableNodes: DraggableNodes;
-  droppableContainers: DroppableContainers;
+  draggableNodes: DraggableNodes<DraggableData>;
+  droppableContainers: DroppableContainers<DroppableData>;
   measuringConfiguration: DeepRequired<MeasuringConfiguration>;
 }
 
-export interface KeyframeResolverParameters extends SharedParameters {
+export interface KeyframeResolverParameters<DraggableData, DroppableData>
+  extends SharedParameters<DraggableData, DroppableData> {
   transform: {
     initial: Transform;
     final: Transform;
   };
 }
 
-export type KeyframeResolver = (
-  parameters: KeyframeResolverParameters
+export type KeyframeResolver<DraggableData, DroppableData> = (
+  parameters: KeyframeResolverParameters<DraggableData, DroppableData>
 ) => Keyframe[];
 
-export interface DropAnimationOptions {
-  keyframes?: KeyframeResolver;
+export interface DropAnimationOptions<DraggableData, DroppableData> {
+  keyframes?: KeyframeResolver<DraggableData, DroppableData>;
   duration?: number;
   easing?: string;
-  sideEffects?: DropAnimationSideEffects | null;
+  sideEffects?: DropAnimationSideEffects<DraggableData, DroppableData> | null;
 }
 
-export type DropAnimation = DropAnimationFunction | DropAnimationOptions;
+export type DropAnimation<DraggableData = AnyData, DroppableData = AnyData> =
+  | DropAnimationFunction<DraggableData, DroppableData>
+  | DropAnimationOptions<DraggableData, DroppableData>;
 
-interface Arguments {
-  draggableNodes: DraggableNodes;
-  droppableContainers: DroppableContainers;
+interface Arguments<DraggableData, DroppableData> {
+  draggableNodes: DraggableNodes<DraggableData>;
+  droppableContainers: DroppableContainers<DroppableData>;
   measuringConfiguration: DeepRequired<MeasuringConfiguration>;
-  config?: DropAnimation | null;
+  config?: DropAnimation<DraggableData, DroppableData> | null;
 }
 
-export interface DropAnimationFunctionArguments extends SharedParameters {
+export interface DropAnimationFunctionArguments<DraggableData, DroppableData>
+  extends SharedParameters<DraggableData, DroppableData> {
   transform: Transform;
 }
 
-export type DropAnimationFunction = (
-  args: DropAnimationFunctionArguments
+export type DropAnimationFunction<DraggableData, DroppableData> = (
+  args: DropAnimationFunctionArguments<DraggableData, DroppableData>
 ) => Promise<void> | void;
 
 type CleanupFunction = () => void;
 
-export interface DropAnimationSideEffectsParameters extends SharedParameters {}
+export interface DropAnimationSideEffectsParameters<
+  DraggableData,
+  DroppableData
+> extends SharedParameters<DraggableData, DroppableData> {}
 
-export type DropAnimationSideEffects = (
-  parameters: DropAnimationSideEffectsParameters
+export type DropAnimationSideEffects<DraggableData, DroppableData> = (
+  parameters: DropAnimationSideEffectsParameters<DraggableData, DroppableData>
 ) => CleanupFunction | void;
 
 type ExtractStringProperties<T> = {
@@ -90,53 +98,55 @@ interface DefaultDropAnimationSideEffectsOptions {
   };
 }
 
-export const defaultDropAnimationSideEffects = (
-  options: DefaultDropAnimationSideEffectsOptions
-): DropAnimationSideEffects => ({active, dragOverlay}) => {
-  const originalStyles: Record<string, string> = {};
-  const {styles, className} = options;
+export const defaultDropAnimationSideEffects =
+  (
+    options: DefaultDropAnimationSideEffectsOptions
+  ): DropAnimationSideEffects<AnyData, AnyData> =>
+  ({active, dragOverlay}) => {
+    const originalStyles: Record<string, string> = {};
+    const {styles, className} = options;
 
-  if (styles?.active) {
-    for (const [key, value] of Object.entries(styles.active)) {
-      if (value === undefined) {
-        continue;
+    if (styles?.active) {
+      for (const [key, value] of Object.entries(styles.active)) {
+        if (value === undefined) {
+          continue;
+        }
+
+        originalStyles[key] = active.node.style.getPropertyValue(key);
+        active.node.style.setProperty(key, value);
       }
-
-      originalStyles[key] = active.node.style.getPropertyValue(key);
-      active.node.style.setProperty(key, value);
     }
-  }
 
-  if (styles?.dragOverlay) {
-    for (const [key, value] of Object.entries(styles.dragOverlay)) {
-      if (value === undefined) {
-        continue;
+    if (styles?.dragOverlay) {
+      for (const [key, value] of Object.entries(styles.dragOverlay)) {
+        if (value === undefined) {
+          continue;
+        }
+
+        dragOverlay.node.style.setProperty(key, value);
       }
-
-      dragOverlay.node.style.setProperty(key, value);
-    }
-  }
-
-  if (className?.active) {
-    active.node.classList.add(className.active);
-  }
-
-  if (className?.dragOverlay) {
-    dragOverlay.node.classList.add(className.dragOverlay);
-  }
-
-  return function cleanup() {
-    for (const [key, value] of Object.entries(originalStyles)) {
-      active.node.style.setProperty(key, value);
     }
 
     if (className?.active) {
-      active.node.classList.remove(className.active);
+      active.node.classList.add(className.active);
     }
-  };
-};
 
-const defaultKeyframeResolver: KeyframeResolver = ({
+    if (className?.dragOverlay) {
+      dragOverlay.node.classList.add(className.dragOverlay);
+    }
+
+    return function cleanup() {
+      for (const [key, value] of Object.entries(originalStyles)) {
+        active.node.style.setProperty(key, value);
+      }
+
+      if (className?.active) {
+        active.node.classList.remove(className.active);
+      }
+    };
+  };
+
+const defaultKeyframeResolver: KeyframeResolver<AnyData, AnyData> = ({
   transform: {initial, final},
 }) => [
   {
@@ -147,7 +157,9 @@ const defaultKeyframeResolver: KeyframeResolver = ({
   },
 ];
 
-export const defaultDropAnimationConfiguration: Required<DropAnimationOptions> = {
+export const defaultDropAnimationConfiguration: Required<
+  DropAnimationOptions<AnyData, AnyData>
+> = {
   duration: 250,
   easing: 'ease',
   keyframes: defaultKeyframeResolver,
@@ -160,18 +172,19 @@ export const defaultDropAnimationConfiguration: Required<DropAnimationOptions> =
   }),
 };
 
-export function useDropAnimation({
+export function useDropAnimation<DraggableData, DroppableData>({
   config,
   draggableNodes,
   droppableContainers,
   measuringConfiguration,
-}: Arguments) {
+}: Arguments<DraggableData, DroppableData>) {
   return useEvent<Animation>((id, node) => {
     if (config === null) {
       return;
     }
 
-    const activeDraggable: DraggableNode | undefined = draggableNodes.get(id);
+    const activeDraggable: DraggableNode<DraggableData> | undefined =
+      draggableNodes.get(id);
 
     if (!activeDraggable) {
       return;
@@ -195,7 +208,7 @@ export function useDropAnimation({
       return;
     }
 
-    const animation: DropAnimationFunction =
+    const animation: DropAnimationFunction<DraggableData, DroppableData> =
       typeof config === 'function'
         ? config
         : createDefaultDropAnimation(config);
@@ -224,11 +237,13 @@ export function useDropAnimation({
   });
 }
 
-function createDefaultDropAnimation(
-  options: DropAnimationOptions | undefined
-): DropAnimationFunction {
+function createDefaultDropAnimation<DraggableData, DroppableData>(
+  options: DropAnimationOptions<DraggableData, DroppableData> | undefined
+): DropAnimationFunction<DraggableData, DroppableData> {
   const {duration, easing, sideEffects, keyframes} = {
-    ...defaultDropAnimationConfiguration,
+    ...(defaultDropAnimationConfiguration as Required<
+      DropAnimationOptions<DraggableData, DroppableData>
+    >),
     ...options,
   };
 

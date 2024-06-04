@@ -1,12 +1,12 @@
 import React, {ComponentProps} from 'react';
 import {createPortal} from 'react-dom';
 import {DragOverlay, useDndContext} from '@dnd-kit/core';
-import type {DropAnimation} from '@dnd-kit/core';
+import type {AnyData, DropAnimation} from '@dnd-kit/core';
 import {CSS} from '@dnd-kit/utilities';
 
 import {Draggable} from './Draggable';
 
-const dropAnimationConfig: DropAnimation = {
+const dropAnimationConfig: DropAnimation<AnyData, AnyData> = {
   keyframes({transform}) {
     return [
       {transform: CSS.Transform.toString(transform.initial)},
@@ -50,15 +50,18 @@ const dropAnimationConfig: DropAnimation = {
   },
 };
 
-interface Props {
+interface Props<DraggableData, DroppableData> {
   axis?: ComponentProps<typeof Draggable>['axis'];
-  dropAnimation?: DropAnimation | null;
+  dropAnimation?: DropAnimation<DraggableData, DroppableData> | null;
 }
 
-export function DraggableOverlay({
+export function DraggableOverlay<DraggableData, DroppableData>({
   axis,
-  dropAnimation = dropAnimationConfig,
-}: Props) {
+  dropAnimation = dropAnimationConfig as DropAnimation<
+    DraggableData,
+    DroppableData
+  >,
+}: Props<DraggableData, DroppableData>) {
   const {active} = useDndContext();
 
   return createPortal(

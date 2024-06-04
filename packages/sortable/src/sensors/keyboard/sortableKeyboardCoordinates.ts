@@ -5,6 +5,7 @@ import {
   KeyboardCode,
   DroppableContainer,
   KeyboardCoordinateGetter,
+  AnyData,
 } from '@dnd-kit/core';
 import {subtract} from '@dnd-kit/utilities';
 
@@ -17,7 +18,10 @@ const directions: string[] = [
   KeyboardCode.Left,
 ];
 
-export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
+export const sortableKeyboardCoordinates: KeyboardCoordinateGetter<
+  AnyData,
+  AnyData
+> = (
   event,
   {
     context: {
@@ -37,7 +41,7 @@ export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
       return;
     }
 
-    const filteredContainers: DroppableContainer[] = [];
+    const filteredContainers: DroppableContainer<AnyData>[] = [];
 
     droppableContainers.getEnabled().forEach((entry) => {
       if (!entry || entry?.disabled) {
@@ -128,7 +132,10 @@ export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
   return undefined;
 };
 
-function isSameContainer(a: DroppableContainer, b: DroppableContainer) {
+function isSameContainer(
+  a: DroppableContainer<AnyData>,
+  b: DroppableContainer<AnyData>
+) {
   if (!hasSortableData(a) || !hasSortableData(b)) {
     return false;
   }
@@ -138,7 +145,10 @@ function isSameContainer(a: DroppableContainer, b: DroppableContainer) {
   );
 }
 
-function isAfter(a: DroppableContainer, b: DroppableContainer) {
+function isAfter(
+  a: DroppableContainer<AnyData>,
+  b: DroppableContainer<AnyData>
+) {
   if (!hasSortableData(a) || !hasSortableData(b)) {
     return false;
   }

@@ -2,8 +2,10 @@ import {useCallback, useState} from 'react';
 
 import type {DndMonitorListener, DndMonitorEvent} from './types';
 
-export function useDndMonitorProvider() {
-  const [listeners] = useState(() => new Set<DndMonitorListener>());
+export function useDndMonitorProvider<DraggableData, DroppableData>() {
+  const [listeners] = useState(
+    () => new Set<DndMonitorListener<DraggableData, DroppableData>>()
+  );
 
   const registerListener = useCallback(
     (listener) => {

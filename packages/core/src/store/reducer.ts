@@ -2,7 +2,10 @@ import {Action, Actions} from './actions';
 import {DroppableContainersMap} from './constructors';
 import type {State} from './types';
 
-export function getInitialState(): State {
+export function getInitialState<DraggableData, DroppableData>(): State<
+  DraggableData,
+  DroppableData
+> {
   return {
     draggable: {
       active: null,
@@ -11,12 +14,15 @@ export function getInitialState(): State {
       translate: {x: 0, y: 0},
     },
     droppable: {
-      containers: new DroppableContainersMap(),
+      containers: new DroppableContainersMap<DroppableData>(),
     },
   };
 }
 
-export function reducer(state: State, action: Actions): State {
+export function reducer<DraggableData, DroppableData>(
+  state: State<DraggableData, DroppableData>,
+  action: Actions<DroppableData>
+): State<DraggableData, DroppableData> {
   switch (action.type) {
     case Action.DragStart:
       return {
