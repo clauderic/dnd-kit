@@ -37,9 +37,13 @@ export function useDraggable<T extends Data = Data>(
   );
 
   useEffect(() => {
+    manager.registry.register(draggable);
+
     // Cleanup on unmount
-    return draggable.destroy;
-  }, [draggable]);
+    return () => {
+      manager.registry.unregister(draggable);
+    };
+  }, [manager, draggable]);
 
   return {
     get isDragSource() {

@@ -34,9 +34,13 @@ export function useDroppable<T extends Data = Data>(
   useOnValueChange(type, () => (droppable.id = id));
 
   useEffect(() => {
+    manager.registry.register(droppable);
+
     // Cleanup on unmount
-    return droppable.destroy;
-  }, [droppable]);
+    return () => {
+      manager.registry.unregister(droppable);
+    };
+  }, [manager, droppable]);
 
   return {
     get isDisabled() {

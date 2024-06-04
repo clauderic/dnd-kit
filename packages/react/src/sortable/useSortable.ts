@@ -12,13 +12,11 @@ import {
   useIsomorphicLayoutEffect as layoutEffect,
 } from '@dnd-kit/react/hooks';
 import {getCurrentValue, type RefOrValue} from '@dnd-kit/react/utilities';
-import {FeedbackType} from '@dnd-kit/dom';
 
 export interface UseSortableInput<T extends Data = Data>
-  extends Omit<SortableInput<T>, 'handle' | 'element' | 'feedback'> {
+  extends Omit<SortableInput<T>, 'handle' | 'element'> {
   handle?: RefOrValue<Element>;
   element?: RefOrValue<Element>;
-  feedback?: FeedbackType | (() => React.ReactNode);
 }
 
 export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
@@ -30,12 +28,11 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     data,
     index,
     disabled,
+    feedback,
     sensors,
     transition = defaultSortableTransition,
     type,
   } = input;
-  const feedback =
-    typeof input.feedback === 'function' ? 'none' : input.feedback;
 
   const manager = useDragDropManager();
 
@@ -90,16 +87,8 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     collisionPriority,
     () => (sortable.collisionPriority = collisionPriority)
   );
-  useOnValueChange(
-    input.feedback,
-    () => (sortable.feedback = feedback ?? 'default')
-  );
+  useOnValueChange(feedback, () => (sortable.feedback = feedback ?? 'default'));
   useOnValueChange(transition, () => (sortable.transition = transition));
-
-  useEffect(() => {
-    // Cleanup on unmount
-    return sortable.destroy;
-  }, [sortable]);
 
   return {
     get isDisabled() {

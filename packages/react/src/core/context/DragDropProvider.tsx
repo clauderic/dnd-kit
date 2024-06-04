@@ -59,39 +59,46 @@ export const DragDropProvider = forwardRef<DragDropManager, Props>(
     const handleCollision = useEvent(onCollision);
 
     useEffect(() => {
-      manager.monitor.addEventListener('beforedragstart', (event, manager) => {
-        const callback = handleBeforeDragStart.current;
+      const listeners = [
+        manager.monitor.addEventListener(
+          'beforedragstart',
+          (event, manager) => {
+            const callback = handleBeforeDragStart.current;
 
-        if (callback) {
-          trackRendering(() => callback(event, manager));
-        }
-      });
-      manager.monitor.addEventListener('dragstart', handleDragStart);
-      manager.monitor.addEventListener('dragover', (event, manager) => {
-        const callback = handleDragOver.current;
+            if (callback) {
+              trackRendering(() => callback(event, manager));
+            }
+          }
+        ),
+        manager.monitor.addEventListener('dragstart', handleDragStart),
+        manager.monitor.addEventListener('dragover', (event, manager) => {
+          const callback = handleDragOver.current;
 
-        if (callback) {
-          trackRendering(() => callback(event, manager));
-        }
-      });
-      manager.monitor.addEventListener('dragmove', (event, manager) => {
-        const callback = handleDragMove.current;
+          if (callback) {
+            trackRendering(() => callback(event, manager));
+          }
+        }),
+        manager.monitor.addEventListener('dragmove', (event, manager) => {
+          const callback = handleDragMove.current;
 
-        if (callback) {
-          trackRendering(() => callback(event, manager));
-        }
-      });
-      manager.monitor.addEventListener('dragend', (event, manager) => {
-        const callback = handleDragEnd.current;
+          if (callback) {
+            trackRendering(() => callback(event, manager));
+          }
+        }),
+        manager.monitor.addEventListener('dragend', (event, manager) => {
+          const callback = handleDragEnd.current;
 
-        if (callback) {
-          trackRendering(() => callback(event, manager));
-        }
-      });
-      manager.monitor.addEventListener('collision', handleCollision);
+          if (callback) {
+            trackRendering(() => callback(event, manager));
+          }
+        }),
+        manager.monitor.addEventListener('collision', handleCollision),
+      ];
 
       return () => {
-        manager.destroy();
+        for (const unsubscribe of listeners) {
+          unsubscribe();
+        }
       };
     }, [manager]);
 

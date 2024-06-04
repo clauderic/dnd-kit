@@ -10,7 +10,9 @@ export default {
   ],
   framework: {
     name: getAbsolutePath('@storybook/react-vite'),
-    options: {},
+    options: {
+      strictMode: true,
+    },
   },
   async viteFinal(config, {configType}) {
     // customize the Vite config here
