@@ -1,8 +1,10 @@
 import {Code, Preview} from '../../../components';
 import {Demo} from '../Sortable.stories';
 import BasicSetupSource from '../SortableExample?raw';
-import {Example} from './examples/QuickStart';
-import ExampleSource from './examples/QuickStart?raw';
+import {Example} from './examples/Example';
+import {Example as UncontrolledExample} from './examples/UncontrolledExample';
+import UncontrolledExampleSource from './examples/UncontrolledExample?raw';
+import ControlledExampleSource from './examples/ControlledExample?raw';
 import image from './assets/useSortable.png';
 
 # Sortable
@@ -21,17 +23,25 @@ npm install @dnd-kit/react
 
 ## Getting started
 
-<Preview code={ExampleSource}>
+The fastest way to get started is to the `useSortable` hook and provide it an `id` and an `index`:
+<Preview code={UncontrolledExampleSource}>
+  <UncontrolledExample />
+</Preview>
+
+This will create an uncontrolled sortable list that will automatically update the order of the items in the DOM when they are dragged and dropped.
+
+To create a controlled sortable list and update the order of the items in React, we can listen to the `onDragEnd` event emitted by the `<DragDropProvider>` component:
+<Preview code={ControlledExampleSource}>
   <Example />
 </Preview>
 
-To create a vertical list, we can simply update the of the `flex-direction` property to `column`, without any other configuration changes.
+To create a vertical list, we can update the of the `flex-direction` style property to `column`, without any other configuration changes.
 
 <Preview>
   <Example style={{display: 'inline-flex', flexDirection: 'column', gap: 20}} />
 </Preview>
 
-To create a grid list, we can update the of the `display` property to `grid`, and set the `grid-template-columns` property to the desired number of columns.
+To create a grid list, we can update the of the `display` style property to `grid`, and set the `grid-template-columns` property to the desired number of columns.
 
 <Preview>
   <Example

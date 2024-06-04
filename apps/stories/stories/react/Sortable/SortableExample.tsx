@@ -15,7 +15,6 @@ import {Debug} from '@dnd-kit/dom/plugins/debug';
 
 import {Item, Handle} from '../components/index.js';
 import {createRange} from '../../utilities/createRange.js';
-import {cloneDeep} from '../../utilities/cloneDeep.js';
 
 interface Props {
   debug?: boolean;
@@ -45,7 +44,6 @@ export function SortableExample({
   getItemStyle,
 }: Props) {
   const [items, setItems] = useState(createRange(itemCount));
-  const snapshot = useRef(cloneDeep(items));
 
   return (
     <DragDropProvider
