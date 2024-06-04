@@ -1,4 +1,4 @@
-import {batch, effects, reactive, untracked, type Effect} from '@dnd-kit/state';
+import {batch, reactive, untracked} from '@dnd-kit/state';
 import {CollisionPriority} from '@dnd-kit/abstract';
 import type {
   Data,
@@ -49,8 +49,8 @@ const defaultPlugins: PluginConstructor[] = [
 ];
 
 export interface SortableInput<T extends Data>
-  extends Omit<DraggableInput<T>, 'effects'>,
-    Omit<DroppableInput<T>, 'effects'> {
+  extends DraggableInput<T>,
+    DroppableInput<T> {
   /**
    * The index of the sortable item within its group.
    */
@@ -63,10 +63,6 @@ export interface SortableInput<T extends Data>
    * The transition configuration to use when the index of the sortable item changes.
    */
   transition?: SortableTransition | null;
-  /**
-   * Additional effects to set up when sortable item is instantiated.
-   */
-  effects?: (instance: Sortable<T>) => Effect[];
   /**
    * Plugins to register when sortable item is instantiated.
    * @default [SortableKeyboardPlugin, OptimisticSortingPlugin]
@@ -98,7 +94,7 @@ export class Sortable<T extends Data = Data> {
 
   constructor(
     {
-      effects: inputEffects,
+      effects: inputEffects = () => [],
       group,
       index,
       sensors,
@@ -109,12 +105,44 @@ export class Sortable<T extends Data = Data> {
     }: SortableInput<T>,
     public manager: DragDropManager<any, any>
   ) {
+    this.droppable = new SortableDroppable<T>(input, manager, this);
     this.draggable = new SortableDraggable<T>(
-      {...input, type, sensors},
+      {
+        ...input,
+        effects: () => [
+          () =>
+            this.manager.monitor.addEventListener('dragstart', () => {
+              this.initialIndex = this.index;
+              this.previousIndex = this.index;
+            }),
+          () => {
+            const {index, previousIndex} = this;
+
+            // Re-run this effect whenever the index changes
+            if (index === previousIndex) {
+              return;
+            }
+
+            this.previousIndex = index;
+
+            this.animate();
+          },
+          () => {
+            const {target} = this;
+            const {feedback, isDragSource} = this.draggable;
+
+            if (feedback == 'move' && isDragSource) {
+              this.droppable.disabled = !target;
+            }
+          },
+          ...inputEffects(),
+        ],
+        type,
+        sensors,
+      },
       manager,
       this
     );
-    this.droppable = new SortableDroppable<T>(input, manager, this);
 
     for (const plugin of plugins) {
       manager.registry.register(plugin);
@@ -127,44 +155,9 @@ export class Sortable<T extends Data = Data> {
     this.type = type;
     this.transition = transition;
 
-    const {destroy} = this;
-
-    const unsubscribe = this.manager.monitor.addEventListener(
-      'dragstart',
-      () => {
-        this.initialIndex = this.index;
-        this.previousIndex = this.index;
-      }
-    );
-
-    const cleanup = effects(
-      () => {
-        const {index, previousIndex} = this;
-
-        // Re-run this effect whenever the index changes
-        if (index === previousIndex) {
-          return;
-        }
-
-        this.previousIndex = index;
-
-        this.animate();
-      },
-      () => {
-        const {target} = this;
-        const {feedback, isDragSource} = this.draggable;
-
-        if (feedback == 'move' && isDragSource) {
-          this.droppable.disabled = !target;
-        }
-      },
-      ...(inputEffects?.(this) ?? [])
-    );
-
     this.destroy = () => {
-      destroy.bind(this)();
-      unsubscribe();
-      cleanup();
+      this.draggable.destroy();
+      this.droppable.destroy();
     };
   }
 
@@ -322,10 +315,7 @@ export class Sortable<T extends Data = Data> {
     return this.droppable.accepts(draggable);
   }
 
-  public destroy() {
-    this.draggable.destroy();
-    this.droppable.destroy();
-  }
+  public destroy() {}
 }
 
 export class SortableDraggable<T extends Data> extends Draggable<T> {

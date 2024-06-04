@@ -7,7 +7,11 @@ export interface Input<T extends Data = Data, U extends Entity<T> = Entity<T>> {
   id: UniqueIdentifier;
   data?: T | null;
   disabled?: boolean;
-  effects?: <Instance extends U>(instance: Instance) => Effect[];
+  effects?(): Effect[];
+}
+
+function getDefaultEffects(): Effect[] {
+  return [];
 }
 
 /**
@@ -27,25 +31,42 @@ export class Entity<T extends Data = Data> {
     input: Input<T>,
     public manager: DragDropManager
   ) {
-    const {effects: getInputEffects, id, data = null, disabled = false} = input;
+    const {
+      effects: getEffects = getDefaultEffects,
+      id,
+      data = null,
+      disabled = false,
+    } = input;
+
+    let previousId = id;
 
     this.id = id;
     this.data = data;
     this.disabled = disabled;
 
     queueMicrotask(() => {
-      const inputEffects = getInputEffects?.(this) ?? [];
+      manager.registry.register(this);
 
-      this.destroy = effects(
+      const cleanupEffects = effects(
         () => {
           // Re-run this effect whenever the `id` changes
           const {id: _} = this;
+
+          if (id === previousId) {
+            return;
+          }
+
           manager.registry.register(this);
 
           return () => manager.registry.unregister(this);
         },
-        ...inputEffects
+        ...getEffects()
       );
+
+      this.destroy = () => {
+        manager.registry.unregister(this);
+        cleanupEffects();
+      };
     });
   }
 

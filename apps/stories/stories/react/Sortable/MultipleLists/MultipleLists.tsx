@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import type {PropsWithChildren} from 'react';
 import {flushSync} from 'react-dom';
 import {CollisionPriority} from '@dnd-kit/abstract';

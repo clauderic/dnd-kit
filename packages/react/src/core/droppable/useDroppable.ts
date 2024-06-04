@@ -1,12 +1,12 @@
-import {useCallback, useEffect} from 'react';
+import {useCallback} from 'react';
 import type {Data} from '@dnd-kit/abstract';
 import {Droppable} from '@dnd-kit/dom';
 import {deepEqual} from '@dnd-kit/state';
 import type {DroppableInput} from '@dnd-kit/dom';
-import {useComputed, useConstant, useOnValueChange} from '@dnd-kit/react/hooks';
+import {useComputed, useOnValueChange} from '@dnd-kit/react/hooks';
 import {getCurrentValue, type RefOrValue} from '@dnd-kit/react/utilities';
 
-import {useDragDropManager} from '../context/index.js';
+import {useInstance} from '../hooks/useInstance.js';
 
 export interface UseDroppableInput<T extends Data = Data>
   extends Omit<DroppableInput<T>, 'element'> {
@@ -16,12 +16,10 @@ export interface UseDroppableInput<T extends Data = Data>
 export function useDroppable<T extends Data = Data>(
   input: UseDroppableInput<T>
 ) {
-  const manager = useDragDropManager();
   const {collisionDetector, disabled, id, accept, type} = input;
   const element = getCurrentValue(input.element);
-  const droppable = useConstant(
-    () => new Droppable({...input, element}, manager),
-    manager
+  const droppable = useInstance(
+    (manager) => new Droppable({...input, element}, manager)
   );
   const isDisabled = useComputed(() => droppable.disabled);
   const isDropTarget = useComputed(() => droppable.isDropTarget);
@@ -32,15 +30,6 @@ export function useDroppable<T extends Data = Data>(
   useOnValueChange(disabled, () => (droppable.disabled = disabled === true));
   useOnValueChange(element, () => (droppable.element = element));
   useOnValueChange(type, () => (droppable.id = id));
-
-  useEffect(() => {
-    manager.registry.register(droppable);
-
-    // Cleanup on unmount
-    return () => {
-      manager.registry.unregister(droppable);
-    };
-  }, [manager, droppable]);
 
   return {
     get isDisabled() {

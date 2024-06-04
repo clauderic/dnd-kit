@@ -6,7 +6,7 @@ import type {
 } from '@dnd-kit/abstract';
 import {defaultCollisionDetection} from '@dnd-kit/collision';
 import type {CollisionDetector} from '@dnd-kit/collision';
-import {Signal, effects, reactive, signal, untracked} from '@dnd-kit/state';
+import {Signal, reactive, signal, untracked} from '@dnd-kit/state';
 import type {Shape} from '@dnd-kit/geometry';
 import {
   DOMRectangle,
@@ -25,14 +25,95 @@ export interface Input<T extends Data = Data>
 
 export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
   constructor(
-    {element, ...input}: Input<T>,
+    {element, effects = () => [], ...input}: Input<T>,
     public manager: AbstractDragDropManager<any, any>
   ) {
     const {collisionDetector = defaultCollisionDetection} = input;
 
-    super({...input, collisionDetector}, manager);
+    super(
+      {
+        ...input,
+        collisionDetector,
+        effects: () => [
+          ...effects(),
+          () => {
+            const {element} = this;
+            const {dragOperation} = manager;
 
-    const {destroy} = this;
+            if (element && dragOperation.status.initialized) {
+              const scrollableAncestor = getFirstScrollableAncestor(element);
+              const doc = getDocument(element);
+              const root =
+                scrollableAncestor === doc.scrollingElement
+                  ? doc
+                  : scrollableAncestor;
+              const intersectionObserver = new IntersectionObserver(
+                (entries) => {
+                  const [entry] = entries.slice(-1);
+                  const {width, height} = entry.boundingClientRect;
+
+                  if (!width && !height) {
+                    return;
+                  }
+
+                  this.visible = entry.isIntersecting;
+                },
+                {
+                  root: root ?? doc,
+                  rootMargin: '40%',
+                }
+              );
+
+              const mutationObserver = new MutationObserver(() =>
+                scheduler.schedule(this.refreshShape)
+              );
+
+              const resizeObserver = new ResizeObserver(() =>
+                scheduler.schedule(this.refreshShape)
+              );
+
+              if (element.parentElement) {
+                mutationObserver.observe(element.parentElement, {
+                  childList: true,
+                });
+              }
+
+              resizeObserver.observe(element);
+              intersectionObserver.observe(element);
+
+              return () => {
+                this.shape = undefined;
+                this.visible = undefined;
+                resizeObserver.disconnect();
+                mutationObserver.disconnect();
+                intersectionObserver.disconnect();
+              };
+            }
+          },
+          () => {
+            const {dragOperation} = manager;
+            const {status} = dragOperation;
+            const source = untracked(() => dragOperation.source);
+
+            if (status.initialized) {
+              if (source?.type != null && !this.accepts(source)) {
+                return;
+              }
+
+              scheduler.schedule(this.refreshShape);
+            }
+          },
+          () => {
+            if (manager.dragOperation.status.initialized) {
+              return () => {
+                this.shape = undefined;
+              };
+            }
+          },
+        ],
+      },
+      manager
+    );
 
     this.internal = {
       element: signal(element),
@@ -46,88 +127,6 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
     if (manager.dragOperation.status.initialized) {
       this.visible = true;
     }
-
-    const cleanup = effects(
-      () => {
-        const {element} = this;
-        const {dragOperation} = manager;
-
-        if (element && dragOperation.status.initialized) {
-          const scrollableAncestor = getFirstScrollableAncestor(element);
-          const doc = getDocument(element);
-          const root =
-            scrollableAncestor === doc.scrollingElement
-              ? doc
-              : scrollableAncestor;
-          const intersectionObserver = new IntersectionObserver(
-            (entries) => {
-              const [entry] = entries.slice(-1);
-              const {width, height} = entry.boundingClientRect;
-
-              if (!width && !height) {
-                return;
-              }
-
-              this.visible = entry.isIntersecting;
-            },
-            {
-              root: root ?? doc,
-              rootMargin: '40%',
-            }
-          );
-
-          const mutationObserver = new MutationObserver(() =>
-            scheduler.schedule(this.refreshShape)
-          );
-
-          const resizeObserver = new ResizeObserver(() =>
-            scheduler.schedule(this.refreshShape)
-          );
-
-          if (element.parentElement) {
-            mutationObserver.observe(element.parentElement, {
-              childList: true,
-            });
-          }
-
-          resizeObserver.observe(element);
-          intersectionObserver.observe(element);
-
-          return () => {
-            this.shape = undefined;
-            this.visible = undefined;
-            resizeObserver.disconnect();
-            mutationObserver.disconnect();
-            intersectionObserver.disconnect();
-          };
-        }
-      },
-      () => {
-        const {dragOperation} = manager;
-        const {status} = dragOperation;
-        const source = untracked(() => dragOperation.source);
-
-        if (status.initialized) {
-          if (source?.type != null && !this.accepts(source)) {
-            return;
-          }
-
-          scheduler.schedule(this.refreshShape);
-        }
-      },
-      () => {
-        if (manager.dragOperation.status.initialized) {
-          return () => {
-            this.shape = undefined;
-          };
-        }
-      }
-    );
-
-    this.destroy = () => {
-      cleanup();
-      destroy();
-    };
   }
 
   @reactive

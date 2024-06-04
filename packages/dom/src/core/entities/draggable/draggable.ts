@@ -36,39 +36,49 @@ export class Draggable<T extends Data = Data> extends AbstractDraggable<T> {
   public sensors: Sensors | undefined;
 
   constructor(
-    {element, handle, feedback = 'default', sensors, ...input}: Input<T>,
+    {
+      element,
+      effects = () => [],
+      handle,
+      feedback = 'default',
+      sensors,
+      ...input
+    }: Input<T>,
     public manager: AbstractDragDropManager<any, any>
   ) {
-    super(input, manager);
+    super(
+      {
+        effects: () => [
+          ...effects(),
+          () => {
+            const sensors = this.sensors?.map(descriptor) ?? [
+              ...manager.sensors,
+            ];
+            const unbindFunctions = sensors.map((entry) => {
+              const sensorInstance =
+                entry instanceof Sensor
+                  ? entry
+                  : manager.registry.register(entry.plugin);
+              const options =
+                entry instanceof Sensor ? undefined : entry.options;
+
+              const unbind = sensorInstance.bind(this, options);
+              return unbind;
+            });
+
+            return function cleanup() {
+              unbindFunctions.forEach((unbind) => unbind());
+            };
+          },
+        ],
+        ...input,
+      },
+      manager
+    );
 
     this.element = element;
     this.handle = handle;
     this.feedback = feedback;
     this.sensors = sensors;
-
-    const cleanupEffect = effect(() => {
-      const sensors = this.sensors?.map(descriptor) ?? [...manager.sensors];
-      const unbindFunctions = sensors.map((entry) => {
-        const sensorInstance =
-          entry instanceof Sensor
-            ? entry
-            : manager.registry.register(entry.plugin);
-        const options = entry instanceof Sensor ? undefined : entry.options;
-
-        const unbind = sensorInstance.bind(this, options);
-        return unbind;
-      });
-
-      return function cleanup() {
-        unbindFunctions.forEach((unbind) => unbind());
-      };
-    });
-
-    const {destroy} = this;
-
-    this.destroy = () => {
-      cleanupEffect();
-      destroy();
-    };
   }
 }

@@ -15,7 +15,7 @@ export enum Status {
   Idle = 'idle',
   Initializing = 'initializing',
   Dragging = 'dragging',
-  Dropping = 'dropping',
+  Dropped = 'dropped',
 }
 
 export type Serializable = {
@@ -35,7 +35,8 @@ export interface DragOperation<
     initialized: boolean;
     initializing: boolean;
     dragging: boolean;
-    dropping: boolean;
+    dragended: boolean;
+    dropped: boolean;
     idle: boolean;
   };
   get shape(): {
@@ -77,7 +78,8 @@ export function DragOperationManager<
   const initialized = computed(() => status.value !== Status.Idle);
   const initializing = computed(() => status.value === Status.Initializing);
   const idle = computed(() => status.value === Status.Idle);
-  const dropping = computed(() => status.value === Status.Dropping);
+  const dropped = computed(() => status.value === Status.Dropped);
+  const dragended = signal<boolean>(true);
   let previousSource: T | undefined;
   const source = computed<T | null>(() => {
     const identifier = sourceIdentifier.value;
@@ -116,7 +118,8 @@ export function DragOperationManager<
         initializing: initializing.peek(),
         initialized: initialized.peek(),
         dragging: dragging.peek(),
-        dropping: dropping.peek(),
+        dragended: dragended.peek(),
+        dropped: dropped.peek(),
       },
       shape:
         initialShape && currentShape
@@ -161,8 +164,11 @@ export function DragOperationManager<
       get dragging() {
         return dragging.value;
       },
-      get dropping() {
-        return dropping.value;
+      get dragended() {
+        return dragended.value;
+      },
+      get dropped() {
+        return dropped.value;
       },
     },
     get shape(): DragOperation['shape'] {
@@ -218,17 +224,20 @@ export function DragOperationManager<
 
         targetIdentifier.value = id;
 
-        monitor.dispatch(
-          'dragover',
-          defaultPreventable({
-            operation: snapshot(operation),
-          })
-        );
+        if (status.peek() === Status.Dragging) {
+          monitor.dispatch(
+            'dragover',
+            defaultPreventable({
+              operation: snapshot(operation),
+            })
+          );
+        }
 
         return manager.renderer.rendering;
       },
       start({event, coordinates}: {event: Event; coordinates: Coordinates}) {
         batch(() => {
+          dragended.value = false;
           canceled.value = false;
           activatorEvent.value = event;
           position.reset(coordinates);
@@ -309,14 +318,17 @@ export function DragOperationManager<
           return output;
         };
         const end = () => {
+          /* Wait for the renderer to finish rendering before finalizing the drag operation */
           manager.renderer.rendering.then(() => {
-            status.value = Status.Dropping;
-
+            status.value = Status.Dropped;
             manager.renderer.rendering.then(reset);
           });
         };
 
-        canceled.value = eventCanceled;
+        batch(() => {
+          dragended.value = true;
+          canceled.value = eventCanceled;
+        });
 
         monitor.dispatch('dragend', {
           operation: snapshot(operation),

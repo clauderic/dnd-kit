@@ -35,7 +35,6 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
   } = input;
 
   const manager = useDragDropManager();
-
   const handle = getCurrentValue(input.handle);
   const element = getCurrentValue(input.element);
   const sortable = useConstant(
@@ -51,6 +50,16 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
       ),
     manager
   );
+
+  useEffect(() => {
+    manager.registry.register(sortable.draggable);
+    manager.registry.register(sortable.droppable);
+
+    return () => {
+      manager.registry.unregister(sortable.draggable);
+      manager.registry.unregister(sortable.droppable);
+    };
+  }, [manager]);
 
   const isDisabled = useComputed(() => sortable.disabled);
   const isDropTarget = useComputed(() => sortable.isDropTarget);

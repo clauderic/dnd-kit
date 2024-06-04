@@ -1,4 +1,5 @@
 ---
+'@dnd-kit/abstract': patch
 '@dnd-kit/react': patch
 '@dnd-kit/dom': patch
 ---

@@ -20,7 +20,8 @@ const ATTR_PREFIX = 'data-dnd-kit-';
 const CSS_PREFIX = '--dnd-kit-feedback-';
 const cssRules = `[${ATTR_PREFIX}feedback] {position: fixed !important;pointer-events: none;touch-action: none;z-index: 999999;will-change: transform;top: var(${CSS_PREFIX}top, 0px) !important;left: var(${CSS_PREFIX}left, 0px) !important;width: var(${CSS_PREFIX}width, auto) !important;height: var(${CSS_PREFIX}height, auto) !important;margin: var(${CSS_PREFIX}margin, 0px) !important;padding: var(${CSS_PREFIX}padding, 0px) !important;}[${ATTR_PREFIX}feedback][style*="${CSS_PREFIX}translate"] {transition: var(${CSS_PREFIX}transition) !important;translate: var(${CSS_PREFIX}translate) !important;}[${ATTR_PREFIX}feedback][popover]{overflow:visible;}[popover]{background:unset;border:unset;}[${ATTR_PREFIX}feedback]::backdrop {display: none}`;
 const ATTRIBUTE = `${ATTR_PREFIX}feedback`;
-const IGNORED_ATTRIBUTES = [ATTRIBUTE, 'popover'];
+const PLACEHOLDER_ATTRIBUTE = `${ATTR_PREFIX}placeholder`;
+const IGNORED_ATTRIBUTES = [ATTRIBUTE, PLACEHOLDER_ATTRIBUTE, 'popover'];
 const IGNORED_STYLES = ['view-transition-name'];
 
 export class Feedback extends Plugin<DragDropManager> {
@@ -68,7 +69,9 @@ export class Feedback extends Plugin<DragDropManager> {
         getWindow(element).getComputedStyle(element);
       const droppable = manager.registry.droppables.get(source.id);
       const clone = feedback === 'clone';
-      const placeholder = createPlaceholder(element, clone);
+      const placeholder = createPlaceholder(element, clone, {
+        [PLACEHOLDER_ATTRIBUTE]: '',
+      });
       const isKeyboardOperation = untracked(() =>
         isKeyboardEvent(manager.dragOperation.activatorEvent)
       );
@@ -112,10 +115,7 @@ export class Feedback extends Plugin<DragDropManager> {
         },
         CSS_PREFIX
       );
-      element.parentElement?.insertBefore(
-        placeholder,
-        element.nextElementSibling
-      );
+      element.insertAdjacentElement('afterend', placeholder);
 
       if (supportsPopover(element)) {
         element.setAttribute('popover', '');
@@ -221,7 +221,7 @@ export class Feedback extends Plugin<DragDropManager> {
         for (const entry of entries) {
           if (Array.from(entry.addedNodes).includes(element)) {
             /* Update the position of the placeholder when the source element is moved */
-            entry.target.insertBefore(placeholder, element.nextElementSibling);
+            element.insertAdjacentElement('afterend', placeholder);
 
             /*
              * Any update in DOM order that affects the source element hide the popover
@@ -284,7 +284,7 @@ export class Feedback extends Plugin<DragDropManager> {
       const id = manager.dragOperation.source?.id;
 
       const restoreFocus = () => {
-        if (id == null) {
+        if (!isKeyboardOperation || id == null) {
           return;
         }
 
@@ -323,7 +323,7 @@ export class Feedback extends Plugin<DragDropManager> {
       };
 
       const dropEffectCleanup = effect(function dropAnimation() {
-        if (dragOperation.status.dropping) {
+        if (dragOperation.status.dropped) {
           const onComplete = cleanup;
           cleanup = undefined;
 

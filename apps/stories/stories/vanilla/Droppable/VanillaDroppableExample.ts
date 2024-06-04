@@ -16,24 +16,19 @@ export const DroppableExample = createVanillaStory(() => {
     {
       id: 'draggable',
       element: draggableElement,
-      effects(draggable) {
-        return [
-          () => {
-            const {status} = manager.dragOperation;
+      effects: () => [
+        () => {
+          const {status} = manager.dragOperation;
 
-            if (
-              draggable.isDragSource &&
-              (status.dragging || status.dropping)
-            ) {
-              draggableElement.setAttribute('data-shadow', 'true');
+          if (draggable.isDragSource && (status.dragging || status.dropped)) {
+            draggableElement.setAttribute('data-shadow', 'true');
 
-              return () => {
-                draggableElement.removeAttribute('data-shadow');
-              };
-            }
-          },
-        ];
-      },
+            return () => {
+              draggableElement.removeAttribute('data-shadow');
+            };
+          }
+        },
+      ],
     },
     manager
   );
@@ -41,19 +36,17 @@ export const DroppableExample = createVanillaStory(() => {
     {
       id: 'droppable',
       element: droppableElement,
-      effects(droppable) {
-        return [
-          () => {
-            if (droppable.isDropTarget) {
-              droppableElement.setAttribute('data-highlight', 'true');
+      effects: () => [
+        () => {
+          if (droppable.isDropTarget) {
+            droppableElement.setAttribute('data-highlight', 'true');
 
-              return () => {
-                droppableElement.removeAttribute('data-highlight');
-              };
-            }
-          },
-        ];
-      },
+            return () => {
+              droppableElement.removeAttribute('data-highlight');
+            };
+          }
+        },
+      ],
     },
     manager
   );

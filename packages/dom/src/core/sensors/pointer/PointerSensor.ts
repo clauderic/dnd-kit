@@ -51,25 +51,11 @@ export class PointerSensor extends Sensor<
 
   #clearTimeout: CleanupFunction | undefined;
 
-  #document: Document | undefined;
-
   constructor(
     public manager: DragDropManager,
     public options?: PointerSensorOptions
   ) {
     super(manager);
-
-    // Adding a non-capture and non-passive `touchmove` listener in order
-    // to force `event.preventDefault()` calls to work in dynamically added
-    // touchmove event handlers. This is required for iOS Safari.
-    this.listeners.bind(window, {
-      type: 'touchmove',
-      listener() {},
-      options: {
-        capture: false,
-        passive: false,
-      },
-    });
   }
 
   public bind(source: Draggable, options = this.options) {
@@ -82,6 +68,8 @@ export class PointerSensor extends Sensor<
       };
 
       if (target) {
+        patchWindow(target.ownerDocument.defaultView);
+
         target.addEventListener('pointerdown', listener);
 
         return () => {
@@ -145,8 +133,6 @@ export class PointerSensor extends Sensor<
     }
 
     const ownerDocument = getDocument(event.target);
-
-    this.#document = ownerDocument;
 
     const unbindListeners = this.listeners.bind(ownerDocument, [
       {
@@ -297,4 +283,20 @@ export class PointerSensor extends Sensor<
 
 function preventDefault(event: Event) {
   event.preventDefault();
+}
+
+function noop() {}
+
+const windows = new WeakSet<Window>();
+
+function patchWindow(window: Window | null) {
+  if (!window || windows.has(window)) {
+    return;
+  }
+
+  window.addEventListener('touchmove', noop, {
+    capture: false,
+    passive: false,
+  });
+  windows.add(window);
 }

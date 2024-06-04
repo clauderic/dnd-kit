@@ -1,11 +1,11 @@
-import {useCallback, useEffect} from 'react';
+import {useCallback} from 'react';
 import type {Data} from '@dnd-kit/abstract';
 import {Draggable} from '@dnd-kit/dom';
 import type {DraggableInput} from '@dnd-kit/dom';
-import {useComputed, useConstant, useOnValueChange} from '@dnd-kit/react/hooks';
+import {useComputed, useOnValueChange} from '@dnd-kit/react/hooks';
 import {getCurrentValue, type RefOrValue} from '@dnd-kit/react/utilities';
 
-import {useDragDropManager} from '../context/index.js';
+import {useInstance} from '../hooks/useInstance.js';
 
 export interface UseDraggableInput<T extends Data = Data>
   extends Omit<DraggableInput<T>, 'handle' | 'element'> {
@@ -17,12 +17,10 @@ export function useDraggable<T extends Data = Data>(
   input: UseDraggableInput<T>
 ) {
   const {disabled, id, sensors} = input;
-  const manager = useDragDropManager();
   const handle = getCurrentValue(input.handle);
   const element = getCurrentValue(input.element);
-  const draggable = useConstant(
-    () => new Draggable({...input, handle, element}, manager),
-    manager
+  const draggable = useInstance(
+    (manager) => new Draggable({...input, handle, element}, manager)
   );
   const isDragSource = useComputed(() => draggable.isDragSource);
 
@@ -35,15 +33,6 @@ export function useDraggable<T extends Data = Data>(
     input.feedback,
     () => (draggable.feedback = input.feedback ?? 'default')
   );
-
-  useEffect(() => {
-    manager.registry.register(draggable);
-
-    // Cleanup on unmount
-    return () => {
-      manager.registry.unregister(draggable);
-    };
-  }, [manager, draggable]);
 
   return {
     get isDragSource() {

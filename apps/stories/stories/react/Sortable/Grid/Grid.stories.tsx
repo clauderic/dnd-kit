@@ -41,7 +41,7 @@ export const VariableSizes: Story = {
     ...defaultArgs,
     itemCount: 14,
     collisionDetector: pointerIntersection,
-    getItemStyle(_, index) {
+    getItemStyle(_: number, index: number) {
       if (index === 0 || index === 10) {
         return {
           width: 320,
