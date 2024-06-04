@@ -14,7 +14,7 @@ Restrict dragging to a specific element within a draggable element.
 To create a drag handle, provide a `handle` element to the `useDraggable` hook by consuming the `handleRef` from the output object of the `useDraggable` hook.
 
 ```jsx
-import {useDraggable} from '@dnd-kit/core';
+import {useDraggable} from '@dnd-kit/react';
 
 function Draggable(props) {
   const {handleRef, ref} = useDraggable({
@@ -33,7 +33,7 @@ function Draggable(props) {
 Alternatively, you can also pass an `Element` or `ref` to an element as an argument to the `handle` option of `useDraggable`:
 
 ```jsx
-import {useDraggable} from '@dnd-kit/core';
+import {useDraggable} from '@dnd-kit/react';
 
 function Draggable(props) {
   const handleRef = useRef(null);
