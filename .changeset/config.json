@@ -2,7 +2,7 @@
   "$schema": "https://unpkg.com/@changesets/config@1.5.0/schema.json",
   "changelog": ["@changesets/changelog-github", {"repo": "clauderic/dnd-kit"}],
   "commit": false,
-  "linked": [],
+  "linked": [["@dnd-kit/*"]],
   "access": "public",
   "baseBranch": "experimental",
   "updateInternalDependencies": "patch",
