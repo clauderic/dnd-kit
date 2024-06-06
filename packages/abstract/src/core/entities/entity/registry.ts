@@ -1,4 +1,4 @@
-import {signal} from '@dnd-kit/state';
+import {effects, signal} from '@dnd-kit/state';
 
 import type {Entity} from './entity.ts';
 import type {UniqueIdentifier} from './types.ts';
@@ -10,6 +10,7 @@ import type {UniqueIdentifier} from './types.ts';
  */
 export class EntityRegistry<T extends Entity> {
   private map = signal<Map<UniqueIdentifier, T>>(new Map());
+  private cleanupFunctions = new WeakMap<T, () => void>();
 
   /**
    * Iterator for the EntityRegistry class.
@@ -59,6 +60,9 @@ export class EntityRegistry<T extends Entity> {
 
     this.map.value = updatedMap;
 
+    const cleanup = effects(...value.effects);
+    this.cleanupFunctions.set(value, cleanup);
+
     return () => this.unregister(key, value);
   };
 
@@ -74,6 +78,10 @@ export class EntityRegistry<T extends Entity> {
       return;
     }
 
+    const cleanup = this.cleanupFunctions.get(value);
+    cleanup?.();
+    this.cleanupFunctions.delete(value);
+
     const updatedMap = new Map(current);
     updatedMap.delete(key);
 
@@ -85,6 +93,8 @@ export class EntityRegistry<T extends Entity> {
    */
   public destroy() {
     for (const entry of this) {
+      const cleanup = this.cleanupFunctions.get(entry);
+      cleanup?.();
       entry.destroy();
     }
 

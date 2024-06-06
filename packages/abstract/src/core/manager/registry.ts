@@ -37,9 +37,9 @@ export class DragDropRegistry<
   public sensors: PluginRegistry<V, SensorConstructor<V>>;
   public modifiers: PluginRegistry<V, ModifierConstructor<V>>;
 
-  public register(input: Entity): Entity;
-  public register(input: Draggable): Draggable;
-  public register(input: Droppable): Droppable;
+  public register(input: Entity): () => void;
+  public register(input: Draggable): () => void;
+  public register(input: Droppable): () => void;
   public register(input: SensorConstructor, options?: SensorOptions): Sensor;
   public register(input: ModifierConstructor): Modifier;
   public register(input: PluginConstructor, options?: PluginOptions): Plugin;

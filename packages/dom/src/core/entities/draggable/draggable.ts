@@ -8,7 +8,7 @@ import type {
   DraggableInput,
   DragDropManager as AbstractDragDropManager,
 } from '@dnd-kit/abstract';
-import {effect, reactive} from '@dnd-kit/state';
+import {reactive} from '@dnd-kit/state';
 
 import type {Sensors} from '../../sensors/index.ts';
 
@@ -32,16 +32,12 @@ export class Draggable<T extends Data = Data> extends AbstractDraggable<T> {
   @reactive
   public feedback: FeedbackType;
 
-  @reactive
-  public sensors: Sensors | undefined;
-
   constructor(
     {
       element,
       effects = () => [],
       handle,
       feedback = 'default',
-      sensors,
       ...input
     }: Input<T>,
     public manager: AbstractDragDropManager<any, any>
@@ -79,6 +75,5 @@ export class Draggable<T extends Data = Data> extends AbstractDraggable<T> {
     this.element = element;
     this.handle = handle;
     this.feedback = feedback;
-    this.sensors = sensors;
   }
 }

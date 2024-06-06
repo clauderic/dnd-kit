@@ -11,11 +11,8 @@ export function useInstance<T extends Entity>(
   const [instance] = useState<T>(() => initializer(manager));
 
   useEffect(() => {
-    manager.registry.register(instance);
-
-    return () => {
-      manager.registry.unregister(instance);
-    };
+    // Register returns an unregister callback
+    return manager.registry.register(instance);
   }, []);
 
   return instance;

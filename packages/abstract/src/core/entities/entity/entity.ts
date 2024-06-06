@@ -53,33 +53,28 @@ export class Entity<T extends Data = Data> {
     this.id = id;
     this.data = data;
     this.disabled = disabled;
+    this.effects = [
+      () => {
+        // Re-run this effect whenever the `id` changes
+        const {id: _} = this;
 
-    queueMicrotask(() => {
-      if (options?.register !== false) {
+        if (id === previousId) {
+          return;
+        }
+
         manager.registry.register(this);
-      }
 
-      const cleanupEffects = effects(
-        () => {
-          // Re-run this effect whenever the `id` changes
-          const {id: _} = this;
+        return () => manager.registry.unregister(this);
+      },
+      ...getEffects(),
+    ];
+    this.destroy = this.destroy.bind(this);
 
-          if (id === previousId) {
-            return;
-          }
-
-          manager.registry.register(this);
-
-          return () => manager.registry.unregister(this);
-        },
-        ...getEffects()
-      );
-
-      this.destroy = () => {
-        manager.registry.unregister(this);
-        cleanupEffects();
-      };
-    });
+    if (options?.register !== false) {
+      queueMicrotask(() => {
+        manager.registry.register(this);
+      });
+    }
   }
 
   /**
@@ -101,8 +96,15 @@ export class Entity<T extends Data = Data> {
   public disabled: boolean;
 
   /**
+   * An array of effects that are applied to the entity.
+   */
+  public effects: Effect[];
+
+  /**
    * A method that cleans up the entity when it is no longer needed.
    * @returns void
    */
-  public destroy(): void {}
+  public destroy(): void {
+    this.manager.registry.unregister(this);
+  }
 }

@@ -6,6 +6,7 @@ import {Modifier} from '../../modifiers/index.ts';
 import type {Modifiers} from '../../modifiers/index.ts';
 import type {DragDropManager} from '../../manager/index.ts';
 import {descriptor} from '../../plugins/index.ts';
+import type {Sensors} from '../../sensors/sensor.ts';
 
 export interface Input<
   T extends Data = Data,
@@ -13,16 +14,18 @@ export interface Input<
 > extends EntityInput<T, U> {
   type?: Type;
   modifiers?: Modifiers;
+  sensors?: Sensors;
 }
 
 export class Draggable<T extends Data = Data> extends Entity<T> {
   constructor(
-    {modifiers, type, ...input}: Input<T>,
+    {modifiers, type, sensors, ...input}: Input<T>,
     public manager: DragDropManager
   ) {
     super(input, manager);
 
     this.type = type;
+    this.sensors = sensors;
 
     if (modifiers?.length) {
       this.modifiers = modifiers.map((modifier) => {
@@ -32,6 +35,8 @@ export class Draggable<T extends Data = Data> extends Entity<T> {
       });
     }
   }
+
+  public sensors: Sensors | undefined;
 
   public modifiers: Modifier[] | undefined;
 
