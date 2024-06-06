@@ -19,8 +19,8 @@ export class PluginRegistry<
   #previousValues: PluginConstructor<T>[] = [];
 
   public set values(entries: Plugins<T>) {
-    const descriptos = entries.map(descriptor);
-    const constructors = descriptos.map(({plugin}) => plugin);
+    const descriptors = entries.map(descriptor);
+    const constructors = descriptors.map(({plugin}) => plugin);
 
     for (const plugin of this.#previousValues) {
       if (!constructors.includes(plugin)) {
@@ -32,7 +32,7 @@ export class PluginRegistry<
       }
     }
 
-    for (const {plugin, options} of descriptos) {
+    for (const {plugin, options} of descriptors) {
       this.register(plugin as W, options as InferPluginOptions<W>);
     }
 

@@ -1,4 +1,5 @@
 import {
+  Component,
   forwardRef,
   useImperativeHandle,
   useEffect,
@@ -96,9 +97,7 @@ export const DragDropProvider = forwardRef<DragDropManager, Props>(
       ];
 
       return () => {
-        for (const unsubscribe of listeners) {
-          unsubscribe();
-        }
+        listeners.forEach((unsubscribe) => unsubscribe());
       };
     }, [manager]);
 
@@ -113,7 +112,18 @@ export const DragDropProvider = forwardRef<DragDropManager, Props>(
     return (
       <DragDropContext.Provider value={manager}>
         {children}
+        <Lifecycle manager={manager} />
       </DragDropContext.Provider>
     );
   }
 );
+
+class Lifecycle extends Component<{manager: DragDropManager}> {
+  render() {
+    return null;
+  }
+
+  componentWillUnmount() {
+    this.props.manager.destroy();
+  }
+}

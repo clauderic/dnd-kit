@@ -45,7 +45,7 @@ export class PointerSensor extends Sensor<
 > {
   protected listeners = new Listeners();
 
-  protected cleanup: CleanupFunction | undefined;
+  protected cleanup: Set<CleanupFunction> = new Set();
 
   protected initialCoordinates: Coordinates | undefined;
 
@@ -101,7 +101,6 @@ export class PointerSensor extends Sensor<
     if (source.disabled) {
       return;
     }
-
     this.initialCoordinates = {
       x: event.clientX,
       y: event.clientY,
@@ -113,9 +112,10 @@ export class PointerSensor extends Sensor<
         ? activationConstraints(event, source)
         : activationConstraints;
 
+    event.stopImmediatePropagation();
+
     if (!constraints?.delay && !constraints?.distance) {
       this.handleStart(source, event);
-      event.stopImmediatePropagation();
     } else {
       const {delay} = constraints;
 
@@ -163,12 +163,15 @@ export class PointerSensor extends Sensor<
       },
     ]);
 
-    this.cleanup = () => {
+    const cleanup = () => {
       unbindListeners();
 
       this.#clearTimeout?.();
       this.initialCoordinates = undefined;
+      this.cleanup.delete(cleanup);
     };
+
+    this.cleanup.add(cleanup);
   }
 
   protected handlePointerMove(
@@ -237,7 +240,7 @@ export class PointerSensor extends Sensor<
     }
 
     // Remove the pointer move and up event listeners
-    this.cleanup?.();
+    this.cleanup.forEach((cleanup) => cleanup());
   }
 
   protected handleKeyDown(event: KeyboardEvent) {
@@ -256,6 +259,12 @@ export class PointerSensor extends Sensor<
       return;
     }
 
+    if (event.defaultPrevented) {
+      return;
+    }
+
+    event.preventDefault();
+
     batch(() => {
       manager.actions.setDragSource(source.id);
       manager.actions.start({coordinates: initialCoordinates, event});
@@ -270,7 +279,7 @@ export class PointerSensor extends Sensor<
     }
 
     // Remove the pointer move and up event listeners
-    this.cleanup?.();
+    this.cleanup.forEach((cleanup) => cleanup());
   }
 
   public destroy() {

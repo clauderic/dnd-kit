@@ -70,32 +70,26 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
             const orderedSortables = Array.from(
               sortableInstances.values()
             ).sort((a, b) => a.index - b.index);
+
+            const sourceIndex = orderedSortables.indexOf(source.sortable);
+            const targetIndex = orderedSortables.indexOf(target.sortable);
+
             const newOrder = arrayMove(
               orderedSortables,
-              source.sortable.index,
-              target.sortable.index
+              sourceIndex,
+              targetIndex
             );
 
-            const sourceElement = source.sortable.droppable.element;
+            const sourceElement =
+              source.sortable.droppable.internal.element.peek() ??
+              source.sortable.droppable.placeholder;
             const targetElement = target.element;
 
             if (!targetElement || !sourceElement) {
               return;
             }
 
-            reorder(
-              sourceElement,
-              source.sortable.index,
-              targetElement,
-              target.sortable.index
-            );
-
-            const position =
-              target.sortable.index < source.sortable.index
-                ? 'beforebegin'
-                : 'afterend';
-
-            targetElement.insertAdjacentElement(position, sourceElement);
+            reorder(sourceElement, sourceIndex, targetElement, targetIndex);
 
             batch(() => {
               for (const [index, sortable] of newOrder.entries()) {
@@ -139,7 +133,7 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
 
             const sourceElement = source.sortable.droppable.element;
             const targetElement =
-              orderedSortables[source.sortable.initialIndex].element;
+              orderedSortables[source.sortable.initialIndex]?.element;
 
             if (!targetElement || !sourceElement) {
               return;

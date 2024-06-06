@@ -18,7 +18,7 @@ import {DragDropManager} from '../../manager/index.js';
 
 const ATTR_PREFIX = 'data-dnd-kit-';
 const CSS_PREFIX = '--dnd-kit-feedback-';
-const cssRules = `[${ATTR_PREFIX}feedback] {position: fixed !important;pointer-events: none;touch-action: none;z-index: 999999;will-change: transform;top: var(${CSS_PREFIX}top, 0px) !important;left: var(${CSS_PREFIX}left, 0px) !important;width: var(${CSS_PREFIX}width, auto) !important;height: var(${CSS_PREFIX}height, auto) !important;margin: var(${CSS_PREFIX}margin, 0px) !important;padding: var(${CSS_PREFIX}padding, 0px) !important;}[${ATTR_PREFIX}feedback][style*="${CSS_PREFIX}translate"] {transition: var(${CSS_PREFIX}transition) !important;translate: var(${CSS_PREFIX}translate) !important;}[${ATTR_PREFIX}feedback][popover]{overflow:visible;}[popover]{background:unset;border:unset;}[${ATTR_PREFIX}feedback]::backdrop {display: none}`;
+const cssRules = `[${ATTR_PREFIX}feedback] {position: fixed !important;pointer-events: none;touch-action: none;z-index: 999999;will-change: transform;top: var(${CSS_PREFIX}top, 0px) !important;left: var(${CSS_PREFIX}left, 0px) !important;width: var(${CSS_PREFIX}width, auto) !important;height: var(${CSS_PREFIX}height, auto) !important;margin: var(${CSS_PREFIX}margin, 0px) !important;padding: var(${CSS_PREFIX}padding, 0px) !important;}[${ATTR_PREFIX}feedback][style*="${CSS_PREFIX}translate"] {transition: var(${CSS_PREFIX}transition) !important;translate: var(${CSS_PREFIX}translate) !important;}[${ATTR_PREFIX}feedback][popover]{overflow:visible;}*:where([popover]){background:unset;border:unset;}[${ATTR_PREFIX}feedback]::backdrop {display: none}`;
 const ATTRIBUTE = `${ATTR_PREFIX}feedback`;
 const PLACEHOLDER_ATTRIBUTE = `${ATTR_PREFIX}placeholder`;
 const IGNORED_ATTRIBUTES = [ATTRIBUTE, PLACEHOLDER_ATTRIBUTE, 'popover'];
@@ -154,6 +154,21 @@ export class Feedback extends Plugin<DragDropManager> {
           CSS_PREFIX
         );
 
+        /* Table cells need to have their width set explicitly because the feedback element is position fixed */
+        if (
+          element instanceof HTMLTableRowElement &&
+          placeholder instanceof HTMLTableRowElement
+        ) {
+          const cells = Array.from(element.cells);
+          const placeholderCells = Array.from(placeholder.cells);
+
+          for (const [index, cell] of cells.entries()) {
+            const placeholderCell = placeholderCells[index];
+
+            cell.style.width = `${placeholderCell.offsetWidth}px`;
+          }
+        }
+
         manager.dragOperation.shape = new DOMRectangle(element);
       });
 
@@ -224,7 +239,7 @@ export class Feedback extends Plugin<DragDropManager> {
             element.insertAdjacentElement('afterend', placeholder);
 
             /*
-             * Any update in DOM order that affects the source element hide the popover
+             * Any update in DOM order that affects the source element hides the popover
              * so we need to force the source element to be promoted to the top layer again
              */
             showPopover(element);
