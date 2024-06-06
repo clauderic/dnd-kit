@@ -3,10 +3,19 @@ import {effects, reactive, type Effect} from '@dnd-kit/state';
 import type {DragDropManager} from '../../manager/index.js';
 import type {Data, UniqueIdentifier} from './types.js';
 
+interface Options {
+  /**
+   * A boolean indicating whether the entity should automatically be registered with the manager.
+   * @defaultValue true
+   */
+  register?: boolean;
+}
+
 export interface Input<T extends Data = Data, U extends Entity<T> = Entity<T>> {
   id: UniqueIdentifier;
   data?: T | null;
   disabled?: boolean;
+  options?: Options;
   effects?(): Effect[];
 }
 
@@ -34,6 +43,7 @@ export class Entity<T extends Data = Data> {
     const {
       effects: getEffects = getDefaultEffects,
       id,
+      options,
       data = null,
       disabled = false,
     } = input;
@@ -45,7 +55,9 @@ export class Entity<T extends Data = Data> {
     this.disabled = disabled;
 
     queueMicrotask(() => {
-      manager.registry.register(this);
+      if (options?.register !== false) {
+        manager.registry.register(this);
+      }
 
       const cleanupEffects = effects(
         () => {

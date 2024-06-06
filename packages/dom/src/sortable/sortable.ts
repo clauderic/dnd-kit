@@ -267,6 +267,10 @@ export class Sortable<T extends Data = Data> {
     });
   }
 
+  public get id() {
+    return this.droppable.id;
+  }
+
   public set sensors(value: Sensors | undefined) {
     this.draggable.sensors = value;
   }

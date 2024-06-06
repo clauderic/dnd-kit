@@ -4,7 +4,7 @@ import {Droppable} from '@dnd-kit/dom';
 import {deepEqual} from '@dnd-kit/state';
 import type {DroppableInput} from '@dnd-kit/dom';
 import {useComputed, useOnValueChange} from '@dnd-kit/react/hooks';
-import {getCurrentValue, type RefOrValue} from '@dnd-kit/react/utilities';
+import {currentValue, type RefOrValue} from '@dnd-kit/react/utilities';
 
 import {useInstance} from '../hooks/useInstance.js';
 
@@ -17,9 +17,20 @@ export function useDroppable<T extends Data = Data>(
   input: UseDroppableInput<T>
 ) {
   const {collisionDetector, disabled, id, accept, type} = input;
-  const element = getCurrentValue(input.element);
+  const element = currentValue(input.element);
   const droppable = useInstance(
-    (manager) => new Droppable({...input, element}, manager)
+    (manager) =>
+      new Droppable(
+        {
+          ...input,
+          element,
+          options: {
+            ...input.options,
+            register: false,
+          },
+        },
+        manager
+      )
   );
   const isDisabled = useComputed(() => droppable.disabled);
   const isDropTarget = useComputed(() => droppable.isDropTarget);

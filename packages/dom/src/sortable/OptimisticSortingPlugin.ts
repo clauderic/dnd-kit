@@ -23,7 +23,7 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
 
           if (sortableInstances.has(sortable.index)) {
             throw new Error(
-              'Duplicate sortable index found for same sortable group. Make sure each sortable item has a unique index. Use the `group` attribute to separate sortables into different groups.'
+              `Duplicate sortable index found for same sortable group: ${sortable.droppable.id} and ${sortableInstances.get(sortable.index)?.droppable.id} have the same index (${sortable.index}). Make sure each sortable item has a unique index. Use the \`group\` attribute to separate sortables into different groups.`
             );
           }
 

@@ -4,11 +4,7 @@ export function deepEqual<T>(a: T, b: T) {
   }
 
   if (Array.isArray(a)) {
-    if (!Array.isArray(b)) {
-      return false;
-    }
-
-    if (a.length !== b.length) {
+    if (!Array.isArray(b) || a.length !== b.length) {
       return false;
     }
 

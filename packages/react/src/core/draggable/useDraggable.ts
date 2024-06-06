@@ -3,7 +3,7 @@ import type {Data} from '@dnd-kit/abstract';
 import {Draggable} from '@dnd-kit/dom';
 import type {DraggableInput} from '@dnd-kit/dom';
 import {useComputed, useOnValueChange} from '@dnd-kit/react/hooks';
-import {getCurrentValue, type RefOrValue} from '@dnd-kit/react/utilities';
+import {currentValue, type RefOrValue} from '@dnd-kit/react/utilities';
 
 import {useInstance} from '../hooks/useInstance.js';
 
@@ -17,10 +17,22 @@ export function useDraggable<T extends Data = Data>(
   input: UseDraggableInput<T>
 ) {
   const {disabled, id, sensors} = input;
-  const handle = getCurrentValue(input.handle);
-  const element = getCurrentValue(input.element);
+  const handle = currentValue(input.handle);
+  const element = currentValue(input.element);
   const draggable = useInstance(
-    (manager) => new Draggable({...input, handle, element}, manager)
+    (manager) =>
+      new Draggable(
+        {
+          ...input,
+          handle,
+          element,
+          options: {
+            ...input.options,
+            register: false,
+          },
+        },
+        manager
+      )
   );
   const isDragSource = useComputed(() => draggable.isDragSource);
 

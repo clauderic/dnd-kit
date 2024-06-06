@@ -1,4 +1,4 @@
-import {useCallback, useEffect} from 'react';
+import {useCallback, useLayoutEffect} from 'react';
 import {deepEqual} from '@dnd-kit/state';
 import {type Data} from '@dnd-kit/abstract';
 import {Sortable, defaultSortableTransition} from '@dnd-kit/dom/sortable';
@@ -11,7 +11,7 @@ import {
   useImmediateEffect as immediateEffect,
   useIsomorphicLayoutEffect as layoutEffect,
 } from '@dnd-kit/react/hooks';
-import {getCurrentValue, type RefOrValue} from '@dnd-kit/react/utilities';
+import {currentValue, type RefOrValue} from '@dnd-kit/react/utilities';
 
 export interface UseSortableInput<T extends Data = Data>
   extends Omit<SortableInput<T>, 'handle' | 'element'> {
@@ -27,6 +27,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     id,
     data,
     index,
+    group,
     disabled,
     feedback,
     sensors,
@@ -35,23 +36,25 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
   } = input;
 
   const manager = useDragDropManager();
-  const handle = getCurrentValue(input.handle);
-  const element = getCurrentValue(input.element);
-  const sortable = useConstant(
-    () =>
-      new Sortable(
-        {
-          ...input,
-          handle,
-          element,
-          feedback,
+  const handle = currentValue(input.handle);
+  const element = currentValue(input.element);
+  const sortable = useConstant(() => {
+    return new Sortable(
+      {
+        ...input,
+        handle,
+        element,
+        feedback,
+        options: {
+          ...input.options,
+          register: false,
         },
-        manager
-      ),
-    manager
-  );
+      },
+      manager
+    );
+  }, manager);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     manager.registry.register(sortable.draggable);
     manager.registry.register(sortable.droppable);
 
@@ -59,20 +62,22 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
       manager.registry.unregister(sortable.draggable);
       manager.registry.unregister(sortable.droppable);
     };
-  }, [manager]);
+  }, [sortable, manager]);
 
   const isDisabled = useComputed(() => sortable.disabled);
   const isDropTarget = useComputed(() => sortable.isDropTarget);
   const isDragSource = useComputed(() => sortable.isDragSource);
 
+  useOnValueChange(id, () => (sortable.id = id));
+  useOnValueChange(index, () => (sortable.index = index), layoutEffect);
+  useOnValueChange(type, () => (sortable.type = type));
+  useOnValueChange(group, () => (sortable.group = group));
   useOnValueChange(
     accept,
     () => (sortable.accept = accept),
     undefined,
     deepEqual
   );
-  useOnValueChange(type, () => (sortable.type = type));
-  useOnValueChange(id, () => (sortable.id = id));
   useOnValueChange(data, () => (sortable.data = data ?? null));
   useOnValueChange(
     index,
@@ -83,7 +88,6 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     },
     immediateEffect
   );
-  useOnValueChange(index, () => (sortable.index = index), layoutEffect);
   useOnValueChange(handle, () => (sortable.handle = handle));
   useOnValueChange(element, () => (sortable.element = element));
   useOnValueChange(disabled, () => (sortable.disabled = disabled === true));

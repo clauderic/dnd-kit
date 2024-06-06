@@ -8,12 +8,7 @@ import {
 import {type DragDropEvents} from '@dnd-kit/abstract';
 import {DragDropManager, defaultPreset} from '@dnd-kit/dom';
 import type {DragDropManagerInput, Draggable, Droppable} from '@dnd-kit/dom';
-import {
-  useConstant,
-  useEvent,
-  useLatest,
-  useOnValueChange,
-} from '@dnd-kit/react/hooks';
+import {useConstant, useLatest, useOnValueChange} from '@dnd-kit/react/hooks';
 
 import {DragDropContext} from './context.js';
 import {useRenderer} from './renderer.js';
@@ -53,11 +48,11 @@ export const DragDropProvider = forwardRef<DragDropManager, Props>(
     });
     const {plugins, modifiers} = input;
     const handleBeforeDragStart = useLatest(onBeforeDragStart);
-    const handleDragStart = useEvent(onDragStart);
+    const handleDragStart = useLatest(onDragStart);
     const handleDragOver = useLatest(onDragOver);
     const handleDragMove = useLatest(onDragMove);
     const handleDragEnd = useLatest(onDragEnd);
-    const handleCollision = useEvent(onCollision);
+    const handleCollision = useLatest(onCollision);
 
     useEffect(() => {
       const listeners = [
@@ -71,7 +66,9 @@ export const DragDropProvider = forwardRef<DragDropManager, Props>(
             }
           }
         ),
-        manager.monitor.addEventListener('dragstart', handleDragStart),
+        manager.monitor.addEventListener('dragstart', (event, manager) =>
+          handleDragStart.current?.(event, manager)
+        ),
         manager.monitor.addEventListener('dragover', (event, manager) => {
           const callback = handleDragOver.current;
 
@@ -93,7 +90,9 @@ export const DragDropProvider = forwardRef<DragDropManager, Props>(
             trackRendering(() => callback(event, manager));
           }
         }),
-        manager.monitor.addEventListener('collision', handleCollision),
+        manager.monitor.addEventListener('collision', (event, manager) =>
+          handleCollision.current?.(event, manager)
+        ),
       ];
 
       return () => {

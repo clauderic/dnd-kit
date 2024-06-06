@@ -6,11 +6,12 @@ export function useOnValueChange<T>(
   effect = useEffect,
   compare = Object.is
 ) {
-  const tracked = useRef(value);
+  const tracked = useRef<T>(value);
 
   effect(() => {
     const oldValue = tracked.current;
-    if (!compare(value, tracked.current)) {
+
+    if (!compare(value, oldValue)) {
       tracked.current = value;
       onChange(value, oldValue);
     }

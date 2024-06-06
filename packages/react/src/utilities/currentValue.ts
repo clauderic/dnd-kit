@@ -7,7 +7,7 @@ export type RefOrValue<T> =
   | null
   | undefined;
 
-export function getCurrentValue<T>(
+export function currentValue<T>(
   value: RefOrValue<T>
 ): NonNullable<T> | undefined {
   if (value == null) {

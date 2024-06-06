@@ -21,7 +21,7 @@ export class Debug extends Plugin<DragDropManager> {
         const collidingIds = topCollisions.map(({id}) => id);
 
         if (draggable && dragOperation.shape) {
-          const element = draggableElement ?? createDebugElement('dialog');
+          const element = draggableElement ?? createDebugElement();
           const {boundingRectangle} = dragOperation.shape.current;
 
           if (!draggableElement) {
@@ -40,7 +40,7 @@ export class Debug extends Plugin<DragDropManager> {
           }
 
           if (element instanceof HTMLDialogElement) {
-            element.showModal();
+            element.showPopover();
           }
 
           element.style.top = `${boundingRectangle.top}px`;
@@ -74,8 +74,8 @@ export class Debug extends Plugin<DragDropManager> {
             debugElement.style.backgroundColor = droppable.isDropTarget
               ? 'rgba(13, 210, 36, 0.6)'
               : collidingIds.includes(droppable.id)
-              ? 'rgba(255, 193, 7, 0.5)'
-              : 'rgba(0, 0, 0, 0.1)';
+                ? 'rgba(255, 193, 7, 0.5)'
+                : 'rgba(0, 0, 0, 0.1)';
 
             debugElement.style.top = `${boundingRectangle.top}px`;
             debugElement.style.left = `${boundingRectangle.left}px`;
@@ -95,6 +95,7 @@ export class Debug extends Plugin<DragDropManager> {
 function createDebugElement(tagName = 'div') {
   const element = document.createElement(tagName);
 
+  element.setAttribute('popover', '');
   element.style.all = 'initial';
   element.style.position = 'fixed';
   element.style.display = 'flex';
