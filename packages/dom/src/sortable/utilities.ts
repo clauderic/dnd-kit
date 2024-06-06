@@ -1,6 +1,6 @@
 import type {Droppable, Draggable} from '@dnd-kit/dom';
 
-import {SortableDroppable, SortableDraggable} from './sortable.js';
+import {SortableDroppable, SortableDraggable} from './sortable.ts';
 
 export function isSortable(
   element: Draggable | Droppable | null

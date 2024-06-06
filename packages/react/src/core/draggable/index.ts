@@ -1,2 +1,2 @@
-export {useDraggable} from './useDraggable.js';
-export type {UseDraggableInput} from './useDraggable.js';
+export {useDraggable} from './useDraggable.ts';
+export type {UseDraggableInput} from './useDraggable.ts';

@@ -1,11 +1,11 @@
 import {derived, reactive} from '@dnd-kit/state';
 
-import {Entity} from '../entity/index.js';
-import type {EntityInput, Data, Type} from '../entity/index.js';
-import {Modifier} from '../../modifiers/index.js';
-import type {Modifiers} from '../../modifiers/index.js';
-import type {DragDropManager} from '../../manager/index.js';
-import {descriptor} from '../../plugins/index.js';
+import {Entity} from '../entity/index.ts';
+import type {EntityInput, Data, Type} from '../entity/index.ts';
+import {Modifier} from '../../modifiers/index.ts';
+import type {Modifiers} from '../../modifiers/index.ts';
+import type {DragDropManager} from '../../manager/index.ts';
+import {descriptor} from '../../plugins/index.ts';
 
 export interface Input<
   T extends Data = Data,

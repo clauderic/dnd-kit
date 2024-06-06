@@ -6,7 +6,7 @@ import type {DroppableInput} from '@dnd-kit/dom';
 import {useComputed, useOnValueChange} from '@dnd-kit/react/hooks';
 import {currentValue, type RefOrValue} from '@dnd-kit/react/utilities';
 
-import {useInstance} from '../hooks/useInstance.js';
+import {useInstance} from '../hooks/useInstance.ts';
 
 export interface UseDroppableInput<T extends Data = Data>
   extends Omit<DroppableInput<T>, 'element'> {

@@ -4,9 +4,9 @@ import {Axes} from '@dnd-kit/geometry';
 import type {Coordinates} from '@dnd-kit/geometry';
 import {ScrollDirection} from '@dnd-kit/dom/utilities';
 
-import type {DragDropManager} from '../../manager/index.js';
+import type {DragDropManager} from '../../manager/index.ts';
 
-import {ScrollLock} from './ScrollLock.js';
+import {ScrollLock} from './ScrollLock.ts';
 
 const DIRECTIONS = [ScrollDirection.Forward, ScrollDirection.Reverse];
 

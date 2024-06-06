@@ -8,11 +8,11 @@ import {
   effect,
 } from '@dnd-kit/state';
 
-import type {DragDropManager} from '../manager/index.js';
-import type {Draggable, Droppable} from '../entities/index.js';
-import {Plugin} from '../plugins/index.js';
-import type {Collision, CollisionDetector, Collisions} from './types.js';
-import {sortCollisions} from './utilities.js';
+import type {DragDropManager} from '../manager/index.ts';
+import type {Draggable, Droppable} from '../entities/index.ts';
+import {Plugin} from '../plugins/index.ts';
+import type {Collision, CollisionDetector, Collisions} from './types.ts';
+import {sortCollisions} from './utilities.ts';
 
 const DEFAULT_VALUE: Collisions = [];
 

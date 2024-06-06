@@ -10,7 +10,7 @@ import type {
 } from '@dnd-kit/abstract';
 import {effect, reactive} from '@dnd-kit/state';
 
-import type {Sensors} from '../../sensors/index.js';
+import type {Sensors} from '../../sensors/index.ts';
 
 export type FeedbackType = 'default' | 'move' | 'clone' | 'none';
 

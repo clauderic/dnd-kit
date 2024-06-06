@@ -1,5 +1,5 @@
-import {canUseDOM} from '../execution-context/canUseDOM.js';
-import {getDocument} from '../execution-context/getDocument.js';
+import {canUseDOM} from '../execution-context/canUseDOM.ts';
+import {getDocument} from '../execution-context/getDocument.ts';
 
 export function isDocumentScrollingElement(element: Element | null) {
   if (!canUseDOM || !element) {

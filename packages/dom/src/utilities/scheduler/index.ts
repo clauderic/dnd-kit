@@ -1,1 +1,1 @@
-export {Scheduler, scheduler} from './scheduler.js';
+export {Scheduler, scheduler} from './scheduler.ts';

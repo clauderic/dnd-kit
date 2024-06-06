@@ -1,17 +1,17 @@
-import type {Draggable, Droppable} from '../entities/index.js';
-import {CollisionObserver, CollisionNotifier} from '../collision/index.js';
-import type {Plugins, Plugin} from '../plugins/index.js';
-import type {Sensor, Sensors} from '../sensors/index.js';
-import type {Modifier, Modifiers} from '../modifiers/index.js';
+import type {Draggable, Droppable} from '../entities/index.ts';
+import {CollisionObserver, CollisionNotifier} from '../collision/index.ts';
+import type {Plugins, Plugin} from '../plugins/index.ts';
+import type {Sensor, Sensors} from '../sensors/index.ts';
+import type {Modifier, Modifiers} from '../modifiers/index.ts';
 
-import {DragDropRegistry} from './registry.js';
+import {DragDropRegistry} from './registry.ts';
 import {
   DragOperationManager,
   type DragOperation,
   type DragActions,
-} from './dragOperation.js';
-import {DragDropMonitor} from './events.js';
-import {defaultRenderer, type Renderer} from './renderer.js';
+} from './dragOperation.ts';
+import {DragDropMonitor} from './events.ts';
+import {defaultRenderer, type Renderer} from './renderer.ts';
 
 export interface DragDropConfiguration<T extends DragDropManager> {
   core?: {

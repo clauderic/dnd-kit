@@ -1,18 +1,18 @@
 import {effects} from '@dnd-kit/state';
 import {Plugin} from '@dnd-kit/abstract';
 
-import type {DragDropManager} from '../../manager/index.js';
+import type {DragDropManager} from '../../manager/index.ts';
 import {
   defaultAnnouncements,
   defaultAttributes,
   defaultAnnouncementIdPrefix,
   defaultDescriptionIdPrefix,
   defaultScreenReaderInstructions,
-} from './defaults.js';
-import type {Announcements, ScreenReaderInstructions} from './types.js';
-import {generateUniqueId, isFocusable} from './utilities.js';
-import {createHiddenText} from './HiddenText.js';
-import {createLiveRegion} from './LiveRegion.js';
+} from './defaults.ts';
+import type {Announcements, ScreenReaderInstructions} from './types.ts';
+import {generateUniqueId, isFocusable} from './utilities.ts';
+import {createHiddenText} from './HiddenText.ts';
+import {createLiveRegion} from './LiveRegion.ts';
 
 interface Options {
   id?: string;

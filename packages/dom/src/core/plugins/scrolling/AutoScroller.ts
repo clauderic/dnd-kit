@@ -2,8 +2,8 @@ import {Plugin} from '@dnd-kit/abstract';
 import {effect} from '@dnd-kit/state';
 import type {CleanupFunction} from '@dnd-kit/state';
 
-import type {DragDropManager} from '../../manager/index.js';
-import {Scroller} from './Scroller.js';
+import type {DragDropManager} from '../../manager/index.ts';
+import {Scroller} from './Scroller.ts';
 
 interface Options {}
 

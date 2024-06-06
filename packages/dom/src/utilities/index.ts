@@ -1,15 +1,15 @@
 export {
   getBoundingRectangle,
   getViewportBoundingRectangle,
-} from './bounding-rectangle/index.js';
+} from './bounding-rectangle/index.ts';
 
-export {canUseDOM, getDocument, getWindow} from './execution-context/index.js';
+export {canUseDOM, getDocument, getWindow} from './execution-context/index.ts';
 
-export {cloneElement, createPlaceholder} from './element/index.js';
+export {cloneElement, createPlaceholder} from './element/index.ts';
 
-export {Listeners} from './event-listeners/index.js';
+export {Listeners} from './event-listeners/index.ts';
 
-export {showPopover, supportsPopover} from './popover/index.js';
+export {showPopover, supportsPopover} from './popover/index.ts';
 
 export {
   canScroll,
@@ -19,24 +19,24 @@ export {
   isDocumentScrollingElement,
   ScrollDirection,
   scrollIntoViewIfNeeded,
-} from './scroll/index.js';
+} from './scroll/index.ts';
 
-export {scheduler, Scheduler} from './scheduler/index.js';
+export {scheduler, Scheduler} from './scheduler/index.ts';
 
-export {DOMRectangle} from './shapes/index.js';
+export {DOMRectangle} from './shapes/index.ts';
 
-export {Styles} from './styles/index.js';
+export {Styles} from './styles/index.ts';
 
 export {
   supportsViewTransition,
   supportsStyle,
   isKeyboardEvent,
-} from './type-guards/index.js';
+} from './type-guards/index.ts';
 
 export {
   animateTransform,
   inverseTransform,
   parseTransform,
   stringifyTransform,
-} from './transform/index.js';
-export type {Transform} from './transform/index.js';
+} from './transform/index.ts';
+export type {Transform} from './transform/index.ts';

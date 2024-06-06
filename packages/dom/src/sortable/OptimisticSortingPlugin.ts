@@ -2,8 +2,8 @@ import {Plugin, UniqueIdentifier} from '@dnd-kit/abstract';
 import type {DragDropManager} from '@dnd-kit/dom';
 import {arrayMove} from '@dnd-kit/helpers';
 
-import {isSortable} from './utilities.js';
-import {Sortable, SortableDroppable} from './sortable.js';
+import {isSortable} from './utilities.ts';
+import {Sortable, SortableDroppable} from './sortable.ts';
 import {batch} from '@dnd-kit/state';
 
 export class OptimisticSortingPlugin extends Plugin<DragDropManager> {

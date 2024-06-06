@@ -2,6 +2,6 @@ export {
   AxisModifier,
   RestrictToHorizontalAxis,
   RestrictToVerticalAxis,
-} from './axis.js';
+} from './axis.ts';
 
-export {restrictShapeToBoundingRectangle} from './boundingRectangle.js';
+export {restrictShapeToBoundingRectangle} from './boundingRectangle.ts';

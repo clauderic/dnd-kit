@@ -1,1 +1,1 @@
-export {KeyboardSensor} from './KeyboardSensor.js';
+export {KeyboardSensor} from './KeyboardSensor.ts';

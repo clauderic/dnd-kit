@@ -1,1 +1,1 @@
-export {DragDropProvider} from './DragDropProvider.js';
+export {DragDropProvider} from './DragDropProvider.tsx';

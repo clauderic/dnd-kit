@@ -5,20 +5,20 @@ import {
   Droppable,
   Entity,
   EntityRegistry,
-} from '../entities/index.js';
+} from '../entities/index.ts';
 import {
   PluginRegistry,
   Plugin,
   type PluginConstructor,
   PluginOptions,
-} from '../plugins/index.js';
+} from '../plugins/index.ts';
 import {
   Sensor,
   SensorOptions,
   type SensorConstructor,
-} from '../sensors/index.js';
-import {Modifier, type ModifierConstructor} from '../modifiers/index.js';
-import type {DragDropManager} from './manager.js';
+} from '../sensors/index.ts';
+import {Modifier, type ModifierConstructor} from '../modifiers/index.ts';
+import type {DragDropManager} from './manager.ts';
 
 export class DragDropRegistry<
   T extends Draggable,

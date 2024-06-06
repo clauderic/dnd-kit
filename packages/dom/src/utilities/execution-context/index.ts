@@ -1,3 +1,3 @@
-export {canUseDOM} from './canUseDOM.js';
-export {getDocument} from './getDocument.js';
-export {getWindow} from './getWindow.js';
+export {canUseDOM} from './canUseDOM.ts';
+export {getDocument} from './getDocument.ts';
+export {getWindow} from './getWindow.ts';

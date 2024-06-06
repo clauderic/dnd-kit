@@ -9,9 +9,9 @@ import {
   Listeners,
 } from '@dnd-kit/dom/utilities';
 
-import type {DragDropManager} from '../../manager/index.js';
-import type {Draggable} from '../../entities/index.js';
-import {AutoScroller} from '../../plugins/index.js';
+import type {DragDropManager} from '../../manager/index.ts';
+import type {Draggable} from '../../entities/index.ts';
+import {AutoScroller} from '../../plugins/index.ts';
 
 export type KeyCode = KeyboardEvent['code'];
 

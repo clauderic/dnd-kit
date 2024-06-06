@@ -1,1 +1,1 @@
-export {PointerSensor} from './PointerSensor.js';
+export {PointerSensor} from './PointerSensor.ts';

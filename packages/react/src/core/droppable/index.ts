@@ -1,2 +1,2 @@
-export {useDroppable} from './useDroppable.js';
-export type {UseDroppableInput} from './useDroppable.js';
+export {useDroppable} from './useDroppable.ts';
+export type {UseDroppableInput} from './useDroppable.ts';

@@ -1,13 +1,13 @@
 import {CleanupFunction} from '@dnd-kit/state';
 
-import type {DragDropManager} from '../manager/index.js';
-import type {Draggable} from '../entities/index.js';
+import type {DragDropManager} from '../manager/index.ts';
+import type {Draggable} from '../entities/index.ts';
 import {
   Plugin,
   type PluginConstructor,
   type PluginDescriptor,
   type PluginOptions,
-} from '../plugins/index.js';
+} from '../plugins/index.ts';
 
 export type SensorOptions = PluginOptions;
 

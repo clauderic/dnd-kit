@@ -1,5 +1,5 @@
-import {cloneElement} from './cloneElement.js';
-import {supportsStyle} from '../type-guards/supportsStyle.js';
+import {cloneElement} from './cloneElement.ts';
+import {supportsStyle} from '../type-guards/supportsStyle.ts';
 
 export function createPlaceholder(
   element: Element,

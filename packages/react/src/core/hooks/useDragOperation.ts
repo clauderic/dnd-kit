@@ -1,6 +1,6 @@
 import {useComputed} from '@dnd-kit/react/hooks';
 
-import {useDragDropManager} from './useDragDropManager.js';
+import {useDragDropManager} from './useDragDropManager.ts';
 
 export function useDragOperation() {
   const manager = useDragDropManager();

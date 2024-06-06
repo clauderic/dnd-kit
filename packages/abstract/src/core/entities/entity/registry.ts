@@ -1,7 +1,7 @@
 import {signal} from '@dnd-kit/state';
 
-import type {Entity} from './entity.js';
-import type {UniqueIdentifier} from './types.js';
+import type {Entity} from './entity.ts';
+import type {UniqueIdentifier} from './types.ts';
 
 /**
  * Reactive class representing a registry for entities.

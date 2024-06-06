@@ -1,7 +1,7 @@
-import {isDocument} from '../type-guards/isDocument.js';
-import {isHTMLElement} from '../type-guards/isHTMLElement.js';
-import {isNode} from '../type-guards/isNode.js';
-import {isWindow} from '../type-guards/isWindow.js';
+import {isDocument} from '../type-guards/isDocument.ts';
+import {isHTMLElement} from '../type-guards/isHTMLElement.ts';
+import {isNode} from '../type-guards/isNode.ts';
+import {isWindow} from '../type-guards/isWindow.ts';
 
 export function getDocument(target: Event['target']): Document {
   if (!target) {

@@ -6,4 +6,4 @@ export {
   pointerDistance,
   pointerIntersection,
   shapeIntersection,
-} from './algorithms/index.js';
+} from './algorithms/index.ts';

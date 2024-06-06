@@ -1,5 +1,5 @@
-import {Styles} from '../styles/index.js';
-import {getWindow} from '../execution-context/index.js';
+import {Styles} from '../styles/index.ts';
+import {getWindow} from '../execution-context/index.ts';
 
 interface Arguments {
   element: Element;

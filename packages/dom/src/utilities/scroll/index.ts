@@ -1,12 +1,12 @@
-export {canScroll} from './canScroll.js';
+export {canScroll} from './canScroll.ts';
 export {
   getFirstScrollableAncestor,
   getScrollableAncestors,
-} from './getScrollableAncestors.js';
-export {getScrollableElement} from './getScrollableElement.js';
-export {detectScrollIntent, ScrollDirection} from './detectScrollIntent.js';
-export {getScrollPosition} from './getScrollPosition.js';
-export {isDocumentScrollingElement} from './documentScrollingElement.js';
-export {isScrollable} from './isScrollable.js';
-export {isFixed} from './isFixed.js';
-export {scrollIntoViewIfNeeded} from './scrollIntoViewIfNeeded.js';
+} from './getScrollableAncestors.ts';
+export {getScrollableElement} from './getScrollableElement.ts';
+export {detectScrollIntent, ScrollDirection} from './detectScrollIntent.ts';
+export {getScrollPosition} from './getScrollPosition.ts';
+export {isDocumentScrollingElement} from './documentScrollingElement.ts';
+export {isScrollable} from './isScrollable.ts';
+export {isFixed} from './isFixed.ts';
+export {scrollIntoViewIfNeeded} from './scrollIntoViewIfNeeded.ts';

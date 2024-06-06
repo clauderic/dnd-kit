@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import {Entity} from '@dnd-kit/abstract';
 import type {DragDropManager} from '@dnd-kit/dom';
 
-import {useDragDropManager} from './useDragDropManager.js';
+import {useDragDropManager} from './useDragDropManager.ts';
 
 export function useInstance<T extends Entity>(
   initializer: (manager: DragDropManager) => T

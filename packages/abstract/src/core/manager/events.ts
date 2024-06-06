@@ -1,9 +1,9 @@
 import type {Coordinates} from '@dnd-kit/geometry';
 
-import type {Draggable, Droppable} from '../entities/index.js';
-import type {Collisions} from '../collision/index.js';
-import type {DragDropManager} from './manager.js';
-import type {DragOperation} from './dragOperation.js';
+import type {Draggable, Droppable} from '../entities/index.ts';
+import type {Collisions} from '../collision/index.ts';
+import type {DragDropManager} from './manager.ts';
+import type {DragOperation} from './dragOperation.ts';
 
 export type Events = Record<string, (...args: any[]) => void>;
 

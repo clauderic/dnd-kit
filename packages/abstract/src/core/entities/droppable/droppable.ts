@@ -1,14 +1,14 @@
 import {derived, effects, reactive, type Effect} from '@dnd-kit/state';
 import type {Shape} from '@dnd-kit/geometry';
 
-import {Entity} from '../entity/index.js';
-import type {EntityInput, Data, Type} from '../entity/index.js';
+import {Entity} from '../entity/index.ts';
+import type {EntityInput, Data, Type} from '../entity/index.ts';
 import {
   CollisionPriority,
   type CollisionDetector,
-} from '../../collision/index.js';
-import type {DragDropManager} from '../../manager/index.js';
-import {Draggable} from '../draggable/draggable.js';
+} from '../../collision/index.ts';
+import type {DragDropManager} from '../../manager/index.ts';
+import {Draggable} from '../draggable/draggable.ts';
 
 export interface Input<
   T extends Data = Data,

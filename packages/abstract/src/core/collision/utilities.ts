@@ -1,4 +1,4 @@
-import {Collision} from './types.js';
+import {Collision} from './types.ts';
 
 /**
  * Sort collisions from greatest to smallest priority

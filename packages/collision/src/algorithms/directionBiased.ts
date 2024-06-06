@@ -2,7 +2,7 @@ import {CollisionPriority} from '@dnd-kit/abstract';
 import type {CollisionDetector} from '@dnd-kit/abstract';
 import {Point} from '@dnd-kit/geometry';
 
-import {defaultCollisionDetection} from './default.js';
+import {defaultCollisionDetection} from './default.ts';
 
 export const directionBiased: CollisionDetector = ({
   dragOperation,

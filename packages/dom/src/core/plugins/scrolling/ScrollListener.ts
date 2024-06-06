@@ -1,7 +1,7 @@
 import {DragOperationStatus, CorePlugin} from '@dnd-kit/abstract';
 import {effect} from '@dnd-kit/state';
 
-import type {DragDropManager} from '../../manager/index.js';
+import type {DragDropManager} from '../../manager/index.ts';
 
 const listenerOptions: AddEventListenerOptions = {
   capture: true,

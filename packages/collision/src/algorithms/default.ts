@@ -1,7 +1,7 @@
 import type {CollisionDetector} from '@dnd-kit/abstract';
 
-import {pointerIntersection} from './pointerIntersection.js';
-import {shapeIntersection} from './shapeIntersection.js';
+import {pointerIntersection} from './pointerIntersection.ts';
+import {shapeIntersection} from './shapeIntersection.ts';
 
 /**
  * Returns the droppable that has the greatest intersection area with the

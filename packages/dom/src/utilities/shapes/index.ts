@@ -1,1 +1,1 @@
-export {DOMRectangle} from './DOMRectangle.js';
+export {DOMRectangle} from './DOMRectangle.ts';

@@ -3,10 +3,10 @@ import {effect} from '@dnd-kit/state';
 import type {CleanupFunction} from '@dnd-kit/state';
 import {Listeners} from '@dnd-kit/dom/utilities';
 
-import type {DragDropManager} from '../../manager/index.js';
-import type {Draggable} from '../../entities/index.js';
+import type {DragDropManager} from '../../manager/index.ts';
+import type {Draggable} from '../../entities/index.ts';
 
-import {encode, decode} from './encoding.js';
+import {encode, decode} from './encoding.ts';
 
 interface DragSensorOptions {}
 

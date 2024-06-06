@@ -11,7 +11,7 @@ import type {Coordinates} from '@dnd-kit/geometry';
 import {Scroller} from '@dnd-kit/dom';
 import type {DragDropManager, Droppable} from '@dnd-kit/dom';
 
-import {isSortable} from './utilities.js';
+import {isSortable} from './utilities.ts';
 
 const TOLERANCE = 10;
 

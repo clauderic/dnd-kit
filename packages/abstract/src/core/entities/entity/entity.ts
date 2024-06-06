@@ -1,7 +1,7 @@
 import {effects, reactive, type Effect} from '@dnd-kit/state';
 
-import type {DragDropManager} from '../../manager/index.js';
-import type {Data, UniqueIdentifier} from './types.js';
+import type {DragDropManager} from '../../manager/index.ts';
+import type {Data, UniqueIdentifier} from './types.ts';
 
 interface Options {
   /**

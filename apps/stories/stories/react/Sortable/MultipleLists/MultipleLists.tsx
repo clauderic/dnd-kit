@@ -15,9 +15,9 @@ import {
   Item,
   Handle,
   Remove,
-} from '../../components/index.js';
-import {createRange} from '../../../utilities/createRange.js';
-import {cloneDeep} from '../../../utilities/cloneDeep.js';
+} from '../../components/index.ts';
+import {createRange} from '../../../utilities/createRange.ts';
+import {cloneDeep} from '../../../utilities/cloneDeep.ts';
 
 interface Props {
   debug?: boolean;

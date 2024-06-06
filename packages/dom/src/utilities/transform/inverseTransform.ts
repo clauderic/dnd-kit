@@ -1,6 +1,6 @@
 import type {BoundingRectangle} from '@dnd-kit/geometry';
 
-import {type Transform} from './parseTransform.js';
+import {type Transform} from './parseTransform.ts';
 
 export function inverseTransform(
   rect: BoundingRectangle,

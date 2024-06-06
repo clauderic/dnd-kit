@@ -2,8 +2,8 @@ import {useState} from 'react';
 import {flushSync} from 'react-dom';
 import {effect, signal, Signal} from '@dnd-kit/state';
 
-import {useConstant} from './useConstant.js';
-import {useIsomorphicLayoutEffect} from './useIsomorphicLayoutEffect.js';
+import {useConstant} from './useConstant.ts';
+import {useIsomorphicLayoutEffect} from './useIsomorphicLayoutEffect.ts';
 
 /** Wrap the given value in a Signal if it isn't already one, and make changes trigger a re-render. */
 export function useSignal<T = any>(signalOrValue: T, sync = false) {

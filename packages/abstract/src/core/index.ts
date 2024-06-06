@@ -1,4 +1,4 @@
-export {DragDropManager, DragOperationStatus} from './manager/index.js';
+export {DragDropManager, DragOperationStatus} from './manager/index.ts';
 export type {
   DragDropManagerInput,
   DragDropConfiguration,
@@ -6,15 +6,15 @@ export type {
   DragDropEvents,
   DragOperation,
   Renderer,
-} from './manager/index.js';
+} from './manager/index.ts';
 
-export {CollisionPriority, sortCollisions} from './collision/index.js';
-export type {Collision, CollisionDetector} from './collision/index.js';
+export {CollisionPriority, sortCollisions} from './collision/index.ts';
+export type {Collision, CollisionDetector} from './collision/index.ts';
 
-export {Modifier} from './modifiers/index.js';
-export type {Modifiers, ModifierConstructor} from './modifiers/index.js';
+export {Modifier} from './modifiers/index.ts';
+export type {Modifiers, ModifierConstructor} from './modifiers/index.ts';
 
-export {Draggable, Droppable} from './entities/index.js';
+export {Draggable, Droppable} from './entities/index.ts';
 export type {
   Data,
   DraggableInput,
@@ -22,7 +22,7 @@ export type {
   Entity,
   Type,
   UniqueIdentifier,
-} from './entities/index.js';
+} from './entities/index.ts';
 
 export {
   Plugin,
@@ -31,18 +31,18 @@ export {
   configure,
   configurator,
   descriptor,
-} from './plugins/index.js';
+} from './plugins/index.ts';
 export type {
   Plugins,
   PluginConstructor,
   PluginDescriptor,
   PluginOptions,
-} from './plugins/index.js';
+} from './plugins/index.ts';
 
-export {Sensor} from './sensors/index.js';
+export {Sensor} from './sensors/index.ts';
 export type {
   Sensors,
   SensorConstructor,
   SensorDescriptor,
   SensorOptions,
-} from './sensors/index.js';
+} from './sensors/index.ts';

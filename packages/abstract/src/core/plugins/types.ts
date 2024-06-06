@@ -1,5 +1,5 @@
-import type {DragDropManager} from '../manager/index.js';
-import type {Plugin} from './plugin.js';
+import type {DragDropManager} from '../manager/index.ts';
+import type {Plugin} from './plugin.ts';
 
 export type PluginOptions = Record<string, any>;
 
@@ -24,18 +24,12 @@ export type Plugins<
   T extends DragDropManager<any, any> = DragDropManager<any, any>,
 > = (PluginConstructor<T> | PluginDescriptor<T>)[];
 
-export type InferPluginOptions<P> = P extends PluginConstructor<
-  any,
-  any,
-  infer T
->
-  ? T
-  : P extends Plugin<any, infer T>
-  ? T
-  : never;
+export type InferPluginOptions<P> =
+  P extends PluginConstructor<any, any, infer T>
+    ? T
+    : P extends Plugin<any, infer T>
+      ? T
+      : never;
 
-export type InferManager<P> = P extends Plugin<
-  infer T extends DragDropManager<any, any>
->
-  ? T
-  : never;
+export type InferManager<P> =
+  P extends Plugin<infer T extends DragDropManager<any, any>> ? T : never;

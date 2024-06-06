@@ -1,1 +1,1 @@
-export {DragSensor} from './DragSensor.js';
+export {DragSensor} from './DragSensor.ts';

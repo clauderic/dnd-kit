@@ -1,7 +1,7 @@
 import {useContext} from 'react';
 
-import {DragDropContext} from './context.js';
-import {useComputed} from '../../hooks/useComputed.js';
+import {DragDropContext} from './context.ts';
+import {useComputed} from '../../hooks/useComputed.ts';
 
 export function useDragDropManager() {
   return useContext(DragDropContext);

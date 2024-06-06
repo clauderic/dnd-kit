@@ -1,1 +1,1 @@
-export {Accessibility} from './Accessibility.js';
+export {Accessibility} from './Accessibility.ts';

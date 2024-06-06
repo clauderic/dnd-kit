@@ -1,7 +1,7 @@
 import {Plugin} from '@dnd-kit/abstract';
 import {effect} from '@dnd-kit/state';
 
-import {DragDropManager} from '../../manager/index.js';
+import {DragDropManager} from '../../manager/index.ts';
 
 export class PreventSelection extends Plugin<DragDropManager> {
   constructor(public manager: DragDropManager) {

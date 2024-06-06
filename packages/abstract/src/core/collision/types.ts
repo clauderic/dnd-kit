@@ -1,9 +1,9 @@
-import type {DragOperation} from '../manager/index.js';
+import type {DragOperation} from '../manager/index.ts';
 import type {
   Draggable,
   Droppable,
   UniqueIdentifier,
-} from '../entities/index.js';
+} from '../entities/index.ts';
 
 export enum CollisionPriority {
   Lowest,

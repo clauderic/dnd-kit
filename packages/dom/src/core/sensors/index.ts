@@ -1,5 +1,5 @@
-export {KeyboardSensor} from './keyboard/index.js';
+export {KeyboardSensor} from './keyboard/index.ts';
 
-export {PointerSensor} from './pointer/index.js';
+export {PointerSensor} from './pointer/index.ts';
 
-export type {Sensors} from './types.js';
+export type {Sensors} from './types.ts';

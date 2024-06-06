@@ -1,6 +1,6 @@
-export {animateTransform} from './animateTransform.js';
-export {inverseTransform} from './inverseTransform.js';
-export {parseTransform} from './parseTransform.js';
-export {parseTranslate} from './parseTranslate.js';
-export type {Transform} from './parseTransform.js';
-export {stringifyTransform} from './stringifyTransform.js';
+export {animateTransform} from './animateTransform.ts';
+export {inverseTransform} from './inverseTransform.ts';
+export {parseTransform} from './parseTransform.ts';
+export {parseTranslate} from './parseTranslate.ts';
+export type {Transform} from './parseTransform.ts';
+export {stringifyTransform} from './stringifyTransform.ts';

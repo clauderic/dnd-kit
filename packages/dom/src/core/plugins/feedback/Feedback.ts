@@ -14,7 +14,7 @@ import {
 } from '@dnd-kit/dom/utilities';
 import {Coordinates} from '@dnd-kit/geometry';
 
-import {DragDropManager} from '../../manager/index.js';
+import {DragDropManager} from '../../manager/index.ts';
 
 const ATTR_PREFIX = 'data-dnd-kit-';
 const CSS_PREFIX = '--dnd-kit-feedback-';

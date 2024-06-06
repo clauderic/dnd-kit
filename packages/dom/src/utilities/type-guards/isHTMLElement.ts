@@ -1,6 +1,6 @@
-import {getWindow} from '../execution-context/getWindow.js';
+import {getWindow} from '../execution-context/getWindow.ts';
 
-import {isWindow} from './isWindow.js';
+import {isWindow} from './isWindow.ts';
 
 export function isHTMLElement(node: Node | Window): node is HTMLElement {
   if (isWindow(node)) {

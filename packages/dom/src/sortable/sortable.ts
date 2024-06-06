@@ -21,8 +21,8 @@ import type {
 import {animateTransform, scheduler} from '@dnd-kit/dom/utilities';
 import {Shape} from '@dnd-kit/geometry';
 
-import {SortableKeyboardPlugin} from './SortableKeyboardPlugin.js';
-import {OptimisticSortingPlugin} from './OptimisticSortingPlugin.js';
+import {SortableKeyboardPlugin} from './SortableKeyboardPlugin.ts';
+import {OptimisticSortingPlugin} from './OptimisticSortingPlugin.ts';
 
 export interface SortableTransition {
   /**

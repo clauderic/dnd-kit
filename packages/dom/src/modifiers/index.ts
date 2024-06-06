@@ -1,2 +1,2 @@
-export {RestrictToWindow} from './RestrictToWindow.js';
-export {RestrictToElement} from './RestrictToElement.js';
+export {RestrictToWindow} from './RestrictToWindow.ts';
+export {RestrictToElement} from './RestrictToElement.ts';

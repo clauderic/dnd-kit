@@ -1,7 +1,7 @@
 import type {Coordinates} from '@dnd-kit/geometry';
 
-import {parseScale} from './parseScale.js';
-import {parseTranslate} from './parseTranslate.js';
+import {parseScale} from './parseScale.ts';
+import {parseTranslate} from './parseTranslate.ts';
 
 export interface Transform extends Coordinates {
   z?: number;

@@ -1,6 +1,6 @@
 import type {BoundingRectangle} from '@dnd-kit/geometry';
 
-import {getDocument} from '../execution-context/index.js';
+import {getDocument} from '../execution-context/index.ts';
 
 export function getViewportBoundingRectangle(
   element: Element

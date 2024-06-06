@@ -1,2 +1,2 @@
-export {Draggable} from './draggable.js';
-export type {Input as DraggableInput} from './draggable.js';
+export {Draggable} from './draggable.ts';
+export type {Input as DraggableInput} from './draggable.ts';

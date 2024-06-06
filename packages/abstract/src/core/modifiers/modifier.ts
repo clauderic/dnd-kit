@@ -5,8 +5,8 @@ import {
   type PluginOptions,
   type PluginConstructor,
   type PluginDescriptor,
-} from '../plugins/index.js';
-import type {DragDropManager} from '../manager/index.js';
+} from '../plugins/index.ts';
+import type {DragDropManager} from '../manager/index.ts';
 
 export type ModifierOptions = PluginOptions;
 

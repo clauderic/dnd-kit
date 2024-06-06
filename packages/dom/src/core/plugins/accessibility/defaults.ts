@@ -1,4 +1,4 @@
-import type {Announcements, ScreenReaderInstructions} from './types.js';
+import type {Announcements, ScreenReaderInstructions} from './types.ts';
 
 export const defaultAttributes = {
   role: 'button',

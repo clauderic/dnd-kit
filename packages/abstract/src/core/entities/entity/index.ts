@@ -1,6 +1,6 @@
-export {Entity} from './entity.js';
-export type {Input as EntityInput} from './entity.js';
+export {Entity} from './entity.ts';
+export type {Input as EntityInput} from './entity.ts';
 
-export type {Data, Type, UniqueIdentifier} from './types.js';
+export type {Data, Type, UniqueIdentifier} from './types.ts';
 
-export {EntityRegistry} from './registry.js';
+export {EntityRegistry} from './registry.ts';

@@ -1,8 +1,8 @@
 import {effect, untracked} from '@dnd-kit/state';
 
-import {DragDropManager} from '../manager/index.js';
-import {CorePlugin} from '../plugins/index.js';
-import {defaultPreventable} from '../manager/events.js';
+import {DragDropManager} from '../manager/index.ts';
+import {CorePlugin} from '../plugins/index.ts';
+import {defaultPreventable} from '../manager/events.ts';
 
 export class CollisionNotifier extends CorePlugin {
   constructor(manager: DragDropManager) {

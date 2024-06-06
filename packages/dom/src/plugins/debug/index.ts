@@ -1,1 +1,1 @@
-export {Debug} from './debug.js';
+export {Debug} from './debug.ts';

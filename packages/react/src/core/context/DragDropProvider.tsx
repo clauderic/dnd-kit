@@ -10,8 +10,8 @@ import {DragDropManager, defaultPreset} from '@dnd-kit/dom';
 import type {DragDropManagerInput, Draggable, Droppable} from '@dnd-kit/dom';
 import {useConstant, useLatest, useOnValueChange} from '@dnd-kit/react/hooks';
 
-import {DragDropContext} from './context.js';
-import {useRenderer} from './renderer.js';
+import {DragDropContext} from './context.ts';
+import {useRenderer} from './renderer.ts';
 
 type Events = DragDropEvents<Draggable, Droppable, DragDropManager>;
 

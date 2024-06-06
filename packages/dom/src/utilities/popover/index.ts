@@ -1,2 +1,2 @@
-export {showPopover} from './showPopover.js';
-export {supportsPopover} from './supportsPopover.js';
+export {showPopover} from './showPopover.ts';
+export {supportsPopover} from './supportsPopover.ts';

@@ -3,7 +3,7 @@ import type {
   PluginOptions,
   PluginDescriptor,
   InferPluginOptions,
-} from './types.js';
+} from './types.ts';
 
 export function configure<
   T extends PluginConstructor<any, any, any>,

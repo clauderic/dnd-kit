@@ -6,10 +6,10 @@ import type {
   Draggable,
   Droppable,
   UniqueIdentifier,
-} from '../entities/index.js';
+} from '../entities/index.ts';
 
-import type {DragDropManager} from './manager.js';
-import {defaultPreventable} from './events.js';
+import type {DragDropManager} from './manager.ts';
+import {defaultPreventable} from './events.ts';
 
 export enum Status {
   Idle = 'idle',

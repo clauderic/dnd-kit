@@ -13,8 +13,8 @@ import {directionBiased} from '@dnd-kit/collision';
 import {move} from '@dnd-kit/helpers';
 import {Debug} from '@dnd-kit/dom/plugins/debug';
 
-import {Item, Handle} from '../components/index.js';
-import {createRange} from '../../utilities/createRange.js';
+import {Item, Handle} from '../components/index.ts';
+import {createRange} from '../../utilities/createRange.ts';
 
 interface Props {
   debug?: boolean;

@@ -1,6 +1,6 @@
 import type {Axis, Coordinates} from '@dnd-kit/geometry';
 
-import {getScrollPosition} from './getScrollPosition.js';
+import {getScrollPosition} from './getScrollPosition.ts';
 
 export enum ScrollDirection {
   Idle = 0,

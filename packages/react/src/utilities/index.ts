@@ -1,1 +1,1 @@
-export {currentValue, type RefOrValue} from './currentValue.js';
+export {currentValue, type RefOrValue} from './currentValue.ts';

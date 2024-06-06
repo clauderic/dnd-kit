@@ -1,4 +1,4 @@
-import {getWindow} from '../execution-context/getWindow.js';
+import {getWindow} from '../execution-context/getWindow.ts';
 
 export function isScrollable(
   element: HTMLElement,

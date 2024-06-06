@@ -1,9 +1,9 @@
-export {DragDropProvider} from './context/index.js';
+export {DragDropProvider} from './context/index.ts';
 
-export {useDraggable} from './draggable/index.js';
+export {useDraggable} from './draggable/index.ts';
 
-export {useDroppable} from './droppable/index.js';
+export {useDroppable} from './droppable/index.ts';
 
-export {useDragDropManager} from './hooks/useDragDropManager.js';
+export {useDragDropManager} from './hooks/useDragDropManager.ts';
 
-export {useDragOperation} from './hooks/useDragOperation.js';
+export {useDragOperation} from './hooks/useDragOperation.ts';

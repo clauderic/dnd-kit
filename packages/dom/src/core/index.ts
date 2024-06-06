@@ -1,15 +1,15 @@
-export {DragDropManager, defaultPreset} from './manager/index.js';
-export type {DragDropManagerInput} from './manager/index.js';
+export {DragDropManager, defaultPreset} from './manager/index.ts';
+export type {DragDropManagerInput} from './manager/index.ts';
 
-export {Draggable, Droppable} from './entities/index.js';
+export {Draggable, Droppable} from './entities/index.ts';
 export type {
   DraggableInput,
   FeedbackType,
   DroppableInput,
-} from './entities/index.js';
+} from './entities/index.ts';
 
-export {PointerSensor, KeyboardSensor} from './sensors/index.js';
-export type {Sensors} from './sensors/index.js';
+export {PointerSensor, KeyboardSensor} from './sensors/index.ts';
+export type {Sensors} from './sensors/index.ts';
 
 export {
   Accessibility,
@@ -17,5 +17,5 @@ export {
   Feedback,
   Scroller,
   ScrollListener,
-} from './plugins/index.js';
-export type {Transition} from './plugins/index.js';
+} from './plugins/index.ts';
+export type {Transition} from './plugins/index.ts';

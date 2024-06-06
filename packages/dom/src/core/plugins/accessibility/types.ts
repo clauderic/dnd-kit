@@ -1,6 +1,6 @@
 import type {DragDropEvents} from '@dnd-kit/abstract';
-import type {DragDropManager} from '../../manager/index.js';
-import type {Draggable, Droppable} from '../../entities/index.js';
+import type {DragDropManager} from '../../manager/index.ts';
+import type {Draggable, Droppable} from '../../entities/index.ts';
 
 export type GetAnnouncementForEvent<
   Key extends keyof DragDropEvents<any, any, any>,

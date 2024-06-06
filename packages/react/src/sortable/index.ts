@@ -1,2 +1,2 @@
-export {useSortable} from './useSortable.js';
-export type {UseSortableInput} from './useSortable.js';
+export {useSortable} from './useSortable.ts';
+export type {UseSortableInput} from './useSortable.ts';

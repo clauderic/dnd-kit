@@ -1,5 +1,5 @@
-import {getWindow} from '../execution-context/getWindow.js';
-import {getScrollableAncestors} from './getScrollableAncestors.js';
+import {getWindow} from '../execution-context/getWindow.ts';
+import {getScrollableAncestors} from './getScrollableAncestors.ts';
 
 function supportsScrollIntoViewIfNeeded(
   element: Element

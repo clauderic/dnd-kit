@@ -1,9 +1,9 @@
 import {Rectangle} from '@dnd-kit/geometry';
 
-import {inverseTransform} from '../transform/inverseTransform.js';
-import {getBoundingRectangle} from '../bounding-rectangle/getBoundingRectangle.js';
-import {getWindow} from '../execution-context/getWindow.js';
-import {parseTransform, parseTranslate} from '../transform/index.js';
+import {inverseTransform} from '../transform/inverseTransform.ts';
+import {getBoundingRectangle} from '../bounding-rectangle/getBoundingRectangle.ts';
+import {getWindow} from '../execution-context/getWindow.ts';
+import {parseTransform, parseTranslate} from '../transform/index.ts';
 
 export class DOMRectangle extends Rectangle {
   constructor(element: Element, ignoreTransforms = false) {

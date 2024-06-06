@@ -1,10 +1,10 @@
-export {Accessibility} from './accessibility/index.js';
+export {Accessibility} from './accessibility/index.ts';
 
-export {Cursor} from './cursor/index.js';
+export {Cursor} from './cursor/index.ts';
 
-export {Feedback} from './feedback/index.js';
-export type {Transition} from './feedback/types.js';
+export {Feedback} from './feedback/index.ts';
+export type {Transition} from './feedback/types.ts';
 
-export {AutoScroller, Scroller, ScrollListener} from './scrolling/index.js';
+export {AutoScroller, Scroller, ScrollListener} from './scrolling/index.ts';
 
-export {PreventSelection} from './selection/PreventSelection.js';
+export {PreventSelection} from './selection/PreventSelection.ts';

@@ -1,4 +1,4 @@
-import {supportsStyle} from '../type-guards/supportsStyle.js';
+import {supportsStyle} from '../type-guards/supportsStyle.ts';
 
 type ExtractStringProperties<T> = {
   [K in keyof T]?: T[K] extends string ? string : never;

@@ -1,7 +1,7 @@
-import {DragDropManager} from '../manager/index.js';
-import {CorePlugin, type Plugin} from './plugin.js';
-import type {InferPluginOptions, PluginConstructor, Plugins} from './types.js';
-import {descriptor} from './utilities.js';
+import {DragDropManager} from '../manager/index.ts';
+import {CorePlugin, type Plugin} from './plugin.ts';
+import type {InferPluginOptions, PluginConstructor, Plugins} from './types.ts';
+import {descriptor} from './utilities.ts';
 
 export class PluginRegistry<
   T extends DragDropManager<any, any>,

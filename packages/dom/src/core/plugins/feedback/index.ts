@@ -1,2 +1,2 @@
-export {Feedback} from './Feedback.js';
-export type {Transition} from './types.js';
+export {Feedback} from './Feedback.ts';
+export type {Transition} from './types.ts';

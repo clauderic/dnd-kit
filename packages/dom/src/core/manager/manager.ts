@@ -5,7 +5,7 @@ import {
   type Sensors,
 } from '@dnd-kit/abstract';
 
-import type {Draggable, Droppable} from '../entities/index.js';
+import type {Draggable, Droppable} from '../entities/index.ts';
 import {
   Accessibility,
   AutoScroller,
@@ -14,8 +14,8 @@ import {
   Scroller,
   ScrollListener,
   PreventSelection,
-} from '../plugins/index.js';
-import {KeyboardSensor, PointerSensor} from '../sensors/index.js';
+} from '../plugins/index.ts';
+import {KeyboardSensor, PointerSensor} from '../sensors/index.ts';
 
 export interface Input extends DragDropManagerInput<any> {}
 

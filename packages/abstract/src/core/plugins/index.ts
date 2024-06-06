@@ -1,9 +1,9 @@
-export {Plugin, CorePlugin} from './plugin.js';
-export {PluginRegistry} from './registry.js';
+export {Plugin, CorePlugin} from './plugin.ts';
+export {PluginRegistry} from './registry.ts';
 export type {
   Plugins,
   PluginConstructor,
   PluginDescriptor,
   PluginOptions,
-} from './types.js';
-export {configure, configurator, descriptor} from './utilities.js';
+} from './types.ts';
+export {configure, configurator, descriptor} from './utilities.ts';

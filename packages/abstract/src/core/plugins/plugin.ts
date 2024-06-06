@@ -1,8 +1,8 @@
 import {reactive, untracked} from '@dnd-kit/state';
 
-import type {DragDropManager} from '../manager/index.js';
-import type {PluginOptions} from './types.js';
-import {configure} from './utilities.js';
+import type {DragDropManager} from '../manager/index.ts';
+import type {PluginOptions} from './types.ts';
+import {configure} from './utilities.ts';
 
 /**
  * An abstract plugin class that can be extended to implement custom

@@ -1,1 +1,1 @@
-export {Styles} from './Styles.js';
+export {Styles} from './Styles.ts';

@@ -1,2 +1,2 @@
-export {Sortable, defaultSortableTransition} from './sortable.js';
-export type {SortableInput, SortableTransition} from './sortable.js';
+export {Sortable, defaultSortableTransition} from './sortable.ts';
+export type {SortableInput, SortableTransition} from './sortable.ts';

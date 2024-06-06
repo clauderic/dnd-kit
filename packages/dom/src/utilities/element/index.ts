@@ -1,2 +1,2 @@
-export {cloneElement} from './cloneElement.js';
-export {createPlaceholder} from './createPlaceholder.js';
+export {cloneElement} from './cloneElement.ts';
+export {createPlaceholder} from './createPlaceholder.ts';

@@ -1,1 +1,1 @@
-export {move, swap, arrayMove, arraySwap} from './move.js';
+export {move, swap, arrayMove, arraySwap} from './move.ts';

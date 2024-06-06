@@ -10,9 +10,9 @@ import {
 } from '@dnd-kit/dom/utilities';
 import {Axes, type Coordinates} from '@dnd-kit/geometry';
 
-import type {DragDropManager} from '../../manager/index.js';
+import type {DragDropManager} from '../../manager/index.ts';
 
-import {ScrollIntentTracker} from './ScrollIntent.js';
+import {ScrollIntentTracker} from './ScrollIntent.ts';
 
 export class Scroller extends CorePlugin<DragDropManager> {
   public getScrollableElements: () => Element[] | null;

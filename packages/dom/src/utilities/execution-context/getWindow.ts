@@ -1,5 +1,5 @@
-import {isWindow} from '../type-guards/isWindow.js';
-import {isNode} from '../type-guards/isNode.js';
+import {isWindow} from '../type-guards/isWindow.ts';
+import {isNode} from '../type-guards/isNode.ts';
 
 export function getWindow(target: Event['target']): typeof window {
   if (!target) {

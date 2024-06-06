@@ -1,9 +1,9 @@
-import {getWindow} from '../execution-context/getWindow.js';
-import {isDocument} from '../type-guards/isDocument.js';
-import {isHTMLElement} from '../type-guards/isHTMLElement.js';
-import {isSVGElement} from '../type-guards/isSVGElement.js';
-import {isFixed} from './isFixed.js';
-import {isScrollable} from './isScrollable.js';
+import {getWindow} from '../execution-context/getWindow.ts';
+import {isDocument} from '../type-guards/isDocument.ts';
+import {isHTMLElement} from '../type-guards/isHTMLElement.ts';
+import {isSVGElement} from '../type-guards/isSVGElement.ts';
+import {isFixed} from './isFixed.ts';
+import {isScrollable} from './isScrollable.ts';
 
 interface Options {
   limit?: number;
