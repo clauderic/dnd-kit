@@ -51,8 +51,6 @@ export class Scroller extends CorePlugin<DragDropManager> {
         }
       }
 
-      console.log(element);
-
       return element
         ? getScrollableAncestors(element, {excludeElement: false})
         : null;
@@ -99,8 +97,6 @@ export class Scroller extends CorePlugin<DragDropManager> {
     }
 
     const elements = this.getScrollableElements();
-
-    console.log(elements);
 
     if (!elements) {
       return false;
