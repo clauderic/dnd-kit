@@ -18,7 +18,7 @@ import {DragDropManager} from '../../manager/index.ts';
 
 const ATTR_PREFIX = 'data-dnd-kit-';
 const CSS_PREFIX = '--dnd-kit-feedback-';
-const cssRules = `[${ATTR_PREFIX}feedback] {position: fixed !important;pointer-events: none;touch-action: none;z-index: 999999;will-change: transform;top: var(${CSS_PREFIX}top, 0px) !important;left: var(${CSS_PREFIX}left, 0px) !important;width: var(${CSS_PREFIX}width, auto) !important;height: var(${CSS_PREFIX}height, auto) !important;margin: var(${CSS_PREFIX}margin, 0px) !important;padding: var(${CSS_PREFIX}padding, 0px) !important;}[${ATTR_PREFIX}feedback][style*="${CSS_PREFIX}translate"] {transition: var(${CSS_PREFIX}transition) !important;translate: var(${CSS_PREFIX}translate) !important;}[${ATTR_PREFIX}feedback][popover]{overflow:visible;}*:where([popover]){background:unset;border:unset;}[${ATTR_PREFIX}feedback]::backdrop {display: none}`;
+const cssRules = `[${ATTR_PREFIX}feedback] {position: fixed !important; pointer-events: none !important; touch-action: none !important; z-index: calc(infinity); will-change: transform;top: var(${CSS_PREFIX}top, 0px) !important;left: var(${CSS_PREFIX}left, 0px) !important;width: var(${CSS_PREFIX}width, auto) !important;height: var(${CSS_PREFIX}height, auto) !important;}[${ATTR_PREFIX}feedback][style*="${CSS_PREFIX}translate"] {transition: var(${CSS_PREFIX}transition) !important;translate: var(${CSS_PREFIX}translate) !important;}[${ATTR_PREFIX}feedback][popover]{overflow:visible;}*:where([popover]){background:unset;border:unset;margin:unset;padding:unset;}[${ATTR_PREFIX}feedback]::backdrop {display: none}`;
 const ATTRIBUTE = `${ATTR_PREFIX}feedback`;
 const PLACEHOLDER_ATTRIBUTE = `${ATTR_PREFIX}placeholder`;
 const IGNORED_ATTRIBUTES = [ATTRIBUTE, PLACEHOLDER_ATTRIBUTE, 'popover'];
@@ -65,8 +65,7 @@ export class Feedback extends Plugin<DragDropManager> {
       const shape = new DOMRectangle(element, true);
       const {width, height, top, left} = shape;
       const styles = new Styles(element);
-      const {padding, margin, transition} =
-        getWindow(element).getComputedStyle(element);
+      const {transition} = getWindow(element).getComputedStyle(element);
       const droppable = manager.registry.droppables.get(source.id);
       const clone = feedback === 'clone';
       const placeholder = createPlaceholder(element, clone, {
@@ -107,8 +106,6 @@ export class Feedback extends Plugin<DragDropManager> {
           height: height,
           top: projected.top,
           left: projected.left,
-          padding,
-          margin,
           translate: currentTransform
             ? `${currentTransform.x}px ${currentTransform.y}px 0`
             : '',
