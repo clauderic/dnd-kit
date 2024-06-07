@@ -15,7 +15,7 @@ import type {DragDropManager} from '../../manager/index.ts';
 import {ScrollIntentTracker} from './ScrollIntent.ts';
 
 export class Scroller extends CorePlugin<DragDropManager> {
-  public getScrollableElements: () => Element[] | null;
+  public getScrollableElements: () => Set<Element> | null;
 
   private scrollIntentTracker: ScrollIntentTracker;
 
@@ -50,6 +50,8 @@ export class Scroller extends CorePlugin<DragDropManager> {
           return getScrollableAncestors(targetElement, {excludeElement: false});
         }
       }
+
+      console.log(element);
 
       return element
         ? getScrollableAncestors(element, {excludeElement: false})
@@ -97,6 +99,8 @@ export class Scroller extends CorePlugin<DragDropManager> {
     }
 
     const elements = this.getScrollableElements();
+
+    console.log(elements);
 
     if (!elements) {
       return false;

@@ -17,12 +17,12 @@ const defaultOptions: Options = {
 export function getScrollableAncestors(
   element: Node | null,
   options: Options = defaultOptions
-): Element[] {
+): Set<Element> {
   const {limit, excludeElement} = options;
-  const scrollParents: Element[] = [];
+  const scrollParents = new Set<Element>();
 
-  function findScrollableAncestors(node: Node | null): Element[] {
-    if (limit != null && scrollParents.length >= limit) {
+  function findScrollableAncestors(node: Node | null): Set<Element> {
+    if (limit != null && scrollParents.size >= limit) {
       return scrollParents;
     }
 
@@ -33,9 +33,9 @@ export function getScrollableAncestors(
     if (
       isDocument(node) &&
       node.scrollingElement != null &&
-      !scrollParents.includes(node.scrollingElement)
+      !scrollParents.has(node.scrollingElement)
     ) {
-      scrollParents.push(node.scrollingElement);
+      scrollParents.add(node.scrollingElement);
 
       return scrollParents;
     }
@@ -48,7 +48,7 @@ export function getScrollableAncestors(
       return scrollParents;
     }
 
-    if (scrollParents.includes(node)) {
+    if (scrollParents.has(node)) {
       return scrollParents;
     }
 
@@ -58,10 +58,14 @@ export function getScrollableAncestors(
     if (excludeElement && node === element) {
       // no-op
     } else if (isScrollable(node, computedStyle)) {
-      scrollParents.push(node);
+      scrollParents.add(node);
     }
 
     if (isFixed(node, computedStyle)) {
+      const {scrollingElement} = node.ownerDocument;
+
+      if (scrollingElement) scrollParents.add(scrollingElement);
+
       return scrollParents;
     }
 
