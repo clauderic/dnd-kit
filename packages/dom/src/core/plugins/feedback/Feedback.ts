@@ -16,10 +16,10 @@ import {Coordinates} from '@dnd-kit/geometry';
 
 import {DragDropManager} from '../../manager/index.ts';
 
-const ATTR_PREFIX = 'data-dnd-kit-';
-const CSS_PREFIX = '--dnd-kit-feedback-';
-const cssRules = `[${ATTR_PREFIX}feedback] {position: fixed !important; pointer-events: none !important; touch-action: none !important; z-index: calc(infinity); will-change: transform;top: var(${CSS_PREFIX}top, 0px) !important;left: var(${CSS_PREFIX}left, 0px) !important;width: var(${CSS_PREFIX}width, auto) !important;height: var(${CSS_PREFIX}height, auto) !important;}[${ATTR_PREFIX}feedback][style*="${CSS_PREFIX}translate"] {transition: var(${CSS_PREFIX}transition) !important;translate: var(${CSS_PREFIX}translate) !important;}[${ATTR_PREFIX}feedback][popover]{overflow:visible;}*:where([popover]){background:unset;border:unset;margin:unset;padding:unset;}[${ATTR_PREFIX}feedback]::backdrop {display: none}`;
-const ATTRIBUTE = `${ATTR_PREFIX}feedback`;
+const ATTR_PREFIX = 'data-dnd-';
+const CSS_PREFIX = '--dnd-';
+const ATTRIBUTE = `${ATTR_PREFIX}dragging`;
+const cssRules = `[${ATTRIBUTE}] {position: fixed !important; pointer-events: none !important; touch-action: none !important; z-index: calc(infinity); will-change: transform;top: var(${CSS_PREFIX}top, 0px) !important;left: var(${CSS_PREFIX}left, 0px) !important;width: var(${CSS_PREFIX}width, auto) !important;height: var(${CSS_PREFIX}height, auto) !important;}[${ATTRIBUTE}][style*="${CSS_PREFIX}translate"] {transition: var(${CSS_PREFIX}transition) !important;translate: var(${CSS_PREFIX}translate) !important;}*:where([${ATTRIBUTE}][popover]){overflow:visible;background:unset;border:unset;margin:unset;padding:unset;color:inherit;}[${ATTRIBUTE}]::backdrop {display: none}`;
 const PLACEHOLDER_ATTRIBUTE = `${ATTR_PREFIX}placeholder`;
 const IGNORED_ATTRIBUTES = [ATTRIBUTE, PLACEHOLDER_ATTRIBUTE, 'popover'];
 const IGNORED_STYLES = ['view-transition-name'];
@@ -99,7 +99,7 @@ export class Feedback extends Plugin<DragDropManager> {
         left: left + delta.x,
       };
 
-      element.setAttribute(ATTRIBUTE, '');
+      element.setAttribute(ATTRIBUTE, 'true');
       styles.set(
         {
           width: width,
@@ -115,7 +115,9 @@ export class Feedback extends Plugin<DragDropManager> {
       element.insertAdjacentElement('afterend', placeholder);
 
       if (supportsPopover(element)) {
-        element.setAttribute('popover', '');
+        if (!element.hasAttribute('popover')) {
+          element.setAttribute('popover', '');
+        }
         showPopover(element);
       }
 
