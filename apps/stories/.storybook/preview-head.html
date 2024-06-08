@@ -1,12 +1,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&Inter:wght@300;400&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
 
 <style>
   :root {
-    --font-family: "Nunito Sans",-apple-system,".SFNSText-Regular","San Francisco",BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --font-family: "Poppins",-apple-system,".SFNSText-Regular","San Francisco",BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
 
     font-family: var(--font-family);
+  }
+
+  .css-qa4clq :where(h1:not(.sb-anchor, .sb-unstyled, .sb-unstyled h1)),
+  .css-qa4clq :where(h2:not(.sb-anchor, .sb-unstyled, .sb-unstyled h2)),
+  .css-qa4clq :where(h3:not(.sb-anchor, .sb-unstyled, .sb-unstyled h3)) {
+    font-family: var(--font-family) !important;
   }
 
   body {
@@ -48,7 +54,11 @@
   }
 
   .sb-main-padded {
-    padding-top: 3rem !important;
+    padding-top: 2rem !important;
+
+    @media (min-width: 750px) {
+      padding-top: 3rem !important;
+    }
   }
 
   h1 {

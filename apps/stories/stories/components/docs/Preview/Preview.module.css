@@ -23,7 +23,7 @@
 
 .hero {
   position: relative;
-  --gradient: linear-gradient(65deg, #56fff410, #001AFF10, #5F6AF210, #F25FD010, #56FFF510, #F25FD010, #001AFF10, #56fff410);
+  --gradient: linear-gradient(65deg, #56fff420, #001AFF20, #5F6AF220, #F25FD020, #56FFF520, #F25FD020, #001AFF20, #56fff420);
   display: grid;
   align-items: center;
   min-height: 200px;

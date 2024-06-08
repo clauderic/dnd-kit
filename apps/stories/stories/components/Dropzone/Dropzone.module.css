@@ -8,8 +8,11 @@
   padding-top: 80px;
   text-align: center;
   border-radius: 10px;
-  width: 340px;
-  height: 340px;
+  max-width: 340px;
+  max-height: 340px;
+  flex-grow: 1;
+  min-width: 300px;
+  aspect-ratio: 1 / 1;
   box-sizing: border-box;
   background-color: #fff;
   box-shadow: inset rgba(201, 211, 219, 0.5) 0 0 0 2px,
@@ -31,11 +34,12 @@
 
 
 .Dropzone[data-highlight="true"] {
-  box-shadow: inset #1eb99d 0 0 0 3px, rgba(201, 211, 219, 0.5) 20px 14px 24px;
+background-color: #1eb99d05;
+  box-shadow: inset #1eb99d 0 0 0 2px, rgba(201, 211, 219, 0.5) 20px 14px 24px;
 }
 
 .Dropzone[data-highlight="true"][data-dropped="true"] {
-  box-shadow: inset #1eb99d 0 0 0 3px, rgba(0, 0, 0, 0.1) 20px 14px 24px;
+  box-shadow: inset #1eb99d 0 0 0 2px, rgba(0, 0, 0, 0.1) 20px 14px 24px;
 }
 
 .Dropzone[data-highlight="true"] > img {
@@ -52,5 +56,5 @@
 }
 
 :global(.dark) .Dropzone[data-highlight="true"] {
-  box-shadow: inset #1eb99d 0 0 0 3px, rgba(0, 0, 0, 0.1) 20px 14px 24px;
+  box-shadow: inset #1eb99d 0 0 0 2px, rgba(0, 0, 0, 0.1) 20px 14px 24px;
 }
