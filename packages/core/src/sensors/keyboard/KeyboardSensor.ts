@@ -22,16 +22,23 @@ import type {
   SensorOptions,
 } from '../types';
 
-import {KeyboardCoordinateGetter, KeyboardCode, KeyboardCodes} from './types';
+import {
+  KeyboardCoordinateGetter,
+  KeyboardCode,
+  KeyboardCodes,
+  type ScrollThreshold,
+} from './types';
 import {
   defaultKeyboardCodes,
   defaultKeyboardCoordinateGetter,
+  defaultScrollThreshold,
 } from './defaults';
 
 export interface KeyboardSensorOptions extends SensorOptions {
   keyboardCodes?: KeyboardCodes;
   coordinateGetter?: KeyboardCoordinateGetter;
   scrollBehavior?: ScrollBehavior;
+  scrollThreshold?: ScrollThreshold;
   onActivation?({event}: {event: KeyboardEvent}): void;
 }
 
@@ -84,6 +91,7 @@ export class KeyboardSensor implements SensorInstance {
         keyboardCodes = defaultKeyboardCodes,
         coordinateGetter = defaultKeyboardCoordinateGetter,
         scrollBehavior = 'smooth',
+        scrollThreshold = defaultScrollThreshold,
       } = options;
       const {code} = event;
 
@@ -132,23 +140,29 @@ export class KeyboardSensor implements SensorInstance {
           const clampedCoordinates = {
             x: Math.min(
               direction === KeyboardCode.Right
-                ? scrollElementRect.right - scrollElementRect.width / 2
+                ? scrollElementRect.right -
+                    scrollElementRect.width * scrollThreshold.x -
+                    coordinatesDelta.x
                 : scrollElementRect.right,
               Math.max(
                 direction === KeyboardCode.Right
                   ? scrollElementRect.left
-                  : scrollElementRect.left + scrollElementRect.width / 2,
+                  : scrollElementRect.left +
+                      scrollElementRect.width * scrollThreshold.x,
                 newCoordinates.x
               )
             ),
             y: Math.min(
               direction === KeyboardCode.Down
-                ? scrollElementRect.bottom - scrollElementRect.height / 2
+                ? scrollElementRect.bottom -
+                    scrollElementRect.height * scrollThreshold.y -
+                    coordinatesDelta.y
                 : scrollElementRect.bottom,
               Math.max(
                 direction === KeyboardCode.Down
                   ? scrollElementRect.top
-                  : scrollElementRect.top + scrollElementRect.height / 2,
+                  : scrollElementRect.top +
+                      scrollElementRect.height * scrollThreshold.y,
                 newCoordinates.y
               )
             ),
