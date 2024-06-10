@@ -10,7 +10,7 @@ const meta: Meta<typeof DroppableExample> = {
 export default meta;
 type Story = StoryObj<typeof DroppableExample>;
 
-export const MultipleDroppables: Story = {
+export const Example: Story = {
   args: {
     droppableCount: 3,
     debug: false,

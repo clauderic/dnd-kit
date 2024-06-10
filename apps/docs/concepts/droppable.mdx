@@ -33,6 +33,59 @@ const droppable = new Droppable({
 
 In order for our droppable element to receive draggable elements, you'll need to create some [Draggable elements](/concepts/draggable).
 
+## Detecting collisions
+
+By default, the `Droppable` class uses a simple bounding box collision detection algorithm to detect collisions between the droppable element and the active draggable source element:
+
+<img src="/images/droppable/shape-intersection.svg" />
+
+You can customize this behavior by supplying a custom collision detector function.
+The built-in collision detectors are:
+
+- `shapeIntersection`
+- `pointerWithin`
+- `closestCenter`
+- `directionBiased`
+
+
+For example, you can import the `closestCenter` collision detector from the `@dnd-kit/collision` package:
+
+```js
+import {Droppable, DragDropManager} from '@dnd-kit/dom';
+import {closestCenter} from '@dnd-kit/collision';
+
+const manager = new DragDropManager();
+const droppable = new Droppable({
+  id: 'droppable',
+  collisionDetector: closestCenter,
+}, manager);
+```
+
+This collision detection algorithm will detect collisions based on the distance between the center of the droppable element and the center of the active draggable source element:
+
+<img src="/images/droppable/closest-center.svg" />
+
+### Prioritizing collisions
+
+You can prioritize collisions between droppable elements by supplying a `collisionPriority` number to the `Droppable` class.
+The higher the number, the higher the priority when detecting collisions.
+This can be useful if there are multiple droppable elements that overlap, or if you want to prioritize certain droppable elements over others.
+
+```js
+import {Droppable, DragDropManager} from '@dnd-kit/dom';
+
+const manager = new DragDropManager();
+
+const firstDroppable = new Droppable({
+  id: '1',
+  collisionPriority: 1,
+}, manager);
+const secondDroppable = new Droppable({
+  id: '2',
+  collisionPriority: 2,
+}, manager);
+```
+
 ## API Reference
 
 ### Arguments

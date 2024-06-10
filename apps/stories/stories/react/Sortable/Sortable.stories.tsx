@@ -17,7 +17,7 @@ const meta: Meta<typeof SortableExample> = {
 export default meta;
 type Story = StoryObj<typeof SortableExample>;
 
-export const Demo: Story = {
+export const Example: Story = {
   name: 'Example',
   args: {
     dragHandle: true,

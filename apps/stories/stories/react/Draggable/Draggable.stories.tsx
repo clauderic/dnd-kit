@@ -17,6 +17,6 @@ const meta: Meta<typeof DraggableExample> = {
 export default meta;
 type Story = StoryObj<typeof DraggableExample>;
 
-export const BasicSetup: Story = {
+export const Example: Story = {
   name: 'Example',
 };
