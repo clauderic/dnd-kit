@@ -13,6 +13,11 @@ const defaultThreshold: Record<Axis, number> = {
   y: 0.2,
 };
 
+const defaultTolerance: Record<Axis, number> = {
+  x: 10,
+  y: 10,
+};
+
 interface ScrollIntent {
   x: ScrollDirection;
   y: ScrollDirection;
@@ -23,7 +28,8 @@ export function detectScrollIntent(
   coordinates: Coordinates,
   intent?: ScrollIntent,
   acceleration = 25,
-  thresholdPercentage = defaultThreshold
+  thresholdPercentage = defaultThreshold,
+  tolerance = defaultTolerance
 ) {
   const {
     rect: scrollContainerRect,
@@ -49,7 +55,9 @@ export function detectScrollIntent(
   if (
     !isTop &&
     coordinates.y <= scrollContainerRect.top + threshold.height &&
-    intent?.y !== ScrollDirection.Forward
+    intent?.y !== ScrollDirection.Forward &&
+    coordinates.x >= scrollContainerRect.left - tolerance.x &&
+    coordinates.x <= scrollContainerRect.right + tolerance.x
   ) {
     // Scroll Up
     direction.y = ScrollDirection.Reverse;
@@ -62,7 +70,9 @@ export function detectScrollIntent(
   } else if (
     !isBottom &&
     coordinates.y >= scrollContainerRect.bottom - threshold.height &&
-    intent?.y !== ScrollDirection.Reverse
+    intent?.y !== ScrollDirection.Reverse &&
+    coordinates.x >= scrollContainerRect.left - tolerance.x &&
+    coordinates.x <= scrollContainerRect.right + tolerance.x
   ) {
     // Scroll Down
     direction.y = ScrollDirection.Forward;
@@ -77,7 +87,9 @@ export function detectScrollIntent(
   if (
     !isRight &&
     coordinates.x >= scrollContainerRect.right - threshold.width &&
-    intent?.x !== ScrollDirection.Reverse
+    intent?.x !== ScrollDirection.Reverse &&
+    coordinates.y >= scrollContainerRect.top - tolerance.y &&
+    coordinates.y <= scrollContainerRect.bottom + tolerance.y
   ) {
     // Scroll Right
     direction.x = ScrollDirection.Forward;
@@ -90,7 +102,9 @@ export function detectScrollIntent(
   } else if (
     !isLeft &&
     coordinates.x <= scrollContainerRect.left + threshold.width &&
-    intent?.x !== ScrollDirection.Forward
+    intent?.x !== ScrollDirection.Forward &&
+    coordinates.y >= scrollContainerRect.top - tolerance.y &&
+    coordinates.y <= scrollContainerRect.bottom + tolerance.y
   ) {
     // Scroll Left
     direction.x = ScrollDirection.Reverse;

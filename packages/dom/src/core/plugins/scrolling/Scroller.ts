@@ -1,5 +1,5 @@
 import {CorePlugin} from '@dnd-kit/abstract';
-import {computed, deepEqual} from '@dnd-kit/state';
+import {computed, deepEqual, reactive} from '@dnd-kit/state';
 import {
   canScroll,
   detectScrollIntent,
@@ -19,10 +19,14 @@ export class Scroller extends CorePlugin<DragDropManager> {
 
   private scrollIntentTracker: ScrollIntentTracker;
 
+  @reactive
+  public autoScrolling = false;
+
   constructor(manager: DragDropManager) {
     super(manager);
 
     let previousElementFromPoint: Element | null = null;
+    let previousScrollableElements: Set<Element> | null = null;
     const elementFromPoint = computed(() => {
       const {position} = manager.dragOperation;
 
@@ -47,13 +51,36 @@ export class Scroller extends CorePlugin<DragDropManager> {
         const targetElement = target?.element;
 
         if (targetElement) {
-          return getScrollableAncestors(targetElement, {excludeElement: false});
+          const elements = getScrollableAncestors(targetElement, {
+            excludeElement: false,
+          });
+          previousScrollableElements = elements;
+
+          return elements;
         }
       }
 
-      return element
-        ? getScrollableAncestors(element, {excludeElement: false})
-        : null;
+      if (element) {
+        const elements = getScrollableAncestors(element, {
+          excludeElement: false,
+        });
+
+        if (
+          this.autoScrolling &&
+          previousScrollableElements &&
+          elements.size < previousScrollableElements?.size
+        ) {
+          return previousScrollableElements;
+        }
+
+        previousScrollableElements = elements;
+
+        return elements;
+      }
+
+      previousScrollableElements = null;
+
+      return null;
     }, deepEqual);
 
     this.getScrollableElements = () => {
@@ -99,6 +126,7 @@ export class Scroller extends CorePlugin<DragDropManager> {
     const elements = this.getScrollableElements();
 
     if (!elements) {
+      this.#meta = undefined;
       return false;
     }
 
@@ -113,11 +141,11 @@ export class Scroller extends CorePlugin<DragDropManager> {
             y: getScrollIntent(by.y),
           }
         : undefined;
-      const trackedScrollIntent = intent
+      const scrollIntent = intent
         ? undefined
         : this.scrollIntentTracker.current;
 
-      if (trackedScrollIntent?.isLocked()) {
+      if (scrollIntent?.isLocked()) {
         return false;
       }
 
@@ -131,9 +159,9 @@ export class Scroller extends CorePlugin<DragDropManager> {
             intent
           );
 
-          if (trackedScrollIntent) {
+          if (scrollIntent) {
             for (const axis of Axes) {
-              if (trackedScrollIntent[axis].isLocked(direction[axis])) {
+              if (scrollIntent[axis].isLocked(direction[axis])) {
                 speed[axis] = 0;
                 direction[axis] = 0;
               }
@@ -146,6 +174,16 @@ export class Scroller extends CorePlugin<DragDropManager> {
             const scrollTopBy = y * speed.y;
 
             if (scrollLeftBy || scrollTopBy) {
+              const previousScrollBy = this.#meta?.by;
+
+              if (this.autoScrolling && previousScrollBy) {
+                const scrollIntentMismatch =
+                  (previousScrollBy.x && !scrollLeftBy) ||
+                  (previousScrollBy.y && !scrollTopBy);
+
+                if (scrollIntentMismatch) continue;
+              }
+
               this.#meta = {
                 element: scrollableElement,
                 by: {
@@ -163,6 +201,7 @@ export class Scroller extends CorePlugin<DragDropManager> {
       }
     }
 
+    this.#meta = undefined;
     return false;
   };
 }

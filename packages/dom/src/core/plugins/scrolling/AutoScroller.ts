@@ -34,11 +34,14 @@ export class AutoScroller extends Plugin<DragDropManager> {
         const canScroll = scroller.scroll();
 
         if (canScroll) {
+          scroller.autoScrolling = true;
           const interval = setInterval(scroller.scroll, AUTOSCROLL_INTERVAL);
 
           return () => {
             clearInterval(interval);
           };
+        } else {
+          scroller.autoScrolling = false;
         }
       }
     });
