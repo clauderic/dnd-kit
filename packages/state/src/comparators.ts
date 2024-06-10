@@ -3,6 +3,20 @@ export function deepEqual<T>(a: T, b: T) {
     return true;
   }
 
+  if (a instanceof Set && b instanceof Set) {
+    if (a.size !== b.size) {
+      return false;
+    }
+
+    for (const value of a) {
+      if (!b.has(value)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   if (Array.isArray(a)) {
     if (!Array.isArray(b) || a.length !== b.length) {
       return false;
