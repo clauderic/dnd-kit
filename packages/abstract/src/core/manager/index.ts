@@ -1,5 +1,5 @@
 export {DragDropManager} from './manager.ts';
-export type {DragDropManagerInput, DragDropConfiguration} from './manager.ts';
+export type {DragDropManagerInput} from './manager.ts';
 export type {DragDropEvents} from './events.ts';
 export {Status as DragOperationStatus} from './dragOperation.ts';
 export type {DragOperation, DragOperationManager} from './dragOperation.ts';

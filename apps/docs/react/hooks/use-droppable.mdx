@@ -1,0 +1,85 @@
+---
+title: 'useDroppable'
+description: 'Use the `useDroppable` hook to create droppable targets for draggable elements.'
+icon: 'arrows-maximize'
+---
+
+<Info>
+  The `useDroppable` hook is a thin wrapper around the [Droppable](/concepts/droppable) class that makes it easier to create droppable targets in React.
+</Info>
+
+
+## Usage
+
+The `useDroppable` hook requires an `id` and accepts all the same options as the `Droppable` class. Refer to the [Input](#input) section below for more information.
+
+```jsx
+import {useDroppable} from '@dnd-kit/react';
+
+function Droppable(props) {
+  const {isDropTarget, ref} = useDroppable({
+    id: props.id,
+  });
+
+  return (
+    <div ref={ref}>
+      {isDropTarget ? 'Draggable element is over me' : 'Drag something over me'}
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Input
+
+The `useDroppable` hook accepts the following arguments:
+
+<ParamField path="id" type="string | number" required>
+  The identifier of the droppable element. Should be unique within the same [drag and drop context provider](/react/components/drag-drop-provider).
+</ParamField>
+
+<ParamField path="element" type="Element | Ref<Element>">
+  If you already have a reference to the element, you can pass it to the `element` option instead of using the `ref` that is returned by the `useDraggable` hook to connect the draggable source element.
+</ParamField>
+
+<ParamField path="accepts" type="string | number | Symbol | (type: string | number | Symbol) => boolean">
+  Optionally supply a type of draggable element to only allow it to be dropped over certina droppable targets that [accept](#) this `type`.
+</ParamField>
+
+<ParamField path="collisionDetector" type="(input: CollisionDetectorInput) => Collision | null">
+  Optionally supply a [collision detector](/concepts/droppable#detecting-collisions) function can be used to detect collisions between the droppable element and draggable elements.
+</ParamField>
+
+<ParamField path="collisionPriority" type="number">
+  Optionally supply a number to set the collision priority of the droppable element. The higher the number, the higher the priority when detecting collisions. This can be useful if there are multiple droppable elements that overlap.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Set to `true` to prevent the droppable element from being a drop target.
+</ParamField>
+
+<ParamField path="data" type="{[key: string]: any}">
+  The data argument is for advanced use-cases where you may need access to additional data about the droppable element in event handlers, modifiers, sensors or custom plugins.
+</ParamField>
+
+<ParamField path="effects" type="(manager: DragDropManager) => Effect[]">
+  <Info>This is an advanced feature and should not need to be used by most consumers.</Info>
+  You can supply a function that returns an array of reactive effects that can be set up and automatically cleaned up when the component invoking the `useDraggable` hook element is unmounted.
+</ParamField>
+
+### Output
+
+The `useDroppable` hook returns an object containing the following properties:
+
+<ResponseField name="ref" type="(element: Element) => void">
+  A [ref callback function](https://react.dev/reference/react-dom/components/common#ref-callback) that can be attached to the element that you want to use as a droppable target.
+</ResponseField>
+
+<ResponseField name="isDropTarget" type="boolean">
+  A boolean value that indicates whether the element is currently being dragged.
+</ResponseField>
+
+<ResponseField name="droppable" type="Droppable">
+  The [droppable](concepts/droppable) instance that is created by the `useDroppable` hook.
+</ResponseField>

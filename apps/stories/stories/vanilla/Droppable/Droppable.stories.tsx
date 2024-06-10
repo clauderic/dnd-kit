@@ -1,6 +1,6 @@
 import type {Meta, StoryObj} from '@storybook/react';
 
-import {DroppableExample} from './VanillaDroppableExample';
+import {DroppableExample} from './DroppableExample.ts';
 
 const meta: Meta<typeof DroppableExample> = {
   component: DroppableExample,

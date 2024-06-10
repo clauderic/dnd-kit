@@ -1,0 +1,93 @@
+---
+title: 'Manager'
+description: 'The orchestrator of the drag and drop system.'
+icon: 'sitemap'
+---
+
+## Overview
+
+As its name suggests, the `DragDropManager` is the manager of all of draggable and droppable elements, and it coordinates the events between them.
+
+The manager is responsible for:
+
+- Keeping track of all draggable and droppable elements.
+- Firing events when elements are dragged, moved, dropped.
+- Detecting collisions between draggable and droppable elements.
+- Registering and unregistering [plugins](/extend/plugins) to extend the core functionality, [modifiers](/extend/modifiers) to modify the behavior of the drag and drop system, and [sensors](/extend/sensors) to detect user interactions.
+- Lifecycle management to avoid any memory leaks.
+
+## Usage
+
+To create a new `DragDropManager` instance, you can import the `DragDropManager` class from the `@dnd-kit/dom` package.
+
+```js
+import {DragDropManager} from '@dnd-kit/dom';
+
+const manager = new DragDropManager();
+```
+
+## API Reference
+
+### Arguments
+
+The `DragDropManager` class accepts the following arguments:
+
+<ParamField path="plugins" type="Plugin[]">
+  An array of [plugins](/extend/plugins) that can be used to extend the core functionality of the drag and drop system.
+</ParamField>
+
+<ParamField path="sensors" type="Sensors[]">
+  An array of [sensors](/extend/sensors) that can be bound to the draggable element to detect drag interactions.
+</ParamField>
+
+<ParamField path="modifiers" type="Modifier[]">
+  An array of [modifiers](/extend/modifiers) that can be used to modify or restrict the behavior of the draggable element.
+</ParamField>
+
+<ParamField path="renderer" type="Renderer">
+  The renderer option is an advanced option that allows you to connect the drag and drop system to a custom renderer, such as React or Vue. This allows the manager to await the renderer to finish rendering before firing certain events.
+</ParamField>
+
+### Instance
+
+#### Properties
+
+The `DragDropManager` instance exposes the following properties:
+
+<ParamField path="actions">
+  The `actions` property exposes a set of methods that can be used to interact with the drag and drop system. This includes methods to start, move, and end drag operations.
+</ParamField>
+
+<ParamField path="collisionObserver">
+  The `collisionObserver` property is responsible for detecting collisions between draggable and droppable elements.
+</ParamField>
+
+<ParamField path="dragOperation">
+  The `dragOperation` property exposes metadata about the current drag operation.
+</ParamField>
+
+<ParamField path="monitor">
+  The `monitor` can be used to register and unregister event listeners when drag and drop events are emitted.
+
+  The events that can be listened to are:
+
+  | Event Name | Description | Preventable |
+  | ---------- | ----------- | ----------- |
+  | `beforedragstart` | Fired before a drag operation is initiated. | True |
+  | `dragstart` | Fired when a drag operation is initiated. | False |
+  | `dragmove` | Fired when a draggable element is moved. | False |
+  | `dragend` | Fired when a drag operation is ended. | True |
+  | `collision` | Fired when a collision is detected between draggable and droppable elements. | True |
+</ParamField>
+
+<ParamField path="registry">
+  The `registry` property is responsible for registering and unregistering [draggable](/concepts/draggable) and [droppable](/concepts/droppable) instances, along with instances of [plugins](/extend/plugins), [modifiers](/extend/modifiers), and [sensors](/extend/sensors).
+</ParamField>
+
+#### Methods
+
+The `DragDropManager` instance exposes the following methods:
+
+<ParamField path="destroy" type="() => void">
+  The `destroy` method is used to clean up the manager and all of its associated draggable, droppable, plugins, modifiers, and sensors instances.
+</ParamField>

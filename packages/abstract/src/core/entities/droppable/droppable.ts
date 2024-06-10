@@ -10,10 +10,7 @@ import {
 import type {DragDropManager} from '../../manager/index.ts';
 import {Draggable} from '../draggable/draggable.ts';
 
-export interface Input<
-  T extends Data = Data,
-  U extends Droppable<T> = Droppable<T>,
-> extends EntityInput<T, U> {
+export interface Input<T extends Data = Data> extends EntityInput<T> {
   accept?: Type | Type[] | ((source: Draggable) => boolean);
   collisionPriority?: CollisionPriority | number;
   collisionDetector: CollisionDetector;

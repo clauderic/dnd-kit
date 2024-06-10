@@ -1,0 +1,52 @@
+---
+title: 'Keyboard'
+description: 'Detect keyboard input to initiate drag and drop operations.'
+icon: 'keyboard'
+---
+
+The Keyboard sensor responds to [Keyboard events](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent). This sensor is enabled by default.
+
+The keyboard sensor activates when the source `element` or `handle` of a draggable instance is focused and the <kbd>Space</kbd> or <kbd>Enter</kbd> key is pressed.
+
+## Usage
+
+The Keyboard sensor can be configured to respond to different keyboard codes:
+
+```js
+import {KeyboardSensor} from '@dnd-kit/dom/sensors';
+
+const sensors = [
+  KeyboardSensor.configure({
+    keyboardCodes: {
+      start: ['Space', 'Enter'],
+      cancel: ['Escape'],
+      end: ['Space', 'Enter'],
+      up: ['ArrowUp'],
+      down: ['ArrowDown'],
+      left: ['ArrowLeft'],
+      right: ['ArrowRight'],
+    },
+  }),
+];
+```
+
+## API Reference
+
+### Options
+
+
+The `PointerSensor` accepts the following options:
+
+<ParamField path="keyboardCodes" type="{[key: string]: string[]}">
+  Use this option to customize the keyboard codes that should trigger different drag operations:
+
+  | Property | Description                                                                  |
+  | -------- | ---------------------------------------------------------------------------- |
+  | `start`  | The keyboard codes that should trigger the start of a drag operation.        |
+  | `cancel` | The keyboard codes that should trigger the cancelation of a drag operation.  |
+  | `end`    | The keyboard codes that should trigger the end of a drag operation.          |
+  | `up`     | The keyboard codes that should trigger the upward movement of a drag operation. |
+  | `down`   | The keyboard codes that should trigger the downward movement of a drag operation. |
+  | `left`   | The keyboard codes that should trigger the leftward movement of a drag operation. |
+  | `right`  | The keyboard codes that should trigger the rightward movement of a drag operation. |
+</ParamField>

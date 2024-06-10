@@ -1,0 +1,88 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "@dnd-kit",
+  "logo": "/logo/logo.svg",
+  "favicon": "/favicon.png",
+  "colors": {
+    "primary": "#596dff",
+    "light": "#596dff",
+    "dark": "#596dff",
+    "anchors": {
+      "from": "#596dff",
+      "to": "#596dff"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Community",
+      "url": "mailto:hi@mintlify.com"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Github",
+    "url": "https://github.com/clauderic/dnd-kit"
+  },
+  "versions": ["Latest"],
+  "topAnchor": {
+    "name": "Vanilla",
+    "icon": "js"
+  },
+  "anchors": [
+    {
+      "name": "React",
+      "url": "react",
+      "icon": "react"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "",
+      "pages": ["overview"]
+    },
+    {
+      "group": "Get Started",
+      "pages": ["react/quickstart", "quickstart"]
+    },
+    {
+      "group": "Concepts",
+      "pages": [
+        "concepts/drag-drop-manager",
+        "concepts/draggable",
+        "concepts/droppable",
+        "concepts/sortable"
+      ]
+    },
+    {
+      "group": "Extensibility",
+      "pages": [
+        "extend/plugins",
+        {
+          "group": "Sensors",
+          "icon": "signal-stream",
+          "pages": [
+            "extend/sensors/overview",
+            "extend/sensors/pointer-sensor",
+            "extend/sensors/keyboard-sensor"
+          ]
+        },
+        "extend/modifiers"
+      ]
+    },
+    {
+      "group": "Components",
+      "pages": ["react/components/drag-drop-provider"]
+    },
+    {
+      "group": "Hooks",
+      "pages": [
+        "react/hooks/use-draggable",
+        "react/hooks/use-droppable",
+        "react/hooks/use-sortable"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "x": "https://x.com/dndkit",
+    "github": "https://github.com/clauderic/dnd-kit"
+  }
+}

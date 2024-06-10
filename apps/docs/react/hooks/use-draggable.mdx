@@ -1,0 +1,168 @@
+---
+title: 'useDraggable'
+description: 'Use the `useDraggable` hook to make draggable elements that can dropped over droppable targets.'
+icon: 'bullseye-pointer'
+---
+
+import {Story} from '/snippets/story.mdx';
+
+<Info>
+  The `useDraggable` hook is a thin wrapper around the [Draggable](/concepts/draggable) class that makes it easier to create draggable elements in React.
+</Info>
+
+## Usage
+
+The `useDraggable` hook requires an `id` and accepts all the same options as the `Draggable` class. Refer to the [Input](#input) section below for more information.
+
+```jsx
+import {useDraggable} from '@dnd-kit/react';
+
+function Draggable(props) {}
+  const {ref} = useDraggable({
+    id: props.id,
+  });
+
+  return <button ref={ref}>Draggable</button>;
+}
+```
+
+## API Reference
+
+### Input
+
+The `useDraggable` hook accepts the following arguments:
+
+<ParamField path="id" type="string | number" required>
+  The identifier of the draggable element. Should be unique within the same [drag and drop context provider](/react/components/drag-drop-provider).
+</ParamField>
+
+<ParamField path="type" type="string | number | Symbol">
+  Optionally supply a type to only allow this draggable element to be dropped over droppable targets that [accept](/concepts/droppable) this `type`.
+</ParamField>
+
+<ParamField path="element" type="Element | Ref<Element>">
+  If you already have a reference to the element, you can pass it to the `element` option instead of using the `ref` that is returned by the `useDraggable` hook to connect the draggable source element.
+</ParamField>
+
+<ParamField path="handle" type="Element | Ref<Element>">
+  If you already have a reference to the drag handle element, you can pass it to the `handle` option instead of using the `handleRef` that is returned by the `useDraggable` hook to connect the drag handle element.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Set to `true` to prevent the draggable element from being draggable.
+</ParamField>
+
+<ParamField path="feedback" type="'default' | 'clone' | 'move' | 'none'">
+  The type of feedback that should be displayed when the element is being dragged.
+</ParamField>
+
+<ParamField path="modifiers" type="Modifier[]">
+  An array of [modifiers](/plugins/modifiers) that can be used to modify or restrict the behavior of the draggable element.
+</ParamField>
+
+<ParamField path="sensors" type="Sensors[]">
+  An array of [sensors](/sensors/overview) that can be bound to the draggable element to detect drag interactions.
+</ParamField>
+
+<ParamField path="data" type="{[key: string]: any}">
+  The data argument is for advanced use-cases where you may need access to additional data about the draggable element in event handlers, modifiers, sensors or custom plugins.
+</ParamField>
+
+<ParamField path="effects" type="(manager: DragDropManager) => Effect[]">
+  <Info>This is an advanced feature and should not need to be used by most consumers.</Info>
+  You can supply a function that returns an array of reactive effects that can be set up and automatically cleaned up when the component invoking the `useDraggable` hook element is unmounted.
+</ParamField>
+
+### Output
+
+The `useDraggable` hook returns an object containing the following properties:
+
+<ResponseField name="ref" type="(element: Element) => void">
+  A [ref callback function](https://react.dev/reference/react-dom/components/common#ref-callback) that can be attached to the element that you want to make draggable.
+</ResponseField>
+
+<ResponseField name="handleRef" type="(element: Element) => void">
+  A [ref callback function](https://react.dev/reference/react-dom/components/common#ref-callback) that can be attached to an element to create a drag handle.
+</ResponseField>
+
+<ResponseField name="isDragSource" type="boolean">
+  A boolean value that indicates whether the element is currently being dragged.
+</ResponseField>
+
+<ResponseField name="draggable" type="Draggable">
+  The [draggable](concepts/draggable) instance that is created by the `useDraggable` hook.
+</ResponseField>
+
+## Guides
+
+### Specifying a drag handle
+
+To specify a drag handle, provide a reference to an element and pass it as the `handle` argument to the `useDraggable` hook. Alternatively, you can consume the `handleRef` ref callback to connect the drag handle element.
+
+```jsx
+import {useDraggable} from '@dnd-kit/react';
+
+function Draggable(props) {
+  const {ref, handleRef} = useDraggable({
+    id: props.id,
+  });
+
+  return (
+    <div ref={ref}>
+      Draggable
+      <button ref={handleRef}>Drag handle</button>
+    </div>
+  );
+}
+```
+
+<Note>
+  When you connect a drag handle element, only the element that is connected to the `handleRef` will initiate the drag operation.
+</Note>
+
+<Story id="react-draggable-drag-handles--drag-handle" />
+
+### Restricting dragging using modifiers
+
+Use [modifiers](/plugins/modifiers) to modify or restrict the behavior of draggable elements.
+
+Modifiers let you dynamically modify the movement coordinates that are detected by sensors. They can be used for a wide range of use cases, for example:
+
+- Restricting motion to a single axis
+- Restricting motion to the draggable node container's bounding rectangle
+- Restricting motion to the draggable node's scroll container bounding rectangle
+- Applying resistance or clamping the motion
+
+Modifiers can be applied globally on the [&lt;DragDropProvider&gt;](/react/components/drag-drop-provider) component or locally on individual draggable elements.
+
+Here is an example of how to restrict dragging to the horizontal axis:
+
+```jsx
+import {useDraggable} from '@dnd-kit/react';
+import {RestrictToHorizontalAxis} from '@dnd-kit/abstract/modifiers';
+
+function Draggable({id}) {
+  const {ref} = useDraggable({
+    id,
+    modifiers: [RestrictToHorizontalAxis],
+  });
+}
+```
+
+<Story id="react-draggable-modifiers--horizontal-axis" height="130" />
+
+And here is an example of how to restrict dragging to the container element of the draggable:
+
+```jsx
+import {useDraggable} from '@dnd-kit/react';
+import {RestrictToContainer} from '@dnd-kit/dom/modifiers';
+
+function Draggable({id}) {
+  const {ref} = useDraggable({
+    id,
+    modifiers: [RestrictToContainer],
+  });
+}
+```
+
+<Story id="react-draggable-modifiers--container-modifier" height="500" />

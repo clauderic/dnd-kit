@@ -47,6 +47,7 @@ export function useDraggable<T extends Data = Data>(
   );
 
   return {
+    draggable,
     get isDragSource() {
       return isDragSource.value;
     },

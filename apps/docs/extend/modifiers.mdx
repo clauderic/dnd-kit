@@ -1,0 +1,103 @@
+---
+title: 'Modifiers'
+description: 'Modify or restrict the behavior of draggable elements.'
+icon: 'arrows-from-line'
+---
+
+## Overview
+
+Modifiers are a type of [plugin](/extend/plugins) that modify or restrict the behavior of draggable elements. They can be used to create custom behaviors, such as restricting the movement of draggable elements to a specific axis or container.
+
+## Usage
+
+Modifiers can be applied globally or to individual draggable elements.
+
+### Global modifiers
+
+Modifiers can be applied globally by passing them to the [DragDropManager instance](/concepts/drag-drop-manager).
+
+For example, if you wanted to only enable the `RestrictToHorizontalAxis` modifier:
+
+```js
+import {DragDropManager} from '@dnd-kit/dom';
+import {RestrictToHorizontalAxis} from '@dnd-kit/abstract/modifiers';
+
+function App() {
+  const manager = new DragDropManager({
+    modifiers: [RestrictToHorizontalAxis],
+  });
+}
+```
+
+### Local modifiers
+
+Modifiers can also be applied to individual [draggable](/concepts/draggable) elements by passing them to the `modifiers` option.
+
+For example, if you wanted to only enable the `RestrictToContainer` modifier for this specific draggable element, while using the `RestrictToHorizontalAxis` globally for all other draggable elements:
+
+```js
+import {Draggable} from '@dnd-kit/dom';
+
+function App() {
+  const manager = new DragDropManager({
+    modifiers: [RestrictToHorizontalAxis],
+  });
+
+  const draggable = new Draggable({
+    id: 'draggable',
+    modifiers: [RestrictToContainer],
+  }, manager);
+}
+```
+
+## Built-in modifiers
+
+### Abstract modifiers
+
+Abstract modifiers are not tied to a specific environments. These modifiers can be imported from `@dnd-kit/abstract/modifiers`.
+
+<ResponseField name="RestrictToHorizontalAxis">
+  Restricts the movement of draggable elements to the horizontal axis.
+</ResponseField>
+
+<ResponseField name="RestrictToVerticalAxis">
+  Restricts the movement of draggable elements to the vertical axis.
+</ResponseField>
+
+### Concrete modifiers
+
+Concrete modifiers are tied to specific environments, such as the DOM.
+
+#### DOM
+
+These modifiers can be imported from `@dnd-kit/dom/modifiers`.
+
+<ResponseField name="RestrictToWindow">
+  Restricts the movement of draggable elements to the window.
+</ResponseField>
+
+<ResponseField name="RestrictToContainer">
+  Restricts the movement of draggable elements to the container element.
+</ResponseField>
+
+## API Reference
+
+### Modifier
+
+```ts
+abstract class Modifier extends Plugin {
+  constructor(
+    public manager: DragDropManager,
+    public options?: {[key: string]: any}
+  ) {
+    super(manager, options);
+  }
+
+  public apply(operation: DragDropManager['dragOperation']): Coordinates {
+    /*
+     * Apply modifications to the coordinates of the drag operation.
+     */
+    return operation.transform;
+  }
+}
+```

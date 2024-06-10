@@ -18,7 +18,7 @@ import {
 type OptionalInput = 'collisionDetector';
 
 export interface Input<T extends Data = Data>
-  extends Omit<AbstractDroppableInput<T, Droppable<T>>, OptionalInput> {
+  extends Omit<AbstractDroppableInput<T>, OptionalInput> {
   collisionDetector?: CollisionDetector;
   element?: Element;
 }

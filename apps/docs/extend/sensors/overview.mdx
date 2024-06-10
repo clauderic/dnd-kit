@@ -1,0 +1,142 @@
+---
+title: 'Overview'
+description: 'Sensors detect user input and translate it into drag and drop operations.'
+---
+
+Sensors are used to detect different input methods in order to initiate drag operations, respond to movement and end or cancel the operation.
+
+## Built-in sensors
+
+The `@dnd-kit/dom` package provides a set of built-in sensors that can be used to detect user input in the browser.
+
+<CardGroup cols={2}>
+  <Card
+    title="Pointer"
+    icon="arrow-pointer"
+    href="/extend/sensors/pointer-sensor"
+  >
+    Respond to mouse, touch and pen input using the Pointer sensor.
+  </Card>
+  <Card
+    title="Keyboard"
+    icon="keyboard"
+    href="/extend/sensors/keyboard-sensor"
+  >
+    Respond to keyboard input using the Keyboard sensor.
+  </Card>
+</CardGroup>
+
+## Usage
+
+Sensors can be applied globally or to individual draggable elements.
+
+The Pointer sensor and Keyboard sensor are enabled by default.
+
+### Global sensors
+
+Sensors can be applied globally by passing them to the [DragDropManager instance](/concepts/drag-drop-manager).
+For example, if you wanted to only enable the Pointer sensor:
+
+```js
+import {DragDropManager} from '@dnd-kit/dom';
+import {PointerSensor} from '@dnd-kit/dom/sensors';
+
+function App() {
+  const manager = new DragDropManager({
+    sensors: [PointerSensor],
+  });
+}
+```
+
+### Local sensors
+
+Sensors can also be applied to individual [draggable](/concepts/draggable) elements by passing them to the modifiers option.
+
+For example, if you wanted to only enable the KeyboardSensor for this specific draggable element, while using the `PointerSensor` globally for all other draggable elements:
+
+```js
+import {Draggable} from '@dnd-kit/dom';
+import {PointerSensor, KeyboardSensor} from '@dnd-kit/dom/sensors';
+
+function App() {
+  const manager = new DragDropManager({
+    sensors: [PointerSensor],
+  });
+
+  const draggable = new Draggable({
+    id: 'draggable',
+    sensors: [KeyboardSensor],
+  }, manager);
+}
+```
+
+<Info>Local sensors take precedence over global sensors.</Info>
+
+## Custom sensors
+
+You can also create custom sensors to detect input from other input sources, or extend the built-in sensors to add additional functionality on top of them.
+
+To do so, you can create a new sensor by extending the `Sensor` class and implementing the required methods.
+
+```js
+import {Sensor} from '@dnd-kit/abstract';
+import {effect} from '@dnd-kit/state';
+
+class CustomPointerSensor extends Sensor {
+  constructor(manager) {
+    super(manager);
+
+    document.addEventListener('pointermove', this.handlePointerMove);
+    document.addEventListener('pointerup', this.handlePointerUp);
+
+    this.destroy = () => {
+      document.removeEventListener('pointermove', this.handlePointerMove);
+      document.removeEventListener('pointerup', this.handlePointerUp);
+    };
+  }
+
+  /* Bind event listeners to the draggable element */
+  public bind(source) {
+    /* Using*/
+    const unbind = effect(() => {
+      const target = source.handle ?? source.element;
+      const listener = (event) => {
+        if (event instanceof PointerEvent) {
+          this.handlePointerDown(event, source);
+        }
+      };
+
+      if (target) {
+        target.addEventListener('pointerdown', listener);
+
+        return () => {
+          target.removeEventListener('pointerdown', listener);
+        };
+      }
+    });
+
+    return unbind;
+  }
+
+  handlePointerDown = (event, source) => {
+    const coordinates = {x: event.clientX, y: event.clientY};
+
+    manager.actions.setDragSource(source.id);
+    manager.actions.start({coordinates, event});
+  }
+
+  handlePointerMove = (event) => {
+    if (!manager.dragOperation.status.initialized) return;
+
+    const coordinates = {x: event.clientX, y: event.clientY};
+
+    this.manager.actions.move({to: coordinates});
+  }
+
+  handlePointerUp = (event) => {
+    if (!manager.dragOperation.status.initialized) return;
+
+    this.manager.actions.stop();
+  }
+}
+```

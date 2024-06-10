@@ -32,7 +32,6 @@ export function useDroppable<T extends Data = Data>(
         manager
       )
   );
-  const isDisabled = useComputed(() => droppable.disabled);
   const isDropTarget = useComputed(() => droppable.isDropTarget);
 
   useOnValueChange(id, () => (droppable.id = id));
@@ -43,9 +42,6 @@ export function useDroppable<T extends Data = Data>(
   useOnValueChange(type, () => (droppable.id = id));
 
   return {
-    get isDisabled() {
-      return isDisabled.value;
-    },
     get isDropTarget() {
       return isDropTarget.value;
     },
@@ -55,5 +51,6 @@ export function useDroppable<T extends Data = Data>(
       },
       [droppable]
     ),
+    droppable,
   };
 }

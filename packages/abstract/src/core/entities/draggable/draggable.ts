@@ -8,10 +8,7 @@ import type {DragDropManager} from '../../manager/index.ts';
 import {descriptor} from '../../plugins/index.ts';
 import type {Sensors} from '../../sensors/sensor.ts';
 
-export interface Input<
-  T extends Data = Data,
-  U extends Draggable<T> = Draggable<T>,
-> extends EntityInput<T, U> {
+export interface Input<T extends Data = Data> extends EntityInput<T> {
   type?: Type;
   modifiers?: Modifiers;
   sensors?: Sensors;
@@ -51,5 +48,11 @@ export class Draggable<T extends Data = Data> extends Entity<T> {
     const {dragOperation} = this.manager;
 
     return dragOperation.source?.id === this.id;
+  }
+
+  public destroy() {
+    super.destroy();
+
+    this.modifiers?.forEach((modifier) => modifier.destroy());
   }
 }

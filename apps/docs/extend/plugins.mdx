@@ -1,0 +1,79 @@
+---
+title: 'Plugins'
+description: 'Extend beyond the core functionality with plugins.'
+icon: 'cube'
+---
+
+## Overview
+
+Plugins are a powerful way to extend the core functionality of @dnd-kit. They can be used to add new features, or modify existing behavior.
+
+Almost every non-essential feature in dnd kit is implemented as a plugin, and can be disabled or replaced. This includes sensors, modifiers and other non-vital functionality, such as:
+
+- [Accessibility](https://github.com/clauderic/dnd-kit/blob/experimental/packages/dom/src/core/plugins/accessibility/Accessibility.ts)
+- [Scroller](https://github.com/clauderic/dnd-kit/blob/experimental/packages/dom/src/core/plugins/scrolling/Scroller.ts)
+- [Auto-scroller](https://github.com/clauderic/dnd-kit/blob/experimental/packages/dom/src/core/plugins/scrolling/AutoScroller.ts)
+- [Feedback](https://github.com/clauderic/dnd-kit/blob/experimental/packages/dom/src/core/plugins/feedback/Feedback.ts)
+- [Cursor](https://github.com/clauderic/dnd-kit/blob/experimental/packages/dom/src/core/plugins/cursor/Cursor.ts)
+
+## API Reference
+
+### Plugin
+
+The `Plugin` class is the base interface for all plugins.
+
+```ts
+interface PluginOptions {
+  [key: string]: any;
+}
+
+export abstract class Plugin {
+  constructor(
+    public manager: DragDropManager,
+    public options?: PluginOptions
+  ) {}
+
+  /**
+   * Whether the plugin instance is disabled.
+   * Triggers effects when accessed.
+   */
+  public disabled: boolean = false;
+
+  /**
+   * Enable a disabled plugin instance.
+   * Triggers effects.
+   */
+  public enable(): void;
+
+  /**
+   * Disable an enabled plugin instance.
+   * Triggers effects.
+   */
+  public disable(): void;
+
+  /**
+   * Whether the plugin instance is disabled.
+   * Does not trigger effects when accessed.
+   */
+  public isDisabled(): boolean;
+
+  /**
+   * Configure a plugin instance with new options.
+   */
+  public configure(options?: PluginOptions): void;
+
+  /**
+   * Destroy a plugin instance.
+   * Each plugin is responsible for implementing its own
+   * destroy method to clean up effects and listeners
+   */
+  public destroy(): void;
+
+  /**
+   * Configure a plugin constructor with options.
+   * This method is used to configure the options that the
+   * plugin constructor will use to create plugin instances.
+   */
+  static configure(options: PluginOptions): PluginDescriptor;
+}
+```

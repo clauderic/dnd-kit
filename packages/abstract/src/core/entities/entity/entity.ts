@@ -11,7 +11,7 @@ interface Options {
   register?: boolean;
 }
 
-export interface Input<T extends Data = Data, U extends Entity<T> = Entity<T>> {
+export interface Input<T extends Data = Data> {
   id: UniqueIdentifier;
   data?: T | null;
   disabled?: boolean;

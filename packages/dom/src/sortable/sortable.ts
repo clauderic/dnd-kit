@@ -55,6 +55,12 @@ export interface SortableInput<T extends Data>
    * The index of the sortable item within its group.
    */
   index: number;
+
+  /**
+   * The element that should be used as the droppable target for this sortable item.
+   */
+  target?: Element;
+
   /**
    * The optional unique identifier of the group that the sortable item belongs to.
    */

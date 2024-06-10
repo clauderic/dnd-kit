@@ -55,6 +55,14 @@ background-color: #1eb99d05;
   box-shadow: none;
 }
 
+:global(.dark) .Dropzone {
+  background-color: #383d40;
+}
+
+:global(.hero) .Dropzone {
+  background-color: #f6f8ff;
+}
+
 :global(.dark) .Dropzone[data-highlight="true"] {
   box-shadow: inset #1eb99d 0 0 0 2px, rgba(0, 0, 0, 0.1) 20px 14px 24px;
 }

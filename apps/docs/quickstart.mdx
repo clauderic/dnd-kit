@@ -1,0 +1,116 @@
+---
+title: 'Quickstart'
+description: 'Start building drag and drop interfaces with plain JavaScript in minutes.'
+---
+
+import Intro from '/snippets/quickstart/intro.mdx';
+import {Story} from '/snippets/story.mdx';
+
+<Intro />
+
+## Installation
+Before getting started, make sure you install `@dnd-kit/dom` in your project.
+
+<CodeGroup>
+  ```plain npm
+  npm install @dnd-kit/dom
+  ```
+
+  ```plain yarn
+  yarn install @dnd-kit/dom
+  ```
+
+  ```plain pnpm
+  pnpm install @dnd-kit/dom
+  ```
+
+  ```plain bun
+  bun install @dnd-kit/dom
+  ```
+</CodeGroup>
+
+## Creating a draggable element
+
+Let's get started by creating draggable elements that can be dropped over droppable targets.
+
+In this example, we'll be using the Draggable class to create a draggable element. The Draggable class requires an element and an id as arguments.
+We'll also need to create a DragDropManager instance to manage the drag and drop interactions.
+
+```tsx
+import {DragDropManager, Draggable} from '@dnd-kit/dom';
+
+const manager = new DragDropManager();
+const element = document.createElement('button');
+const draggable = new Draggable({
+  element,
+  id: 'draggable',
+}, manager);
+
+document.body.appendChild(element);
+```
+
+<Story id="vanilla-draggable--example" />
+
+## Creating droppable elements
+
+In order for our draggable elements to have targets where they can be dropped, we need to create droppable elements. To do so, we’ll be using the useDroppable hook.
+
+Like the useDraggable hook, the useDroppable hook requires a unique id, and returns a ref that you can attach to any element to make it droppable.
+
+This time, we'll accept the id argument as a prop of the Droppable component.
+
+```tsx
+import {Droppable} from '@dnd-kit/dom';
+
+const element = document.createElement('div');
+const droppable = new Droppable({
+  element,
+  id: 'droppable',
+}, manager);
+
+element.setAttribute('style', 'width: 300px; height: 300px; background: #FEFEFE;');
+
+document.body.appendChild(element);
+```
+
+## Putting all the pieces together
+
+In order to move the draggable element into the droppable target, we need to monitor the drag and drop events and update the DOM accordingly.
+
+```tsx
+manager.monitor.addEventListener('dragend', (event) => {
+  if (event.canceled) {
+    return;
+  }
+
+  if (event.operation.target?.id === 'droppable') {
+    droppableElement.appendChild(draggableElement);
+  } else {
+    document.body.prependChild(draggableElement);
+  }
+});
+```
+
+<Story id="vanilla-droppable--example" height="360" />
+
+## Next steps
+
+Now that you have a basic understanding of how to make elements draggable and droppable, you can explore the concepts covered in this quickstart guide in more detail:
+
+<CardGroup>
+  <Card title="Manager" icon="sitemap" href="/concepts/drag-drop-manager">
+    Create drag and drop contexts for your draggable and droppable elements.
+  </Card>
+
+  <Card title="Draggable" icon="bullseye-pointer" href="/concepts/draggable">
+    Learn how to make elements draggable with the `Draggable` class.
+  </Card>
+
+  <Card title="Droppable" icon="arrows-maximize" href="/concepts/droppable">
+    Learn how to create droppable targets with the `Droppable` class.
+  </Card>
+
+  <Card title="Sortable" icon="layer-group" href="/concepts/sortable">
+    Learn how to create sortable elements with the `Sortable` class.
+  </Card>
+</CardGroup>

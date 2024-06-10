@@ -13,19 +13,12 @@ import {
 import {DragDropMonitor} from './events.ts';
 import {defaultRenderer, type Renderer} from './renderer.ts';
 
-export interface DragDropConfiguration<T extends DragDropManager> {
-  core?: {
-    plugins: Plugins<T>;
-  };
-  plugins: Plugins<T>;
-  sensors: Sensors<T>;
-  modifiers: Modifiers<T>;
-  renderer: Renderer;
-}
-
-export type DragDropManagerInput<T extends DragDropManager<any, any>> = Partial<
-  DragDropConfiguration<T>
->;
+export type DragDropManagerInput<T extends DragDropManager<any, any>> = {
+  plugins?: Plugins<T>;
+  sensors?: Sensors<T>;
+  modifiers?: Modifiers<T>;
+  renderer?: Renderer;
+};
 
 export class DragDropManager<
   T extends Draggable = Draggable,

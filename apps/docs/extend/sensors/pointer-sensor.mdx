@@ -1,0 +1,70 @@
+---
+title: 'Pointer'
+description: 'Detect pointer events to initiate drag and drop operations.'
+icon: 'arrow-pointer'
+---
+
+The Pointer sensor responds to [Pointer events](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events). It is the default sensors used by the [DragDropManager](/concepts/drag-drop-manager) if none are defined.
+
+> Pointer events are DOM events that are fired for a pointing device. They are designed to create a single DOM event model to handle pointing input devices such as a mouse, pen/stylus or touch (such as one or more fingers).
+>
+> The pointer is a hardware-agnostic device that can target a specific set of screen coordinates. Having a single event model for pointers can simplify creating Web sites and applications and provide a good user experience regardless of the user's hardware.
+>
+> Source: MDN
+
+## Usage
+
+```js
+import {PointerSensor} from '@dnd-kit/dom/sensors';
+
+const sensors = [
+  PointerSensor.configure({
+    activationConstraints: {
+      distance: {value: 5},
+      delay: {value: 200, tolerance: 10},
+    },
+  }),
+];
+```
+
+## API Reference
+
+### Options
+
+The `PointerSensor` accepts the following options:
+
+<ParamField path="activationConstraints" type="{distance?: DistanceConstraint; delay?: DelayConstraint}">
+  The Pointer sensor supports two types activation constraints, `distance` and `delay`.
+  These activation constraints are not mutually exclusive, they can be used simultaneously.
+  In case both constraints are used, the Pointer sensor will activate as soon as one of the constraints is met.
+
+  #### `distance`
+  <Expandable defaultOpen>
+    <ResponseField name="value" type="number">
+      The amount of distance the pointer must move before the drag operation is initiated.
+    </ResponseField>
+
+    <ResponseField name="tolerance" type="{x?: number, y?: number}">
+      The amount of distance the pointer can move in a given axis before the drag operation is canceled.
+
+      <Info>
+        This property is useful when the drag operation is restricted to a single axis. For example, if dragging is restricted to the y-axis, you can set the tolerance on the x-axis to be close to zero to only register movement in the y-axis as a valid distance constraint.
+      </Info>
+    </ResponseField>
+  </Expandable>
+
+  #### `delay`
+  <Expandable defaultOpen>
+    <ResponseField name="value" type="number">
+      Represents the duration in milliseconds that a draggable item needs to be held by the primary pointer for before a drag start event is emitted.
+    </ResponseField>
+
+    <ResponseField name="tolerance" type="number | {x?: number, y?: number}">
+      The `tolerance` property represents the amount of movement of the pointer calculated in pixels that is tolerated before the drag operation is aborted. If the pointer is moved during the delay duration and the tolerance is set to zero, the drag operation will be immediately aborted. If a higher tolerance is set, for example, a tolerance of 5 pixels, the operation will only be aborted if the pointer is moved by more than 5 pixels during the delay.
+
+      <Info>
+        This property is particularly useful for touch input, where some tolerance should be accounted for when using a delay constraint, as touch input is typically far less precise than mouse input.
+      </Info>
+    </ResponseField>
+  </Expandable>
+</ParamField>

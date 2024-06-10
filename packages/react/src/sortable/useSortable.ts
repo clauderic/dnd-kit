@@ -14,9 +14,10 @@ import {
 import {currentValue, type RefOrValue} from '@dnd-kit/react/utilities';
 
 export interface UseSortableInput<T extends Data = Data>
-  extends Omit<SortableInput<T>, 'handle' | 'element'> {
+  extends Omit<SortableInput<T>, 'handle' | 'element' | 'target'> {
   handle?: RefOrValue<Element>;
   element?: RefOrValue<Element>;
+  target?: RefOrValue<Element>;
 }
 
 export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
@@ -38,12 +39,15 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
   const manager = useDragDropManager();
   const handle = currentValue(input.handle);
   const element = currentValue(input.element);
+  const target = currentValue(input.target);
+
   const sortable = useConstant(() => {
     return new Sortable(
       {
         ...input,
         handle,
         element,
+        target,
         feedback,
         options: {
           ...input.options,
@@ -64,7 +68,6 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     };
   }, [sortable, manager]);
 
-  const isDisabled = useComputed(() => sortable.disabled);
   const isDropTarget = useComputed(() => sortable.isDropTarget);
   const isDragSource = useComputed(() => sortable.isDragSource);
 
@@ -90,6 +93,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
   );
   useOnValueChange(handle, () => (sortable.handle = handle));
   useOnValueChange(element, () => (sortable.element = element));
+  useOnValueChange(target, () => (sortable.target = target));
   useOnValueChange(disabled, () => (sortable.disabled = disabled === true));
   useOnValueChange(sensors, () => (sortable.sensors = sensors));
   useOnValueChange(
@@ -104,9 +108,6 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
   useOnValueChange(transition, () => (sortable.transition = transition));
 
   return {
-    get isDisabled() {
-      return isDisabled.value;
-    },
     get isDragSource() {
       return isDragSource.value;
     },

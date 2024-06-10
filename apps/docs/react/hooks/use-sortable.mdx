@@ -1,0 +1,138 @@
+---
+title: 'useSortable'
+description: 'Use the `useSortable` hook to reorder elements in a list or across multiple lists.'
+icon: 'layer-group'
+---
+
+A sortable element is an element that is simultaneously [draggable](/concepts/draggable) and [droppable](/concepts/droppable).
+
+<Info>
+  The `useSortable` hook is a thin wrapper around the [Sortable](/concepts/sortable) class that makes it easier to create sortable elements in React.
+</Info>
+
+
+## Usage
+
+The `useSortable` hook requires an `id` and an `index`. It accepts all the same options as the `Sortable` class. Refer to the [Input](#input) section below for more information.
+
+```jsx
+import {useSortable} from '@dnd-kit/react/sortable';
+
+function Sortable(props) {
+  const {ref} = useSortable({
+    id: props.id,
+    index: props.index,
+  });
+
+  return (
+    <div ref={setNodeRef}>
+      {props.index}
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Input
+
+The `useSortable` hook accepts all of the same arguments as the [useDraggable](/react/hooks/use-draggable) hook and [useDroppable](/react/hooks/use-droppable) hooks, as well as additional arguments that are specific to sortable elements.
+
+<ParamField path="id" type="string | number" required>
+  The identifier of the sortable element. Should be unique within the same [drag and drop context provider](/react/components/drag-drop-provider).
+</ParamField>
+
+<ParamField path="index" type="number" required>
+  The index of the sortable element. This is used to determine the position of the element in the list.
+</ParamField>
+
+<ParamField path="transition" type="{duration?: number; easing?: string: idle: boolean} | null">
+  Optionally supply a transition to animate the sortable element when it is being sorted.
+
+  <Expandable>
+    <ParamField path="duration" type="number">
+      The duration of the transition in milliseconds.
+    </ParamField>
+
+    <ParamField path="easing" type="string">
+      The easing function to use for the transition.
+    </ParamField>
+
+    <ParamField path="idle" type="boolean">
+      Whether the sortable item should transition to its new position when its index changes, but there is no drag operation in progress.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField path="element" type="Element | Ref<Element>">
+  If you already have a reference to the element, you can pass it to the `element` option instead of using the `ref` that is returned by the `useSortable` hook to connect the sortable element.
+</ParamField>
+
+<ParamField path="handle" type="Element | Ref<Element>">
+  If you already have a reference to the drag handle element, you can pass it to the `handle` option instead of using the `handleRef` that is returned by the `useSortable` hook to connect the sortable handle element.
+</ParamField>
+
+<ParamField path="modifiers" type="Modifier[]">
+  An array of [modifiers](/plugins/modifiers) that can be used to modify or restrict the behavior of the sortable element.
+</ParamField>
+
+<ParamField path="sensors" type="Sensors[]">
+  An array of [sensors](/sensors/overview) that can be bound to the sortable element to detect drag interactions.
+</ParamField>
+
+<ParamField path="target" type="Element | Ref<Element>">
+  If you already have a reference to the element you want to use as the droppable target for this sortable element, you can pass it to the `target` option instead of using the `targetRef` that is returned by the `useSortable` hook.
+</ParamField>
+
+<ParamField path="accepts" type="string | number | Symbol | (type: string | number | Symbol) => boolean">
+  Optionally supply a type of draggable element to only allow it to be dropped over certina droppable targets that [accept](#) this `type`.
+</ParamField>
+
+<ParamField path="collisionDetector" type="(input: CollisionDetectorInput) => Collision | null">
+  Optionally supply a [collision detector](/concepts/droppable#detecting-collisions) function can be used to detect collisions between the droppable element and draggable elements.
+</ParamField>
+
+<ParamField path="collisionPriority" type="number">
+  Optionally supply a number to set the collision priority of the droppable target of this sortable element. The higher the number, the higher the priority when detecting collisions. This can be useful if there are multiple droppable elements that overlap.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Set to `true` to prevent the sortable element from being sortable.
+</ParamField>
+
+<ParamField path="data" type="{[key: string]: any}">
+  The data argument is for advanced use-cases where you may need access to additional data about the sortable element in event handlers, modifiers, sensors or custom plugins.
+</ParamField>
+
+<ParamField path="effects" type="(manager: DragDropManager) => Effect[]">
+  <Info>This is an advanced feature and should not need to be used by most consumers.</Info>
+  You can supply a function that returns an array of reactive effects that can be set up and automatically cleaned up when the component invoking the `useSortable` hook element is unmounted.
+</ParamField>
+
+### Output
+
+The `useSortable` hook returns an object containing the following properties:
+
+<ParamField path="ref" type="Ref<Element>">
+  A React ref that can be assigned to the element you want to connect as the draggable element and droppable target for this sortable instance.
+</ParamField>
+
+<ParamField path="targetRef" type="Ref<Element>">
+  A React ref that can be assigned to the element you want to use as the droppable target for this sortable element.
+</ParamField>
+
+<ParamField path="sourceRef" type="Ref<Element>">
+  A React ref that can be assigned to the element you want to use as the draggable source element for this sortable element.
+</ParamField>
+
+<ParamField path="handleRef" type="Ref<Element>">
+  A React ref that can be assigned to the element you want to use as the drag handle element for this sortable element.
+</ParamField>
+
+<ParamField path="isDropTarget" type="boolean">
+  A boolean value that indicates whether the sortable element is currently a drop target.
+</ParamField>
+
+<ParamField path="isDragSource" type="boolean">
+  A boolean value that indicates whether the sortable element is currently being dragged.
+</ParamField>

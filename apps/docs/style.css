@@ -1,0 +1,68 @@
+#navbar img[src*="logo"] {
+  height: 45px;
+}
+
+#sidebar svg:is([style*="sitemap.svg"], [style*="layer-group.svg"], [style*="arrows-from-line.svg"], [style*="signal-stream.svg"]) {
+  width: 1.1rem;
+}
+
+#navbar a:is([href="/react/quickstart"],[href="/javascript/quickstart"]) {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+
+  &::before {
+    content: '';
+    display: block;
+    mask-repeat: no-repeat;
+    mask-position: center center;
+    width: 18px;
+    height: 18px;
+    background-color: #596dff;
+  }
+}
+
+#navbar a[href="/react/quickstart"]::before  {
+  mask-image: url("https://mintlify.b-cdn.net/v6.4.0/brands/react.svg");
+}
+
+#navbar a[href="/javascript/quickstart"]::before {
+  mask-image: url("https://mintlify.b-cdn.net/v6.4.0/brands/js.svg");
+}
+
+.font-extrabold, .prose :where(h2):not(:where([class~=not-prose] *)) {
+  font-weight: 600;
+}
+
+.info ol {
+  list-style-type: decimal;
+  padding: 1.25rem;
+  text-indent: 0.25rem;
+}
+
+kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-weight: 400;
+  vertical-align: text-top;
+  white-space: nowrap;
+  font-size: .75em;
+  min-width: 1.75em;
+  line-height: 1.7em;
+  box-sizing: border-box;
+  padding-left: .5em;
+  padding-right: .5em;
+  padding-bottom: .05em;
+  word-spacing: -.1em;
+  border-radius: 0.25em;
+  height: fit-content;
+  background-color: rgba(255,255,255);
+  box-shadow: color(display-p3 0.024 0.024 0.349 / 0.024) 0px -0.6px 6px 0px inset, color(display-p3 1 1 1 / 0.95) 0px 0.6px 0px 0px inset, color(display-p3 0.024 0.024 0.349 / 0.024) 0px 3px 6px 0px inset, color(display-p3 0.008 0.008 0.165 / 0.15) 0px -0.6px 0px 0px inset, color(display-p3 0.004 0.039 0.2 / 0.122) 0px 0px 0px 0.6px, color(display-p3 0.008 0.027 0.184 / 0.197) 0px 0.96px 2.04px 0px;
+}
+
+.dark kbd {
+  background-color: rgba(0,0,0);
+  box-shadow: color(display-p3 0.882 0.933 0.992 / 0.077) 0px -0.6px 6px 0px inset, color(display-p3 0.949 0.969 0.996 / 0.708) 0px 0.6px 0px 0px inset, color(display-p3 0.875 0.992 1 / 0.034) 0px 3px 6px 0px inset, color(display-p3 0 0 0 / 0.9) 0px -1.2px 0px 0px inset, color(display-p3 0.882 0.929 1 / 0.246) 0px 0px 0px 0.9px, color(display-p3 0 0 0 / 0.95) 0px 0.96px 2.04px 0px;
+}
