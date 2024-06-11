@@ -16,7 +16,7 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
-    "@dnd-kit/state": "*",
+    "@dnd-kit/state": "^0.0.1",
     "tslib": "^2.6.2"
   },
   "devDependencies": {

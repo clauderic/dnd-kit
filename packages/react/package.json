@@ -56,9 +56,9 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
-    "@dnd-kit/abstract": "*",
-    "@dnd-kit/dom": "*",
-    "@dnd-kit/state": "*",
+    "@dnd-kit/abstract": "^0.0.1",
+    "@dnd-kit/dom": "^0.0.1",
+    "@dnd-kit/state": "^0.0.1",
     "tslib": "^2.6.2"
   },
   "peerDependencies": {
