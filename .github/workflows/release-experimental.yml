@@ -5,8 +5,15 @@ on:
       - experimental
 jobs:
   release:
+    name: ${{ matrix.channel }}
     runs-on: ubuntu-latest
     environment: production
+    strategy:
+      max-parallel: 1
+      matrix:
+        channel:
+          - current
+          - beta
     steps:
       - uses: actions/checkout@v2
         with:
@@ -22,7 +29,18 @@ jobs:
       - uses: oven-sh/setup-bun@v1
       - run: bun install && bun run build
 
+      - name: Create Release Pull Request or Publish to npm
+        if: matrix.channel == 'current'
+        uses: changesets/action@master
+        with:
+          publish: npm run release
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Publish packages on npm with @beta tag
+        if: matrix.channel == 'beta'
         run: |
           npm run version-packages:beta
           npm run release:beta
