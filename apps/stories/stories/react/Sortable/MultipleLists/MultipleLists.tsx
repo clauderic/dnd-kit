@@ -1,8 +1,8 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import type {PropsWithChildren} from 'react';
 import {flushSync} from 'react-dom';
 import {CollisionPriority} from '@dnd-kit/abstract';
-import {DragDropProvider, useDragOperation} from '@dnd-kit/react';
+import {DragDropProvider} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
 import {move} from '@dnd-kit/helpers';
 import {DragDropManager, defaultPreset} from '@dnd-kit/dom';
@@ -23,6 +23,7 @@ interface Props {
   debug?: boolean;
   grid?: boolean;
   defaultItems?: Record<string, string[]>;
+  columnStyle?: Record<string, string>;
   itemCount: number;
   scrollable?: boolean;
   vertical?: boolean;
@@ -33,6 +34,7 @@ export function MultipleLists({
   defaultItems,
   grid,
   itemCount,
+  columnStyle,
   scrollable,
   vertical,
 }: Props) {
@@ -109,6 +111,7 @@ export function MultipleLists({
               index={columnIndex}
               columns={grid ? 2 : 1}
               scrollable={scrollable}
+              style={columnStyle}
             >
               {children}
             </SortableColumn>
@@ -190,6 +193,7 @@ interface SortableColumnProps {
   id: string;
   index: number;
   scrollable?: boolean;
+  style?: React.CSSProperties;
 }
 
 function SortableColumn({
@@ -198,6 +202,7 @@ function SortableColumn({
   id,
   index,
   scrollable,
+  style,
 }: PropsWithChildren<SortableColumnProps>) {
   const {handleRef, isDragSource, ref} = useSortable({
     id,
@@ -220,6 +225,7 @@ function SortableColumn({
       shadow={isDragSource}
       scrollable={scrollable}
       transitionId={`sortable-column-${id}`}
+      style={style}
     >
       {children}
     </Container>

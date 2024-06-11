@@ -1,6 +1,7 @@
 import {Code, Preview} from '../../../../components';
 
 import {MultipleLists} from '../MultipleLists.tsx';
+import {Hero} from '../MultipleLists.stories.tsx';
 import {Example} from './examples/QuickStart';
 import ExampleSource from './examples/QuickStart?raw';
 import ColumnSource from './examples/Column?raw';
@@ -10,19 +11,7 @@ import ItemSource from './examples/Item?raw';
 
 Reorder sortable elements across multiple lists.
 
-<Preview hero>
-  <div
-    style={{display: 'flex', justifyContent: 'center', '--min-width': '270px'}}
-  >
-    <MultipleLists
-      defaultItems={{
-        A: ['A1', 'A2'],
-        B: ['B1', 'B2'],
-        C: [],
-      }}
-    />
-  </div>
-</Preview>
+<Preview hero of={Hero} />
 
 ## Installation
 

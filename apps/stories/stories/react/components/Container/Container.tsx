@@ -53,7 +53,7 @@ export const Container = forwardRef<HTMLDivElement, Props>(
             {actions}
           </div>
         ) : null}
-        <ul>{children}</ul>
+        <ul id={label}>{children}</ul>
       </div>
     );
   }

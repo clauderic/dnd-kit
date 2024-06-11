@@ -15,19 +15,28 @@ The `useSortable` hook requires an `id` and an `index`. It accepts all the same 
 ```jsx
 import {useSortable} from '@dnd-kit/react/sortable';
 
-function Sortable(props) {
-  const {ref} = useSortable({
-    id: props.id,
-    index: props.index,
-  });
+function Sortable({id, index}) {
+  const {ref} = useSortable({id, index});
 
   return (
-    <div ref={setNodeRef}>
-      {props.index}
-    </div>
+    <li ref={ref}>Item {id}</li>
+  );
+}
+
+function App() {
+  const items = [1, 2, 3, 4];
+
+  return (
+    <ul>
+      {items.map((id, index) =>
+        <Sortable key={id} id={id} index={index} />
+      )}
+    </ul>
   );
 }
 ```
+
+<Story id="react-sortable--quickstart" height="200" />
 
 ## API Reference
 

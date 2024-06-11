@@ -79,6 +79,10 @@
         "react/hooks/use-droppable",
         "react/hooks/use-sortable"
       ]
+    },
+    {
+      "group": "Guides",
+      "pages": ["react/guides/multiple-sortable-lists"]
     }
   ],
   "footerSocials": {

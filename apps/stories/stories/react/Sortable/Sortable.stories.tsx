@@ -1,6 +1,8 @@
 import type {Meta, StoryObj} from '@storybook/react';
 
-import {SortableExample} from './SortableExample';
+import {SortableExample} from './SortableExample.tsx';
+import {QuickstartExample} from './Quickstart.tsx';
+
 import docs from './docs/SortableDocs.mdx';
 
 const meta: Meta<typeof SortableExample> = {
@@ -24,4 +26,10 @@ export const Example: Story = {
     debug: false,
     itemCount: 11,
   },
+};
+
+export const Quickstart: Story = {
+  name: 'Quickstart',
+  tags: ['hidden'],
+  render: () => <QuickstartExample />,
 };

@@ -1,0 +1,365 @@
+---
+title: 'Multiple sortable lists'
+description: 'Learn how to reorder sortable elements across multiple lists.'
+icon: 'columns-3'
+mode: "wide"
+---
+
+import {Story} from '/snippets/story.mdx';
+
+<Story id="react-sortable-multiple-lists--hero" height="400" hero />
+
+## Overview
+
+In this guide, you'll learn how to reorder sortable elements across multiple lists. This is useful when you have multiple lists and you want to move elements between them.
+
+Before getting started, make sure you familiarize yourself with the [useSortable](/react/hooks/use-sortable) hook.
+
+We'll be setting up three columns, and each column will have its own list of items. You'll be able to drag and drop items between the columns.
+
+## Setup
+
+First, let's set up the initial setup for the columns and items. We'll be creating three files, `App.js`, `Column.js`, and `Item.js`, and applying some basic styles in the `Styles.css` file.
+
+<CodeGroup>
+```jsx App.js
+import {Column} from './Column';
+import {Item} from './Item';
+import "./Styles.css";
+
+export function App() {
+  const [items] = useState({
+    A: ['A0', 'A1', 'A2'],
+    B: ['B0', 'B1'],
+    C: [],
+  });
+
+  return (
+    <div className="Root">
+      {Object.entries(items).map(([column, items]) => (
+        <Column key={column} id={column}>
+          {items.map((id, index) => (
+            <Item key={id} id={id} index={index} column={column} />
+          ))}
+        </Column>
+      ))}
+    </div>
+  );
+}
+```
+
+```jsx Column.js
+import React from 'react';
+
+export function Column({children, id}) {
+  return (
+    <div className="Column">
+      {children}
+    </div>
+  );
+}
+```
+
+```jsx Item.js
+import React from 'react';
+
+export function Item({id, index}) {
+  return (
+    <button className="Item">
+      {id}
+    </button>
+  );
+}
+
+const styles = {
+  appearance: "none", backgroundColor: "#FFF", color: "#666";
+  padding: "12px 20px"; borderRadius: "5px"
+};
+```
+
+```css Styles.css
+.Root {
+  display: inline-flex;
+  flex-direction: row;
+  gap: 20;
+}
+
+.Column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  min-width: 200px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.Item {
+  appearance: none;
+  background: #FFF;
+  color: #666;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: grab;
+};
+```
+</CodeGroup>
+
+<Story id="react-sortable-multiple-lists--guide-1" height="280" />
+
+## Adding drag and drop functionality
+
+Now, let's add drag and drop functionality to the items. We'll be using the [useSortable](/react/hooks/use-sortable) hook to make the items sortable. Let's modify the `Item` component to make it sortable:
+
+```jsx Item.js
+import React from 'react';
+import {useSortable} from '@dnd-kit/react/sortable';
+
+export function Item({id, index, column}) {
+  const {ref} = useSortable({
+    id,
+    index,
+    type: 'item',
+    accept: 'item',
+    group: column
+  });
+
+  return (
+    <button ref={ref}>
+      {id}
+    </button>
+  );
+}
+```
+
+<Story id="react-sortable-multiple-lists--guide-2" height="280" />
+
+As you can see, we've added the `useSortable` hook to the `Item` component. We've also passed the `id`, `index`, `type`, `accept`, and `group` props to the hook.
+
+This creates an uncontrolled list of sortable items that can be sorted within each column. In order to be able to move items between columns, we need to add some additional logic.
+
+## Moving items between columns
+
+To move items between columns, we need to add a drop target to each column.
+
+We'll be using the [useDroppable](/react/hooks/use-droppable) hook to create a drop target for each column. Let's modify the `Column` component to make it droppable:
+
+```jsx Column.js
+import React from 'react';
+import {useDroppable} from '@dnd-kit/react';
+import {CollisionPriority} from '@dnd-kit/abstract';
+
+export function Column({children, id}) {
+  const {ref} = useDroppable({
+    id,
+    type: 'column',
+    accept: 'item',
+    collisionPriority: CollisionPriority.Low,
+  });
+
+  return (
+    <div className="Column" ref={ref}>
+      {children}
+    </div>
+  );
+}
+```
+
+<Note>We're setting the `collisionPriority` to `CollisionPriority.Low` to prioritize collisions of items over collisions of columns. Learn more about [detecting collisions](/concepts/droppable#detecting-collisions).</Note>
+
+This will allow us to drop items into each column. However, we still need to handle the logic for moving items between columns.
+
+We'll be using the [DragDropProvider](/react/components/drag-drop-provider) component to listen and respond to the drag and drop events. Let's modify the `App` component to add the `DragDropProvider`. We'll be using the `move` helper function from `@dnd-kit/helpers` to help us mutate the array of items between columns:
+
+```jsx App.js
+import React, {useState} from 'react';
+import {DragDropProvider} from '@dnd-kit/react';
+import {move} from '@dnd-kit/helpers';
+import "./Styles.css";
+
+import {Column} from './Column';
+import {Item} from './Item';
+
+export function App() {
+  const [items, setItems] = useState({
+    A: ['A0', 'A1', 'A2'],
+    B: ['B0', 'B1'],
+    C: [],
+  });
+
+  return (
+    <DragDropProvider
+      onDragOver={(event) => {
+        const {source, target} = event.operation;
+
+        setItems((items) => move(items, source, target));
+      }}
+    >
+      <div className="Root">
+        {Object.entries(items).map(([column, items]) => (
+          <Column key={column} id={column}>
+            {items.map((id, index) => (
+              <Item key={id} id={id} index={index} column={column} />
+            ))}
+          </Column>
+        ))}
+      </div>
+    </DragDropProvider>
+  );
+}
+```
+
+As you can see, we've added the `DragDropProvider` component to the `App` component. We've also added an `onDragOver` event handler to listen for drag and drop events.
+
+When an item is dragged over a column, the `onDragOver` event handler will be called. We'll use the `move` helper function to move the item between columns.
+
+The result is a sortable list of items that can be moved between columns:
+
+<Story id="react-sortable-multiple-lists--guide-3" height="280" />
+
+### Making the columns sortable
+
+If you want to make the columns themselves sortable, you can use the `useSortable` hook in the `Column` component.
+Here's how you can modify the `Column` component to make it sortable:
+
+```jsx Column.js
+import React from 'react';
+import {CollisionPriority} from '@dnd-kit/abstract';
+import {useSortable} from '@dnd-kit/react/sortable';
+
+export function Column({children, id, index}) {
+  const {ref} = useSortable({
+    id,
+    index,
+    type: 'column',
+    collisionPriority: CollisionPriority.Low,
+    accept: ['item', 'column'],
+  });
+
+  return (
+    <div className="Column" ref={ref}>
+      {children}
+    </div>
+  );
+}
+```
+
+<Info>You'll also need to pass the column `index` prop to the `Column` component in the `App` component.</Info>
+
+<Story id="react-sortable-multiple-lists--guide-4" height="280" />
+
+If we want to control the state of the columns in React, we can update the `App` component to handle the column order in the `onDragEnd` callback:
+
+```jsx App.js
+export function App({style = styles}) {
+  const [items, setItems] = useState({
+    A: ['A0', 'A1', 'A2'],
+    B: ['B0', 'B1'],
+    C: [],
+  });
+  const [columnOrder, setColumnOrder] = useState(() => Object.keys(items));
+
+  return (
+    <DragDropProvider
+      onDragOver={(event) => {
+        const {source, target} = event.operation;
+
+        if (source?.type === 'column') return;
+
+        setItems((items) => move(items, source, target));
+      }}
+      onDragEnd={(event) => {
+        const {source, target} = event.operation;
+
+        if (event.canceled || source.type !== 'column') return;
+
+        setColumnOrder((columns) => move(columns, source, target));
+      }}
+    >
+      <div className="Root">
+        {Object.entries(items).map(([column, items], columnIndex) => (
+          <Column key={column} id={column} index={columnIndex}>
+            {items.map((id, index) => (
+              <Item key={id} id={id} index={index} column={column} />
+            ))}
+          </Column>
+        ))}
+      </div>
+    </DragDropProvider>
+  );
+}
+```
+
+We're using the `onDragEnd` event handler instead of the `onDragOver` event handler to handle the column order. This allows us to only update the order of the columns in React when the drag operation is completed, while letting `@dnd-kit` optimistically update the order of the columns during the drag operation, without causing unnecessary re-renders.
+If we wanted more control over the drag and drop operation, we could also handle the event in the `onDragOver` callback.
+
+## Handling canceled drag operations
+
+It's possible for a drag operation to be canceled. For example, users can cancel a drag operation initiated by the [Pointer sensor](/extend/sensors/pointer) by pressing the `Escape` key.
+
+When you update the order of items in the `onDragOver` callback, you should make sure to check if the user decided to abort the drag operation in the `onDragEnd` callback. If the drag operation was canceled, you should revert the order of items to the state before the drag operation started.
+
+For example, here is how we would update our app to handle this case for the order of items:
+
+```jsx App.js
+import React, {useRef, useState} from 'react';
+import {DragDropProvider} from '@dnd-kit/react';
+import {move} from '@dnd-kit/helpers';
+import "./Styles.css";
+
+import {Column} from './Column';
+import {Item} from './Item';
+
+export function App({style = styles}) {
+  const [items, setItems] = useState({
+    A: ['A0', 'A1', 'A2'],
+    B: ['B0', 'B1'],
+    C: [],
+  });
+  const previousItems = useRef(items);
+  const [columnOrder, setColumnOrder] = useState(() => Object.keys(items));
+
+  return (
+    <DragDropProvider
+      onDragStart={() => {
+        previousItems.current = items;
+      }}
+      onDragOver={(event) => {
+        const {source, target} = event.operation;
+
+        if (source?.type === 'column') return;
+
+        setItems((items) => move(items, source, target));
+      }}
+      onDragEnd={(event) => {
+        const {source, target} = event.operation;
+
+        if (event.canceled) {
+          if (source.type === 'item') {
+            setItems(previousItems.current);
+          }
+
+          return;
+        }
+
+        if (source.type === 'column') {
+          setColumnOrder((columns) => move(columns, source, target));
+        }
+      }}
+    >
+      <div className="Root">
+        {Object.entries(items).map(([column, items], columnIndex) => (
+          <Column key={column} id={column} index={columnIndex}>
+            {items.map((id, index) => (
+              <Item key={id} id={id} index={index} column={column} />
+            ))}
+          </Column>
+        ))}
+      </div>
+    </DragDropProvider>
+  );
+}
+```
+
+<Note>Optimistic updates performed by `@dnd-kit` are automatically reverted when a drag operation is canceled.</Note>

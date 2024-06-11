@@ -104,3 +104,7 @@ kbd {
   mask-size: contain;
   background-color: currentColor;
 }
+
+#content-container.max-w-6xl {
+  max-width: 80rem;
+}
