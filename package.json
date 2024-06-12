@@ -8,7 +8,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "turbo run build --filter=storybook^... && changeset publish",
+    "release": "changeset publish",
     "version-packages:beta": "changeset version --snapshot beta",
     "release:beta": "changeset publish --snapshot --tag beta"
   },
