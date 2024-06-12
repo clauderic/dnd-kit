@@ -1,5 +1,5 @@
 import {dirname, join} from 'path';
-import {mergeConfig} from 'vite';
+import {mergeConfig, optimizeDeps} from 'vite';
 
 export default {
   stories: ['../stories/**/*.stories.mdx', '../stories/**/*.stories.tsx'],
@@ -19,6 +19,9 @@ export default {
     return mergeConfig(config, {
       define: {
         'process.env': {},
+      },
+      optimizeDeps: {
+        exclude: ['@dnd-kit/*'],
       },
     });
   },
