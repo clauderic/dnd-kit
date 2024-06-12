@@ -1,4 +1,3 @@
-import {useReducer} from 'react';
 import {getWindow, useIsomorphicLayoutEffect} from '@dnd-kit/utilities';
 
 import type {ClientRect} from '../../types';
@@ -18,7 +17,22 @@ export function useRects(
   const windowRect = useWindowRect(
     firstElement ? getWindow(firstElement) : null
   );
-  const [rects, measureRects] = useReducer(reducer, defaultValue);
+  const [rects, setRects] = useState(defaultValue);
+
+  function measureRects() {
+    setRects(() => {
+      if (!elements.length) {
+        return defaultValue;
+      }
+  
+      return elements.map((element) =>
+        isDocumentScrollingElement(element)
+          ? (windowRect as ClientRect)
+          : new Rect(measure(element), element)
+      );
+    });
+  }
+  
   const resizeObserver = useResizeObserver({callback: measureRects});
 
   if (elements.length > 0 && rects === defaultValue) {
@@ -35,16 +49,4 @@ export function useRects(
   }, [elements]);
 
   return rects;
-
-  function reducer() {
-    if (!elements.length) {
-      return defaultValue;
-    }
-
-    return elements.map((element) =>
-      isDocumentScrollingElement(element)
-        ? (windowRect as ClientRect)
-        : new Rect(measure(element), element)
-    );
-  }
 }

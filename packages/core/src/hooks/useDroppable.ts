@@ -116,7 +116,7 @@ export function useDroppable({
     resizeObserver.observe(nodeRef.current);
   }, [nodeRef, resizeObserver]);
 
-  useIsomorphicLayoutEffect(
+  useEffect(
     () => {
       dispatch({
         type: Action.RegisterDroppable,
