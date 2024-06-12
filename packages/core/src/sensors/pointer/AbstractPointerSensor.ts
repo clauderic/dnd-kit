@@ -112,6 +112,7 @@ export class AbstractPointerSensor implements SensorInstance {
     this.windowListeners.add(EventName.Resize, this.handleCancel);
     this.windowListeners.add(EventName.DragStart, preventDefault);
     this.windowListeners.add(EventName.VisibilityChange, this.handleCancel);
+    this.windowListeners.add(EventName.TouchCancel, this.handleCancel);
     this.windowListeners.add(EventName.ContextMenu, preventDefault);
     this.documentListeners.add(EventName.Keydown, this.handleKeydown);
 
