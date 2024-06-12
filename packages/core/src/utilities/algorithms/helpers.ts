@@ -1,7 +1,8 @@
 /* eslint-disable no-redeclare */
-import type {ClientRect} from '../../types';
+import {distanceBetween} from '../coordinates';
+import type {Coordinates, ClientRect} from '../../types';
 
-import type {Collision, CollisionDescriptor} from './types';
+import type {Collision, CollisionDetection, CollisionDescriptor} from './types';
 
 /**
  * Sort collisions from smallest to greatest value
@@ -71,3 +72,26 @@ export function getFirstCollision(
 
   return property ? firstCollision[property] : firstCollision;
 }
+
+export const closestPoint =
+  (
+    getReferencePoint: (rect: ClientRect) => Coordinates,
+    getComparisonPoint = getReferencePoint
+  ): CollisionDetection =>
+  ({collisionRect, droppableRects, droppableContainers}) => {
+    const point = getReferencePoint(collisionRect);
+    const collisions: CollisionDescriptor[] = [];
+
+    for (const droppableContainer of droppableContainers) {
+      const {id} = droppableContainer;
+      const rect = droppableRects.get(id);
+
+      if (rect) {
+        const distBetween = distanceBetween(getComparisonPoint(rect), point);
+
+        collisions.push({id, data: {droppableContainer, value: distBetween}});
+      }
+    }
+
+    return collisions.sort(sortCollisionsAsc);
+  };
