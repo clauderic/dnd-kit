@@ -31,8 +31,6 @@ export class Draggable<T extends Data = Data> extends Entity<T> {
   #modifiers: Modifier[] | undefined;
 
   public set modifiers(modifiers: Modifiers | undefined) {
-    console.log(modifiers);
-
     this.#modifiers?.forEach((modifier) => modifier.destroy());
 
     this.#modifiers = modifiers?.map((modifier) => {
