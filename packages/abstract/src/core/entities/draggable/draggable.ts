@@ -23,19 +23,28 @@ export class Draggable<T extends Data = Data> extends Entity<T> {
 
     this.type = type;
     this.sensors = sensors;
-
-    if (modifiers?.length) {
-      this.modifiers = modifiers.map((modifier) => {
-        const {plugin, options} = descriptor(modifier);
-
-        return new plugin(manager, options);
-      });
-    }
+    this.modifiers = modifiers;
   }
 
   public sensors: Sensors | undefined;
 
-  public modifiers: Modifier[] | undefined;
+  #modifiers: Modifier[] | undefined;
+
+  public set modifiers(modifiers: Modifiers | undefined) {
+    console.log(modifiers);
+
+    this.#modifiers?.forEach((modifier) => modifier.destroy());
+
+    this.#modifiers = modifiers?.map((modifier) => {
+      const {plugin, options} = descriptor(modifier);
+
+      return new plugin(this.manager, options);
+    });
+  }
+
+  public get modifiers(): Modifier[] | undefined {
+    return this.#modifiers;
+  }
 
   @reactive
   public type: Type | undefined;
