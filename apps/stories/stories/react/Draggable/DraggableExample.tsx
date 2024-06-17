@@ -1,5 +1,11 @@
-import React, {PropsWithChildren, useRef, useState} from 'react';
+import React, {
+  type PropsWithChildren,
+  type CSSProperties,
+  useRef,
+  useState,
+} from 'react';
 import type {Modifiers, Sensors} from '@dnd-kit/abstract';
+import type {FeedbackType} from '@dnd-kit/dom';
 import {DragDropProvider, useDraggable} from '@dnd-kit/react';
 
 import {Button, Handle} from '../components';
@@ -32,10 +38,18 @@ export function DraggableExample({
 interface DraggableProps {
   id: string;
   handle?: boolean;
+  feedback?: FeedbackType;
   modifiers?: Modifiers;
+  style?: CSSProperties;
 }
 
-function Draggable({id, modifiers, handle}: DraggableProps) {
+export function Draggable({
+  id,
+  modifiers,
+  handle,
+  feedback,
+  style,
+}: DraggableProps) {
   const [element, setElement] = useState<Element | null>(null);
   const handleRef = useRef<HTMLButtonElement | null>(null);
 
@@ -43,6 +57,7 @@ function Draggable({id, modifiers, handle}: DraggableProps) {
     id,
     modifiers,
     element,
+    feedback,
     handle: handleRef,
   });
 
@@ -51,6 +66,7 @@ function Draggable({id, modifiers, handle}: DraggableProps) {
       ref={setElement}
       shadow={isDragSource}
       actions={handle ? <Handle ref={handleRef} variant="dark" /> : undefined}
+      style={style}
     >
       <DraggableIcon />
     </Button>

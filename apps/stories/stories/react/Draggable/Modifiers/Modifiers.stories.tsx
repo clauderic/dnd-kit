@@ -1,4 +1,3 @@
-import React, {type PropsWithChildren} from 'react';
 import type {Meta, StoryObj} from '@storybook/react';
 import {
   RestrictToHorizontalAxis,
@@ -8,6 +7,7 @@ import {RestrictToElement, RestrictToWindow} from '@dnd-kit/dom/modifiers';
 
 import docs from './docs/ModifierDocs.mdx';
 import {DraggableExample} from '../DraggableExample';
+import {SnapToGridExample} from './SnapToGridExample';
 import styles from './styles.module.css';
 
 const meta: Meta<typeof DraggableExample> = {
@@ -63,4 +63,9 @@ export const ContainerModifier: Story = {
       }),
     ],
   },
+};
+
+export const SnapModifierExample: Story = {
+  name: 'Snap to grid',
+  render: SnapToGridExample,
 };

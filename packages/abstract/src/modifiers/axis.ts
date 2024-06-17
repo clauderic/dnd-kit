@@ -31,6 +31,7 @@ export const RestrictToVerticalAxis = AxisModifier.configure({
   axis: 'x',
   value: 0,
 });
+
 export const RestrictToHorizontalAxis = AxisModifier.configure({
   axis: 'y',
   value: 0,

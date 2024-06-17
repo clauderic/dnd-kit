@@ -17,6 +17,7 @@ export const Button = forwardRef<HTMLElement, PropsWithChildren<Props>>(
       {
         ref,
         'data-shadow': shadow,
+        ...props,
       },
       <Fragment>
         {children}
