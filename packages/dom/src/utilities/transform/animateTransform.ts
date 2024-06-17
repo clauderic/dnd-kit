@@ -1,5 +1,5 @@
 import {Styles} from '../styles/index.ts';
-import {getWindow} from '../execution-context/index.ts';
+import {getComputedStyles} from '../styles/getComputedStyles.ts';
 
 interface Arguments {
   element: Element;
@@ -16,7 +16,7 @@ export function animateTransform({
   onFinish,
 }: Arguments) {
   const styles = new Styles(element);
-  const {transitionProperty} = getWindow(element).getComputedStyle(element);
+  const {transitionProperty} = getComputedStyles(element);
 
   const properties = transitionProperty.split(', ');
 

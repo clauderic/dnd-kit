@@ -2,6 +2,7 @@ import {getWindow} from '../execution-context/getWindow.ts';
 import {isDocument} from '../type-guards/isDocument.ts';
 import {isHTMLElement} from '../type-guards/isHTMLElement.ts';
 import {isSVGElement} from '../type-guards/isSVGElement.ts';
+import {getComputedStyles} from '../styles/getComputedStyles.ts';
 import {isFixed} from './isFixed.ts';
 import {isScrollable} from './isScrollable.ts';
 
@@ -52,8 +53,7 @@ export function getScrollableAncestors(
       return scrollParents;
     }
 
-    const {getComputedStyle} = getWindow(node);
-    const computedStyle = getComputedStyle(node);
+    const computedStyle = getComputedStyles(node);
 
     if (excludeElement && node === element) {
       // no-op

@@ -18,8 +18,11 @@ import type {
   Sensors,
   DragDropManager,
 } from '@dnd-kit/dom';
-import {animateTransform, scheduler} from '@dnd-kit/dom/utilities';
-import {Shape} from '@dnd-kit/geometry';
+import {
+  animateTransform,
+  computeTranslate,
+  scheduler,
+} from '@dnd-kit/dom/utilities';
 
 import {SortableKeyboardPlugin} from './SortableKeyboardPlugin.ts';
 import {OptimisticSortingPlugin} from './OptimisticSortingPlugin.ts';
@@ -176,7 +179,6 @@ export class Sortable<T extends Data = Data> {
       if (!shape || !transition || (idle && !transition.idle)) {
         return;
       }
-
       scheduler.schedule(() => {
         const {element} = this.droppable;
 
@@ -184,9 +186,7 @@ export class Sortable<T extends Data = Data> {
           return;
         }
 
-        this.refreshShape();
-
-        const updatedShape = this.droppable.shape;
+        const updatedShape = this.refreshShape();
 
         if (!updatedShape) {
           return;
@@ -197,11 +197,16 @@ export class Sortable<T extends Data = Data> {
           y: shape.boundingRectangle.top - updatedShape.boundingRectangle.top,
         };
 
+        const {x, y, z} = computeTranslate(element);
+
         if (delta.x || delta.y) {
           animateTransform({
             element,
             keyframes: {
-              translate: [`${delta.x}px ${delta.y}px 0`, '0px 0px 0'],
+              translate: [
+                `${x + delta.x}px ${y + delta.y}px ${z}`,
+                `${x}px ${y}px ${z}`,
+              ],
             },
             options: transition,
             onFinish: () => {
@@ -317,8 +322,8 @@ export class Sortable<T extends Data = Data> {
     return this.draggable.isDragSource;
   }
 
-  public refreshShape(ignoreTransforms = true) {
-    this.droppable.refreshShape(ignoreTransforms);
+  public refreshShape(ignoreTransforms: boolean = false) {
+    return this.droppable.refreshShape(ignoreTransforms);
   }
 
   public accepts(draggable: Draggable): boolean {
@@ -351,7 +356,7 @@ export class SortableDroppable<T extends Data> extends Droppable<T> {
     super(input, manager);
   }
 
-  public refreshShape(ignoreTransforms = true): Shape | undefined {
+  public refreshShape(ignoreTransforms = false) {
     return super.refreshShape(ignoreTransforms);
   }
 

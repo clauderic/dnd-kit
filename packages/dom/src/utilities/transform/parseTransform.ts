@@ -9,34 +9,43 @@ export interface Transform extends Coordinates {
   scaleY: number;
 }
 
-export function parseTransform(
-  computedStyles: CSSStyleDeclaration
-): Transform | null {
+export function parseTransform(computedStyles: {
+  scale: string;
+  transform: string;
+  translate: string;
+}): Transform | null {
   const {scale, transform, translate} = computedStyles;
   const parsedScale = parseScale(scale);
   const parsedTranslate = parseTranslate(translate);
-
-  if (parsedScale && parsedTranslate) {
-    return {
-      x: parsedTranslate.x,
-      y: parsedTranslate.y,
-      z: parsedTranslate.z,
-      scaleX: parsedScale.x,
-      scaleY: parsedScale.y,
-    };
-  }
-
   const parsedMatrix = parseTransformMatrix(transform);
 
   if (!parsedMatrix && !parsedScale && !parsedTranslate) {
     return null;
   }
 
+  const normalizedScale = {
+    x: parsedScale?.x ?? 1,
+    y: parsedScale?.y ?? 1,
+  };
+
+  const normalizedTranslate = {
+    x: parsedTranslate?.x ?? 0,
+    y: parsedTranslate?.y ?? 0,
+  };
+
+  const normalizedMatrix = {
+    x: parsedMatrix?.x ?? 0,
+    y: parsedMatrix?.y ?? 0,
+    scaleX: parsedMatrix?.scaleX ?? 1,
+    scaleY: parsedMatrix?.scaleY ?? 1,
+  };
+
   return {
-    x: parsedTranslate?.x ?? parsedMatrix?.x ?? 0,
-    y: parsedTranslate?.y ?? parsedMatrix?.y ?? 0,
-    scaleX: parsedScale?.x ?? parsedMatrix?.scaleX ?? 1,
-    scaleY: parsedScale?.y ?? parsedMatrix?.scaleY ?? 1,
+    x: normalizedTranslate.x + normalizedMatrix.x,
+    y: normalizedTranslate.y + normalizedMatrix.y,
+    z: parsedTranslate?.z ?? 0,
+    scaleX: normalizedScale.x * normalizedMatrix.scaleX,
+    scaleY: normalizedScale.y * normalizedMatrix.scaleY,
   };
 }
 

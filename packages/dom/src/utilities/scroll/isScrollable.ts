@@ -1,10 +1,8 @@
-import {getWindow} from '../execution-context/getWindow.ts';
+import {getComputedStyles} from '../styles/getComputedStyles.ts';
 
 export function isScrollable(
   element: HTMLElement,
-  computedStyle: CSSStyleDeclaration = getWindow(element).getComputedStyle(
-    element
-  )
+  computedStyle: CSSStyleDeclaration = getComputedStyles(element)
 ): boolean {
   const overflowRegex = /(auto|scroll|overlay)/;
   const properties = ['overflow', 'overflowX', 'overflowY'];

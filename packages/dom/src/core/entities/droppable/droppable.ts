@@ -144,14 +144,13 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
   }
 
   public refreshShape(ignoreTransform?: boolean): Shape | undefined {
-    const {element} = this;
+    const {element, shape} = this;
 
     if (!element || this.visible === false) {
       this.shape = undefined;
       return undefined;
     }
 
-    const {shape} = this;
     const updatedShape = new DOMRectangle(element, ignoreTransform);
 
     if (updatedShape && shape?.equals(updatedShape)) {

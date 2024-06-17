@@ -25,7 +25,7 @@ export {scheduler, Scheduler} from './scheduler/index.ts';
 
 export {DOMRectangle} from './shapes/index.ts';
 
-export {Styles} from './styles/index.ts';
+export {Styles, getComputedStyles} from './styles/index.ts';
 
 export {
   supportsViewTransition,
@@ -35,8 +35,10 @@ export {
 
 export {
   animateTransform,
+  computeTranslate,
   inverseTransform,
   parseTransform,
+  parseTranslate,
   stringifyTransform,
 } from './transform/index.ts';
 export type {Transform} from './transform/index.ts';
