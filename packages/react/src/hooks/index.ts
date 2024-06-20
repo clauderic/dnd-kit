@@ -1,3 +1,5 @@
+'use client';
+
 export {useConstant} from './useConstant.ts';
 export {useComputed} from './useComputed.ts';
 export {useImmediateEffect} from './useImmediateEffect.ts';

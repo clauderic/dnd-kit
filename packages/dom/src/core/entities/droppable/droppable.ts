@@ -37,7 +37,7 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
         effects: () => [
           ...effects(),
           () => {
-            const {element} = this;
+            const {element, manager} = this;
             const {dragOperation} = manager;
 
             if (element && dragOperation.status.initialized) {
@@ -91,6 +91,7 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
             }
           },
           () => {
+            const {manager} = this;
             const {dragOperation} = manager;
             const {status} = dragOperation;
             const source = untracked(() => dragOperation.source);
@@ -104,6 +105,8 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
             }
           },
           () => {
+            const {manager} = this;
+
             if (manager.dragOperation.status.initialized) {
               return () => {
                 this.shape = undefined;

@@ -49,6 +49,7 @@ export class Draggable<T extends Data = Data> extends AbstractDraggable<T> {
         effects: () => [
           ...effects(),
           () => {
+            const {manager} = this;
             const sensors = this.sensors?.map(descriptor) ?? [
               ...manager.sensors,
             ];

@@ -1,3 +1,5 @@
+'use client';
+
 import {useCallback} from 'react';
 import type {Data} from '@dnd-kit/abstract';
 import {Draggable} from '@dnd-kit/dom';

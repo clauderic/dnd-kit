@@ -5,7 +5,7 @@ import {CollisionPriority} from '@dnd-kit/abstract';
 import {DragDropProvider} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
 import {move} from '@dnd-kit/helpers';
-import {DragDropManager, defaultPreset} from '@dnd-kit/dom';
+import {defaultPreset} from '@dnd-kit/dom';
 import {Debug} from '@dnd-kit/dom/plugins/debug';
 import {supportsViewTransition} from '@dnd-kit/dom/utilities';
 
@@ -47,12 +47,10 @@ export function MultipleLists({
     }
   );
   const [columns, setColumns] = useState(Object.keys(items));
-  const manager = useRef<DragDropManager>(null);
   const snapshot = useRef(cloneDeep(items));
 
   return (
     <DragDropProvider
-      ref={manager}
       plugins={debug ? [...defaultPreset.plugins, Debug] : undefined}
       onDragStart={() => {
         snapshot.current = cloneDeep(items);

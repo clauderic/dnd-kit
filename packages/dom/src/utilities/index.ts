@@ -21,7 +21,7 @@ export {
   scrollIntoViewIfNeeded,
 } from './scroll/index.ts';
 
-export {scheduler, Scheduler} from './scheduler/index.ts';
+export {scheduler, Scheduler, timeout} from './scheduling/index.ts';
 
 export {DOMRectangle} from './shapes/index.ts';
 

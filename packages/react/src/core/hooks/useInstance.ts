@@ -12,6 +12,8 @@ export function useInstance<T extends Entity>(
   const instance = useConstant<T>(() => initializer(manager));
 
   useEffect(() => {
+    instance.manager = manager as any;
+
     // Register returns an unregister callback
     return manager.registry.register(instance);
   }, [manager]);

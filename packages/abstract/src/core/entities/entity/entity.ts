@@ -36,10 +36,7 @@ export class Entity<T extends Data = Data> {
    * @param input - An object containing the initial properties of the entity.
    * @param manager - The manager that controls the drag and drop operations.
    */
-  constructor(
-    input: Input<T>,
-    public manager: DragDropManager
-  ) {
+  constructor(input: Input<T>, manager: DragDropManager) {
     const {
       effects: getEffects = getDefaultEffects,
       id,
@@ -50,10 +47,11 @@ export class Entity<T extends Data = Data> {
 
     let previousId = id;
 
+    this.manager = manager;
     this.id = id;
     this.data = data;
     this.disabled = disabled;
-    this.effects = [
+    this.effects = () => [
       () => {
         // Re-run this effect whenever the `id` changes
         const {id: _} = this;
@@ -77,6 +75,9 @@ export class Entity<T extends Data = Data> {
     }
   }
 
+  @reactive
+  public manager: DragDropManager;
+
   /**
    * The unique identifier of the entity.
    */
@@ -98,7 +99,7 @@ export class Entity<T extends Data = Data> {
   /**
    * An array of effects that are applied to the entity.
    */
-  public effects: Effect[];
+  public effects: () => Effect[];
 
   /**
    * A method that cleans up the entity when it is no longer needed.

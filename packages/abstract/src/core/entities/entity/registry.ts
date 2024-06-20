@@ -60,7 +60,7 @@ export class EntityRegistry<T extends Entity> {
 
     this.map.value = updatedMap;
 
-    const cleanup = effects(...value.effects);
+    const cleanup = effects(...value.effects());
     this.cleanupFunctions.set(value, cleanup);
 
     return () => this.unregister(key, value);
