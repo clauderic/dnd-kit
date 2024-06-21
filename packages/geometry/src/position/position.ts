@@ -15,13 +15,13 @@ export class Position {
   }
 
   @reactive
-  public initial: Point;
+  public accessor initial: Point;
 
   @reactive
-  public previous: Point;
+  public accessor previous: Point;
 
   @reactive
-  public current: Point;
+  public accessor current: Point;
 
   @derived
   public get delta() {

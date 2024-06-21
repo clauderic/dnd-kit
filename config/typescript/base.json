@@ -6,7 +6,6 @@
     "declaration": true,
     "declarationMap": true,
     "esModuleInterop": true,
-    "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "inlineSources": false,
     "isolatedModules": true,

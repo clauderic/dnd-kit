@@ -40,7 +40,7 @@ export class Droppable<T extends Data = Data> extends Entity<T> {
    * An array of types that are compatible with the droppable.
    */
   @reactive
-  public accept:
+  public accessor accept:
     | Type
     | Type[]
     | ((draggable: Draggable) => boolean)
@@ -50,7 +50,7 @@ export class Droppable<T extends Data = Data> extends Entity<T> {
    * The type of the droppable.
    */
   @reactive
-  public type: Type | undefined;
+  public accessor type: Type | undefined;
 
   /**
    * Checks whether or not the droppable accepts a given draggable.
@@ -81,13 +81,13 @@ export class Droppable<T extends Data = Data> extends Entity<T> {
   }
 
   @reactive
-  public collisionDetector: CollisionDetector;
+  public accessor collisionDetector: CollisionDetector;
 
   @reactive
-  public collisionPriority: number;
+  public accessor collisionPriority: number;
 
   @reactive
-  public shape: Shape | undefined;
+  public accessor shape: Shape | undefined;
 
   @derived
   public get isDropTarget() {

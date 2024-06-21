@@ -90,14 +90,14 @@ export class Sortable<T extends Data = Data> {
   public droppable: Droppable<T>;
 
   @reactive
-  index: number;
+  public accessor index: number;
 
   previousIndex: number;
 
   initialIndex: number;
 
   @reactive
-  group: UniqueIdentifier | undefined;
+  public accessor group: UniqueIdentifier | undefined;
 
   transition: SortableTransition | null;
 

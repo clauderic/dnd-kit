@@ -5,8 +5,8 @@ const LOCKED = true;
 const UNLOCKED = false;
 
 export class ScrollLock {
-  @reactive private [Direction.Forward] = LOCKED;
-  @reactive private [Direction.Reverse] = LOCKED;
+  @reactive private accessor [Direction.Forward] = LOCKED;
+  @reactive private accessor [Direction.Reverse] = LOCKED;
 
   public isLocked(direction?: Direction): boolean {
     if (direction === Direction.Idle) {

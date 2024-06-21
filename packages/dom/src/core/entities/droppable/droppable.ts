@@ -133,10 +133,10 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
   }
 
   @reactive
-  visible: Boolean | undefined;
+  public accessor visible: Boolean | undefined;
 
   @reactive
-  public placeholder: Element | undefined;
+  public accessor placeholder: Element | undefined;
 
   public set element(value: Element | undefined) {
     this.internal.element.value = value;

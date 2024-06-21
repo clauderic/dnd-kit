@@ -22,7 +22,7 @@ export abstract class Plugin<
    * Triggers effects when accessed.
    */
   @reactive
-  public disabled: boolean = false;
+  public accessor disabled: boolean = false;
 
   /**
    * Enable a disabled plugin instance.

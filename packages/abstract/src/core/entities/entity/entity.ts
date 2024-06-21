@@ -75,26 +75,29 @@ export class Entity<T extends Data = Data> {
     }
   }
 
+  /**
+   * The manager that controls the drag and drop operations.
+   */
   @reactive
-  public manager: DragDropManager;
+  public accessor manager: DragDropManager | undefined;
 
   /**
    * The unique identifier of the entity.
    */
   @reactive
-  public id: UniqueIdentifier;
+  public accessor id: UniqueIdentifier;
 
   /**
    * The data associated with the entity.
    */
   @reactive
-  public data: Data | null;
+  public accessor data: Data | null;
 
   /**
    * A boolean indicating whether the entity is disabled.
    */
   @reactive
-  public disabled: boolean;
+  public accessor disabled: boolean;
 
   /**
    * An array of effects that are applied to the entity.

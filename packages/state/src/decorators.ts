@@ -2,57 +2,45 @@ import {signal, type Signal} from '@preact/signals-core';
 
 import {computed} from './computed';
 
-export function reactive(target: Object, propertyKey: string) {
-  const store = new WeakMap<any, Signal<any>>();
-
-  Object.defineProperty(target, propertyKey, {
-    get() {
-      if (!store.get(this)) {
-        store.set(this, signal(undefined));
-      }
-
-      const stored = store.get(this);
-      const value = stored?.value;
-
-      return value;
+export function reactive(
+  {get}: ClassAccessorDecoratorTarget<any, any>,
+  _: ClassAccessorDecoratorContext<any, any>
+): ClassAccessorDecoratorResult<any, any> {
+  return {
+    init() {
+      return signal(undefined) as any;
     },
-    set(value: any) {
-      const stored = store.get(this);
+    get() {
+      const current: Signal = get.call(this);
+      return current.value;
+    },
+    set(newValue: any) {
+      const current = get.call(this);
 
-      if (stored) {
-        if (stored.peek() !== value) {
-          stored.value = value;
-        }
+      if (current.peek() === newValue) {
         return;
       }
 
-      store.set(this, signal(value));
+      current.value = newValue;
     },
-  });
+  };
 }
 
-export function derived(
-  target: Object,
-  propertyKey: string,
-  descriptor: PropertyDescriptor
+export function derived<This, Return>(
+  target: (this: This) => Return,
+  _: ClassGetterDecoratorContext<This, Return>
 ) {
-  const store = new WeakMap<any, Signal<any>>();
-  const compute = descriptor.get;
+  const map: WeakMap<any, Signal<Return>> = new WeakMap();
 
-  Object.defineProperty(target, propertyKey, {
-    get() {
-      if (!compute) {
-        return undefined;
-      }
+  return function (this: This): Return {
+    let result = map.get(this);
 
-      if (!store.get(this)) {
-        store.set(this, computed(compute.bind(this)));
-      }
+    if (!result) {
+      result = computed(target.bind(this));
 
-      const stored = store.get(this);
-      const value = stored?.value;
+      map.set(this, result);
+    }
 
-      return value;
-    },
-  });
+    return result.value;
+  };
 }

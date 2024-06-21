@@ -20,7 +20,7 @@ export class Scroller extends CorePlugin<DragDropManager> {
   private scrollIntentTracker: ScrollIntentTracker;
 
   @reactive
-  public autoScrolling = false;
+  public accessor autoScrolling = false;
 
   constructor(manager: DragDropManager) {
     super(manager);
