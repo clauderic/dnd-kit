@@ -24,7 +24,7 @@ export interface Props extends DragDropManagerInput, PropsWithChildren {
   onDragEnd?: Events['dragend'];
 }
 
-export default function DragDropProvider({
+export function DragDropProvider({
   children,
   onCollision,
   onBeforeDragStart,

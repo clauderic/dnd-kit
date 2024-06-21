@@ -1,6 +1,6 @@
 'use client';
 
-export {DragDropProvider} from './context/index.tsx';
+export {DragDropProvider} from './context/index.ts';
 
 export {useDraggable} from './draggable/index.ts';
 
