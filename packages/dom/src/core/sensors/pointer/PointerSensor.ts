@@ -56,6 +56,10 @@ export class PointerSensor extends Sensor<
     public options?: PointerSensorOptions
   ) {
     super(manager);
+
+    this.handleCancel = this.handleCancel.bind(this);
+    this.handlePointerUp = this.handlePointerUp.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
   }
 
   public bind(source: Draggable, options = this.options) {
@@ -86,21 +90,21 @@ export class PointerSensor extends Sensor<
     source: Draggable,
     options: PointerSensorOptions = {}
   ) {
-    if (this.disabled) {
-      return;
-    }
-
     if (
+      this.disabled ||
       !event.isPrimary ||
       event.button !== 0 ||
-      !(event.target instanceof Element)
+      !(event.target instanceof Element) ||
+      source.disabled
     ) {
       return;
     }
+    const {target} = event;
+    const isNativeDraggable =
+      target instanceof HTMLElement &&
+      target.draggable &&
+      target.getAttribute('draggable') === 'true';
 
-    if (source.disabled) {
-      return;
-    }
     this.initialCoordinates = {
       x: event.clientX,
       y: event.clientY,
@@ -142,7 +146,10 @@ export class PointerSensor extends Sensor<
       },
       {
         type: 'pointerup',
-        listener: this.handlePointerUp.bind(this),
+        listener: this.handlePointerUp,
+        options: {
+          capture: true,
+        },
       },
       {
         // Prevent scrolling on touch devices
@@ -153,18 +160,23 @@ export class PointerSensor extends Sensor<
         },
       },
       {
+        // Prevent click events
+        type: 'click',
+        listener: preventDefault,
+      },
+      {
         // Cancel activation if there is a competing Drag and Drop interaction
         type: 'dragstart',
-        listener: this.handleCancel.bind(this),
+        listener: isNativeDraggable ? this.handleCancel : preventDefault,
       },
       {
         type: 'keydown',
-        listener: this.handleKeyDown.bind(this),
+        listener: this.handleKeyDown,
       },
     ]);
 
     const cleanup = () => {
-      unbindListeners();
+      setTimeout(unbindListeners);
 
       this.#clearTimeout?.();
       this.initialCoordinates = undefined;
