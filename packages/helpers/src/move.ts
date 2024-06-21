@@ -65,18 +65,21 @@ function mutate<
     if (sourceIndex === -1 || targetIndex === -1) {
       return items;
     }
-    const {dragOperation} = source.manager;
 
-    // Reconcile optimistic updates
-    if (
-      !dragOperation.canceled &&
-      'index' in source &&
-      typeof source.index === 'number'
-    ) {
-      const projectedSourceIndex = source.index;
+    if (source.manager) {
+      const {dragOperation} = source.manager;
 
-      if (projectedSourceIndex !== sourceIndex) {
-        return mutation(items, sourceIndex, projectedSourceIndex);
+      // Reconcile optimistic updates
+      if (
+        !dragOperation.canceled &&
+        'index' in source &&
+        typeof source.index === 'number'
+      ) {
+        const projectedSourceIndex = source.index;
+
+        if (projectedSourceIndex !== sourceIndex) {
+          return mutation(items, sourceIndex, projectedSourceIndex);
+        }
       }
     }
 
@@ -115,6 +118,8 @@ function mutate<
       break;
     }
   }
+
+  if (!source.manager) return items;
 
   const {dragOperation} = source.manager;
   const position = dragOperation.position.current;

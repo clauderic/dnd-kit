@@ -26,7 +26,7 @@ export class Droppable<T extends Data = Data> extends Entity<T> {
       type,
       ...input
     }: Input<T>,
-    public manager: DragDropManager
+    manager: DragDropManager | undefined
   ) {
     super(input, manager);
 
@@ -91,7 +91,7 @@ export class Droppable<T extends Data = Data> extends Entity<T> {
 
   @derived
   public get isDropTarget() {
-    return this.manager.dragOperation.target?.id === this.id;
+    return this.manager?.dragOperation.target?.id === this.id;
   }
 
   public refreshShape() {

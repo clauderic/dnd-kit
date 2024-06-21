@@ -1,4 +1,4 @@
-import {useCallback, useLayoutEffect} from 'react';
+import {useCallback, useEffect} from 'react';
 import {deepEqual} from '@dnd-kit/state';
 import {type Data} from '@dnd-kit/abstract';
 import {Sortable, defaultSortableTransition} from '@dnd-kit/dom/sortable';
@@ -35,12 +35,10 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     transition = defaultSortableTransition,
     type,
   } = input;
-
   const manager = useDragDropManager();
   const handle = currentValue(input.handle);
   const element = currentValue(input.element);
   const target = currentValue(input.target);
-
   const sortable = useConstant(() => {
     return new Sortable(
       {
@@ -54,11 +52,15 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
           register: false,
         },
       },
-      manager
+      manager ?? undefined
     );
-  }, manager);
+  });
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    sortable.manager = manager ?? undefined;
+
+    if (!manager) return;
+
     manager.registry.register(sortable.draggable);
     manager.registry.register(sortable.droppable);
 
@@ -85,7 +87,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
   useOnValueChange(
     index,
     () => {
-      if (manager.dragOperation.status.idle && transition) {
+      if (manager?.dragOperation.status.idle && transition) {
         sortable.refreshShape();
       }
     },

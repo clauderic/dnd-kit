@@ -112,7 +112,7 @@ export class Sortable<T extends Data = Data> {
       plugins = defaultPlugins,
       ...input
     }: SortableInput<T>,
-    public manager: DragDropManager<any, any>
+    manager: DragDropManager<any, any> | undefined
   ) {
     this.droppable = new SortableDroppable<T>(input, manager, this);
     this.draggable = new SortableDraggable<T>(
@@ -120,12 +120,12 @@ export class Sortable<T extends Data = Data> {
         ...input,
         effects: () => [
           () =>
-            this.manager.monitor.addEventListener('dragstart', () => {
+            this.manager?.monitor.addEventListener('dragstart', () => {
               this.initialIndex = this.index;
               this.previousIndex = this.index;
             }),
           () => {
-            const {index, previousIndex} = this;
+            const {index, previousIndex, manager: _} = this;
 
             // Re-run this effect whenever the index changes
             if (index === previousIndex) {
@@ -144,6 +144,13 @@ export class Sortable<T extends Data = Data> {
               this.droppable.disabled = !target;
             }
           },
+          () => {
+            const {manager} = this;
+
+            for (const plugin of plugins) {
+              manager?.registry.register(plugin);
+            }
+          },
           ...inputEffects(),
         ],
         type,
@@ -153,10 +160,7 @@ export class Sortable<T extends Data = Data> {
       this
     );
 
-    for (const plugin of plugins) {
-      manager.registry.register(plugin);
-    }
-
+    this.manager = manager;
     this.index = index;
     this.previousIndex = index;
     this.initialIndex = index;
@@ -174,11 +178,15 @@ export class Sortable<T extends Data = Data> {
     untracked(() => {
       const {manager, transition} = this;
       const {shape} = this.droppable;
+
+      if (!manager) return;
+
       const {idle} = manager.dragOperation.status;
 
       if (!shape || !transition || (idle && !transition.idle)) {
         return;
       }
+
       scheduler.schedule(() => {
         const {element} = this.droppable;
 
@@ -218,6 +226,15 @@ export class Sortable<T extends Data = Data> {
         }
       });
     });
+  }
+
+  public get manager(): DragDropManager<any, any> | undefined {
+    return this.draggable.manager as any;
+  }
+
+  public set manager(manager: DragDropManager<any, any> | undefined) {
+    this.draggable.manager = manager as any;
+    this.droppable.manager = manager as any;
   }
 
   public set element(element: Element | undefined) {
@@ -336,7 +353,7 @@ export class Sortable<T extends Data = Data> {
 export class SortableDraggable<T extends Data> extends Draggable<T> {
   constructor(
     input: DraggableInput<T>,
-    manager: DragDropManager,
+    manager: DragDropManager | undefined,
     public sortable: Sortable<T>
   ) {
     super(input, manager);
@@ -350,7 +367,7 @@ export class SortableDraggable<T extends Data> extends Draggable<T> {
 export class SortableDroppable<T extends Data> extends Droppable<T> {
   constructor(
     input: DraggableInput<T>,
-    manager: DragDropManager,
+    manager: DragDropManager | undefined,
     public sortable: Sortable<T>
   ) {
     super(input, manager);

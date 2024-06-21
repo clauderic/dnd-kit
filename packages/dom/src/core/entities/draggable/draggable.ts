@@ -42,7 +42,7 @@ export class Draggable<T extends Data = Data> extends AbstractDraggable<T> {
       feedback = 'default',
       ...input
     }: Input<T>,
-    public manager: AbstractDragDropManager<any, any>
+    manager: AbstractDragDropManager<any, any> | undefined
   ) {
     super(
       {
@@ -50,6 +50,9 @@ export class Draggable<T extends Data = Data> extends AbstractDraggable<T> {
           ...effects(),
           () => {
             const {manager} = this;
+
+            if (!manager) return;
+
             const sensors = this.sensors?.map(descriptor) ?? [
               ...manager.sensors,
             ];

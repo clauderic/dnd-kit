@@ -55,6 +55,7 @@ export class DragDropManager<
     this.plugins = [CollisionNotifier, ...plugins];
     this.modifiers = modifiers;
     this.sensors = sensors;
+    this.destroy = this.destroy.bind(this);
   }
 
   get plugins(): Plugin<any>[] {

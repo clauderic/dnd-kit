@@ -4,10 +4,9 @@ import {useDragDropManager} from './useDragDropManager.ts';
 
 export function useDragOperation() {
   const manager = useDragDropManager();
-  const {dragOperation} = manager;
 
-  const source = useComputed(() => dragOperation.source);
-  const target = useComputed(() => dragOperation.target);
+  const source = useComputed(() => manager?.dragOperation.source);
+  const target = useComputed(() => manager?.dragOperation.target);
 
   return {
     get source() {

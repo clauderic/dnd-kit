@@ -17,7 +17,7 @@ export interface Input<T extends Data = Data> extends EntityInput<T> {
 export class Draggable<T extends Data = Data> extends Entity<T> {
   constructor(
     {modifiers, type, sensors, ...input}: Input<T>,
-    public manager: DragDropManager
+    manager: DragDropManager | undefined
   ) {
     super(input, manager);
 
@@ -31,12 +31,15 @@ export class Draggable<T extends Data = Data> extends Entity<T> {
   #modifiers: Modifier[] | undefined;
 
   public set modifiers(modifiers: Modifiers | undefined) {
+    const {manager} = this;
+
     this.#modifiers?.forEach((modifier) => modifier.destroy());
 
+    if (!manager) return;
     this.#modifiers = modifiers?.map((modifier) => {
       const {plugin, options} = descriptor(modifier);
 
-      return new plugin(this.manager, options);
+      return new plugin(manager, options);
     });
   }
 
@@ -52,9 +55,7 @@ export class Draggable<T extends Data = Data> extends Entity<T> {
    */
   @derived
   public get isDragSource() {
-    const {dragOperation} = this.manager;
-
-    return dragOperation.source?.id === this.id;
+    return this.manager?.dragOperation.source?.id === this.id;
   }
 
   public destroy() {

@@ -26,7 +26,7 @@ export interface Input<T extends Data = Data>
 export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
   constructor(
     {element, effects = () => [], ...input}: Input<T>,
-    public manager: AbstractDragDropManager<any, any>
+    manager: AbstractDragDropManager<any, any> | undefined
   ) {
     const {collisionDetector = defaultCollisionDetection} = input;
 
@@ -38,6 +38,8 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
           ...effects(),
           () => {
             const {element, manager} = this;
+            if (!manager) return;
+
             const {dragOperation} = manager;
 
             if (element && dragOperation.status.initialized) {
@@ -92,6 +94,9 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
           },
           () => {
             const {manager} = this;
+
+            if (!manager) return;
+
             const {dragOperation} = manager;
             const {status} = dragOperation;
             const source = untracked(() => dragOperation.source);
@@ -105,9 +110,7 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
             }
           },
           () => {
-            const {manager} = this;
-
-            if (manager.dragOperation.status.initialized) {
+            if (this.manager?.dragOperation.status.initialized) {
               return () => {
                 this.shape = undefined;
               };
@@ -127,7 +130,7 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
      * If a droppable target mounts during a drag operation, assume it is visible
      * so that we can update its shape immediately.
      */
-    if (manager.dragOperation.status.initialized) {
+    if (this.manager?.dragOperation.status.initialized) {
       this.visible = true;
     }
   }

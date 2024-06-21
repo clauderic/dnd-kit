@@ -1,6 +1,6 @@
-import {effects, reactive, type Effect} from '@dnd-kit/state';
+import {reactive, type Effect} from '@dnd-kit/state';
 
-import type {DragDropManager} from '../../manager/index.ts';
+import {DragDropManager} from '../../manager/index.ts';
 import type {Data, UniqueIdentifier} from './types.ts';
 
 interface Options {
@@ -36,7 +36,7 @@ export class Entity<T extends Data = Data> {
    * @param input - An object containing the initial properties of the entity.
    * @param manager - The manager that controls the drag and drop operations.
    */
-  constructor(input: Input<T>, manager: DragDropManager) {
+  constructor(input: Input<T>, manager: DragDropManager | undefined) {
     const {
       effects: getEffects = getDefaultEffects,
       id,
@@ -54,15 +54,15 @@ export class Entity<T extends Data = Data> {
     this.effects = () => [
       () => {
         // Re-run this effect whenever the `id` changes
-        const {id: _} = this;
+        const {id: _, manager} = this;
 
         if (id === previousId) {
           return;
         }
 
-        manager.registry.register(this);
+        manager?.registry.register(this);
 
-        return () => manager.registry.unregister(this);
+        return () => manager?.registry.unregister(this);
       },
       ...getEffects(),
     ];
@@ -70,7 +70,7 @@ export class Entity<T extends Data = Data> {
 
     if (options?.register !== false) {
       queueMicrotask(() => {
-        manager.registry.register(this);
+        this.manager?.registry.register(this);
       });
     }
   }
@@ -109,6 +109,6 @@ export class Entity<T extends Data = Data> {
    * @returns void
    */
   public destroy(): void {
-    this.manager.registry.unregister(this);
+    this.manager?.registry.unregister(this);
   }
 }
