@@ -5,7 +5,7 @@ import {CorePlugin} from '../plugins/index.ts';
 import {defaultPreventable} from '../manager/events.ts';
 
 export class CollisionNotifier extends CorePlugin {
-  constructor(manager: DragDropManager) {
+  constructor(manager: DragDropManager<any, any>) {
     super(manager);
 
     this.destroy = effect(() => {

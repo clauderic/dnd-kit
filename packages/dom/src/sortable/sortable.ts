@@ -1,5 +1,5 @@
 import {batch, reactive, untracked} from '@dnd-kit/state';
-import {CollisionPriority} from '@dnd-kit/abstract';
+import {CollisionPriority, Entity} from '@dnd-kit/abstract';
 import type {
   Data,
   PluginConstructor,
@@ -351,7 +351,22 @@ export class Sortable<T extends Data = Data> {
     return this.droppable.accepts(draggable);
   }
 
-  public destroy() {}
+  public register() {
+    this.manager?.registry.register(this.draggable);
+    this.manager?.registry.register(this.droppable);
+
+    return () => this.unregister();
+  }
+
+  public unregister() {
+    this.manager?.registry.unregister(this.draggable);
+    this.manager?.registry.unregister(this.droppable);
+  }
+
+  public destroy() {
+    this.draggable.destroy();
+    this.droppable.destroy();
+  }
 }
 
 export class SortableDraggable<T extends Data> extends Draggable<T> {

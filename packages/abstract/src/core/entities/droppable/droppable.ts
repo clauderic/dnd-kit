@@ -17,7 +17,10 @@ export interface Input<T extends Data = Data> extends EntityInput<T> {
   type?: Type;
 }
 
-export class Droppable<T extends Data = Data> extends Entity<T> {
+export class Droppable<
+  T extends Data = Data,
+  U extends DragDropManager<any, any> = DragDropManager<any, any>,
+> extends Entity<T> {
   constructor(
     {
       accept,
@@ -26,7 +29,7 @@ export class Droppable<T extends Data = Data> extends Entity<T> {
       type,
       ...input
     }: Input<T>,
-    manager: DragDropManager | undefined
+    manager: U | undefined
   ) {
     super(input, manager);
 

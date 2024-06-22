@@ -1,7 +1,7 @@
 import {CleanupFunction} from '@dnd-kit/state';
 
 import type {DragDropManager} from '../manager/index.ts';
-import type {Draggable} from '../entities/index.ts';
+import type {Draggable, Droppable} from '../entities/index.ts';
 import {
   Plugin,
   type PluginConstructor,
@@ -12,7 +12,7 @@ import {
 export type SensorOptions = PluginOptions;
 
 export abstract class Sensor<
-  T extends DragDropManager<any, any> = DragDropManager,
+  T extends DragDropManager<any, any> = DragDropManager<Draggable, Droppable>,
   U extends SensorOptions = SensorOptions,
 > extends Plugin<T, U> {
   constructor(

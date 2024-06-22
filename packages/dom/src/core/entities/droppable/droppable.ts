@@ -2,7 +2,6 @@ import {Droppable as AbstractDroppable} from '@dnd-kit/abstract';
 import type {
   Data,
   DroppableInput as AbstractDroppableInput,
-  DragDropManager as AbstractDragDropManager,
 } from '@dnd-kit/abstract';
 import {defaultCollisionDetection} from '@dnd-kit/collision';
 import type {CollisionDetector} from '@dnd-kit/collision';
@@ -15,6 +14,8 @@ import {
   getFirstScrollableAncestor,
 } from '@dnd-kit/dom/utilities';
 
+import type {DragDropManager} from '../../manager/manager.ts';
+
 type OptionalInput = 'collisionDetector';
 
 export interface Input<T extends Data = Data>
@@ -26,7 +27,7 @@ export interface Input<T extends Data = Data>
 export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
   constructor(
     {element, effects = () => [], ...input}: Input<T>,
-    manager: AbstractDragDropManager<any, any> | undefined
+    manager: DragDropManager | undefined
   ) {
     const {collisionDetector = defaultCollisionDetection} = input;
 

@@ -3,13 +3,12 @@ import {deepEqual} from '@dnd-kit/state';
 import {type Data} from '@dnd-kit/abstract';
 import {Sortable, defaultSortableTransition} from '@dnd-kit/dom/sortable';
 import type {SortableInput} from '@dnd-kit/dom/sortable';
-import {useDragDropManager} from '@dnd-kit/react';
+import {useDragDropManager, useInstance} from '@dnd-kit/react';
 import {
   useComputed,
-  useConstant,
-  useOnValueChange,
   useImmediateEffect as immediateEffect,
   useIsomorphicLayoutEffect as layoutEffect,
+  useOnValueChange,
 } from '@dnd-kit/react/hooks';
 import {currentValue, type RefOrValue} from '@dnd-kit/react/utilities';
 
@@ -39,7 +38,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
   const handle = currentValue(input.handle);
   const element = currentValue(input.element);
   const target = currentValue(input.target);
-  const sortable = useConstant(() => {
+  const sortable = useInstance((manager) => {
     return new Sortable(
       {
         ...input,
@@ -48,23 +47,9 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
         target,
         feedback,
       },
-      undefined
+      manager
     );
   });
-
-  useEffect(() => {
-    sortable.manager = manager ?? undefined;
-
-    if (!manager) return;
-
-    manager.registry.register(sortable.draggable);
-    manager.registry.register(sortable.droppable);
-
-    return () => {
-      manager.registry.unregister(sortable.draggable);
-      manager.registry.unregister(sortable.droppable);
-    };
-  }, [sortable, manager]);
 
   const isDropTarget = useComputed(() => sortable.isDropTarget);
   const isDragSource = useComputed(() => sortable.isDragSource);

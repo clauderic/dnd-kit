@@ -1,8 +1,10 @@
 import {
-  DragOperation,
   configurator,
   Modifier,
-  DragDropManager,
+  type DragOperation,
+  type DragDropManager,
+  type Draggable,
+  type Droppable,
 } from '@dnd-kit/abstract';
 
 interface Options {
@@ -10,7 +12,10 @@ interface Options {
   value: number;
 }
 
-export class AxisModifier extends Modifier<DragDropManager, Options> {
+export class AxisModifier extends Modifier<
+  DragDropManager<Draggable, Droppable>,
+  Options
+> {
   apply({transform}: DragOperation) {
     if (!this.options) {
       return transform;

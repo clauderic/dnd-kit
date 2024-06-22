@@ -21,14 +21,14 @@ export function useDraggable<T extends Data = Data>(
   const handle = currentValue(input.handle);
   const element = currentValue(input.element);
   const draggable = useInstance(
-    () =>
+    (manager) =>
       new Draggable(
         {
           ...input,
           handle,
           element,
         },
-        undefined
+        manager
       )
   );
   const isDragSource = useComputed(() => draggable.isDragSource);

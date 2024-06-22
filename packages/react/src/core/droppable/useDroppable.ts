@@ -19,13 +19,13 @@ export function useDroppable<T extends Data = Data>(
   const {collisionDetector, data, disabled, id, accept, type} = input;
   const element = currentValue(input.element);
   const droppable = useInstance(
-    () =>
+    (manager) =>
       new Droppable(
         {
           ...input,
           element,
         },
-        undefined
+        manager
       )
   );
   const isDropTarget = useComputed(() => droppable.isDropTarget);

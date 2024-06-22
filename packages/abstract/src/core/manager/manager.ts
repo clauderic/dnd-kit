@@ -20,10 +20,7 @@ export type DragDropManagerInput<T extends DragDropManager<any, any>> = {
   renderer?: Renderer;
 };
 
-export class DragDropManager<
-  T extends Draggable = Draggable,
-  U extends Droppable = Droppable,
-> {
+export class DragDropManager<T extends Draggable, U extends Droppable> {
   public actions: DragActions<T, U, DragDropManager<T, U>>;
   public collisionObserver: CollisionObserver<T, U>;
   public dragOperation: DragOperation<T, U>;

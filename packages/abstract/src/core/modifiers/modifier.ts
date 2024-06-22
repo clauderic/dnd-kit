@@ -11,7 +11,7 @@ import type {DragDropManager} from '../manager/index.ts';
 export type ModifierOptions = PluginOptions;
 
 export class Modifier<
-  T extends DragDropManager<any, any> = DragDropManager,
+  T extends DragDropManager<any, any> = DragDropManager<any, any>,
   U extends ModifierOptions = ModifierOptions,
 > extends Plugin<T, U> {
   constructor(

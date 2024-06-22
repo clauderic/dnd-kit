@@ -1,4 +1,4 @@
-import {reactive, type Effect} from '@dnd-kit/state';
+import {CleanupFunction, reactive, type Effect} from '@dnd-kit/state';
 
 import {DragDropManager} from '../../manager/index.ts';
 import type {Data, UniqueIdentifier} from './types.ts';
@@ -16,14 +16,17 @@ export interface Input<T extends Data = Data> {
  *
  * @template T - The type of data associated with the entity.
  */
-export class Entity<T extends Data = Data> {
+export class Entity<
+  T extends Data = Data,
+  U extends DragDropManager<any, any> = DragDropManager<any, any>,
+> {
   /**
    * Creates a new instance of the `Entity` class.
    *
    * @param input - An object containing the initial properties of the entity.
    * @param manager - The manager that controls the drag and drop operations.
    */
-  constructor(input: Input<T>, manager: DragDropManager | undefined) {
+  constructor(input: Input<T>, manager: U | undefined) {
     const {effects, id, data = {}, disabled = false} = input;
 
     let previousId = id;
@@ -60,7 +63,7 @@ export class Entity<T extends Data = Data> {
    * The manager that controls the drag and drop operations.
    */
   @reactive
-  public accessor manager: DragDropManager | undefined;
+  public accessor manager: U | undefined;
 
   /**
    * The unique identifier of the entity.
@@ -84,6 +87,22 @@ export class Entity<T extends Data = Data> {
    * An array of effects that are applied to the entity.
    */
   public effects: () => Effect[];
+
+  /**
+   * A method that registers the entity with the manager.
+   * @returns CleanupFunction | void
+   */
+  public register(): CleanupFunction | void {
+    return this.manager?.registry.register(this);
+  }
+
+  /**
+   * A method that unregisters the entity from the manager.
+   * @returns void
+   */
+  public unregister(): void {
+    this.manager?.registry.unregister(this);
+  }
 
   /**
    * A method that cleans up the entity when it is no longer needed.
