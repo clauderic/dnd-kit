@@ -16,20 +16,16 @@ export interface UseDroppableInput<T extends Data = Data>
 export function useDroppable<T extends Data = Data>(
   input: UseDroppableInput<T>
 ) {
-  const {collisionDetector, disabled, id, accept, type} = input;
+  const {collisionDetector, data, disabled, id, accept, type} = input;
   const element = currentValue(input.element);
   const droppable = useInstance(
-    (manager) =>
+    () =>
       new Droppable(
         {
           ...input,
           element,
-          options: {
-            ...input.options,
-            register: false,
-          },
         },
-        manager
+        undefined
       )
   );
   const isDropTarget = useComputed(() => droppable.isDropTarget);
@@ -37,6 +33,7 @@ export function useDroppable<T extends Data = Data>(
   useOnValueChange(id, () => (droppable.id = id));
   useOnValueChange(accept, () => (droppable.id = id), undefined, deepEqual);
   useOnValueChange(collisionDetector, () => (droppable.id = id));
+  useOnValueChange(data, () => data && (droppable.data = data));
   useOnValueChange(disabled, () => (droppable.disabled = disabled === true));
   useOnValueChange(element, () => (droppable.element = element));
   useOnValueChange(type, () => (droppable.id = id));

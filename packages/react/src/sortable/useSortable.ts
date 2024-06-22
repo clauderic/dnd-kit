@@ -47,12 +47,8 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
         element,
         target,
         feedback,
-        options: {
-          ...input.options,
-          register: false,
-        },
       },
-      manager ?? undefined
+      undefined
     );
   });
 
@@ -83,7 +79,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     undefined,
     deepEqual
   );
-  useOnValueChange(data, () => (sortable.data = data ?? null));
+  useOnValueChange(data, () => data && (sortable.data = data));
   useOnValueChange(
     index,
     () => {

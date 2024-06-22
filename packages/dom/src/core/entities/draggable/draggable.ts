@@ -25,15 +25,6 @@ export interface Input<T extends Data = Data> extends DraggableInput<T> {
 }
 
 export class Draggable<T extends Data = Data> extends AbstractDraggable<T> {
-  @reactive
-  public accessor handle: Element | undefined;
-
-  @reactive
-  public accessor element: Element | undefined;
-
-  @reactive
-  public accessor feedback: FeedbackType;
-
   constructor(
     {
       element,
@@ -82,4 +73,13 @@ export class Draggable<T extends Data = Data> extends AbstractDraggable<T> {
     this.handle = handle;
     this.feedback = feedback;
   }
+
+  @reactive
+  public accessor handle: Element | undefined;
+
+  @reactive
+  public accessor element: Element | undefined;
+
+  @reactive
+  public accessor feedback: FeedbackType;
 }

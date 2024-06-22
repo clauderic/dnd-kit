@@ -277,7 +277,7 @@ export class Sortable<T extends Data = Data> {
     });
   }
 
-  public set data(data: T | null) {
+  public set data(data: T) {
     batch(() => {
       this.draggable.data = data;
       this.droppable.data = data;
@@ -337,6 +337,10 @@ export class Sortable<T extends Data = Data> {
    */
   public get isDragSource() {
     return this.draggable.isDragSource;
+  }
+
+  public get status() {
+    return this.draggable.status;
   }
 
   public refreshShape(ignoreTransforms: boolean = false) {

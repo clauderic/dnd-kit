@@ -3,24 +3,11 @@ import {reactive, type Effect} from '@dnd-kit/state';
 import {DragDropManager} from '../../manager/index.ts';
 import type {Data, UniqueIdentifier} from './types.ts';
 
-interface Options {
-  /**
-   * A boolean indicating whether the entity should automatically be registered with the manager.
-   * @defaultValue true
-   */
-  register?: boolean;
-}
-
 export interface Input<T extends Data = Data> {
   id: UniqueIdentifier;
-  data?: T | null;
+  data?: T;
   disabled?: boolean;
-  options?: Options;
   effects?(): Effect[];
-}
-
-function getDefaultEffects(): Effect[] {
-  return [];
 }
 
 /**
@@ -37,13 +24,7 @@ export class Entity<T extends Data = Data> {
    * @param manager - The manager that controls the drag and drop operations.
    */
   constructor(input: Input<T>, manager: DragDropManager | undefined) {
-    const {
-      effects: getEffects = getDefaultEffects,
-      id,
-      options,
-      data = null,
-      disabled = false,
-    } = input;
+    const {effects, id, data = {}, disabled = false} = input;
 
     let previousId = id;
 
@@ -64,11 +45,11 @@ export class Entity<T extends Data = Data> {
 
         return () => manager?.registry.unregister(this);
       },
-      ...getEffects(),
+      ...(effects?.() ?? []),
     ];
     this.destroy = this.destroy.bind(this);
 
-    if (options?.register !== false) {
+    if (manager) {
       queueMicrotask(() => {
         this.manager?.registry.register(this);
       });
@@ -91,7 +72,7 @@ export class Entity<T extends Data = Data> {
    * The data associated with the entity.
    */
   @reactive
-  public accessor data: Data | null;
+  public accessor data: Data;
 
   /**
    * A boolean indicating whether the entity is disabled.
