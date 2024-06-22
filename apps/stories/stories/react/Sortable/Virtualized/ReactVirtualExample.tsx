@@ -73,7 +73,7 @@ export function ReactVirtualExample({debug}: Props) {
               alignItems: 'center',
               gap: 20,
               transform: `translateY(${
-                virtualItems[0].start - virtualizer.options.scrollMargin
+                virtualItems[0]?.start - virtualizer.options.scrollMargin
               }px)`,
             }}
           >
