@@ -32,6 +32,7 @@ export function useDraggable<T extends Data = Data>(
       )
   );
   const isDragSource = useComputed(() => draggable.isDragSource);
+  const status = useComputed(() => draggable.status);
 
   useOnValueChange(id, () => (draggable.id = id));
   useOnValueChange(handle, () => (draggable.handle = handle));
@@ -54,6 +55,9 @@ export function useDraggable<T extends Data = Data>(
     draggable,
     get isDragSource() {
       return isDragSource.value;
+    },
+    get status() {
+      return status.value;
     },
     handleRef: useCallback(
       (element: Element | null) => {

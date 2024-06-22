@@ -68,6 +68,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
 
   const isDropTarget = useComputed(() => sortable.isDropTarget);
   const isDragSource = useComputed(() => sortable.isDragSource);
+  const status = useComputed(() => sortable.status);
 
   useOnValueChange(id, () => (sortable.id = id));
   useOnValueChange(index, () => (sortable.index = index), layoutEffect);
@@ -111,6 +112,9 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     },
     get isDropTarget() {
       return isDropTarget.value;
+    },
+    get status() {
+      return status.value;
     },
     handleRef: useCallback(
       (element: Element | null) => {

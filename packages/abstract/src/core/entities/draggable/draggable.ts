@@ -14,6 +14,8 @@ export interface Input<T extends Data = Data> extends EntityInput<T> {
   sensors?: Sensors;
 }
 
+export type DraggableStatus = 'idle' | 'dragging' | 'dropping';
+
 export class Draggable<T extends Data = Data> extends Entity<T> {
   constructor(
     {modifiers, type, sensors, ...input}: Input<T>,
@@ -49,6 +51,9 @@ export class Draggable<T extends Data = Data> extends Entity<T> {
 
   @reactive
   public accessor type: Type | undefined;
+
+  @reactive
+  public accessor status: DraggableStatus = 'idle';
 
   /**
    * A boolean indicating whether the draggable item is the source of a drag operation.

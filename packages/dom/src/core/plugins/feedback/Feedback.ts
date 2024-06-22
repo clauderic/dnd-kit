@@ -207,6 +207,7 @@ export class Feedback extends Plugin<DragDropManager> {
 
       /* Initialize drag operation shape */
       dragOperation.shape = new DOMRectangle(element);
+      source.status = 'dragging';
 
       let elementMutationObserver: MutationObserver | undefined;
       let documentMutationObserver: MutationObserver | undefined;
@@ -365,6 +366,8 @@ export class Feedback extends Plugin<DragDropManager> {
           droppable.placeholder = undefined;
         }
 
+        source.status = 'idle';
+
         moved = false;
       };
 
@@ -373,19 +376,14 @@ export class Feedback extends Plugin<DragDropManager> {
           const onComplete = cleanup;
           cleanup = undefined;
 
+          source.status = 'dropping';
+
           const transform = currentTransform;
 
           if (!transform) {
             onComplete?.();
             return;
           }
-
-          let projectedTransform: Transform = {
-            x: 0,
-            y: 0,
-            scaleX: 1,
-            scaleY: 1,
-          };
 
           manager.renderer.rendering.then(() => {
             /* Force the source element to be promoted to the top layer before animating it */
