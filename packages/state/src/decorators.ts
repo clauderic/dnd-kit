@@ -2,20 +2,20 @@ import {signal, type Signal} from '@preact/signals-core';
 
 import {computed} from './computed';
 
-export function reactive(
-  {get}: ClassAccessorDecoratorTarget<any, any>,
-  _: ClassAccessorDecoratorContext<any, any>
-): ClassAccessorDecoratorResult<any, any> {
+export function reactive<This, Value>(
+  {get}: ClassAccessorDecoratorTarget<This, Value>,
+  _: ClassAccessorDecoratorContext<This, Value>
+): ClassAccessorDecoratorResult<This, Value> {
   return {
-    init() {
-      return signal(undefined) as any;
+    init(value: Value) {
+      return signal(value) as Value;
     },
-    get() {
-      const current: Signal = get.call(this);
+    get(): Value {
+      const current = get.call(this) as Signal<Value>;
       return current.value;
     },
-    set(newValue: any) {
-      const current = get.call(this);
+    set(newValue: Value) {
+      const current = get.call(this) as Signal<Value>;
 
       if (current.peek() === newValue) {
         return;
