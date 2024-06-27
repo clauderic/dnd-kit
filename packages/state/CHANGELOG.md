@@ -1,5 +1,11 @@
 # @dnd-kit/state
 
+## 0.0.4
+
+### Patch Changes
+
+- [#1443](https://github.com/clauderic/dnd-kit/pull/1443) [`a4d9150`](https://github.com/clauderic/dnd-kit/commit/a4d91500124698abf58355592913f84d438faa3d) Thanks [@clauderic](https://github.com/clauderic)! - Refactor decorators to use the [latest decorators API](https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/#decorators) rather than the experimental API.
+
 ## 0.0.3
 
 ## 0.0.2
