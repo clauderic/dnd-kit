@@ -1,10 +1,5 @@
 import {useCallback, useContext, useEffect, useRef} from 'react';
-import {
-  useIsomorphicLayoutEffect,
-  useLatestValue,
-  useNodeRef,
-  useUniqueId,
-} from '@dnd-kit/utilities';
+import {useLatestValue, useNodeRef, useUniqueId} from '@dnd-kit/utilities';
 
 import {InternalContext, Action, Data} from '../store';
 import type {ClientRect, UniqueIdentifier} from '../types';
@@ -43,9 +38,8 @@ export function useDroppable({
   resizeObserverConfig,
 }: UseDroppableArguments) {
   const key = useUniqueId(ID_PREFIX);
-  const {active, dispatch, over, measureDroppableContainers} = useContext(
-    InternalContext
-  );
+  const {active, dispatch, over, measureDroppableContainers} =
+    useContext(InternalContext);
   const previous = useRef({disabled});
   const resizeObserverConnected = useRef(false);
   const rect = useRef<ClientRect | null>(null);

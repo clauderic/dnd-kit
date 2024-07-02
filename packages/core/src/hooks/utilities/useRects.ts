@@ -1,3 +1,4 @@
+import {useState} from 'react';
 import {getWindow, useIsomorphicLayoutEffect} from '@dnd-kit/utilities';
 
 import type {ClientRect} from '../../types';
@@ -17,7 +18,7 @@ export function useRects(
   const windowRect = useWindowRect(
     firstElement ? getWindow(firstElement) : null
   );
-  const [rects, setRects] = useState(defaultValue);
+  const [rects, setRects] = useState<ClientRect[]>(defaultValue);
 
   function measureRects() {
     setRects(() => {

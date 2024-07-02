@@ -1,4 +1,4 @@
-import {useReducer} from 'react';
+import {useState} from 'react';
 import {useIsomorphicLayoutEffect} from '@dnd-kit/utilities';
 
 import type {ClientRect} from '../../types';
@@ -16,10 +16,10 @@ export function useRect(
   measure: (element: HTMLElement) => ClientRect = defaultMeasure,
   fallbackRect?: ClientRect | null
 ) {
-  const [rect, setRect] = useState(null);
+  const [rect, setRect] = useState<ClientRect | null>(null);
 
   function measureRect() {
-    setRect((currentRect: ClientRect | null) => {
+    setRect((currentRect): ClientRect | null => {
       if (!element) {
         return null;
       }
