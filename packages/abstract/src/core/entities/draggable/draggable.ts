@@ -2,10 +2,8 @@ import {derived, reactive} from '@dnd-kit/state';
 
 import {Entity} from '../entity/index.ts';
 import type {EntityInput, Data, Type} from '../entity/index.ts';
-import {Modifier} from '../../modifiers/index.ts';
 import type {Modifiers} from '../../modifiers/index.ts';
 import type {DragDropManager} from '../../manager/index.ts';
-import {descriptor} from '../../plugins/index.ts';
 import type {Sensors} from '../../sensors/sensor.ts';
 
 export interface Input<T extends Data = Data> extends EntityInput<T> {
@@ -33,24 +31,8 @@ export class Draggable<
 
   public sensors: Sensors | undefined;
 
-  #modifiers: Modifier[] | undefined;
-
-  public set modifiers(modifiers: Modifiers | undefined) {
-    const {manager} = this;
-
-    this.#modifiers?.forEach((modifier) => modifier.destroy());
-
-    if (!manager) return;
-    this.#modifiers = modifiers?.map((modifier) => {
-      const {plugin, options} = descriptor(modifier);
-
-      return new plugin(manager, options);
-    });
-  }
-
-  public get modifiers(): Modifier[] | undefined {
-    return this.#modifiers;
-  }
+  @reactive
+  public accessor modifiers: Modifiers | undefined;
 
   @reactive
   public accessor type: Type | undefined;
@@ -64,11 +46,5 @@ export class Draggable<
   @derived
   public get isDragSource() {
     return this.manager?.dragOperation.source?.id === this.id;
-  }
-
-  public destroy() {
-    super.destroy();
-
-    this.modifiers?.forEach((modifier) => modifier.destroy());
   }
 }

@@ -1,12 +1,14 @@
 import {Position, type Shape} from '@dnd-kit/geometry';
 import type {Coordinates} from '@dnd-kit/geometry';
-import {batch, computed, signal} from '@dnd-kit/state';
+import {batch, computed, effect, signal} from '@dnd-kit/state';
 
 import type {
   Draggable,
   Droppable,
   UniqueIdentifier,
 } from '../entities/index.ts';
+import type {Modifier} from '../modifiers/index.ts';
+import {descriptor} from '../plugins/index.ts';
 
 import type {DragDropManager} from './manager.ts';
 import {defaultPreventable} from './events.ts';
@@ -100,9 +102,24 @@ export function DragOperationManager<
     return identifier != null ? droppables.get(identifier) ?? null : null;
   });
 
+  const modifiers = signal<Modifier[]>([]);
+
+  effect(() => {
+    const currentModifiers = modifiers.peek();
+
+    if (currentModifiers !== manager.modifiers) {
+      currentModifiers.forEach((modifier) => modifier.destroy());
+    }
+
+    modifiers.value =
+      source.value?.modifiers?.map((modifier) => {
+        const {plugin, options} = descriptor(modifier);
+        return new plugin(manager, options);
+      }) ?? manager.modifiers;
+  });
+
   const transform = computed(() => {
     const {x, y} = position.delta;
-    const modifiers = source?.value?.modifiers ?? manager.modifiers;
 
     let transform = {x, y};
     const initialShape = shape.initial.peek();
@@ -128,7 +145,7 @@ export function DragOperationManager<
       position,
     };
 
-    for (const modifier of modifiers) {
+    for (const modifier of modifiers.value) {
       transform = modifier.apply({...operation, transform});
     }
 
@@ -204,6 +221,7 @@ export function DragOperationManager<
       shape.current.value = null;
       shape.initial.value = null;
       position.reset({x: 0, y: 0});
+      modifiers.value = [];
     });
   };
 
@@ -236,6 +254,14 @@ export function DragOperationManager<
         return manager.renderer.rendering;
       },
       start({event, coordinates}: {event: Event; coordinates: Coordinates}) {
+        const sourceInstance = source.peek();
+
+        if (!sourceInstance) {
+          throw new Error(
+            'Cannot start a drag operation without a drag source'
+          );
+        }
+
         batch(() => {
           dragended.value = false;
           canceled.value = false;
