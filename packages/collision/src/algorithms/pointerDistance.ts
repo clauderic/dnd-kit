@@ -1,4 +1,4 @@
-import {CollisionPriority} from '@dnd-kit/abstract';
+import {CollisionPriority, CollisionType} from '@dnd-kit/abstract';
 import type {CollisionDetector} from '@dnd-kit/abstract';
 import {Point} from '@dnd-kit/geometry';
 
@@ -19,6 +19,7 @@ export const pointerDistance: CollisionDetector = (input) => {
   return {
     id: droppable.id,
     value,
-    priority: CollisionPriority.Low,
+    type: CollisionType.Collision,
+    priority: CollisionPriority.Normal,
   };
 };

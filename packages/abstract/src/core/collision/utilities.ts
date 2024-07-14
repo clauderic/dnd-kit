@@ -6,7 +6,11 @@ import {Collision} from './types.ts';
  */
 export function sortCollisions(a: Collision, b: Collision) {
   if (a.priority === b.priority) {
-    return b.value - a.value;
+    if (a.type === b.type) {
+      return b.value - a.value;
+    }
+
+    return b.type - a.type;
   }
 
   return b.priority - a.priority;

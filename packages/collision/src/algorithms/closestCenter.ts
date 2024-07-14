@@ -1,4 +1,4 @@
-import {CollisionPriority} from '@dnd-kit/abstract';
+import {CollisionPriority, CollisionType} from '@dnd-kit/abstract';
 import type {CollisionDetector} from '@dnd-kit/abstract';
 import {Point} from '@dnd-kit/geometry';
 
@@ -15,11 +15,11 @@ export const closestCenter: CollisionDetector = (input) => {
     return null;
   }
 
-  // const collision = defaultCollisionDetection(input);
+  const collision = defaultCollisionDetection(input);
 
-  // if (collision) {
-  //   return collision;
-  // }
+  if (collision) {
+    return collision;
+  }
 
   const distance = Point.distance(
     droppable.shape.center,
@@ -31,6 +31,7 @@ export const closestCenter: CollisionDetector = (input) => {
   return {
     id: droppable.id,
     value,
-    priority: CollisionPriority.Low,
+    type: CollisionType.Collision,
+    priority: CollisionPriority.Normal,
   };
 };

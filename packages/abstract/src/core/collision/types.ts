@@ -13,9 +13,16 @@ export enum CollisionPriority {
   Highest,
 }
 
+export enum CollisionType {
+  Collision,
+  ShapeIntersection,
+  PointerIntersection,
+}
+
 export interface Collision {
   id: UniqueIdentifier;
   priority: CollisionPriority | number;
+  type: CollisionType;
   value: number;
 }
 

@@ -22,13 +22,7 @@ export class Droppable<
   U extends DragDropManager<any, any> = DragDropManager<any, any>,
 > extends Entity<T> {
   constructor(
-    {
-      accept,
-      collisionDetector,
-      collisionPriority = CollisionPriority.Normal,
-      type,
-      ...input
-    }: Input<T>,
+    {accept, collisionDetector, collisionPriority, type, ...input}: Input<T>,
     manager: U | undefined
   ) {
     super(input, manager);
@@ -87,7 +81,7 @@ export class Droppable<
   public accessor collisionDetector: CollisionDetector;
 
   @reactive
-  public accessor collisionPriority: number;
+  public accessor collisionPriority: CollisionPriority | number | undefined;
 
   @reactive
   public accessor shape: Shape | undefined;

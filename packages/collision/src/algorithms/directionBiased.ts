@@ -1,4 +1,4 @@
-import {CollisionPriority} from '@dnd-kit/abstract';
+import {CollisionPriority, CollisionType} from '@dnd-kit/abstract';
 import type {CollisionDetector} from '@dnd-kit/abstract';
 import {Point} from '@dnd-kit/geometry';
 
@@ -37,6 +37,7 @@ export const directionBiased: CollisionDetector = ({
     return {
       id: droppable.id,
       value: 1 / Point.distance(droppable.shape.center, center),
+      type: CollisionType.Collision,
       priority: CollisionPriority.Normal,
     };
   }

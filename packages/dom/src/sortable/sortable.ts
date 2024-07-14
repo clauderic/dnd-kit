@@ -1,5 +1,5 @@
 import {batch, reactive, untracked} from '@dnd-kit/state';
-import {CollisionPriority, Entity} from '@dnd-kit/abstract';
+import type {CollisionPriority} from '@dnd-kit/abstract';
 import type {
   Data,
   PluginConstructor,
@@ -304,7 +304,7 @@ export class Sortable<T extends Data = Data> {
   }
 
   public set collisionPriority(value: CollisionPriority | number | undefined) {
-    this.droppable.collisionPriority = value ?? CollisionPriority.Normal;
+    this.droppable.collisionPriority = value;
   }
 
   public set collisionDetector(value: CollisionDetector | undefined) {

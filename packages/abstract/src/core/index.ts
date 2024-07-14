@@ -7,7 +7,11 @@ export type {
   Renderer,
 } from './manager/index.ts';
 
-export {CollisionPriority, sortCollisions} from './collision/index.ts';
+export {
+  CollisionPriority,
+  CollisionType,
+  sortCollisions,
+} from './collision/index.ts';
 export type {Collision, CollisionDetector} from './collision/index.ts';
 
 export {Modifier} from './modifiers/index.ts';
