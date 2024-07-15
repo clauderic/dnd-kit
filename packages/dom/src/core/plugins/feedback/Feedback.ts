@@ -20,7 +20,7 @@ import {DragDropManager} from '../../manager/index.ts';
 const ATTR_PREFIX = 'data-dnd-';
 const CSS_PREFIX = '--dnd-';
 const ATTRIBUTE = `${ATTR_PREFIX}dragging`;
-const cssRules = `[${ATTRIBUTE}] {position: fixed !important; pointer-events: none !important; touch-action: none !important; z-index: calc(infinity); will-change: transform;top: var(${CSS_PREFIX}top, 0px) !important;left: var(${CSS_PREFIX}left, 0px) !important;width: var(${CSS_PREFIX}width, auto) !important;height: var(${CSS_PREFIX}height, auto) !important;}[${ATTRIBUTE}] *{pointer-events: none !important;}[${ATTRIBUTE}][style*="${CSS_PREFIX}translate"] {translate: var(${CSS_PREFIX}translate) !important;}[style*="${CSS_PREFIX}transition"] {transition: var(${CSS_PREFIX}transition) !important;}*:where([${ATTRIBUTE}][popover]){overflow:visible;background:var(${CSS_PREFIX}background);border:var(${CSS_PREFIX}border);margin:unset;padding:unset;color:inherit;}[${ATTRIBUTE}]::backdrop {display: none}`;
+const cssRules = `[${ATTRIBUTE}] {position: fixed !important;pointer-events: none !important;touch-action: none !important;z-index: calc(infinity);will-change: transform;top: var(${CSS_PREFIX}top, 0px) !important;left: var(${CSS_PREFIX}left, 0px) !important;width: var(${CSS_PREFIX}width, auto) !important;height: var(${CSS_PREFIX}height, auto) !important;box-sizing:border-box;}[${ATTRIBUTE}] *{pointer-events: none !important;}[${ATTRIBUTE}][style*="${CSS_PREFIX}translate"] {translate: var(${CSS_PREFIX}translate) !important;}[style*="${CSS_PREFIX}transition"] {transition: var(${CSS_PREFIX}transition) !important;}*:where([${ATTRIBUTE}][popover]){overflow:visible;background:var(${CSS_PREFIX}background);border:var(${CSS_PREFIX}border);margin:unset;padding:unset;color:inherit;}[${ATTRIBUTE}]::backdrop {display: none}`;
 const PLACEHOLDER_ATTRIBUTE = `${ATTR_PREFIX}placeholder`;
 const IGNORED_ATTRIBUTES = [ATTRIBUTE, PLACEHOLDER_ATTRIBUTE, 'popover'];
 const IGNORED_STYLES = ['view-transition-name'];
@@ -30,6 +30,7 @@ export class Feedback extends Plugin<DragDropManager> {
     super(manager);
 
     let style: HTMLStyleElement | undefined;
+    let initialSize: {width: number; height: number} | undefined = undefined;
     let initialCoordinates: Coordinates | undefined;
     let initialTranslate: Coordinates = {x: 0, y: 0};
     let currentTransform: Transform | undefined;
@@ -51,10 +52,11 @@ export class Feedback extends Plugin<DragDropManager> {
       const {position, source, status} = dragOperation;
 
       if (status.idle) {
-        initialCoordinates = undefined;
         currentTransform = undefined;
-        transformOrigin = undefined;
+        initialCoordinates = undefined;
+        initialSize = undefined;
         initialTranslate = {x: 0, y: 0};
+        transformOrigin = undefined;
         return;
       }
 
@@ -62,7 +64,9 @@ export class Feedback extends Plugin<DragDropManager> {
 
       const {element, feedback} = source;
 
-      if (!element || feedback === 'none') return;
+      if (!element || feedback === 'none') {
+        return;
+      }
 
       const shape = new DOMRectangle(element, true);
       const {width, height, top, left} = shape;
@@ -90,23 +94,28 @@ export class Feedback extends Plugin<DragDropManager> {
       }
 
       if (!initialCoordinates) {
-        initialCoordinates = {
-          x: left,
-          y: top,
-        };
+        initialCoordinates = {x: left, y: top};
+      }
+
+      if (!initialSize) {
+        initialSize = {width, height};
       }
 
       if (!transformOrigin) {
-        const currentPosition = untracked(() => position.current);
+        const {x, y} = untracked(() => position.current);
         transformOrigin = {
-          x: (currentPosition.x - left) / width,
-          y: (currentPosition.y - top) / height,
+          x: (x - left) / width,
+          y: (y - top) / height,
         };
       }
 
+      const sizeDelta = {
+        width: (width - initialSize.width) * transformOrigin.x,
+        height: (height - initialSize.height) * transformOrigin.y,
+      };
       const delta = {
-        x: initialCoordinates.x - left,
-        y: initialCoordinates.y - top,
+        x: initialCoordinates.x - left - sizeDelta.width,
+        y: initialCoordinates.y - top - sizeDelta.height,
       };
       const projected = {
         top: top + delta.y,
@@ -195,14 +204,16 @@ export class Feedback extends Plugin<DragDropManager> {
       });
 
       if (droppable && placeholder) {
-        /*
-         * If there is a droppable with the same id as the draggable source
-         * set the placeholder as the droppable's placeholder, which takes
-         * precedence over the dorppable's `element` property when computing
-         * its shape.
-         */
-        droppable.placeholder = placeholder;
-        untracked(droppable.refreshShape);
+        if (untracked(() => droppable.element) === element) {
+          /*
+           * If there is a droppable with the same id and element as the draggable source
+           * set the placeholder as the droppable's placeholder, which takes
+           * precedence over the dorppable's `element` property when computing
+           * its shape.
+           */
+          droppable.placeholder = placeholder;
+          untracked(droppable.refreshShape);
+        }
       }
 
       /* Initialize drag operation shape */
@@ -393,27 +404,43 @@ export class Feedback extends Plugin<DragDropManager> {
 
             styles.remove(['translate'], CSS_PREFIX);
 
-            const shape = new DOMRectangle(target);
-            const currentShape = new DOMRectangle(element, true).translate(
+            const final = new DOMRectangle(target);
+            const current = new DOMRectangle(element, true).translate(
               transform.x,
               transform.y
             );
             const delta = {
-              x: currentShape.center.x - shape.center.x,
-              y: currentShape.center.y - shape.center.y,
+              x: current.left - final.left,
+              y: current.top - final.top,
             };
-            const final = {
+            const finalTransform = {
               x: transform.x - delta.x,
               y: transform.y - delta.y,
               z: 0,
             };
+            const heightKeyframes =
+              Math.round(current.height) !== Math.round(final.height)
+                ? {
+                    minHeight: [`${current.height}px`, `${final.height}px`],
+                    maxHeight: [`${current.height}px`, `${final.height}px`],
+                  }
+                : {};
+            const widthKeyframes =
+              Math.round(current.width) !== Math.round(final.width)
+                ? {
+                    minWidth: [`${current.width}px`, `${final.width}px`],
+                    maxWidth: [`${current.width}px`, `${final.width}px`],
+                  }
+                : {};
 
             animateTransform({
               element,
               keyframes: {
+                ...heightKeyframes,
+                ...widthKeyframes,
                 translate: [
                   `${transform.x}px ${transform.y}px ${transform.z ?? 0}`,
-                  `${final.x}px ${final.y}px ${final.z}`,
+                  `${finalTransform.x}px ${finalTransform.y}px ${finalTransform.z}`,
                 ],
               },
               options: {
