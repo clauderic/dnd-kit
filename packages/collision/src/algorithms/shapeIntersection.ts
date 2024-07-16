@@ -10,12 +10,13 @@ export const shapeIntersection: CollisionDetector = ({
   dragOperation,
   droppable,
 }) => {
-  if (!droppable.shape) {
+  const {shape} = dragOperation;
+
+  if (!droppable.shape || !shape?.current) {
     return null;
   }
 
-  const {shape} = dragOperation;
-  const intersectionArea = shape?.current.intersectionArea(droppable.shape);
+  const intersectionArea = shape.current.intersectionArea(droppable.shape);
 
   // Check if the droppable is intersecting with the drag operation shape.
   if (intersectionArea) {
@@ -26,8 +27,11 @@ export const shapeIntersection: CollisionDetector = ({
      * collisions.
      */
     const distance = Point.distance(droppable.shape.center, position.current);
+    const intersectionRatio =
+      intersectionArea /
+      (shape.current.area + droppable.shape.area - intersectionArea);
 
-    const value = 1 / distance;
+    const value = intersectionRatio / distance;
 
     return {
       id: droppable.id,
