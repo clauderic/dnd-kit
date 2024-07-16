@@ -38,7 +38,7 @@ export class Entity<
     this.effects = () => [
       () => {
         // Re-run this effect whenever the `id` changes
-        const {id: _, manager} = this;
+        const {id, manager} = this;
 
         if (id === previousId) {
           return;
