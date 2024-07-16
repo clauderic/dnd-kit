@@ -1,12 +1,5 @@
-import {
-  batch,
-  computed,
-  deepEqual,
-  signal,
-  untracked,
-  type ReadonlySignal,
-  effect,
-} from '@dnd-kit/state';
+import {batch, signal, untracked, type Signal, effects} from '@dnd-kit/state';
+import type {Coordinates} from '@dnd-kit/geometry';
 
 import type {DragDropManager} from '../manager/index.ts';
 import type {Draggable, Droppable} from '../entities/index.ts';
@@ -25,15 +18,43 @@ export class CollisionObserver<
     super(manager);
 
     this.computeCollisions = this.computeCollisions.bind(this);
-    this.#collisions = computed(this.computeCollisions, deepEqual);
+    this.#collisions = signal(DEFAULT_VALUE);
 
-    this.destroy = effect(() => {
-      const {dragOperation} = this.manager;
+    const isEqual = (a: Collision[], b: Collision[]) =>
+      a.map(({id}) => id).join('') === b.map(({id}) => id).join('');
 
-      if (dragOperation.status.initialized) {
-        this.forceUpdate();
+    let previousCoordinates: Coordinates = {x: 0, y: 0};
+
+    this.destroy = effects(
+      () => {
+        const collisions = this.computeCollisions();
+        const previousCollisions = this.#collisions.peek();
+
+        if (isEqual(collisions, previousCollisions)) {
+          return;
+        }
+
+        const coordinates = untracked(
+          () => this.manager.dragOperation.position.current
+        );
+        const {x, y} = previousCoordinates;
+
+        previousCoordinates = coordinates;
+
+        if (coordinates.x == x && coordinates.y == y) {
+          return;
+        }
+
+        this.#collisions.value = collisions;
+      },
+      () => {
+        const {dragOperation} = this.manager;
+
+        if (dragOperation.status.initialized) {
+          this.forceUpdate();
+        }
       }
-    });
+    );
   }
 
   forceUpdateCount = signal(0);
@@ -53,7 +74,7 @@ export class CollisionObserver<
           }
         }
 
-        this.forceUpdateCount.value++;
+        this.#collisions.value = this.computeCollisions();
       });
     });
   }
@@ -70,8 +91,6 @@ export class CollisionObserver<
     }
 
     const collisions: Collision[] = [];
-
-    this.forceUpdateCount.value;
 
     for (const entry of entries ?? registry.droppables) {
       if (entry.disabled) {
@@ -113,5 +132,5 @@ export class CollisionObserver<
     return this.#collisions.value;
   }
 
-  #collisions: ReadonlySignal<Collisions>;
+  #collisions: Signal<Collisions>;
 }
