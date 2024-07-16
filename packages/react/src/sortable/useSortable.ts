@@ -1,5 +1,5 @@
-import {useCallback, useEffect} from 'react';
-import {deepEqual} from '@dnd-kit/state';
+import {useCallback} from 'react';
+import {batch, deepEqual} from '@dnd-kit/state';
 import {type Data} from '@dnd-kit/abstract';
 import {Sortable, defaultSortableTransition} from '@dnd-kit/dom/sortable';
 import type {SortableInput} from '@dnd-kit/dom/sortable';
@@ -7,7 +7,7 @@ import {useDragDropManager, useInstance} from '@dnd-kit/react';
 import {
   useComputed,
   useImmediateEffect as immediateEffect,
-  useIsomorphicLayoutEffect as layoutEffect,
+  useIsomorphicLayoutEffect,
   useOnValueChange,
 } from '@dnd-kit/react/hooks';
 import {currentValue, type RefOrValue} from '@dnd-kit/react/utilities';
@@ -56,9 +56,15 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
   const status = useComputed(() => sortable.status);
 
   useOnValueChange(id, () => (sortable.id = id));
-  useOnValueChange(index, () => (sortable.index = index), layoutEffect);
+
+  useIsomorphicLayoutEffect(() => {
+    batch(() => {
+      sortable.group = group;
+      sortable.index = index;
+    });
+  }, [group, index]);
+
   useOnValueChange(type, () => (sortable.type = type));
-  useOnValueChange(group, () => (sortable.group = group));
   useOnValueChange(
     accept,
     () => (sortable.accept = accept),
