@@ -7,88 +7,92 @@ export class Debug extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager) {
     super(manager);
 
-    if (process.env.NODE_ENV !== 'production') {
-      const elements = new Map<UniqueIdentifier, HTMLElement>();
-      let draggableElement: HTMLElement | null = null;
+    const elements = new Map<UniqueIdentifier, HTMLElement>();
+    let draggableElement: HTMLElement | null = null;
 
-      this.destroy = effect(() => {
-        const {dragOperation} = manager;
-        const {current: _} = dragOperation.status;
+    const cleanup = effect(() => {
+      const {dragOperation} = manager;
+      const {current: _} = dragOperation.status;
 
-        const {collisions} = manager.collisionObserver;
-        const draggable = dragOperation.source;
-        const topCollisions = collisions.slice(1, 3);
-        const collidingIds = topCollisions.map(({id}) => id);
+      const {collisions} = manager.collisionObserver;
+      const draggable = dragOperation.source;
+      const topCollisions = collisions.slice(1, 3);
+      const collidingIds = topCollisions.map(({id}) => id);
 
-        if (draggable && dragOperation.shape) {
-          const element = draggableElement ?? createDebugElement();
-          const {boundingRectangle} = dragOperation.shape.current;
+      if (draggable && dragOperation.shape) {
+        const element = draggableElement ?? createDebugElement();
+        const {boundingRectangle} = dragOperation.shape.current;
 
-          if (!draggableElement) {
-            draggableElement = element;
+        if (!draggableElement) {
+          draggableElement = element;
 
-            const style = document.createElement('style');
-            style.innerText = `dialog[data-dnd-kit-debug]::backdrop {display: none;}`;
+          const style = document.createElement('style');
+          style.innerText = `dialog[data-dnd-kit-debug]::backdrop {display: none;}`;
 
-            element.innerText = `${draggable.id}`;
-            element.setAttribute('data-dnd-kit-debug', '');
-            element.appendChild(style);
-            element.style.backgroundColor = 'rgba(118, 190, 250, 0.5)';
-            element.style.color = 'rgba(0,0,0,0.9)';
+          element.innerText = `${draggable.id}`;
+          element.setAttribute('data-dnd-kit-debug', '');
+          element.appendChild(style);
+          element.style.backgroundColor = 'rgba(118, 190, 250, 0.5)';
+          element.style.color = 'rgba(0,0,0,0.9)';
 
-            document.body.appendChild(element);
-          }
-
-          if (element instanceof HTMLDialogElement) {
-            element.showPopover();
-          }
-
-          element.style.top = `${boundingRectangle.top}px`;
-          element.style.left = `${boundingRectangle.left}px`;
-          element.style.width = `${boundingRectangle.width}px`;
-          element.style.height = `${boundingRectangle.height}px`;
-        } else {
-          draggableElement?.remove();
-          draggableElement = null;
+          document.body.appendChild(element);
         }
 
-        for (const [id, element] of elements) {
-          if (!manager.registry.droppables.has(id)) {
-            element.remove();
-            elements.delete(id);
-          }
+        if (element instanceof HTMLDialogElement) {
+          element.showPopover();
         }
 
-        for (const droppable of manager.registry.droppables) {
-          const element = elements.get(droppable.id);
+        element.style.top = `${boundingRectangle.top}px`;
+        element.style.left = `${boundingRectangle.left}px`;
+        element.style.width = `${boundingRectangle.width}px`;
+        element.style.height = `${boundingRectangle.height}px`;
+      } else {
+        draggableElement?.remove();
+        draggableElement = null;
+      }
 
-          if (droppable.shape) {
-            const {boundingRectangle} = droppable.shape;
-            const debugElement = element ?? createDebugElement();
-
-            if (!element) {
-              elements.set(droppable.id, debugElement);
-              document.body.appendChild(debugElement);
-            }
-
-            debugElement.style.backgroundColor = droppable.isDropTarget
-              ? 'rgba(13, 210, 36, 0.6)'
-              : collidingIds.includes(droppable.id)
-                ? 'rgba(255, 193, 7, 0.5)'
-                : 'rgba(0, 0, 0, 0.1)';
-
-            debugElement.style.top = `${boundingRectangle.top}px`;
-            debugElement.style.left = `${boundingRectangle.left}px`;
-            debugElement.style.width = `${boundingRectangle.width}px`;
-            debugElement.style.height = `${boundingRectangle.height}px`;
-            debugElement.innerText = `${droppable.id}`;
-          } else if (element) {
-            element.remove();
-            elements.delete(droppable.id);
-          }
+      for (const [id, element] of elements) {
+        if (!manager.registry.droppables.has(id)) {
+          element.remove();
+          elements.delete(id);
         }
-      });
-    }
+      }
+
+      for (const droppable of manager.registry.droppables) {
+        const element = elements.get(droppable.id);
+
+        if (droppable.shape) {
+          const {boundingRectangle} = droppable.shape;
+          const debugElement = element ?? createDebugElement();
+
+          if (!element) {
+            elements.set(droppable.id, debugElement);
+            document.body.appendChild(debugElement);
+          }
+
+          debugElement.style.backgroundColor = droppable.isDropTarget
+            ? 'rgba(13, 210, 36, 0.6)'
+            : collidingIds.includes(droppable.id)
+              ? 'rgba(255, 193, 7, 0.5)'
+              : 'rgba(0, 0, 0, 0.1)';
+
+          debugElement.style.top = `${boundingRectangle.top}px`;
+          debugElement.style.left = `${boundingRectangle.left}px`;
+          debugElement.style.width = `${boundingRectangle.width}px`;
+          debugElement.style.height = `${boundingRectangle.height}px`;
+          debugElement.innerText = `${droppable.id}`;
+        } else if (element) {
+          element.remove();
+          elements.delete(droppable.id);
+        }
+      }
+    });
+
+    this.destroy = () => {
+      draggableElement?.remove();
+      elements.forEach((element) => element.remove());
+      cleanup();
+    };
   }
 }
 
