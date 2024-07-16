@@ -1,6 +1,6 @@
 import {effect} from '@dnd-kit/state';
 import {Plugin} from '@dnd-kit/abstract';
-import {closestCenter} from '@dnd-kit/collision';
+import {closestCorners} from '@dnd-kit/collision';
 import {
   isKeyboardEvent,
   scheduler,
@@ -80,8 +80,8 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
 
             if (
               !shape ||
-              (id === source?.id && isSortable(droppable)) ||
-              (source?.type != null && !droppable.accepts(source))
+              !droppable.accepts(source) ||
+              (id === source?.id && isSortable(droppable))
             ) {
               continue;
             }
@@ -115,7 +115,7 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
 
           const collisions = collisionObserver.computeCollisions(
             potentialTargets,
-            closestCenter
+            closestCorners
           );
           const [firstCollision] = collisions;
 
