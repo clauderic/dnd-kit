@@ -21,17 +21,10 @@ export function useRects(
   const [rects, measureRects] = useReducer(reducer, defaultValue);
   const resizeObserver = useResizeObserver({callback: measureRects});
 
-  if (elements.length > 0 && rects === defaultValue) {
-    measureRects();
-  }
-
   useIsomorphicLayoutEffect(() => {
-    if (elements.length) {
-      elements.forEach((element) => resizeObserver?.observe(element));
-    } else {
-      resizeObserver?.disconnect();
-      measureRects();
-    }
+    resizeObserver?.disconnect();
+    measureRects();
+    elements.forEach((element) => resizeObserver?.observe(element));
   }, [elements]);
 
   return rects;
