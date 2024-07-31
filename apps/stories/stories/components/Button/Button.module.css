@@ -34,7 +34,7 @@
   outline: 3px solid #4c9ffe;
 }
 
-.Button[data-shadow="true"] {
+.Button[data-shadow="true"]:not([aria-hidden="true"]) {
   transform: scale(1.03);
   --box-shadow: -1px 0 15px 0 rgba(34, 33, 81, 0.01), 0px 15px 15px 0 rgba(34, 33, 81, 0.25);
 
