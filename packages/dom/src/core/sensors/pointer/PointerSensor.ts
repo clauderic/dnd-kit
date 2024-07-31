@@ -137,6 +137,7 @@ export class PointerSensor extends Sensor<
     }
 
     const ownerDocument = getDocument(event.target);
+    ownerDocument.body.setPointerCapture(event.pointerId);
 
     const unbindListeners = this.listeners.bind(ownerDocument, [
       {
@@ -176,6 +177,7 @@ export class PointerSensor extends Sensor<
     ]);
 
     const cleanup = () => {
+      console.log('cleanup');
       setTimeout(unbindListeners);
 
       this.#clearTimeout?.();
