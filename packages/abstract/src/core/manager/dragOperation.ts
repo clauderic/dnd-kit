@@ -12,6 +12,7 @@ import {descriptor} from '../plugins/index.ts';
 
 import type {DragDropManager} from './manager.ts';
 import {defaultPreventable} from './events.ts';
+import {Collision} from '../collision/types.ts';
 
 export enum Status {
   Idle = 'idle',
@@ -30,6 +31,7 @@ export interface DragOperation<
 > {
   activatorEvent: Event | null;
   canceled: boolean;
+  collision: Collision | null;
   position: Position;
   transform: Coordinates;
   status: {
@@ -74,6 +76,7 @@ export function DragOperationManager<
   const canceled = signal<boolean>(false);
   const position = new Position({x: 0, y: 0});
   const activatorEvent = signal<Event | null>(null);
+  const collision = signal<Collision | null>(null);
   const sourceIdentifier = signal<UniqueIdentifier | null>(null);
   const targetIdentifier = signal<UniqueIdentifier | null>(null);
   const dragging = computed(() => status.value === Status.Dragging);
@@ -129,6 +132,7 @@ export function DragOperationManager<
       canceled: canceled.peek(),
       source: source.peek(),
       target: target.peek(),
+      collision: collision.peek(),
       status: {
         current: status.peek(),
         idle: idle.peek(),
@@ -158,6 +162,9 @@ export function DragOperationManager<
     },
     get canceled() {
       return canceled.value;
+    },
+    get collision() {
+      return collision.value;
     },
     get source() {
       return source.value;
@@ -216,6 +223,7 @@ export function DragOperationManager<
   const reset = () => {
     batch(() => {
       status.value = Status.Idle;
+      collision.value = null;
       sourceIdentifier.value = null;
       targetIdentifier.value = null;
       shape.current.value = null;
@@ -228,6 +236,9 @@ export function DragOperationManager<
   return {
     operation,
     actions: {
+      setCollision(currentCollision: Collision) {
+        collision.value = currentCollision;
+      },
       setDragSource(identifier: UniqueIdentifier) {
         sourceIdentifier.value = identifier;
       },
