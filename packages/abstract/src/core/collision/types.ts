@@ -4,6 +4,7 @@ import type {
   Droppable,
   UniqueIdentifier,
 } from '../entities/index.ts';
+import {Serializable} from '../manager/dragOperation.ts';
 
 export enum CollisionPriority {
   Lowest,
@@ -24,6 +25,7 @@ export interface Collision {
   priority: CollisionPriority | number;
   type: CollisionType;
   value: number;
+  data?: Serializable;
 }
 
 export type Collisions = Collision[];
