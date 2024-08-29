@@ -1,5 +1,12 @@
 # @dnd-kit/helpers
 
+## 0.0.6
+
+### Patch Changes
+
+- Updated dependencies [[`a04d3f8`](https://github.com/clauderic/dnd-kit/commit/a04d3f88d380853b97585ab3b608561f7b02ce69), [`a8542de`](https://github.com/clauderic/dnd-kit/commit/a8542de56d39c3cd3b6ef981172a0782454295b2), [`96f28ef`](https://github.com/clauderic/dnd-kit/commit/96f28ef86adf95e77540732d39033c7f3fb0fd04)]:
+  - @dnd-kit/abstract@0.0.6
+
 ## 0.0.5
 
 ### Patch Changes

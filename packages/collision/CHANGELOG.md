@@ -1,5 +1,19 @@
 # @dnd-kit/collision
 
+## 0.0.6
+
+### Patch Changes
+
+- [#1454](https://github.com/clauderic/dnd-kit/pull/1454) [`69bfad7`](https://github.com/clauderic/dnd-kit/commit/69bfad7d795947987a4281f1a61f81b6a7839fe8) Thanks [@github-actions](https://github.com/apps/github-actions)! - Introduce `closestCorners` collision detection algorithm.
+
+- [#1454](https://github.com/clauderic/dnd-kit/pull/1454) [`a8542de`](https://github.com/clauderic/dnd-kit/commit/a8542de56d39c3cd3b6ef981172a0782454295b2) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fix issues with `collisionPriority` not being respected.
+
+- [#1454](https://github.com/clauderic/dnd-kit/pull/1454) [`a6366f9`](https://github.com/clauderic/dnd-kit/commit/a6366f9e42836b4c5732141bf314489ede9f60cb) Thanks [@github-actions](https://github.com/apps/github-actions)! - Improve accuracy of `shapeIntersection` when there are multiple intersecting shapes.
+
+- Updated dependencies [[`a04d3f8`](https://github.com/clauderic/dnd-kit/commit/a04d3f88d380853b97585ab3b608561f7b02ce69), [`a8542de`](https://github.com/clauderic/dnd-kit/commit/a8542de56d39c3cd3b6ef981172a0782454295b2), [`96f28ef`](https://github.com/clauderic/dnd-kit/commit/96f28ef86adf95e77540732d39033c7f3fb0fd04)]:
+  - @dnd-kit/abstract@0.0.6
+  - @dnd-kit/geometry@0.0.6
+
 ## 0.0.5
 
 ### Patch Changes

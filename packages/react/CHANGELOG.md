@@ -1,5 +1,16 @@
 # @dnd-kit/react
 
+## 0.0.6
+
+### Patch Changes
+
+- [#1454](https://github.com/clauderic/dnd-kit/pull/1454) [`e2f5d93`](https://github.com/clauderic/dnd-kit/commit/e2f5d935cd21303c9877ce46f7642de7fc9b1ae8) Thanks [@github-actions](https://github.com/apps/github-actions)! - `useSortable`: Make sure `group` and `index` are updated at the same time.
+
+- Updated dependencies [[`a04d3f8`](https://github.com/clauderic/dnd-kit/commit/a04d3f88d380853b97585ab3b608561f7b02ce69), [`f400106`](https://github.com/clauderic/dnd-kit/commit/f400106072d12a902f6c113b889c7de97f43e1ea), [`a8542de`](https://github.com/clauderic/dnd-kit/commit/a8542de56d39c3cd3b6ef981172a0782454295b2), [`f219549`](https://github.com/clauderic/dnd-kit/commit/f219549087d9100cee53ab0cf35d820fe256aa85), [`bfc8ab2`](https://github.com/clauderic/dnd-kit/commit/bfc8ab21cfd9c16a8d90ab250386e6d52d0a40a3), [`96f28ef`](https://github.com/clauderic/dnd-kit/commit/96f28ef86adf95e77540732d39033c7f3fb0fd04), [`69bfad7`](https://github.com/clauderic/dnd-kit/commit/69bfad7d795947987a4281f1a61f81b6a7839fe8)]:
+  - @dnd-kit/abstract@0.0.6
+  - @dnd-kit/dom@0.0.6
+  - @dnd-kit/state@0.0.6
+
 ## 0.0.5
 
 ### Patch Changes

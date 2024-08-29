@@ -1,7 +1,7 @@
 {
   "name": "@dnd-kit/helpers",
   "type": "module",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -24,7 +24,7 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
-    "@dnd-kit/abstract": "^0.0.5",
+    "@dnd-kit/abstract": "^0.0.6",
     "tslib": "^2.6.2"
   },
   "devDependencies": {
