@@ -137,7 +137,6 @@ export class PointerSensor extends Sensor<
     }
 
     const ownerDocument = getDocument(event.target);
-    ownerDocument.body.setPointerCapture(event.pointerId);
 
     const unbindListeners = this.listeners.bind(ownerDocument, [
       {
@@ -153,36 +152,16 @@ export class PointerSensor extends Sensor<
         },
       },
       {
-        // Prevent scrolling on touch devices
-        type: 'touchmove',
-        listener: preventDefault,
-        options: {
-          passive: false,
-        },
-      },
-      {
-        // Prevent click events
-        type: 'click',
-        listener: preventDefault,
-      },
-      {
         // Cancel activation if there is a competing Drag and Drop interaction
         type: 'dragstart',
         listener: isNativeDraggable ? this.handleCancel : preventDefault,
       },
-      {
-        type: 'keydown',
-        listener: this.handleKeyDown,
-      },
     ]);
 
     const cleanup = () => {
-      console.log('cleanup');
       setTimeout(unbindListeners);
-
       this.#clearTimeout?.();
       this.initialCoordinates = undefined;
-      this.cleanup.delete(cleanup);
     };
 
     this.cleanup.add(cleanup);
@@ -255,6 +234,7 @@ export class PointerSensor extends Sensor<
 
     // Remove the pointer move and up event listeners
     this.cleanup.forEach((cleanup) => cleanup());
+    this.cleanup.clear();
   }
 
   protected handleKeyDown(event: KeyboardEvent) {
@@ -283,6 +263,31 @@ export class PointerSensor extends Sensor<
       manager.actions.setDragSource(source.id);
       manager.actions.start({coordinates: initialCoordinates, event});
     });
+
+    const ownerDocument = getDocument(event.target);
+    const unbind = this.listeners.bind(ownerDocument, [
+      {
+        // Prevent scrolling on touch devices
+        type: 'touchmove',
+        listener: preventDefault,
+        options: {
+          passive: false,
+        },
+      },
+      {
+        // Prevent click events
+        type: 'click',
+        listener: preventDefault,
+      },
+      {
+        type: 'keydown',
+        listener: this.handleKeyDown,
+      },
+    ]);
+
+    ownerDocument.body.setPointerCapture(event.pointerId);
+
+    this.cleanup.add(unbind);
   }
 
   protected handleCancel() {
@@ -294,6 +299,7 @@ export class PointerSensor extends Sensor<
 
     // Remove the pointer move and up event listeners
     this.cleanup.forEach((cleanup) => cleanup());
+    this.cleanup.clear();
   }
 
   public destroy() {
