@@ -4,9 +4,16 @@ import {DragDropManager} from '../manager/index.ts';
 import {CorePlugin} from '../plugins/index.ts';
 import {defaultPreventable} from '../manager/events.ts';
 
+import type {Collision} from './types.ts';
+
 export class CollisionNotifier extends CorePlugin {
   constructor(manager: DragDropManager<any, any>) {
     super(manager);
+
+    const isEqual = (a: Collision[], b: Collision[]) =>
+      a.map(({id}) => id).join('') === b.map(({id}) => id).join('');
+
+    let previousCollisions: Collision[] = [];
 
     this.destroy = effect(() => {
       const {collisionObserver, monitor} = manager;
@@ -24,6 +31,12 @@ export class CollisionNotifier extends CorePlugin {
 
       if (event.defaultPrevented) {
         return;
+      }
+
+      if (isEqual(collisions, previousCollisions)) {
+        return;
+      } else {
+        previousCollisions = collisions;
       }
 
       const [firstCollision] = collisions;

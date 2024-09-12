@@ -20,19 +20,11 @@ export class CollisionObserver<
     this.computeCollisions = this.computeCollisions.bind(this);
     this.#collisions = signal(DEFAULT_VALUE);
 
-    const isEqual = (a: Collision[], b: Collision[]) =>
-      a.map(({id}) => id).join('') === b.map(({id}) => id).join('');
-
     let previousCoordinates: Coordinates = {x: 0, y: 0};
 
     this.destroy = effects(
       () => {
         const collisions = this.computeCollisions();
-        const previousCollisions = this.#collisions.peek();
-
-        if (isEqual(collisions, previousCollisions)) {
-          return;
-        }
 
         const coordinates = untracked(
           () => this.manager.dragOperation.position.current
