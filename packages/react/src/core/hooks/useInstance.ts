@@ -22,9 +22,8 @@ export function useInstance<T extends Instance>(
 
   useEffect(() => {
     instance.manager = manager;
-
-    // Register returns an unregister callback
-    return instance.register();
+    const unregister = instance.register();
+    return unregister;
   }, [instance, manager]);
 
   return instance;

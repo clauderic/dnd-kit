@@ -50,9 +50,16 @@ export class EntityRegistry<T extends Entity> {
    */
   public register = (key: UniqueIdentifier, value: T) => {
     const current = this.map.peek();
+    const currentValue = current.get(key);
 
-    if (current.get(key) === value) {
+    if (currentValue === value) {
       return;
+    }
+
+    if (currentValue) {
+      const cleanup = this.cleanupFunctions.get(currentValue);
+      cleanup?.();
+      this.cleanupFunctions.delete(currentValue);
     }
 
     const updatedMap = new Map(current);
