@@ -167,11 +167,6 @@ export class Sortable<T extends Data = Data> {
     this.group = group;
     this.type = type;
     this.transition = transition;
-
-    this.destroy = () => {
-      this.draggable.destroy();
-      this.droppable.destroy();
-    };
   }
 
   protected animate() {
@@ -188,7 +183,7 @@ export class Sortable<T extends Data = Data> {
       }
 
       scheduler.schedule(() => {
-        const {element} = this.droppable;
+        const {element} = this;
 
         if (!element) {
           return;
@@ -233,13 +228,15 @@ export class Sortable<T extends Data = Data> {
   }
 
   public set manager(manager: DragDropManager<any, any> | undefined) {
-    this.draggable.manager = manager as any;
-    this.droppable.manager = manager as any;
+    batch(() => {
+      this.draggable.manager = manager as any;
+      this.droppable.manager = manager as any;
+    });
   }
 
   public set element(element: Element | undefined) {
     this.draggable.element = element;
-    this.droppable.element = element;
+        this.droppable.element = element;
   }
 
   public get element() {
@@ -272,15 +269,15 @@ export class Sortable<T extends Data = Data> {
 
   public set disabled(value: boolean) {
     batch(() => {
-      this.draggable.disabled = value;
       this.droppable.disabled = value;
+      this.draggable.disabled = value;
     });
   }
 
   public set data(data: T) {
     batch(() => {
-      this.draggable.data = data;
       this.droppable.data = data;
+      this.draggable.data = data;
     });
   }
 
@@ -290,8 +287,8 @@ export class Sortable<T extends Data = Data> {
 
   public set id(id: UniqueIdentifier) {
     batch(() => {
-      this.draggable.id = id;
       this.droppable.id = id;
+      this.draggable.id = id;
     });
   }
 
@@ -312,8 +309,10 @@ export class Sortable<T extends Data = Data> {
   }
 
   public set type(type: Type | undefined) {
-    this.draggable.type = type;
-    this.droppable.type = type;
+    batch(() => {
+      this.droppable.type = type;
+      this.draggable.type = type;
+    });
   }
 
   public get type() {
@@ -352,20 +351,26 @@ export class Sortable<T extends Data = Data> {
   }
 
   public register() {
-    this.manager?.registry.register(this.draggable);
-    this.manager?.registry.register(this.droppable);
+    batch(() => {
+      this.manager?.registry.register(this.droppable);
+      this.manager?.registry.register(this.draggable);
+    });
 
     return () => this.unregister();
   }
 
   public unregister() {
-    this.manager?.registry.unregister(this.draggable);
-    this.manager?.registry.unregister(this.droppable);
+    batch(() => {
+      this.manager?.registry.unregister(this.droppable);
+      this.manager?.registry.unregister(this.draggable);
+    });
   }
 
   public destroy() {
-    this.draggable.destroy();
-    this.droppable.destroy();
+    batch(() => {
+      this.droppable.destroy();
+      this.draggable.destroy();
+    });
   }
 }
 
