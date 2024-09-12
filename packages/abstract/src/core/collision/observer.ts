@@ -1,4 +1,4 @@
-import {batch, signal, untracked, type Signal, effects} from '@dnd-kit/state';
+import {signal, untracked, type Signal, effects} from '@dnd-kit/state';
 import type {Coordinates} from '@dnd-kit/geometry';
 
 import type {DragDropManager} from '../manager/index.ts';
@@ -49,25 +49,9 @@ export class CollisionObserver<
     );
   }
 
-  forceUpdateCount = signal(0);
-
-  public forceUpdate(refresh = true) {
+  public forceUpdate() {
     untracked(() => {
-      const {source} = this.manager.dragOperation;
-
-      batch(() => {
-        if (refresh) {
-          for (const droppable of this.manager.registry.droppables) {
-            if (source && !droppable.accepts(source)) {
-              continue;
-            }
-
-            droppable.refreshShape();
-          }
-        }
-
-        this.#collisions.value = this.computeCollisions();
-      });
+      this.#collisions.value = this.computeCollisions();
     });
   }
 

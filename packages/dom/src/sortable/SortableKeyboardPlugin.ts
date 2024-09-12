@@ -127,35 +127,37 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
           const {id} = firstCollision;
 
           actions.setDropTarget(id).then(() => {
-            const {source} = dragOperation;
+            // Wait until optimistic sorting has a chance to update the DOM
+            queueMicrotask(() => {
+              const {source} = dragOperation;
 
-            if (!source || !isSortable(source)) {
-              return;
-            }
-
-            const {element} = source.sortable;
-
-            if (!element) return;
-
-            scrollIntoViewIfNeeded(element);
-
-            scheduler.schedule(() => {
-              const shape = new DOMRectangle(element);
-
-              if (!shape) {
+              if (!source || !isSortable(source)) {
                 return;
               }
 
-              actions.move({
-                to: {
-                  x: shape.center.x,
-                  y: shape.center.y,
-                },
-              });
+              const {element} = source.sortable;
 
-              actions.setDropTarget(source.id).then(() => {
-                dragOperation.shape = shape;
-                collisionObserver.enable();
+              if (!element) return;
+
+              scrollIntoViewIfNeeded(element);
+              scheduler.schedule(() => {
+                const shape = new DOMRectangle(element);
+
+                if (!shape) {
+                  return;
+                }
+
+                actions.move({
+                  to: {
+                    x: shape.center.x,
+                    y: shape.center.y,
+                  },
+                });
+
+                actions.setDropTarget(source.id).then(() => {
+                  dragOperation.shape = shape;
+                  collisionObserver.enable();
+                });
               });
             });
           });

@@ -1,5 +1,5 @@
 import {getComputedStyles} from '../styles/getComputedStyles.ts';
-import {getScrollableAncestors} from './getScrollableAncestors.ts';
+import {getFirstScrollableAncestor} from './getScrollableAncestors.ts';
 
 function supportsScrollIntoViewIfNeeded(
   element: Element
@@ -22,7 +22,7 @@ export function scrollIntoViewIfNeeded(el: Element, centerIfNeeded = false) {
     return el.scrollIntoView();
   }
 
-  var [parent] = getScrollableAncestors(el, {limit: 1});
+  var parent = getFirstScrollableAncestor(el);
 
   if (!(parent instanceof HTMLElement)) {
     return;

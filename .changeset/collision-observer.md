@@ -1,5 +1,6 @@
 ---
 '@dnd-kit/abstract': patch
+'@dnd-kit/dom': patch
 ---
 
-Reduce the how frequently collisions are re-computed when the position of the drag operation does not change.
+Rework how collisions are detected and how the position of elements is observed using a new `PositionObserver`.

@@ -2,7 +2,7 @@ import {effect, untracked, type CleanupFunction} from '@dnd-kit/state';
 import {Plugin} from '@dnd-kit/abstract';
 import {
   animateTransform,
-  createPlaceholder,
+  cloneElement,
   DOMRectangle,
   isKeyboardEvent,
   showPopover,
@@ -10,18 +10,21 @@ import {
   supportsPopover,
   supportsStyle,
   Styles,
-  type Transform,
   parseTranslate,
+  ProxiedElements,
+  type Transform,
 } from '@dnd-kit/dom/utilities';
 import {Coordinates} from '@dnd-kit/geometry';
 
-import {DragDropManager} from '../../manager/index.ts';
+import type {DragDropManager} from '../../manager/index.ts';
+import {type Draggable} from '../../entities/index.ts';
 
 const ATTR_PREFIX = 'data-dnd-';
 const CSS_PREFIX = '--dnd-';
 const ATTRIBUTE = `${ATTR_PREFIX}dragging`;
 const cssRules = `[${ATTRIBUTE}] {position: fixed !important;pointer-events: none !important;touch-action: none !important;z-index: calc(infinity);will-change: transform;top: var(${CSS_PREFIX}top, 0px) !important;left: var(${CSS_PREFIX}left, 0px) !important;width: var(${CSS_PREFIX}width, auto) !important;height: var(${CSS_PREFIX}height, auto) !important;box-sizing:border-box;}[${ATTRIBUTE}] *{pointer-events: none !important;}[${ATTRIBUTE}][style*="${CSS_PREFIX}translate"] {translate: var(${CSS_PREFIX}translate) !important;}[style*="${CSS_PREFIX}transition"] {transition: var(${CSS_PREFIX}transition) !important;}*:where([${ATTRIBUTE}][popover]){overflow:visible;background:var(${CSS_PREFIX}background);border:var(${CSS_PREFIX}border);margin:unset;padding:unset;color:inherit;}[${ATTRIBUTE}]::backdrop {display: none}`;
 const PLACEHOLDER_ATTRIBUTE = `${ATTR_PREFIX}placeholder`;
+const IDENTIFIER_ATTRIBUTE = `${ATTR_PREFIX}id`;
 const IGNORED_ATTRIBUTES = [ATTRIBUTE, PLACEHOLDER_ATTRIBUTE, 'popover'];
 const IGNORED_STYLES = ['view-transition-name'];
 
@@ -68,19 +71,17 @@ export class Feedback extends Plugin<DragDropManager> {
         return;
       }
 
-      const shape = new DOMRectangle(element, true);
+      let cleanup: CleanupFunction | undefined;
+
+      const shape = new DOMRectangle(element, {ignoreTransforms: true});
       const {width, height, top, left} = shape;
       const styles = new Styles(element);
       const {background, border, transition, translate} =
         getComputedStyles(element);
-      const droppable = manager.registry.droppables.get(source.id);
       const clone = feedback === 'clone';
+
       const placeholder =
-        feedback !== 'move'
-          ? createPlaceholder(element, clone, {
-              [PLACEHOLDER_ATTRIBUTE]: '',
-            })
-          : null;
+        feedback !== 'move' ? createPlaceholder(source) : null;
       const isKeyboardOperation = untracked(() =>
         isKeyboardEvent(manager.dragOperation.activatorEvent)
       );
@@ -138,7 +139,9 @@ export class Feedback extends Plugin<DragDropManager> {
         CSS_PREFIX
       );
 
-      if (placeholder) element.insertAdjacentElement('afterend', placeholder);
+      if (placeholder) {
+        element.insertAdjacentElement('afterend', placeholder);
+      }
 
       if (supportsPopover(element)) {
         if (!element.hasAttribute('popover')) {
@@ -147,7 +150,7 @@ export class Feedback extends Plugin<DragDropManager> {
         showPopover(element);
       }
 
-      const actual = new DOMRectangle(element, true);
+      const actual = new DOMRectangle(element, {ignoreTransforms: true});
       const offset = {
         top: projected.top - actual.top,
         left: projected.left - actual.left,
@@ -170,7 +173,9 @@ export class Feedback extends Plugin<DragDropManager> {
       const resizeObserver = new ResizeObserver(() => {
         if (!placeholder) return;
 
-        const placeholderShape = new DOMRectangle(placeholder, true);
+        const placeholderShape = new DOMRectangle(placeholder, {
+          ignoreTransforms: true,
+        });
         const origin = transformOrigin ?? {x: 1, y: 1};
         const dX = (width - placeholderShape.width) * origin.x + delta.x;
         const dY = (height - placeholderShape.height) * origin.y + delta.y;
@@ -202,19 +207,6 @@ export class Feedback extends Plugin<DragDropManager> {
 
         manager.dragOperation.shape = new DOMRectangle(element);
       });
-
-      if (droppable && placeholder) {
-        if (untracked(() => droppable.element) === element) {
-          /*
-           * If there is a droppable with the same id and element as the draggable source
-           * set the placeholder as the droppable's placeholder, which takes
-           * precedence over the dorppable's `element` property when computing
-           * its shape.
-           */
-          droppable.placeholder = placeholder;
-          untracked(droppable.refreshShape);
-        }
-      }
 
       /* Initialize drag operation shape */
       dragOperation.shape = new DOMRectangle(element);
@@ -352,7 +344,7 @@ export class Feedback extends Plugin<DragDropManager> {
         }
       };
 
-      let cleanup: CleanupFunction | undefined = () => {
+      cleanup = () => {
         elementMutationObserver?.disconnect();
         documentMutationObserver?.disconnect();
         resizeObserver.disconnect();
@@ -373,12 +365,7 @@ export class Feedback extends Plugin<DragDropManager> {
         cleanupEffect();
         dropEffectCleanup();
 
-        if (droppable) {
-          droppable.placeholder = undefined;
-        }
-
         source.status = 'idle';
-
         moved = false;
       };
 
@@ -402,16 +389,28 @@ export class Feedback extends Plugin<DragDropManager> {
 
             const target = placeholder ?? element;
 
-            styles.remove(['translate'], CSS_PREFIX);
+            const animations = element.getAnimations();
+
+            if (animations.length) {
+              animations.forEach((animation) => {
+                const {effect} = animation;
+
+                if (effect instanceof KeyframeEffect) {
+                  if (
+                    effect.getKeyframes().some((keyframe) => keyframe.translate)
+                  ) {
+                    animation.finish();
+                  }
+                }
+              });
+            }
 
             const final = new DOMRectangle(target);
-            const current = new DOMRectangle(element, true).translate(
-              transform.x,
-              transform.y
-            );
+            const current = new DOMRectangle(element);
+
             const delta = {
-              x: current.left - final.left,
-              y: current.top - final.top,
+              x: current.center.x - final.center.x,
+              y: current.center.y - final.center.y,
             };
             const finalTransform = {
               x: transform.x - delta.x,
@@ -447,6 +446,9 @@ export class Feedback extends Plugin<DragDropManager> {
                 duration: moved ? 250 : 0,
                 easing: 'ease',
               },
+              onReady() {
+                styles.remove(['translate'], CSS_PREFIX);
+              },
               onFinish() {
                 requestAnimationFrame(restoreFocus);
                 onComplete?.();
@@ -465,4 +467,89 @@ export class Feedback extends Plugin<DragDropManager> {
       style?.remove();
     };
   }
+}
+
+function createPlaceholder(source: Draggable) {
+  const {element, manager} = source;
+
+  if (!element || !manager) return;
+
+  return untracked(() => {
+    const {droppables} = manager.registry;
+    const containedDroppables = [];
+
+    for (const droppable of droppables) {
+      if (!droppable.element) continue;
+
+      if (
+        element === droppable.element ||
+        element.contains(droppable.element)
+      ) {
+        droppable.element.setAttribute(
+          IDENTIFIER_ATTRIBUTE,
+          `${JSON.stringify(droppable.id)}`
+        );
+        containedDroppables.push(droppable);
+      }
+    }
+
+    const cleanup: CleanupFunction[] = [];
+    const placeholder = cloneElement(element);
+    const {remove} = placeholder;
+
+    for (const droppable of containedDroppables) {
+      if (!droppable.element) continue;
+
+      const selector = `[${IDENTIFIER_ATTRIBUTE}='${JSON.stringify(droppable.id)}']`;
+      const clonedElement = placeholder.matches(selector)
+        ? placeholder
+        : placeholder.querySelector(selector);
+
+      droppable.element?.removeAttribute(IDENTIFIER_ATTRIBUTE);
+
+      if (!clonedElement) continue;
+
+      let current = droppable.element;
+
+      droppable.element = clonedElement;
+      clonedElement.removeAttribute(IDENTIFIER_ATTRIBUTE);
+
+      ProxiedElements.set(current, clonedElement);
+
+      const proxy = Proxy.revocable(droppable, {
+        set(target, key, newValue) {
+          if (key === 'element') {
+            ProxiedElements.delete(current);
+
+            if (newValue instanceof Element) {
+              ProxiedElements.set(newValue, clonedElement);
+            }
+
+            current = newValue;
+
+            return false;
+          }
+
+          return Reflect.set(target, key, newValue);
+        },
+      });
+
+      cleanup.push(() => {
+        proxy.revoke();
+        ProxiedElements.delete(current);
+        droppable.element = current;
+      });
+    }
+
+    placeholder.setAttribute('inert', 'true');
+    placeholder.setAttribute('tab-index', '-1');
+    placeholder.setAttribute('aria-hidden', 'true');
+    placeholder.setAttribute(PLACEHOLDER_ATTRIBUTE, '');
+    placeholder.remove = () => {
+      cleanup.forEach((fn) => fn());
+      remove.call(placeholder);
+    };
+
+    return placeholder;
+  });
 }

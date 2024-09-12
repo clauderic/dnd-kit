@@ -6,11 +6,7 @@ export {
 
 export {canUseDOM, getDocument, getWindow} from './execution-context/index.ts';
 
-export {
-  cloneElement,
-  createPlaceholder,
-  ProxiedElements,
-} from './element/index.ts';
+export {cloneElement, ProxiedElements} from './element/index.ts';
 
 export {Listeners} from './event-listeners/index.ts';
 

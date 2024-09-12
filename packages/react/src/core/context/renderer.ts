@@ -1,4 +1,4 @@
-import {useTransition, useState, useRef} from 'react';
+import {useTransition, useState, useRef, useLayoutEffect} from 'react';
 import type {Renderer} from '@dnd-kit/abstract';
 import {useConstant, useOnValueChange} from '@dnd-kit/react/hooks';
 
@@ -13,10 +13,14 @@ export function useRenderer() {
     },
   }));
 
-  useOnValueChange(transitionCount, () => {
-    resolver.current?.();
-    rendering.current = undefined;
-  });
+  useOnValueChange(
+    transitionCount,
+    () => {
+      resolver.current?.();
+      rendering.current = undefined;
+    },
+    useLayoutEffect
+  );
 
   return {
     renderer,

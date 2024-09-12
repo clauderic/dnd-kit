@@ -90,8 +90,4 @@ export class Droppable<
   public get isDropTarget() {
     return this.manager?.dragOperation.target?.id === this.id;
   }
-
-  public refreshShape() {
-    // To be implemented by subclasses
-  }
 }
