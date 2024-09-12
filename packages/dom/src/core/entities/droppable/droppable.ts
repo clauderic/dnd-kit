@@ -90,6 +90,7 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<
       manager
     );
 
+    this.element = element;
     this.refreshShape = () => updateShape();
   }
 
