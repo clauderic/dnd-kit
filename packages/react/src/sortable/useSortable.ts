@@ -75,7 +75,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
   useOnValueChange(
     index,
     () => {
-      if (manager?.dragOperation.status.idle && transition) {
+      if (manager?.dragOperation.status.idle && transition?.idle) {
         sortable.refreshShape();
       }
     },
