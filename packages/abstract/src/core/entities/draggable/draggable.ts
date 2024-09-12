@@ -17,7 +17,7 @@ export type DraggableStatus = 'idle' | 'dragging' | 'dropping';
 export class Draggable<
   T extends Data = Data,
   U extends DragDropManager<any, any> = DragDropManager<any, any>,
-> extends Entity<T> {
+> extends Entity<T, U> {
   constructor(
     {modifiers, type, sensors, ...input}: Input<T>,
     manager: U | undefined

@@ -24,7 +24,10 @@ export interface Input<T extends Data = Data>
   element?: Element;
 }
 
-export class Droppable<T extends Data = Data> extends AbstractDroppable<T> {
+export class Droppable<T extends Data = Data> extends AbstractDroppable<
+  T,
+  DragDropManager
+> {
   constructor(
     {element, effects = () => [], ...input}: Input<T>,
     manager: DragDropManager | undefined

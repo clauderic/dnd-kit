@@ -19,7 +19,10 @@ export interface Input<T extends Data = Data> extends DraggableInput<T> {
   modifiers?: Modifiers<DragDropManager>;
 }
 
-export class Draggable<T extends Data = Data> extends AbstractDraggable<T> {
+export class Draggable<T extends Data = Data> extends AbstractDraggable<
+  T,
+  DragDropManager
+> {
   constructor(
     {
       element,

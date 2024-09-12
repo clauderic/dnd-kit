@@ -20,7 +20,7 @@ export interface Input<T extends Data = Data> extends EntityInput<T> {
 export class Droppable<
   T extends Data = Data,
   U extends DragDropManager<any, any> = DragDropManager<any, any>,
-> extends Entity<T> {
+> extends Entity<T, U> {
   constructor(
     {accept, collisionDetector, collisionPriority, type, ...input}: Input<T>,
     manager: U | undefined
