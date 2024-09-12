@@ -80,9 +80,7 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
               targetIndex
             );
 
-            const sourceElement =
-              source.sortable.droppable.internal.element.peek() ??
-              source.sortable.droppable.placeholder;
+            const sourceElement = source.sortable.element;
             const targetElement = target.element;
 
             if (!targetElement || !sourceElement) {
@@ -131,7 +129,7 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
               sortableInstances.values()
             ).sort((a, b) => a.index - b.index);
 
-            const sourceElement = source.sortable.droppable.element;
+            const sourceElement = source.sortable.element;
             const targetElement =
               orderedSortables[source.sortable.initialIndex]?.element;
 

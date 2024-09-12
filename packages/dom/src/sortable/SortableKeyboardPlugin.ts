@@ -2,6 +2,7 @@ import {effect} from '@dnd-kit/state';
 import {Plugin} from '@dnd-kit/abstract';
 import {closestCorners} from '@dnd-kit/collision';
 import {
+  DOMRectangle,
   isKeyboardEvent,
   scheduler,
   scrollIntoViewIfNeeded,
@@ -128,21 +129,18 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
           actions.setDropTarget(id).then(() => {
             const {source} = dragOperation;
 
-            if (!source) {
+            if (!source || !isSortable(source)) {
               return;
             }
 
-            const droppable = registry.droppables.get(source.id);
+            const {element} = source.sortable;
 
-            if (!droppable?.element) {
-              return;
-            }
+            if (!element) return;
 
-            const {element} = droppable;
             scrollIntoViewIfNeeded(element);
 
             scheduler.schedule(() => {
-              const shape = droppable.refreshShape();
+              const shape = new DOMRectangle(element);
 
               if (!shape) {
                 return;

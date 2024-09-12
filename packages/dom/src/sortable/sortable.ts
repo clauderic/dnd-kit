@@ -22,6 +22,7 @@ import {
   animateTransform,
   computeTranslate,
   scheduler,
+  ProxiedElements,
 } from '@dnd-kit/dom/utilities';
 
 import {SortableKeyboardPlugin} from './SortableKeyboardPlugin.ts';
@@ -114,6 +115,8 @@ export class Sortable<T extends Data = Data> {
     }: SortableInput<T>,
     manager: DragDropManager<any, any> | undefined
   ) {
+    let previousGroup = group;
+
     this.droppable = new SortableDroppable<T>(input, manager, this);
     this.draggable = new SortableDraggable<T>(
       {
@@ -125,7 +128,13 @@ export class Sortable<T extends Data = Data> {
               this.previousIndex = this.index;
             }),
           () => {
-            const {index, previousIndex, manager: _} = this;
+            const {index, group, previousIndex, manager: _} = this;
+
+            if (group !== previousGroup) {
+              previousGroup = group;
+              this.previousIndex = index;
+              return;
+            }
 
             // Re-run this effect whenever the index changes
             if (index === previousIndex) {
@@ -234,13 +243,32 @@ export class Sortable<T extends Data = Data> {
     });
   }
 
+  #element: Element | undefined;
+
   public set element(element: Element | undefined) {
-    this.draggable.element = element;
+    batch(() => {
+      const previousElement = this.#element;
+      const droppableElement = this.droppable.element;
+      const draggableElement = this.draggable.element;
+
+      if (!droppableElement || droppableElement === previousElement) {
         this.droppable.element = element;
+      }
+
+      if (!draggableElement || draggableElement === previousElement) {
+        this.draggable.element = element;
+      }
+
+      this.#element = element;
+    });
   }
 
   public get element() {
-    return this.droppable.element ?? this.draggable.element;
+    const element = this.#element;
+
+    if (!element) return;
+
+    return ProxiedElements.get(element) ?? element ?? this.droppable.element;
   }
 
   public set target(target: Element | undefined) {
@@ -342,8 +370,8 @@ export class Sortable<T extends Data = Data> {
     return this.draggable.status;
   }
 
-  public refreshShape(ignoreTransforms: boolean = false) {
-    return this.droppable.refreshShape(ignoreTransforms);
+  public refreshShape() {
+    return this.droppable.refreshShape();
   }
 
   public accepts(draggable: Draggable): boolean {
@@ -382,10 +410,6 @@ export class SortableDraggable<T extends Data> extends Draggable<T> {
   ) {
     super(input, manager);
   }
-
-  public get index() {
-    return this.sortable.index;
-  }
 }
 
 export class SortableDroppable<T extends Data> extends Droppable<T> {
@@ -395,13 +419,5 @@ export class SortableDroppable<T extends Data> extends Droppable<T> {
     public sortable: Sortable<T>
   ) {
     super(input, manager);
-  }
-
-  public refreshShape(ignoreTransforms = false) {
-    return super.refreshShape(ignoreTransforms);
-  }
-
-  public get index() {
-    return this.sortable.index;
   }
 }

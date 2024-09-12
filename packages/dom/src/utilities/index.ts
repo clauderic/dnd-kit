@@ -1,11 +1,16 @@
 export {
   getBoundingRectangle,
   getViewportBoundingRectangle,
+  PositionObserver,
 } from './bounding-rectangle/index.ts';
 
 export {canUseDOM, getDocument, getWindow} from './execution-context/index.ts';
 
-export {cloneElement, createPlaceholder} from './element/index.ts';
+export {
+  cloneElement,
+  createPlaceholder,
+  ProxiedElements,
+} from './element/index.ts';
 
 export {Listeners} from './event-listeners/index.ts';
 
