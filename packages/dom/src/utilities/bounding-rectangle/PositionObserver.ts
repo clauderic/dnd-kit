@@ -1,6 +1,4 @@
-import {getFirstScrollableAncestor} from '../scroll/getScrollableAncestors.ts';
 import {isRectEqual} from './isRectEqual.ts';
-import {Listeners} from '../event-listeners/index.ts';
 
 const THRESHOLD = [
   0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65,
@@ -28,49 +26,15 @@ export class PositionObserver {
       element.ownerDocument.body.appendChild(this.#debug);
     }
 
-    const doc = element.ownerDocument ?? document;
-    const scrollableAncestor = getFirstScrollableAncestor(element);
-
     this.#visibilityObserver = new IntersectionObserver(
       (entries: IntersectionObserverEntry[]) => {
         const entry = entries[entries.length - 1];
-        const {isIntersecting: visible} = entry;
-
-        if (visible) {
-          this.#partialVisibilityObserver.observe(element);
-          this.#resizeObserver.observe(element);
-          this.#observePosition();
-
-          if (scrollableAncestor) {
-            this.#listeners.bind(scrollableAncestor, {
-              type: 'scroll',
-              listener: this.#observePosition,
-              options: {passive: true},
-            });
-          }
-        } else {
-          this.#positionObserver?.disconnect();
-          this.#resizeObserver.disconnect();
-          this.#partialVisibilityObserver?.disconnect();
-          this.#callback(null);
-          this.#listeners.clear();
-
-          if (this.#debug) this.#debug.style.visibility = 'hidden';
-        }
-      },
-      {
-        root:
-          scrollableAncestor === doc.scrollingElement
-            ? doc
-            : scrollableAncestor,
-        rootMargin: '40%',
-      }
-    );
-
-    this.#partialVisibilityObserver = new IntersectionObserver(
-      (entries: IntersectionObserverEntry[]) => {
-        const entry = entries[entries.length - 1];
-        const {boundingClientRect, intersectionRect, intersectionRatio} = entry;
+        const {
+          boundingClientRect,
+          intersectionRect,
+          isIntersecting: visible,
+          intersectionRatio,
+        } = entry;
         const {width, height} = boundingClientRect;
 
         if (!width && !height) return;
@@ -86,6 +50,22 @@ export class PositionObserver {
         }
 
         this.#observePosition();
+
+        if (this.#visible && !visible) {
+          this.#positionObserver?.disconnect();
+          this.#callback(null);
+          this.#resizeObserver?.disconnect();
+          this.#resizeObserver = undefined;
+
+          if (this.#debug) this.#debug.style.visibility = 'hidden';
+        }
+
+        if (visible && !this.#resizeObserver) {
+          this.#resizeObserver = new ResizeObserver(this.#observePosition);
+          this.#resizeObserver.observe(element);
+        }
+
+        this.#visible = visible;
       },
       {
         threshold: THRESHOLD,
@@ -93,32 +73,28 @@ export class PositionObserver {
       }
     );
 
-    this.#resizeObserver = new ResizeObserver(this.#observePosition);
-
+    this.#callback(this.boundingClientRect);
     this.#visibilityObserver.observe(element);
   }
 
   public boundingClientRect: DOMRectReadOnly;
 
   public disconnect() {
-    this.#resizeObserver.disconnect();
+    this.#resizeObserver?.disconnect();
     this.#positionObserver?.disconnect();
     this.#visibilityObserver.disconnect();
-    this.#partialVisibilityObserver.disconnect();
     this.#debug?.remove();
-    this.#listeners.clear();
   }
 
-  #listeners = new Listeners();
   #callback: PositionObserverCallback;
+  #visible = true;
   #offsetTop = 0;
   #offsetLeft = 0;
   #visibleRect: DOMRectReadOnly | undefined;
   #previousBoundingClientRect: DOMRectReadOnly | undefined;
-  #resizeObserver: ResizeObserver;
+  #resizeObserver: ResizeObserver | undefined;
   #positionObserver: IntersectionObserver | undefined;
   #visibilityObserver: IntersectionObserver;
-  #partialVisibilityObserver: IntersectionObserver;
   #debug: HTMLElement | undefined;
 
   #observePosition = () => {
@@ -175,13 +151,12 @@ export class PositionObserver {
   };
 
   async #notify() {
-    if (
-      !isRectEqual(this.boundingClientRect, this.#previousBoundingClientRect)
-    ) {
-      this.#updateDebug();
-      this.#callback(this.boundingClientRect);
-      this.#previousBoundingClientRect = this.boundingClientRect;
-    }
+    if (isRectEqual(this.boundingClientRect, this.#previousBoundingClientRect))
+      return;
+
+    this.#updateDebug();
+    this.#callback(this.boundingClientRect);
+    this.#previousBoundingClientRect = this.boundingClientRect;
   }
 
   #updateDebug() {

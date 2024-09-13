@@ -64,6 +64,7 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<
               source &&
               dragOperation.status.initialized &&
               element &&
+              !this.disabled &&
               this.accepts(source);
 
             if (observePosition) {

@@ -77,15 +77,18 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
           const potentialTargets: Droppable[] = [];
 
           for (const droppable of registry.droppables) {
-            const {shape, id} = droppable;
+            const {id} = droppable;
 
             if (
-              !shape ||
               !droppable.accepts(source) ||
               (id === source?.id && isSortable(droppable))
             ) {
               continue;
             }
+
+            const shape = droppable.refreshShape();
+
+            if (!shape) continue;
 
             switch (direction) {
               case 'down':
