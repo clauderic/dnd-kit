@@ -2,6 +2,11 @@ import type {BoundingRectangle} from '@dnd-kit/geometry';
 
 import {getDocument} from '../execution-context/index.ts';
 
+/**
+ * Returns the bounding rectangle of the viewport
+ * @param element
+ * @returns BoundingRectangle
+ */
 export function getViewportBoundingRectangle(
   element: Element
 ): BoundingRectangle {

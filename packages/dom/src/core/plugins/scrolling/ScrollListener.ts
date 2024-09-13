@@ -1,4 +1,4 @@
-import {DragOperationStatus, CorePlugin} from '@dnd-kit/abstract';
+import {CorePlugin} from '@dnd-kit/abstract';
 import {effect} from '@dnd-kit/state';
 
 import type {DragDropManager} from '../../manager/index.ts';
@@ -20,10 +20,12 @@ export class ScrollListener extends CorePlugin<DragDropManager> {
       const enabled = dragOperation.status.dragging;
 
       if (enabled) {
-        document.addEventListener('scroll', this.handleScroll, listenerOptions);
+        const root = dragOperation.source?.element?.ownerDocument ?? document;
+
+        root.addEventListener('scroll', this.handleScroll, listenerOptions);
 
         return () => {
-          document.removeEventListener(
+          root.removeEventListener(
             'scroll',
             this.handleScroll,
             listenerOptions
@@ -36,8 +38,7 @@ export class ScrollListener extends CorePlugin<DragDropManager> {
   private handleScroll = () => {
     if (this.#timeout == null) {
       this.#timeout = setTimeout(() => {
-        this.manager.collisionObserver.forceUpdate();
-
+        this.manager.collisionObserver.forceUpdate(false);
         this.#timeout = undefined;
       }, 50);
     }

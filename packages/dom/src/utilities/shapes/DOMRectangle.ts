@@ -1,19 +1,25 @@
-import {Rectangle} from '@dnd-kit/geometry';
+import {Rectangle, type BoundingRectangle} from '@dnd-kit/geometry';
 
 import {inverseTransform} from '../transform/inverseTransform.ts';
 import {getComputedStyles} from '../styles/getComputedStyles.ts';
 import {parseTransform, type Transform} from '../transform/index.ts';
+import {getBoundingRectangle} from '../bounding-rectangle/getBoundingRectangle.ts';
 
 interface Options {
+  getBoundingClientRect?: (element: Element) => BoundingRectangle;
+  /* Whether to ignore transforms when calculating the rectangle */
   ignoreTransforms?: boolean;
 }
 
 export class DOMRectangle extends Rectangle {
   constructor(element: Element, options: Options = {}) {
-    const {ignoreTransforms = false} = options;
+    const {
+      ignoreTransforms = false,
+      getBoundingClientRect = getBoundingRectangle,
+    } = options;
     const resetAnimations = forceFinishAnimations(element);
     let {top, left, right, bottom, width, height} =
-      element.getBoundingClientRect();
+      getBoundingClientRect(element);
     const computedStyles = getComputedStyles(element);
     const parsedTransform = parseTransform(computedStyles);
     const scale = {

@@ -1,8 +1,9 @@
-import {effect} from '@dnd-kit/state';
+import {batch, CleanupFunction, effect} from '@dnd-kit/state';
 import {Plugin} from '@dnd-kit/abstract';
 import {closestCorners} from '@dnd-kit/collision';
 import {
   DOMRectangle,
+  getVisibleBoundingRectangle,
   isKeyboardEvent,
   scheduler,
   scrollIntoViewIfNeeded,
@@ -75,44 +76,42 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
           const {source} = dragOperation;
           const {center} = dragOperation.shape.current;
           const potentialTargets: Droppable[] = [];
+          const cleanup: CleanupFunction[] = [];
 
-          for (const droppable of registry.droppables) {
-            const {id} = droppable;
+          batch(() => {
+            for (const droppable of registry.droppables) {
+              const {id} = droppable;
 
-            if (
-              !droppable.accepts(source) ||
-              (id === source?.id && isSortable(droppable))
-            ) {
-              continue;
+              if (
+                !droppable.accepts(source) ||
+                (id === source?.id && isSortable(droppable)) ||
+                !droppable.element
+              ) {
+                continue;
+              }
+
+              let previousShape = droppable.shape;
+              const shape = new DOMRectangle(droppable.element, {
+                getBoundingClientRect: (element) =>
+                  getVisibleBoundingRectangle(element, undefined, 0.2),
+              });
+
+              if (!shape.height || !shape.width) continue;
+
+              if (
+                (direction == 'down' &&
+                  center.y + TOLERANCE < shape.center.y) ||
+                (direction == 'up' && center.y - TOLERANCE > shape.center.y) ||
+                (direction == 'left' &&
+                  center.x - TOLERANCE > shape.center.x) ||
+                (direction == 'right' && center.x + TOLERANCE < shape.center.x)
+              ) {
+                potentialTargets.push(droppable);
+                droppable.shape = shape;
+                cleanup.push(() => (droppable.shape = previousShape));
+              }
             }
-
-            const shape = droppable.refreshShape();
-
-            if (!shape) continue;
-
-            switch (direction) {
-              case 'down':
-                if (center.y + TOLERANCE < shape.center.y) {
-                  potentialTargets.push(droppable);
-                }
-                break;
-              case 'up':
-                if (center.y - TOLERANCE > shape.center.y) {
-                  potentialTargets.push(droppable);
-                }
-                break;
-              case 'left':
-                if (center.x - TOLERANCE > shape.center.x) {
-                  potentialTargets.push(droppable);
-                }
-                break;
-              case 'right':
-                if (center.x + TOLERANCE < shape.center.x) {
-                  potentialTargets.push(droppable);
-                }
-                break;
-            }
-          }
+          });
 
           event.preventDefault();
           collisionObserver.disable();
@@ -121,6 +120,8 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
             potentialTargets,
             closestCorners
           );
+          batch(() => cleanup.forEach((clean) => clean()));
+
           const [firstCollision] = collisions;
 
           if (!firstCollision) {
@@ -158,7 +159,6 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
                 });
 
                 actions.setDropTarget(source.id).then(() => {
-                  dragOperation.shape = shape;
                   collisionObserver.enable();
                 });
               });

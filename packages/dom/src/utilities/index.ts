@@ -3,6 +3,7 @@ export {
   getViewportBoundingRectangle,
   PositionObserver,
 } from './bounding-rectangle/index.ts';
+export {getVisibleBoundingRectangle} from './bounding-rectangle/getVisibleBoundingRectangle.ts';
 
 export {canUseDOM, getDocument, getWindow} from './execution-context/index.ts';
 

@@ -6,7 +6,7 @@ import type {
 import {defaultCollisionDetection} from '@dnd-kit/collision';
 import type {CollisionDetector} from '@dnd-kit/collision';
 import {reactive, untracked} from '@dnd-kit/state';
-import type {Shape} from '@dnd-kit/geometry';
+import type {BoundingRectangle, Shape} from '@dnd-kit/geometry';
 import {DOMRectangle, PositionObserver} from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/manager.ts';
@@ -28,7 +28,7 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<
     manager: DragDropManager | undefined
   ) {
     const {collisionDetector = defaultCollisionDetection} = input;
-    const updateShape = (boundingClientRect?: DOMRectReadOnly | null) => {
+    const updateShape = (boundingClientRect?: BoundingRectangle | null) => {
       const {element} = this;
 
       if (!element || boundingClientRect === null) {

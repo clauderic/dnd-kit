@@ -115,7 +115,8 @@ export class Scroller extends CorePlugin<DragDropManager> {
 
     const {element, by} = this.#meta;
 
-    element.scrollBy(by.x, by.y);
+    if (by.y) element.scrollTop += by.y;
+    if (by.x) element.scrollLeft += by.x;
   };
 
   public scroll = (options?: {by: Coordinates}): boolean => {

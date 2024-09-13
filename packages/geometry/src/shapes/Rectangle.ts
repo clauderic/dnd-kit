@@ -100,6 +100,14 @@ export class Rectangle implements Shape {
 
     return left + width;
   }
+
+  static from({top, left, width, height}: BoundingRectangle) {
+    return new Rectangle(left, top, width, height);
+  }
+
+  static intersectionRatio(a: BoundingRectangle, b: BoundingRectangle): number {
+    return Rectangle.from(a).intersectionRatio(Rectangle.from(b));
+  }
 }
 
 function rectangleRectangleIntersection(

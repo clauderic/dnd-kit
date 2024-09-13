@@ -222,7 +222,7 @@ export class Sortable<T extends Data = Data> {
             },
             options: transition,
             onFinish: () => {
-              if (idle) {
+              if (!manager.dragOperation.status.dragging) {
                 this.droppable.shape = undefined;
               }
             },

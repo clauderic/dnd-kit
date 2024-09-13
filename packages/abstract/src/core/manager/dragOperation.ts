@@ -263,6 +263,8 @@ export function DragOperationManager<
         }
 
         batch(() => {
+          shape.initial.value = null;
+          shape.current.value = null;
           dragended.value = false;
           canceled.value = false;
           activatorEvent.value = event;

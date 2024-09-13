@@ -20,20 +20,21 @@ export class CollisionObserver<
     this.computeCollisions = this.computeCollisions.bind(this);
     this.#collisions = signal(DEFAULT_VALUE);
 
-    let previousCoordinates: Coordinates = {x: 0, y: 0};
-
     this.destroy = effects(
       () => {
         const collisions = this.computeCollisions();
-
         const coordinates = untracked(
           () => this.manager.dragOperation.position.current
         );
-        const {x, y} = previousCoordinates;
+        const previousCoordinates = this.#previousCoordinates;
 
-        previousCoordinates = coordinates;
+        this.#previousCoordinates = coordinates;
 
-        if (coordinates.x == x && coordinates.y == y) {
+        if (
+          previousCoordinates &&
+          coordinates.x == previousCoordinates.x &&
+          coordinates.y == previousCoordinates.y
+        ) {
           return;
         }
 
@@ -49,9 +50,15 @@ export class CollisionObserver<
     );
   }
 
-  public forceUpdate() {
+  #previousCoordinates: Coordinates | undefined;
+
+  public forceUpdate(immediate = true) {
     untracked(() => {
-      this.#collisions.value = this.computeCollisions();
+      if (immediate) {
+        this.#collisions.value = this.computeCollisions();
+      } else {
+        this.#previousCoordinates = undefined;
+      }
     });
   }
 
@@ -83,6 +90,7 @@ export class CollisionObserver<
         continue;
       }
 
+      entry.shape;
       const collision = untracked(() =>
         detectCollision({
           droppable: entry,

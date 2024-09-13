@@ -1,6 +1,9 @@
-type Rect = Pick<DOMRectReadOnly, 'top' | 'left' | 'right' | 'bottom'>;
+import type {BoundingRectangle} from '@dnd-kit/geometry';
 
-export function isRectEqual(a: Rect | undefined, b: Rect | undefined) {
+export function isRectEqual(
+  a: BoundingRectangle | undefined,
+  b: BoundingRectangle | undefined
+) {
   if (a === b) return true;
   if (!a || !b) return false;
 

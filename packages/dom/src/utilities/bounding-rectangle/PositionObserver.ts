@@ -1,13 +1,17 @@
-import {isRectEqual} from './isRectEqual.ts';
+import {BoundingRectangle, Rectangle} from '@dnd-kit/geometry';
 
-const THRESHOLD = [
-  0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65,
-  0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 0.99, 1,
-];
+import {throttle} from '../scheduling/throttle.ts';
+
+import {isRectEqual} from './isRectEqual.ts';
+import {isVisible} from './isVisible.ts';
+import {getVisibleBoundingRectangle} from './getVisibleBoundingRectangle.ts';
 
 type PositionObserverCallback = (
-  boundingClientRect: DOMRectReadOnly | null
+  boundingClientRect: BoundingRectangle | null
 ) => void;
+
+const threshold = Array.from({length: 100}, (_, index) => index / 100);
+const THROTTLE_INTERVAL = 75;
 
 export class PositionObserver {
   constructor(
@@ -17,69 +21,62 @@ export class PositionObserver {
   ) {
     this.#callback = callback;
     this.boundingClientRect = element.getBoundingClientRect();
+    this.#visible = isVisible(element, this.boundingClientRect);
+
+    const root = element.ownerDocument;
 
     if (options?.debug) {
       this.#debug = document.createElement('div');
       this.#debug.style.background = 'rgba(0,0,0,0.15)';
       this.#debug.style.position = 'fixed';
       this.#debug.style.pointerEvents = 'none';
-      element.ownerDocument.body.appendChild(this.#debug);
+      root.body.appendChild(this.#debug);
     }
 
     this.#visibilityObserver = new IntersectionObserver(
       (entries: IntersectionObserverEntry[]) => {
         const entry = entries[entries.length - 1];
-        const {
-          boundingClientRect,
-          intersectionRect,
-          isIntersecting: visible,
-          intersectionRatio,
-        } = entry;
+        const {boundingClientRect, isIntersecting: visible} = entry;
         const {width, height} = boundingClientRect;
+        const previousVisible = this.#visible;
+
+        this.#visible = visible;
 
         if (!width && !height) return;
 
-        if (intersectionRatio < 1 && intersectionRatio > 0) {
-          this.#visibleRect = intersectionRect;
-          this.#offsetLeft = intersectionRect.left - boundingClientRect.left;
-          this.#offsetTop = intersectionRect.top - boundingClientRect.top;
-        } else {
-          this.#visibleRect = undefined;
-          this.#offsetLeft = 0;
-          this.#offsetTop = 0;
-        }
-
-        this.#observePosition();
-
-        if (this.#visible && !visible) {
+        if (previousVisible && !visible) {
           this.#positionObserver?.disconnect();
           this.#callback(null);
           this.#resizeObserver?.disconnect();
           this.#resizeObserver = undefined;
 
           if (this.#debug) this.#debug.style.visibility = 'hidden';
+        } else {
+          this.#observePosition();
         }
 
         if (visible && !this.#resizeObserver) {
           this.#resizeObserver = new ResizeObserver(this.#observePosition);
           this.#resizeObserver.observe(element);
         }
-
-        this.#visible = visible;
       },
       {
-        threshold: THRESHOLD,
-        root: element.ownerDocument ?? document,
+        threshold,
+        root,
       }
     );
 
-    this.#callback(this.boundingClientRect);
+    if (this.#visible) {
+      this.#callback(this.boundingClientRect);
+    }
+
     this.#visibilityObserver.observe(element);
   }
 
   public boundingClientRect: DOMRectReadOnly;
 
   public disconnect() {
+    this.#disconnected = true;
     this.#resizeObserver?.disconnect();
     this.#positionObserver?.disconnect();
     this.#visibilityObserver.disconnect();
@@ -88,59 +85,55 @@ export class PositionObserver {
 
   #callback: PositionObserverCallback;
   #visible = true;
-  #offsetTop = 0;
-  #offsetLeft = 0;
-  #visibleRect: DOMRectReadOnly | undefined;
   #previousBoundingClientRect: DOMRectReadOnly | undefined;
   #resizeObserver: ResizeObserver | undefined;
   #positionObserver: IntersectionObserver | undefined;
   #visibilityObserver: IntersectionObserver;
   #debug: HTMLElement | undefined;
+  #disconnected = false;
 
-  #observePosition = () => {
+  #observePosition = throttle(() => {
     const {element} = this;
 
-    if (!element.isConnected) {
-      this.disconnect();
+    this.#positionObserver?.disconnect();
+
+    if (this.#disconnected || !this.#visible || !element.isConnected) {
       return;
     }
 
     const root = element.ownerDocument ?? document;
     const {innerHeight, innerWidth} = root.defaultView ?? window;
-    const {width, height} = this.#visibleRect ?? this.boundingClientRect;
-    const rect = element.getBoundingClientRect();
-    const top = rect.top + this.#offsetTop;
-    const left = rect.left + this.#offsetLeft;
-    const bottom = top + height;
-    const right = left + width;
-    const insetTop = Math.floor(top);
-    const insetLeft = Math.floor(left);
-    const insetRight = Math.floor(innerWidth - right);
-    const insetBottom = Math.floor(innerHeight - bottom);
-    const rootMargin = `${-insetTop}px ${-insetRight}px ${-insetBottom}px ${-insetLeft}px`;
+    const clientRect = element.getBoundingClientRect();
+    const visibleRect = getVisibleBoundingRectangle(element, clientRect);
+    const {top, left, bottom, right} = visibleRect;
+    const insetTop = -Math.floor(top);
+    const insetLeft = -Math.floor(left);
+    const insetRight = -Math.floor(innerWidth - right);
+    const insetBottom = -Math.floor(innerHeight - bottom);
+    const rootMargin = `${insetTop}px ${insetRight}px ${insetBottom}px ${insetLeft}px`;
 
-    this.#positionObserver?.disconnect();
+    this.boundingClientRect = clientRect;
     this.#positionObserver = new IntersectionObserver(
       (entries: IntersectionObserverEntry[]) => {
         const [entry] = entries;
-        const {boundingClientRect, intersectionRatio} = entry;
+        const {intersectionRect} = entry;
+        /*
+         * The intersection ratio returned by the intersection observer entry
+         * represents the ratio of the intersectionRect to the boundingClientRect,
+         * which is not what we want. We want the ratio of the intersectionRect
+         * to the rootBounds (visible rect).
+         */
+        const intersectionRatio = Rectangle.intersectionRatio(
+          intersectionRect,
+          visibleRect
+        );
 
-        const previous = this.boundingClientRect;
-        this.boundingClientRect =
-          intersectionRatio === 1
-            ? boundingClientRect
-            : element.getBoundingClientRect();
-
-        if (
-          previous.width > width ||
-          previous.height > height ||
-          !isRectEqual(this.boundingClientRect, previous)
-        ) {
+        if (intersectionRatio !== 1) {
           this.#observePosition();
         }
       },
       {
-        threshold: [0, 1],
+        threshold,
         rootMargin,
         root,
       }
@@ -148,26 +141,32 @@ export class PositionObserver {
 
     this.#positionObserver.observe(element);
     this.#notify();
-  };
+  }, THROTTLE_INTERVAL);
 
-  async #notify() {
+  #notify() {
+    if (this.#disconnected) return;
+
+    this.#updateDebug();
+
     if (isRectEqual(this.boundingClientRect, this.#previousBoundingClientRect))
       return;
 
-    this.#updateDebug();
     this.#callback(this.boundingClientRect);
     this.#previousBoundingClientRect = this.boundingClientRect;
   }
 
   #updateDebug() {
     if (this.#debug) {
-      const {top, left, width, height} = this.boundingClientRect;
+      const {top, left, width, height} = getVisibleBoundingRectangle(
+        this.element
+      );
 
+      this.#debug.style.overflow = 'hidden';
       this.#debug.style.visibility = 'visible';
-      this.#debug.style.top = `${top}px`;
-      this.#debug.style.left = `${left}px`;
-      this.#debug.style.width = `${width}px`;
-      this.#debug.style.height = `${height}px`;
+      this.#debug.style.top = `${Math.floor(top)}px`;
+      this.#debug.style.left = `${Math.floor(left)}px`;
+      this.#debug.style.width = `${Math.floor(width)}px`;
+      this.#debug.style.height = `${Math.floor(height)}px`;
     }
   }
 }
