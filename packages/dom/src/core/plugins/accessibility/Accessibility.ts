@@ -1,5 +1,6 @@
 import {effects} from '@dnd-kit/state';
 import {Plugin} from '@dnd-kit/abstract';
+import {isSafari} from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import {
@@ -83,7 +84,10 @@ export class Accessibility extends Plugin<DragDropManager> {
             initialize();
           }
 
-          if (!isFocusable(activator) && !activator.hasAttribute('tabindex')) {
+          if (
+            (!isFocusable(activator) || isSafari()) &&
+            !activator.hasAttribute('tabindex')
+          ) {
             activator.setAttribute('tabindex', '0');
           }
 

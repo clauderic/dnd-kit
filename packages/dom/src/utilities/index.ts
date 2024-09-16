@@ -6,6 +6,7 @@ export {
 export {getVisibleBoundingRectangle} from './bounding-rectangle/getVisibleBoundingRectangle.ts';
 
 export {canUseDOM, getDocument, getWindow} from './execution-context/index.ts';
+export {isSafari} from './execution-context/isSafari.ts';
 
 export {cloneElement, ProxiedElements} from './element/index.ts';
 
