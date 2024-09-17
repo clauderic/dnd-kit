@@ -62,16 +62,16 @@ export class Droppable<
       return true;
     }
 
+    if (typeof accept === 'function') {
+      return accept(draggable);
+    }
+
     if (!draggable.type) {
       return false;
     }
 
     if (Array.isArray(accept)) {
       return accept.includes(draggable.type);
-    }
-
-    if (typeof accept === 'function') {
-      return accept(draggable);
     }
 
     return draggable.type === accept;
