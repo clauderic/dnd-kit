@@ -1,11 +1,18 @@
+import {useMemo, useRef} from 'react';
 import {computed} from '@dnd-kit/state';
 
-import {useConstant} from './useConstant.ts';
 import {useSignal} from './useSignal.ts';
 
-export function useComputed<T = any>(compute: () => T, sync = false) {
+export function useComputed<T = any>(
+  compute: () => T,
+  dependencies: any[] = [],
+  sync = false
+) {
+  const $compute = useRef(compute);
+  $compute.current = compute;
+
   return useSignal(
-    useConstant(() => computed(compute)),
+    useMemo(() => computed(() => $compute.current()), dependencies),
     sync
   );
 }

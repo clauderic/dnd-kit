@@ -1,22 +1,18 @@
 import {useState} from 'react';
 import {flushSync} from 'react-dom';
-import {effect, signal, Signal} from '@dnd-kit/state';
+import {effect, Signal} from '@dnd-kit/state';
 
-import {useConstant} from './useConstant.ts';
 import {useIsomorphicLayoutEffect} from './useIsomorphicLayoutEffect.ts';
 
 /** Wrap the given value in a Signal if it isn't already one, and make changes trigger a re-render. */
-export function useSignal<T = any>(signalOrValue: T, sync = false) {
-  const sig = useConstant(() =>
-    signalOrValue instanceof Signal ? signalOrValue : signal(signalOrValue)
-  ) as T extends Signal ? T : Signal<T>;
-  let val = sig.peek();
+export function useSignal<T = any>(signal: Signal<T>, sync = false) {
+  let val = signal.peek();
   const update = useState(val)[1];
 
   useIsomorphicLayoutEffect(
     () =>
       effect(() => {
-        if (val !== (val = sig.value)) {
+        if (val !== (val = signal.value)) {
           if (sync) {
             flushSync(() => update(val));
           } else {
@@ -24,7 +20,8 @@ export function useSignal<T = any>(signalOrValue: T, sync = false) {
           }
         }
       }),
-    [sync]
+    [signal, sync]
   );
-  return sig;
+
+  return signal;
 }
