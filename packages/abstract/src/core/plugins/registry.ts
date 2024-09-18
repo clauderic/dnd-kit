@@ -1,6 +1,11 @@
 import {DragDropManager} from '../manager/index.ts';
 import {CorePlugin, type Plugin} from './plugin.ts';
-import type {InferPluginOptions, PluginConstructor, Plugins} from './types.ts';
+import type {
+  InferPluginOptions,
+  PluginDescriptor,
+  PluginConstructor,
+  Plugins,
+} from './types.ts';
 import {descriptor} from './utilities.ts';
 
 export class PluginRegistry<
@@ -19,7 +24,16 @@ export class PluginRegistry<
   #previousValues: PluginConstructor<T>[] = [];
 
   public set values(entries: Plugins<T>) {
-    const descriptors = entries.map(descriptor);
+    const descriptors = entries
+      .map(descriptor)
+      .reduceRight<PluginDescriptor<T>[]>((acc, descriptor) => {
+        if (acc.some(({plugin}) => plugin === descriptor.plugin)) {
+          // Filter out duplicate plugins
+          return acc;
+        }
+
+        return [descriptor, ...acc];
+      }, []);
     const constructors = descriptors.map(({plugin}) => plugin);
 
     for (const plugin of this.#previousValues) {

@@ -1,5 +1,5 @@
 import {effect, untracked, type CleanupFunction} from '@dnd-kit/state';
-import {Plugin} from '@dnd-kit/abstract';
+import {configurator, Plugin} from '@dnd-kit/abstract';
 import {
   animateTransform,
   cloneElement,
@@ -364,8 +364,12 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
         styles.reset();
 
-        if (moved && element.isConnected) {
-          placeholder?.replaceWith(element);
+        if (
+          placeholder &&
+          (moved || placeholder.parentElement !== element.parentElement) &&
+          element.isConnected
+        ) {
+          placeholder.replaceWith(element);
         }
 
         placeholder?.remove();
@@ -480,6 +484,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       style?.remove();
     };
   }
+
+  static configure = configurator(Feedback);
 }
 
 function createPlaceholder(source: Draggable) {
