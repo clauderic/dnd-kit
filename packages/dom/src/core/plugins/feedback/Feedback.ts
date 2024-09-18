@@ -28,8 +28,12 @@ const IDENTIFIER_ATTRIBUTE = `${ATTR_PREFIX}id`;
 const IGNORED_ATTRIBUTES = [ATTRIBUTE, PLACEHOLDER_ATTRIBUTE, 'popover'];
 const IGNORED_STYLES = ['view-transition-name'];
 
-export class Feedback extends Plugin<DragDropManager> {
-  constructor(manager: DragDropManager) {
+export interface FeedbackOptions {
+  rootElement?: Element | ((source: Draggable) => Element);
+}
+
+export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
+  constructor(manager: DragDropManager, options?: FeedbackOptions) {
     super(manager);
 
     let style: HTMLStyleElement | undefined;
@@ -141,6 +145,15 @@ export class Feedback extends Plugin<DragDropManager> {
 
       if (placeholder) {
         element.insertAdjacentElement('afterend', placeholder);
+
+        if (options?.rootElement) {
+          const root =
+            typeof options.rootElement === 'function'
+              ? options.rootElement(source)
+              : options.rootElement;
+
+          root.appendChild(element);
+        }
       }
 
       if (supportsPopover(element)) {
@@ -470,11 +483,11 @@ export class Feedback extends Plugin<DragDropManager> {
 }
 
 function createPlaceholder(source: Draggable) {
-  const {element, manager} = source;
-
-  if (!element || !manager) return;
-
   return untracked(() => {
+    const {element, manager} = source;
+
+    if (!element || !manager) return;
+
     const {droppables} = manager.registry;
     const containedDroppables = [];
 
