@@ -511,33 +511,14 @@ function createPlaceholder(source: Draggable) {
 
       let current = droppable.element;
 
-      droppable.element = clonedElement;
+      droppable.proxy = clonedElement;
       clonedElement.removeAttribute(IDENTIFIER_ATTRIBUTE);
 
       ProxiedElements.set(current, clonedElement);
 
-      const proxy = Proxy.revocable(droppable, {
-        set(target, key, newValue) {
-          if (key === 'element') {
-            ProxiedElements.delete(current);
-
-            if (newValue instanceof Element) {
-              ProxiedElements.set(newValue, clonedElement);
-            }
-
-            current = newValue;
-
-            return false;
-          }
-
-          return Reflect.set(target, key, newValue);
-        },
-      });
-
       cleanup.push(() => {
-        proxy.revoke();
         ProxiedElements.delete(current);
-        droppable.element = current;
+        droppable.proxy = undefined;
       });
     }
 

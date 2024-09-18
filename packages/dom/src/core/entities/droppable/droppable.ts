@@ -96,7 +96,18 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<
   }
 
   @reactive
-  public accessor element: Element | undefined;
+  accessor #element: Element | undefined;
+
+  @reactive
+  public accessor proxy: Element | undefined;
+
+  set element(element: Element | undefined) {
+    this.#element = element;
+  }
+
+  get element() {
+    return this.proxy ?? this.#element;
+  }
 
   public refreshShape: () => Shape | undefined;
 }
