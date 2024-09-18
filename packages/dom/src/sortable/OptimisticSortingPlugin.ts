@@ -81,7 +81,7 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
             );
 
             const sourceElement = source.sortable.element;
-            const targetElement = target.element;
+            const targetElement = target.sortable.element;
 
             if (!targetElement || !sourceElement) {
               return;

@@ -73,7 +73,7 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
           }
 
           const direction = getDirection(by);
-          const {source} = dragOperation;
+          const {source, target} = dragOperation;
           const {center} = dragOperation.shape.current;
           const potentialTargets: Droppable[] = [];
           const cleanup: CleanupFunction[] = [];
@@ -84,7 +84,7 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
 
               if (
                 !droppable.accepts(source) ||
-                (id === source?.id && isSortable(droppable)) ||
+                (id === target?.id && isSortable(droppable)) ||
                 !droppable.element
               ) {
                 continue;
@@ -129,39 +129,50 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
           }
 
           const {id} = firstCollision;
+          const {index, group} = source.sortable;
 
-          actions.setDropTarget(id).then(() => {
+          actions.setDropTarget(id).then((defaultPrevented) => {
+            if (defaultPrevented) return;
+
             // Wait until optimistic sorting has a chance to update the DOM
             queueMicrotask(() => {
-              const {source} = dragOperation;
+              const {source, target} = dragOperation;
 
               if (!source || !isSortable(source)) {
                 return;
               }
 
-              const {element} = source.sortable;
+              const {
+                index: newIndex,
+                group: newGroup,
+                target: targetElement,
+              } = source.sortable;
+              const updated = index !== newIndex || group !== newGroup;
+              const element = updated ? targetElement : target?.element;
 
               if (!element) return;
 
               scrollIntoViewIfNeeded(element);
-              scheduler.schedule(() => {
-                const shape = new DOMRectangle(element);
+              const shape = new DOMRectangle(element);
 
-                if (!shape) {
-                  return;
-                }
+              if (!shape) {
+                return;
+              }
 
-                actions.move({
-                  to: {
-                    x: shape.center.x,
-                    y: shape.center.y,
-                  },
-                });
-
-                actions.setDropTarget(source.id).then(() => {
-                  collisionObserver.enable();
-                });
+              actions.move({
+                to: {
+                  x: shape.center.x,
+                  y: shape.center.y,
+                },
               });
+
+              if (updated) {
+                actions
+                  .setDropTarget(source.id)
+                  .then(() => collisionObserver.enable());
+              } else {
+                collisionObserver.enable();
+              }
             });
           });
         });

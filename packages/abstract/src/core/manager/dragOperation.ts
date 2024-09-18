@@ -233,25 +233,24 @@ export function DragOperationManager<
       },
       setDropTarget(
         identifier: UniqueIdentifier | null | undefined
-      ): Promise<void> {
+      ): Promise<boolean> {
         const id = identifier ?? null;
 
         if (targetIdentifier.peek() === id) {
-          return Promise.resolve();
+          return Promise.resolve(false);
         }
 
         targetIdentifier.value = id;
 
+        const event = defaultPreventable({
+          operation: snapshot(operation),
+        });
+
         if (status.peek() === Status.Dragging) {
-          monitor.dispatch(
-            'dragover',
-            defaultPreventable({
-              operation: snapshot(operation),
-            })
-          );
+          monitor.dispatch('dragover', event);
         }
 
-        return manager.renderer.rendering;
+        return manager.renderer.rendering.then(() => event.defaultPrevented);
       },
       start({event, coordinates}: {event: Event; coordinates: Coordinates}) {
         const sourceInstance = source.peek();

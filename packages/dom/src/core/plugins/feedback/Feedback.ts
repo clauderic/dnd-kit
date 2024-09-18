@@ -277,7 +277,12 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
         documentMutationObserver = new MutationObserver((entries) => {
           for (const entry of entries) {
-            if (Array.from(entry.addedNodes).includes(element)) {
+            const {addedNodes} = entry;
+
+            if (
+              addedNodes.length > 0 &&
+              Array.from(addedNodes).some((node) => node.contains(element))
+            ) {
               /* Update the position of the placeholder when the source element is moved */
               element.insertAdjacentElement('afterend', placeholder);
 
@@ -357,6 +362,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         }
       };
 
+      let dropEffectCleanup: CleanupFunction | undefined;
       cleanup = () => {
         elementMutationObserver?.disconnect();
         documentMutationObserver?.disconnect();
@@ -380,13 +386,13 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         }
 
         cleanupEffect();
-        dropEffectCleanup();
+        dropEffectCleanup?.();
 
         source.status = 'idle';
         moved = false;
       };
 
-      const dropEffectCleanup = effect(function dropAnimation() {
+      dropEffectCleanup = effect(function dropAnimation() {
         if (dragOperation.status.dropped) {
           const onComplete = cleanup;
           cleanup = undefined;
