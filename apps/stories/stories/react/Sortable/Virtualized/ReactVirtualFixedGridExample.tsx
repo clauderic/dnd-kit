@@ -81,7 +81,7 @@ export function ReactVirtualFixedGridExample({ debug }: Props) {
       if (draggingIndex.current !== null) {
         const includes = arr.includes(draggingIndex.current)
         if (range.endIndex > draggingIndex.current)
-          if (!includes) arr.push(0)
+          if (!includes) arr.push(draggingIndex.current)
       }
 
       return arr;
@@ -114,7 +114,7 @@ export function ReactVirtualFixedGridExample({ debug }: Props) {
       if (draggingIndex.current !== null) {
         const includes = arr.includes(draggingIndex.current)
         if (range.endIndex > draggingIndex.current)
-          if (!includes) arr.push(0)
+          if (!includes) arr.push(draggingIndex.current)
       }
 
       return arr
