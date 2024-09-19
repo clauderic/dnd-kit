@@ -93,21 +93,26 @@ export class KeyboardSensor extends Sensor<
       return;
     }
 
-    if (source.disabled || !source.element) {
+    if (source.disabled) {
       return;
     }
 
-    const {keyboardCodes = DEFAULT_KEYBOARD_CODES} = options ?? {};
+    if (
+      (!source.handle && source.element && event.target === source.element) ||
+      (source.handle && event.target === source.handle)
+    ) {
+      const {keyboardCodes = DEFAULT_KEYBOARD_CODES} = options ?? {};
 
-    if (!keyboardCodes.start.includes(event.code)) {
-      return;
+      if (!keyboardCodes.start.includes(event.code)) {
+        return;
+      }
+
+      if (!this.manager.dragOperation.status.idle) {
+        return;
+      }
+
+      this.handleStart(event, source, options);
     }
-
-    if (!this.manager.dragOperation.status.idle) {
-      return;
-    }
-
-    this.handleStart(event, source, options);
   };
 
   protected handleStart(
