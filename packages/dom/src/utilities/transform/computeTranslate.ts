@@ -23,29 +23,33 @@ function getFinalKeyframe(
   return null;
 }
 
-export function computeTranslate(element: Element): {
+export function computeTranslate(
+  element: Element,
+  translate = getComputedStyles(element).translate,
+  projected = true
+): {
   x: number;
   y: number;
   z: number;
 } {
-  const keyframe = getFinalKeyframe(
-    element,
-    (keyframe) => 'translate' in keyframe
-  );
+  if (projected) {
+    const keyframe = getFinalKeyframe(
+      element,
+      (keyframe) => 'translate' in keyframe
+    );
 
-  if (keyframe) {
-    const {translate = ''} = keyframe;
+    if (keyframe) {
+      const {translate = ''} = keyframe;
 
-    if (typeof translate === 'string') {
-      const finalTranslate = parseTranslate(translate);
+      if (typeof translate === 'string') {
+        const finalTranslate = parseTranslate(translate);
 
-      if (finalTranslate) {
-        return finalTranslate;
+        if (finalTranslate) {
+          return finalTranslate;
+        }
       }
     }
   }
-
-  const {translate} = getComputedStyles(element);
 
   if (translate) {
     const finalTranslate = parseTranslate(translate);

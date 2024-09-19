@@ -20,8 +20,8 @@ import type {
 } from '@dnd-kit/dom';
 import {
   animateTransform,
+  getComputedStyles,
   computeTranslate,
-  scheduler,
   ProxiedElements,
 } from '@dnd-kit/dom/utilities';
 
@@ -191,7 +191,7 @@ export class Sortable<T extends Data = Data> {
         return;
       }
 
-      scheduler.schedule(() => {
+      manager.renderer.rendering.then(() => {
         const {element} = this;
 
         if (!element) {
@@ -209,15 +209,17 @@ export class Sortable<T extends Data = Data> {
           y: shape.boundingRectangle.top - updatedShape.boundingRectangle.top,
         };
 
-        const {x, y, z} = computeTranslate(element);
+        const {translate} = getComputedStyles(element);
+        const currentTranslate = computeTranslate(element, translate, false);
+        const finalTranslate = computeTranslate(element, translate);
 
         if (delta.x || delta.y) {
           animateTransform({
             element,
             keyframes: {
               translate: [
-                `${x + delta.x}px ${y + delta.y}px ${z}`,
-                `${x}px ${y}px ${z}`,
+                `${currentTranslate.x + delta.x}px ${currentTranslate.y + delta.y}px ${currentTranslate.z}`,
+                `${finalTranslate.x}px ${finalTranslate.y}px ${finalTranslate.z}`,
               ],
             },
             options: transition,

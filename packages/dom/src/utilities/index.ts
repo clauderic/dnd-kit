@@ -42,6 +42,5 @@ export {
   inverseTransform,
   parseTransform,
   parseTranslate,
-  stringifyTransform,
 } from './transform/index.ts';
 export type {Transform} from './transform/index.ts';
