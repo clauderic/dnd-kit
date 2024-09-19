@@ -2,6 +2,7 @@ import {effect} from '@dnd-kit/state';
 import {Plugin} from '@dnd-kit/abstract';
 import type {UniqueIdentifier} from '@dnd-kit/abstract';
 import type {DragDropManager} from '@dnd-kit/dom';
+import {getWindow} from '@dnd-kit/dom/utilities';
 
 export class Debug extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager) {
@@ -21,6 +22,7 @@ export class Debug extends Plugin<DragDropManager> {
 
       if (draggable && dragOperation.shape) {
         const element = draggableElement ?? createDebugElement();
+        const window = getWindow(element);
         const {boundingRectangle} = dragOperation.shape.current;
 
         if (!draggableElement) {
@@ -38,7 +40,7 @@ export class Debug extends Plugin<DragDropManager> {
           document.body.appendChild(element);
         }
 
-        if (element instanceof HTMLDialogElement) {
+        if (element instanceof window.HTMLDialogElement) {
           element.showPopover();
         }
 

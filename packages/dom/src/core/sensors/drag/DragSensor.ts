@@ -1,7 +1,7 @@
 import {Sensor} from '@dnd-kit/abstract';
 import {effect} from '@dnd-kit/state';
 import type {CleanupFunction} from '@dnd-kit/state';
-import {Listeners} from '@dnd-kit/dom/utilities';
+import {Listeners, isElement} from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import type {Draggable} from '../../entities/index.ts';
@@ -55,7 +55,7 @@ export class DragSensor extends Sensor<DragDropManager, DragSensorOptions> {
     source: Draggable,
     _options: DragSensorOptions
   ) => {
-    if (!(event.target instanceof Element)) {
+    if (!isElement(event.target)) {
       return;
     }
 

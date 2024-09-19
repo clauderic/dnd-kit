@@ -1,7 +1,9 @@
 import {isWindow} from '../type-guards/isWindow.ts';
 import {isNode} from '../type-guards/isNode.ts';
 
-export function getWindow(target: Event['target']): typeof window {
+export function getWindow(
+  target: Event['target'] | null | undefined
+): typeof window {
   if (!target) {
     return window;
   }

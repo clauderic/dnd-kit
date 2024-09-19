@@ -6,7 +6,13 @@ import {
   type Distance,
   type Coordinates,
 } from '@dnd-kit/geometry';
-import {getDocument, Listeners} from '@dnd-kit/dom/utilities';
+import {
+  getDocument,
+  isElement,
+  isHTMLElement,
+  isPointerEvent,
+  Listeners,
+} from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import type {Draggable} from '../../entities/index.ts';
@@ -66,7 +72,7 @@ export class PointerSensor extends Sensor<
     const unbind = effect(() => {
       const target = source.handle ?? source.element;
       const listener: EventListener = (event: Event) => {
-        if (event instanceof PointerEvent) {
+        if (isPointerEvent(event)) {
           this.handlePointerDown(event, source, options);
         }
       };
@@ -94,14 +100,14 @@ export class PointerSensor extends Sensor<
       this.disabled ||
       !event.isPrimary ||
       event.button !== 0 ||
-      !(event.target instanceof Element) ||
+      !isElement(event.target) ||
       source.disabled
     ) {
       return;
     }
     const {target} = event;
     const isNativeDraggable =
-      target instanceof HTMLElement &&
+      isHTMLElement(target) &&
       target.draggable &&
       target.getAttribute('draggable') === 'true';
 

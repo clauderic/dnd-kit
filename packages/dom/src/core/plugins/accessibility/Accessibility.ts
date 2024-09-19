@@ -1,6 +1,6 @@
 import {effects} from '@dnd-kit/state';
 import {Plugin} from '@dnd-kit/abstract';
-import {isSafari} from '@dnd-kit/dom/utilities';
+import {getWindow, isSafari} from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import {
@@ -78,6 +78,7 @@ export class Accessibility extends Plugin<DragDropManager> {
       for (const draggable of manager.registry.draggables.value) {
         const {element, handle} = draggable;
         const activator = handle ?? element;
+        const window = getWindow(activator);
 
         if (activator) {
           if (!hiddenTextElement || !liveRegionElement) {
@@ -93,7 +94,7 @@ export class Accessibility extends Plugin<DragDropManager> {
 
           if (
             !activator.hasAttribute('role') &&
-            !(activator instanceof HTMLButtonElement)
+            !(activator instanceof window.HTMLButtonElement)
           ) {
             activator.setAttribute('role', defaultAttributes.role);
           }

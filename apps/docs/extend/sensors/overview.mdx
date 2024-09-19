@@ -101,9 +101,7 @@ class CustomPointerSensor extends Sensor {
     const unbind = effect(() => {
       const target = source.handle ?? source.element;
       const listener = (event) => {
-        if (event instanceof PointerEvent) {
-          this.handlePointerDown(event, source);
-        }
+        this.handlePointerDown(event, source);
       };
 
       if (target) {

@@ -1,4 +1,7 @@
+import {getWindow} from '../execution-context/getWindow.ts';
+
 export function cloneElement(element: Element): Element {
+  const window = getWindow(element);
   const selector = 'input, textarea, select, canvas, [contenteditable]';
   const clonedElement = element.cloneNode(true) as HTMLElement;
   const fields = Array.from(element.querySelectorAll(selector));
@@ -20,8 +23,8 @@ export function cloneElement(element: Element): Element {
     }
 
     if (
-      field instanceof HTMLCanvasElement &&
-      originalField instanceof HTMLCanvasElement &&
+      field instanceof window.HTMLCanvasElement &&
+      originalField instanceof window.HTMLCanvasElement &&
       originalField.width > 0 &&
       originalField.height > 0
     ) {

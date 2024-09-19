@@ -33,7 +33,10 @@ export {Styles, getComputedStyles} from './styles/index.ts';
 export {
   supportsViewTransition,
   supportsStyle,
+  isElement,
+  isHTMLElement,
   isKeyboardEvent,
+  isPointerEvent,
 } from './type-guards/index.ts';
 
 export {

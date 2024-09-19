@@ -2,10 +2,8 @@ import {getWindow} from '../execution-context/getWindow.ts';
 
 import {isWindow} from './isWindow.ts';
 
-export function isHTMLElement(node: Node | Window): node is HTMLElement {
-  if (isWindow(node)) {
-    return false;
-  }
+export function isHTMLElement(node: Node | Window | null): node is HTMLElement {
+  if (!node || isWindow(node)) return false;
 
   return node instanceof getWindow(node).HTMLElement;
 }

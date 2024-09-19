@@ -4,6 +4,7 @@ import {
   type Plugins,
   type Sensors,
 } from '@dnd-kit/abstract';
+import {isElement} from '@dnd-kit/dom/utilities';
 
 import type {Draggable, Droppable} from '../entities/index.ts';
 import {
@@ -31,7 +32,7 @@ export const defaultPreset: {
 
         if (
           pointerType === 'mouse' &&
-          target instanceof Element &&
+          isElement(target) &&
           (source.handle === target || source.handle?.contains(target))
         ) {
           return undefined;

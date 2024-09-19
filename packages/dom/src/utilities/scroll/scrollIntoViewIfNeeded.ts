@@ -1,4 +1,5 @@
 import {getComputedStyles} from '../styles/getComputedStyles.ts';
+import {isHTMLElement} from '../type-guards/isHTMLElement.ts';
 import {getFirstScrollableAncestor} from './getScrollableAncestors.ts';
 
 function supportsScrollIntoViewIfNeeded(
@@ -18,13 +19,13 @@ export function scrollIntoViewIfNeeded(el: Element, centerIfNeeded = false) {
     return;
   }
 
-  if (!(el instanceof HTMLElement)) {
+  if (!isHTMLElement(el)) {
     return el.scrollIntoView();
   }
 
   var parent = getFirstScrollableAncestor(el);
 
-  if (!(parent instanceof HTMLElement)) {
+  if (!isHTMLElement(parent)) {
     return;
   }
 

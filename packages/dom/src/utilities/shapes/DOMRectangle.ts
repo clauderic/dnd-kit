@@ -4,6 +4,7 @@ import {inverseTransform} from '../transform/inverseTransform.ts';
 import {getComputedStyles} from '../styles/getComputedStyles.ts';
 import {parseTransform, type Transform} from '../transform/index.ts';
 import {getBoundingRectangle} from '../bounding-rectangle/getBoundingRectangle.ts';
+import {getWindow} from '../execution-context/getWindow.ts';
 
 interface Options {
   getBoundingClientRect?: (element: Element) => BoundingRectangle;
@@ -63,6 +64,7 @@ export class DOMRectangle extends Rectangle {
  * Get the projected transform of an element based on its final keyframe
  */
 function getProjectedTransform(element: Element): Transform | null {
+  const {KeyframeEffect} = getWindow(element);
   const animations = element.getAnimations();
   let projectedTransform: Transform | null = null;
 
@@ -111,6 +113,7 @@ function getProjectedTransform(element: Element): Transform | null {
  * of an element without having to wait for the animations to finish.
  */
 function forceFinishAnimations(element: Element): (() => void) | undefined {
+  const {KeyframeEffect} = getWindow(element);
   const animations = element.ownerDocument
     .getAnimations()
     .filter((animation) => {

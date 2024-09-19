@@ -5,6 +5,8 @@ import {
   DOMRectangle,
   getDocument,
   getWindow,
+  isElement,
+  isKeyboardEvent,
   scrollIntoViewIfNeeded,
   Listeners,
 } from '@dnd-kit/dom/utilities';
@@ -63,7 +65,7 @@ export class KeyboardSensor extends Sensor<
     const unbind = effect(() => {
       const target = source.handle ?? source.element;
       const listener: EventListener = (event: Event) => {
-        if (event instanceof KeyboardEvent) {
+        if (isKeyboardEvent(event)) {
           this.handleSourceKeyDown(event, source, options);
         }
       };
@@ -89,7 +91,7 @@ export class KeyboardSensor extends Sensor<
       return;
     }
 
-    if (!(event.target instanceof Element)) {
+    if (!isElement(event.target)) {
       return;
     }
 

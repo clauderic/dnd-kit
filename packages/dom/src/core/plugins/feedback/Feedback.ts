@@ -13,6 +13,7 @@ import {
   parseTranslate,
   ProxiedElements,
   isSafari,
+  getWindow,
   type Transform,
 } from '@dnd-kit/dom/utilities';
 import {Coordinates} from '@dnd-kit/geometry';
@@ -210,10 +211,12 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           CSS_PREFIX
         );
 
+        const window = getWindow(element);
+
         /* Table cells need to have their width set explicitly because the feedback element is position fixed */
         if (
-          element instanceof HTMLTableRowElement &&
-          placeholder instanceof HTMLTableRowElement
+          element instanceof window.HTMLTableRowElement &&
+          placeholder instanceof window.HTMLTableRowElement
         ) {
           const cells = Array.from(element.cells);
           const placeholderCells = Array.from(placeholder.cells);

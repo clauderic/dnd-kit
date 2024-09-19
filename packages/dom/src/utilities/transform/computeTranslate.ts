@@ -1,10 +1,13 @@
 import {getComputedStyles} from '../styles/getComputedStyles.ts';
+import {getWindow} from '../execution-context/getWindow.ts';
+
 import {parseTranslate} from './parseTranslate.ts';
 
 function getFinalKeyframe(
   element: Element,
   match: (keyframe: Keyframe) => boolean
 ): Keyframe | null {
+  const {KeyframeEffect} = getWindow(element);
   const animations = element.getAnimations();
 
   if (animations.length > 0) {
