@@ -135,45 +135,43 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
             if (defaultPrevented) return;
 
             // Wait until optimistic sorting has a chance to update the DOM
-            queueMicrotask(() => {
-              const {source, target} = dragOperation;
+            const {source, target} = dragOperation;
 
-              if (!source || !isSortable(source)) {
-                return;
-              }
+            if (!source || !isSortable(source)) {
+              return;
+            }
 
-              const {
-                index: newIndex,
-                group: newGroup,
-                target: targetElement,
-              } = source.sortable;
-              const updated = index !== newIndex || group !== newGroup;
-              const element = updated ? targetElement : target?.element;
+            const {
+              index: newIndex,
+              group: newGroup,
+              target: targetElement,
+            } = source.sortable;
+            const updated = index !== newIndex || group !== newGroup;
+            const element = updated ? targetElement : target?.element;
 
-              if (!element) return;
+            if (!element) return;
 
-              scrollIntoViewIfNeeded(element);
-              const shape = new DOMRectangle(element);
+            scrollIntoViewIfNeeded(element);
+            const shape = new DOMRectangle(element);
 
-              if (!shape) {
-                return;
-              }
+            if (!shape) {
+              return;
+            }
 
-              actions.move({
-                to: {
-                  x: shape.center.x,
-                  y: shape.center.y,
-                },
-              });
-
-              if (updated) {
-                actions
-                  .setDropTarget(source.id)
-                  .then(() => collisionObserver.enable());
-              } else {
-                collisionObserver.enable();
-              }
+            actions.move({
+              to: {
+                x: shape.center.x,
+                y: shape.center.y,
+              },
             });
+
+            if (updated) {
+              actions
+                .setDropTarget(source.id)
+                .then(() => collisionObserver.enable());
+            } else {
+              collisionObserver.enable();
+            }
           });
         });
       }
