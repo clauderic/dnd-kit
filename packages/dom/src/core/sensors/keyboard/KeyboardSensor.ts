@@ -34,7 +34,7 @@ export interface KeyboardSensorOptions {
 const DEFAULT_KEYBOARD_CODES: KeyboardCodes = {
   start: ['Space', 'Enter'],
   cancel: ['Escape'],
-  end: ['Space', 'Enter'],
+  end: ['Space', 'Enter', 'Tab'],
   up: ['ArrowUp'],
   down: ['ArrowDown'],
   left: ['ArrowLeft'],
