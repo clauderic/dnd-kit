@@ -14,6 +14,14 @@ export class Position {
     this.previous = point;
   }
 
+  #timestamp = 0;
+
+  @reactive
+  public accessor velocity: Point = {
+    x: 0,
+    y: 0,
+  };
+
   @reactive
   public accessor initial: Point;
 
@@ -50,6 +58,8 @@ export class Position {
     const point = Point.from(coordinates);
 
     batch(() => {
+      this.#timestamp = 0;
+      this.velocity = {x: 0, y: 0};
       this.current = point;
       this.previous = point;
       this.initial = point;
@@ -68,11 +78,19 @@ export class Position {
       x: point.x - current.x,
       y: point.y - current.y,
     };
+    const timestamp = Date.now();
+    const timeDelta = timestamp - this.#timestamp;
+    const velocity = (delta: number) => Math.round((delta / timeDelta) * 100);
 
     if (Math.abs(delta.x) < SENSITIVITY || Math.abs(delta.y) < SENSITIVITY) {
       this.previous = current;
     }
 
+    this.#timestamp = timestamp;
+    this.velocity = {
+      x: velocity(delta.x),
+      y: velocity(delta.y),
+    };
     this.current = point;
   }
 }
