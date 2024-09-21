@@ -131,20 +131,13 @@ export class Sortable<T extends Data = Data> {
           () => {
             const {index, group, previousIndex, manager: _} = this;
 
-            if (group !== previousGroup) {
-              previousGroup = group;
-              this.previousIndex = index;
-              return;
-            }
-
             // Re-run this effect whenever the index changes
-            if (index === previousIndex) {
-              return;
+            if (index !== previousIndex || group !== previousGroup) {
+              this.previousIndex = index;
+              previousGroup = group;
+
+              this.animate();
             }
-
-            this.previousIndex = index;
-
-            this.animate();
           },
           () => {
             const {target} = this;
