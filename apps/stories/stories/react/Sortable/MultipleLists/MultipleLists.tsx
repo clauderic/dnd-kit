@@ -63,15 +63,23 @@ export function MultipleLists({
         }
 
         if (source.type === 'column') {
-          setColumns((columns) => move(columns, source, target));
+          // We can rely on optimistic sorting for columns
           return;
         }
 
+        event.preventDefault();
         setItems((items) => move(items, source, target));
       }}
       onDragEnd={(event) => {
         if (event.canceled) {
           setItems(snapshot.current);
+          return;
+        }
+
+        const {source, target} = event.operation;
+
+        if (source?.type === 'column') {
+          setColumns((columns) => move(columns, source, target));
         }
       }}
     >
