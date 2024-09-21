@@ -94,8 +94,8 @@ export class Sortable<T extends Data = Data> {
   public accessor index: number;
 
   previousIndex: number;
-
   initialIndex: number;
+  initialGroup: UniqueIdentifier | undefined;
 
   @reactive
   public accessor group: UniqueIdentifier | undefined;
@@ -125,6 +125,7 @@ export class Sortable<T extends Data = Data> {
           () =>
             this.manager?.monitor.addEventListener('dragstart', () => {
               this.initialIndex = this.index;
+              this.initialGroup = this.group;
               this.previousIndex = this.index;
             }),
           () => {
