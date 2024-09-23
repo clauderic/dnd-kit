@@ -27,11 +27,7 @@ export function Guide({
           return;
         }
 
-        const {source, target} = event.operation;
-
-        if (source && target) {
-          setItems((items) => move(items, source, target));
-        }
+        setItems((items) => move(items, event));
       }}
     >
       <div style={style}>

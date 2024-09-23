@@ -50,20 +50,12 @@ export function SortableExample({
       plugins={debug ? [Debug, ...defaultPreset.plugins] : undefined}
       modifiers={modifiers}
       onDragOver={(event) => {
-        const {source, target} = event.operation;
-
         if (optimistic) return;
 
-        setItems((items) => move(items, source, target));
+        setItems((items) => move(items, event));
       }}
       onDragEnd={(event) => {
-        const {source, target} = event.operation;
-
-        if (event.canceled) {
-          return;
-        }
-
-        setItems((items) => move(items, source, target));
+        setItems((items) => move(items, event));
       }}
     >
       <Wrapper layout={layout}>

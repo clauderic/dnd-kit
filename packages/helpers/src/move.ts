@@ -1,4 +1,10 @@
-import type {UniqueIdentifier, Draggable, Droppable} from '@dnd-kit/abstract';
+import type {
+  UniqueIdentifier,
+  Draggable,
+  Droppable,
+  DragDropManager,
+  DragDropEvents,
+} from '@dnd-kit/abstract';
 
 /**
  * Move an array item to a different position. Returns a new array with the item moved to the new position.
@@ -45,13 +51,18 @@ function mutate<
   T extends Items | Record<UniqueIdentifier, Items>,
   U extends Draggable,
   V extends Droppable,
+  W extends DragDropManager<U, V>,
 >(
   items: T,
-  source: U | null,
-  target: V | null,
+  event: Parameters<
+    DragDropEvents<U, V, W>['dragover'] | DragDropEvents<U, V, W>['dragend']
+  >[0],
   mutation: typeof arrayMove | typeof arraySwap
 ): T {
-  if (!source || !target) {
+  const {source, target, canceled} = event.operation;
+
+  if (!source || !target || canceled || source.id === target.id) {
+    if ('preventDefault' in event) event.preventDefault();
     return items;
   }
 
@@ -66,28 +77,16 @@ function mutate<
       return items;
     }
 
-    if (source.manager) {
-      const {dragOperation} = source.manager;
+    // Reconcile optimistic updates
+    if (!canceled && 'index' in source && typeof source.index === 'number') {
+      const projectedSourceIndex = source.index;
 
-      // Reconcile optimistic updates
-      if (
-        !dragOperation.canceled &&
-        'index' in source &&
-        typeof source.index === 'number'
-      ) {
-        const projectedSourceIndex = source.index;
-
-        if (projectedSourceIndex !== sourceIndex) {
-          return mutation(items, sourceIndex, projectedSourceIndex);
-        }
+      if (projectedSourceIndex !== sourceIndex) {
+        return mutation(items, sourceIndex, projectedSourceIndex);
       }
     }
 
     return mutation(items, sourceIndex, targetIndex);
-  }
-
-  if (source.id === target.id) {
-    return items;
   }
 
   const entries = Object.entries(items);
@@ -122,7 +121,8 @@ function mutate<
   if (!source.manager) return items;
 
   const {dragOperation} = source.manager;
-  const position = dragOperation.position.current;
+  const position =
+    dragOperation.shape?.current.center ?? dragOperation.position.current;
 
   if (targetParent == null) {
     if (target.id in items) {
@@ -137,7 +137,13 @@ function mutate<
     }
   }
 
-  if (sourceParent == null || targetParent == null) {
+  if (
+    sourceParent == null ||
+    targetParent == null ||
+    (sourceParent === targetParent && sourceIndex === targetIndex)
+  ) {
+    if ('preventDefault' in event) event.preventDefault();
+
     return items;
   }
 
@@ -171,14 +177,26 @@ export function move<
   T extends Items | Record<UniqueIdentifier, Items>,
   U extends Draggable,
   V extends Droppable,
->(items: T, source: U | null, target: V | null) {
-  return mutate(items, source, target, arrayMove);
+  W extends DragDropManager<U, V>,
+>(
+  items: T,
+  event: Parameters<
+    DragDropEvents<U, V, W>['dragover'] | DragDropEvents<U, V, W>['dragend']
+  >[0]
+) {
+  return mutate(items, event, arrayMove);
 }
 
 export function swap<
   T extends Items | Record<UniqueIdentifier, Items>,
   U extends Draggable,
   V extends Droppable,
->(items: T, source: U | null, target: V | null) {
-  return mutate(items, source, target, arraySwap);
+  W extends DragDropManager<U, V>,
+>(
+  items: T,
+  event: Parameters<
+    DragDropEvents<U, V, W>['dragover'] | DragDropEvents<U, V, W>['dragend']
+  >[0]
+) {
+  return mutate(items, event, arraySwap);
 }

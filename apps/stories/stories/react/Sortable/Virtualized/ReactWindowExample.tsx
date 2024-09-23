@@ -25,13 +25,7 @@ export function ReactWindowExample({debug}: Props) {
         snapshot.current = cloneDeep(items);
       }}
       onDragOver={(event) => {
-        const {source, target} = event.operation;
-
-        if (!source || !target) {
-          return;
-        }
-
-        setItems((items) => move(items, source, target));
+        setItems((items) => move(items, event));
       }}
       onDragEnd={(event) => {
         if (event.canceled) {
@@ -54,17 +48,15 @@ export function ReactWindowExample({debug}: Props) {
   );
 }
 
-function Row(
-  {
-    data,
-    index,
-    style,
-  }: {
-    data: UniqueIdentifier[];
-    index: number;
-    style: React.CSSProperties;
-  }
-) {
+function Row({
+  data,
+  index,
+  style,
+}: {
+  data: UniqueIdentifier[];
+  index: number;
+  style: React.CSSProperties;
+}) {
   return <Sortable id={data[index]} index={index} style={style} />;
 }
 

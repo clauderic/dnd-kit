@@ -25,13 +25,7 @@ export function ReactTinyVirtualListExample({debug}: Props) {
         snapshot.current = cloneDeep(items);
       }}
       onDragOver={(event) => {
-        const {source, target} = event.operation;
-
-        if (!source || !target) {
-          return;
-        }
-
-        setItems((items) => move(items, source, target));
+        setItems((items) => move(items, event));
       }}
       onDragEnd={(event) => {
         if (event.canceled) {

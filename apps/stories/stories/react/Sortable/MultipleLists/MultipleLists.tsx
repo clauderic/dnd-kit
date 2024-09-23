@@ -56,23 +56,14 @@ export function MultipleLists({
         snapshot.current = cloneDeep(items);
       }}
       onDragOver={(event) => {
-        const {source, target} = event.operation;
+        const {source} = event.operation;
 
-        if (!source || !target || source.id === target.id) {
-          return;
-        }
-
-        if (source.type === 'column') {
+        if (source?.type === 'column') {
           // We can rely on optimistic sorting for columns
           return;
         }
 
-        if (target.id === source.data.group) {
-          event.preventDefault();
-          return;
-        }
-
-        setItems((items) => move(items, source, target));
+        setItems((items) => move(items, event));
       }}
       onDragEnd={(event) => {
         if (event.canceled) {
@@ -80,10 +71,10 @@ export function MultipleLists({
           return;
         }
 
-        const {source, target} = event.operation;
+        const {source} = event.operation;
 
         if (source?.type === 'column') {
-          setColumns((columns) => move(columns, source, target));
+          setColumns((columns) => move(columns, event));
         }
       }}
     >

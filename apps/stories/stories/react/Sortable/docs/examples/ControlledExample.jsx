@@ -11,11 +11,7 @@ export function ControlledExample() {
   return (
     <DragDropProvider
       onDragEnd={(event) => {
-        const {source, target} = event.operation;
-
-        if (source && target) {
-          setItems((items) => move(items, source, target));
-        }
+        setItems((items) => move(items, event));
       }}
     >
       <div style={styles}>

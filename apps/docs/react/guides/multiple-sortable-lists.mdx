@@ -191,9 +191,7 @@ export function App() {
   return (
     <DragDropProvider
       onDragOver={(event) => {
-        const {source, target} = event.operation;
-
-        setItems((items) => move(items, source, target));
+        setItems((items) => move(items, eventt));
       }}
     >
       <div className="Root">
@@ -267,14 +265,14 @@ export function App({style = styles}) {
 
         if (source?.type === 'column') return;
 
-        setItems((items) => move(items, source, target));
+        setItems((items) => move(items, event));
       }}
       onDragEnd={(event) => {
         const {source, target} = event.operation;
 
         if (event.canceled || source.type !== 'column') return;
 
-        setColumnOrder((columns) => move(columns, source, target));
+        setColumnOrder((columns) => move(columns, sevent));
       }}
     >
       <div className="Root">
@@ -330,7 +328,7 @@ export function App({style = styles}) {
 
         if (source?.type === 'column') return;
 
-        setItems((items) => move(items, source, target));
+        setItems((items) => move(items, event));
       }}
       onDragEnd={(event) => {
         const {source, target} = event.operation;
@@ -344,7 +342,7 @@ export function App({style = styles}) {
         }
 
         if (source.type === 'column') {
-          setColumnOrder((columns) => move(columns, source, target));
+          setColumnOrder((columns) => move(columns, event));
         }
       }}
     >
