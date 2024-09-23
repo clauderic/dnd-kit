@@ -3,6 +3,10 @@ export function deepEqual<T>(a: T, b: T) {
     return true;
   }
 
+  if (typeof a === 'function' && typeof b === 'function') {
+    return a === b;
+  }
+
   if (a instanceof Set && b instanceof Set) {
     if (a.size !== b.size) {
       return false;
