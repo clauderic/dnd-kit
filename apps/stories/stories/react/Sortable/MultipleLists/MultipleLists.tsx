@@ -67,7 +67,11 @@ export function MultipleLists({
           return;
         }
 
-        event.preventDefault();
+        if (target.id === source.data.group) {
+          event.preventDefault();
+          return;
+        }
+
         setItems((items) => move(items, source, target));
       }}
       onDragEnd={(event) => {
@@ -164,13 +168,15 @@ function SortableItem({
   style,
   onRemove,
 }: PropsWithChildren<SortableItemProps>) {
+  const group = column;
   const {handleRef, ref, isDragSource} = useSortable({
     id,
-    group: column,
+    group,
     accept: 'item',
     type: 'item',
     feedback: 'clone',
     index,
+    data: {group},
   });
 
   return (
