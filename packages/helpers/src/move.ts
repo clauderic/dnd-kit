@@ -154,8 +154,7 @@ function mutate<
     };
   }
 
-  const isBelowTarget =
-    target.shape && position.y > target.shape.boundingRectangle.bottom;
+  const isBelowTarget = target.shape && position.y > target.shape.center.y;
   const modifier = isBelowTarget ? 1 : 0;
   const sourceItem = items[sourceParent][sourceIndex];
 
