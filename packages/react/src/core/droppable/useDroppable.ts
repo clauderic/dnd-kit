@@ -44,6 +44,14 @@ export function useDroppable<T extends Data = Data>(
     },
     ref: useCallback(
       (element: Element | null) => {
+        if (
+          !element &&
+          droppable.element?.isConnected &&
+          !droppable.manager?.dragOperation.status.idle
+        ) {
+          return;
+        }
+
         droppable.element = element ?? undefined;
       },
       [droppable]

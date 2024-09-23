@@ -115,6 +115,14 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     ),
     ref: useCallback(
       (element: Element | null) => {
+        if (
+          !element &&
+          sortable.element?.isConnected &&
+          !manager?.dragOperation.status.idle
+        ) {
+          return;
+        }
+
         sortable.element = element ?? undefined;
       },
       [sortable]
