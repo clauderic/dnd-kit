@@ -319,6 +319,7 @@ export const DndContext = memo(function DndContext({
     activeNodeRect
   );
 
+  const activeSensorRef = useRef<SensorInstance | null>(null);
   const instantiateSensor = useCallback(
     (
       event: React.SyntheticEvent,
@@ -371,6 +372,8 @@ export const DndContext = memo(function DndContext({
               active: id,
             });
             dispatchMonitorEvent({type: 'onDragStart', event});
+            setActiveSensor(activeSensorRef.current);
+            setActivatorEvent(activatorEvent);
           });
         },
         onMove(coordinates) {
@@ -383,10 +386,7 @@ export const DndContext = memo(function DndContext({
         onCancel: createHandler(Action.DragCancel),
       });
 
-      unstable_batchedUpdates(() => {
-        setActiveSensor(sensorInstance);
-        setActivatorEvent(event.nativeEvent);
-      });
+      activeSensorRef.current = sensorInstance;
 
       function createHandler(type: Action.DragEnd | Action.DragCancel) {
         return async function handler() {
@@ -422,6 +422,7 @@ export const DndContext = memo(function DndContext({
             setOver(null);
             setActiveSensor(null);
             setActivatorEvent(null);
+            activeSensorRef.current = null;
 
             const eventName =
               type === Action.DragEnd ? 'onDragEnd' : 'onDragCancel';
