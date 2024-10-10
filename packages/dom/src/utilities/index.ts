@@ -47,3 +47,5 @@ export {
   parseTranslate,
 } from './transform/index.ts';
 export type {Transform} from './transform/index.ts';
+
+export {generateUniqueId} from './misc/generateUniqueId.ts';
