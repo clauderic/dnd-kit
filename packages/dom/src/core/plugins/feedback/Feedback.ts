@@ -15,18 +15,18 @@ import {
   isSafari,
   getWindow,
   type Transform,
+  generateUniqueId,
 } from '@dnd-kit/dom/utilities';
 import {Coordinates} from '@dnd-kit/geometry';
 
 import type {DragDropManager} from '../../manager/index.ts';
-import type {Draggable} from '../../entities/index.ts';
+import type {Draggable, Droppable} from '../../entities/index.ts';
 
 const ATTR_PREFIX = 'data-dnd-';
 const CSS_PREFIX = '--dnd-';
 const ATTRIBUTE = `${ATTR_PREFIX}dragging`;
 const cssRules = `[${ATTRIBUTE}] {position: fixed !important;pointer-events: none !important;touch-action: none !important;z-index: calc(infinity);will-change: translate;top: var(${CSS_PREFIX}top, 0px) !important;left: var(${CSS_PREFIX}left, 0px) !important;width: var(${CSS_PREFIX}width, auto) !important;height: var(${CSS_PREFIX}height, auto) !important;box-sizing:border-box;}[${ATTRIBUTE}] *{pointer-events: none !important;}[${ATTRIBUTE}][style*="${CSS_PREFIX}translate"] {translate: var(${CSS_PREFIX}translate) !important;}[style*="${CSS_PREFIX}transition"] {transition: var(${CSS_PREFIX}transition) !important;}*:where([${ATTRIBUTE}][popover]){overflow:visible;background:var(${CSS_PREFIX}background);border:var(${CSS_PREFIX}border);margin:unset;padding:unset;color:inherit;}[${ATTRIBUTE}]::backdrop {display: none}html:has([${ATTRIBUTE}]) * {user-select:none;-webkit-user-select:none;}`;
 const PLACEHOLDER_ATTRIBUTE = `${ATTR_PREFIX}placeholder`;
-const IDENTIFIER_ATTRIBUTE = `${ATTR_PREFIX}id`;
 const IGNORED_ATTRIBUTES = [ATTRIBUTE, PLACEHOLDER_ATTRIBUTE, 'popover'];
 const IGNORED_STYLES = ['view-transition-name'];
 
@@ -511,7 +511,7 @@ function createPlaceholder(source: Draggable) {
     if (!element || !manager) return;
 
     const {droppables} = manager.registry;
-    const containedDroppables = [];
+    const containedDroppables = new Map<Droppable, string>();
 
     for (const droppable of droppables) {
       if (!droppable.element) continue;
@@ -520,11 +520,11 @@ function createPlaceholder(source: Draggable) {
         element === droppable.element ||
         element.contains(droppable.element)
       ) {
-        droppable.element.setAttribute(
-          IDENTIFIER_ATTRIBUTE,
-          `${JSON.stringify(droppable.id)}`
-        );
-        containedDroppables.push(droppable);
+        const identifierAttribute = `${ATTR_PREFIX}${generateUniqueId('dom-id')}`;
+
+        droppable.element.setAttribute(identifierAttribute, '');
+
+        containedDroppables.set(droppable, identifierAttribute);
       }
     }
 
@@ -532,22 +532,22 @@ function createPlaceholder(source: Draggable) {
     const placeholder = cloneElement(element);
     const {remove} = placeholder;
 
-    for (const droppable of containedDroppables) {
+    for (const [droppable, identifierAttribute] of containedDroppables) {
       if (!droppable.element) continue;
 
-      const selector = `[${IDENTIFIER_ATTRIBUTE}='${JSON.stringify(droppable.id)}']`;
+      const selector = `[${identifierAttribute}]`;
       const clonedElement = placeholder.matches(selector)
         ? placeholder
         : placeholder.querySelector(selector);
 
-      droppable.element?.removeAttribute(IDENTIFIER_ATTRIBUTE);
+      droppable.element?.removeAttribute(identifierAttribute);
 
       if (!clonedElement) continue;
 
       let current = droppable.element;
 
       droppable.proxy = clonedElement;
-      clonedElement.removeAttribute(IDENTIFIER_ATTRIBUTE);
+      clonedElement.removeAttribute(identifierAttribute);
 
       ProxiedElements.set(current, clonedElement);
 
