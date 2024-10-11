@@ -1,6 +1,6 @@
 import {effects} from '@dnd-kit/state';
 import {Plugin} from '@dnd-kit/abstract';
-import {getWindow, isSafari} from '@dnd-kit/dom/utilities';
+import {getWindow, isSafari, generateUniqueId} from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import {
@@ -11,7 +11,7 @@ import {
   defaultScreenReaderInstructions,
 } from './defaults.ts';
 import type {Announcements, ScreenReaderInstructions} from './types.ts';
-import {generateUniqueId, isFocusable} from './utilities.ts';
+import {isFocusable} from './utilities.ts';
 import {createHiddenText} from './HiddenText.ts';
 import {createLiveRegion} from './LiveRegion.ts';
 
