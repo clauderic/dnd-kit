@@ -1,5 +1,22 @@
 # @dnd-kit/react
 
+## 0.0.6
+
+### Patch Changes
+
+- [#1454](https://github.com/clauderic/dnd-kit/pull/1454) [`d26fafe`](https://github.com/clauderic/dnd-kit/commit/d26fafe02c0d3018df03ac3ff2bbd95602ed87ed) Thanks [@github-actions](https://github.com/apps/github-actions)! - Prevent un-necessary re-renders of unused `useSignal` values.
+
+- [#1454](https://github.com/clauderic/dnd-kit/pull/1454) [`d302511`](https://github.com/clauderic/dnd-kit/commit/d302511c96e11e30763361aa6a88d1eb6c6dc0f1) Thanks [@github-actions](https://github.com/apps/github-actions)! - Prevent unstable `ref` from being set to undefined during a drag operation on draggable sources during a drag operation.
+
+- [#1454](https://github.com/clauderic/dnd-kit/pull/1454) [`e2f5d93`](https://github.com/clauderic/dnd-kit/commit/e2f5d935cd21303c9877ce46f7642de7fc9b1ae8) Thanks [@github-actions](https://github.com/apps/github-actions)! - `useSortable`: Make sure `group` and `index` are updated at the same time.
+
+- [#1454](https://github.com/clauderic/dnd-kit/pull/1454) [`ff17c04`](https://github.com/clauderic/dnd-kit/commit/ff17c0497ba5604648319917ff327bd52518d426) Thanks [@github-actions](https://github.com/apps/github-actions)! - Allow dependencies to be passed to `useComputed` hook.
+
+- Updated dependencies [[`d436037`](https://github.com/clauderic/dnd-kit/commit/d43603740a4d056e9fc7501e9b2117c173b1df4d), [`94920c8`](https://github.com/clauderic/dnd-kit/commit/94920c8a7a3a15accfb806b52e4935637b1a0781), [`a04d3f8`](https://github.com/clauderic/dnd-kit/commit/a04d3f88d380853b97585ab3b608561f7b02ce69), [`8053e4b`](https://github.com/clauderic/dnd-kit/commit/8053e4b4a727c6097b29fb559ce72362d7d6eb2a), [`f400106`](https://github.com/clauderic/dnd-kit/commit/f400106072d12a902f6c113b889c7de97f43e1ea), [`c597b3f`](https://github.com/clauderic/dnd-kit/commit/c597b3fe1514f10e227c287dc8ad875134e9b4cb), [`a8542de`](https://github.com/clauderic/dnd-kit/commit/a8542de56d39c3cd3b6ef981172a0782454295b2), [`a9798f4`](https://github.com/clauderic/dnd-kit/commit/a9798f43450e406e8cb235b7d5fba8bb809fd1d7), [`f7458d9`](https://github.com/clauderic/dnd-kit/commit/f7458d9dc32824dbea3a6d5dfb29236f19a2c073), [`b750c05`](https://github.com/clauderic/dnd-kit/commit/b750c05b4b14f5d9817dc07d974d40b74470e904), [`e70b29a`](https://github.com/clauderic/dnd-kit/commit/e70b29ae64837e424f7279c95112fb6e420c4dcc), [`3d0b00a`](https://github.com/clauderic/dnd-kit/commit/3d0b00a663b9dc38ccd7a46544c94a342694b626), [`4d1a030`](https://github.com/clauderic/dnd-kit/commit/4d1a0306c920ae064eb5b30c4c02961f50460c84), [`51be6df`](https://github.com/clauderic/dnd-kit/commit/51be6dfe1b8cb42f74df34c76098e197b9208f81), [`fe76033`](https://github.com/clauderic/dnd-kit/commit/fe7603330fb4b0a397c0e2af641df94fc2879c35), [`62a8118`](https://github.com/clauderic/dnd-kit/commit/62a81180c84f7782b14b69b56f891c810e7d0f69), [`a5933d8`](https://github.com/clauderic/dnd-kit/commit/a5933d8607e63ed08818ffab43e858863cb35d47), [`0c7bf85`](https://github.com/clauderic/dnd-kit/commit/0c7bf85897992dc48c3cf2f1deeaa896995bfcc3), [`f219549`](https://github.com/clauderic/dnd-kit/commit/f219549087d9100cee53ab0cf35d820fe256aa85), [`bfc8ab2`](https://github.com/clauderic/dnd-kit/commit/bfc8ab21cfd9c16a8d90ab250386e6d52d0a40a3), [`96f28ef`](https://github.com/clauderic/dnd-kit/commit/96f28ef86adf95e77540732d39033c7f3fb0fd04), [`3fb972e`](https://github.com/clauderic/dnd-kit/commit/3fb972e228aabfe07d662b77c642405f909fddb0), [`5b36f8f`](https://github.com/clauderic/dnd-kit/commit/5b36f8fb36f5a4468793b469425b5c0461426f56), [`69bfad7`](https://github.com/clauderic/dnd-kit/commit/69bfad7d795947987a4281f1a61f81b6a7839fe8)]:
+  - @dnd-kit/dom@0.0.6
+  - @dnd-kit/abstract@0.0.6
+  - @dnd-kit/state@0.0.6
+
 ## 0.0.5
 
 ### Patch Changes
