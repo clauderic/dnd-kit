@@ -1,6 +1,6 @@
 {
   "name": "@dnd-kit/geometry",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -16,7 +16,7 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
-    "@dnd-kit/state": "^0.0.5",
+    "@dnd-kit/state": "^0.0.6",
     "tslib": "^2.6.2"
   },
   "devDependencies": {
