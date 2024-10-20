@@ -1,5 +1,14 @@
 # @dnd-kit/helpers
 
+## 0.0.6
+
+### Patch Changes
+
+- [#1454](https://github.com/clauderic/dnd-kit/pull/1454) [`1998c20`](https://github.com/clauderic/dnd-kit/commit/1998c20ecc26f0e2cb24f06077bc01e3dabcaf7c) Thanks [@github-actions](https://github.com/apps/github-actions)! - Updated the `move` helper to accept an `event` instead of `source` and `target`.
+
+- Updated dependencies [[`a04d3f8`](https://github.com/clauderic/dnd-kit/commit/a04d3f88d380853b97585ab3b608561f7b02ce69), [`a8542de`](https://github.com/clauderic/dnd-kit/commit/a8542de56d39c3cd3b6ef981172a0782454295b2), [`f7458d9`](https://github.com/clauderic/dnd-kit/commit/f7458d9dc32824dbea3a6d5dfb29236f19a2c073), [`e70b29a`](https://github.com/clauderic/dnd-kit/commit/e70b29ae64837e424f7279c95112fb6e420c4dcc), [`4d1a030`](https://github.com/clauderic/dnd-kit/commit/4d1a0306c920ae064eb5b30c4c02961f50460c84), [`a5933d8`](https://github.com/clauderic/dnd-kit/commit/a5933d8607e63ed08818ffab43e858863cb35d47), [`96f28ef`](https://github.com/clauderic/dnd-kit/commit/96f28ef86adf95e77540732d39033c7f3fb0fd04)]:
+  - @dnd-kit/abstract@0.0.6
+
 ## 0.0.5
 
 ### Patch Changes

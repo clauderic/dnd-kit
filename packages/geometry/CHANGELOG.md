@@ -1,5 +1,14 @@
 # @dnd-kit/geometry
 
+## 0.0.6
+
+### Patch Changes
+
+- [#1454](https://github.com/clauderic/dnd-kit/pull/1454) [`71dc39f`](https://github.com/clauderic/dnd-kit/commit/71dc39fb2ec21b9a680238a91be419c71ecabe86) Thanks [@github-actions](https://github.com/apps/github-actions)! - Added `velocity` property on `Position` interface to track the current velocity of position updates in the `x` and `y` axis.
+
+- Updated dependencies [[`b750c05`](https://github.com/clauderic/dnd-kit/commit/b750c05b4b14f5d9817dc07d974d40b74470e904)]:
+  - @dnd-kit/state@0.0.6
+
 ## 0.0.5
 
 ### Patch Changes
