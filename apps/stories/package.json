@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@dnd-kit/eslint-config": "*",
+    "@measured/auto-frame-component": "^0.1.7",
     "@storybook/addon-actions": "^8.4.1",
     "@storybook/addon-docs": "^8.4.1",
     "@storybook/addon-essentials": "^8.4.1",
