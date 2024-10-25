@@ -16,6 +16,7 @@ import {
 
 import type {DragDropManager} from '../../manager/index.ts';
 import type {Draggable} from '../../entities/index.ts';
+import getIframeOffset from '../../../utilities/iframe/get-iframe-offset.ts';
 
 export interface DelayConstraint {
   value: number;
@@ -111,9 +112,11 @@ export class PointerSensor extends Sensor<
       target.draggable &&
       target.getAttribute('draggable') === 'true';
 
+    const offset = getIframeOffset(source.element as Element);
+
     this.initialCoordinates = {
-      x: event.clientX,
-      y: event.clientY,
+      x: event.clientX + offset.x,
+      y: event.clientY + offset.y,
     };
 
     const {activationConstraints} = options;
@@ -182,6 +185,11 @@ export class PointerSensor extends Sensor<
       x: event.clientX,
       y: event.clientY,
     };
+
+    const offset = getIframeOffset(source.element as Element);
+
+    coordinates.x = coordinates.x + offset.x;
+    coordinates.y = coordinates.y + offset.y;
 
     if (this.manager.dragOperation.status.dragging) {
       event.preventDefault();
