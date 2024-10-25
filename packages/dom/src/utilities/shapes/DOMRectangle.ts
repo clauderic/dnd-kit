@@ -5,8 +5,7 @@ import {getComputedStyles} from '../styles/getComputedStyles.ts';
 import {parseTransform, type Transform} from '../transform/index.ts';
 import {getBoundingRectangle} from '../bounding-rectangle/getBoundingRectangle.ts';
 import {getWindow} from '../execution-context/getWindow.ts';
-import getIframeOffset from '../iframe/get-iframe-offset.ts';
-import applyOffset from '../iframe/apply-offset.ts';
+import {getFrameOffset} from '@dnd-kit/dom/utilities';
 
 interface Options {
   getBoundingClientRect?: (element: Element) => BoundingRectangle;
@@ -21,12 +20,11 @@ export class DOMRectangle extends Rectangle {
       getBoundingClientRect = getBoundingRectangle,
     } = options;
     const resetAnimations = forceFinishAnimations(element);
-    const iframeOffset = getIframeOffset(element);
+    const iframeOffset = getFrameOffset(element);
     const rect = getBoundingClientRect(element);
-    let {top, left, right, bottom, width, height} = applyOffset(
-      rect,
-      iframeOffset
-    );
+    let {top, left, right, bottom, width, height} = Rectangle.from(
+      rect
+    ).translate(iframeOffset.x, iframeOffset.y);
 
     const computedStyles = window.getComputedStyle(element);
     const parsedTransform = parseTransform(computedStyles);

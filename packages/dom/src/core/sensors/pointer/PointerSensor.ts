@@ -12,11 +12,11 @@ import {
   isHTMLElement,
   isPointerEvent,
   Listeners,
+  getFrameOffset,
 } from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import type {Draggable} from '../../entities/index.ts';
-import getIframeOffset from '../../../utilities/iframe/get-iframe-offset.ts';
 
 export interface DelayConstraint {
   value: number;
@@ -112,7 +112,7 @@ export class PointerSensor extends Sensor<
       target.draggable &&
       target.getAttribute('draggable') === 'true';
 
-    const offset = getIframeOffset(source.element as Element);
+    const offset = getFrameOffset(source.element as Element);
 
     this.initialCoordinates = {
       x: event.clientX + offset.x,
@@ -186,7 +186,7 @@ export class PointerSensor extends Sensor<
       y: event.clientY,
     };
 
-    const offset = getIframeOffset(source.element as Element);
+    const offset = getFrameOffset(source.element as Element);
 
     coordinates.x = coordinates.x + offset.x;
     coordinates.y = coordinates.y + offset.y;
