@@ -21,7 +21,7 @@ import {Coordinates} from '@dnd-kit/geometry';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import type {Draggable, Droppable} from '../../entities/index.ts';
-import getIframeOffset from '../../../utilities/iframe/get-iframe-offset.ts';
+import {getFrameOffset} from '@dnd-kit/dom/utilities';
 
 const ATTR_PREFIX = 'data-dnd-';
 const CSS_PREFIX = '--dnd-';
@@ -101,7 +101,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         }
       }
 
-      const iframeOffset = getIframeOffset(element);
+      const frameOffset = getFrameOffset(element);
 
       if (!initialCoordinates) {
         initialCoordinates = {x: left, y: top};
@@ -211,8 +211,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           {
             width: placeholderShape.width,
             height: placeholderShape.height,
-            top: top + dY + offset.top - iframeOffset.y,
-            left: left + dX + offset.left - iframeOffset.x,
+            top: top + dY + offset.top - frameOffset.y,
+            left: left + dX + offset.left - frameOffset.x,
           },
           CSS_PREFIX
         );
