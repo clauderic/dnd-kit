@@ -128,8 +128,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         y: initialCoordinates.y - top - sizeDelta.height,
       };
       const projected = {
-        top: top + delta.y,
-        left: left + delta.x,
+        top: top + delta.y - frameOffset.y,
+        left: left + delta.x - frameOffset.x,
       };
 
       element.setAttribute(ATTRIBUTE, 'true');
