@@ -5,6 +5,8 @@ import {getComputedStyles} from '../styles/getComputedStyles.ts';
 import {parseTransform, type Transform} from '../transform/index.ts';
 import {getBoundingRectangle} from '../bounding-rectangle/getBoundingRectangle.ts';
 import {getWindow} from '../execution-context/getWindow.ts';
+import getIframeOffset from '../iframe/get-iframe-offset.ts';
+import applyOffset from '../iframe/apply-offset.ts';
 
 interface Options {
   getBoundingClientRect?: (element: Element) => BoundingRectangle;
@@ -19,10 +21,16 @@ export class DOMRectangle extends Rectangle {
       getBoundingClientRect = getBoundingRectangle,
     } = options;
     const resetAnimations = forceFinishAnimations(element);
-    let {top, left, right, bottom, width, height} =
-      getBoundingClientRect(element);
-    const computedStyles = getComputedStyles(element);
+    const iframeOffset = getIframeOffset(element);
+    const rect = getBoundingClientRect(element);
+    let {top, left, right, bottom, width, height} = applyOffset(
+      rect,
+      iframeOffset
+    );
+
+    const computedStyles = window.getComputedStyle(element);
     const parsedTransform = parseTransform(computedStyles);
+
     const scale = {
       x: parsedTransform?.scaleX ?? 1,
       y: parsedTransform?.scaleY ?? 1,

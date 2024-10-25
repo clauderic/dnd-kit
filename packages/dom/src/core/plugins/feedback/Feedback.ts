@@ -21,6 +21,7 @@ import {Coordinates} from '@dnd-kit/geometry';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import type {Draggable, Droppable} from '../../entities/index.ts';
+import getIframeOffset from '../../../utilities/iframe/get-iframe-offset.ts';
 
 const ATTR_PREFIX = 'data-dnd-';
 const CSS_PREFIX = '--dnd-';
@@ -100,6 +101,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         }
       }
 
+      const iframeOffset = getIframeOffset(element);
+
       if (!initialCoordinates) {
         initialCoordinates = {x: left, y: top};
       }
@@ -164,6 +167,9 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         }
       }
 
+      // TODO this is causing issues in iframes
+      // causing a flash of an incorrectly positioned element in center,
+      // before ResizeObserver corrects it
       if (supportsPopover(element)) {
         if (!element.hasAttribute('popover')) {
           element.setAttribute('popover', '');
@@ -205,8 +211,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           {
             width: placeholderShape.width,
             height: placeholderShape.height,
-            top: top + dY + offset.top,
-            left: left + dX + offset.left,
+            top: top + dY + offset.top - iframeOffset.y,
+            left: left + dX + offset.left - iframeOffset.x,
           },
           CSS_PREFIX
         );
