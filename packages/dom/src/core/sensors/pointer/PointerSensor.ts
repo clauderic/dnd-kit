@@ -112,7 +112,7 @@ export class PointerSensor extends Sensor<
       target.draggable &&
       target.getAttribute('draggable') === 'true';
 
-    const offset = getFrameOffset(source.element as Element);
+    const offset = getFrameOffset(source.element);
 
     this.initialCoordinates = {
       x: event.clientX + offset.x,
