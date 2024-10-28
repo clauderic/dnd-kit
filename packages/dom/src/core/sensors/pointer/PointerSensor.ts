@@ -13,6 +13,11 @@ import {
   isPointerEvent,
   Listeners,
   getFrameOffset,
+  getFrameElement,
+  getDeepTransform,
+  transformCoordinates,
+  computeRelativeTransform,
+  Transform,
 } from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.ts';
@@ -55,6 +60,21 @@ export class PointerSensor extends Sensor<
   protected cleanup: Set<CleanupFunction> = new Set();
 
   protected initialCoordinates: Coordinates | undefined;
+
+  protected initialTransform: Transform = {
+    scaleX: 1,
+    scaleY: 1,
+    x: 0,
+    y: 0,
+    z: 0,
+  };
+  protected lastRelativeTransform: Transform = {
+    scaleX: 1,
+    scaleY: 1,
+    x: 0,
+    y: 0,
+    z: 0,
+  };
 
   #clearTimeout: CleanupFunction | undefined;
 
@@ -118,6 +138,8 @@ export class PointerSensor extends Sensor<
       x: event.clientX + offset.x,
       y: event.clientY + offset.y,
     };
+
+    this.initialTransform = getDeepTransform(source.element);
 
     const {activationConstraints} = options;
     const constraints =
@@ -188,8 +210,26 @@ export class PointerSensor extends Sensor<
 
     const offset = getFrameOffset(source.element as Element);
 
-    coordinates.x = coordinates.x + offset.x;
-    coordinates.y = coordinates.y + offset.y;
+    const targetElement = source.manager?.dragOperation.target?.element;
+
+    if (targetElement) {
+      const frameEl = getFrameElement(targetElement);
+      const deepTransform = getDeepTransform(frameEl);
+
+      this.lastRelativeTransform = computeRelativeTransform(
+        this.initialTransform,
+        deepTransform
+      );
+    }
+
+    const transformedCoordinates = transformCoordinates(
+      coordinates,
+      this.lastRelativeTransform,
+      source.manager?.dragOperation.shape?.initial.boundingRectangle
+    );
+
+    coordinates.x = transformedCoordinates.x + offset.x;
+    coordinates.y = transformedCoordinates.y + offset.y;
 
     if (this.manager.dragOperation.status.dragging) {
       event.preventDefault();

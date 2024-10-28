@@ -42,9 +42,12 @@ export {
 export {
   animateTransform,
   computeTranslate,
+  computeRelativeTransform,
+  getDeepTransform,
   inverseTransform,
   parseTransform,
   parseTranslate,
+  transformCoordinates,
 } from './transform/index.ts';
 export type {Transform} from './transform/index.ts';
 

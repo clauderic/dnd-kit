@@ -22,6 +22,7 @@ interface Props {
   itemCount: number;
   scrollable?: boolean;
   vertical?: boolean;
+  transform?: boolean;
 }
 
 export function IframeLists({
@@ -32,6 +33,7 @@ export function IframeLists({
   columnStyle,
   scrollable,
   vertical,
+  transform,
 }: Props) {
   const [items, setItems] = useState(
     defaultItems ?? {
@@ -113,7 +115,12 @@ export function IframeLists({
           ))}
         </SortableColumn>
 
-        <AutoFrame style={{border: 'none'}}>
+        <AutoFrame
+          style={{
+            border: 'none',
+            transform: transform ? 'scale(0.8)' : undefined,
+          }}
+        >
           <style
             dangerouslySetInnerHTML={{
               __html: 'body { background: transparent; margin: 0 !important; }',
