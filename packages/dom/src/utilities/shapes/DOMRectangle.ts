@@ -11,6 +11,7 @@ interface Options {
   getBoundingClientRect?: (element: Element) => BoundingRectangle;
   /* Whether to ignore transforms when calculating the rectangle */
   ignoreTransforms?: boolean;
+  ignoreFrameOffset?: boolean;
 }
 
 export class DOMRectangle extends Rectangle {
@@ -22,9 +23,9 @@ export class DOMRectangle extends Rectangle {
     const resetAnimations = forceFinishAnimations(element);
     const iframeOffset = getFrameOffset(element);
     const rect = getBoundingClientRect(element);
-    let {top, left, right, bottom, width, height} = Rectangle.from(
-      rect
-    ).translate(iframeOffset.x, iframeOffset.y);
+    let {top, left, right, bottom, width, height} = options.ignoreFrameOffset
+      ? rect
+      : Rectangle.from(rect).translate(iframeOffset.x, iframeOffset.y);
 
     const computedStyles = window.getComputedStyle(element);
     const parsedTransform = parseTransform(computedStyles);

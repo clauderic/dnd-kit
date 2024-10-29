@@ -167,9 +167,6 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         }
       }
 
-      // TODO this is causing issues in iframes
-      // causing a flash of an incorrectly positioned element in center,
-      // before ResizeObserver corrects it
       if (supportsPopover(element)) {
         if (!element.hasAttribute('popover')) {
           element.setAttribute('popover', '');
@@ -177,17 +174,20 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         showPopover(element);
       }
 
-      const actual = new DOMRectangle(element, {ignoreTransforms: true});
+      const actual = new DOMRectangle(element, {
+        ignoreTransforms: true,
+        ignoreFrameOffset: true,
+      });
       const offset = {
         top: projected.top - actual.top,
         left: projected.left - actual.left,
       };
 
-      if (offset.left > 0.01 || offset.top > 0.01) {
+      if (Math.abs(offset.left) > 0.01 || Math.abs(offset.top) > 0.01) {
         styles.set(
           {
-            top: projected.top + offset.top,
-            left: projected.left + offset.left,
+            top: actual.top + offset.top,
+            left: actual.left + offset.left,
           },
           CSS_PREFIX
         );
@@ -211,8 +211,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           {
             width: placeholderShape.width,
             height: placeholderShape.height,
-            top: top + dY + offset.top - frameOffset.y,
-            left: left + dX + offset.left - frameOffset.x,
+            top: top + dY - frameOffset.y,
+            left: left + dX - frameOffset.x,
           },
           CSS_PREFIX
         );
