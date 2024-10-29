@@ -1,5 +1,5 @@
 import {Point} from '@dnd-kit/geometry';
-import {getFrameElement} from './get-frame-element.ts';
+import {getFrameElement} from './getFrameElement.ts';
 
 export function getFrameOffset(el: Element | undefined) {
   const offset: Point = {
