@@ -6,6 +6,7 @@ import {parseTransform, type Transform} from '../transform/index.ts';
 import {getBoundingRectangle} from '../bounding-rectangle/getBoundingRectangle.ts';
 import {getWindow} from '../execution-context/getWindow.ts';
 import {getFrameOffset} from '@dnd-kit/dom/utilities';
+import {getDeepScroll} from '../frame/getDeepScroll.ts';
 
 interface Options {
   getBoundingClientRect?: (element: Element) => BoundingRectangle;
@@ -22,10 +23,17 @@ export class DOMRectangle extends Rectangle {
     } = options;
     const resetAnimations = forceFinishAnimations(element);
     const iframeOffset = getFrameOffset(element);
+    const deepScroll = options.ignoreTransforms // TODO swap out for "ignoreDeepScroll"
+      ? {x: 0, y: 0}
+      : getDeepScroll(element);
+
     const rect = getBoundingClientRect(element);
     let {top, left, right, bottom, width, height} = options.ignoreFrameOffset
       ? rect
-      : Rectangle.from(rect).translate(iframeOffset.x, iframeOffset.y);
+      : Rectangle.from(rect).translate(
+          iframeOffset.x + deepScroll.x,
+          iframeOffset.y + deepScroll.y
+        );
 
     const computedStyles = window.getComputedStyle(element);
     const parsedTransform = parseTransform(computedStyles);

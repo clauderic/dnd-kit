@@ -13,6 +13,8 @@ import {
   isPointerEvent,
   Listeners,
   getFrameOffset,
+  getFrameElement,
+  getNestedDocuments,
 } from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.ts';
@@ -55,6 +57,10 @@ export class PointerSensor extends Sensor<
   protected cleanup: Set<CleanupFunction> = new Set();
 
   protected initialCoordinates: Coordinates | undefined;
+
+  protected coordinates: Coordinates | undefined;
+
+  protected nestedScroll: Coordinates = {x: 0, y: 0};
 
   #clearTimeout: CleanupFunction | undefined;
 
@@ -119,6 +125,11 @@ export class PointerSensor extends Sensor<
       y: event.clientY + offset.y,
     };
 
+    this.coordinates = this.initialCoordinates;
+
+    // TODO initialize
+    this.nestedScroll = {x: 0, y: 0};
+
     const {activationConstraints} = options;
     const constraints =
       typeof activationConstraints === 'function'
@@ -146,6 +157,7 @@ export class PointerSensor extends Sensor<
     }
 
     const ownerDocument = getDocument(event.target);
+    const nestedDocuments = getNestedDocuments(event.target);
 
     const unbindListeners = this.listeners.bind(ownerDocument, [
       {
@@ -167,8 +179,20 @@ export class PointerSensor extends Sensor<
       },
     ]);
 
+    // Create scroll listeners on every nested document
+    const unbindScrollListeners = nestedDocuments.map((doc) =>
+      this.listeners.bind(doc, [
+        {
+          type: 'scroll',
+          listener: (event: PointerEvent) =>
+            this.handleWindowScroll(event, source),
+        },
+      ])
+    );
+
     const cleanup = () => {
       setTimeout(unbindListeners);
+      unbindScrollListeners.forEach(setTimeout);
       this.#clearTimeout?.();
       this.initialCoordinates = undefined;
     };
@@ -181,21 +205,27 @@ export class PointerSensor extends Sensor<
     source: Draggable,
     options: PointerSensorOptions
   ) {
-    const coordinates = {
+    console.log('pointer move');
+    this.coordinates = {
       x: event.clientX,
       y: event.clientY,
     };
 
     const offset = getFrameOffset(source.element as Element);
 
-    coordinates.x = coordinates.x + offset.x;
-    coordinates.y = coordinates.y + offset.y;
+    this.coordinates.x = this.coordinates.x + offset.x;
+    this.coordinates.y = this.coordinates.y + offset.y;
+
+    const scrolledCoordinates = {
+      x: this.coordinates.x + this.nestedScroll.x,
+      y: this.coordinates.y + this.nestedScroll.y,
+    };
 
     if (this.manager.dragOperation.status.dragging) {
       event.preventDefault();
       event.stopPropagation();
 
-      this.manager.actions.move({to: coordinates});
+      this.manager.actions.move({to: scrolledCoordinates});
       return;
     }
 
@@ -204,8 +234,8 @@ export class PointerSensor extends Sensor<
     }
 
     const delta = {
-      x: coordinates.x - this.initialCoordinates.x,
-      y: coordinates.y - this.initialCoordinates.y,
+      x: this.coordinates.x - this.initialCoordinates.x,
+      y: this.coordinates.y - this.initialCoordinates.y,
     };
     const {activationConstraints} = options;
     const constraints =
@@ -255,6 +285,33 @@ export class PointerSensor extends Sensor<
     if (event.key === 'Escape') {
       event.preventDefault();
       this.handleCancel();
+    }
+  }
+
+  protected handleWindowScroll(event: Event, source: Draggable) {
+    if (!this.coordinates) return;
+
+    const frame = getFrameElement(source.element);
+
+    // TODO account for nested scrolls via frame utility
+    this.nestedScroll = {
+      x: frame?.ownerDocument.defaultView?.scrollX || 0,
+      y: frame?.ownerDocument.defaultView?.scrollY || 0,
+    };
+
+    if (this.manager.dragOperation.status.dragging) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      console.log('scroll', this.coordinates, this.nestedScroll);
+
+      // TODO this clashes with autoscroller
+      this.manager.actions.move({
+        to: {
+          x: this.coordinates.x + this.nestedScroll.x,
+          y: this.coordinates.y + this.nestedScroll.y,
+        },
+      });
     }
   }
 

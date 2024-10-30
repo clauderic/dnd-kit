@@ -24,7 +24,8 @@ export const defaultPreset: {
   plugins: Plugins<DragDropManager>;
   sensors: Sensors<DragDropManager>;
 } = {
-  plugins: [Accessibility, AutoScroller, Cursor, Feedback, PreventSelection],
+  plugins: [Accessibility, Cursor, Feedback, PreventSelection],
+  // plugins: [Accessibility, AutoScroller, Cursor, Feedback, PreventSelection],
   sensors: [
     PointerSensor.configure({
       activationConstraints(event, source) {
