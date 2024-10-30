@@ -23,12 +23,14 @@ export class DOMRectangle extends Rectangle {
     const iframeOffset = getFrameOffset(element);
     const rect = getBoundingClientRect(element);
 
-    rect.left *= iframeOffset.scaleX;
-    rect.width *= iframeOffset.scaleX;
-    rect.right *= iframeOffset.scaleX;
-    rect.top *= iframeOffset.scaleY;
-    rect.height *= iframeOffset.scaleY;
-    rect.bottom *= iframeOffset.scaleY;
+    if (!ignoreTransforms) {
+      rect.left *= iframeOffset.scaleX;
+      rect.width *= iframeOffset.scaleX;
+      rect.right *= iframeOffset.scaleX;
+      rect.top *= iframeOffset.scaleY;
+      rect.height *= iframeOffset.scaleY;
+      rect.bottom *= iframeOffset.scaleY;
+    }
 
     let {top, left, right, bottom, width, height} = Rectangle.from(
       rect
