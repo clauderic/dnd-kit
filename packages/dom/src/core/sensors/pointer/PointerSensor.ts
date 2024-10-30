@@ -8,11 +8,11 @@ import {
 } from '@dnd-kit/geometry';
 import {
   getDocument,
+  getFrameOffset,
   isElement,
   isHTMLElement,
   isPointerEvent,
   Listeners,
-  Transform,
 } from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.ts';
@@ -56,20 +56,7 @@ export class PointerSensor extends Sensor<
 
   protected initialCoordinates: Coordinates | undefined;
 
-  protected initialTransform: Transform = {
-    scaleX: 1,
-    scaleY: 1,
-    x: 0,
-    y: 0,
-    z: 0,
-  };
-  protected lastRelativeTransform: Transform = {
-    scaleX: 1,
-    scaleY: 1,
-    x: 0,
-    y: 0,
-    z: 0,
-  };
+  protected offset: Coordinates = {x: 0, y: 0};
 
   #clearTimeout: CleanupFunction | undefined;
 
@@ -107,6 +94,13 @@ export class PointerSensor extends Sensor<
     return unbind;
   }
 
+  private getRelativeCoordinates(coordinates: Coordinates) {
+    return {
+      x: coordinates.x - this.offset.x,
+      y: coordinates.y - this.offset.y,
+    };
+  }
+
   protected handlePointerDown(
     event: PointerEvent,
     source: Draggable,
@@ -127,10 +121,11 @@ export class PointerSensor extends Sensor<
       target.draggable &&
       target.getAttribute('draggable') === 'true';
 
-    this.initialCoordinates = {
+    this.offset = getFrameOffset(target);
+    this.initialCoordinates = this.getRelativeCoordinates({
       x: event.clientX,
       y: event.clientY,
-    };
+    });
 
     const {activationConstraints} = options;
     const constraints =
@@ -194,10 +189,10 @@ export class PointerSensor extends Sensor<
     source: Draggable,
     options: PointerSensorOptions
   ) {
-    const coordinates = {
+    const coordinates = this.getRelativeCoordinates({
       x: event.clientX,
       y: event.clientY,
-    };
+    });
 
     if (this.manager.dragOperation.status.dragging) {
       event.preventDefault();
