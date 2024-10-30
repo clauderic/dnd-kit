@@ -444,8 +444,15 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
               });
             }
 
-            const final = new DOMRectangle(target);
             const current = new DOMRectangle(element);
+            const {height, width} = new DOMRectangle(element, {
+              ignoreTransforms: true,
+            });
+            const final = new DOMRectangle(target);
+            const {height: finalHeight, width: finalWidth} = new DOMRectangle(
+              target,
+              {ignoreTransforms: true}
+            );
 
             const delta = {
               x: current.center.x - final.center.x,
@@ -457,17 +464,17 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
               z: 0,
             };
             const heightKeyframes =
-              Math.round(current.height) !== Math.round(final.height)
+              Math.round(height) !== Math.round(finalHeight)
                 ? {
-                    minHeight: [`${current.height}px`, `${final.height}px`],
-                    maxHeight: [`${current.height}px`, `${final.height}px`],
+                    minHeight: [`${height}px`, `${finalHeight}px`],
+                    maxHeight: [`${height}px`, `${finalHeight}px`],
                   }
                 : {};
             const widthKeyframes =
-              Math.round(current.width) !== Math.round(final.width)
+              Math.round(width) !== Math.round(finalWidth)
                 ? {
-                    minWidth: [`${current.width}px`, `${final.width}px`],
-                    maxWidth: [`${current.width}px`, `${final.width}px`],
+                    minWidth: [`${width}px`, `${finalWidth}px`],
+                    maxWidth: [`${width}px`, `${finalWidth}px`],
                   }
                 : {};
 
