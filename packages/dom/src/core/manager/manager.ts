@@ -59,6 +59,12 @@ export class DragDropManager<
       modifiers = [],
     } = input;
 
+    // This is a hack to prevent the `getFrameElement` function from returning a frame above this window
+    // We need to find a better way to handle this since there could be multiple instances of `DragDropManager`
+    // in different execution contexts. A better way to solve this would be to store the excution context on the
+    // manager instance, and then pass that manager instance to the `getFrameElement` function.
+    (window as any)['dnd-kit'] = true;
+
     super({
       ...input,
       plugins: [ScrollListener, Scroller, ...plugins],

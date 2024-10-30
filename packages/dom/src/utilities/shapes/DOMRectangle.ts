@@ -5,7 +5,7 @@ import {getComputedStyles} from '../styles/getComputedStyles.ts';
 import {parseTransform, type Transform} from '../transform/index.ts';
 import {getBoundingRectangle} from '../bounding-rectangle/getBoundingRectangle.ts';
 import {getWindow} from '../execution-context/getWindow.ts';
-import {getFrameOffset} from '@dnd-kit/dom/utilities';
+import {getFrameOffset} from '../frame/get-frame-offset.ts';
 
 interface Options {
   getBoundingClientRect?: (element: Element) => BoundingRectangle;
@@ -22,6 +22,14 @@ export class DOMRectangle extends Rectangle {
     const resetAnimations = forceFinishAnimations(element);
     const iframeOffset = getFrameOffset(element);
     const rect = getBoundingClientRect(element);
+
+    rect.left *= iframeOffset.scaleX;
+    rect.width *= iframeOffset.scaleX;
+    rect.right *= iframeOffset.scaleX;
+    rect.top *= iframeOffset.scaleY;
+    rect.height *= iframeOffset.scaleY;
+    rect.bottom *= iframeOffset.scaleY;
+
     let {top, left, right, bottom, width, height} = Rectangle.from(
       rect
     ).translate(iframeOffset.x, iframeOffset.y);

@@ -12,11 +12,6 @@ import {
   isHTMLElement,
   isPointerEvent,
   Listeners,
-  getFrameOffset,
-  getFrameElement,
-  getDeepTransform,
-  transformCoordinates,
-  computeRelativeTransform,
   Transform,
 } from '@dnd-kit/dom/utilities';
 
@@ -132,14 +127,10 @@ export class PointerSensor extends Sensor<
       target.draggable &&
       target.getAttribute('draggable') === 'true';
 
-    const offset = getFrameOffset(source.element);
-
     this.initialCoordinates = {
-      x: event.clientX + offset.x,
-      y: event.clientY + offset.y,
+      x: event.clientX,
+      y: event.clientY,
     };
-
-    this.initialTransform = getDeepTransform(source.element);
 
     const {activationConstraints} = options;
     const constraints =
@@ -207,29 +198,6 @@ export class PointerSensor extends Sensor<
       x: event.clientX,
       y: event.clientY,
     };
-
-    const offset = getFrameOffset(source.element as Element);
-
-    const targetElement = source.manager?.dragOperation.target?.element;
-
-    if (targetElement) {
-      const frameEl = getFrameElement(targetElement);
-      const deepTransform = getDeepTransform(frameEl);
-
-      this.lastRelativeTransform = computeRelativeTransform(
-        this.initialTransform,
-        deepTransform
-      );
-    }
-
-    const transformedCoordinates = transformCoordinates(
-      coordinates,
-      this.lastRelativeTransform,
-      source.manager?.dragOperation.shape?.initial.boundingRectangle
-    );
-
-    coordinates.x = transformedCoordinates.x + offset.x;
-    coordinates.y = transformedCoordinates.y + offset.y;
 
     if (this.manager.dragOperation.status.dragging) {
       event.preventDefault();
