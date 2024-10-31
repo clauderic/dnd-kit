@@ -40,8 +40,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
   constructor(manager: DragDropManager, options?: FeedbackOptions) {
     super(manager);
 
-    let style: HTMLStyleElement | undefined;
-    let elDocStyle: HTMLStyleElement | undefined;
+    const styleTags = new Map<Document, HTMLStyleElement>();
+
     let initialSize: {width: number; height: number} | undefined = undefined;
     let initialCoordinates: Coordinates | undefined;
     let initialTranslate: Coordinates = {x: 0, y: 0};
@@ -50,21 +50,18 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     let moved = false;
 
     const styleInjectionCleanup = effect(() => {
-      if (!style && manager.dragOperation.status.initialized) {
-        style = document.createElement('style');
-        style.innerText = cssRules;
-        document.head.prepend(style);
+      const {status, source, target} = manager.dragOperation;
 
-        // Also inject styles into element document if it differs from host document
-        const element = manager.dragOperation.source?.element;
+      if (status.initialized) {
+        const sourceDoc = getDocument(source?.element ?? null);
+        const targetDoc = getDocument(target?.element ?? null);
 
-        if (element) {
-          const elDoc = getDocument(element);
-
-          if (elDoc !== document) {
-            elDocStyle = getDocument(element).createElement('style');
-            elDocStyle.innerText = cssRules;
-            elDoc.head.prepend(elDocStyle);
+        for (const doc of [sourceDoc, targetDoc]) {
+          if (!styleTags.has(doc)) {
+            const style = document.createElement('style');
+            style.innerText = cssRules;
+            doc.head.prepend(style);
+            styleTags.set(doc, style);
           }
         }
 
@@ -518,8 +515,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     this.destroy = () => {
       styleInjectionCleanup();
       cleanupEffect();
-      style?.remove();
-      elDocStyle?.remove();
+      styleTags.forEach((style) => style.remove());
     };
   }
 
