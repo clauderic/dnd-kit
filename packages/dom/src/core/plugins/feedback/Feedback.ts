@@ -16,6 +16,7 @@ import {
   getWindow,
   type Transform,
   generateUniqueId,
+  getDocument,
 } from '@dnd-kit/dom/utilities';
 import {Coordinates} from '@dnd-kit/geometry';
 
@@ -40,6 +41,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     super(manager);
 
     let style: HTMLStyleElement | undefined;
+    let elDocStyle: HTMLStyleElement | undefined;
     let initialSize: {width: number; height: number} | undefined = undefined;
     let initialCoordinates: Coordinates | undefined;
     let initialTranslate: Coordinates = {x: 0, y: 0};
@@ -52,6 +54,19 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         style = document.createElement('style');
         style.innerText = cssRules;
         document.head.prepend(style);
+
+        // Also inject styles into element document if it differs from host document
+        const element = manager.dragOperation.source?.element;
+
+        if (element) {
+          const elDoc = getDocument(element);
+
+          if (elDoc !== document) {
+            elDocStyle = getDocument(element).createElement('style');
+            elDocStyle.innerText = cssRules;
+            elDoc.head.prepend(elDocStyle);
+          }
+        }
 
         return styleInjectionCleanup;
       }
@@ -504,6 +519,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       styleInjectionCleanup();
       cleanupEffect();
       style?.remove();
+      elDocStyle?.remove();
     };
   }
 
