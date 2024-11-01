@@ -7,27 +7,31 @@ import {getBoundingRectangle} from '../bounding-rectangle/getBoundingRectangle.t
 import {getWindow} from '../execution-context/getWindow.ts';
 import {getFrameOffset} from '@dnd-kit/dom/utilities';
 
-interface Options {
+export interface DOMRectangleOptions {
+  rootDocument?: Document;
   getBoundingClientRect?: (element: Element) => BoundingRectangle;
   /* Whether to ignore transforms when calculating the rectangle */
   ignoreTransforms?: boolean;
-  ignoreFrameOffset?: boolean;
 }
 
 export class DOMRectangle extends Rectangle {
-  constructor(element: Element, options: Options = {}) {
+  constructor(element: Element, options: DOMRectangleOptions = {}) {
     const {
+      rootDocument = document,
       ignoreTransforms = false,
       getBoundingClientRect = getBoundingRectangle,
     } = options;
     const resetAnimations = forceFinishAnimations(element);
-    const iframeOffset = getFrameOffset(element);
-    const rect = getBoundingClientRect(element);
-    let {top, left, right, bottom, width, height} = options.ignoreFrameOffset
-      ? rect
-      : Rectangle.from(rect).translate(iframeOffset.x, iframeOffset.y);
+    const frame = rootDocument.defaultView?.frameElement;
+    const frameOffset = getFrameOffset(element, frame);
+    const boundingRectangle = getBoundingClientRect(element);
+    const rect = Rectangle.from(boundingRectangle).translate(
+      frameOffset.x,
+      frameOffset.y
+    );
+    let {top, left, right, bottom, width, height} = rect;
 
-    const computedStyles = window.getComputedStyle(element);
+    const computedStyles = getComputedStyles(element);
     const parsedTransform = parseTransform(computedStyles);
 
     const scale = {
