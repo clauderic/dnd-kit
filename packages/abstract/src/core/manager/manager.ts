@@ -49,10 +49,10 @@ export class DragDropManager<T extends Draggable, U extends Droppable> {
     this.actions = actions;
     this.dragOperation = operation;
     this.collisionObserver = new CollisionObserver<T, U, V>(this);
-    this.plugins = [CollisionNotifier, ...plugins];
     this.modifiers = modifiers;
     this.sensors = sensors;
     this.destroy = this.destroy.bind(this);
+    this.plugins = [CollisionNotifier, ...plugins];
   }
 
   get plugins(): Plugin<any>[] {

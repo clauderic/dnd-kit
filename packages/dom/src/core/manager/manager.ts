@@ -4,7 +4,11 @@ import {
   type Plugins,
   type Sensors,
 } from '@dnd-kit/abstract';
-import {isElement} from '@dnd-kit/dom/utilities';
+import {
+  DOMRectangle,
+  type DOMRectangleOptions,
+  isElement,
+} from '@dnd-kit/dom/utilities';
 
 import type {Draggable, Droppable} from '../entities/index.ts';
 import {
@@ -18,7 +22,9 @@ import {
 } from '../plugins/index.ts';
 import {KeyboardSensor, PointerSensor} from '../sensors/index.ts';
 
-export interface Input extends DragDropManagerInput<any> {}
+export interface Input extends DragDropManagerInput<any> {
+  rootDocument?: Document;
+}
 
 export const defaultPreset: {
   plugins: Plugins<DragDropManager>;
@@ -54,6 +60,7 @@ export class DragDropManager<
 > extends AbstractDragDropManager<Draggable, Droppable> {
   constructor(input: Input = {}) {
     const {
+      rootDocument = document,
       plugins = defaultPreset.plugins,
       sensors = defaultPreset.sensors,
       modifiers = [],
@@ -64,6 +71,18 @@ export class DragDropManager<
       plugins: [ScrollListener, Scroller, ...plugins],
       sensors,
       modifiers,
+    });
+
+    this.rootDocument = rootDocument;
+    this.getShape = this.getShape.bind(this);
+  }
+
+  public rootDocument: Document;
+
+  public getShape(element: Element, options?: DOMRectangleOptions) {
+    return new DOMRectangle(element, {
+      ...options,
+      rootDocument: this.rootDocument,
     });
   }
 }

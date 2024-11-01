@@ -8,7 +8,11 @@ export {getVisibleBoundingRectangle} from './bounding-rectangle/getVisibleBoundi
 export {canUseDOM, getDocument, getWindow} from './execution-context/index.ts';
 export {isSafari} from './execution-context/isSafari.ts';
 
-export {cloneElement, ProxiedElements} from './element/index.ts';
+export {
+  cloneElement,
+  getElementFromPoint,
+  ProxiedElements,
+} from './element/index.ts';
 
 export {Listeners} from './event-listeners/index.ts';
 
@@ -26,7 +30,7 @@ export {
 
 export {scheduler, Scheduler, timeout} from './scheduling/index.ts';
 
-export {DOMRectangle} from './shapes/index.ts';
+export {DOMRectangle, type DOMRectangleOptions} from './shapes/index.ts';
 
 export {Styles, getComputedStyles} from './styles/index.ts';
 

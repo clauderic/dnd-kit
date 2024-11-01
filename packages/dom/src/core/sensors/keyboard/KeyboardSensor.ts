@@ -2,7 +2,6 @@ import {Sensor} from '@dnd-kit/abstract';
 import {batch, effect} from '@dnd-kit/state';
 import type {CleanupFunction} from '@dnd-kit/state';
 import {
-  DOMRectangle,
   getDocument,
   getWindow,
   isElement,
@@ -122,6 +121,7 @@ export class KeyboardSensor extends Sensor<
     source: Draggable,
     options: KeyboardSensorOptions | undefined
   ) {
+    const {getShape} = this.manager;
     const {element} = source;
 
     if (!element) {
@@ -133,7 +133,7 @@ export class KeyboardSensor extends Sensor<
 
     scrollIntoViewIfNeeded(element);
 
-    const {center} = new DOMRectangle(element);
+    const {center} = getShape(element);
 
     batch(() => {
       this.manager.actions.setDragSource(source.id);

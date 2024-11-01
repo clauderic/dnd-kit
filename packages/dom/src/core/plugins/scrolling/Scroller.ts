@@ -4,9 +4,12 @@ import {
   canScroll,
   detectScrollIntent,
   getScrollableAncestors,
+  getElementFromPoint,
   ScrollDirection,
   scheduler,
   isKeyboardEvent,
+  getDocument,
+  getFrameOffset,
 } from '@dnd-kit/dom/utilities';
 import {Axes, type Coordinates} from '@dnd-kit/geometry';
 
@@ -34,19 +37,19 @@ export class Scroller extends CorePlugin<DragDropManager> {
         return null;
       }
 
-      const {x, y} = position.current;
-      const element = document.elementFromPoint(x, y);
+      const element = getElementFromPoint(document, position.current);
 
       if (element) {
         previousElementFromPoint = element;
       }
 
-      return document.elementFromPoint(x, y) ?? previousElementFromPoint;
+      return element ?? previousElementFromPoint;
     });
     const scrollableElements = computed(() => {
       const element = elementFromPoint.value;
+      const {documentElement} = getDocument(element);
 
-      if (!element || element === document.documentElement) {
+      if (!element || element === documentElement) {
         const {target} = manager.dragOperation;
         const targetElement = target?.element;
 
@@ -135,6 +138,7 @@ export class Scroller extends CorePlugin<DragDropManager> {
     const currentPosition = position?.current;
 
     if (currentPosition) {
+      const rootFrame = this.manager.rootDocument.defaultView?.frameElement;
       const {by} = options ?? {};
       const intent = by
         ? {
@@ -154,9 +158,12 @@ export class Scroller extends CorePlugin<DragDropManager> {
         const elementCanScroll = canScroll(scrollableElement, by);
 
         if (elementCanScroll.x || elementCanScroll.y) {
+          // TODO: This is likely expensive, we should try and remove the need to get the frame offset
+          // on the fly and instead store it on the dragOperation.position, or something similar
+          const offset = getFrameOffset(scrollableElement, rootFrame);
           const {speed, direction} = detectScrollIntent(
             scrollableElement,
-            currentPosition,
+            {x: currentPosition.x - offset.x, y: currentPosition.y - offset.y},
             intent
           );
 
