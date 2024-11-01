@@ -18,3 +18,12 @@ export const Iframe: Story = {
     itemCount: 6,
   },
 };
+
+export const IframeTransformed: Story = {
+  name: 'IframeTransformed',
+  args: {
+    debug: false,
+    itemCount: 6,
+    transform: true,
+  },
+};
