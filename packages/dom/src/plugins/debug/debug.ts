@@ -10,11 +10,12 @@ export class Debug extends Plugin<DragDropManager> {
 
     const elements = new Map<UniqueIdentifier, HTMLElement>();
     let draggableElement: HTMLElement | null = null;
+    let positionElement: HTMLElement | null = null;
 
     const cleanup = effect(() => {
       const {dragOperation} = manager;
-      const {current: _} = dragOperation.status;
-
+      const {x, y} = dragOperation.position.current;
+      const {current: _, idle} = dragOperation.status;
       const {collisions} = manager.collisionObserver;
       const draggable = dragOperation.source;
       const topCollisions = collisions.slice(1, 3);
@@ -88,9 +89,40 @@ export class Debug extends Plugin<DragDropManager> {
           elements.delete(droppable.id);
         }
       }
+
+      if (!idle) {
+        if (!positionElement) {
+          positionElement = createDebugElement();
+
+          const horizontal = document.createElement('div');
+          const vertical = document.createElement('div');
+
+          horizontal.style.position = 'absolute';
+          horizontal.style.width = '25px';
+          horizontal.style.height = '1px';
+          horizontal.style.backgroundColor = '#000';
+
+          vertical.style.position = 'absolute';
+          vertical.style.width = '1px';
+          vertical.style.height = '25px';
+          vertical.style.backgroundColor = '#000';
+
+          positionElement.appendChild(horizontal);
+          positionElement.appendChild(vertical);
+          document.body.appendChild(positionElement);
+          positionElement.showPopover();
+        }
+
+        positionElement.style.top = `${y}px`;
+        positionElement.style.left = `${x}px`;
+      } else {
+        positionElement?.remove();
+        positionElement = null;
+      }
     });
 
     this.destroy = () => {
+      positionElement?.remove();
       draggableElement?.remove();
       elements.forEach((element) => element.remove());
       cleanup();
