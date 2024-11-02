@@ -13,15 +13,16 @@ import {
   ProxiedElements,
   isSafari,
   getWindow,
-  type Transform,
   generateUniqueId,
   getDocument,
+  getFrameOffset,
+  type Transform,
+  DOMRectangle,
 } from '@dnd-kit/dom/utilities';
 import {Coordinates} from '@dnd-kit/geometry';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import type {Draggable, Droppable} from '../../entities/index.ts';
-import {getFrameOffset} from '@dnd-kit/dom/utilities';
 
 const ATTR_PREFIX = 'data-dnd-';
 const CSS_PREFIX = '--dnd-';
@@ -52,10 +53,11 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       const {status, source, target} = manager.dragOperation;
 
       if (status.initialized) {
-        const sourceDoc = getDocument(source?.element ?? null);
-        const targetDoc = getDocument(target?.element ?? null);
+        const sourceDocument = getDocument(source?.element ?? null);
+        const targetDocument = getDocument(target?.element ?? null);
+        const documents = new Set([sourceDocument, targetDocument]);
 
-        for (const doc of [sourceDoc, targetDoc]) {
+        for (const doc of documents) {
           if (!styleTags.has(doc)) {
             const style = document.createElement('style');
             style.innerText = cssRules;
@@ -69,7 +71,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     });
 
     const cleanupEffect = effect(() => {
-      const {dragOperation, getShape} = manager;
+      const {dragOperation} = manager;
       const {position, source, status} = dragOperation;
 
       if (status.idle) {
@@ -91,7 +93,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
       let cleanup: CleanupFunction | undefined;
 
-      const shape = getShape(element, {
+      const shape = new DOMRectangle(element, {
         ignoreTransforms: true,
       });
       const {width, height, top, left} = shape;
@@ -114,8 +116,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         }
       }
 
-      const rootFrame = manager.rootDocument.defaultView?.frameElement;
-      const frameOffset = getFrameOffset(element, rootFrame);
+      const frameOffset = getFrameOffset(element);
 
       if (!initialCoordinates) {
         initialCoordinates = {x: left, y: top};
@@ -188,7 +189,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         showPopover(element);
       }
 
-      const actual = getShape(element, {
+      const actual = new DOMRectangle(element, {
         ignoreTransforms: true,
       });
       const offset = {
@@ -213,7 +214,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       const resizeObserver = new ResizeObserver(() => {
         if (!placeholder) return;
 
-        const placeholderShape = getShape(placeholder, {
+        const placeholderShape = new DOMRectangle(placeholder, {
           ignoreTransforms: true,
         });
         const origin = transformOrigin ?? {x: 1, y: 1};
@@ -247,11 +248,11 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           }
         }
 
-        manager.dragOperation.shape = getShape(element);
+        manager.dragOperation.shape = new DOMRectangle(element);
       });
 
       /* Initialize drag operation shape */
-      dragOperation.shape = getShape(element);
+      dragOperation.shape = new DOMRectangle(element);
       source.status = 'dragging';
 
       let elementMutationObserver: MutationObserver | undefined;
@@ -351,7 +352,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           const x = transform.x + initialTranslate.x;
           const y = transform.y + initialTranslate.y;
 
-          const shape = getShape(element);
+          const shape = new DOMRectangle(element);
 
           styles.set(
             {
@@ -457,8 +458,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
               });
             }
 
-            const final = getShape(target);
-            const current = getShape(element);
+            const final = new DOMRectangle(target);
+            const current = new DOMRectangle(element);
 
             const delta = {
               x: current.center.x - final.center.x,

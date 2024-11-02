@@ -2,12 +2,12 @@ import {batch, CleanupFunction, effect} from '@dnd-kit/state';
 import {Plugin} from '@dnd-kit/abstract';
 import {closestCorners} from '@dnd-kit/collision';
 import {
+  DOMRectangle,
   getVisibleBoundingRectangle,
   isKeyboardEvent,
   scrollIntoViewIfNeeded,
 } from '@dnd-kit/dom/utilities';
 import type {Coordinates} from '@dnd-kit/geometry';
-
 import {Scroller} from '@dnd-kit/dom';
 import type {DragDropManager, Droppable} from '@dnd-kit/dom';
 
@@ -49,7 +49,7 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
             return;
           }
 
-          const {dragOperation, getShape} = manager;
+          const {dragOperation} = manager;
 
           if (!isKeyboardEvent(dragOperation.activatorEvent)) {
             return;
@@ -89,7 +89,7 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
               }
 
               let previousShape = droppable.shape;
-              const shape = getShape(droppable.element, {
+              const shape = new DOMRectangle(droppable.element, {
                 getBoundingClientRect: (element) =>
                   getVisibleBoundingRectangle(element, undefined, 0.2),
               });
@@ -150,7 +150,7 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
             if (!element) return;
 
             scrollIntoViewIfNeeded(element);
-            const shape = getShape(element);
+            const shape = new DOMRectangle(element);
 
             if (!shape) {
               return;

@@ -8,6 +8,7 @@ import {
   isKeyboardEvent,
   scrollIntoViewIfNeeded,
   Listeners,
+  DOMRectangle,
 } from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.ts';
@@ -121,7 +122,6 @@ export class KeyboardSensor extends Sensor<
     source: Draggable,
     options: KeyboardSensorOptions | undefined
   ) {
-    const {getShape} = this.manager;
     const {element} = source;
 
     if (!element) {
@@ -133,7 +133,7 @@ export class KeyboardSensor extends Sensor<
 
     scrollIntoViewIfNeeded(element);
 
-    const {center} = getShape(element);
+    const {center} = new DOMRectangle(element);
 
     batch(() => {
       this.manager.actions.setDragSource(source.id);

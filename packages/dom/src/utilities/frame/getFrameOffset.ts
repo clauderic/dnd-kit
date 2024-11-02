@@ -3,7 +3,7 @@ import {getFrameElement} from './getFrameElement.ts';
 
 export function getFrameOffset(
   el: Element | undefined,
-  boundary?: Element | null
+  boundary: Element | null = window.frameElement
 ): Point {
   const offset: Point = {
     x: 0,
