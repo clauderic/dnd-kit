@@ -24,6 +24,16 @@ export class DOMRectangle extends Rectangle {
     const resetAnimations = forceFinishAnimations(element);
     const frameOffset = getFrameOffset(element);
     const boundingRectangle = getBoundingClientRect(element);
+
+    if (!ignoreTransforms) {
+      boundingRectangle.left *= frameOffset.scaleX;
+      boundingRectangle.width *= frameOffset.scaleX;
+      boundingRectangle.right *= frameOffset.scaleX;
+      boundingRectangle.top *= frameOffset.scaleY;
+      boundingRectangle.height *= frameOffset.scaleY;
+      boundingRectangle.bottom *= frameOffset.scaleY;
+    }
+
     const rect = Rectangle.from(boundingRectangle).translate(
       frameOffset.x,
       frameOffset.y
