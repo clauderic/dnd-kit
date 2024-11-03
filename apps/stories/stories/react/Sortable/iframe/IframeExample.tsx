@@ -39,7 +39,6 @@ export function IframeLists({
     defaultItems ?? {
       Host: createRange(itemCount).map((id) => `Host: ${id}`),
       Iframe: createRange(itemCount).map((id) => `Iframe: ${id}`),
-      Transformed: createRange(itemCount).map((id) => `Transformed: ${id}`),
     }
   );
   const [columns, setColumns] = useState(Object.keys(items));
@@ -161,7 +160,6 @@ interface SortableItemProps {
 const COLORS: Record<string, string> = {
   Host: '#7193f1',
   Iframe: '#FF851B',
-  Transformed: '#2ECC40',
 };
 
 function SortableItem({
