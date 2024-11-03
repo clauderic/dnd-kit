@@ -70,11 +70,17 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
 
           // Wait for the renderer to handle the event before attempting to optimistically update
           manager.renderer.rendering.then(() => {
+            const newInstances = getSortableInstances();
+
             for (const [group, sortableInstances] of instances.entries()) {
               const entries = Array.from(sortableInstances).entries();
 
               for (const [index, sortable] of entries) {
-                if (sortable.index !== index || sortable.group !== group) {
+                if (
+                  sortable.index !== index ||
+                  sortable.group !== group ||
+                  !newInstances.get(group)?.has(sortable)
+                ) {
                   // At least one index or group was changed so we should abort optimistic updates
                   return;
                 }
@@ -85,6 +91,10 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
             const targetElement = target.sortable.element;
 
             if (!targetElement || !sourceElement) {
+              return;
+            }
+
+            if (!sameGroup && target.id === source.sortable.group) {
               return;
             }
 
