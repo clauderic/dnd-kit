@@ -449,7 +449,9 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
           source.status = 'dropping';
 
-          if (!currentTranslate) {
+          const transform = currentTranslate;
+
+          if (!transform) {
             onComplete?.();
             return;
           }
