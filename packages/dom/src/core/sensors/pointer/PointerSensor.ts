@@ -12,7 +12,7 @@ import {
   isHTMLElement,
   isPointerEvent,
   Listeners,
-  getFrameOffset,
+  getFrameTransform,
 } from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.ts';
@@ -112,11 +112,11 @@ export class PointerSensor extends Sensor<
       target.draggable &&
       target.getAttribute('draggable') === 'true';
 
-    const offset = getFrameOffset(source.element);
+    const offset = getFrameTransform(source.element);
 
     this.initialCoordinates = {
-      x: event.clientX + offset.x,
-      y: event.clientY + offset.y,
+      x: event.clientX * offset.scaleX + offset.x,
+      y: event.clientY * offset.scaleY + offset.y,
     };
 
     const {activationConstraints} = options;
@@ -186,10 +186,10 @@ export class PointerSensor extends Sensor<
       y: event.clientY,
     };
 
-    const offset = getFrameOffset(source.element);
+    const offset = getFrameTransform(source.element);
 
-    coordinates.x = coordinates.x + offset.x;
-    coordinates.y = coordinates.y + offset.y;
+    coordinates.x = coordinates.x * offset.scaleX + offset.x;
+    coordinates.y = coordinates.y * offset.scaleY + offset.y;
 
     if (this.manager.dragOperation.status.dragging) {
       event.preventDefault();

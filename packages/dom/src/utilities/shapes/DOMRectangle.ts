@@ -5,40 +5,25 @@ import {getComputedStyles} from '../styles/getComputedStyles.ts';
 import {parseTransform, type Transform} from '../transform/index.ts';
 import {getBoundingRectangle} from '../bounding-rectangle/getBoundingRectangle.ts';
 import {getWindow} from '../execution-context/getWindow.ts';
-import {getFrameOffset} from '../frame/getFrameOffset.ts';
+import {getFrameTransform} from '../frame/getFrameTransform.ts';
 
 export interface DOMRectangleOptions {
-  rootDocument?: Document;
   getBoundingClientRect?: (element: Element) => BoundingRectangle;
   /* Whether to ignore transforms when calculating the rectangle */
   ignoreTransforms?: boolean;
+  frameTransform?: Transform | null;
 }
 
 export class DOMRectangle extends Rectangle {
   constructor(element: Element, options: DOMRectangleOptions = {}) {
     const {
-      rootDocument = document,
-      ignoreTransforms = false,
+      frameTransform = getFrameTransform(element),
+      ignoreTransforms,
       getBoundingClientRect = getBoundingRectangle,
     } = options;
     const resetAnimations = forceFinishAnimations(element);
-    const frameOffset = getFrameOffset(element);
     const boundingRectangle = getBoundingClientRect(element);
-
-    if (!ignoreTransforms) {
-      boundingRectangle.left *= frameOffset.scaleX;
-      boundingRectangle.width *= frameOffset.scaleX;
-      boundingRectangle.right *= frameOffset.scaleX;
-      boundingRectangle.top *= frameOffset.scaleY;
-      boundingRectangle.height *= frameOffset.scaleY;
-      boundingRectangle.bottom *= frameOffset.scaleY;
-    }
-
-    const rect = Rectangle.from(boundingRectangle).translate(
-      frameOffset.x,
-      frameOffset.y
-    );
-    let {top, left, right, bottom, width, height} = rect;
+    let {top, left, width, height} = boundingRectangle;
 
     const computedStyles = getComputedStyles(element);
     const parsedTransform = parseTransform(computedStyles);
@@ -54,7 +39,7 @@ export class DOMRectangle extends Rectangle {
 
     if (parsedTransform && (ignoreTransforms || projectedTransform)) {
       const updated = inverseTransform(
-        {top, left, right, bottom, width, height},
+        boundingRectangle,
         parsedTransform,
         computedStyles.transformOrigin
       );
@@ -72,6 +57,18 @@ export class DOMRectangle extends Rectangle {
       height = height * projectedTransform.scaleY;
       scale.x = projectedTransform.scaleX;
       scale.y = projectedTransform.scaleY;
+    }
+
+    if (frameTransform) {
+      if (!ignoreTransforms) {
+        left *= frameTransform.scaleX;
+        width *= frameTransform.scaleX;
+        top *= frameTransform.scaleY;
+        height *= frameTransform.scaleY;
+      }
+
+      left += frameTransform.x;
+      top += frameTransform.y;
     }
 
     super(left, top, width, height);
