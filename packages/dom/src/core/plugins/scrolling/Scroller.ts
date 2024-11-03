@@ -9,7 +9,7 @@ import {
   scheduler,
   isKeyboardEvent,
   getDocument,
-  getFrameOffset,
+  getFrameTransform,
 } from '@dnd-kit/dom/utilities';
 import {Axes, type Coordinates} from '@dnd-kit/geometry';
 
@@ -159,7 +159,7 @@ export class Scroller extends CorePlugin<DragDropManager> {
         if (elementCanScroll.x || elementCanScroll.y) {
           // TODO: This is likely expensive, we should try and remove the need to get the frame offset
           // on the fly and instead store it on the dragOperation.position, or something similar
-          const offset = getFrameOffset(scrollableElement);
+          const offset = getFrameTransform(scrollableElement);
           const {speed, direction} = detectScrollIntent(
             scrollableElement,
             {x: currentPosition.x - offset.x, y: currentPosition.y - offset.y},

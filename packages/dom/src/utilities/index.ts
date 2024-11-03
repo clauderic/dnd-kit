@@ -55,4 +55,4 @@ export type {Transform} from './transform/index.ts';
 export {generateUniqueId} from './misc/generateUniqueId.ts';
 
 export {getFrameElement} from './frame/getFrameElement.ts';
-export {getFrameOffset} from './frame/getFrameOffset.ts';
+export {getFrameTransform} from './frame/getFrameTransform.ts';

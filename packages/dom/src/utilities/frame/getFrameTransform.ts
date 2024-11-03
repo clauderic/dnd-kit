@@ -1,40 +1,41 @@
 import {getComputedStyles} from '../styles/getComputedStyles.ts';
 import {isHTMLElement} from '../type-guards/isHTMLElement.ts';
+import type {Transform} from '../transform/index.ts';
 
 import {getFrameElement} from './getFrameElement.ts';
 
-export function getFrameOffset(
+export function getFrameTransform(
   el: Element | undefined,
   boundary: Element | null = window.frameElement
-) {
-  const offset = {
+): Transform {
+  const transform: Transform = {
     x: 0,
     y: 0,
     scaleX: 1,
     scaleY: 1,
   };
 
-  if (!el) return offset;
+  if (!el) return transform;
 
   let frame = getFrameElement(el);
 
   while (frame) {
     if (frame === boundary) {
-      return offset;
+      return transform;
     }
 
     const rect = frame.getBoundingClientRect();
     const {x: scaleX, y: scaleY} = getScale(frame, rect);
 
-    offset.x = offset.x + rect.left;
-    offset.y = offset.y + rect.top;
-    offset.scaleX = offset.scaleX * scaleX;
-    offset.scaleY = offset.scaleY * scaleY;
+    transform.x = transform.x + rect.left;
+    transform.y = transform.y + rect.top;
+    transform.scaleX = transform.scaleX * scaleX;
+    transform.scaleY = transform.scaleY * scaleY;
 
     frame = getFrameElement(frame);
   }
 
-  return offset;
+  return transform;
 }
 
 function getScale(

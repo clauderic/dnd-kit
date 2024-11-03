@@ -1,5 +1,4 @@
 import type {Coordinates} from '@dnd-kit/geometry';
-import {getFrameOffset} from '../frame/getFrameOffset.ts';
 
 export function getElementFromPoint(
   document: Document,
