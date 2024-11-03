@@ -157,12 +157,9 @@ export class Scroller extends CorePlugin<DragDropManager> {
         const elementCanScroll = canScroll(scrollableElement, by);
 
         if (elementCanScroll.x || elementCanScroll.y) {
-          // TODO: This is likely expensive, we should try and remove the need to get the frame offset
-          // on the fly and instead store it on the dragOperation.position, or something similar
-          const offset = getFrameTransform(scrollableElement);
           const {speed, direction} = detectScrollIntent(
             scrollableElement,
-            {x: currentPosition.x - offset.x, y: currentPosition.y - offset.y},
+            currentPosition,
             intent
           );
 

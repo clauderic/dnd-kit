@@ -1,6 +1,7 @@
-import type {Axis, Coordinates} from '@dnd-kit/geometry';
+import {Rectangle, type Axis, type Coordinates} from '@dnd-kit/geometry';
 
 import {getScrollPosition} from './getScrollPosition.ts';
+import {getFrameTransform} from '../frame/getFrameTransform.ts';
 
 export enum ScrollDirection {
   Idle = 0,
@@ -31,14 +32,16 @@ export function detectScrollIntent(
   thresholdPercentage = defaultThreshold,
   tolerance = defaultTolerance
 ) {
-  const {
-    rect: scrollContainerRect,
-    isTop,
-    isBottom,
-    isLeft,
-    isRight,
-  } = getScrollPosition(scrollableElement);
-
+  const {x, y} = coordinates;
+  const {rect, isTop, isBottom, isLeft, isRight} =
+    getScrollPosition(scrollableElement);
+  const frameTransform = getFrameTransform(scrollableElement);
+  const scrollContainerRect = new Rectangle(
+    rect.left * frameTransform.scaleX + frameTransform.x,
+    rect.top * frameTransform.scaleY + frameTransform.y,
+    rect.width * frameTransform.scaleX,
+    rect.height * frameTransform.scaleY
+  );
   const direction: Record<Axis, ScrollDirection> = {
     x: ScrollDirection.Idle,
     y: ScrollDirection.Idle,
@@ -54,65 +57,61 @@ export function detectScrollIntent(
 
   if (
     !isTop &&
-    coordinates.y <= scrollContainerRect.top + threshold.height &&
+    y <= scrollContainerRect.top + threshold.height &&
     intent?.y !== ScrollDirection.Forward &&
-    coordinates.x >= scrollContainerRect.left - tolerance.x &&
-    coordinates.x <= scrollContainerRect.right + tolerance.x
+    x >= scrollContainerRect.left - tolerance.x &&
+    x <= scrollContainerRect.right + tolerance.x
   ) {
     // Scroll Up
     direction.y = ScrollDirection.Reverse;
     speed.y =
       acceleration *
       Math.abs(
-        (scrollContainerRect.top + threshold.height - coordinates.y) /
-          threshold.height
+        (scrollContainerRect.top + threshold.height - y) / threshold.height
       );
   } else if (
     !isBottom &&
-    coordinates.y >= scrollContainerRect.bottom - threshold.height &&
+    y >= scrollContainerRect.bottom - threshold.height &&
     intent?.y !== ScrollDirection.Reverse &&
-    coordinates.x >= scrollContainerRect.left - tolerance.x &&
-    coordinates.x <= scrollContainerRect.right + tolerance.x
+    x >= scrollContainerRect.left - tolerance.x &&
+    x <= scrollContainerRect.right + tolerance.x
   ) {
     // Scroll Down
     direction.y = ScrollDirection.Forward;
     speed.y =
       acceleration *
       Math.abs(
-        (scrollContainerRect.bottom - threshold.height - coordinates.y) /
-          threshold.height
+        (scrollContainerRect.bottom - threshold.height - y) / threshold.height
       );
   }
 
   if (
     !isRight &&
-    coordinates.x >= scrollContainerRect.right - threshold.width &&
+    x >= scrollContainerRect.right - threshold.width &&
     intent?.x !== ScrollDirection.Reverse &&
-    coordinates.y >= scrollContainerRect.top - tolerance.y &&
-    coordinates.y <= scrollContainerRect.bottom + tolerance.y
+    y >= scrollContainerRect.top - tolerance.y &&
+    y <= scrollContainerRect.bottom + tolerance.y
   ) {
     // Scroll Right
     direction.x = ScrollDirection.Forward;
     speed.x =
       acceleration *
       Math.abs(
-        (scrollContainerRect.right - threshold.width - coordinates.x) /
-          threshold.width
+        (scrollContainerRect.right - threshold.width - x) / threshold.width
       );
   } else if (
     !isLeft &&
-    coordinates.x <= scrollContainerRect.left + threshold.width &&
+    x <= scrollContainerRect.left + threshold.width &&
     intent?.x !== ScrollDirection.Forward &&
-    coordinates.y >= scrollContainerRect.top - tolerance.y &&
-    coordinates.y <= scrollContainerRect.bottom + tolerance.y
+    y >= scrollContainerRect.top - tolerance.y &&
+    y <= scrollContainerRect.bottom + tolerance.y
   ) {
     // Scroll Left
     direction.x = ScrollDirection.Reverse;
     speed.x =
       acceleration *
       Math.abs(
-        (scrollContainerRect.left + threshold.width - coordinates.x) /
-          threshold.width
+        (scrollContainerRect.left + threshold.width - x) / threshold.width
       );
   }
 
