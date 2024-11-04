@@ -5,11 +5,9 @@ import {
   DOMRectangle,
   getVisibleBoundingRectangle,
   isKeyboardEvent,
-  scheduler,
   scrollIntoViewIfNeeded,
 } from '@dnd-kit/dom/utilities';
 import type {Coordinates} from '@dnd-kit/geometry';
-
 import {Scroller} from '@dnd-kit/dom';
 import type {DragDropManager, Droppable} from '@dnd-kit/dom';
 
@@ -45,7 +43,7 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
 
     const unsubscribe = manager.monitor.addEventListener(
       'dragmove',
-      (event, manager) => {
+      (event, manager: DragDropManager) => {
         queueMicrotask(() => {
           if (this.disabled || event.defaultPrevented) {
             return;

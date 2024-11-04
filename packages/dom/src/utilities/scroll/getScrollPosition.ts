@@ -1,8 +1,10 @@
 import {getBoundingRectangle} from '../bounding-rectangle/getBoundingRectangle.ts';
 import {getViewportBoundingRectangle} from '../bounding-rectangle/getViewportBoundingRectangle.ts';
+import {getWindow} from '../execution-context/getWindow.ts';
 import {isDocumentScrollingElement} from './documentScrollingElement.ts';
 
 export function getScrollPosition(scrollableElement: Element) {
+  const window = getWindow(scrollableElement);
   const rect = isDocumentScrollingElement(scrollableElement)
     ? getViewportBoundingRectangle(scrollableElement)
     : getBoundingRectangle(scrollableElement);

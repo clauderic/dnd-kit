@@ -2,13 +2,13 @@ import {Sensor} from '@dnd-kit/abstract';
 import {batch, effect} from '@dnd-kit/state';
 import type {CleanupFunction} from '@dnd-kit/state';
 import {
-  DOMRectangle,
   getDocument,
   getWindow,
   isElement,
   isKeyboardEvent,
   scrollIntoViewIfNeeded,
   Listeners,
+  DOMRectangle,
 } from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.ts';

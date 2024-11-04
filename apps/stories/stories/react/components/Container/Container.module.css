@@ -47,6 +47,7 @@
 
 .Header {
   display: flex;
+  min-height: 59px;
   padding: 8px 20px;
   padding-right: 8px;
   align-items: center;

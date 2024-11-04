@@ -29,12 +29,14 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<
   ) {
     const {collisionDetector = defaultCollisionDetection} = input;
     const updateShape = (boundingClientRect?: BoundingRectangle | null) => {
-      const {element} = this;
+      const {manager, element} = this;
 
       if (!element || boundingClientRect === null) {
         this.shape = undefined;
         return undefined;
       }
+
+      if (!manager) return;
 
       const updatedShape = new DOMRectangle(element);
 

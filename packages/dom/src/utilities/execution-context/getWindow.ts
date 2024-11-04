@@ -16,5 +16,9 @@ export function getWindow(
     return window;
   }
 
+  if ('defaultView' in target) {
+    return (target.defaultView as typeof window | null) ?? window;
+  }
+
   return target.ownerDocument?.defaultView ?? window;
 }

@@ -3,7 +3,6 @@ import {configurator, Plugin} from '@dnd-kit/abstract';
 import {
   animateTransform,
   cloneElement,
-  DOMRectangle,
   isKeyboardEvent,
   showPopover,
   getComputedStyles,
@@ -14,8 +13,12 @@ import {
   ProxiedElements,
   isSafari,
   getWindow,
-  type Transform,
   generateUniqueId,
+  getDocument,
+  getFrameTransform,
+  type Transform,
+  DOMRectangle,
+  getFrameElement,
 } from '@dnd-kit/dom/utilities';
 import {Coordinates} from '@dnd-kit/geometry';
 
@@ -38,19 +41,34 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
   constructor(manager: DragDropManager, options?: FeedbackOptions) {
     super(manager);
 
-    let style: HTMLStyleElement | undefined;
-    let initialSize: {width: number; height: number} | undefined = undefined;
+    const styleTags = new Map<Document, HTMLStyleElement>();
+
+    let initialSize: {width: number; height: number} | undefined;
     let initialCoordinates: Coordinates | undefined;
+    let initialFrameTransform:
+      | {x: number; y: number; scaleX: number; scaleY: number}
+      | undefined;
     let initialTranslate: Coordinates = {x: 0, y: 0};
-    let currentTransform: Transform | undefined;
+    let currentTranslate: Coordinates | undefined;
     let transformOrigin: Coordinates | undefined;
     let moved = false;
 
     const styleInjectionCleanup = effect(() => {
-      if (!style && manager.dragOperation.status.initialized) {
-        style = document.createElement('style');
-        style.innerText = cssRules;
-        document.head.prepend(style);
+      const {status, source, target} = manager.dragOperation;
+
+      if (status.initialized) {
+        const sourceDocument = getDocument(source?.element ?? null);
+        const targetDocument = getDocument(target?.element ?? null);
+        const documents = new Set([sourceDocument, targetDocument]);
+
+        for (const doc of documents) {
+          if (!styleTags.has(doc)) {
+            const style = document.createElement('style');
+            style.innerText = cssRules;
+            doc.head.prepend(style);
+            styleTags.set(doc, style);
+          }
+        }
 
         return styleInjectionCleanup;
       }
@@ -61,9 +79,10 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       const {position, source, status} = dragOperation;
 
       if (status.idle) {
-        currentTransform = undefined;
+        currentTranslate = undefined;
         initialCoordinates = undefined;
         initialSize = undefined;
+        initialFrameTransform = undefined;
         initialTranslate = {x: 0, y: 0};
         transformOrigin = undefined;
         return;
@@ -79,7 +98,11 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
       let cleanup: CleanupFunction | undefined;
 
-      const shape = new DOMRectangle(element, {ignoreTransforms: true});
+      const frameTransform = getFrameTransform(element);
+      const shape = new DOMRectangle(element, {
+        frameTransform: null,
+        ignoreTransforms: true,
+      });
       const {width, height, top, left} = shape;
       const styles = new Styles(element);
       const {background, border, transition, translate} =
@@ -100,33 +123,55 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         }
       }
 
+      const relativeTop = top * frameTransform.scaleY + frameTransform.y;
+      const relativeLeft = left * frameTransform.scaleX + frameTransform.x;
+
       if (!initialCoordinates) {
-        initialCoordinates = {x: left, y: top};
+        initialCoordinates = {x: relativeLeft, y: relativeTop};
       }
 
       if (!initialSize) {
         initialSize = {width, height};
       }
 
+      if (!initialFrameTransform) {
+        initialFrameTransform = frameTransform;
+      }
+
       if (!transformOrigin) {
-        const {x, y} = untracked(() => position.current);
+        const current = untracked(() => position.current);
+
         transformOrigin = {
-          x: (x - left) / width,
-          y: (y - top) / height,
+          x:
+            (current.x - left * frameTransform.scaleX - frameTransform.x) /
+            (width * frameTransform.scaleX),
+          y:
+            (current.y - top * frameTransform.scaleY - frameTransform.y) /
+            (height * frameTransform.scaleY),
         };
       }
 
+      const coordinatesDelta = {
+        x: initialCoordinates.x - relativeLeft,
+        y: initialCoordinates.y - relativeTop,
+      };
       const sizeDelta = {
-        width: (width - initialSize.width) * transformOrigin.x,
-        height: (height - initialSize.height) * transformOrigin.y,
+        width:
+          (initialSize.width / initialFrameTransform.scaleX -
+            width / frameTransform.scaleX) *
+          transformOrigin.x,
+        height:
+          (initialSize.height / initialFrameTransform.scaleY -
+            height / frameTransform.scaleY) *
+          transformOrigin.y,
       };
       const delta = {
-        x: initialCoordinates.x - left - sizeDelta.width,
-        y: initialCoordinates.y - top - sizeDelta.height,
+        x: coordinatesDelta.x / frameTransform.scaleX - sizeDelta.width,
+        y: coordinatesDelta.y / frameTransform.scaleY - sizeDelta.height,
       };
       const projected = {
-        top: top + delta.y,
         left: left + delta.x,
+        top: top + delta.y,
       };
 
       element.setAttribute(ATTRIBUTE, 'true');
@@ -136,6 +181,9 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         styles.set({translate: `var(${CSS_PREFIX}translate)`});
       }
 
+      const transform = untracked(() => dragOperation.transform);
+      const translateString = `${transform.x * frameTransform.scaleX + initialTranslate.x}px ${transform.y * frameTransform.scaleY + initialTranslate.y}px 0`;
+
       styles.set(
         {
           width: width,
@@ -144,9 +192,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           left: projected.left,
           background,
           border,
-          translate: currentTransform
-            ? `${currentTransform.x}px ${currentTransform.y}px 0`
-            : '',
+          translate: translateString,
         },
         CSS_PREFIX
       );
@@ -171,17 +217,19 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         showPopover(element);
       }
 
-      const actual = new DOMRectangle(element, {ignoreTransforms: true});
+      const actual = new DOMRectangle(element, {
+        ignoreTransforms: true,
+      });
       const offset = {
         top: projected.top - actual.top,
         left: projected.left - actual.left,
       };
 
-      if (offset.left > 0.01 || offset.top > 0.01) {
+      if (Math.abs(offset.left) > 0.01 || Math.abs(offset.top) > 0.01) {
         styles.set(
           {
-            top: projected.top + offset.top,
-            left: projected.left + offset.left,
+            top: actual.top + offset.top,
+            left: actual.left + offset.left,
           },
           CSS_PREFIX
         );
@@ -205,8 +253,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           {
             width: placeholderShape.width,
             height: placeholderShape.height,
-            top: top + dY + offset.top,
-            left: left + dX + offset.left,
+            top: top + dY,
+            left: left + dX,
           },
           CSS_PREFIX
         );
@@ -228,7 +276,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           }
         }
 
-        manager.dragOperation.shape = new DOMRectangle(element);
+        dragOperation.shape = new DOMRectangle(element);
       });
 
       /* Initialize drag operation shape */
@@ -329,10 +377,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             ? '250ms cubic-bezier(0.25, 1, 0.5, 1)'
             : '0ms linear';
 
-          const x = transform.x + initialTranslate.x;
-          const y = transform.y + initialTranslate.y;
-
-          const shape = new DOMRectangle(element);
+          const x = transform.x / frameTransform.scaleX + initialTranslate.x;
+          const y = transform.y / frameTransform.scaleY + initialTranslate.y;
 
           styles.set(
             {
@@ -342,17 +388,11 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             CSS_PREFIX
           );
 
-          dragOperation.shape = shape.translate(
-            x - (currentTransform?.x ?? 0),
-            y - (currentTransform?.y ?? 0)
-          );
+          dragOperation.shape = new DOMRectangle(element);
 
-          currentTransform = {
+          currentTranslate = {
             x,
             y,
-            z: 0,
-            scaleX: shape.scale.x,
-            scaleY: shape.scale.y,
           };
         }
       });
@@ -409,7 +449,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
           source.status = 'dropping';
 
-          const transform = currentTransform;
+          const transform = currentTranslate;
 
           if (!transform) {
             onComplete?.();
@@ -438,9 +478,13 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
               });
             }
 
-            const final = new DOMRectangle(target);
-            const current = new DOMRectangle(element);
-
+            const sameFrame =
+              getFrameElement(element) === getFrameElement(target);
+            const options = {
+              frameTransform: sameFrame ? null : undefined,
+            };
+            const current = new DOMRectangle(element, options);
+            const final = new DOMRectangle(target, options);
             const delta = {
               x: current.center.x - final.center.x,
               y: current.center.y - final.center.y,
@@ -448,7 +492,6 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             const finalTransform = {
               x: transform.x - delta.x,
               y: transform.y - delta.y,
-              z: 0,
             };
             const heightKeyframes =
               Math.round(current.height) !== Math.round(final.height)
@@ -471,8 +514,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
                 ...heightKeyframes,
                 ...widthKeyframes,
                 translate: [
-                  `${transform.x}px ${transform.y}px ${transform.z ?? 0}`,
-                  `${finalTransform.x}px ${finalTransform.y}px ${finalTransform.z}`,
+                  `${transform.x}px ${transform.y}px 0`,
+                  `${finalTransform.x}px ${finalTransform.y}px 0`,
                 ],
               },
               options: {
@@ -497,7 +540,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     this.destroy = () => {
       styleInjectionCleanup();
       cleanupEffect();
-      style?.remove();
+      styleTags.forEach((style) => style.remove());
     };
   }
 

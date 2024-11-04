@@ -5,24 +5,29 @@ import {getComputedStyles} from '../styles/getComputedStyles.ts';
 import {parseTransform, type Transform} from '../transform/index.ts';
 import {getBoundingRectangle} from '../bounding-rectangle/getBoundingRectangle.ts';
 import {getWindow} from '../execution-context/getWindow.ts';
+import {getFrameTransform} from '../frame/getFrameTransform.ts';
 
-interface Options {
+export interface DOMRectangleOptions {
   getBoundingClientRect?: (element: Element) => BoundingRectangle;
   /* Whether to ignore transforms when calculating the rectangle */
   ignoreTransforms?: boolean;
+  frameTransform?: Transform | null;
 }
 
 export class DOMRectangle extends Rectangle {
-  constructor(element: Element, options: Options = {}) {
+  constructor(element: Element, options: DOMRectangleOptions = {}) {
     const {
-      ignoreTransforms = false,
+      frameTransform = getFrameTransform(element),
+      ignoreTransforms,
       getBoundingClientRect = getBoundingRectangle,
     } = options;
     const resetAnimations = forceFinishAnimations(element);
-    let {top, left, right, bottom, width, height} =
-      getBoundingClientRect(element);
+    const boundingRectangle = getBoundingClientRect(element);
+    let {top, left, width, height} = boundingRectangle;
+
     const computedStyles = getComputedStyles(element);
     const parsedTransform = parseTransform(computedStyles);
+
     const scale = {
       x: parsedTransform?.scaleX ?? 1,
       y: parsedTransform?.scaleY ?? 1,
@@ -34,7 +39,7 @@ export class DOMRectangle extends Rectangle {
 
     if (parsedTransform && (ignoreTransforms || projectedTransform)) {
       const updated = inverseTransform(
-        {top, left, right, bottom, width, height},
+        boundingRectangle,
         parsedTransform,
         computedStyles.transformOrigin
       );
@@ -52,6 +57,18 @@ export class DOMRectangle extends Rectangle {
       height = height * projectedTransform.scaleY;
       scale.x = projectedTransform.scaleX;
       scale.y = projectedTransform.scaleY;
+    }
+
+    if (frameTransform) {
+      if (!ignoreTransforms) {
+        left *= frameTransform.scaleX;
+        width *= frameTransform.scaleX;
+        top *= frameTransform.scaleY;
+        height *= frameTransform.scaleY;
+      }
+
+      left += frameTransform.x;
+      top += frameTransform.y;
     }
 
     super(left, top, width, height);

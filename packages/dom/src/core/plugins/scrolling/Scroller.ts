@@ -4,9 +4,12 @@ import {
   canScroll,
   detectScrollIntent,
   getScrollableAncestors,
+  getElementFromPoint,
   ScrollDirection,
   scheduler,
   isKeyboardEvent,
+  getDocument,
+  getFrameTransform,
 } from '@dnd-kit/dom/utilities';
 import {Axes, type Coordinates} from '@dnd-kit/geometry';
 
@@ -34,19 +37,19 @@ export class Scroller extends CorePlugin<DragDropManager> {
         return null;
       }
 
-      const {x, y} = position.current;
-      const element = document.elementFromPoint(x, y);
+      const element = getElementFromPoint(document, position.current);
 
       if (element) {
         previousElementFromPoint = element;
       }
 
-      return document.elementFromPoint(x, y) ?? previousElementFromPoint;
+      return element ?? previousElementFromPoint;
     });
     const scrollableElements = computed(() => {
       const element = elementFromPoint.value;
+      const {documentElement} = getDocument(element);
 
-      if (!element || element === document.documentElement) {
+      if (!element || element === documentElement) {
         const {target} = manager.dragOperation;
         const targetElement = target?.element;
 
