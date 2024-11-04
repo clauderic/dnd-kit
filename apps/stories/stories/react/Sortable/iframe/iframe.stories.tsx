@@ -5,7 +5,6 @@ import {IframeLists} from './IframeExample.tsx';
 const meta: Meta<typeof IframeLists> = {
   title: 'React/Sortable/Iframe',
   component: IframeLists,
-  tags: ['autodocs'],
 };
 
 export default meta;
