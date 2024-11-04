@@ -14,6 +14,10 @@
   },
   "topbarLinks": [
     {
+      "name": "Examples",
+      "url": "https://experimental--5fc05e08a4a65d0021ae0bf2.chromatic.com/"
+    },
+    {
       "name": "Community",
       "url": "https://dnd-kit.slack.com/"
     }
