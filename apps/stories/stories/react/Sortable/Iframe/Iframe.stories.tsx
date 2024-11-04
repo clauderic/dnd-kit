@@ -19,7 +19,7 @@ export const Iframe: Story = {
 };
 
 export const IframeTransformed: Story = {
-  name: 'IframeTransformed',
+  name: 'Transformed Iframe',
   args: {
     debug: false,
     itemCount: 6,
