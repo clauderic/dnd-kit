@@ -1,6 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
 import type {PropsWithChildren} from 'react';
-import {CollisionPriority} from '@dnd-kit/abstract';
 import {DragDropProvider} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
 import {move} from '@dnd-kit/helpers';
@@ -8,7 +7,7 @@ import {defaultPreset} from '@dnd-kit/dom';
 import {Debug} from '@dnd-kit/dom/plugins/debug';
 import AutoFrameComponent from '@measured/auto-frame-component';
 
-import {Actions, Container, Item, Handle} from '../../components/index.ts';
+import {Container, Item} from '../../components/index.ts';
 import {createRange} from '../../../utilities/createRange.ts';
 import {cloneDeep} from '../../../utilities/cloneDeep.ts';
 
@@ -16,32 +15,27 @@ const AutoFrame = AutoFrameComponent.default || AutoFrameComponent;
 
 interface Props {
   debug?: boolean;
-  grid?: boolean;
   defaultItems?: Record<string, string[]>;
   columnStyle?: Record<string, string>;
   itemCount: number;
   scrollable?: boolean;
-  vertical?: boolean;
   transform?: boolean;
 }
 
 export function IframeLists({
   debug,
   defaultItems,
-  grid,
   itemCount,
   columnStyle,
   scrollable,
-  vertical,
   transform,
 }: Props) {
   const [items, setItems] = useState(
     defaultItems ?? {
-      Host: createRange(itemCount).map((id) => `Host: ${id}`),
-      Iframe: createRange(itemCount).map((id) => `Iframe: ${id}`),
+      host: createRange(itemCount).map((id) => `Host: ${id}`),
+      iframe: createRange(itemCount).map((id) => `Iframe: ${id}`),
     }
   );
-  const [columns, setColumns] = useState(Object.keys(items));
   const snapshot = useRef(cloneDeep(items));
 
   const [bodyClassName, setBodyClassName] = useState('');
@@ -63,13 +57,6 @@ export function IframeLists({
         snapshot.current = cloneDeep(items);
       }}
       onDragOver={(event) => {
-        const {source} = event.operation;
-
-        if (source?.type === 'column') {
-          // We can rely on optimistic sorting for columns
-          return;
-        }
-
         setItems((items) => move(items, event));
       }}
       onDragEnd={(event) => {
@@ -77,42 +64,20 @@ export function IframeLists({
           setItems(snapshot.current);
           return;
         }
-
-        const {source} = event.operation;
-
-        if (source?.type === 'column') {
-          setColumns((columns) => move(columns, event));
-        }
       }}
     >
       <div
         style={{
-          display: grid ? 'grid' : 'flex',
-          width: grid ? '60%' : undefined,
-          gridTemplateColumns: grid ? '1fr 1fr' : undefined,
-          alignItems: vertical ? 'center' : undefined,
-          margin: grid ? '0 auto' : undefined,
-          flexDirection: vertical ? 'column' : 'row',
+          display: 'flex',
+          flexDirection: 'row',
           gap: 20,
         }}
       >
-        <SortableColumn
-          id={columns[0]}
-          index={0}
-          columns={grid ? 2 : 1}
-          scrollable={scrollable}
-          style={columnStyle}
-        >
-          {items[columns[0]].map((id, index) => (
-            <SortableItem
-              key={id}
-              id={id}
-              column={columns[0]}
-              index={index}
-              style={grid ? {height: 100} : undefined}
-            />
+        <Column id="host" scrollable={scrollable} style={columnStyle}>
+          {items.host.map((id, index) => (
+            <SortableItem key={id} id={id} column={'host'} index={index} />
           ))}
-        </SortableColumn>
+        </Column>
 
         <AutoFrame
           style={{
@@ -126,23 +91,11 @@ export function IframeLists({
             }}
           />
           <div className={bodyClassName}>
-            <SortableColumn
-              id={columns[1]}
-              index={1}
-              columns={grid ? 2 : 1}
-              scrollable={scrollable}
-              style={columnStyle}
-            >
-              {items[columns[1]].map((id, index) => (
-                <SortableItem
-                  key={id}
-                  id={id}
-                  column={columns[1]}
-                  index={index}
-                  style={grid ? {height: 100} : undefined}
-                />
+            <Column id="iframe" scrollable={scrollable} style={columnStyle}>
+              {items.iframe.map((id, index) => (
+                <SortableItem key={id} id={id} column="iframe" index={index} />
               ))}
-            </SortableColumn>
+            </Column>
           </div>
         </AutoFrame>
       </div>
@@ -192,41 +145,21 @@ function SortableItem({
   );
 }
 
-interface SortableColumnProps {
-  columns: number;
+interface ColumnProps {
   id: string;
-  index: number;
   scrollable?: boolean;
   style?: React.CSSProperties;
 }
 
-function SortableColumn({
+function Column({
   children,
-  columns,
   id,
-  index,
   scrollable,
   style,
-}: PropsWithChildren<SortableColumnProps>) {
-  const {handleRef, isDragSource, ref} = useSortable({
-    id,
-    accept: ['column', 'item'],
-    collisionPriority: CollisionPriority.Low,
-    type: 'column',
-    index,
-  });
-
+}: PropsWithChildren<ColumnProps>) {
   return (
     <Container
-      ref={ref}
-      label={`${id}`}
-      actions={
-        <Actions>
-          <Handle ref={handleRef} />
-        </Actions>
-      }
-      columns={columns}
-      shadow={isDragSource}
+      label={id.charAt(0).toUpperCase() + id.slice(1)}
       scrollable={scrollable}
       transitionId={`sortable-column-${id}`}
       style={style}
