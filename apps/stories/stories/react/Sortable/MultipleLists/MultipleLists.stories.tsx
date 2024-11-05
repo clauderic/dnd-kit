@@ -1,7 +1,6 @@
 import type {Meta, StoryObj} from '@storybook/react';
 
 import {MultipleLists} from './MultipleLists';
-import {Guide} from './docs/examples/Guide';
 import docs from './docs/MultipleLists.mdx';
 
 const meta: Meta<typeof MultipleLists> = {
@@ -42,26 +41,6 @@ export const Hero: Story = {
       C: [],
     },
   },
-};
-
-export const Guide1: Story = {
-  tags: ['hidden'],
-  render: () => <Guide disabled uncontrolled />,
-};
-
-export const Guide2: Story = {
-  tags: ['hidden'],
-  render: () => <Guide uncontrolled />,
-};
-
-export const Guide3: Story = {
-  tags: ['hidden'],
-  render: () => <Guide />,
-};
-
-export const Guide4: Story = {
-  tags: ['hidden'],
-  render: () => <Guide sortableColumns />,
 };
 
 export const Scrollable: Story = {
