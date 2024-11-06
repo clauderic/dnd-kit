@@ -24,11 +24,11 @@ First, let's set up the initial setup for the columns and items. We'll be creati
 
 
 <CodeSandbox height="560" previewHeight="260" files={{
-  "/App.js": App,
-  "/Column.js": Column,
-  "/Item.js": Item,
-  "/Styles.css": Styles
-}} />
+  "App.js": App,
+  "Column.js": Column,
+  "Item.js": Item,
+  "styles.css": Styles
+}} showTabs />
 
 ## Adding drag and drop functionality
 
@@ -37,8 +37,8 @@ Now, let's add drag and drop functionality to the items. We'll be using the [use
 
 <CodeSandbox height="435" previewHeight="260" files={{
   ...files,
-  "/Item.js": {code: SortableItem, active: true},
-}} />
+  "Item.js": {code: SortableItem, active: true},
+}} showTabs />
 
 As you can see, we've added the `useSortable` hook to the `Item` component. We've also passed the `id`, `index`, `type`, `accept`, and `group` props to the hook.
 
@@ -52,8 +52,8 @@ We'll be using the [useDroppable](/react/hooks/use-droppable) hook to create a d
 
 <CodeSandbox height="455" previewHeight="260" files={{
   ...files,
-  "/Column.js": {code: DroppableColumn, active: true},
-}} />
+  "Column.js": {code: DroppableColumn, active: true},
+}} showTabs />
 
 <Note>We're setting the `collisionPriority` to `CollisionPriority.Low` to prioritize collisions of items over collisions of columns. Learn more about [detecting collisions](/concepts/droppable#detecting-collisions).</Note>
 
@@ -63,9 +63,9 @@ We'll be using the [DragDropProvider](/react/components/drag-drop-provider) comp
 
 <CodeSandbox height="455" previewHeight="260" files={{
   ...files,
-  "/App.js": {code: AppDroppableColumns, active: true},
-  "/Column.js": {code: DroppableColumn},
-}} />
+  "App.js": {code: AppDroppableColumns, active: true},
+  "Column.js": {code: DroppableColumn},
+}} showTabs />
 
 As you can see, we've added the `DragDropProvider` component to the `App` component. We've also added an `onDragOver` event handler to listen for drag and drop events.
 
@@ -81,16 +81,16 @@ Here's how you can modify the `Column` component to make it sortable:
 
 <CodeSandbox height="455" previewHeight="260" files={{
   ...files,
-  "/App.js": {code: AppSortableColumns},
-  "/Column.js": {code: SortableColumn, active: true},
-}} />
+  "App.js": {code: AppSortableColumns},
+  "Column.js": {code: SortableColumn, active: true},
+}} showTabs />
 
 <Info>You'll also need to pass the column `index` prop to the `Column` component in the `App` component.</Info>
 
 If we want to control the state of the columns in React, we can update the `App` component to handle the column order in the `onDragEnd` callback:
 
 ```jsx App.js
-export function App({style = styles}) {
+export function App() {
   const [items, setItems] = useState({
     A: ['A0', 'A1', 'A2'],
     B: ['B0', 'B1'],
@@ -144,7 +144,7 @@ For example, here is how we would update our app to handle this case for the ord
 import React, {useRef, useState} from 'react';
 import {DragDropProvider} from '@dnd-kit/react';
 import {move} from '@dnd-kit/helpers';
-import "./Styles.css";
+import "./styles.css";
 
 import {Column} from './Column';
 import {Item} from './Item';
@@ -203,9 +203,9 @@ export function App({style = styles}) {
 <Note>Optimistic updates performed by `@dnd-kit` are automatically reverted when a drag operation is canceled.</Note>
 
 export const App = `import React, {useState} from 'react';
-import {Column} from './Column';
-import {Item} from './Item';
-import './Styles.css';
+import {Column} from './Column.js';
+import {Item} from './Item.js';
+import './styles.css';
 
 export default function App() {
   const [items] = useState({
@@ -230,9 +230,9 @@ export default function App() {
 export const AppDroppableColumns = `import React, {useState} from 'react';
 import {DragDropProvider} from '@dnd-kit/react';
 import {move} from '@dnd-kit/helpers';
-import {Column} from './Column';
-import {Item} from './Item';
-import './Styles.css';
+import {Column} from './Column.js';
+import {Item} from './Item.js';
+import './styles.css';
 
 export default function App() {
   const [items, setItems] = useState({
@@ -263,9 +263,9 @@ export default function App() {
 export const AppSortableColumns = `import React, {useState} from 'react';
 import {DragDropProvider} from '@dnd-kit/react';
 import {move} from '@dnd-kit/helpers';
-import {Column} from './Column';
-import {Item} from './Item';
-import './Styles.css';
+import {Column} from './Column.js';
+import {Item} from './Item.js';
+import './styles.css';
 
 export default function App() {
   const [items, setItems] = useState({
@@ -361,7 +361,7 @@ export const SortableItem = `import React from 'react';
 import {useSortable} from '@dnd-kit/react/sortable';
 
 export function Item({id, index, column}) {
-  const {ref} = useSortable({
+  const {ref, isDragSource} = useSortable({
     id,
     index,
     type: 'item',
@@ -370,17 +370,13 @@ export function Item({id, index, column}) {
   });
 
   return (
-    <button className="Item" ref={ref}>
+    <button className="Item" ref={ref} data-dragging={isDragSource}>
       {id}
     </button>
   );
 }`;
 
-export const Styles = (() => `
-html {
-  background-color: ${typeof document != 'undefined' && document.documentElement.classList.contains('dark') ? '#11131b' : '#fafafd'};
-}
-
+export const Styles = `
 .Root {
   display: flex;
   flex-direction: row;
@@ -408,19 +404,19 @@ html {
   border: none;
   border-radius: 5px;
   cursor: grab;
-  transition: transform 0.3s ease-in, box-shadow 0.3s ease-in;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   transform: scale(1);
   box-shadow: inset 0px 0px 1px rgba(0,0,0,0.4), 0 0 0 calc(1px / var(--scale-x, 1)) rgba(63, 63, 68, 0.05), 0px 1px calc(2px / var(--scale-x, 1)) 0 rgba(34, 33, 81, 0.05);
 }
 
-.Item[data-dnd-dragging="true"] {
+.Item[data-dragging="true"] {
   transform: scale(1.02);
   box-shadow: inset 0px 0px 1px rgba(0,0,0,0.5), -1px 0 15px 0 rgba(34, 33, 81, 0.01), 0px 15px 15px 0 rgba(34, 33, 81, 0.25)
-}`)();
+}`;
 
 export const files = {
-  "/Item.js": {code: SortableItem, hidden: true},
-  "/App.js": {code: App, hidden: true},
-  "/Column.js": {code: Column, hidden: true},
-  "/Styles.css": {code: Styles, hidden: true}
+  "Item.js": {code: SortableItem, hidden: true},
+  "App.js": {code: App, hidden: true},
+  "Column.js": {code: Column, hidden: true},
+  "styles.css": {code: Styles, hidden: true}
 };

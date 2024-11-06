@@ -15,6 +15,7 @@ importMapScript.textContent = JSON.stringify(importMap);
 document.head.appendChild(importMapScript);
 
 const script = document.createElement('script');
+
 const code = `
 import React from "react";
 import {createRoot} from "react-dom/client";
@@ -61,19 +62,36 @@ const theme = {
 class SandpackElement extends HTMLElement {
   connectedCallback() {
     const root = createRoot(this);
-    let files;
+    let files = {};
     const height = parseInt(this.getAttribute("height"));
+    const showTabs = Boolean(this.getAttribute("showTabs"));
 
     try {
       files = JSON.parse(this.getAttribute("files"));
     } catch {}
+
+    const styles = files['styles.css'];
+    const backgroundColor = document.documentElement.classList.contains('dark')
+      ? '#11131b'
+      : '#fafafd';
+
+    if (styles) {
+      const background = \`html {background-color: \${backgroundColor};}\`;
+
+      files['styles.css'] = typeof styles == 'string' ? {
+        code: \`\${background} \${styles}\`,
+      } : {
+        ...styles,
+        code: \`\${background} \${styles.code}\`,
+      };
+    }
 
     const sandpackComponent = React.createElement(Sandpack, {
       files,
       template: "react",
       theme: theme,
       options: {
-        showTabs: true,
+        showTabs,
         resizablePanels: false,
         editorHeight: height || undefined,
       },

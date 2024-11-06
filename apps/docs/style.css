@@ -144,6 +144,10 @@ kbd {
   background-color: transparent;
 }
 
+.sp-preview-iframe {
+  min-height: 100px;
+}
+
 code-sandbox[style*="--preview-height"] .sp-preview {
   height: var(--preview-height) !important;
 }
