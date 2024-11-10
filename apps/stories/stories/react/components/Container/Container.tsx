@@ -6,6 +6,7 @@ import styles from './Container.module.css';
 
 export interface Props {
   children: React.ReactNode;
+  accentColor?: string;
   actions?: React.ReactNode;
   columns?: number;
   label?: string;
@@ -18,6 +19,7 @@ export interface Props {
 export const Container = forwardRef<HTMLDivElement, Props>(
   (
     {
+      accentColor = 'transparent',
       actions,
       children,
       columns = 1,
@@ -39,6 +41,7 @@ export const Container = forwardRef<HTMLDivElement, Props>(
             ...style,
             viewTransitionName: transitionId,
             '--columns': columns,
+            '--accent-color': accentColor,
           } as React.CSSProperties
         }
         className={classNames(

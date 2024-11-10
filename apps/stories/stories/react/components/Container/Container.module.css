@@ -7,7 +7,7 @@
   appearance: none;
   outline: none;
   min-width: var(--min-width, 300px);
-  border-radius: 5px;
+  border-radius: 6px;
   min-height: 200px;
   transition-property: transform, background, box-shadow;
   transition-duration: 250ms;
@@ -33,6 +33,7 @@
 
 .Container > ul {
   display: grid;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
   gap: 16px;
   grid-template-columns: repeat(var(--columns, 1), 1fr);
   list-style: none;
@@ -46,6 +47,7 @@
 }
 
 .Header {
+  border-left: var(--accent-color) 3px solid;
   display: flex;
   min-height: 59px;
   padding: 8px 20px;
@@ -55,12 +57,11 @@
   background-color: #fff;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   font-family: var(--font-family);
 }
 
 :global(.dark) .Container {
-  border: none;
+  border-color: rgba(255, 255, 255, 0.05);
   background-color: rgb(76, 79, 80);
 
   &:hover, &.shadow {
