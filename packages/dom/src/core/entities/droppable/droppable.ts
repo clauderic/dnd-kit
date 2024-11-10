@@ -2,6 +2,7 @@ import {Droppable as AbstractDroppable} from '@dnd-kit/abstract';
 import type {
   Data,
   DroppableInput as AbstractDroppableInput,
+  UniqueIdentifier,
 } from '@dnd-kit/abstract';
 import {defaultCollisionDetection} from '@dnd-kit/collision';
 import type {CollisionDetector} from '@dnd-kit/collision';
@@ -17,6 +18,32 @@ export interface Input<T extends Data = Data>
   extends Omit<AbstractDroppableInput<T>, OptionalInput> {
   collisionDetector?: CollisionDetector;
   element?: Element;
+}
+
+function getPathArray(
+  droppables: DragDropManager['registry']['droppables'],
+  target: Element
+): UniqueIdentifier[] {
+  // Create a map from element to id for easy lookup
+  const elementMap = new Map<Element, UniqueIdentifier>();
+  Array.from(droppables.value).forEach((item) => {
+    if (item?.element) {
+      elementMap.set(item.element, item.id);
+    }
+  });
+
+  const path: UniqueIdentifier[] = [];
+  let currentElement = target.parentElement;
+
+  while (currentElement) {
+    const parentId = elementMap.get(currentElement);
+    if (parentId) {
+      path.unshift(parentId);
+    }
+    currentElement = currentElement.parentElement;
+  }
+
+  return path;
 }
 
 export class Droppable<T extends Data = Data> extends AbstractDroppable<
@@ -68,6 +95,10 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<
               element &&
               !this.disabled &&
               this.accepts(source);
+
+            this.path = element
+              ? getPathArray(manager.registry.droppables, element)
+              : [];
 
             if (observePosition) {
               const positionObserver = new PositionObserver(
