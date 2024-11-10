@@ -1,9 +1,9 @@
-export const CodeSandbox = ({ files, height, previewHeight, showTabs }) => {
+export const CodeSandbox = ({ files, height, previewHeight, showTabs, hero }) => {
   const Element = 'code-sandbox';
 
   return (
     <Element
-      class="not-prose"
+      class={`not-prose${hero ? ' hero' : ''}`}
       files={JSON.stringify(files)}
       height={height}
       style={previewHeight ? {'--preview-height': `${previewHeight}px`} : undefined}

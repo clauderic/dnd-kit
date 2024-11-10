@@ -70,22 +70,6 @@ class SandpackElement extends HTMLElement {
       files = JSON.parse(this.getAttribute("files"));
     } catch {}
 
-    const styles = files['styles.css'];
-    const backgroundColor = document.documentElement.classList.contains('dark')
-      ? '#11131b'
-      : '#fafafd';
-
-    if (styles) {
-      const background = \`html {background-color: \${backgroundColor};}\`;
-
-      files['styles.css'] = typeof styles == 'string' ? {
-        code: \`\${background} \${styles}\`,
-      } : {
-        ...styles,
-        code: \`\${background} \${styles.code}\`,
-      };
-    }
-
     const sandpackComponent = React.createElement(Sandpack, {
       files,
       template: "react",
@@ -107,7 +91,7 @@ class SandpackElement extends HTMLElement {
 }
 
 customElements.define("code-sandbox", SandpackElement);
-`.replace(/\n/g, ' ');
+`;
 
 script.type = 'module';
 script.innerText = code;
