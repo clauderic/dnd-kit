@@ -1,22 +1,19 @@
 import {dirname, join} from 'path';
-import {mergeConfig} from 'vite';
+import {mergeConfig, optimizeDeps} from 'vite';
 
 export default {
-  stories: ['../stories/**/*.stories.tsx'],
-
+  stories: ['../stories/**/*.stories.mdx', '../stories/**/*.stories.tsx'],
   addons: [
     getAbsolutePath('@storybook/addon-links'),
     getAbsolutePath('@storybook/addon-essentials'),
     getAbsolutePath('storybook-dark-mode'),
   ],
-
   framework: {
     name: getAbsolutePath('@storybook/react-vite'),
     options: {
       strictMode: true,
     },
   },
-
   async viteFinal(config, {configType}) {
     // customize the Vite config here
     return mergeConfig(config, {
@@ -28,11 +25,8 @@ export default {
       },
     });
   },
-
-  docs: {},
-
-  typescript: {
-    reactDocgen: 'react-docgen-typescript',
+  docs: {
+    autodocs: 'tag',
   },
 };
 
