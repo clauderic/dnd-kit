@@ -11,12 +11,10 @@ import {
   Styles,
   parseTranslate,
   ProxiedElements,
-  isSafari,
   getWindow,
   generateUniqueId,
   getDocument,
   getFrameTransform,
-  type Transform,
   DOMRectangle,
   getFrameElement,
 } from '@dnd-kit/dom/utilities';
@@ -175,11 +173,6 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       };
 
       element.setAttribute(ATTRIBUTE, 'true');
-
-      if (isSafari()) {
-        // Fix a bug in Safari > 18.0 where changes to the `translate` css variable do not trigger a repaint
-        styles.set({translate: `var(${CSS_PREFIX}translate)`});
-      }
 
       const transform = untracked(() => dragOperation.transform);
       const translateString = `${transform.x * frameTransform.scaleX + initialTranslate.x}px ${transform.y * frameTransform.scaleY + initialTranslate.y}px 0`;
