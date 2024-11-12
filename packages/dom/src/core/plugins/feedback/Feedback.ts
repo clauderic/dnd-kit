@@ -153,20 +153,23 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         x: initialCoordinates.x - relativeLeft,
         y: initialCoordinates.y - relativeTop,
       };
+
       const sizeDelta = {
         width:
-          (initialSize.width / initialFrameTransform.scaleX -
-            width / frameTransform.scaleX) *
+          (initialSize.width * initialFrameTransform.scaleX -
+            width * frameTransform.scaleX) *
           transformOrigin.x,
         height:
-          (initialSize.height / initialFrameTransform.scaleY -
-            height / frameTransform.scaleY) *
+          (initialSize.height * initialFrameTransform.scaleY -
+            height * frameTransform.scaleY) *
           transformOrigin.y,
       };
+
       const delta = {
-        x: coordinatesDelta.x / frameTransform.scaleX - sizeDelta.width,
-        y: coordinatesDelta.y / frameTransform.scaleY - sizeDelta.height,
+        x: coordinatesDelta.x / frameTransform.scaleX + sizeDelta.width,
+        y: coordinatesDelta.y / frameTransform.scaleY + sizeDelta.height,
       };
+
       const projected = {
         left: left + delta.x,
         top: top + delta.y,
