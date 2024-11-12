@@ -96,5 +96,24 @@ export class Droppable<
     return this.manager?.dragOperation.target?.id === this.id;
   }
 
-  public path: UniqueIdentifier[] = [];
+  @reactive
+  public accessor parent: UniqueIdentifier | undefined;
+
+  @derived
+  public get path() {
+    const path = [];
+
+    if (this.manager && this.parent) {
+      const {droppables} = this.manager.registry;
+
+      let parent = droppables.get(this.parent);
+
+      while (parent) {
+        path.unshift(parent.id);
+        parent = droppables.get(parent.parent);
+      }
+    }
+
+    return path;
+  }
 }
