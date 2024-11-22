@@ -97,6 +97,8 @@ export type {
   DragMoveEvent,
   DragOverEvent,
   DragStartEvent,
+  DragPendingEvent,
+  DragAbortEvent,
   DragCancelEvent,
   Translate,
   UniqueIdentifier,

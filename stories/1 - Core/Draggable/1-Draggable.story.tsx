@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {
   DndContext,
   useDraggable,
@@ -9,6 +9,8 @@ import {
   PointerActivationConstraint,
   Modifiers,
   useSensors,
+  type DragPendingEvent,
+  useDndMonitor,
 } from '@dnd-kit/core';
 import {
   createSnapModifier,
@@ -18,6 +20,7 @@ import {
   snapCenterToCursor,
 } from '@dnd-kit/modifiers';
 import type {Coordinates} from '@dnd-kit/utilities';
+import type {StoryObj} from '@storybook/react';
 
 import {
   Axis,
@@ -44,6 +47,7 @@ interface Props {
   buttonStyle?: React.CSSProperties;
   style?: React.CSSProperties;
   label?: string;
+  showConstraintCue?: boolean;
 }
 
 function DraggableStory({
@@ -54,6 +58,7 @@ function DraggableStory({
   modifiers,
   style,
   buttonStyle,
+  showConstraintCue,
 }: Props) {
   const [{x, y}, setCoordinates] = useState<Coordinates>(defaultCoordinates);
   const mouseSensor = useSensor(MouseSensor, {
@@ -64,6 +69,7 @@ function DraggableStory({
   });
   const keyboardSensor = useSensor(KeyboardSensor, {});
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
+  const Item = showConstraintCue ? DraggableItemWithVisualCue : DraggableItem;
 
   return (
     <DndContext
@@ -79,7 +85,7 @@ function DraggableStory({
       modifiers={modifiers}
     >
       <Wrapper>
-        <DraggableItem
+        <Item
           axis={axis}
           label={label}
           handle={handle}
@@ -133,6 +139,105 @@ function DraggableItem({
   );
 }
 
+function DraggableItemWithVisualCue(props: DraggableItemProps) {
+  const {attributes, isDragging, listeners, node, setNodeRef, transform} =
+    useDraggable({id: 'draggable'});
+
+  const [isPending, setIsPending] = useState(false);
+  const [pendingDelayMs, setPendingDelay] = useState(0);
+  const [distanceCue, setDistanceCue] = useState<
+    (Coordinates & {size: number}) | null
+  >(null);
+  const distanceCueRef = useRef<HTMLDivElement>(null);
+
+  const handlePending = useCallback(
+    (event: DragPendingEvent) => {
+      setIsPending(true);
+      const {constraint} = event;
+      if ('delay' in constraint) {
+        setPendingDelay(constraint.delay);
+      }
+      if ('distance' in constraint && typeof constraint.distance === 'number') {
+        const {distance} = constraint;
+        if (event.offset === undefined && node.current !== null) {
+          // Infer the position of the pointer relative to the element.
+          // Only do this once at the start, as the offset is defined
+          // when the pointer moves.
+          const {x: rx, y: ry} = node.current.getBoundingClientRect();
+          setDistanceCue({
+            x: event.initialCoordinates.x - rx - distance,
+            y: event.initialCoordinates.y - ry - distance,
+            size: distance * 2,
+          });
+        }
+        if (distanceCueRef.current === null) {
+          return;
+        }
+        const {x, y} = event.offset ?? {x: 0, y: 0};
+        const length = Math.sqrt(x * x + y * y);
+        const ratio = length / Math.max(distance, 1);
+        const fanAngle = 360 * (1 - ratio);
+        const rotation = Math.atan2(y, x) * (180 / Math.PI) - 90 - fanAngle / 2;
+        const {style} = distanceCueRef.current;
+        style.setProperty(
+          'background-image',
+          `conic-gradient(red ${fanAngle}deg, transparent 0deg)`
+        );
+        style.setProperty('rotate', `${rotation}deg`);
+        style.setProperty('opacity', `${0.25 + ratio * 0.75}`);
+      }
+    },
+    [node]
+  );
+
+  const handlePendingEnd = useCallback(() => setIsPending(false), []);
+
+  useDndMonitor({
+    onDragPending: handlePending,
+    onDragAbort: handlePendingEnd,
+    onDragCancel: handlePendingEnd,
+    onDragEnd: handlePendingEnd,
+  });
+
+  const pendingStyle: React.CSSProperties = isPending
+    ? {animationDuration: `${pendingDelayMs}ms`}
+    : {};
+
+  return (
+    <>
+      <Draggable
+        ref={setNodeRef}
+        dragging={isDragging}
+        handle={props.handle}
+        label={props.label}
+        listeners={listeners}
+        style={{...props.style, top: props.top, left: props.left}}
+        buttonStyle={{...props.buttonStyle, ...pendingStyle}}
+        isPendingDelay={isPending && pendingDelayMs > 0}
+        transform={transform}
+        axis={props.axis}
+        {...attributes}
+      >
+        {isPending && !isDragging && distanceCue && (
+          <div
+            ref={distanceCueRef}
+            style={{
+              borderRadius: '50%',
+              position: 'absolute',
+              backgroundImage: 'conic-gradient(red 360deg, transparent 0deg)',
+              opacity: 0.25,
+              width: distanceCue.size,
+              height: distanceCue.size,
+              left: distanceCue.x,
+              top: distanceCue.y,
+            }}
+          ></div>
+        )}
+      </Draggable>
+    </>
+  );
+}
+
 export const BasicSetup = () => <DraggableStory />;
 
 export const DragHandle = () => (
@@ -164,6 +269,29 @@ export const PressDelayOrDistance = () => (
 
 PressDelayOrDistance.storyName = 'Press delay or minimum distance';
 
+type PressDelayWithVisualCueArgs = {
+  delay: number;
+  tolerance: number;
+};
+
+export const PressDelayWithVisualCue: StoryObj<PressDelayWithVisualCueArgs> = {
+  render: (args) => (
+    <DraggableStory
+      label={`Press and hold for ${args.delay}ms to drag`}
+      activationConstraint={args}
+      showConstraintCue={true}
+    />
+  ),
+  args: {delay: 500, tolerance: 5},
+  argTypes: {
+    delay: {
+      name: 'Delay (ms)',
+      control: {type: 'range', min: 250, max: 1000, step: 50},
+    },
+    tolerance: {control: 'number', name: 'Tolerance (px)'},
+  },
+};
+
 export const MinimumDistance = () => (
   <DraggableStory
     label="I'm activated after dragging 15px"
@@ -172,6 +300,20 @@ export const MinimumDistance = () => (
     }}
   />
 );
+
+export const MinimumDistanceWithVisualCue: StoryObj<{
+  distance: number;
+}> = {
+  render: (args) => (
+    <DraggableStory
+      label={`I'm activated after dragging ${args.distance}px`}
+      activationConstraint={{distance: args.distance}}
+      showConstraintCue={true}
+    />
+  ),
+  args: {distance: 60},
+  argTypes: {distance: {control: {type: 'range', min: 10, max: 80}}},
+};
 
 export const MinimumDistanceX = () => (
   <DraggableStory

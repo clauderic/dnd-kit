@@ -15,6 +15,7 @@ import type {
   ClientRect,
 } from '../types';
 import type {Collision} from '../utilities/algorithms';
+import type {PointerActivationConstraint} from './pointer';
 
 export enum Response {
   Start = 'start',
@@ -46,6 +47,13 @@ export interface SensorProps<T> {
   event: Event;
   context: MutableRefObject<SensorContext>;
   options: T;
+  onAbort(id: UniqueIdentifier): void;
+  onPending(
+    id: UniqueIdentifier,
+    constraint: PointerActivationConstraint,
+    initialCoordinates: Coordinates,
+    offset?: Coordinates | undefined
+  ): void;
   onStart(coordinates: Coordinates): void;
   onCancel(): void;
   onMove(coordinates: Coordinates): void;

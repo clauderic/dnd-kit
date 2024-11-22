@@ -70,6 +70,8 @@ import type {
   DragMoveEvent,
   DragOverEvent,
   UniqueIdentifier,
+  DragPendingEvent,
+  DragAbortEvent,
 } from '../../types';
 import {
   Accessibility,
@@ -100,6 +102,8 @@ export interface Props {
   measuring?: MeasuringConfiguration;
   modifiers?: Modifiers;
   sensors?: SensorDescriptor<any>[];
+  onDragAbort?(event: DragAbortEvent): void;
+  onDragPending?(event: DragPendingEvent): void;
   onDragStart?(event: DragStartEvent): void;
   onDragMove?(event: DragMoveEvent): void;
   onDragOver?(event: DragOverEvent): void;
@@ -344,6 +348,36 @@ export const DndContext = memo(function DndContext({
         // Sensors need to be instantiated with refs for arguments that change over time
         // otherwise they are frozen in time with the stale arguments
         context: sensorContext,
+        onAbort(id) {
+          const draggableNode = draggableNodes.get(id);
+
+          if (!draggableNode) {
+            return;
+          }
+
+          const {onDragAbort} = latestProps.current;
+          const event: DragAbortEvent = {id};
+          onDragAbort?.(event);
+          dispatchMonitorEvent({type: 'onDragAbort', event});
+        },
+        onPending(id, constraint, initialCoordinates, offset) {
+          const draggableNode = draggableNodes.get(id);
+
+          if (!draggableNode) {
+            return;
+          }
+
+          const {onDragPending} = latestProps.current;
+          const event: DragPendingEvent = {
+            id,
+            constraint,
+            initialCoordinates,
+            offset,
+          };
+
+          onDragPending?.(event);
+          dispatchMonitorEvent({type: 'onDragPending', event});
+        },
         onStart(initialCoordinates) {
           const id = activeRef.current;
 
