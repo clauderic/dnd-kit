@@ -1,5 +1,28 @@
 # @dnd-kit/core
 
+## 6.2.0
+
+### Minor Changes
+
+- [#1140](https://github.com/clauderic/dnd-kit/pull/1140) [`545a41c`](https://github.com/clauderic/dnd-kit/commit/545a41c27c6919e4ca22a58a67f3fa02a7caab8a) Thanks [@anilanar](https://github.com/anilanar)! - Add `activatorEvent` to `DragStartEvent`
+
+### Patch Changes
+
+- [#1494](https://github.com/clauderic/dnd-kit/pull/1494) [`00ec286`](https://github.com/clauderic/dnd-kit/commit/00ec286ab2fc7969549a4b19ffd42a09b5171dbe) Thanks [@dinkinflickaa](https://github.com/dinkinflickaa)! - Improves performance by eliminating wasteful re-renders on every child item on click
+
+- [#1400](https://github.com/clauderic/dnd-kit/pull/1400) [`995dc23`](https://github.com/clauderic/dnd-kit/commit/995dc23b7cd9019f3a920676cbe4e141e917e82c) Thanks [@12joan](https://github.com/12joan)! - Export `defaultKeyboardCoordinateGetter`
+
+- [#1542](https://github.com/clauderic/dnd-kit/pull/1542) [`f629ec6`](https://github.com/clauderic/dnd-kit/commit/f629ec6a9c3c25b749561fac31741046d96c28dc) Thanks [@clauderic](https://github.com/clauderic)! - Fix bug with draggable and sortable elements with an `id` equal to `0`.
+
+- [#1541](https://github.com/clauderic/dnd-kit/pull/1541) [`99643f6`](https://github.com/clauderic/dnd-kit/commit/99643f634cd55fa0bf0898365883507b28637659) Thanks [@clauderic](https://github.com/clauderic)! - Handle `touchcancel` and `pointercancel` events.
+
+- [#1435](https://github.com/clauderic/dnd-kit/pull/1435) [`6bbe39b`](https://github.com/clauderic/dnd-kit/commit/6bbe39bba6ad9afd0bc6db1c345ad4e6b58f5e5e) Thanks [@knaveenkumar3576](https://github.com/knaveenkumar3576)! - Faster Paint with delayed flush of Effects
+
+- [#1543](https://github.com/clauderic/dnd-kit/pull/1543) [`bcaf7c4`](https://github.com/clauderic/dnd-kit/commit/bcaf7c4e57b34dfc8ff9c4eea7a01c6e525e7874) Thanks [@clauderic](https://github.com/clauderic)! - Fix a bug with auto-scroller continuing to observe stale elements, causing them to be considered as scrollable.
+
+- Updated dependencies [[`93602df`](https://github.com/clauderic/dnd-kit/commit/93602df08498b28749e8146e0f6143ab987bc178)]:
+  - @dnd-kit/accessibility@3.1.1
+
 ## 6.1.0
 
 ### Minor Changes
