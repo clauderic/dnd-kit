@@ -152,7 +152,7 @@ export const DndContext = memo(function DndContext({
     draggable: {active: activeId, nodes: draggableNodes, translate},
     droppable: {containers: droppableContainers},
   } = state;
-  const node = activeId ? draggableNodes.get(activeId) : null;
+  const node = activeId != null ? draggableNodes.get(activeId) : null;
   const activeRects = useRef<Active['rect']['current']>({
     initial: null,
     translated: null,
@@ -197,7 +197,7 @@ export const DndContext = memo(function DndContext({
   );
 
   useLayoutShiftScrollCompensation({
-    activeNode: activeId ? draggableNodes.get(activeId) : null,
+    activeNode: activeId != null ? draggableNodes.get(activeId) : null,
     config: autoScrollOptions.layoutShiftCompensation,
     initialRect: initialActiveNodeRect,
     measure: measuringConfiguration.draggable.measure,

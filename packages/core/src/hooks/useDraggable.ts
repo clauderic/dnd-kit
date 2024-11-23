@@ -38,7 +38,7 @@ const NullContext = createContext<any>(null);
 
 const defaultRole = 'button';
 
-const ID_PREFIX = 'Droppable';
+const ID_PREFIX = 'Draggable';
 
 export function useDraggable({
   id,

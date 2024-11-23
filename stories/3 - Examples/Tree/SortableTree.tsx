@@ -129,7 +129,7 @@ export function SortableTree({
 
     return removeChildrenOf(
       flattenedTree,
-      activeId ? [activeId, ...collapsedItems] : collapsedItems
+      activeId != null ? [activeId, ...collapsedItems] : collapsedItems
     );
   }, [activeId, items]);
   const projected =
@@ -156,9 +156,10 @@ export function SortableTree({
     })
   );
 
-  const sortedIds = useMemo(() => flattenedItems.map(({id}) => id), [
-    flattenedItems,
-  ]);
+  const sortedIds = useMemo(
+    () => flattenedItems.map(({id}) => id),
+    [flattenedItems]
+  );
   const activeItem = activeId
     ? flattenedItems.find(({id}) => id === activeId)
     : null;
