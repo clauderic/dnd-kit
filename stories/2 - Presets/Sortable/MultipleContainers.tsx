@@ -182,7 +182,8 @@ export function MultipleContainers({
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const lastOverId = useRef<UniqueIdentifier | null>(null);
   const recentlyMovedToNewContainer = useRef(false);
-  const isSortingContainer = activeId ? containers.includes(activeId) : false;
+  const isSortingContainer =
+    activeId != null ? containers.includes(activeId) : false;
 
   /**
    * Custom collision detection strategy optimized for multiple containers

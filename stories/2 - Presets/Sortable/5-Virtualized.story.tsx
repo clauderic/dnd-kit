@@ -50,7 +50,7 @@ function Sortable({
     })
   );
   const getIndex = (id: UniqueIdentifier) => items.indexOf(id);
-  const activeIndex = activeId ? getIndex(activeId) : -1;
+  const activeIndex = activeId != null ? getIndex(activeId) : -1;
 
   return (
     <DndContext
@@ -80,7 +80,9 @@ function Sortable({
             className={styles.VirtualList}
             itemCount={items.length}
             itemSize={64}
-            stickyIndices={activeId ? [items.indexOf(activeId)] : undefined}
+            stickyIndices={
+              activeId != null ? [items.indexOf(activeId)] : undefined
+            }
             renderItem={({index, style}) => {
               const id = items[index];
 
@@ -104,7 +106,7 @@ function Sortable({
       </Wrapper>
       {createPortal(
         <DragOverlay adjustScale={adjustScale}>
-          {activeId ? (
+          {activeId != null ? (
             <Item
               value={items[activeIndex]}
               handle={handle}

@@ -28,7 +28,7 @@ export function reducer(state: State, action: Actions): State {
         },
       };
     case Action.DragMove:
-      if (!state.draggable.active) {
+      if (state.draggable.active == null) {
         return state;
       }
 
