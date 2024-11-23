@@ -33,7 +33,8 @@ export interface DragPendingEvent {
   offset?: Coordinates | undefined;
 }
 
-export interface DragStartEvent extends Pick<DragEvent, 'active'> {}
+export interface DragStartEvent
+  extends Pick<DragEvent, 'active' | 'activatorEvent'> {}
 
 export interface DragMoveEvent extends DragEvent {}
 

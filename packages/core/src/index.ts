@@ -52,6 +52,7 @@ export {
   MouseSensor,
   PointerSensor,
   TouchSensor,
+  defaultKeyboardCoordinateGetter,
   useSensors,
   useSensor,
 } from './sensors';

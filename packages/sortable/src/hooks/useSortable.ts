@@ -179,7 +179,7 @@ export function useSortable({
       return;
     }
 
-    if (activeId && !previous.current.activeId) {
+    if (activeId != null && previous.current.activeId == null) {
       previous.current.activeId = activeId;
       return;
     }

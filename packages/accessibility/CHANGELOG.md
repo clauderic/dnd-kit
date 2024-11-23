@@ -1,5 +1,15 @@
 # @dnd-kit/accessibility
 
+## 3.1.1
+
+### Patch Changes
+
+- [#1534](https://github.com/clauderic/dnd-kit/pull/1534) [`93602df`](https://github.com/clauderic/dnd-kit/commit/93602df08498b28749e8146e0f6143ab987bc178) Thanks [@duvallj](https://github.com/duvallj)! - Workaround `<LiveRegion>` layout bug by adding explicit `top` and `left`
+  attributes. Under sufficiently complex CSS conditions, the element would
+  overflow containers that it's not supposed to. See [this
+  post](https://blog.duvallj.pw/posts/2024-11-19-chrome-heisenbug-uncovered.html)
+  for a complete explanation.
+
 ## 3.1.0
 
 ### Minor Changes

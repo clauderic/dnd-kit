@@ -1,5 +1,5 @@
 ---
-'@dnd-kit/core': patch
+'@dnd-kit/core': minor
 ---
 
 Make it possible to add visual cues when using activation constraints.

@@ -70,7 +70,7 @@ export function Pages({layout}: Props) {
   const [items, setItems] = useState(() =>
     createRange<UniqueIdentifier>(20, (index) => `${index + 1}`)
   );
-  const activeIndex = activeId ? items.indexOf(activeId) : -1;
+  const activeIndex = activeId != null ? items.indexOf(activeId) : -1;
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {coordinateGetter: sortableKeyboardCoordinates})
@@ -102,7 +102,7 @@ export function Pages({layout}: Props) {
         </ul>
       </SortableContext>
       <DragOverlay dropAnimation={dropAnimation}>
-        {activeId ? (
+        {activeId != null ? (
           <PageOverlay id={activeId} layout={layout} items={items} />
         ) : null}
       </DragOverlay>

@@ -1,4 +1,4 @@
-import {useReducer} from 'react';
+import {useState} from 'react';
 import {getWindow, useIsomorphicLayoutEffect} from '@dnd-kit/utilities';
 
 import type {ClientRect} from '../../types';
@@ -18,33 +18,29 @@ export function useRects(
   const windowRect = useWindowRect(
     firstElement ? getWindow(firstElement) : null
   );
-  const [rects, measureRects] = useReducer(reducer, defaultValue);
-  const resizeObserver = useResizeObserver({callback: measureRects});
+  const [rects, setRects] = useState<ClientRect[]>(defaultValue);
 
-  if (elements.length > 0 && rects === defaultValue) {
-    measureRects();
+  function measureRects() {
+    setRects(() => {
+      if (!elements.length) {
+        return defaultValue;
+      }
+
+      return elements.map((element) =>
+        isDocumentScrollingElement(element)
+          ? (windowRect as ClientRect)
+          : new Rect(measure(element), element)
+      );
+    });
   }
 
+  const resizeObserver = useResizeObserver({callback: measureRects});
+
   useIsomorphicLayoutEffect(() => {
-    if (elements.length) {
-      elements.forEach((element) => resizeObserver?.observe(element));
-    } else {
-      resizeObserver?.disconnect();
-      measureRects();
-    }
+    resizeObserver?.disconnect();
+    measureRects();
+    elements.forEach((element) => resizeObserver?.observe(element));
   }, [elements]);
 
   return rects;
-
-  function reducer() {
-    if (!elements.length) {
-      return defaultValue;
-    }
-
-    return elements.map((element) =>
-      isDocumentScrollingElement(element)
-        ? (windowRect as ClientRect)
-        : new Rect(measure(element), element)
-    );
-  }
 }

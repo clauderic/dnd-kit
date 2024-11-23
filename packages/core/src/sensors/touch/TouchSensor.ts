@@ -9,6 +9,7 @@ import {
 import type {SensorProps} from '../types';
 
 const events: PointerEventHandlers = {
+  cancel: {name: 'touchcancel'},
   move: {name: 'touchmove'},
   end: {name: 'touchend'},
 };

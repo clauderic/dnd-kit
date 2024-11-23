@@ -117,8 +117,7 @@ export function Sortable({
 }: Props) {
   const [items, setItems] = useState<UniqueIdentifier[]>(
     () =>
-      initialItems ??
-      createRange<UniqueIdentifier>(itemCount, (index) => index + 1)
+      initialItems ?? createRange<UniqueIdentifier>(itemCount, (index) => index)
   );
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const sensors = useSensors(
@@ -137,7 +136,7 @@ export function Sortable({
   const isFirstAnnouncement = useRef(true);
   const getIndex = (id: UniqueIdentifier) => items.indexOf(id);
   const getPosition = (id: UniqueIdentifier) => getIndex(id) + 1;
-  const activeIndex = activeId ? getIndex(activeId) : -1;
+  const activeIndex = activeId != null ? getIndex(activeId) : -1;
   const handleRemove = removable
     ? (id: UniqueIdentifier) =>
         setItems((items) => items.filter((item) => item !== id))
@@ -184,7 +183,7 @@ export function Sortable({
   };
 
   useEffect(() => {
-    if (!activeId) {
+    if (activeId == null) {
       isFirstAnnouncement.current = true;
     }
   }, [activeId]);
@@ -246,7 +245,7 @@ export function Sortable({
               adjustScale={adjustScale}
               dropAnimation={dropAnimation}
             >
-              {activeId ? (
+              {activeId != null ? (
                 <Item
                   value={items[activeIndex]}
                   handle={handle}
