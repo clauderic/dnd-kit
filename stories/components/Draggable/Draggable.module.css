@@ -1,3 +1,9 @@
+@property --progress {
+  syntax: "<number>";
+  initial-value: 0;
+  inherits: false;
+}
+
 .Draggable {
   position: relative;
   display: flex;
@@ -22,6 +28,13 @@
     transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0)
       scale(var(--scale, 1));
     transition: box-shadow 300ms ease;
+  }
+
+  &.pendingDelay > button {
+    animation: pending linear;
+    background-image: linear-gradient(90deg,
+      #f00d calc(var(--progress)* 1%),
+      transparent calc(var(--progress)* 1% + 1%));
   }
 
   &:not(.handle) {
@@ -126,5 +139,11 @@
     transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0)
       scale(var(--scale));
     box-shadow: var(--box-shadow);
+  }
+}
+
+@keyframes pending {
+  100% {
+    --progress: 100;
   }
 }

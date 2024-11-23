@@ -6,6 +6,8 @@ export type {
 } from './coordinates';
 export {Direction} from './direction';
 export type {
+  DragAbortEvent,
+  DragPendingEvent,
   DragStartEvent,
   DragCancelEvent,
   DragEndEvent,

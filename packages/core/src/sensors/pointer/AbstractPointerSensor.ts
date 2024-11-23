@@ -137,10 +137,12 @@ export class AbstractPointerSensor implements SensorInstance {
           this.handleStart,
           activationConstraint.delay
         );
+        this.handlePending(activationConstraint);
         return;
       }
 
       if (isDistanceConstraint(activationConstraint)) {
+        this.handlePending(activationConstraint);
         return;
       }
     }
@@ -160,6 +162,14 @@ export class AbstractPointerSensor implements SensorInstance {
       clearTimeout(this.timeoutId);
       this.timeoutId = null;
     }
+  }
+
+  private handlePending(
+    constraint: PointerActivationConstraint,
+    offset?: Coordinates | undefined
+  ): void {
+    const {active, onPending} = this.props;
+    onPending(active, constraint, this.initialCoordinates, offset);
   }
 
   private handleStart() {
@@ -222,6 +232,7 @@ export class AbstractPointerSensor implements SensorInstance {
         }
       }
 
+      this.handlePending(activationConstraint, delta);
       return;
     }
 
@@ -233,16 +244,22 @@ export class AbstractPointerSensor implements SensorInstance {
   }
 
   private handleEnd() {
-    const {onEnd} = this.props;
+    const {onAbort, onEnd} = this.props;
 
     this.detach();
+    if (!this.activated) {
+      onAbort(this.props.active);
+    }
     onEnd();
   }
 
   private handleCancel() {
-    const {onCancel} = this.props;
+    const {onAbort, onCancel} = this.props;
 
     this.detach();
+    if (!this.activated) {
+      onAbort(this.props.active);
+    }
     onCancel();
   }
 

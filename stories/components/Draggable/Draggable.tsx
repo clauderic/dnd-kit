@@ -28,6 +28,8 @@ interface Props {
   style?: React.CSSProperties;
   buttonStyle?: React.CSSProperties;
   transform?: Transform | null;
+  isPendingDelay?: boolean;
+  children?: React.ReactNode;
 }
 
 export const Draggable = forwardRef<HTMLButtonElement, Props>(
@@ -42,6 +44,7 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
       transform,
       style,
       buttonStyle,
+      isPendingDelay = false,
       ...props
     },
     ref
@@ -52,7 +55,8 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
           styles.Draggable,
           dragOverlay && styles.dragOverlay,
           dragging && styles.dragging,
-          handle && styles.handle
+          handle && styles.handle,
+          isPendingDelay && styles.pendingDelay
         )}
         style={
           {
@@ -77,6 +81,7 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
             ? draggableHorizontal
             : draggable}
           {handle ? <Handle {...(handle ? listeners : {})} /> : null}
+          {props.children}
         </button>
         {label ? <label>{label}</label> : null}
       </div>
