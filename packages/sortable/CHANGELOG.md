@@ -1,5 +1,14 @@
 # @dnd-kit/sortable
 
+## 9.0.0
+
+### Patch Changes
+
+- [#1542](https://github.com/clauderic/dnd-kit/pull/1542) [`f629ec6`](https://github.com/clauderic/dnd-kit/commit/f629ec6a9c3c25b749561fac31741046d96c28dc) Thanks [@clauderic](https://github.com/clauderic)! - Fix bug with draggable and sortable elements with an `id` equal to `0`.
+
+- Updated dependencies [[`00ec286`](https://github.com/clauderic/dnd-kit/commit/00ec286ab2fc7969549a4b19ffd42a09b5171dbe), [`995dc23`](https://github.com/clauderic/dnd-kit/commit/995dc23b7cd9019f3a920676cbe4e141e917e82c), [`f629ec6`](https://github.com/clauderic/dnd-kit/commit/f629ec6a9c3c25b749561fac31741046d96c28dc), [`99643f6`](https://github.com/clauderic/dnd-kit/commit/99643f634cd55fa0bf0898365883507b28637659), [`6bbe39b`](https://github.com/clauderic/dnd-kit/commit/6bbe39bba6ad9afd0bc6db1c345ad4e6b58f5e5e), [`545a41c`](https://github.com/clauderic/dnd-kit/commit/545a41c27c6919e4ca22a58a67f3fa02a7caab8a), [`bcaf7c4`](https://github.com/clauderic/dnd-kit/commit/bcaf7c4e57b34dfc8ff9c4eea7a01c6e525e7874)]:
+  - @dnd-kit/core@6.2.0
+
 ## 8.0.0
 
 ### Patch Changes
