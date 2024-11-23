@@ -359,6 +359,7 @@ export const DndContext = memo(function DndContext({
 
           const {onDragStart} = latestProps.current;
           const event: DragStartEvent = {
+            activatorEvent,
             active: {id, data: draggableNode.data, rect: activeRects},
           };
 
