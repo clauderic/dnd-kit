@@ -25,7 +25,7 @@ export function useRects(
       if (!elements.length) {
         return defaultValue;
       }
-  
+
       return elements.map((element) =>
         isDocumentScrollingElement(element)
           ? (windowRect as ClientRect)
@@ -33,7 +33,7 @@ export function useRects(
       );
     });
   }
-  
+
   const resizeObserver = useResizeObserver({callback: measureRects});
 
   useIsomorphicLayoutEffect(() => {
