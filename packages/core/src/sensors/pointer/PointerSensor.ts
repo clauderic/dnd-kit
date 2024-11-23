@@ -9,6 +9,7 @@ import {
 } from './AbstractPointerSensor';
 
 const events: PointerEventHandlers = {
+  cancel: {name: 'pointercancel'},
   move: {name: 'pointermove'},
   end: {name: 'pointerup'},
 };
