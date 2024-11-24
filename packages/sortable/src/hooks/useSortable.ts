@@ -64,7 +64,11 @@ export function useSortable({
   );
   const index = items.indexOf(id);
   const data = useMemo<SortableData & Data>(
-    () => ({sortable: {containerId, index, items}, ...customData}),
+    () => ({sortable: {containerId, index, items}, 
+      ...Object.create(
+      Object.getPrototypeOf(customData),
+      Object.getOwnPropertyDescriptors(customData),
+    )}),
     [containerId, customData, index, items]
   );
   const itemsAfterCurrentSortable = useMemo(
