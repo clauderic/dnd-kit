@@ -13,5 +13,5 @@ export {
 } from './getScrollOffsets';
 export {getScrollPosition} from './getScrollPosition';
 export {isDocumentScrollingElement} from './documentScrollingElement';
-export {isScrollable} from './isScrollable';
+export {isScrollingEnabled as isScrollable} from './isScrollingEnabled';
 export {scrollIntoViewIfNeeded} from './scrollIntoViewIfNeeded';
