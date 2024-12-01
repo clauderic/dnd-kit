@@ -26,3 +26,10 @@ export interface NewIndexGetterArguments {
 }
 
 export type NewIndexGetter = (args: NewIndexGetterArguments) => number;
+
+export interface IndexGetterArguments {
+  id: UniqueIdentifier;
+  items: UniqueIdentifier[];
+}
+
+export type IndexGetter = (args: IndexGetterArguments) => number;
