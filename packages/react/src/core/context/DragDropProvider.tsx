@@ -88,7 +88,7 @@ export function DragDropProvider({
     startTransition(() => setManager(manager));
 
     return manager.destroy;
-  }, [renderer]);
+  }, [renderer, input.manager]);
 
   useOnValueChange(
     plugins,
