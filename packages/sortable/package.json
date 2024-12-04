@@ -1,6 +1,6 @@
 {
   "name": "@dnd-kit/sortable",
-  "version": "9.0.0",
+  "version": "10.0.0",
   "description": "Official sortable preset and sensors for dnd kit",
   "author": "Claudéric Demers",
   "license": "MIT",
@@ -31,10 +31,10 @@
   },
   "peerDependencies": {
     "react": ">=16.8.0",
-    "@dnd-kit/core": "^6.2.0"
+    "@dnd-kit/core": "^6.3.0"
   },
   "devDependencies": {
-    "@dnd-kit/core": "^6.2.0"
+    "@dnd-kit/core": "^6.3.0"
   },
   "publishConfig": {
     "access": "public"
