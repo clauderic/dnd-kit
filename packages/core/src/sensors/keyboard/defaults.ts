@@ -3,7 +3,7 @@ import {KeyboardCoordinateGetter, KeyboardCode, KeyboardCodes} from './types';
 export const defaultKeyboardCodes: KeyboardCodes = {
   start: [KeyboardCode.Space, KeyboardCode.Enter],
   cancel: [KeyboardCode.Esc],
-  end: [KeyboardCode.Space, KeyboardCode.Enter],
+  end: [KeyboardCode.Space, KeyboardCode.Enter, KeyboardCode.Tab],
 };
 
 export const defaultKeyboardCoordinateGetter: KeyboardCoordinateGetter = (
