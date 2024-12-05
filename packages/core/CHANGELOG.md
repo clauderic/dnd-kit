@@ -1,5 +1,11 @@
 # @dnd-kit/core
 
+## 6.3.1
+
+### Patch Changes
+
+- [#1555](https://github.com/clauderic/dnd-kit/pull/1555) [`62f632a`](https://github.com/clauderic/dnd-kit/commit/62f632a0c8f06ff020eb90d98770a374c705001d) Thanks [@clauderic](https://github.com/clauderic)! - Added `Tab` to the list of default key codes that end a drag and drop operation. Can be customized by passing in a custom list of `keyCodes` to the KeyboardSensor options.
+
 ## 6.3.0
 
 ### Minor Changes
