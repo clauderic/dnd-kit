@@ -9,6 +9,7 @@ export enum KeyboardCode {
   Up = 'ArrowUp',
   Esc = 'Escape',
   Enter = 'Enter',
+  Tab = 'Tab',
 }
 
 export type KeyboardCodes = {
