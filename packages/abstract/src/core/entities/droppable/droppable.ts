@@ -2,7 +2,12 @@ import {derived, effects, reactive, type Effect} from '@dnd-kit/state';
 import type {Shape} from '@dnd-kit/geometry';
 
 import {Entity} from '../entity/index.ts';
-import type {EntityInput, Data, Type} from '../entity/index.ts';
+import type {
+  EntityInput,
+  Data,
+  Type,
+  UniqueIdentifier,
+} from '../entity/index.ts';
 import {
   CollisionPriority,
   type CollisionDetector,
@@ -89,5 +94,26 @@ export class Droppable<
   @derived
   public get isDropTarget() {
     return this.manager?.dragOperation.target?.id === this.id;
+  }
+
+  @reactive
+  public accessor parent: UniqueIdentifier | undefined;
+
+  @derived
+  public get path() {
+    const path = [];
+
+    if (this.manager && this.parent) {
+      const {droppables} = this.manager.registry;
+
+      let parent = droppables.get(this.parent);
+
+      while (parent) {
+        path.unshift(parent.id);
+        parent = droppables.get(parent.parent);
+      }
+    }
+
+    return path;
   }
 }

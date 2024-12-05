@@ -73,7 +73,7 @@ export class CollisionObserver<
       return DEFAULT_VALUE;
     }
 
-    const collisions: Collision[] = [];
+    const collisionMap: Map<Droppable, Collision> = new Map();
 
     for (const entry of entries ?? registry.droppables) {
       if (entry.disabled) {
@@ -90,7 +90,6 @@ export class CollisionObserver<
         continue;
       }
 
-      entry.shape;
       const collision = untracked(() =>
         detectCollision({
           droppable: entry,
@@ -103,9 +102,21 @@ export class CollisionObserver<
           collision.priority = entry.collisionPriority;
         }
 
-        collisions.push(collision);
+        collisionMap.set(entry, collision);
       }
     }
+
+    // Filter out collisions of items that contain other items
+    const collisions = Array.from(collisionMap.entries())
+      .filter(([droppable]) => {
+        if (source && droppable.path.indexOf(source.id) !== -1) {
+          // Dragged item is parent of collision target. Filter out collision
+          return false;
+        }
+
+        return true;
+      })
+      .map(([_, collision]) => collision);
 
     collisions.sort(sortCollisions);
 
