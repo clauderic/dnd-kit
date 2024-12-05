@@ -48,6 +48,7 @@ export function useSortable({
   transition = defaultTransition,
 }: Arguments) {
   const {
+    accepts,
     items,
     containerId,
     activeIndex,
@@ -110,7 +111,8 @@ export function useSortable({
   const displaceItem =
     isSorting &&
     !disableTransforms &&
-    isValidIndex(activeIndex) &&
+    (isValidIndex(activeIndex) ||
+      accepts.includes(active?.data?.current?.type)) &&
     isValidIndex(overIndex);
   const shouldDisplaceDragSource = !useDragOverlay && isDragging;
   const dragSourceDisplacement =

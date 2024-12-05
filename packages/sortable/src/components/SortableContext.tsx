@@ -7,6 +7,7 @@ import {getSortedRects, itemsEqual, normalizeDisabled} from '../utilities';
 import {rectSortingStrategy} from '../strategies';
 
 export interface Props {
+  accepts: string[];
   children: React.ReactNode;
   items: (UniqueIdentifier | {id: UniqueIdentifier})[];
   strategy?: SortingStrategy;
@@ -17,6 +18,7 @@ export interface Props {
 const ID_PREFIX = 'Sortable';
 
 interface ContextDescriptor {
+  accepts: string[];
   activeIndex: number;
   containerId: string;
   disabled: Disabled;
@@ -32,6 +34,7 @@ export const Context = React.createContext<ContextDescriptor>({
   activeIndex: -1,
   containerId: ID_PREFIX,
   disableTransforms: false,
+  accepts: [],
   items: [],
   overIndex: -1,
   useDragOverlay: false,
@@ -44,6 +47,7 @@ export const Context = React.createContext<ContextDescriptor>({
 });
 
 export function SortableContext({
+  accepts,
   children,
   id,
   items: userDefinedItems,
@@ -72,7 +76,10 @@ export function SortableContext({
   const previousItemsRef = useRef(items);
   const itemsHaveChanged = !itemsEqual(items, previousItemsRef.current);
   const disableTransforms =
-    (overIndex !== -1 && activeIndex === -1) || itemsHaveChanged;
+    (overIndex !== -1 &&
+      activeIndex === -1 &&
+      !accepts.includes(active?.data?.current?.type)) ||
+    itemsHaveChanged;
   const disabled = normalizeDisabled(disabledProp);
 
   useIsomorphicLayoutEffect(() => {
@@ -87,6 +94,7 @@ export function SortableContext({
 
   const contextValue = useMemo(
     (): ContextDescriptor => ({
+      accepts,
       activeIndex,
       containerId,
       disabled,
@@ -99,6 +107,7 @@ export function SortableContext({
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
+      accepts,
       activeIndex,
       containerId,
       disabled.draggable,
