@@ -18,6 +18,7 @@
   },
   "main": "dist/index.js",
   "module": "dist/accessibility.esm.js",
+  "sideEffects": false,
   "typings": "dist/index.d.ts",
   "files": [
     "README.md",

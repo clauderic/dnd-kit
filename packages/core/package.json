@@ -17,6 +17,7 @@
     "prepublish": "npm run build"
   },
   "main": "dist/index.js",
+  "sideEffects": false,
   "module": "dist/core.esm.js",
   "typings": "dist/index.d.ts",
   "files": [
