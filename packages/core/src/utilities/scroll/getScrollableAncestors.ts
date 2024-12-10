@@ -6,7 +6,8 @@ import {
 } from '@dnd-kit/utilities';
 
 import {isFixed} from './isFixed';
-import {isScrollable} from './isScrollable';
+import {isScrollingDisabled} from './isScrollingDisabled';
+import {isScrollingEnabled} from './isScrollingEnabled';
 
 export function getScrollableAncestors(
   element: Node | null,
@@ -28,7 +29,13 @@ export function getScrollableAncestors(
       node.scrollingElement != null &&
       !scrollParents.includes(node.scrollingElement)
     ) {
-      scrollParents.push(node.scrollingElement);
+      const computedStyle = getWindow(element).getComputedStyle(
+        node.scrollingElement
+      );
+
+      if (!isScrollingDisabled(node.scrollingElement, computedStyle)) {
+        scrollParents.push(node.scrollingElement);
+      }
 
       return scrollParents;
     }
@@ -44,7 +51,7 @@ export function getScrollableAncestors(
     const computedStyle = getWindow(element).getComputedStyle(node);
 
     if (node !== element) {
-      if (isScrollable(node, computedStyle)) {
+      if (isScrollingEnabled(node, computedStyle)) {
         scrollParents.push(node);
       }
     }
