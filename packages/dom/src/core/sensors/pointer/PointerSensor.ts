@@ -83,13 +83,68 @@ export class PointerSensor extends Sensor<
 
         target.addEventListener('pointerdown', listener);
 
+        // Re-bind listeners if dragging, in case document changed during effect
+        const unbindListeners = this.bindListeners(source, options);
+
+        this.cleanup.add(() => {
+          setTimeout(unbindListeners);
+        });
+
         return () => {
           target.removeEventListener('pointerdown', listener);
+          unbindListeners();
         };
       }
     });
 
     return unbind;
+  }
+
+  protected bindListeners(
+    source: Draggable,
+    options: PointerSensorOptions = {}
+  ): () => void {
+    const target = source.handle ?? source.element;
+
+    if (!target) {
+      return () => {};
+    }
+
+    // Only register if dragging
+    if (!this.initialCoordinates) {
+      return () => {};
+    }
+
+    const isNativeDraggable =
+      isHTMLElement(target) &&
+      target.draggable &&
+      target.getAttribute('draggable') === 'true';
+
+    const ownerDocument = getDocument(target);
+
+    const unbindListeners = this.listeners.bind(ownerDocument, [
+      {
+        type: 'pointermove',
+        listener: (event: PointerEvent) =>
+          this.handlePointerMove(event, source, options),
+      },
+      {
+        type: 'pointerup',
+        listener: this.handlePointerUp,
+        options: {
+          capture: true,
+        },
+      },
+      {
+        // Cancel activation if there is a competing Drag and Drop interaction
+        type: 'dragstart',
+        listener: isNativeDraggable ? this.handleCancel : preventDefault,
+      },
+    ]);
+
+    return () => {
+      unbindListeners();
+    };
   }
 
   protected handlePointerDown(
@@ -106,11 +161,6 @@ export class PointerSensor extends Sensor<
     ) {
       return;
     }
-    const {target} = event;
-    const isNativeDraggable =
-      isHTMLElement(target) &&
-      target.draggable &&
-      target.getAttribute('draggable') === 'true';
 
     const offset = getFrameTransform(source.element);
 
@@ -145,27 +195,7 @@ export class PointerSensor extends Sensor<
       }
     }
 
-    const ownerDocument = getDocument(event.target);
-
-    const unbindListeners = this.listeners.bind(ownerDocument, [
-      {
-        type: 'pointermove',
-        listener: (event: PointerEvent) =>
-          this.handlePointerMove(event, source, options),
-      },
-      {
-        type: 'pointerup',
-        listener: this.handlePointerUp,
-        options: {
-          capture: true,
-        },
-      },
-      {
-        // Cancel activation if there is a competing Drag and Drop interaction
-        type: 'dragstart',
-        listener: isNativeDraggable ? this.handleCancel : preventDefault,
-      },
-    ]);
+    const unbindListeners = this.bindListeners(source, options);
 
     const cleanup = () => {
       setTimeout(unbindListeners);
