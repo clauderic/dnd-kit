@@ -56,6 +56,8 @@ export class PointerSensor extends Sensor<
 
   protected initialCoordinates: Coordinates | undefined;
 
+  protected source: Draggable | undefined = undefined;
+
   #clearTimeout: CleanupFunction | undefined;
 
   constructor(
@@ -67,6 +69,14 @@ export class PointerSensor extends Sensor<
     this.handleCancel = this.handleCancel.bind(this);
     this.handlePointerUp = this.handlePointerUp.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
+
+    effect(() => {
+      const unbindGlobal = this.bindGlobal(options ?? {});
+
+      return () => {
+        unbindGlobal();
+      };
+    });
   }
 
   public bind(source: Draggable, options = this.options) {
@@ -92,6 +102,48 @@ export class PointerSensor extends Sensor<
     return unbind;
   }
 
+  protected bindGlobal(options: PointerSensorOptions) {
+    const documents = new Set<Document>();
+
+    for (const draggable of this.manager.registry.draggables.value) {
+      if (draggable.element) {
+        documents.add(getDocument(draggable.element));
+      }
+    }
+
+    for (const droppable of this.manager.registry.droppables.value) {
+      if (droppable.element) {
+        documents.add(getDocument(droppable.element));
+      }
+    }
+
+    const unbindFns = Array.from(documents).map((doc) =>
+      this.listeners.bind(doc, [
+        {
+          type: 'pointermove',
+          listener: (event: PointerEvent) =>
+            this.handlePointerMove(event, doc, options),
+        },
+        {
+          type: 'pointerup',
+          listener: this.handlePointerUp,
+          options: {
+            capture: true,
+          },
+        },
+        {
+          // Cancel activation if there is a competing Drag and Drop interaction
+          type: 'dragstart',
+          listener: this.handleDragStart,
+        },
+      ])
+    );
+
+    return () => {
+      unbindFns.forEach((unbind) => unbind());
+    };
+  }
+
   protected handlePointerDown(
     event: PointerEvent,
     source: Draggable,
@@ -106,11 +158,6 @@ export class PointerSensor extends Sensor<
     ) {
       return;
     }
-    const {target} = event;
-    const isNativeDraggable =
-      isHTMLElement(target) &&
-      target.draggable &&
-      target.getAttribute('draggable') === 'true';
 
     const offset = getFrameTransform(source.element);
 
@@ -118,6 +165,8 @@ export class PointerSensor extends Sensor<
       x: event.clientX * offset.scaleX + offset.x,
       y: event.clientY * offset.scaleY + offset.y,
     };
+
+    this.source = source;
 
     const {activationConstraints} = options;
     const constraints =
@@ -145,32 +194,10 @@ export class PointerSensor extends Sensor<
       }
     }
 
-    const ownerDocument = getDocument(event.target);
-
-    const unbindListeners = this.listeners.bind(ownerDocument, [
-      {
-        type: 'pointermove',
-        listener: (event: PointerEvent) =>
-          this.handlePointerMove(event, source, options),
-      },
-      {
-        type: 'pointerup',
-        listener: this.handlePointerUp,
-        options: {
-          capture: true,
-        },
-      },
-      {
-        // Cancel activation if there is a competing Drag and Drop interaction
-        type: 'dragstart',
-        listener: isNativeDraggable ? this.handleCancel : preventDefault,
-      },
-    ]);
-
     const cleanup = () => {
-      setTimeout(unbindListeners);
       this.#clearTimeout?.();
       this.initialCoordinates = undefined;
+      this.source = undefined;
     };
 
     this.cleanup.add(cleanup);
@@ -178,15 +205,27 @@ export class PointerSensor extends Sensor<
 
   protected handlePointerMove(
     event: PointerEvent,
-    source: Draggable,
+    doc: Document,
     options: PointerSensorOptions
   ) {
+    if (!this.source) {
+      return;
+    }
+
+    const ownerDocument =
+      this.source.element && getDocument(this.source.element);
+
+    // Event may have duplicated between documents if user is bubbling events
+    if (doc !== ownerDocument) {
+      return;
+    }
+
     const coordinates = {
       x: event.clientX,
       y: event.clientY,
     };
 
-    const offset = getFrameTransform(source.element);
+    const offset = getFrameTransform(this.source.element);
 
     coordinates.x = coordinates.x * offset.scaleX + offset.x;
     coordinates.y = coordinates.y * offset.scaleY + offset.y;
@@ -210,7 +249,7 @@ export class PointerSensor extends Sensor<
     const {activationConstraints} = options;
     const constraints =
       typeof activationConstraints === 'function'
-        ? activationConstraints(event, source)
+        ? activationConstraints(event, this.source)
         : activationConstraints;
     const {distance, delay} = constraints ?? {};
 
@@ -222,7 +261,7 @@ export class PointerSensor extends Sensor<
         return this.handleCancel();
       }
       if (exceedsDistance(delta, distance.value)) {
-        return this.handleStart(source, event);
+        return this.handleStart(this.source, event);
       }
     }
 
@@ -302,6 +341,25 @@ export class PointerSensor extends Sensor<
     ownerDocument.body.setPointerCapture(event.pointerId);
 
     this.cleanup.add(unbind);
+  }
+
+  protected handleDragStart(event: DragEvent) {
+    const {target} = event;
+
+    if (!isElement(target)) {
+      return;
+    }
+
+    const isNativeDraggable =
+      isHTMLElement(target) &&
+      target.draggable &&
+      target.getAttribute('draggable') === 'true';
+
+    if (isNativeDraggable) {
+      this.handleCancel();
+    } else {
+      preventDefault(event);
+    }
   }
 
   protected handleCancel() {
