@@ -26,3 +26,8 @@ export type KeyboardCoordinateGetter = (
     context: SensorContext;
   }
 ) => Coordinates | void;
+
+export type ScrollThreshold = {
+  x: number;
+  y: number;
+};
