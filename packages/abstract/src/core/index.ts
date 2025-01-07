@@ -1,4 +1,8 @@
-export {DragDropManager, DragOperationStatus} from './manager/index.ts';
+export {
+  DragDropManager,
+  DragOperationStatus,
+  DraggableFileSymbol,
+} from './manager/index.ts';
 export type {
   DragDropManagerInput,
   DragOperationManager,

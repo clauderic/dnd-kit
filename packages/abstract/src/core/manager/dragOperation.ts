@@ -9,11 +9,7 @@ import {
   untracked,
 } from '@dnd-kit/state';
 
-import type {
-  Draggable,
-  Droppable,
-  UniqueIdentifier,
-} from '../entities/index.ts';
+import {Draggable, Droppable, UniqueIdentifier} from '../entities/index.ts';
 import type {Modifier} from '../modifiers/index.ts';
 import {descriptor} from '../plugins/index.ts';
 
@@ -64,6 +60,8 @@ export type DragActions<
   V extends DragDropManager<T, U>,
 > = ReturnType<typeof DragOperationManager<T, U, V>>['actions'];
 
+export const DraggableFileSymbol = Symbol();
+
 export function DragOperationManager<
   T extends Draggable,
   U extends Droppable,
@@ -90,12 +88,19 @@ export function DragOperationManager<
   const dropped = computed(() => status.value === Status.Dropped);
   const dragended = signal<boolean>(true);
   let previousSource: T | undefined;
+  const draggableFile = new Draggable(
+    {id: DraggableFileSymbol},
+    manager
+  ) as unknown as T;
   const source = computed<T | null>(() => {
     const identifier = sourceIdentifier.value;
 
     if (identifier == null) return null;
 
-    const value = draggables.get(identifier);
+    let value = draggables.get(identifier);
+    if (identifier === DraggableFileSymbol) {
+      value = draggableFile;
+    }
 
     if (value) {
       // It's possible for the source to unmount during the drag operation
