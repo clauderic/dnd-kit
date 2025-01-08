@@ -71,7 +71,11 @@ export class CollisionObserver<
     collisionDetector?: CollisionDetector
   ) {
     const {registry, dragOperation} = this.manager;
-    const {source, status} = dragOperation;
+    const {source, status, position, shape} = dragOperation;
+
+    // Make sure effects will re-run when those properties change
+    void position.current;
+    void shape;
 
     if (!status.initialized) {
       return DEFAULT_VALUE;
