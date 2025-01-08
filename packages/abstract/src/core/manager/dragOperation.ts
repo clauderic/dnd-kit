@@ -9,7 +9,11 @@ import {
   untracked,
 } from '@dnd-kit/state';
 
-import {Draggable, Droppable, UniqueIdentifier} from '../entities/index.ts';
+import type {
+  Draggable,
+  Droppable,
+  UniqueIdentifier,
+} from '../entities/index.ts';
 import type {Modifier} from '../modifiers/index.ts';
 import {descriptor} from '../plugins/index.ts';
 
@@ -102,7 +106,7 @@ export function DragOperationManager<
   });
   const target = computed<U | null>(() => {
     const identifier = targetIdentifier.value;
-    return identifier != null ? (droppables.get(identifier) ?? null) : null;
+    return identifier != null ? droppables.get(identifier) ?? null : null;
   });
 
   const modifiers = signal<Modifier[]>([]);
