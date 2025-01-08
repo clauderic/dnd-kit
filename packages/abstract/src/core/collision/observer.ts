@@ -99,7 +99,7 @@ export class CollisionObserver<
 
       // Force collisions to be recomputed when the shape changes
       void entry.shape;
-
+      void dragOperation.position.current;
       const collision = untracked(() =>
         detectCollision({
           droppable: entry,
