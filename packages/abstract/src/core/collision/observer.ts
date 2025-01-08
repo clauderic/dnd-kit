@@ -71,9 +71,9 @@ export class CollisionObserver<
     collisionDetector?: CollisionDetector
   ) {
     const {registry, dragOperation} = this.manager;
-    const {source, shape, status} = dragOperation;
+    const {source, status} = dragOperation;
 
-    if (!status.initialized || !shape) {
+    if (!status.initialized) {
       return DEFAULT_VALUE;
     }
 
