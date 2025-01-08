@@ -60,8 +60,6 @@ export type DragActions<
   V extends DragDropManager<T, U>,
 > = ReturnType<typeof DragOperationManager<T, U, V>>['actions'];
 
-export const DraggableFileSymbol = Symbol();
-
 export function DragOperationManager<
   T extends Draggable,
   U extends Droppable,
@@ -88,19 +86,12 @@ export function DragOperationManager<
   const dropped = computed(() => status.value === Status.Dropped);
   const dragended = signal<boolean>(true);
   let previousSource: T | undefined;
-  const draggableFile = new Draggable(
-    {id: DraggableFileSymbol},
-    manager
-  ) as unknown as T;
   const source = computed<T | null>(() => {
     const identifier = sourceIdentifier.value;
 
     if (identifier == null) return null;
 
-    let value = draggables.get(identifier);
-    if (identifier === DraggableFileSymbol) {
-      value = draggableFile;
-    }
+    const value = draggables.get(identifier);
 
     if (value) {
       // It's possible for the source to unmount during the drag operation

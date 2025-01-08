@@ -1,1 +1,1 @@
-export {DraggableFile} from './draggableFile.ts';
+export {DraggableFile, DraggableFileId} from './draggableFile.ts';

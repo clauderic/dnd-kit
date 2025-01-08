@@ -1,7 +1,9 @@
 import {batch, CleanupFunction} from '@dnd-kit/state';
-import {DraggableFileSymbol, Plugin} from '@dnd-kit/abstract';
-import type {DragDropManager} from '@dnd-kit/dom';
+import {Plugin} from '@dnd-kit/abstract';
+import {Draggable, type DragDropManager} from '@dnd-kit/dom';
 import {getDocument, Listeners} from '@dnd-kit/dom/utilities';
+
+export const DraggableFileId = '$DRAGGABLE_FILE_GLOBALLY_UNIQUE_ID';
 
 export class DraggableFile extends Plugin<DragDropManager> {
   private listeners = new Listeners();
@@ -11,9 +13,19 @@ export class DraggableFile extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager) {
     super(manager);
     console.log('DraggableFile constructor');
-    this.listeners.bind(document.body, [
+
+    const draggable = new Draggable({id: DraggableFileId}, manager);
+
+    const unbind = this.listeners.bind(document.body, [
       {type: 'dragenter', listener: this.handleDragEnter.bind(this)},
     ]);
+
+    this.destroy = () => {
+      this.cleanup.forEach((cleanup) => cleanup());
+      this.cleanup.clear();
+      unbind();
+      draggable.destroy();
+    };
   }
 
   private handleDragEnter(event: DragEvent) {
@@ -26,7 +38,7 @@ export class DraggableFile extends Plugin<DragDropManager> {
     // console.log('handleDragEnter', event);
 
     batch(() => {
-      this.manager.actions.setDragSource(DraggableFileSymbol);
+      this.manager.actions.setDragSource(DraggableFileId);
       this.manager.actions.start({
         coordinates: {x: event.clientX, y: event.clientY},
         event,
