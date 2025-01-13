@@ -273,6 +273,10 @@ export class PointerSensor extends Sensor<
   }
 
   private handlePointerUp(event: PointerEvent) {
+    if (!this.source) {
+      return;
+    }
+
     // Prevent the default behaviour of the event
     event.preventDefault();
     event.stopPropagation();
