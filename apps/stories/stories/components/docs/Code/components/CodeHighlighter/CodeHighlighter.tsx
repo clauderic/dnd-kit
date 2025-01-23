@@ -14,7 +14,7 @@ interface Props {
 
 export function CodeHighlighter({children = '', language = 'jsx'}: Props) {
   const lineCount = children.split('\n').length - 1;
-  const nodeRef = useRef<HTMLButtonElement>();
+  const nodeRef = useRef<HTMLButtonElement>(null);
   const highlightedCode = useMemo(
     () =>
       syntaxReplacements(

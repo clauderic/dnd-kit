@@ -18,8 +18,8 @@
     "@tanstack/react-virtual": "^3.0.0-beta.54",
     "clipboard": "^2.0.11",
     "prismjs": "^1.29.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "react-tiny-virtual-list": "^2.2.0",
     "react-window": "1.8.9"
   },

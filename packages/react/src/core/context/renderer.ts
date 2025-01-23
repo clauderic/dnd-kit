@@ -5,8 +5,8 @@ import {useConstant, useOnValueChange} from '@dnd-kit/react/hooks';
 export function useRenderer() {
   const [_, startTransition] = useTransition();
   const [transitionCount, setTransitionCount] = useState(0);
-  const rendering = useRef<Promise<void>>();
-  const resolver = useRef<() => void>();
+  const rendering = useRef<Promise<void>>(null);
+  const resolver = useRef<() => void>(null);
   const renderer = useConstant<Renderer>(() => ({
     get rendering() {
       return rendering.current ?? Promise.resolve();
@@ -17,7 +17,7 @@ export function useRenderer() {
     transitionCount,
     () => {
       resolver.current?.();
-      rendering.current = undefined;
+      rendering.current = null;
     },
     useLayoutEffect
   );

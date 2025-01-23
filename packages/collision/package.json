@@ -33,7 +33,7 @@
     "@types/react-dom": "^18.0.4",
     "eslint": "^8.38.0",
     "@dnd-kit/eslint-config": "*",
-    "react": "^18.1.0",
+    "react": "^19.0.0",
     "tsup": "^8.1.0",
     "typescript": "^5.5.2"
   },
