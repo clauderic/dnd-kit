@@ -26,18 +26,18 @@
   "devDependencies": {
     "@dnd-kit/eslint-config": "*",
     "@measured/auto-frame-component": "^0.1.7",
-    "@storybook/addon-actions": "^8.1.5",
-    "@storybook/addon-docs": "^8.1.5",
-    "@storybook/addon-essentials": "^8.1.5",
-    "@storybook/addon-links": "^8.1.5",
+    "@storybook/addon-actions": "^8.5.1",
+    "@storybook/addon-docs": "^8.5.1",
+    "@storybook/addon-essentials": "^8.5.1",
+    "@storybook/addon-links": "^8.5.1",
     "@storybook/react": "^8.5.1",
     "@storybook/react-vite": "^8.5.1",
     "@vitejs/plugin-react": "^4.2.1",
     "eslint": "^8.56.0",
-    "serve": "^14.2.1",
+    "serve": "^14.2.4",
     "storybook": "^8.5.1",
-    "storybook-dark-mode": "^4.0.1",
-    "typescript": "^5.5.2",
-    "vite": "^5.1.1"
+    "storybook-dark-mode": "^4.0.2",
+    "typescript": "^5.7.3",
+    "vite": "^5.4.14"
   }
 }
