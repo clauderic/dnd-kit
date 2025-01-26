@@ -11,7 +11,11 @@ export const Dropzone = forwardRef<HTMLDivElement, Props>(function Dropzone(
 ) {
   return React.createElement(
     'dropzone-component',
-    {ref, 'data-highlight': highlight, 'data-dropped': children != null},
+    {
+      ref,
+      'data-highlight': String(highlight),
+      'data-dropped': String(children != null),
+    },
     children
   );
 });
