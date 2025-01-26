@@ -3,7 +3,7 @@ import {batch, deepEqual} from '@dnd-kit/state';
 import {type Data} from '@dnd-kit/abstract';
 import {Sortable, defaultSortableTransition} from '@dnd-kit/dom/sortable';
 import type {SortableInput} from '@dnd-kit/dom/sortable';
-import {useDragDropManager, useInstance} from '@dnd-kit/react';
+import {useInstance} from '@dnd-kit/react';
 import {
   useComputed,
   useImmediateEffect as immediateEffect,
@@ -34,7 +34,6 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     transition = defaultSortableTransition,
     type,
   } = input;
-  const manager = useDragDropManager();
   const handle = currentValue(input.handle);
   const element = currentValue(input.element);
   const target = currentValue(input.target);
@@ -51,9 +50,9 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     );
   });
 
-  const isDropTarget = useComputed(() => sortable.isDropTarget);
-  const isDragSource = useComputed(() => sortable.isDragSource);
-  const status = useComputed(() => sortable.status);
+  const isDropTarget = useComputed(() => sortable.isDropTarget, [sortable]);
+  const isDragSource = useComputed(() => sortable.isDragSource, [sortable]);
+  const status = useComputed(() => sortable.status, [sortable]);
 
   useOnValueChange(id, () => (sortable.id = id));
 
@@ -62,7 +61,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
       sortable.group = group;
       sortable.index = index;
     });
-  }, [group, index]);
+  }, [sortable, group, index]);
 
   useOnValueChange(type, () => (sortable.type = type));
   useOnValueChange(
@@ -75,7 +74,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
   useOnValueChange(
     index,
     () => {
-      if (manager?.dragOperation.status.idle && transition?.idle) {
+      if (sortable.manager?.dragOperation.status.idle && transition?.idle) {
         sortable.refreshShape();
       }
     },
@@ -118,7 +117,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
         if (
           !element &&
           sortable.element?.isConnected &&
-          !manager?.dragOperation.status.idle
+          !sortable.manager?.dragOperation.status.idle
         ) {
           return;
         }
@@ -134,7 +133,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
         if (
           !element &&
           sortable.source?.isConnected &&
-          !manager?.dragOperation.status.idle
+          !sortable.manager?.dragOperation.status.idle
         ) {
           return;
         }
@@ -148,7 +147,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
         if (
           !element &&
           sortable.target?.isConnected &&
-          !manager?.dragOperation.status.idle
+          !sortable.manager?.dragOperation.status.idle
         ) {
           return;
         }

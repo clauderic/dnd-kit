@@ -99,7 +99,7 @@ export function DragOperationManager<
   });
   const target = computed<U | null>(() => {
     const identifier = targetIdentifier.value;
-    return identifier != null ? droppables.get(identifier) ?? null : null;
+    return identifier != null ? (droppables.get(identifier) ?? null) : null;
   });
 
   const modifiers = signal<Modifier[]>([]);

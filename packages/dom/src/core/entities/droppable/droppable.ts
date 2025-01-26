@@ -5,7 +5,7 @@ import type {
 } from '@dnd-kit/abstract';
 import {defaultCollisionDetection} from '@dnd-kit/collision';
 import type {CollisionDetector} from '@dnd-kit/collision';
-import {reactive, untracked} from '@dnd-kit/state';
+import {reactive, signal, untracked} from '@dnd-kit/state';
 import type {BoundingRectangle, Shape} from '@dnd-kit/geometry';
 import {DOMRectangle, PositionObserver} from '@dnd-kit/dom/utilities';
 
@@ -50,6 +50,8 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<
       return updatedShape;
     };
 
+    const observePosition = signal(false);
+
     super(
       {
         ...input,
@@ -62,14 +64,19 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<
 
             const {dragOperation} = manager;
             const {source} = dragOperation;
-            const observePosition =
-              source &&
-              dragOperation.status.initialized &&
-              element &&
-              !this.disabled &&
-              this.accepts(source);
 
-            if (observePosition) {
+            observePosition.value = Boolean(
+              source &&
+                dragOperation.status.initialized &&
+                element &&
+                !this.disabled &&
+                this.accepts(source)
+            );
+          },
+          () => {
+            const {element} = this;
+
+            if (observePosition.value && element) {
               const positionObserver = new PositionObserver(
                 element,
                 updateShape

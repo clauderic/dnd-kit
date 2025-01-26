@@ -50,12 +50,13 @@ export class Entity<
       },
       ...(effects?.() ?? []),
     ];
+
+    this.register = this.register.bind(this);
+    this.unregister = this.unregister.bind(this);
     this.destroy = this.destroy.bind(this);
 
     if (manager) {
-      queueMicrotask(() => {
-        this.manager?.registry.register(this);
-      });
+      queueMicrotask(() => this.manager?.registry.register(this));
     }
   }
 

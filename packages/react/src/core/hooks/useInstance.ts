@@ -3,7 +3,6 @@ import type {DragDropManager} from '@dnd-kit/abstract';
 import type {CleanupFunction} from '@dnd-kit/state';
 
 import {useDragDropManager} from './useDragDropManager.ts';
-import {defaultManager} from '../context/context.ts';
 
 export interface Instance<
   T extends DragDropManager<any, any> = DragDropManager<any, any>,
@@ -18,11 +17,11 @@ export function useInstance<T extends Instance>(
   const manager = useDragDropManager() ?? undefined;
   const [instance] = useState<T>(() => initializer(undefined));
 
-  useEffect(() => {
+  if (instance.manager !== manager) {
     instance.manager = manager;
-    const unregister = instance.register();
-    return unregister;
-  }, [instance, manager]);
+  }
+
+  useEffect(instance.register, [manager, instance]);
 
   return instance;
 }

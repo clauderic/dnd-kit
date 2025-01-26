@@ -28,7 +28,7 @@ export function useDroppable<T extends Data = Data>(
         manager
       )
   );
-  const isDropTarget = useComputed(() => droppable.isDropTarget);
+  const isDropTarget = useComputed(() => droppable.isDropTarget, [droppable]);
 
   useOnValueChange(id, () => (droppable.id = id));
   useOnValueChange(accept, () => (droppable.id = id), undefined, deepEqual);

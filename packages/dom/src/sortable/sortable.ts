@@ -378,28 +378,28 @@ export class Sortable<T extends Data = Data> {
     return this.droppable.accepts(draggable);
   }
 
-  public register() {
+  public register = () => {
     batch(() => {
       this.manager?.registry.register(this.droppable);
       this.manager?.registry.register(this.draggable);
     });
 
     return () => this.unregister();
-  }
+  };
 
-  public unregister() {
+  public unregister = () => {
     batch(() => {
       this.manager?.registry.unregister(this.droppable);
       this.manager?.registry.unregister(this.draggable);
     });
-  }
+  };
 
-  public destroy() {
+  public destroy = () => {
     batch(() => {
       this.droppable.destroy();
       this.draggable.destroy();
     });
-  }
+  };
 }
 
 export class SortableDraggable<T extends Data> extends Draggable<T> {

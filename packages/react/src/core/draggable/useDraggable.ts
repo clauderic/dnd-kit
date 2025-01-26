@@ -31,8 +31,8 @@ export function useDraggable<T extends Data = Data>(
         manager
       )
   );
-  const isDragSource = useComputed(() => draggable.isDragSource);
-  const status = useComputed(() => draggable.status);
+  const isDragSource = useComputed(() => draggable.isDragSource, [draggable]);
+  const status = useComputed(() => draggable.status, [draggable]);
 
   useOnValueChange(id, () => (draggable.id = id));
   useOnValueChange(handle, () => (draggable.handle = handle));
