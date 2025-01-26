@@ -102,10 +102,12 @@ export class PointerSensor extends Sensor<
       !event.isPrimary ||
       event.button !== 0 ||
       !isElement(event.target) ||
-      source.disabled
+      source.disabled ||
+      isCapturedBySensor(event)
     ) {
       return;
     }
+
     const {target} = event;
     const isNativeDraggable =
       isHTMLElement(target) &&
@@ -125,7 +127,7 @@ export class PointerSensor extends Sensor<
         ? activationConstraints(event, source)
         : activationConstraints;
 
-    event.stopImmediatePropagation();
+    (event as any).sensor = this;
 
     if (!constraints?.delay && !constraints?.distance) {
       this.handleStart(source, event);
@@ -322,6 +324,10 @@ export class PointerSensor extends Sensor<
   }
 
   static configure = configurator(PointerSensor);
+}
+
+function isCapturedBySensor(event: Event) {
+  return 'sensor' in event;
 }
 
 function preventDefault(event: Event) {
