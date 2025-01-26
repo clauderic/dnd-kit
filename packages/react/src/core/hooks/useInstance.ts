@@ -1,6 +1,7 @@
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import type {DragDropManager} from '@dnd-kit/abstract';
 import type {CleanupFunction} from '@dnd-kit/state';
+import {useIsomorphicLayoutEffect} from '@dnd-kit/react/hooks';
 
 import {useDragDropManager} from './useDragDropManager.ts';
 
@@ -21,7 +22,7 @@ export function useInstance<T extends Instance>(
     instance.manager = manager;
   }
 
-  useEffect(instance.register, [manager, instance]);
+  useIsomorphicLayoutEffect(instance.register, [manager, instance]);
 
   return instance;
 }
