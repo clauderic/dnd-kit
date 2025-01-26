@@ -234,14 +234,14 @@ export class PointerSensor extends Sensor<
   }
 
   private handlePointerUp(event: PointerEvent) {
-    // Prevent the default behaviour of the event
-    event.preventDefault();
-    event.stopPropagation();
-
     // End the drag and drop operation
     const {status} = this.manager.dragOperation;
 
     if (!status.idle) {
+      // Prevent the default behaviour of the event
+      event.preventDefault();
+      event.stopPropagation();
+
       const canceled = !status.initialized;
       this.manager.actions.stop({canceled});
     }
