@@ -3,7 +3,7 @@ import {
   Sensor,
   descriptor,
 } from '@dnd-kit/abstract';
-import type {Data, DraggableInput, Modifiers} from '@dnd-kit/abstract';
+import type {Data, DraggableInput} from '@dnd-kit/abstract';
 import {reactive} from '@dnd-kit/state';
 
 import type {DragDropManager} from '../../manager/index.ts';
@@ -16,7 +16,6 @@ export interface Input<T extends Data = Data> extends DraggableInput<T> {
   element?: Element;
   feedback?: FeedbackType;
   sensors?: Sensors;
-  modifiers?: Modifiers<DragDropManager>;
 }
 
 export class Draggable<T extends Data = Data> extends AbstractDraggable<
