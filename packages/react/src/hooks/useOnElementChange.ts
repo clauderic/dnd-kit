@@ -3,8 +3,6 @@ import {currentValue, type RefOrValue} from '@dnd-kit/react/utilities';
 
 import {useIsomorphicLayoutEffect} from './useIsomorphicLayoutEffect.ts';
 
-console.log('foo');
-
 export function useOnElementChange(
   value: RefOrValue<Element>,
   onChange: (value: Element | undefined) => void
