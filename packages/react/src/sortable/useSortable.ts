@@ -30,6 +30,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     group,
     disabled,
     feedback,
+    modifiers,
     sensors,
     transition = defaultSortableTransition,
     type,
@@ -95,6 +96,12 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
   );
   useOnValueChange(feedback, () => (sortable.feedback = feedback ?? 'default'));
   useOnValueChange(transition, () => (sortable.transition = transition));
+  useOnValueChange(
+    modifiers,
+    () => (sortable.modifiers = modifiers),
+    undefined,
+    deepEqual
+  );
 
   return {
     get isDragSource() {
@@ -128,8 +135,6 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     ),
     sourceRef: useCallback(
       (element: Element | null) => {
-        const {manager} = sortable;
-
         if (
           !element &&
           sortable.source?.isConnected &&
