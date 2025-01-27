@@ -9,6 +9,7 @@ import {
   useImmediateEffect as immediateEffect,
   useIsomorphicLayoutEffect,
   useOnValueChange,
+  useOnElementChange,
 } from '@dnd-kit/react/hooks';
 import {currentValue, type RefOrValue} from '@dnd-kit/react/utilities';
 
@@ -26,25 +27,25 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     collisionPriority,
     id,
     data,
+    element,
+    handle,
     index,
     group,
     disabled,
     feedback,
     modifiers,
     sensors,
+    target,
     transition = defaultSortableTransition,
     type,
   } = input;
-  const handle = currentValue(input.handle);
-  const element = currentValue(input.element);
-  const target = currentValue(input.target);
   const sortable = useInstance((manager) => {
     return new Sortable(
       {
         ...input,
-        handle,
-        element,
-        target,
+        handle: currentValue(handle),
+        element: currentValue(element),
+        target: currentValue(target),
         feedback,
       },
       manager
@@ -81,9 +82,9 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     },
     immediateEffect
   );
-  useOnValueChange(handle, () => (sortable.handle = handle));
-  useOnValueChange(element, () => (sortable.element = element));
-  useOnValueChange(target, () => (sortable.target = target));
+  useOnElementChange(handle, (handle) => (sortable.handle = handle));
+  useOnElementChange(element, (element) => (sortable.element = element));
+  useOnElementChange(target, (target) => (sortable.target = target));
   useOnValueChange(disabled, () => (sortable.disabled = disabled === true));
   useOnValueChange(sensors, () => (sortable.sensors = sensors));
   useOnValueChange(
