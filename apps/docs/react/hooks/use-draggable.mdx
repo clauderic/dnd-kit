@@ -148,12 +148,12 @@ And here is an example of how to restrict dragging to the container element of t
 
 ```jsx
 import {useDraggable} from '@dnd-kit/react';
-import {RestrictToContainer} from '@dnd-kit/dom/modifiers';
+import {RestrictToElement} from '@dnd-kit/dom/modifiers';
 
 function Draggable({id}) {
   const {ref} = useDraggable({
     id,
-    modifiers: [RestrictToContainer],
+    modifiers: [RestrictToElement.configure({element: document.body})],
   });
 }
 ```

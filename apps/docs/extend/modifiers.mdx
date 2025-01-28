@@ -33,7 +33,7 @@ function App() {
 
 Modifiers can also be applied to individual [draggable](/concepts/draggable) elements by passing them to the `modifiers` option.
 
-For example, if you wanted to only enable the `RestrictToContainer` modifier for this specific draggable element, while using the `RestrictToHorizontalAxis` globally for all other draggable elements:
+For example, if you wanted to only enable the `RestrictToElement` modifier for this specific draggable element, while using the `RestrictToHorizontalAxis` globally for all other draggable elements:
 
 ```js
 import {Draggable} from '@dnd-kit/dom';
@@ -45,7 +45,8 @@ function App() {
 
   const draggable = new Draggable({
     id: 'draggable',
-    modifiers: [RestrictToContainer],
+    element,
+    modifiers: [RestrictToElement.configure({element: element.parentElement})],
   }, manager);
 }
 ```
@@ -76,7 +77,7 @@ These modifiers can be imported from `@dnd-kit/dom/modifiers`.
   Restricts the movement of draggable elements to the window.
 </ResponseField>
 
-<ResponseField name="RestrictToContainer">
+<ResponseField name="RestrictToElement">
   Restricts the movement of draggable elements to the container element.
 </ResponseField>
 
