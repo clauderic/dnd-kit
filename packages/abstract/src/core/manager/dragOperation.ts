@@ -1,6 +1,6 @@
 import {Position, type Shape} from '@dnd-kit/geometry';
 import type {Coordinates} from '@dnd-kit/geometry';
-import {batch, computed, effect, signal} from '@dnd-kit/state';
+import {batch, computed, deepEqual, effect, signal} from '@dnd-kit/state';
 
 import type {
   Draggable,
@@ -104,10 +104,10 @@ export function DragOperationManager<
 
   const modifiers = signal<Modifier[]>([]);
 
-  effect(() => {
+  const dispose = effect(() => {
     const currentModifiers = modifiers.peek();
 
-    if (currentModifiers !== manager.modifiers) {
+    if (!deepEqual(currentModifiers, manager.modifiers)) {
       currentModifiers.forEach((modifier) => modifier.destroy());
     }
 
@@ -369,6 +369,10 @@ export function DragOperationManager<
           end();
         }
       },
+    },
+    cleanup() {
+      modifiers.value.forEach((modifier) => modifier.destroy());
+      dispose();
     },
   };
 }

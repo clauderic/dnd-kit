@@ -44,7 +44,7 @@ export class DragDropManager<T extends Draggable, U extends Droppable> {
     this.monitor = monitor;
     this.renderer = renderer;
 
-    const {actions, operation} = DragOperationManager<T, U, V>(this);
+    const {actions, operation, cleanup} = DragOperationManager<T, U, V>(this);
 
     this.actions = actions;
     this.dragOperation = operation;
@@ -52,7 +52,13 @@ export class DragDropManager<T extends Draggable, U extends Droppable> {
     this.plugins = [CollisionNotifier, ...plugins];
     this.modifiers = modifiers;
     this.sensors = sensors;
-    this.destroy = this.destroy.bind(this);
+
+    const {destroy} = this;
+
+    this.destroy = () => {
+      cleanup();
+      destroy();
+    };
   }
 
   get plugins(): Plugin<any>[] {
@@ -79,8 +85,8 @@ export class DragDropManager<T extends Draggable, U extends Droppable> {
     this.registry.sensors.values = sensors;
   }
 
-  public destroy() {
+  public destroy = () => {
     this.registry.destroy();
     this.collisionObserver.destroy();
-  }
+  };
 }

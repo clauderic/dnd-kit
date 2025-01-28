@@ -66,6 +66,10 @@ export class PluginRegistry<
     const existingInstance = this.instances.get(plugin);
 
     if (existingInstance) {
+      if (existingInstance.options !== options) {
+        existingInstance.options = options;
+      }
+
       return existingInstance as InstanceType<X>;
     }
 
