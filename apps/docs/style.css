@@ -85,6 +85,10 @@ kbd {
   gap: 20px;
 }
 
+.sponsors .rounded-xl:hover {
+  outline: 1px solid rgb(var(--primary-light));
+}
+
 .inline-logo {
   display: inline-block;
 }
