@@ -110,7 +110,7 @@ export class Accessibility extends Plugin<DragDropManager> {
             activator.setAttribute('aria-describedby', descriptionId);
           }
 
-          for (const key in ['aria-pressed', 'aria-grabbed']) {
+          for (const key of ['aria-pressed', 'aria-grabbed']) {
             activator.setAttribute(key, String(draggable.isDragSource));
           }
 
