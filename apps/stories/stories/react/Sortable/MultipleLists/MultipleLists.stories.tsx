@@ -80,6 +80,14 @@ export const VerticalScrollable: Story = {
   },
 };
 
+export const RightToLeft: Story = {
+  name: 'RTL',
+  args: {
+    rtl: true,
+    itemCount: 6,
+  },
+};
+
 export const Debug: Story = {
   name: 'Debug',
   args: {

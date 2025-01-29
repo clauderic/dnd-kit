@@ -25,6 +25,7 @@ interface Props {
   defaultItems?: Record<string, string[]>;
   columnStyle?: Record<string, string>;
   itemCount: number;
+  rtl?: boolean;
   scrollable?: boolean;
   vertical?: boolean;
 }
@@ -35,6 +36,7 @@ export function MultipleLists({
   grid,
   itemCount,
   columnStyle,
+  rtl,
   scrollable,
   vertical,
 }: Props) {
@@ -78,6 +80,7 @@ export function MultipleLists({
         }
       }}
     >
+      {rtl ? <style>{`:root { direction: rtl; }`}</style> : null}
       <div
         style={{
           display: grid ? 'grid' : 'flex',
