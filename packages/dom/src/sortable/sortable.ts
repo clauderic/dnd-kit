@@ -163,6 +163,7 @@ export class Sortable<T extends Data = Data> {
       this
     );
 
+    this.#element = input.element;
     this.manager = manager;
     this.index = index;
     this.previousIndex = index;
