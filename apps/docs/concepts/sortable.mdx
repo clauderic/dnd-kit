@@ -14,8 +14,6 @@ import {sortableStyles as styles} from '/snippets/code.mdx';
 
 The `Sortable` class allows you to reorder elements in a list or across multiple lists.
 Sortable elements are both [Droppable](/concepts/droppable) and [Draggable](/concepts/draggable).
-The `Sortable` class is a thin wrapper that composes the `Draggable` and `Droppable` classes to make it simple to create sortable lists.
-
 
 export const code = `
 import {DragDropManager} from '@dnd-kit/dom';
@@ -48,8 +46,9 @@ export function App() {
   'index.js': {code: `import './styles.css';\nimport {App} from './sortable.js';\n\nApp();`, hidden: true},
   'sortable.js': {code, active: true},
   'styles.css': {code: styles, hidden: true},
-}} height={535} previewHeight={200} template="vanilla" />
+}} height={535} previewHeight={180} template="vanilla" />
 
+Under the hood, the `Sortable` class composes both the `Draggable` and `Droppable` classes, so it accepts most of the same arguments.
 
 ## API Reference
 
