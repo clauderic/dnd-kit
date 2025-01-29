@@ -21,7 +21,7 @@ function Sortable({id, index}) {
   const {ref} = useSortable({id, index});
 
   return (
-    <li ref={ref}>Item {id}</li>
+    <li ref={ref} className="item">Item {id}</li>
   );
 }
 
@@ -29,7 +29,7 @@ export default function App() {
   const items = [1, 2, 3, 4];
 
   return (
-    <ul>
+    <ul className="list">
       {items.map((id, index) =>
         <Sortable key={id} id={id} index={index} />
       )}

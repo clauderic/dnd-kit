@@ -66,6 +66,16 @@ class SandpackElement extends HTMLElement {
     const height = parseInt(this.getAttribute("height"));
     const showTabs = Boolean(this.getAttribute("showTabs"));
     const template = this.getAttribute("template") || "react";
+    const sharedDependencies = {
+      "@dnd-kit/helpers": "beta",
+    }
+    const dependencies = template === "react" ? {
+      ...sharedDependencies,
+      "@dnd-kit/react": "beta"
+    } : {
+      ...sharedDependencies,
+      "@dnd-kit/dom": "beta",
+    };
 
     try {
       files = JSON.parse(this.getAttribute("files"));
@@ -81,10 +91,7 @@ class SandpackElement extends HTMLElement {
         editorHeight: height || undefined,
       },
       customSetup: {
-        dependencies: {
-          "@dnd-kit/react": "beta",
-          "@dnd-kit/helpers": "beta",
-        }
+        dependencies
       }
     }, null);
     root.render(sandpackComponent);

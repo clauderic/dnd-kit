@@ -45,7 +45,7 @@ body {
   line-height: 1.5;
 }
 
-ul {
+.list {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -54,7 +54,7 @@ ul {
   list-style: none;
 }
 
-li {
+.item {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -78,7 +78,7 @@ li {
   cursor: grab;
 }
 
-li[aria-pressed="true"] {
+.item[aria-pressed="true"] {
   transform: scale(1.025);
   box-shadow: inset 0px 0px 1px rgba(0,0,0,0.5), -1px 0 15px 0 rgba(34, 33, 81, 0.01), 0px 15px 15px 0 rgba(34, 33, 81, 0.25)
 }
