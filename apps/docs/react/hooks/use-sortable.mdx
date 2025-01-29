@@ -5,6 +5,8 @@ icon: 'layer-group'
 ---
 
 import {Story} from '/snippets/story.mdx';
+import {CodeSandbox} from '/snippets/sandbox.mdx';
+import {sortableStyles as styles} from '/snippets/code.mdx';
 
 <Story id="react-sortable--example" height="320" hero />
 
@@ -12,7 +14,7 @@ import {Story} from '/snippets/story.mdx';
 
 The `useSortable` hook requires an `id` and an `index`. It accepts all the same options as the `Sortable` class. Refer to the [Input](#input) section below for more information.
 
-```jsx
+export const code = `
 import {useSortable} from '@dnd-kit/react/sortable';
 
 function Sortable({id, index}) {
@@ -23,7 +25,7 @@ function Sortable({id, index}) {
   );
 }
 
-function App() {
+export default function App() {
   const items = [1, 2, 3, 4];
 
   return (
@@ -34,9 +36,12 @@ function App() {
     </ul>
   );
 }
-```
+`;
 
-<Story id="react-sortable--quickstart" height="200" />
+<CodeSandbox files={{
+  'App.js': {code, active: true},
+  'styles.css': {code: styles, hidden: true},
+}} height={470} previewHeight={200} />
 
 ## API Reference
 

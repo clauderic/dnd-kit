@@ -65,6 +65,7 @@ class SandpackElement extends HTMLElement {
     let files = {};
     const height = parseInt(this.getAttribute("height"));
     const showTabs = Boolean(this.getAttribute("showTabs"));
+    const template = this.getAttribute("template") || "react";
 
     try {
       files = JSON.parse(this.getAttribute("files"));
@@ -72,8 +73,8 @@ class SandpackElement extends HTMLElement {
 
     const sandpackComponent = React.createElement(Sandpack, {
       files,
-      template: "react",
-      theme: theme,
+      template,
+      theme,
       options: {
         showTabs,
         resizablePanels: false,

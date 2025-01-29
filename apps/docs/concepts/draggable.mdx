@@ -5,11 +5,10 @@ icon: 'bullseye-pointer'
 ---
 
 import {Story} from '/snippets/story.mdx';
-
-<Story id="vanilla-draggable--example" height="125" hero />
+import {CodeSandbox} from '/snippets/sandbox.mdx';
+import {draggableStyles as styles} from '/snippets/code.mdx';
 
 ## Usage
-
 
 First, we'll create a new [DragDropManager](/concepts/drag-drop-manager) instance. This is the orchestrator of the drag and drop system. It manages the state of all draggable and droppable elements, and coordinates the events between them.
 
@@ -17,22 +16,30 @@ Then, we'll import the `Draggable` class to make elements draggable and allow th
 
 The `id` argument is required, and needs to be unique within this manager. We'll also need to supply a reference to the `element` we want to make draggable.
 
-
-```js
+export const code = `
 import {Draggable, DragDropManager} from '@dnd-kit/dom';
 
-const manager = new DragDropManager();
+export function App() {
+  const manager = new DragDropManager();
 
-const element = document.createElement('button');
-element.innerText = 'Draggable';
+  const element = document.createElement('button');
 
-const draggable = new Draggable({
-  id: 'draggable',
-  element,
-}, manager);
+  element.innerText = 'draggable';
 
-document.body.appendChild(element);
-```
+  const draggable = new Draggable({
+    id: 'draggable',
+    element,
+  }, manager);
+
+  document.body.appendChild(element);
+}
+`.trim();
+
+<CodeSandbox files={{
+  'index.js': {code: `import './styles.css';\nimport {App} from './draggable.js';\n\nApp();`, hidden: true},
+  'draggable.js': {code, active: true},
+  'styles.css': {code: styles, hidden: true},
+}} height={360} previewHeight={200} template="vanilla" hero />
 
 In order to drop the draggable element over a droppable target, you'll need to create a [Droppable element](/concepts/droppable).
 

@@ -29,6 +29,8 @@ const droppable = new Droppable({
   id: 'droppable',
   element,
 }, manager);
+
+document.body.appendChild(element);
 ```
 
 In order for our droppable element to receive draggable elements, you'll need to create some [Draggable elements](/concepts/draggable).

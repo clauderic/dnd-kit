@@ -5,6 +5,8 @@ icon: 'layer-group'
 ---
 
 import {Story} from '/snippets/story.mdx';
+import {CodeSandbox} from '/snippets/sandbox.mdx';
+import {sortableStyles as styles} from '/snippets/code.mdx';
 
 <Story id="react-sortable--example" height="320" hero />
 
@@ -14,29 +16,40 @@ The `Sortable` class allows you to reorder elements in a list or across multiple
 Sortable elements are both [Droppable](/concepts/droppable) and [Draggable](/concepts/draggable).
 The `Sortable` class is a thin wrapper that composes the `Draggable` and `Droppable` classes to make it simple to create sortable lists.
 
-```js
+
+export const code = `
 import {DragDropManager} from '@dnd-kit/dom';
 import {Sortable} from '@dnd-kit/dom/sortable';
 
-const manager = new DragDropManager();
+export function App() {
+  const manager = new DragDropManager();
 
-const wrapper = document.createElement('ul');
-const items = ['Item 1', 'Item 2', 'Item 3'];
+  const wrapper = document.createElement('ul');
+  const items = ['Item 1', 'Item 2', 'Item 3', 'Item 4'];
 
-items.forEach((item) => {
-  const element = document.createElement('li');
-  element.innerText = item;
+  items.forEach((item, index) => {
+    const element = document.createElement('li');
+    element.innerText = item;
 
-  const sortable = new Sortable({
-    id: item,
-    element,
-  }, manager);
+    const sortable = new Sortable({
+      id: item,
+      index,
+      element,
+    }, manager);
 
-  wrapper.appendChild(element);
-});
+    wrapper.appendChild(element);
+  });
 
-document.body.appendChild(wrapper);
-```
+  document.body.appendChild(wrapper);
+}
+`;
+
+<CodeSandbox files={{
+  'index.js': {code: `import './styles.css';\nimport {App} from './sortable.js';\n\nApp();`, hidden: true},
+  'sortable.js': {code, active: true},
+  'styles.css': {code: styles, hidden: true},
+}} height={535} previewHeight={200} template="vanilla" />
+
 
 ## API Reference
 

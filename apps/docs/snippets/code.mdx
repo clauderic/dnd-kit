@@ -1,13 +1,55 @@
-export const CodeSandbox = ({ files, height, previewHeight, showTabs, hero }) => {
-  const Element = 'code-sandbox';
+export const draggableStyles = `
+body {
+  padding: 1em;
+  font-size: 20px;
+  font-family: system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
 
-  return (
-    <Element
-      class={`not-prose${hero ? ' hero' : ''}`}
-      files={JSON.stringify(files)}
-      height={height}
-      style={previewHeight ? {'--preview-height': `${previewHeight}px`} : undefined}
-      showTabs={showTabs}
-    />
-  );
-};
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 900;
+  cursor: grab;
+  padding: 14px 18px;
+  background: #000;
+  color: #FFF;
+  border-radius: 10px;
+  border: none;
+  transition: transform 0.25s ease, box-shadow 0.2s ease;
+}
+
+.btn::before {
+  content: '';
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='43' height='43' viewBox='0 0 43 43' fill='none'%3E%3Cpath d='M4.55229 25.6017L20.5499 20.8985C21.4951 20.6173 22.3778 21.5001 22.1044 22.4532L17.402 38.4532C17.0817 39.5392 15.5897 39.672 15.082 38.6563L12.8401 34.1798C12.7855 34.0782 12.723 33.9767 12.6449 33.8907L5.77086 40.7657C4.79444 41.7423 3.20873 41.7423 2.23231 40.7657C1.2559 39.7892 1.2559 38.2032 2.23231 37.2267L9.10631 30.3517C9.02038 30.2735 8.92665 30.2032 8.81729 30.1563L4.34919 27.922C3.33372 27.4142 3.46651 25.922 4.55229 25.6017Z' fill='white'/%3E%3Cpath transform-origin='25 50%25' d='M22.4324 30.2031L21.3153 34H21.5028C28.408 34 34.001 28.4062 34.001 21.5C34.001 14.5938 28.408 9 21.5028 9C14.5976 9 9.00464 14.5938 9.00464 21.5V21.6875L12.801 20.5703C13.2696 16.1719 16.9878 12.75 21.5028 12.75C26.338 12.75 30.2515 16.6641 30.2515 21.5C30.2515 26.0156 26.8302 29.7344 22.4324 30.2031Z' fill='white' fill-opacity='0.7'%3E%3Canimate attributeName='fill-opacity' begin='0' values='0;0.7;0.7;0' keyTimes='0; 0.2; 0.85; 1' dur='4s' repeatCount='indefinite'/%3E%3CanimateTransform attributeName='transform' type='scale' values='0 0; 1 1; 1 1; 0 0' keyTimes='0; 0.1; 0.9; 1' begin='0s' dur='4s' repeatCount='indefinite'/%3E%3C/path%3E%3Cpath transform-origin='25 50%25' d='M37.7505 21.5C37.7505 30.4766 30.4782 37.75 21.5029 37.75V37.7422C21.0733 37.7422 20.6515 37.7266 20.2297 37.6953L19.1517 41.3594C19.925 41.4531 20.7062 41.5 21.5029 41.5C32.5482 41.5 41.5 32.5469 41.5 21.5C41.5 10.4531 32.5482 1.5 21.5029 1.5C10.4577 1.5 1.50586 10.4531 1.50586 21.5C1.50586 22.2969 1.55273 23.0781 1.64646 23.8516L5.30218 22.7734C5.27093 22.3516 5.25531 21.9297 5.25531 21.5C5.25531 12.5234 12.5277 5.25 21.5029 5.25C30.4782 5.25 37.7505 12.5234 37.7505 21.5Z' fill='white' fill-opacity='0.4'%3E%3Canimate attributeName='fill-opacity' begin='0.1s' values='0;0.4;0.4;0' keyTimes='0; 0.2; 0.85; 1' dur='4s' repeatCount='indefinite'/%3E%3CanimateTransform attributeName='transform' type='scale' values='0 0; 1 1; 1 1; 0 0' keyTimes='0; 0.1; 0.9; 1' begin='0.1s' dur='4s' repeatCount='indefinite'/%3E%3C/path%3E%3Cdiv xmlns='' style='all: initial !important;'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.btn[aria-pressed="true"] {
+  transform: scale(1.025);
+  box-shadow: inset 0px 0px 1px rgba(0,0,0,0.5), -1px 0 15px 0 rgba(34, 33, 81, 0.01), 0px 15px 15px 0 rgba(34, 33, 81, 0.25)
+}
+`.trim()
+
+export const sortableStyles = `
+body {
+  padding: 1em;
+  font-size: 20px;
+  font-family: system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+ul {
+  margin: 0;
+}
+
+li {
+  cursor: grab;
+}
+`.trim()
