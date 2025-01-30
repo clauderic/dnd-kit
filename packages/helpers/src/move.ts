@@ -61,7 +61,7 @@ function mutate<
 ): T {
   const {source, target, canceled} = event.operation;
 
-  if (!source || !target || canceled || source.id === target.id) {
+  if (!source || !target || canceled) {
     if ('preventDefault' in event) event.preventDefault();
     return items;
   }

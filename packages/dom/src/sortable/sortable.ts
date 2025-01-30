@@ -415,6 +415,10 @@ export class SortableDraggable<T extends Data> extends Draggable<T> {
   ) {
     super(input, manager);
   }
+
+  get index() {
+    return this.sortable.index;
+  }
 }
 
 export class SortableDroppable<T extends Data> extends Droppable<T> {
