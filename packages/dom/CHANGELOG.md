@@ -1,5 +1,35 @@
 # @dnd-kit/dom
 
+## 0.0.7
+
+### Patch Changes
+
+- [#1592](https://github.com/clauderic/dnd-kit/pull/1592) [`550a868`](https://github.com/clauderic/dnd-kit/commit/550a86870d7441a38a06b3e7c35aa0d7d89e32d1) Thanks [@github-actions](https://github.com/apps/github-actions)! - Added `aria-grabbed` to the list of attributes added by the Accessibility plugin.
+
+  Setting aria-grabbed to true indicates that the element has been selected for dragging. Setting aria-grabbed to false indicates that the element can be grabbed for a drag-and-drop operation, but is not currently grabbed.
+
+  While the `aria-grabbed` attribute has been deprecated in ARIA 1.1, in practice, since the accessibility API features for accessible drag and drop still don’t exist and likely won’t for several years, these attributes will continue to be supported by browsers and reflected in the accessibility tree for some years to come until a new API is introduced to replace it.
+
+- [#1592](https://github.com/clauderic/dnd-kit/pull/1592) [`75e23b6`](https://github.com/clauderic/dnd-kit/commit/75e23b6fdfdeadeae1b9a4b2b9be7682f48c10e4) Thanks [@github-actions](https://github.com/apps/github-actions)! - Added `aria-grabbed` and `aria-pressed` to the list of attributes that are not synchronized between the draggable element and its placeholder.
+
+- [#1592](https://github.com/clauderic/dnd-kit/pull/1592) [`cef9b46`](https://github.com/clauderic/dnd-kit/commit/cef9b46c5ed017e6a601b1d0ee9d0f05b7bbd19f) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fix global modifiers set on `DragDropManager` / `<DragDropProvider>` being destroyed after the first drag operation.
+
+- [#1592](https://github.com/clauderic/dnd-kit/pull/1592) [`730064b`](https://github.com/clauderic/dnd-kit/commit/730064b8b06bd25ebde335305a303fdf4c9a9c7f) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fix incorrect type for modifiers.
+
+- [#1592](https://github.com/clauderic/dnd-kit/pull/1592) [`808f184`](https://github.com/clauderic/dnd-kit/commit/808f184439125cf7e66054b3e85ac087aa04f13b) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fix reconciliation of optimistic updates in `move` helper.
+
+- [#1592](https://github.com/clauderic/dnd-kit/pull/1592) [`c4e7a7c`](https://github.com/clauderic/dnd-kit/commit/c4e7a7cd98ccaec99fa1037cb1020d3d05cea090) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fixed positioning of `Feedback` plugin when `direction` is set to `rtl`.
+
+- [#1592](https://github.com/clauderic/dnd-kit/pull/1592) [`280b7e2`](https://github.com/clauderic/dnd-kit/commit/280b7e229d5e6a5f067a66038e50c4fbb3b29dc0) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fixed stale modifiers when using `useSortable`.
+
+- [#1592](https://github.com/clauderic/dnd-kit/pull/1592) [`84b75fc`](https://github.com/clauderic/dnd-kit/commit/84b75fc3a7b7a555481dbeba533bc28128783e72) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fixed `element` not being set on initialization of `Sortable` instance even if an `element` was provided as input.
+
+- Updated dependencies [[`c1dadef`](https://github.com/clauderic/dnd-kit/commit/c1dadef118f8f5f096d36dac314bfe317ea950ce), [`cef9b46`](https://github.com/clauderic/dnd-kit/commit/cef9b46c5ed017e6a601b1d0ee9d0f05b7bbd19f)]:
+  - @dnd-kit/abstract@0.0.7
+  - @dnd-kit/collision@0.0.7
+  - @dnd-kit/geometry@0.0.7
+  - @dnd-kit/state@0.0.7
+
 ## 0.0.6
 
 ### Patch Changes

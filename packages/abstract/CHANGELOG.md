@@ -1,5 +1,17 @@
 # @dnd-kit/abstract
 
+## 0.0.7
+
+### Patch Changes
+
+- [#1592](https://github.com/clauderic/dnd-kit/pull/1592) [`c1dadef`](https://github.com/clauderic/dnd-kit/commit/c1dadef118f8f5f096d36dac314bfe317ea950ce) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fire a cancelled `dragend` event when a drag operation is interrupted by the `DragDropManager` being destroyed during an operation.
+
+- [#1592](https://github.com/clauderic/dnd-kit/pull/1592) [`cef9b46`](https://github.com/clauderic/dnd-kit/commit/cef9b46c5ed017e6a601b1d0ee9d0f05b7bbd19f) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fix global modifiers set on `DragDropManager` / `<DragDropProvider>` being destroyed after the first drag operation.
+
+- Updated dependencies []:
+  - @dnd-kit/geometry@0.0.7
+  - @dnd-kit/state@0.0.7
+
 ## 0.0.6
 
 ### Patch Changes
