@@ -1,5 +1,13 @@
 # @dnd-kit/collision
 
+## 0.0.7
+
+### Patch Changes
+
+- Updated dependencies [[`c1dadef`](https://github.com/clauderic/dnd-kit/commit/c1dadef118f8f5f096d36dac314bfe317ea950ce), [`cef9b46`](https://github.com/clauderic/dnd-kit/commit/cef9b46c5ed017e6a601b1d0ee9d0f05b7bbd19f)]:
+  - @dnd-kit/abstract@0.0.7
+  - @dnd-kit/geometry@0.0.7
+
 ## 0.0.6
 
 ### Patch Changes

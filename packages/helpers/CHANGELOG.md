@@ -1,5 +1,14 @@
 # @dnd-kit/helpers
 
+## 0.0.7
+
+### Patch Changes
+
+- [#1592](https://github.com/clauderic/dnd-kit/pull/1592) [`808f184`](https://github.com/clauderic/dnd-kit/commit/808f184439125cf7e66054b3e85ac087aa04f13b) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fix reconciliation of optimistic updates in `move` helper.
+
+- Updated dependencies [[`c1dadef`](https://github.com/clauderic/dnd-kit/commit/c1dadef118f8f5f096d36dac314bfe317ea950ce), [`cef9b46`](https://github.com/clauderic/dnd-kit/commit/cef9b46c5ed017e6a601b1d0ee9d0f05b7bbd19f)]:
+  - @dnd-kit/abstract@0.0.7
+
 ## 0.0.6
 
 ### Patch Changes

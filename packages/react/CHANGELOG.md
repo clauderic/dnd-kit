@@ -1,5 +1,20 @@
 # @dnd-kit/react
 
+## 0.0.7
+
+### Patch Changes
+
+- [#1592](https://github.com/clauderic/dnd-kit/pull/1592) [`cef9b46`](https://github.com/clauderic/dnd-kit/commit/cef9b46c5ed017e6a601b1d0ee9d0f05b7bbd19f) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fix global modifiers set on `DragDropManager` / `<DragDropProvider>` being destroyed after the first drag operation.
+
+- [#1592](https://github.com/clauderic/dnd-kit/pull/1592) [`7c175e1`](https://github.com/clauderic/dnd-kit/commit/7c175e1694fc9c86b5882a5467f0f15fa954bd0a) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fix element refs not being synchronized properly.
+
+- [#1592](https://github.com/clauderic/dnd-kit/pull/1592) [`280b7e2`](https://github.com/clauderic/dnd-kit/commit/280b7e229d5e6a5f067a66038e50c4fbb3b29dc0) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fixed stale modifiers when using `useSortable`.
+
+- Updated dependencies [[`550a868`](https://github.com/clauderic/dnd-kit/commit/550a86870d7441a38a06b3e7c35aa0d7d89e32d1), [`c1dadef`](https://github.com/clauderic/dnd-kit/commit/c1dadef118f8f5f096d36dac314bfe317ea950ce), [`75e23b6`](https://github.com/clauderic/dnd-kit/commit/75e23b6fdfdeadeae1b9a4b2b9be7682f48c10e4), [`cef9b46`](https://github.com/clauderic/dnd-kit/commit/cef9b46c5ed017e6a601b1d0ee9d0f05b7bbd19f), [`730064b`](https://github.com/clauderic/dnd-kit/commit/730064b8b06bd25ebde335305a303fdf4c9a9c7f), [`808f184`](https://github.com/clauderic/dnd-kit/commit/808f184439125cf7e66054b3e85ac087aa04f13b), [`c4e7a7c`](https://github.com/clauderic/dnd-kit/commit/c4e7a7cd98ccaec99fa1037cb1020d3d05cea090), [`280b7e2`](https://github.com/clauderic/dnd-kit/commit/280b7e229d5e6a5f067a66038e50c4fbb3b29dc0), [`84b75fc`](https://github.com/clauderic/dnd-kit/commit/84b75fc3a7b7a555481dbeba533bc28128783e72)]:
+  - @dnd-kit/dom@0.0.7
+  - @dnd-kit/abstract@0.0.7
+  - @dnd-kit/state@0.0.7
+
 ## 0.0.6
 
 ### Patch Changes
