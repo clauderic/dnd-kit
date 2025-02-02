@@ -281,6 +281,7 @@ export class PointerSensor extends Sensor<
     });
 
     const ownerDocument = getDocument(event.target);
+
     const unbind = this.listeners.bind(ownerDocument, [
       {
         // Prevent scrolling on touch devices
@@ -298,6 +299,10 @@ export class PointerSensor extends Sensor<
       {
         type: 'keydown',
         listener: this.handleKeyDown,
+      },
+      {
+        type: 'lostpointercapture',
+        listener: this.handlePointerUp,
       },
     ]);
 
