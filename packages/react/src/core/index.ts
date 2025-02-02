@@ -6,6 +6,7 @@ export {
   useDraggable,
   type UseDraggableInput,
 } from './draggable/useDraggable.ts';
+export {DragOverlay} from './draggable/DragOverlay.tsx';
 
 export {
   useDroppable,

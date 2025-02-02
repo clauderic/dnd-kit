@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import type {PropsWithChildren} from 'react';
 import {DragDropProvider} from '@dnd-kit/react';
+import {DragOverlay} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
 import {move} from '@dnd-kit/helpers';
 import {defaultPreset} from '@dnd-kit/dom';
@@ -99,6 +100,11 @@ export function IframeLists({
           </div>
         </AutoFrame>
       </div>
+      <DragOverlay>
+        {(source, status) => (
+          <Item shadow={status == 'dragging'}>{source.id}</Item>
+        )}
+      </DragOverlay>
     </DragDropProvider>
   );
 }
@@ -136,9 +142,9 @@ function SortableItem({
     <Item
       ref={ref}
       accentColor={COLORS[column]}
-      shadow={isDragSource}
       style={style}
       transitionId={`sortable-${column}-${id}`}
+      aria-hidden={isDragSource}
     >
       {id}
     </Item>
