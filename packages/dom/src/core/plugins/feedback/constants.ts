@@ -54,10 +54,6 @@ export const CSS_RULES = `
   [${ATTRIBUTE}]::backdrop, [${ATTR_PREFIX}overlay]:not([${ATTRIBUTE}]) {
     display: none;
   }
-  html:has([${ATTRIBUTE}]) * {
-    user-select: none;
-    -webkit-user-select: none;
-  }
 `
   .replace(/\n+/g, ' ')
   .replace(/\s+/g, ' ')
