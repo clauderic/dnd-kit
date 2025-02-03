@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useRef, useState} from 'react';
+import {useMemo, useRef} from 'react';
 import {effect, untracked} from '@dnd-kit/state';
 
 import {useIsomorphicLayoutEffect} from './useIsomorphicLayoutEffect.ts';
