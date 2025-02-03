@@ -1,3 +1,4 @@
+import {untracked} from '@dnd-kit/state';
 import {
   cloneElement,
   generateUniqueId,
@@ -13,28 +14,30 @@ import {ATTR_PREFIX, PLACEHOLDER_ATTRIBUTE} from './constants.ts';
  * The placeholder maintains the original element's dimensions and position
  */
 export function createPlaceholder(source: Draggable): Element | undefined {
-  const {element, manager} = source;
+  return untracked(() => {
+    const {element, manager} = source;
 
-  if (!element || !manager) return;
+    if (!element || !manager) return;
 
-  const containedDroppables = findContainedDroppables(
-    element,
-    manager.registry.droppables
-  );
-  const cleanup: Array<() => void> = [];
-  const placeholder = cloneElement(element);
-  const {remove} = placeholder;
+    const containedDroppables = findContainedDroppables(
+      element,
+      manager.registry.droppables
+    );
+    const cleanup: Array<() => void> = [];
+    const placeholder = cloneElement(element);
+    const {remove} = placeholder;
 
-  proxyDroppableElements(containedDroppables, placeholder, cleanup);
-  configurePlaceholder(placeholder);
+    proxyDroppableElements(containedDroppables, placeholder, cleanup);
+    configurePlaceholder(placeholder);
 
-  // Override remove to handle cleanup of proxies
-  placeholder.remove = () => {
-    cleanup.forEach((fn) => fn());
-    remove.call(placeholder);
-  };
+    // Override remove to handle cleanup of proxies
+    placeholder.remove = () => {
+      cleanup.forEach((fn) => fn());
+      remove.call(placeholder);
+    };
 
-  return placeholder;
+    return placeholder;
+  });
 }
 
 /**
