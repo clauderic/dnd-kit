@@ -7,86 +7,31 @@ import {
 import {configurator, Plugin} from '@dnd-kit/abstract';
 import {
   animateTransform,
-  cloneElement,
+  DOMRectangle,
   isKeyboardEvent,
-  showPopover,
   getComputedStyles,
+  getDocument,
+  getFrameTransform,
+  getWindow,
+  parseTranslate,
+  showPopover,
   supportsPopover,
   supportsStyle,
   Styles,
-  parseTranslate,
-  ProxiedElements,
-  getWindow,
-  generateUniqueId,
-  getDocument,
-  getFrameTransform,
-  DOMRectangle,
-  getFrameElement,
 } from '@dnd-kit/dom/utilities';
 import {Coordinates} from '@dnd-kit/geometry';
 
 import type {DragDropManager} from '../../manager/index.ts';
-import type {Draggable, Droppable} from '../../entities/index.ts';
+import type {Draggable} from '../../entities/index.ts';
+import {isSameFrame, createPlaceholder} from './utilities.ts';
 
-const ATTR_PREFIX = 'data-dnd-';
-const CSS_PREFIX = '--dnd-';
-const ATTRIBUTE = `${ATTR_PREFIX}dragging`;
-const cssRules = `
-  [${ATTRIBUTE}] {
-    position: fixed !important;
-    pointer-events: none !important;
-    touch-action: none !important;
-    z-index: calc(infinity);
-    will-change: translate;
-    top: var(${CSS_PREFIX}top, 0px) !important;
-    left: var(${CSS_PREFIX}left, 0px) !important;
-    right: unset !important;
-    bottom: unset !important;
-    width: var(${CSS_PREFIX}width, auto) !important;
-    height: var(${CSS_PREFIX}height, auto) !important;
-    box-sizing: border-box;
-  }
-  [${ATTRIBUTE}] * {
-    pointer-events: none !important;
-  }
-  [${ATTRIBUTE}][style*='${CSS_PREFIX}translate'] {
-    translate: var(${CSS_PREFIX}translate) !important;
-  }
-  [style*='${CSS_PREFIX}transition'] {
-    transition: var(${CSS_PREFIX}transition) !important;
-  }
-  [style*='${CSS_PREFIX}scale'] {
-    scale: var(${CSS_PREFIX}scale) !important;
-    transform-origin: var(${CSS_PREFIX}transform-origin) !important;
-  }
-  *:where([${ATTRIBUTE}][popover]) {
-    overflow: visible;
-    background: unset;
-    border: unset;
-    margin: unset;
-    padding: unset;
-    color: inherit;
-  }
-  [${ATTRIBUTE}]::backdrop, [${ATTR_PREFIX}overlay]:not([${ATTRIBUTE}]) {
-    display: none;
-  }
-  html:has([${ATTRIBUTE}]) * {
-    user-select: none;
-    -webkit-user-select: none;
-  }
-`
-  .replace(/\n+/g, ' ')
-  .replace(/\s+/g, ' ')
-  .trim();
-const PLACEHOLDER_ATTRIBUTE = `${ATTR_PREFIX}placeholder`;
-const IGNORED_ATTRIBUTES = [
+import {
   ATTRIBUTE,
-  PLACEHOLDER_ATTRIBUTE,
-  'popover',
-  'aria-pressed',
-  'aria-grabbing',
-];
-const IGNORED_STYLES = ['view-transition-name'];
+  CSS_PREFIX,
+  CSS_RULES,
+  IGNORED_ATTRIBUTES,
+  IGNORED_STYLES,
+} from './constants.ts';
 
 export interface FeedbackOptions {
   rootElement?: Element | ((source: Draggable) => Element);
@@ -119,7 +64,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         for (const doc of documents) {
           if (!styleTags.has(doc)) {
             const style = document.createElement('style');
-            style.innerText = cssRules;
+            style.innerText = CSS_RULES;
             doc.head.prepend(style);
             styleTags.set(doc, style);
           }
@@ -444,7 +389,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         });
       }
 
-      const cleanupEffect = effect(function updateTransform() {
+      // Update transform on move
+      const cleanupEffect = effect(() => {
         const {transform, status} = dragOperation;
 
         if (!transform.x && !transform.y && !moved) {
@@ -638,76 +584,4 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
   public accessor overlay: Element | undefined;
 
   static configure = configurator(Feedback);
-}
-
-function createPlaceholder(source: Draggable) {
-  return untracked(() => {
-    const {element, manager} = source;
-
-    if (!element || !manager) return;
-
-    const {droppables} = manager.registry;
-    const containedDroppables = new Map<Droppable, string>();
-
-    for (const droppable of droppables) {
-      if (!droppable.element) continue;
-
-      if (
-        element === droppable.element ||
-        element.contains(droppable.element)
-      ) {
-        const identifierAttribute = `${ATTR_PREFIX}${generateUniqueId('dom-id')}`;
-
-        droppable.element.setAttribute(identifierAttribute, '');
-
-        containedDroppables.set(droppable, identifierAttribute);
-      }
-    }
-
-    const cleanup: CleanupFunction[] = [];
-    const placeholder = cloneElement(element);
-    const {remove} = placeholder;
-
-    for (const [droppable, identifierAttribute] of containedDroppables) {
-      if (!droppable.element) continue;
-
-      const selector = `[${identifierAttribute}]`;
-      const clonedElement = placeholder.matches(selector)
-        ? placeholder
-        : placeholder.querySelector(selector);
-
-      droppable.element?.removeAttribute(identifierAttribute);
-
-      if (!clonedElement) continue;
-
-      let current = droppable.element;
-
-      droppable.proxy = clonedElement;
-      clonedElement.removeAttribute(identifierAttribute);
-
-      ProxiedElements.set(current, clonedElement);
-
-      cleanup.push(() => {
-        ProxiedElements.delete(current);
-        droppable.proxy = undefined;
-      });
-    }
-
-    placeholder.setAttribute('inert', 'true');
-    placeholder.setAttribute('tab-index', '-1');
-    placeholder.setAttribute('aria-hidden', 'true');
-    placeholder.setAttribute(PLACEHOLDER_ATTRIBUTE, '');
-    placeholder.remove = () => {
-      cleanup.forEach((fn) => fn());
-      remove.call(placeholder);
-    };
-
-    return placeholder;
-  });
-}
-
-function isSameFrame(element: Element, target: Element) {
-  if (element === target) return true;
-
-  return getFrameElement(element) === getFrameElement(target);
 }
