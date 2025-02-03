@@ -38,10 +38,11 @@ export interface FeedbackOptions {
 }
 
 export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
+  @reactive
+  public accessor overlay: Element | undefined;
+
   constructor(manager: DragDropManager, options?: FeedbackOptions) {
     super(manager);
-
-    const styleTags = new Map<Document, HTMLStyleElement>();
 
     let initialSize: {width: number; height: number} | undefined;
     let initialCoordinates: Coordinates | undefined;
@@ -53,28 +54,9 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     let transformOrigin: Coordinates | undefined;
     let moved = false;
 
-    const styleInjectionCleanup = effect(() => {
-      const {status, source, target} = manager.dragOperation;
+    this.registerEffect(this.#injectStyles);
 
-      if (status.initialized) {
-        const sourceDocument = getDocument(source?.element ?? null);
-        const targetDocument = getDocument(target?.element ?? null);
-        const documents = new Set([sourceDocument, targetDocument]);
-
-        for (const doc of documents) {
-          if (!styleTags.has(doc)) {
-            const style = document.createElement('style');
-            style.innerText = CSS_RULES;
-            doc.head.prepend(style);
-            styleTags.set(doc, style);
-          }
-        }
-
-        return styleInjectionCleanup;
-      }
-    });
-
-    const cleanupEffect = effect(() => {
+    this.registerEffect(() => {
       const {dragOperation} = manager;
       const {position, source, status} = dragOperation;
 
@@ -572,16 +554,35 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
       return () => cleanup?.();
     });
-
-    this.destroy = () => {
-      styleInjectionCleanup();
-      cleanupEffect();
-      styleTags.forEach((style) => style.remove());
-    };
   }
 
-  @reactive
-  public accessor overlay: Element | undefined;
+  #injectStyles() {
+    const {status, source, target} = this.manager.dragOperation;
+
+    if (status.initialized) {
+      const sourceDocument = getDocument(source?.element ?? null);
+      const targetDocument = getDocument(target?.element ?? null);
+      const documents = new Set([sourceDocument, targetDocument]);
+
+      for (const doc of documents) {
+        if (!injectedStyleTags.has(doc)) {
+          const style = document.createElement('style');
+          style.innerText = CSS_RULES;
+          doc.head.prepend(style);
+          injectedStyleTags.set(doc, style);
+        }
+      }
+    }
+  }
+
+  public destroy(): void {
+    super.destroy();
+
+    injectedStyleTags.forEach((style) => style.remove());
+    injectedStyleTags.clear();
+  }
 
   static configure = configurator(Feedback);
 }
+
+const injectedStyleTags = new Map<Document, HTMLStyleElement>();
