@@ -55,6 +55,10 @@ const cssRules = `
   [style*='${CSS_PREFIX}transition'] {
     transition: var(${CSS_PREFIX}transition) !important;
   }
+  [style*='${CSS_PREFIX}scale'] {
+    scale: var(${CSS_PREFIX}scale) !important;
+    transform-origin: var(${CSS_PREFIX}transform-origin) !important;
+  }
   *:where([${ATTRIBUTE}][popover]) {
     overflow: visible;
     background: unset;
@@ -151,13 +155,24 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       let cleanup: CleanupFunction | undefined;
 
       const frameTransform = getFrameTransform(feedbackElement);
+      const elementFrameTransform = getFrameTransform(element);
+      const crossFrame = !isSameFrame(element, feedbackElement);
       const shape = new DOMRectangle(element, {
-        frameTransform: !isSameFrame(element, feedbackElement)
-          ? undefined
-          : null,
-        ignoreTransforms: true,
+        frameTransform: crossFrame ? elementFrameTransform : null,
+        ignoreTransforms: !crossFrame,
       });
-      const {width, height, top, left} = shape;
+      const scaleDelta = {
+        x: elementFrameTransform.scaleX / frameTransform.scaleX,
+        y: elementFrameTransform.scaleY / frameTransform.scaleY,
+      };
+
+      let {width, height, top, left} = shape;
+
+      if (crossFrame) {
+        width = width / scaleDelta.x;
+        height = height / scaleDelta.y;
+      }
+
       const styles = new Styles(feedbackElement);
       const {transition, translate} = getComputedStyles(element);
       const clone = feedback === 'clone';
@@ -176,21 +191,6 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         }
       }
 
-      const relativeTop = top * frameTransform.scaleY + frameTransform.y;
-      const relativeLeft = left * frameTransform.scaleX + frameTransform.x;
-
-      if (!initialCoordinates) {
-        initialCoordinates = {x: relativeLeft, y: relativeTop};
-      }
-
-      if (!initialSize) {
-        initialSize = {width, height};
-      }
-
-      if (!initialFrameTransform) {
-        initialFrameTransform = frameTransform;
-      }
-
       if (!transformOrigin) {
         const current = untracked(() => position.current);
 
@@ -202,6 +202,33 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             (current.y - top * frameTransform.scaleY - frameTransform.y) /
             (height * frameTransform.scaleY),
         };
+      }
+
+      const relativeTop = top * frameTransform.scaleY + frameTransform.y;
+      const relativeLeft = left * frameTransform.scaleX + frameTransform.x;
+
+      if (!initialCoordinates) {
+        initialCoordinates = {
+          x: relativeLeft,
+          y: relativeTop,
+        };
+
+        // Compoensate for transformOrigin when scaling
+        if (scaleDelta.x !== 1 || scaleDelta.y !== 1) {
+          const {scaleX, scaleY} = elementFrameTransform;
+          const {x: tX, y: tY} = transformOrigin;
+
+          initialCoordinates.x += (width * scaleX - width) * tX;
+          initialCoordinates.y += (height * scaleY - height) * tY;
+        }
+      }
+
+      if (!initialSize) {
+        initialSize = {width, height};
+      }
+
+      if (!initialFrameTransform) {
+        initialFrameTransform = frameTransform;
       }
 
       const coordinatesDelta = {
@@ -242,6 +269,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           top: projected.top,
           left: projected.left,
           translate: translateString,
+          scale: crossFrame ? `${scaleDelta.x} ${scaleDelta.y}` : '',
+          'transform-origin': `${transformOrigin.x * 100}% ${transformOrigin.y * 100}%`,
         },
         CSS_PREFIX
       );
