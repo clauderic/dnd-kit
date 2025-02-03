@@ -281,6 +281,9 @@ export class PointerSensor extends Sensor<
     });
 
     const ownerDocument = getDocument(event.target);
+    const pointerCaptureTarget = ownerDocument.body;
+
+    pointerCaptureTarget.setPointerCapture(event.pointerId);
 
     const unbind = this.listeners.bind(ownerDocument, [
       {
@@ -302,11 +305,13 @@ export class PointerSensor extends Sensor<
       },
       {
         type: 'lostpointercapture',
-        listener: this.handlePointerUp,
+        listener: (event: PointerEvent) => {
+          if (event.target !== pointerCaptureTarget) return;
+
+          this.handlePointerUp(event);
+        },
       },
     ]);
-
-    ownerDocument.body.setPointerCapture(event.pointerId);
 
     this.cleanup.add(unbind);
   }
