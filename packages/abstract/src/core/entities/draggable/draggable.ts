@@ -45,9 +45,6 @@ export class Draggable<
    */
   @derived
   public get isDragSource() {
-    return (
-      this.manager?.dragOperation.source?.id === this.id &&
-      this.status === 'dragging'
-    );
+    return this.manager?.dragOperation.source?.id === this.id;
   }
 }
