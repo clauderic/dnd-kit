@@ -1,4 +1,9 @@
-import {reactive, untracked} from '@dnd-kit/state';
+import {
+  type CleanupFunction,
+  effect,
+  reactive,
+  untracked,
+} from '@dnd-kit/state';
 
 import type {DragDropManager} from '../manager/index.ts';
 import type {PluginOptions} from './types.ts';
@@ -57,6 +62,20 @@ export abstract class Plugin<
     this.options = options;
   }
 
+  #cleanupFunctions = new Set<CleanupFunction>();
+
+  /**
+   * Register an effect that will be cleaned up when the plugin instance is destroyed.
+   * Returns a cleanup function that can be used to dispose of the effect.
+   */
+  protected registerEffect(callback: () => void) {
+    const dispose = effect(callback.bind(this));
+
+    this.#cleanupFunctions.add(dispose);
+
+    return dispose;
+  }
+
   /**
    * Destroy a plugin instance.
    */
@@ -65,6 +84,8 @@ export abstract class Plugin<
      * Each plugin is responsible for implementing its own
      * destroy method to clean up effects and listeners
      */
+
+    this.#cleanupFunctions.forEach((cleanup) => cleanup());
   }
 
   /**

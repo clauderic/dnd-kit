@@ -1,6 +1,13 @@
 import {Position, type Shape} from '@dnd-kit/geometry';
 import type {Coordinates} from '@dnd-kit/geometry';
-import {batch, computed, deepEqual, effect, signal} from '@dnd-kit/state';
+import {
+  batch,
+  computed,
+  deepEqual,
+  effect,
+  signal,
+  untracked,
+} from '@dnd-kit/state';
 
 import type {
   Draggable,
@@ -344,7 +351,27 @@ export function DragOperationManager<
         /* Wait for the renderer to finish rendering before finalizing the drag operation */
         manager.renderer.rendering.then(() => {
           status.value = Status.Dropped;
-          manager.renderer.rendering.then(reset);
+
+          const dropping = untracked(() => source.value?.status === 'dropping');
+
+          if (dropping) {
+            const currentSource = source.value;
+
+            // Wait until the source has finished dropping before resetting the operation
+            const dispose = effect(() => {
+              if (currentSource?.status === 'idle') {
+                dispose();
+
+                // Only reset the drag operation if the source is still the same source that was active when the drag operation
+                // was ended, as it's possible for a new drag operation to start while the previous source is still dropping
+                if (source.value !== currentSource) return;
+
+                reset();
+              }
+            });
+          } else {
+            manager.renderer.rendering.then(reset);
+          }
         });
       };
 

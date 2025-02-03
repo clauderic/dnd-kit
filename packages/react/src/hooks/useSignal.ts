@@ -3,34 +3,40 @@ import {flushSync} from 'react-dom';
 import {effect, Signal} from '@dnd-kit/state';
 
 import {useIsomorphicLayoutEffect} from './useIsomorphicLayoutEffect.ts';
+import {useForceUpdate} from './useForceUpdate.ts';
 
-/** Wrap the given value in a Signal if it isn't already one, and make changes trigger a re-render. */
+/** Trigger a re-render when reading a signal. */
 export function useSignal<T = any>(signal: Signal<T>, sync = false) {
-  let val = signal.peek();
+  const previous = useRef(signal.peek());
   const read = useRef(false);
-  const update = useState(val)[1];
+  const forceUpdate = useForceUpdate();
 
   useIsomorphicLayoutEffect(
     () =>
       effect(() => {
-        if (val !== (val = signal.value)) {
+        const previousValue = previous.current;
+        const currentValue = signal.value;
+
+        if (previousValue !== currentValue) {
+          previous.current = currentValue;
+
           if (!read.current) return;
 
           if (sync) {
-            flushSync(() => update(val));
+            flushSync(forceUpdate);
           } else {
-            update(val);
+            forceUpdate();
           }
         }
       }),
-    [signal, sync]
+    [signal, sync, forceUpdate]
   );
 
   return {
     get value() {
       read.current = true;
 
-      return signal.value;
+      return signal.peek();
     },
   };
 }

@@ -1,51 +1,48 @@
-import {effect, untracked, type CleanupFunction} from '@dnd-kit/state';
+import {
+  effect,
+  reactive,
+  untracked,
+  type CleanupFunction,
+} from '@dnd-kit/state';
 import {configurator, Plugin} from '@dnd-kit/abstract';
 import {
   animateTransform,
-  cloneElement,
+  DOMRectangle,
   isKeyboardEvent,
-  showPopover,
   getComputedStyles,
+  getDocument,
+  getFrameTransform,
+  getWindow,
+  parseTranslate,
+  showPopover,
   supportsPopover,
   supportsStyle,
   Styles,
-  parseTranslate,
-  ProxiedElements,
-  getWindow,
-  generateUniqueId,
-  getDocument,
-  getFrameTransform,
-  DOMRectangle,
-  getFrameElement,
 } from '@dnd-kit/dom/utilities';
 import {Coordinates} from '@dnd-kit/geometry';
 
 import type {DragDropManager} from '../../manager/index.ts';
-import type {Draggable, Droppable} from '../../entities/index.ts';
+import type {Draggable} from '../../entities/index.ts';
+import {isSameFrame, createPlaceholder} from './utilities.ts';
 
-const ATTR_PREFIX = 'data-dnd-';
-const CSS_PREFIX = '--dnd-';
-const ATTRIBUTE = `${ATTR_PREFIX}dragging`;
-const cssRules = `[${ATTRIBUTE}] {position: fixed !important;pointer-events: none !important;touch-action: none !important;z-index: calc(infinity);will-change: translate;top: var(${CSS_PREFIX}top, 0px) !important;left: var(${CSS_PREFIX}left, 0px) !important;right: unset !important;bottom: unset !important;width: var(${CSS_PREFIX}width, auto) !important;height: var(${CSS_PREFIX}height, auto) !important;box-sizing:border-box;}[${ATTRIBUTE}] *{pointer-events: none !important;}[${ATTRIBUTE}][style*="${CSS_PREFIX}translate"] {translate: var(${CSS_PREFIX}translate) !important;}[style*="${CSS_PREFIX}transition"] {transition: var(${CSS_PREFIX}transition) !important;}*:where([${ATTRIBUTE}][popover]){overflow:visible;background:var(${CSS_PREFIX}background);border:var(${CSS_PREFIX}border);margin:unset;padding:unset;color:inherit;}[${ATTRIBUTE}]::backdrop {display: none}html:has([${ATTRIBUTE}]) * {user-select:none;-webkit-user-select:none;}`;
-const PLACEHOLDER_ATTRIBUTE = `${ATTR_PREFIX}placeholder`;
-const IGNORED_ATTRIBUTES = [
+import {
   ATTRIBUTE,
-  PLACEHOLDER_ATTRIBUTE,
-  'popover',
-  'aria-pressed',
-  'aria-grabbing',
-];
-const IGNORED_STYLES = ['view-transition-name'];
+  CSS_PREFIX,
+  CSS_RULES,
+  IGNORED_ATTRIBUTES,
+  IGNORED_STYLES,
+} from './constants.ts';
 
 export interface FeedbackOptions {
   rootElement?: Element | ((source: Draggable) => Element);
 }
 
 export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
+  @reactive
+  public accessor overlay: Element | undefined;
+
   constructor(manager: DragDropManager, options?: FeedbackOptions) {
     super(manager);
-
-    const styleTags = new Map<Document, HTMLStyleElement>();
 
     let initialSize: {width: number; height: number} | undefined;
     let initialCoordinates: Coordinates | undefined;
@@ -57,28 +54,9 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     let transformOrigin: Coordinates | undefined;
     let moved = false;
 
-    const styleInjectionCleanup = effect(() => {
-      const {status, source, target} = manager.dragOperation;
+    this.registerEffect(this.#injectStyles);
 
-      if (status.initialized) {
-        const sourceDocument = getDocument(source?.element ?? null);
-        const targetDocument = getDocument(target?.element ?? null);
-        const documents = new Set([sourceDocument, targetDocument]);
-
-        for (const doc of documents) {
-          if (!styleTags.has(doc)) {
-            const style = document.createElement('style');
-            style.innerText = cssRules;
-            doc.head.prepend(style);
-            styleTags.set(doc, style);
-          }
-        }
-
-        return styleInjectionCleanup;
-      }
-    });
-
-    const cleanupEffect = effect(() => {
+    this.registerEffect(() => {
       const {dragOperation} = manager;
       const {position, source, status} = dragOperation;
 
@@ -96,25 +74,38 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
       const {element, feedback} = source;
 
-      if (!element || feedback === 'none') {
+      if (!element || feedback === 'none' || status.initializing) {
         return;
       }
 
+      const feedbackElement = this.overlay ?? element;
       let cleanup: CleanupFunction | undefined;
 
-      const frameTransform = getFrameTransform(element);
+      const frameTransform = getFrameTransform(feedbackElement);
+      const elementFrameTransform = getFrameTransform(element);
+      const crossFrame = !isSameFrame(element, feedbackElement);
       const shape = new DOMRectangle(element, {
-        frameTransform: null,
-        ignoreTransforms: true,
+        frameTransform: crossFrame ? elementFrameTransform : null,
+        ignoreTransforms: !crossFrame,
       });
-      const {width, height, top, left} = shape;
-      const styles = new Styles(element);
-      const {background, border, transition, translate} =
-        getComputedStyles(element);
+      const scaleDelta = {
+        x: elementFrameTransform.scaleX / frameTransform.scaleX,
+        y: elementFrameTransform.scaleY / frameTransform.scaleY,
+      };
+
+      let {width, height, top, left} = shape;
+
+      if (crossFrame) {
+        width = width / scaleDelta.x;
+        height = height / scaleDelta.y;
+      }
+
+      const styles = new Styles(feedbackElement);
+      const {transition, translate} = getComputedStyles(element);
       const clone = feedback === 'clone';
 
       const placeholder =
-        feedback !== 'move' ? createPlaceholder(source) : null;
+        feedback !== 'move' && !this.overlay ? createPlaceholder(source) : null;
       const isKeyboardOperation = untracked(() =>
         isKeyboardEvent(manager.dragOperation.activatorEvent)
       );
@@ -125,21 +116,6 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         if (parsedTranslate) {
           initialTranslate = parsedTranslate;
         }
-      }
-
-      const relativeTop = top * frameTransform.scaleY + frameTransform.y;
-      const relativeLeft = left * frameTransform.scaleX + frameTransform.x;
-
-      if (!initialCoordinates) {
-        initialCoordinates = {x: relativeLeft, y: relativeTop};
-      }
-
-      if (!initialSize) {
-        initialSize = {width, height};
-      }
-
-      if (!initialFrameTransform) {
-        initialFrameTransform = frameTransform;
       }
 
       if (!transformOrigin) {
@@ -153,6 +129,33 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             (current.y - top * frameTransform.scaleY - frameTransform.y) /
             (height * frameTransform.scaleY),
         };
+      }
+
+      const relativeTop = top * frameTransform.scaleY + frameTransform.y;
+      const relativeLeft = left * frameTransform.scaleX + frameTransform.x;
+
+      if (!initialCoordinates) {
+        initialCoordinates = {
+          x: relativeLeft,
+          y: relativeTop,
+        };
+
+        // Compoensate for transformOrigin when scaling
+        if (scaleDelta.x !== 1 || scaleDelta.y !== 1) {
+          const {scaleX, scaleY} = elementFrameTransform;
+          const {x: tX, y: tY} = transformOrigin;
+
+          initialCoordinates.x += (width * scaleX - width) * tX;
+          initialCoordinates.y += (height * scaleY - height) * tY;
+        }
+      }
+
+      if (!initialSize) {
+        initialSize = {width, height};
+      }
+
+      if (!initialFrameTransform) {
+        initialFrameTransform = frameTransform;
       }
 
       const coordinatesDelta = {
@@ -181,7 +184,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         top: top + delta.y,
       };
 
-      element.setAttribute(ATTRIBUTE, 'true');
+      feedbackElement.setAttribute(ATTRIBUTE, 'true');
 
       const transform = untracked(() => dragOperation.transform);
       const translateString = `${transform.x * frameTransform.scaleX + initialTranslate.x}px ${transform.y * frameTransform.scaleY + initialTranslate.y}px 0`;
@@ -192,9 +195,9 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           height: height,
           top: projected.top,
           left: projected.left,
-          background,
-          border,
           translate: translateString,
+          scale: crossFrame ? `${scaleDelta.x} ${scaleDelta.y}` : '',
+          'transform-origin': `${transformOrigin.x * 100}% ${transformOrigin.y * 100}%`,
         },
         CSS_PREFIX
       );
@@ -212,14 +215,15 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         }
       }
 
-      if (supportsPopover(element)) {
-        if (!element.hasAttribute('popover')) {
-          element.setAttribute('popover', '');
+      if (supportsPopover(feedbackElement)) {
+        if (!feedbackElement.hasAttribute('popover')) {
+          feedbackElement.setAttribute('popover', '');
         }
-        showPopover(element);
+        showPopover(feedbackElement);
       }
 
-      const actual = new DOMRectangle(element, {
+      const actual = new DOMRectangle(feedbackElement, {
+        frameTransform,
         ignoreTransforms: true,
       });
       const offset = {
@@ -245,6 +249,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         if (!placeholder) return;
 
         const placeholderShape = new DOMRectangle(placeholder, {
+          frameTransform,
           ignoreTransforms: true,
         });
         const origin = transformOrigin ?? {x: 1, y: 1};
@@ -282,8 +287,11 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       });
 
       /* Initialize drag operation shape */
-      dragOperation.shape = new DOMRectangle(element);
-      source.status = 'dragging';
+      dragOperation.shape = new DOMRectangle(feedbackElement);
+
+      if (untracked(() => source.status) === 'idle') {
+        requestAnimationFrame(() => (source.status = 'dragging'));
+      }
 
       let elementMutationObserver: MutationObserver | undefined;
       let documentMutationObserver: MutationObserver | undefined;
@@ -363,7 +371,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         });
       }
 
-      const cleanupEffect = effect(function updateTransform() {
+      // Update transform on move
+      const cleanupEffect = effect(() => {
         const {transform, status} = dragOperation;
 
         if (!transform.x && !transform.y && !moved) {
@@ -390,7 +399,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             CSS_PREFIX
           );
 
-          dragOperation.shape = new DOMRectangle(element);
+          dragOperation.shape = new DOMRectangle(feedbackElement);
 
           currentTranslate = {
             x,
@@ -420,27 +429,28 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         documentMutationObserver?.disconnect();
         resizeObserver.disconnect();
 
+        feedbackElement.removeAttribute(ATTRIBUTE);
         styles.reset();
+        source.status = 'idle';
 
         if (
           placeholder &&
-          (moved || placeholder.parentElement !== element.parentElement) &&
-          element.isConnected
+          (moved ||
+            placeholder.parentElement !== feedbackElement.parentElement) &&
+          feedbackElement.isConnected
         ) {
-          placeholder.replaceWith(element);
+          placeholder.replaceWith(feedbackElement);
         }
 
         placeholder?.remove();
-        element.removeAttribute(ATTRIBUTE);
 
-        if (supportsPopover(element)) {
-          element.removeAttribute('popover');
+        if (supportsPopover(feedbackElement)) {
+          feedbackElement.removeAttribute('popover');
         }
 
         cleanupEffect();
         dropEffectCleanup?.();
 
-        source.status = 'idle';
         moved = false;
       };
 
@@ -451,7 +461,14 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
           source.status = 'dropping';
 
-          const transform = currentTranslate;
+          let transform = currentTranslate;
+
+          if (!transform && element !== feedbackElement) {
+            transform = {
+              x: 0,
+              y: 0,
+            };
+          }
 
           if (!transform) {
             onComplete?.();
@@ -460,11 +477,10 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
           manager.renderer.rendering.then(() => {
             /* Force the source element to be promoted to the top layer before animating it */
-            showPopover(element);
+            showPopover(feedbackElement);
 
             const target = placeholder ?? element;
-
-            const animations = element.getAnimations();
+            const animations = feedbackElement.getAnimations();
 
             if (animations.length) {
               animations.forEach((animation) => {
@@ -480,12 +496,12 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
               });
             }
 
-            const sameFrame =
-              getFrameElement(element) === getFrameElement(target);
             const options = {
-              frameTransform: sameFrame ? null : undefined,
+              frameTransform: isSameFrame(feedbackElement, target)
+                ? null
+                : undefined,
             };
-            const current = new DOMRectangle(element, options);
+            const current = new DOMRectangle(feedbackElement, options);
             const final = new DOMRectangle(target, options);
             const delta = {
               x: current.center.x - final.center.x,
@@ -511,7 +527,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
                 : {};
 
             animateTransform({
-              element,
+              element: feedbackElement,
               keyframes: {
                 ...heightKeyframes,
                 ...widthKeyframes,
@@ -521,15 +537,15 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
                 ],
               },
               options: {
-                duration: moved ? 250 : 0,
+                duration: moved || feedbackElement !== element ? 250 : 0,
                 easing: 'ease',
               },
               onReady() {
                 styles.remove(['translate'], CSS_PREFIX);
               },
               onFinish() {
-                requestAnimationFrame(restoreFocus);
                 onComplete?.();
+                requestAnimationFrame(restoreFocus);
               },
             });
           });
@@ -538,79 +554,35 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
       return () => cleanup?.();
     });
+  }
 
-    this.destroy = () => {
-      styleInjectionCleanup();
-      cleanupEffect();
-      styleTags.forEach((style) => style.remove());
-    };
+  #injectStyles() {
+    const {status, source, target} = this.manager.dragOperation;
+
+    if (status.initialized) {
+      const sourceDocument = getDocument(source?.element ?? null);
+      const targetDocument = getDocument(target?.element ?? null);
+      const documents = new Set([sourceDocument, targetDocument]);
+
+      for (const doc of documents) {
+        if (!injectedStyleTags.has(doc)) {
+          const style = document.createElement('style');
+          style.innerText = CSS_RULES;
+          doc.head.prepend(style);
+          injectedStyleTags.set(doc, style);
+        }
+      }
+    }
+  }
+
+  public destroy(): void {
+    super.destroy();
+
+    injectedStyleTags.forEach((style) => style.remove());
+    injectedStyleTags.clear();
   }
 
   static configure = configurator(Feedback);
 }
 
-function createPlaceholder(source: Draggable) {
-  return untracked(() => {
-    const {element, manager} = source;
-
-    if (!element || !manager) return;
-
-    const {droppables} = manager.registry;
-    const containedDroppables = new Map<Droppable, string>();
-
-    for (const droppable of droppables) {
-      if (!droppable.element) continue;
-
-      if (
-        element === droppable.element ||
-        element.contains(droppable.element)
-      ) {
-        const identifierAttribute = `${ATTR_PREFIX}${generateUniqueId('dom-id')}`;
-
-        droppable.element.setAttribute(identifierAttribute, '');
-
-        containedDroppables.set(droppable, identifierAttribute);
-      }
-    }
-
-    const cleanup: CleanupFunction[] = [];
-    const placeholder = cloneElement(element);
-    const {remove} = placeholder;
-
-    for (const [droppable, identifierAttribute] of containedDroppables) {
-      if (!droppable.element) continue;
-
-      const selector = `[${identifierAttribute}]`;
-      const clonedElement = placeholder.matches(selector)
-        ? placeholder
-        : placeholder.querySelector(selector);
-
-      droppable.element?.removeAttribute(identifierAttribute);
-
-      if (!clonedElement) continue;
-
-      let current = droppable.element;
-
-      droppable.proxy = clonedElement;
-      clonedElement.removeAttribute(identifierAttribute);
-
-      ProxiedElements.set(current, clonedElement);
-
-      cleanup.push(() => {
-        ProxiedElements.delete(current);
-        droppable.proxy = undefined;
-      });
-    }
-
-    placeholder.setAttribute('inert', 'true');
-    placeholder.setAttribute('tab-index', '-1');
-    placeholder.setAttribute('aria-hidden', 'true');
-    placeholder.setAttribute(PLACEHOLDER_ATTRIBUTE, '');
-    placeholder.remove = () => {
-      cleanup.forEach((fn) => fn());
-      remove.call(placeholder);
-    };
-
-    return placeholder;
-  });
-}
+const injectedStyleTags = new Map<Document, HTMLStyleElement>();
