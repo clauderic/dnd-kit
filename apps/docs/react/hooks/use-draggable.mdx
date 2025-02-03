@@ -80,7 +80,15 @@ The `useDraggable` hook returns an object containing the following properties:
 </ResponseField>
 
 <ResponseField name="isDragSource" type="boolean">
-  A boolean value that indicates whether the element is currently being dragged.
+  A boolean value that indicates whether the draggable is the source of the drag operation that is in progress.
+</ResponseField>
+
+<ResponseField name="isDragging" type="boolean">
+  A boolean value that indicates whether the draggable is currently being dragged.
+</ResponseField>
+
+<ResponseField name="isDropping" type="boolean">
+  A boolean value that indicates whether the draggable is being dropped. This can be used to style the draggable element differently during the drop animation.
 </ResponseField>
 
 <ResponseField name="draggable" type="Draggable">

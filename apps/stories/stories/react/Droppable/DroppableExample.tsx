@@ -53,13 +53,13 @@ interface DraggableProps {
 function Draggable({id}: DraggableProps) {
   const [element, setElement] = useState<Element | null>(null);
 
-  const {isDragSource} = useDraggable({
+  const {isDragging} = useDraggable({
     id,
     element,
   });
 
   return (
-    <Button ref={setElement} shadow={isDragSource}>
+    <Button ref={setElement} shadow={isDragging}>
       <DraggableIcon />
     </Button>
   );

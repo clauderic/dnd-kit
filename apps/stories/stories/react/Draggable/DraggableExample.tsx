@@ -53,7 +53,7 @@ export function Draggable({
   const [element, setElement] = useState<Element | null>(null);
   const handleRef = useRef<HTMLButtonElement | null>(null);
 
-  const {isDragSource} = useDraggable({
+  const {isDragging} = useDraggable({
     id,
     modifiers,
     element,
@@ -64,7 +64,7 @@ export function Draggable({
   return (
     <Button
       ref={setElement}
-      shadow={isDragSource}
+      shadow={isDragging}
       actions={handle ? <Handle ref={handleRef} variant="dark" /> : undefined}
       style={style}
     >

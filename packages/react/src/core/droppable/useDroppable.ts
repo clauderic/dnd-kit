@@ -7,6 +7,7 @@ import {
   useComputed,
   useOnValueChange,
   useOnElementChange,
+  useDeepSignal,
 } from '@dnd-kit/react/hooks';
 import {currentValue, type RefOrValue} from '@dnd-kit/react/utilities';
 
@@ -31,7 +32,7 @@ export function useDroppable<T extends Data = Data>(
         manager
       )
   );
-  const isDropTarget = useComputed(() => droppable.isDropTarget, [droppable]);
+  const trackedDroppalbe = useDeepSignal(droppable);
 
   useOnValueChange(id, () => (droppable.id = id));
   useOnElementChange(element, (element) => (droppable.element = element));
@@ -42,8 +43,9 @@ export function useDroppable<T extends Data = Data>(
   useOnValueChange(type, () => (droppable.id = id));
 
   return {
+    droppable: trackedDroppalbe,
     get isDropTarget() {
-      return isDropTarget.value;
+      return trackedDroppalbe.isDropTarget;
     },
     ref: useCallback(
       (element: Element | null) => {
@@ -59,6 +61,5 @@ export function useDroppable<T extends Data = Data>(
       },
       [droppable]
     ),
-    droppable,
   };
 }

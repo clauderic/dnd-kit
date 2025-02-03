@@ -55,7 +55,7 @@ interface SortableProps {
 }
 
 function Sortable({id, index, style}: SortableProps) {
-  const {isDragSource, ref, handleRef} = useSortable({
+  const {isDragging, ref, handleRef} = useSortable({
     id,
     index,
   });
@@ -68,7 +68,7 @@ function Sortable({id, index, style}: SortableProps) {
       <Item
         actions={<Handle ref={handleRef} />}
         data-index={index}
-        shadow={isDragSource}
+        shadow={isDragging}
       >
         {id}
       </Item>

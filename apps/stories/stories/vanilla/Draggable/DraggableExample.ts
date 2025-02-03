@@ -17,9 +17,7 @@ export const DraggableExample = createVanillaStory(() => {
       element: draggableElement,
       effects: () => [
         () => {
-          const {status} = manager.dragOperation;
-
-          if (draggable.isDragSource && (status.dragging || status.dropped)) {
+          if (draggable.isDragging) {
             draggableElement.setAttribute('data-shadow', 'true');
 
             return () => {

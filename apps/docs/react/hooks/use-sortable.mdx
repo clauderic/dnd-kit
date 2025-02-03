@@ -149,5 +149,13 @@ The `useSortable` hook returns an object containing the following properties:
 </ParamField>
 
 <ParamField path="isDragSource" type="boolean">
-  A boolean value that indicates whether the sortable element is currently being dragged.
+  A boolean value that indicates whether the sortable is the source of the drag operation that is in progress.
 </ParamField>
+
+<ResponseField name="isDragging" type="boolean">
+  A boolean value that indicates whether the sortable is currently being dragged.
+</ResponseField>
+
+<ResponseField name="isDropping" type="boolean">
+  A boolean value that indicates whether the sortable is being dropped. This can be used to style the sortable element differently during the drop animation.
+</ResponseField>

@@ -7,6 +7,7 @@ import {
   useComputed,
   useOnValueChange,
   useOnElementChange,
+  useDeepSignal,
 } from '@dnd-kit/react/hooks';
 import {currentValue, type RefOrValue} from '@dnd-kit/react/utilities';
 
@@ -33,7 +34,7 @@ export function useDraggable<T extends Data = Data>(
         manager
       )
   );
-  const isDragSource = useComputed(() => draggable.isDragSource, [draggable]);
+  const trackedDraggable = useDeepSignal(draggable);
   const status = useComputed(() => draggable.status, [draggable]);
 
   useOnValueChange(id, () => (draggable.id = id));
@@ -54,12 +55,15 @@ export function useDraggable<T extends Data = Data>(
   );
 
   return {
-    draggable,
-    get isDragSource() {
-      return isDragSource.value;
+    draggable: trackedDraggable,
+    get isDragging() {
+      return trackedDraggable.isDragging;
     },
-    get status() {
-      return status.value;
+    get isDropping() {
+      return trackedDraggable.isDropping;
+    },
+    get isDragSource() {
+      return trackedDraggable.isDragSource;
     },
     handleRef: useCallback(
       (element: Element | null) => {

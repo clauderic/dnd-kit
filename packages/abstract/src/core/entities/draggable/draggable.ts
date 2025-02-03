@@ -41,6 +41,22 @@ export class Draggable<
   public accessor status: DraggableStatus = 'idle';
 
   /**
+   * A boolean indicating whether the draggable item is being dropped.
+   */
+  @derived
+  public get isDropping() {
+    return this.status === 'dropping' && this.isDragSource;
+  }
+
+  /**
+   * A boolean indicating whether the draggable item is being dropped.
+   */
+  @derived
+  public get isDragging() {
+    return this.status === 'dragging' && this.isDragSource;
+  }
+
+  /**
    * A boolean indicating whether the draggable item is the source of a drag operation.
    */
   @derived

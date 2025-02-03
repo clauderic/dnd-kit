@@ -106,9 +106,7 @@ export function IframeLists({
         </AutoFrame>
       </div>
       <DragOverlay>
-        {(source) => (
-          <Item shadow={source.status == 'dragging'}>{source.id}</Item>
-        )}
+        {(source) => <Item shadow={source.isDragging}>{source.id}</Item>}
       </DragOverlay>
     </DragDropProvider>
   );

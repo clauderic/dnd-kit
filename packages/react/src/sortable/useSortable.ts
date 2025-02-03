@@ -10,6 +10,7 @@ import {
   useIsomorphicLayoutEffect,
   useOnValueChange,
   useOnElementChange,
+  useDeepSignal,
 } from '@dnd-kit/react/hooks';
 import {currentValue, type RefOrValue} from '@dnd-kit/react/utilities';
 
@@ -52,9 +53,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     );
   });
 
-  const isDropTarget = useComputed(() => sortable.isDropTarget, [sortable]);
-  const isDragSource = useComputed(() => sortable.isDragSource, [sortable]);
-  const status = useComputed(() => sortable.status, [sortable]);
+  const trackedSortable = useDeepSignal(sortable);
 
   useOnValueChange(id, () => (sortable.id = id));
 
@@ -105,14 +104,18 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
   );
 
   return {
+    sortable: trackedSortable,
+    get isDragging() {
+      return trackedSortable.isDragging;
+    },
+    get isDropping() {
+      return trackedSortable.isDropping;
+    },
     get isDragSource() {
-      return isDragSource.value;
+      return trackedSortable.isDragSource;
     },
     get isDropTarget() {
-      return isDropTarget.value;
-    },
-    get status() {
-      return status.value;
+      return trackedSortable.isDropTarget;
     },
     handleRef: useCallback(
       (element: Element | null) => {

@@ -371,6 +371,20 @@ export class Sortable<T extends Data = Data> {
     return this.draggable.isDragSource;
   }
 
+  /**
+   * A boolean indicating whether the sortable item is being dragged.
+   */
+  public get isDragging() {
+    return this.draggable.isDragging;
+  }
+
+  /**
+   * A boolean indicating whether the sortable item is being dropped.
+   */
+  public get isDropping() {
+    return this.draggable.isDropping;
+  }
+
   public get status() {
     return this.draggable.status;
   }
