@@ -300,6 +300,10 @@ export class PointerSensor extends Sensor<
         listener: preventDefault,
       },
       {
+        type: 'contextmenu',
+        listener: preventDefault,
+      },
+      {
         type: 'keydown',
         listener: this.handleKeyDown,
       },
