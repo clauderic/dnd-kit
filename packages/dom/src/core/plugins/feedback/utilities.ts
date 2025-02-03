@@ -3,6 +3,7 @@ import {
   cloneElement,
   generateUniqueId,
   getFrameElement,
+  showPopover,
   ProxiedElements,
 } from '@dnd-kit/dom/utilities';
 
@@ -113,4 +114,20 @@ function configurePlaceholder(placeholder: Element): void {
 export function isSameFrame(element: Element, target: Element): boolean {
   if (element === target) return true;
   return getFrameElement(element) === getFrameElement(target);
+}
+
+/**
+ * Prevent an element with the `popover` attribute from being closed
+ */
+export function preventPopoverClose(event: Event) {
+  const {target} = event;
+
+  if (
+    event instanceof ToggleEvent &&
+    event.newState === 'closed' &&
+    target instanceof Element &&
+    target.hasAttribute('popover')
+  ) {
+    requestAnimationFrame(() => showPopover(target));
+  }
 }

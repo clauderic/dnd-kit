@@ -23,7 +23,6 @@ import {Coordinates} from '@dnd-kit/geometry';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import type {Draggable} from '../../entities/index.ts';
-import {isSameFrame, createPlaceholder} from './utilities.ts';
 
 import {
   ATTRIBUTE,
@@ -32,6 +31,11 @@ import {
   IGNORED_ATTRIBUTES,
   IGNORED_STYLES,
 } from './constants.ts';
+import {
+  createPlaceholder,
+  isSameFrame,
+  preventPopoverClose,
+} from './utilities.ts';
 
 export interface FeedbackOptions {
   rootElement?: Element | ((source: Draggable) => Element);
@@ -232,6 +236,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         feedbackElement.setAttribute('popover', '');
       }
       showPopover(feedbackElement);
+      feedbackElement.addEventListener('beforetoggle', preventPopoverClose);
     }
 
     const actual = new DOMRectangle(feedbackElement, {
@@ -437,8 +442,17 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       documentMutationObserver?.disconnect();
       resizeObserver.disconnect();
 
+      if (supportsPopover(feedbackElement)) {
+        feedbackElement.removeEventListener(
+          'beforetoggle',
+          preventPopoverClose
+        );
+        feedbackElement.removeAttribute('popover');
+      }
+
       feedbackElement.removeAttribute(ATTRIBUTE);
       styles.reset();
+
       source.status = 'idle';
 
       const moved = state.current.translate != null;
@@ -453,10 +467,6 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       }
 
       placeholder?.remove();
-
-      if (supportsPopover(feedbackElement)) {
-        feedbackElement.removeAttribute('popover');
-      }
 
       cleanupEffect();
       dropEffectCleanup?.();
