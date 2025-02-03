@@ -41,13 +41,15 @@ export const CSS_RULES = `
     scale: var(${CSS_PREFIX}scale) !important;
     transform-origin: var(${CSS_PREFIX}transform-origin) !important;
   }
-  *:where([${ATTRIBUTE}][popover]) {
-    overflow: visible;
-    background: unset;
-    border: unset;
-    margin: unset;
-    padding: unset;
-    color: inherit;
+  @layer {
+    :where([${ATTRIBUTE}][popover]) {
+      overflow: visible;
+      background: unset;
+      border: unset;
+      margin: unset;
+      padding: unset;
+      color: inherit;
+    }
   }
   [${ATTRIBUTE}]::backdrop, [${ATTR_PREFIX}overlay]:not([${ATTRIBUTE}]) {
     display: none;
