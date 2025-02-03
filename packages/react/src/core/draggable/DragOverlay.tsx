@@ -1,8 +1,9 @@
-import {useEffect, useRef, type ReactNode} from 'react';
+import {useEffect, useMemo, useRef, type ReactNode} from 'react';
 import {useComputed, useDeepSignal} from '@dnd-kit/react/hooks';
 import {Draggable, Feedback} from '@dnd-kit/dom';
 
 import {useDragDropManager} from '../hooks/useDragDropManager.ts';
+import {DragDropContext} from '../context/context.ts';
 
 export interface Props {
   className?: string;
@@ -33,9 +34,36 @@ export function DragOverlay({children, className}: Props) {
     };
   }, [manager]);
 
+  // Prevent children of the overlay from registering themselves as draggables or droppables
+  const patchedManager = useMemo(() => {
+    if (!manager) return null;
+
+    const patchedRegistry = new Proxy(manager.registry, {
+      get(target, property) {
+        if (property === 'register' || property === 'unregister') {
+          return noop;
+        }
+
+        return target[property as keyof typeof target];
+      },
+    });
+
+    return new Proxy(manager, {
+      get(target, property) {
+        if (property === 'registry') {
+          return patchedRegistry;
+        }
+
+        return target[property as keyof typeof target];
+      },
+    });
+  }, [manager]);
+
   return (
     <div className={className} ref={ref} data-dnd-overlay>
-      {renderChildren()}
+      <DragDropContext.Provider value={patchedManager}>
+        {renderChildren()}
+      </DragDropContext.Provider>
     </div>
   );
 
@@ -48,6 +76,10 @@ export function DragOverlay({children, className}: Props) {
 
     return children;
   }
+}
+
+function noop() {
+  return () => {};
 }
 
 function Children({
