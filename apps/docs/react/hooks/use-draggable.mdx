@@ -189,3 +189,58 @@ export function Draggable(props) {
   return <button ref={ref} className="btn">draggable</button>;
 }
 `.trim();
+
+### Rendering a drag overlay
+
+You can render a completely different element while the draggable element is being dragged by using the `<DragOverlay>` component.
+
+<img src="/images/draggable/drag-overlay.png" />
+
+```jsx
+import {useDraggable, DragOverlay} from '@dnd-kit/react';
+
+function Draggable() {
+  const {ref} = useDraggable({
+    id: 'draggable',
+  });
+
+  return (
+    <>
+      <button ref={ref}>
+        Draggable
+      </button>
+      <DragOverlay>
+        <div>I will be rendered while dragging...</div>
+      </DragOverlay>
+    </>
+  );
+}
+```
+
+The `<DragOverlay>` component will only render its children when a drag operation is in progress. This can be useful for rendering a completely different element while the draggable element is being dragged.
+
+<Warning>
+ You should only render the `<DragOverlay>` component once per [DragDropProvider](/react/components/drag-drop-provider) component.
+</Warning>
+
+To get around the fact that the `<DragOverlay>` component should only rendered once, you can also pass a function as a child to the `<DragOverlay>` component, which will receive the `source` as an argument. This can be useful for rendering a clone of the source element while it is being dragged.
+
+```jsx
+import {useDraggable, DragOverlay} from '@dnd-kit/react';
+
+function App(props) {
+  return (
+    <DragDropProvider>
+      <Draggable id="foo" />
+      <Draggable id="bar" />
+      <DragOverlay>
+        {source => (
+          <div>
+            Dragging {source.id}
+          </div>
+        )}
+      </DragOverlay>
+    </DragDropProvider>
+  );
+}
+```
