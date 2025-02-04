@@ -16,7 +16,7 @@ export function useInstance<T extends Instance>(
   initializer: (manager: DragDropManager<any, any> | undefined) => T
 ): T {
   const manager = useDragDropManager() ?? undefined;
-  const [instance] = useState<T>(() => initializer(undefined));
+  const [instance] = useState<T>(() => initializer(manager));
 
   if (instance.manager !== manager) {
     instance.manager = manager;

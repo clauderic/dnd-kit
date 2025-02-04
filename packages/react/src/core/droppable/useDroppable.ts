@@ -27,6 +27,7 @@ export function useDroppable<T extends Data = Data>(
       new Droppable(
         {
           ...input,
+          register: false,
           element: currentValue(element),
         },
         manager

@@ -38,7 +38,9 @@ export class Draggable<
   public accessor type: Type | undefined;
 
   @reactive
-  public accessor status: DraggableStatus = 'idle';
+  public accessor status: DraggableStatus = this.isDragSource
+    ? 'dragging'
+    : 'idle';
 
   /**
    * A boolean indicating whether the draggable item is being dropped.

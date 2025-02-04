@@ -44,6 +44,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     return new Sortable(
       {
         ...input,
+        register: false,
         handle: currentValue(handle),
         element: currentValue(element),
         target: currentValue(target),

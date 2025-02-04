@@ -4,9 +4,27 @@ import {DragDropManager} from '../../manager/index.ts';
 import type {Data, UniqueIdentifier} from './types.ts';
 
 export interface Input<T extends Data = Data> {
+  /**
+   * The unique identifier of the entity.
+   */
   id: UniqueIdentifier;
+  /**
+   * Optional data associated with the entity.
+   */
   data?: T;
+  /**
+   * Whether the entity should initially be disabled.
+   * @default false
+   */
   disabled?: boolean;
+  /**
+   * Whether the entity should be automatically registered with the manager when it is created.
+   * @default true
+   */
+  register?: boolean;
+  /**
+   * An array of effects that are set up when the entity is registered and cleaned up when it is unregistered.
+   */
   effects?(): Effect[];
 }
 
@@ -27,7 +45,7 @@ export class Entity<
    * @param manager - The manager that controls the drag and drop operations.
    */
   constructor(input: Input<T>, manager: U | undefined) {
-    const {effects, id, data = {}, disabled = false} = input;
+    const {effects, id, data = {}, disabled = false, register = true} = input;
 
     let previousId = id;
 
@@ -55,8 +73,8 @@ export class Entity<
     this.unregister = this.unregister.bind(this);
     this.destroy = this.destroy.bind(this);
 
-    if (manager) {
-      queueMicrotask(() => this.manager?.registry.register(this));
+    if (manager && register) {
+      queueMicrotask(this.register);
     }
   }
 

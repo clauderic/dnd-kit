@@ -28,6 +28,7 @@ export function useDraggable<T extends Data = Data>(
       new Draggable(
         {
           ...input,
+          register: false,
           handle: currentValue(handle),
           element: currentValue(element),
         },
@@ -35,7 +36,6 @@ export function useDraggable<T extends Data = Data>(
       )
   );
   const trackedDraggable = useDeepSignal(draggable);
-  const status = useComputed(() => draggable.status, [draggable]);
 
   useOnValueChange(id, () => (draggable.id = id));
   useOnElementChange(handle, (handle) => (draggable.handle = handle));
