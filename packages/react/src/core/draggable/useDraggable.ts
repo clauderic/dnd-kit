@@ -35,7 +35,7 @@ export function useDraggable<T extends Data = Data>(
         manager
       )
   );
-  const trackedDraggable = useDeepSignal(draggable);
+  const trackedDraggable = useDeepSignal(draggable, shouldUpdateSynchronously);
 
   useOnValueChange(id, () => (draggable.id = id));
   useOnElementChange(handle, (handle) => (draggable.handle = handle));
@@ -86,4 +86,11 @@ export function useDraggable<T extends Data = Data>(
       [draggable]
     ),
   };
+}
+
+function shouldUpdateSynchronously(key: string, oldValue: any, newValue: any) {
+  // Update synchronously after drop animation
+  if (key === 'isDragSource' && !newValue && oldValue) return true;
+
+  return false;
 }

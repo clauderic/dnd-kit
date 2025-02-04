@@ -136,7 +136,6 @@ function SortableItem({
     group,
     accept: 'item',
     type: 'item',
-    feedback: 'clone',
     index,
     data: {group},
   });

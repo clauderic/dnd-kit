@@ -5,7 +5,6 @@ import {Sortable, defaultSortableTransition} from '@dnd-kit/dom/sortable';
 import type {SortableInput} from '@dnd-kit/dom/sortable';
 import {useInstance} from '@dnd-kit/react';
 import {
-  useComputed,
   useImmediateEffect as immediateEffect,
   useIsomorphicLayoutEffect,
   useOnValueChange,
@@ -54,7 +53,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     );
   });
 
-  const trackedSortable = useDeepSignal(sortable);
+  const trackedSortable = useDeepSignal(sortable, shouldUpdateSynchronously);
 
   useOnValueChange(id, () => (sortable.id = id));
 
@@ -167,4 +166,11 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
       [sortable]
     ),
   };
+}
+
+function shouldUpdateSynchronously(key: string, oldValue: any, newValue: any) {
+  // Update synchronously after drop animation
+  if (key === 'isDragSource' && !newValue && oldValue) return true;
+
+  return false;
 }
