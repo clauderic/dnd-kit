@@ -1,5 +1,22 @@
 # @dnd-kit/react
 
+## 0.0.8
+
+### Patch Changes
+
+- [#1598](https://github.com/clauderic/dnd-kit/pull/1598) [`426339d`](https://github.com/clauderic/dnd-kit/commit/426339df7bcfdfb08a2d3b9b2eb0abb8c02ed526) Thanks [@github-actions](https://github.com/apps/github-actions)! - Added the `<DragOverlay>` component to ease migration for consumers of `@dnd-kit/core` migrating to `@dnd-kit/react`
+
+- [#1598](https://github.com/clauderic/dnd-kit/pull/1598) [`3ea0d31`](https://github.com/clauderic/dnd-kit/commit/3ea0d314649b186bfe0524d50145625da13a8787) Thanks [@github-actions](https://github.com/apps/github-actions)! - Added optional `register` argument to instances of `Entity` to disable automatic registration of instances that have a manager supplied on initialization.
+
+- [#1598](https://github.com/clauderic/dnd-kit/pull/1598) [`e7fafec`](https://github.com/clauderic/dnd-kit/commit/e7fafec99cdcd44612a905cdb6ba560d42f1d786) Thanks [@github-actions](https://github.com/apps/github-actions)! - Prevent the `Feedback` element that has the popover attribute from being accidentally closed during the drag operation, which would take it out of the top layer.
+
+- [#1597](https://github.com/clauderic/dnd-kit/pull/1597) [`6978d81`](https://github.com/clauderic/dnd-kit/commit/6978d81311e5ac0d9c623b8ceb864740c693ca1d) Thanks [@clauderic](https://github.com/clauderic)! - Introduce `useDeepSignal` hook, which keeps track of which properties are read on an object and automatically re-renders the component when a read signal changes.
+
+- Updated dependencies [[`0de7456`](https://github.com/clauderic/dnd-kit/commit/0de7456ade17b9a0aa127b8adf13495e7fdf1558), [`c9716cf`](https://github.com/clauderic/dnd-kit/commit/c9716cf7b8b846faab451bd2f60c53c77d2d24ba), [`3ea0d31`](https://github.com/clauderic/dnd-kit/commit/3ea0d314649b186bfe0524d50145625da13a8787), [`3cf4db1`](https://github.com/clauderic/dnd-kit/commit/3cf4db126813ebe6ddfc025df5e42e9bfcfa9c38), [`74eedef`](https://github.com/clauderic/dnd-kit/commit/74eedef3441dc07d8fa8dd9337a6b2d748b0cdde), [`42e7256`](https://github.com/clauderic/dnd-kit/commit/42e7256e7fb9c11ed6295b77e30c41ebe66a15d1)]:
+  - @dnd-kit/dom@0.0.8
+  - @dnd-kit/abstract@0.0.8
+  - @dnd-kit/state@0.0.8
+
 ## 0.0.7
 
 ### Patch Changes
