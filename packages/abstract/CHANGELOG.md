@@ -1,5 +1,19 @@
 # @dnd-kit/abstract
 
+## 0.0.8
+
+### Patch Changes
+
+- [#1598](https://github.com/clauderic/dnd-kit/pull/1598) [`c9716cf`](https://github.com/clauderic/dnd-kit/commit/c9716cf7b8b846faab451bd2f60c53c77d2d24ba) Thanks [@github-actions](https://github.com/apps/github-actions)! - Added `isDragging` and `isDropping` properties to `draggable` and `sortable` instances.
+
+- [#1598](https://github.com/clauderic/dnd-kit/pull/1598) [`3ea0d31`](https://github.com/clauderic/dnd-kit/commit/3ea0d314649b186bfe0524d50145625da13a8787) Thanks [@github-actions](https://github.com/apps/github-actions)! - Added optional `register` argument to instances of `Entity` to disable automatic registration of instances that have a manager supplied on initialization.
+
+- [#1597](https://github.com/clauderic/dnd-kit/pull/1597) [`3cf4db1`](https://github.com/clauderic/dnd-kit/commit/3cf4db126813ebe6ddfc025df5e42e9bfcfa9c38) Thanks [@clauderic](https://github.com/clauderic)! - Added the `registerEffect` method that can be invoked by sub-classes that extend the base `Plugin` class to register effects and automatically dispose of them when the plugin instance is destroyed.
+
+- Updated dependencies []:
+  - @dnd-kit/geometry@0.0.8
+  - @dnd-kit/state@0.0.8
+
 ## 0.0.7
 
 ### Patch Changes

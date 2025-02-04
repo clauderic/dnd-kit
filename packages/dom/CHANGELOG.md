@@ -1,5 +1,26 @@
 # @dnd-kit/dom
 
+## 0.0.8
+
+### Patch Changes
+
+- [#1598](https://github.com/clauderic/dnd-kit/pull/1598) [`0de7456`](https://github.com/clauderic/dnd-kit/commit/0de7456ade17b9a0aa127b8adf13495e7fdf1558) Thanks [@github-actions](https://github.com/apps/github-actions)! - Moved styles that override the default user agent styles for `[popover]` into a CSS layer to avoid overriding other layered styles on the page, such as Tailwind 4.
+
+- [#1598](https://github.com/clauderic/dnd-kit/pull/1598) [`c9716cf`](https://github.com/clauderic/dnd-kit/commit/c9716cf7b8b846faab451bd2f60c53c77d2d24ba) Thanks [@github-actions](https://github.com/apps/github-actions)! - Added `isDragging` and `isDropping` properties to `draggable` and `sortable` instances.
+
+- [#1598](https://github.com/clauderic/dnd-kit/pull/1598) [`74eedef`](https://github.com/clauderic/dnd-kit/commit/74eedef3441dc07d8fa8dd9337a6b2d748b0cdde) Thanks [@github-actions](https://github.com/apps/github-actions)! - **PointerSensor**
+
+  - End drag operation if `lostpointercapture` event is fired and the drag operation has not ended already. This can happen if the `pointerup` event is fired in a different frame.
+  - Prevent `contextmenu` from opening during a drag operation.
+
+- [#1598](https://github.com/clauderic/dnd-kit/pull/1598) [`42e7256`](https://github.com/clauderic/dnd-kit/commit/42e7256e7fb9c11ed6295b77e30c41ebe66a15d1) Thanks [@github-actions](https://github.com/apps/github-actions)! - - Fixed an invalid CSS selector in the `PreventSelection` plugin
+  - Removed logic to prevent user selection in `Feedback` plugin (defer to `PreventSelection` plugin to handle this)
+- Updated dependencies [[`c9716cf`](https://github.com/clauderic/dnd-kit/commit/c9716cf7b8b846faab451bd2f60c53c77d2d24ba), [`3ea0d31`](https://github.com/clauderic/dnd-kit/commit/3ea0d314649b186bfe0524d50145625da13a8787), [`3cf4db1`](https://github.com/clauderic/dnd-kit/commit/3cf4db126813ebe6ddfc025df5e42e9bfcfa9c38)]:
+  - @dnd-kit/abstract@0.0.8
+  - @dnd-kit/collision@0.0.8
+  - @dnd-kit/geometry@0.0.8
+  - @dnd-kit/state@0.0.8
+
 ## 0.0.7
 
 ### Patch Changes
