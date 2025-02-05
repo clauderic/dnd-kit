@@ -15,6 +15,7 @@ export class PreventSelection extends Plugin<DragDropManager> {
         style.innerText = `* { user-select: none !important; -webkit-user-select: none !important; }`;
         document.head.appendChild(style);
 
+        removeSelection();
         document.addEventListener('selectionchange', removeSelection, {
           capture: true,
         });
