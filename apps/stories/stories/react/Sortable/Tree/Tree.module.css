@@ -1,0 +1,32 @@
+.Tree {
+  max-width: 600px;
+  padding: 10px;
+  margin: 10% auto 0px;
+}
+
+.TreeItem {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  gap: 10px;
+  background-color: #fff;
+  border: 1px solid #dedede;
+  margin-bottom: -1px;
+  color: #222;
+  box-sizing: border-box;
+
+  &[data-overlay] {
+    width: max-content !important;
+    padding-right: 24px;
+    border-radius: 4px;
+    box-shadow: 0px 15px 15px 0 rgba(34, 33, 81, 0.1);
+  }
+}
+
+.TreeItem[aria-hidden="true"] {
+  opacity: 0.5;
+}
+
+.Action {
+  margin-left: auto;
+}
