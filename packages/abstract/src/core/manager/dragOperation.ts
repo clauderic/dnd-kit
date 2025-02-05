@@ -129,7 +129,7 @@ export function DragOperationManager<
     const {x, y} = position.delta;
 
     let transform = {x, y};
-    const initialShape = shape.initial.peek();
+    const initialShape = shape.initial.value;
     const currentShape = shape.current.peek();
     const operation: Omit<DragOperation<T, U>, 'transform'> = {
       activatorEvent: activatorEvent.peek(),
