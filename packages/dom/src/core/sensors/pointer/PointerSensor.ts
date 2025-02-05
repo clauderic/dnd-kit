@@ -166,6 +166,9 @@ export class PointerSensor extends Sensor<
         // Cancel activation if there is a competing Drag and Drop interaction
         type: 'dragstart',
         listener: isNativeDraggable ? this.handleCancel : preventDefault,
+        options: {
+          capture: true,
+        },
       },
     ]);
 
