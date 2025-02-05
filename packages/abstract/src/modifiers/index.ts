@@ -4,6 +4,6 @@ export {
   RestrictToVerticalAxis,
 } from './axis.ts';
 
-export {restrictShapeToBoundingRectangle} from './boundingRectangle.ts';
+export { restrictShapeToBoundingRectangle } from './boundingRectangle.ts';
 
-export {SnapModifier} from './snap.ts';
+export { SnapModifier, SnapCenterToCursor } from './snap.ts';

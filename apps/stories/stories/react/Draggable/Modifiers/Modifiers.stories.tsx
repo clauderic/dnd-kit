@@ -1,13 +1,13 @@
-import type {Meta, StoryObj} from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import {
   RestrictToHorizontalAxis,
   RestrictToVerticalAxis,
 } from '@dnd-kit/abstract/modifiers';
-import {RestrictToElement, RestrictToWindow} from '@dnd-kit/dom/modifiers';
+import { RestrictToElement, RestrictToWindow, SnapCenterToCursor } from '@dnd-kit/dom/modifiers';
 
 import docs from './docs/ModifierDocs.mdx';
-import {DraggableExample} from '../DraggableExample';
-import {SnapToGridExample} from './SnapToGridExample';
+import { DraggableExample } from '../DraggableExample';
+import { SnapToGridExample } from './SnapToGridExample';
 import styles from './styles.module.css';
 
 const meta: Meta<typeof DraggableExample> = {
@@ -48,7 +48,7 @@ export const WindowModifier: Story = {
 export const ContainerModifier: Story = {
   name: 'Restrict to container',
   args: {
-    container({children}) {
+    container({ children }) {
       return (
         <div className={styles.Container} data-container>
           {children}
@@ -68,4 +68,11 @@ export const ContainerModifier: Story = {
 export const SnapModifierExample: Story = {
   name: 'Snap to grid',
   render: SnapToGridExample,
+};
+
+export const SnapToCursor: Story = {
+  name: 'Snap to cursor',
+  args: {
+    modifiers: [SnapCenterToCursor],
+  },
 };
