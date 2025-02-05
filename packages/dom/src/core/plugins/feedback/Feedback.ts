@@ -49,7 +49,7 @@ interface State {
     dimensions?: {width: number; height: number};
     coordinates?: Coordinates;
     frameTransform?: {x: number; y: number; scaleX: number; scaleY: number};
-    translate: Coordinates;
+    translate?: Coordinates;
     transformOrigin?: Coordinates;
   };
 }
@@ -59,9 +59,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
   public accessor overlay: Element | undefined;
 
   private state: State = {
-    initial: {
-      translate: {x: 0, y: 0},
-    },
+    initial: {},
     current: {},
   };
 
@@ -79,9 +77,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
     if (status.idle) {
       state.current = {};
-      state.initial = {
-        translate: {x: 0, y: 0},
-      };
+      state.initial = {};
       return;
     }
 
@@ -203,7 +199,10 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     feedbackElement.setAttribute(ATTRIBUTE, 'true');
 
     const transform = untracked(() => dragOperation.transform);
-    const translateString = `${transform.x * frameTransform.scaleX + initial.translate.x}px ${transform.y * frameTransform.scaleY + initial.translate.y}px 0`;
+    const initialTranslate = initial.translate ?? {x: 0, y: 0};
+    const tX = transform.x * frameTransform.scaleX + initialTranslate.x;
+    const tY = transform.y * frameTransform.scaleY + initialTranslate.y;
+    const translateString = `${tX}px ${tY}px 0`;
 
     styles.set(
       {
@@ -237,29 +236,6 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       }
       showPopover(feedbackElement);
       feedbackElement.addEventListener('beforetoggle', preventPopoverClose);
-    }
-
-    const actual = new DOMRectangle(feedbackElement, {
-      frameTransform,
-      ignoreTransforms: true,
-    });
-    const offset = {
-      top: projected.top - actual.top,
-      left: projected.left - actual.left,
-    };
-
-    if (Math.abs(offset.left) > 0.01 || Math.abs(offset.top) > 0.01) {
-      styles.set(
-        {
-          top: actual.top + offset.top,
-          left: actual.left + offset.left,
-        },
-        CSS_PREFIX
-      );
-    } else {
-      // Ignore sub-pixel offsets
-      offset.left = 0;
-      offset.top = 0;
     }
 
     const resizeObserver = new ResizeObserver(() => {
@@ -401,8 +377,9 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           ? '250ms cubic-bezier(0.25, 1, 0.5, 1)'
           : '0ms linear';
 
-        const x = transform.x / frameTransform.scaleX + initial.translate.x;
-        const y = transform.y / frameTransform.scaleY + initial.translate.y;
+        const initialTranslate = initial.translate ?? {x: 0, y: 0};
+        const x = transform.x / frameTransform.scaleX + initialTranslate.x;
+        const y = transform.y / frameTransform.scaleY + initialTranslate.y;
 
         styles.set(
           {
