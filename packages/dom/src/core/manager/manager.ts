@@ -41,6 +41,11 @@ export const defaultPreset: {
           return undefined;
         }
 
+        if (pointerType === 'touch') {
+          return {
+            delay: {value: 250, tolerance: 5},
+          };
+        }
         return {
           delay: {value: 200, tolerance: 10},
           distance: {value: 5},
