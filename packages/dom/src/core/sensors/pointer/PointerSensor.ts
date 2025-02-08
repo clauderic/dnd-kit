@@ -173,7 +173,7 @@ export class PointerSensor extends Sensor<
     ]);
 
     const cleanup = () => {
-      setTimeout(unbindListeners);
+      unbindListeners();
       this.#clearTimeout?.();
       this.initialCoordinates = undefined;
     };
@@ -242,7 +242,7 @@ export class PointerSensor extends Sensor<
     // End the drag and drop operation
     const {status} = this.manager.dragOperation;
 
-    if (!status.idle) {
+    if (status.dragging) {
       // Prevent the default behaviour of the event
       event.preventDefault();
       event.stopPropagation();
