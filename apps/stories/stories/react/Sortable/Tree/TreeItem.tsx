@@ -1,10 +1,9 @@
 import {useSortable} from '@dnd-kit/react/sortable';
 
-import {directionBiased} from '@dnd-kit/collision';
+import {Handle} from '../../components/Handle/Handle.tsx';
+import {Remove} from '../../components/Actions/Remove.tsx';
 
-import {Handle, Remove} from '../../components';
-
-import {FlattenedItem} from './types.js';
+import {FlattenedItem} from './types.ts';
 import styles from './Tree.module.css';
 
 export interface Props extends FlattenedItem {
@@ -15,7 +14,6 @@ const INDENTATION = 50;
 
 export function TreeItem({depth, id, index, parentId, onRemove}: Props) {
   const {ref, handleRef, isDragSource} = useSortable({
-    collisionDetector: directionBiased,
     id,
     index,
     data: {
@@ -33,7 +31,9 @@ export function TreeItem({depth, id, index, parentId, onRemove}: Props) {
       }}
       aria-hidden={isDragSource}
     >
-      <Handle ref={handleRef} />
+      <span className={styles.Handle}>
+        <Handle ref={handleRef} />
+      </span>
       {id}
       {onRemove && (
         <div className={styles.Action}>

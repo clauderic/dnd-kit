@@ -1,5 +1,6 @@
-import {useState} from 'react';
+import {useRef, useState} from 'react';
 import {DragDropProvider, DragOverlay} from '@dnd-kit/react';
+import {isKeyboardEvent} from '@dnd-kit/dom/utilities';
 import {move} from '@dnd-kit/helpers';
 
 import {FlattenedItem, type Item} from './types.js';
@@ -10,9 +11,8 @@ import {
   getDragDepth,
 } from './utilities.js';
 import {TreeItem} from './TreeItem.js';
-
+import {TreeItemOverlay} from './TreeItemOverlay.js';
 import styles from './Tree.module.css';
-import {TreeItemOverlay} from './TreeItemOverlay.tsx';
 
 interface Props {
   items: Item[];
@@ -24,17 +24,32 @@ export function Tree({items, indentation = 50, onChange}: Props) {
   const [flattenedItems, setFlattenedItems] = useState<FlattenedItem[]>(() =>
     flattenTree(items)
   );
-  const [initialDepth, setInitialDepth] = useState(0);
+  const initialDepth = useRef(0);
+  const sourceChildren = useRef<FlattenedItem[]>([]);
 
   return (
     <DragDropProvider
       onDragStart={(event) => {
         const {source} = event.operation;
-        const initialDepth = flattenedItems.find(
-          ({id}) => id === source!.id
-        )!.depth;
 
-        setInitialDepth(initialDepth);
+        if (!source) return;
+
+        const {depth} = flattenedItems.find(({id}) => id === source.id)!;
+
+        setFlattenedItems((flattenedItems) => {
+          sourceChildren.current = [];
+
+          return flattenedItems.filter((item) => {
+            if (item.parentId === source.id) {
+              sourceChildren.current = [...sourceChildren.current, item];
+              return false;
+            }
+
+            return true;
+          });
+        });
+
+        initialDepth.current = depth;
       }}
       onDragOver={(event, manager) => {
         const {source, target} = event.operation;
@@ -43,19 +58,22 @@ export function Tree({items, indentation = 50, onChange}: Props) {
 
         if (source && target && source.id !== target.id) {
           setFlattenedItems((flattenedItems) => {
-            const sortedItems = move(flattenedItems, event);
             const offsetLeft = manager.dragOperation.transform.x;
             const dragDepth = getDragDepth(offsetLeft, indentation);
-            const projectedDepth = initialDepth + dragDepth;
+            const projectedDepth = initialDepth.current + dragDepth;
+
             const {depth, parentId} = getProjection(
-              sortedItems,
+              flattenedItems,
               target.id,
               projectedDepth
             );
 
-            return sortedItems.map((item) =>
+            const sortedItems = move(flattenedItems, event);
+            const newItems = sortedItems.map((item) =>
               item.id === source.id ? {...item, depth, parentId} : item
             );
+
+            return newItems;
           });
         }
       }}
@@ -67,24 +85,25 @@ export function Tree({items, indentation = 50, onChange}: Props) {
         const {source, target} = event.operation;
 
         if (source && target) {
-          let keyboardDepth;
+          const keyboard = isKeyboardEvent(event.operation.activatorEvent);
           const currentDepth = source.data!.depth ?? 0;
+          let keyboardDepth;
 
-          // if (isKeyboardEvent(event.operation.activatorEvent)) {
-          //   const isHorizontal = event.by?.x !== 0 && event.by?.y === 0;
+          if (keyboard) {
+            const isHorizontal = event.by?.x !== 0 && event.by?.y === 0;
 
-          //   if (isHorizontal) {
-          //     event.preventDefault();
+            if (isHorizontal) {
+              event.preventDefault();
 
-          //     keyboardDepth = currentDepth + Math.sign(event.by!.x) * 1;
-          //   }
-          // }
+              keyboardDepth = currentDepth + Math.sign(event.by!.x);
+            }
+          }
 
           const offsetLeft = manager.dragOperation.transform.x;
           const dragDepth = getDragDepth(offsetLeft, indentation);
 
-          const projectedDepth = keyboardDepth ?? initialDepth + dragDepth;
-          console.log({initialDepth, projectedDepth});
+          const projectedDepth =
+            keyboardDepth ?? initialDepth.current + dragDepth;
 
           const {depth, parentId} = getProjection(
             flattenedItems,
@@ -92,15 +111,16 @@ export function Tree({items, indentation = 50, onChange}: Props) {
             projectedDepth
           );
 
-          // if (isKeyboardEvent(event.operation.activatorEvent)) {
-          //   if (currentDepth !== depth) {
-          //     requestAnimationFrame(() => {
-          //       manager.actions.move({
-          //         by: {x: indentation, y: 0},
-          //       });
-          //     });
-          //   }
-          // }
+          if (keyboard) {
+            if (currentDepth !== depth) {
+              const offset = indentation * (depth - currentDepth);
+
+              manager.actions.move({
+                by: {x: offset, y: 0},
+                propagate: false,
+              });
+            }
+          }
 
           if (
             source.data!.depth !== depth ||
@@ -119,7 +139,16 @@ export function Tree({items, indentation = 50, onChange}: Props) {
           return setFlattenedItems(flattenTree(items));
         }
 
-        onChange(buildTree(flattenedItems));
+        setFlattenedItems((flattenedItems) => {
+          const updatedTree = buildTree([
+            ...flattenedItems,
+            ...sourceChildren.current,
+          ]);
+
+          onChange(updatedTree);
+
+          return flattenTree(updatedTree);
+        });
       }}
     >
       <ul className={styles.Tree}>
@@ -132,8 +161,13 @@ export function Tree({items, indentation = 50, onChange}: Props) {
           />
         ))}
       </ul>
-      <DragOverlay>
-        {(source) => <TreeItemOverlay id={source.id} />}
+      <DragOverlay style={{width: 'min-content'}}>
+        {(source) => (
+          <TreeItemOverlay
+            id={source.id}
+            count={sourceChildren.current.length}
+          />
+        )}
       </DragOverlay>
     </DragDropProvider>
   );

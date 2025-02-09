@@ -5,6 +5,7 @@
 }
 
 .TreeItem {
+  position: relative;
   display: flex;
   align-items: center;
   padding: 10px;
@@ -25,8 +26,28 @@
 
 .TreeItem[aria-hidden="true"] {
   opacity: 0.5;
+
+  .Handle {
+    visibility: hidden;
+  }
 }
 
 .Action {
   margin-left: auto;
+}
+
+.Badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #2389ff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
 }
