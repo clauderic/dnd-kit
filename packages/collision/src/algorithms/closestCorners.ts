@@ -1,6 +1,6 @@
 import {CollisionPriority, CollisionType} from '@dnd-kit/abstract';
 import type {CollisionDetector} from '@dnd-kit/abstract';
-import {Point} from '@dnd-kit/geometry';
+import {Point, Shape} from '@dnd-kit/geometry';
 
 /**
  * Returns the distance between the corners of the droppable shape and the drag operation shape.
@@ -13,32 +13,13 @@ export const closestCorners: CollisionDetector = (input) => {
     return null;
   }
 
-  const {left, top, right, bottom} = droppable.shape.boundingRectangle;
-  const corners = [
-    {
-      x: left,
-      y: top,
-    },
-    {
-      x: right,
-      y: top,
-    },
-    {
-      x: left,
-      y: bottom,
-    },
-    {
-      x: right,
-      y: bottom,
-    },
-  ];
-
-  const distance = corners.reduce(
-    (acc, corner) =>
+  const shapeCorners = shape ? corners(shape.current) : undefined;
+  const distance = corners(droppable.shape).reduce(
+    (acc, corner, index) =>
       acc +
       Point.distance(
         Point.from(corner),
-        shape?.current.center ?? position.current
+        shapeCorners?.[index] ?? position.current
       ),
     0
   );
@@ -51,3 +32,13 @@ export const closestCorners: CollisionDetector = (input) => {
     priority: CollisionPriority.Normal,
   };
 };
+
+function corners(shape: Shape) {
+  const {left, top, right, bottom} = shape.boundingRectangle;
+  return [
+    {x: left, y: top},
+    {x: right, y: top},
+    {x: left, y: bottom},
+    {x: right, y: bottom},
+  ];
+}
