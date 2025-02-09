@@ -336,23 +336,35 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         subtree: true,
       });
 
+      /* Make sure the placeholder and the source element positions are always in sync */
       documentMutationObserver = new MutationObserver((entries) => {
         for (const entry of entries) {
-          const {addedNodes} = entry;
+          if (entry.addedNodes.length === 0) continue;
 
-          if (
-            addedNodes.length > 0 &&
-            Array.from(addedNodes).some((node) => node.contains(element))
-          ) {
-            /* Update the position of the placeholder when the source element is moved */
-            element.insertAdjacentElement('afterend', placeholder);
+          for (const node of Array.from(entry.addedNodes)) {
+            if (
+              node.contains(element) &&
+              element.nextElementSibling !== placeholder
+            ) {
+              /* Update the position of the placeholder when the source element is moved */
+              element.insertAdjacentElement('afterend', placeholder);
+              return;
+            }
 
-            /*
-             * Any update in DOM order that affects the source element hides the popover
-             * so we need to force the source element to be promoted to the top layer again
-             */
-            showPopover(element);
-            return;
+            if (
+              node.contains(placeholder) &&
+              placeholder.previousElementSibling !== element
+            ) {
+              /* Update the position of the source element when the placeholder is moved */
+              placeholder.insertAdjacentElement('beforebegin', element);
+
+              /*
+               * Any update in DOM order that affects the source element hides the popover
+               * so we need to force the source element to be promoted to the top layer again
+               */
+              showPopover(element);
+              return;
+            }
           }
         }
       });
