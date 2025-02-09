@@ -38,6 +38,12 @@ export abstract class Shape {
   abstract get inverseScale(): {x: number; y: number};
 
   /**
+   * Get the aspect ratio of the 2D shape.
+   * @returns The aspect ratio of the shape.
+   */
+  abstract get aspectRatio(): number;
+
+  /**
    * Returns whether or not this shape is equal to another shape.
    *
    * @param shape The other shape to compare with.

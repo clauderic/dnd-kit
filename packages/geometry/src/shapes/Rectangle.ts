@@ -101,6 +101,12 @@ export class Rectangle implements Shape {
     return left + width;
   }
 
+  public get aspectRatio(): number {
+    const {width, height} = this;
+
+    return width / height;
+  }
+
   static from({top, left, width, height}: BoundingRectangle) {
     return new Rectangle(left, top, width, height);
   }
