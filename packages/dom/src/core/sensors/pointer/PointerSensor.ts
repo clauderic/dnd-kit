@@ -200,7 +200,7 @@ export class PointerSensor extends Sensor<
       event.preventDefault();
       event.stopPropagation();
 
-      this.manager.actions.move({to: coordinates});
+      this.manager.actions.move({event, to: coordinates});
       return;
     }
 
@@ -224,7 +224,7 @@ export class PointerSensor extends Sensor<
         distance.tolerance != null &&
         exceedsDistance(delta, distance.tolerance)
       ) {
-        return this.handleCancel();
+        return this.handleCancel(event);
       }
       if (exceedsDistance(delta, distance.value)) {
         return this.handleStart(source, event);
@@ -233,7 +233,7 @@ export class PointerSensor extends Sensor<
 
     if (delay) {
       if (exceedsDistance(delta, delay.tolerance)) {
-        return this.handleCancel();
+        return this.handleCancel(event);
       }
     }
   }
@@ -248,7 +248,7 @@ export class PointerSensor extends Sensor<
       event.stopPropagation();
 
       const canceled = !status.initialized;
-      this.manager.actions.stop({canceled});
+      this.manager.actions.stop({event, canceled});
     }
 
     // Remove the pointer move and up event listeners
@@ -259,7 +259,7 @@ export class PointerSensor extends Sensor<
   protected handleKeyDown(event: KeyboardEvent) {
     if (event.key === 'Escape') {
       event.preventDefault();
-      this.handleCancel();
+      this.handleCancel(event);
     }
   }
 
@@ -323,11 +323,11 @@ export class PointerSensor extends Sensor<
     this.cleanup.add(unbind);
   }
 
-  protected handleCancel() {
+  protected handleCancel(event: Event) {
     const {dragOperation} = this.manager;
 
     if (dragOperation.status.initialized) {
-      this.manager.actions.stop({canceled: true});
+      this.manager.actions.stop({event, canceled: true});
     }
 
     // Remove the pointer move and up event listeners

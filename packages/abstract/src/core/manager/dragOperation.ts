@@ -257,7 +257,13 @@ export function DragOperationManager<
 
       return manager.renderer.rendering.then(() => event.defaultPrevented);
     },
-    start({event, coordinates}: {event: Event; coordinates: Coordinates}) {
+    start({
+      event: nativeEvent,
+      coordinates,
+    }: {
+      event?: Event;
+      coordinates: Coordinates;
+    }) {
       const sourceInstance = source.peek();
 
       if (!sourceInstance) {
@@ -269,7 +275,7 @@ export function DragOperationManager<
         shape.current.value = null;
         dragended.value = false;
         canceled.value = false;
-        activatorEvent.value = event;
+        activatorEvent.value = nativeEvent ?? null;
         position.reset(coordinates);
       });
 
@@ -291,6 +297,7 @@ export function DragOperationManager<
           status.value = Status.Dragging;
 
           monitor.dispatch('dragstart', {
+            nativeEvent,
             operation: snapshot(operation),
             cancelable: false,
           });
@@ -300,18 +307,21 @@ export function DragOperationManager<
     move({
       by,
       to,
+      event: nativeEvent,
       cancelable = true,
       propagate = true,
     }:
       | {
           by: Coordinates;
           to?: undefined;
+          event?: Event;
           cancelable?: boolean;
           propagate?: boolean;
         }
       | {
           by?: undefined;
           to: Coordinates;
+          event?: Event;
           cancelable?: boolean;
           propagate?: boolean;
         }) {
@@ -321,6 +331,7 @@ export function DragOperationManager<
 
       const event = defaultPreventable(
         {
+          nativeEvent,
           operation: snapshot(operation),
           by,
           to,
@@ -345,7 +356,10 @@ export function DragOperationManager<
         position.update(coordinates);
       });
     },
-    stop({canceled: eventCanceled = false}: {canceled?: boolean} = {}) {
+    stop({
+      canceled: eventCanceled = false,
+      event: nativeEvent,
+    }: {event?: Event; canceled?: boolean} = {}) {
       let promise: Promise<void> | undefined;
       const suspend = () => {
         const output = {
@@ -394,6 +408,7 @@ export function DragOperationManager<
       });
 
       monitor.dispatch('dragend', {
+        nativeEvent,
         operation: snapshot(operation),
         canceled: eventCanceled,
         suspend,

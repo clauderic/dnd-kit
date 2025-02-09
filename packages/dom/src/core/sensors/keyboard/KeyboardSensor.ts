@@ -161,7 +161,7 @@ export class KeyboardSensor extends Sensor<
         },
       ]),
       this.listeners.bind(sourceWindow, [
-        {type: 'resize', listener: () => this.handleEnd(true)},
+        {type: 'resize', listener: () => this.handleEnd(event, true)},
       ]),
     ];
 
@@ -179,7 +179,7 @@ export class KeyboardSensor extends Sensor<
       event.preventDefault();
       const canceled = isKeycode(event, keyboardCodes.cancel);
 
-      this.handleEnd(canceled);
+      this.handleEnd(event, canceled);
       return;
     }
 
@@ -196,8 +196,9 @@ export class KeyboardSensor extends Sensor<
     }
   }
 
-  protected handleEnd(canceled: boolean) {
+  protected handleEnd(event: Event, canceled: boolean) {
     this.manager.actions.stop({
+      event,
       canceled,
     });
 
@@ -238,6 +239,7 @@ export class KeyboardSensor extends Sensor<
       event.preventDefault();
 
       this.manager.actions.move({
+        event,
         by: offset,
       });
     }

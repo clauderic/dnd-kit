@@ -60,13 +60,17 @@ export type DragDropEvents<
     manager: V
   ): void;
   beforedragstart(
-    event: Preventable<{operation: DragOperation<T, U>}>,
+    event: Preventable<{
+      operation: DragOperation<T, U>;
+      nativeEvent?: Event;
+    }>,
     manager: V
   ): void;
   dragstart(
     event: {
       cancelable: false;
       operation: DragOperation<T, U>;
+      nativeEvent?: Event;
     },
     manager: V
   ): void;
@@ -75,6 +79,7 @@ export type DragDropEvents<
       operation: DragOperation<T, U>;
       to?: Coordinates;
       by?: Coordinates;
+      nativeEvent?: Event;
     }>,
     manager: V
   ): void;
@@ -87,6 +92,7 @@ export type DragDropEvents<
   dragend(
     event: {
       operation: DragOperation<T, U>;
+      nativeEvent?: Event;
       canceled: boolean;
       suspend(): {resume(): void; abort(): void};
     },
