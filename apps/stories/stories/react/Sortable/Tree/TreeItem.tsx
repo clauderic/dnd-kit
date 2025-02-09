@@ -12,13 +12,21 @@ export interface Props extends FlattenedItem {
 
 const INDENTATION = 50;
 
+const config = {
+  alignment: {
+    x: 'start',
+    y: 'center',
+  },
+  transition: {
+    idle: true,
+  },
+} as const;
+
 export function TreeItem({depth, id, index, parentId, onRemove}: Props) {
   const {ref, handleRef, isDragSource} = useSortable({
+    ...config,
     id,
     index,
-    transition: {
-      idle: true,
-    },
     data: {
       depth,
       parentId,

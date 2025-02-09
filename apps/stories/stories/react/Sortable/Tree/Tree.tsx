@@ -139,16 +139,14 @@ export function Tree({items, indentation = 50, onChange}: Props) {
           return setFlattenedItems(flattenTree(items));
         }
 
-        setFlattenedItems((flattenedItems) => {
-          const updatedTree = buildTree([
-            ...flattenedItems,
-            ...sourceChildren.current,
-          ]);
+        const updatedTree = buildTree([
+          ...flattenedItems,
+          ...sourceChildren.current,
+        ]);
 
-          onChange(updatedTree);
+        setFlattenedItems(flattenTree(updatedTree));
 
-          return flattenTree(updatedTree);
-        });
+        onChange(updatedTree);
       }}
     >
       <ul className={styles.Tree}>
