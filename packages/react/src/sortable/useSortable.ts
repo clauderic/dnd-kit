@@ -36,13 +36,14 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     modifiers,
     sensors,
     target,
-    transition = defaultSortableTransition,
     type,
   } = input;
+  const transition = {...defaultSortableTransition, ...input.transition};
   const sortable = useInstance((manager) => {
     return new Sortable(
       {
         ...input,
+        transition,
         register: false,
         handle: currentValue(handle),
         element: currentValue(element),
@@ -95,7 +96,12 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     () => (sortable.collisionPriority = collisionPriority)
   );
   useOnValueChange(feedback, () => (sortable.feedback = feedback ?? 'default'));
-  useOnValueChange(transition, () => (sortable.transition = transition));
+  useOnValueChange(
+    transition,
+    () => (sortable.transition = transition),
+    undefined,
+    deepEqual
+  );
   useOnValueChange(
     modifiers,
     () => (sortable.modifiers = modifiers),

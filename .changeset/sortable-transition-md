@@ -1,0 +1,5 @@
+---
+'@dnd-kit/react': patch
+---
+
+Keep default transition properties when only a partial transition is passed in.
