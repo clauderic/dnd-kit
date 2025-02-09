@@ -14,18 +14,20 @@ export const IGNORED_ATTRIBUTES = [
 export const IGNORED_STYLES = ['view-transition-name'];
 
 export const CSS_RULES = `
-  [${ATTRIBUTE}] {
+  :root [${ATTRIBUTE}] {
     position: fixed !important;
     pointer-events: none !important;
-    touch-action: none !important;
+    touch-action: none;
     z-index: calc(infinity);
     will-change: translate;
     top: var(${CSS_PREFIX}top, 0px) !important;
     left: var(${CSS_PREFIX}left, 0px) !important;
     right: unset !important;
     bottom: unset !important;
-    width: var(${CSS_PREFIX}width, auto) !important;
-    height: var(${CSS_PREFIX}height, auto) !important;
+    width: var(${CSS_PREFIX}width, auto);
+    max-width: var(${CSS_PREFIX}width, auto);
+    height: var(${CSS_PREFIX}height, auto);
+    max-height: var(${CSS_PREFIX}height, auto);
     box-sizing: border-box;
   }
   [${ATTRIBUTE}] * {
