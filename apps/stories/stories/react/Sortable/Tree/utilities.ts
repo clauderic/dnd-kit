@@ -26,6 +26,8 @@ export function buildTree(flattenedItems: FlattenedItem[]): Item[] {
     const parentId = item.parentId ?? root.id;
     const parent = nodes[parentId] ?? items.find(({id}) => id === parentId);
 
+    if (!parent) continue;
+
     nodes[id] = {id, children};
     parent.children.push(item);
   }

@@ -16,6 +16,9 @@ export function TreeItem({depth, id, index, parentId, onRemove}: Props) {
   const {ref, handleRef, isDragSource} = useSortable({
     id,
     index,
+    transition: {
+      idle: true,
+    },
     data: {
       depth,
       parentId,

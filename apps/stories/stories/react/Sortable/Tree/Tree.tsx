@@ -157,7 +157,13 @@ export function Tree({items, indentation = 50, onChange}: Props) {
             key={item.id}
             {...item}
             index={index}
-            onRemove={console.log}
+            onRemove={() => {
+              const newItems = flattenedItems.filter(({id}) => id !== item.id);
+              const tree = buildTree(newItems);
+
+              setFlattenedItems(flattenTree(tree));
+              onChange(tree);
+            }}
           />
         ))}
       </ul>
