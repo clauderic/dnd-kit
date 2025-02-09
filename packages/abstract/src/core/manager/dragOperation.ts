@@ -301,9 +301,20 @@ export function DragOperationManager<
       by,
       to,
       cancelable = true,
+      propagate = true,
     }:
-      | {by: Coordinates; to?: undefined; cancelable?: boolean}
-      | {by?: undefined; to: Coordinates; cancelable?: boolean}) {
+      | {
+          by: Coordinates;
+          to?: undefined;
+          cancelable?: boolean;
+          propagate?: boolean;
+        }
+      | {
+          by?: undefined;
+          to: Coordinates;
+          cancelable?: boolean;
+          propagate?: boolean;
+        }) {
       if (!dragging.peek()) {
         return;
       }
@@ -317,7 +328,9 @@ export function DragOperationManager<
         cancelable
       );
 
-      monitor.dispatch('dragmove', event);
+      if (propagate) {
+        monitor.dispatch('dragmove', event);
+      }
 
       queueMicrotask(() => {
         if (event.defaultPrevented) {
