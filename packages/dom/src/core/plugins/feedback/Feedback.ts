@@ -500,10 +500,17 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           };
           const current = new DOMRectangle(feedbackElement, options);
           const final = new DOMRectangle(target, options);
-          const delta = {
-            x: current.center.x - final.center.x,
-            y: current.center.y - final.center.y,
-          };
+          const ratio = final.aspectRatio / current.aspectRatio;
+          const delta =
+            ratio > 0.99 && ratio < 1.01
+              ? {
+                  x: current.center.x - final.center.x,
+                  y: current.center.y - final.center.y,
+                }
+              : {
+                  x: current.left - final.left,
+                  y: current.top - final.top,
+                };
           const finalTranslate = {
             x: translate.x - delta.x,
             y: translate.y - delta.y,

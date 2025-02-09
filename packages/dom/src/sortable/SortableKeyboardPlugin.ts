@@ -129,13 +129,11 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
           const {id} = firstCollision;
           const {index, group} = source.sortable;
 
-          actions.setDropTarget(id).then((defaultPrevented) => {
-            if (defaultPrevented) return;
-
+          actions.setDropTarget(id).then(() => {
             // Wait until optimistic sorting has a chance to update the DOM
-            const {source, target} = dragOperation;
+            const {source, target, shape} = dragOperation;
 
-            if (!source || !isSortable(source)) {
+            if (!source || !isSortable(source) || !shape) {
               return;
             }
 
@@ -150,17 +148,27 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
             if (!element) return;
 
             scrollIntoViewIfNeeded(element);
-            const shape = new DOMRectangle(element);
+            const updatedShape = new DOMRectangle(element);
 
-            if (!shape) {
+            if (!updatedShape) {
               return;
             }
 
+            const current = shape.current;
+            const ratio = updatedShape.aspectRatio / current.aspectRatio;
+            const delta =
+              ratio > 0.99 && ratio < 1.01
+                ? {
+                    x: updatedShape.center.x - current.center.x,
+                    y: updatedShape.center.y - current.center.y,
+                  }
+                : {
+                    x: updatedShape.left - current.boundingRectangle.left,
+                    y: updatedShape.top - current.boundingRectangle.top,
+                  };
+
             actions.move({
-              to: {
-                x: shape.center.x,
-                y: shape.center.y,
-              },
+              by: delta,
             });
 
             if (updated) {
