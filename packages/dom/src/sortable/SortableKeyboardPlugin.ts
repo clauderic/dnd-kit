@@ -45,13 +45,13 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
       'dragmove',
       (event, manager: DragDropManager) => {
         queueMicrotask(() => {
-          if (this.disabled || event.defaultPrevented) {
+          if (this.disabled || event.defaultPrevented || !event.nativeEvent) {
             return;
           }
 
           const {dragOperation} = manager;
 
-          if (!isKeyboardEvent(dragOperation.activatorEvent)) {
+          if (!isKeyboardEvent(event.nativeEvent)) {
             return;
           }
 
