@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useRef, type ReactNode} from 'react';
+import {createElement, useEffect, useMemo, useRef, type ReactNode} from 'react';
 import {useComputed, useDeepSignal} from '@dnd-kit/react/hooks';
 import {Draggable, Feedback} from '@dnd-kit/dom';
 
@@ -8,9 +8,11 @@ import {DragDropContext} from '../context/context.ts';
 export interface Props {
   className?: string;
   children: ReactNode | ((source: Draggable) => ReactNode);
+  style?: React.CSSProperties;
+  tag?: string;
 }
 
-export function DragOverlay({children, className}: Props) {
+export function DragOverlay({children, className, style, tag}: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
   const manager = useDragDropManager();
   const source = useComputed(
@@ -60,11 +62,14 @@ export function DragOverlay({children, className}: Props) {
   }, [manager]);
 
   return (
-    <div className={className} ref={ref} data-dnd-overlay>
-      <DragDropContext.Provider value={patchedManager}>
-        {renderChildren()}
-      </DragDropContext.Provider>
-    </div>
+    <DragDropContext.Provider value={patchedManager}>
+      {createElement(
+        tag || 'div',
+        {ref, className, style, 'data-dnd-overlay': true},
+
+        renderChildren()
+      )}
+    </DragDropContext.Provider>
   );
 
   function renderChildren() {
