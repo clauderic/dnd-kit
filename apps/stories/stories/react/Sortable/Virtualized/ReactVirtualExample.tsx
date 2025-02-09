@@ -108,15 +108,7 @@ const Sortable = forwardRef<Element, PropsWithChildren<SortableProps>>(
 
     return (
       <Item
-        ref={(el) => {
-          if (typeof ref === 'function') {
-            ref(el);
-          } else if (ref) {
-            ref.current = el;
-          }
-
-          setElement(el);
-        }}
+        ref={setElement}
         actions={<Handle ref={handleRef} />}
         data-index={index}
         shadow={isDragging}
