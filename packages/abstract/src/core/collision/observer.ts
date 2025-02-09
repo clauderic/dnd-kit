@@ -26,16 +26,20 @@ export class CollisionObserver<
         const coordinates = untracked(
           () => this.manager.dragOperation.position.current
         );
-        const previousCoordinates = this.#previousCoordinates;
 
-        this.#previousCoordinates = coordinates;
+        if (collisions !== DEFAULT_VALUE) {
+          const previousCoordinates = this.#previousCoordinates;
+          this.#previousCoordinates = coordinates;
 
-        if (
-          previousCoordinates &&
-          coordinates.x == previousCoordinates.x &&
-          coordinates.y == previousCoordinates.y
-        ) {
-          return;
+          if (
+            previousCoordinates &&
+            coordinates.x == previousCoordinates.x &&
+            coordinates.y == previousCoordinates.y
+          ) {
+            return;
+          }
+        } else {
+          this.#previousCoordinates = undefined;
         }
 
         this.#collisions.value = collisions;
@@ -74,6 +78,7 @@ export class CollisionObserver<
     }
 
     const collisions: Collision[] = [];
+    const potentialTargets = [];
 
     for (const entry of entries ?? registry.droppables) {
       if (entry.disabled) {
@@ -90,7 +95,11 @@ export class CollisionObserver<
         continue;
       }
 
-      entry.shape;
+      potentialTargets.push(entry);
+
+      // Force collisions to be recomputed when the shape changes
+      void entry.shape;
+
       const collision = untracked(() =>
         detectCollision({
           droppable: entry,
@@ -105,6 +114,10 @@ export class CollisionObserver<
 
         collisions.push(collision);
       }
+    }
+
+    if (potentialTargets.length === 0) {
+      return DEFAULT_VALUE;
     }
 
     collisions.sort(sortCollisions);
