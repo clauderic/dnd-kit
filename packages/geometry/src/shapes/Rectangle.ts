@@ -1,5 +1,5 @@
 import {Point} from '../point';
-import {BoundingRectangle} from '../types';
+import {Alignment, BoundingRectangle} from '../types';
 
 import type {Shape} from './Shape';
 
@@ -107,8 +107,38 @@ export class Rectangle implements Shape {
     return width / height;
   }
 
+  public get corners() {
+    return [
+      {x: this.left, y: this.top},
+      {x: this.right, y: this.top},
+      {x: this.left, y: this.bottom},
+      {x: this.right, y: this.bottom},
+    ];
+  }
+
   static from({top, left, width, height}: BoundingRectangle) {
     return new Rectangle(left, top, width, height);
+  }
+
+  static delta(
+    a: BoundingRectangle,
+    b: BoundingRectangle,
+    alignment: Alignment = {x: 'center', y: 'center'}
+  ): Point {
+    const getCoordinate = (rect: BoundingRectangle, axis: 'x' | 'y') => {
+      const align = alignment[axis];
+      const start = axis === 'x' ? rect.left : rect.top;
+      const size = axis === 'x' ? rect.width : rect.height;
+
+      if (align == 'start') return start;
+      if (align == 'end') return start + size;
+      return start + size / 2;
+    };
+
+    return Point.delta(
+      {x: getCoordinate(a, 'x'), y: getCoordinate(a, 'y')},
+      {x: getCoordinate(b, 'x'), y: getCoordinate(b, 'y')}
+    );
   }
 
   static intersectionRatio(a: BoundingRectangle, b: BoundingRectangle): number {

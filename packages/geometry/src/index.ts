@@ -9,4 +9,4 @@ export {exceedsDistance} from './distance';
 export type {Distance} from './distance';
 
 export {Axis, Axes} from './types';
-export type {Coordinates, BoundingRectangle} from './types';
+export type {Alignment, Coordinates, BoundingRectangle} from './types';
