@@ -66,12 +66,19 @@ export const Clone: Story = {
   args: {
     ...defaultArgs,
     collisionDetector: pointerIntersection,
+    optimistic: false,
     getItemStyle(_, index) {
-      if (index === 0 || index === 2) {
+      if (index === 0 || index === 2 || index === 10) {
         return {
           maxWidth: 'initial',
           gridRowStart: 'span 2',
           gridColumnStart: 'span 2',
+        };
+      }
+
+      if (index === 12) {
+        return {
+          gridRowStart: 'span 2',
         };
       }
 
