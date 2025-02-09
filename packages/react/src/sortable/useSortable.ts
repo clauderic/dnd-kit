@@ -108,6 +108,10 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     undefined,
     deepEqual
   );
+  useOnValueChange(
+    input.alignment,
+    () => (sortable.alignment = input.alignment)
+  );
 
   return {
     sortable: trackedSortable,

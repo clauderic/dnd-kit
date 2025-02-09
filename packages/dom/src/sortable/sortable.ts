@@ -10,6 +10,7 @@ import {
   defaultCollisionDetection,
   type CollisionDetector,
 } from '@dnd-kit/collision';
+import type {Alignment} from '@dnd-kit/geometry';
 import {Draggable, Droppable} from '@dnd-kit/dom';
 import type {
   DraggableInput,
@@ -339,6 +340,14 @@ export class Sortable<T extends Data = Data> {
 
   public set collisionDetector(value: CollisionDetector | undefined) {
     this.droppable.collisionDetector = value ?? defaultCollisionDetection;
+  }
+
+  public set alignment(value: Alignment | undefined) {
+    this.draggable.alignment = value;
+  }
+
+  public get alignment() {
+    return this.draggable.alignment;
   }
 
   public set type(type: Type | undefined) {

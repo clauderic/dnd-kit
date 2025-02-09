@@ -7,7 +7,7 @@ import {
   isKeyboardEvent,
   scrollIntoViewIfNeeded,
 } from '@dnd-kit/dom/utilities';
-import type {Coordinates} from '@dnd-kit/geometry';
+import {Rectangle, type Coordinates} from '@dnd-kit/geometry';
 import {Scroller} from '@dnd-kit/dom';
 import type {DragDropManager, Droppable} from '@dnd-kit/dom';
 
@@ -154,18 +154,11 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
               return;
             }
 
-            const current = shape.current;
-            const ratio = updatedShape.aspectRatio / current.aspectRatio;
-            const delta =
-              ratio > 0.99 && ratio < 1.01
-                ? {
-                    x: updatedShape.center.x - current.center.x,
-                    y: updatedShape.center.y - current.center.y,
-                  }
-                : {
-                    x: updatedShape.left - current.boundingRectangle.left,
-                    y: updatedShape.top - current.boundingRectangle.top,
-                  };
+            const delta = Rectangle.delta(
+              updatedShape,
+              Rectangle.from(shape.current.boundingRectangle),
+              source.alignment
+            );
 
             actions.move({
               by: delta,

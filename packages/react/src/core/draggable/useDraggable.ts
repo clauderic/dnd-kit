@@ -4,7 +4,6 @@ import {deepEqual} from '@dnd-kit/state';
 import {Draggable} from '@dnd-kit/dom';
 import type {DraggableInput} from '@dnd-kit/dom';
 import {
-  useComputed,
   useOnValueChange,
   useOnElementChange,
   useDeepSignal,
@@ -52,6 +51,10 @@ export function useDraggable<T extends Data = Data>(
   useOnValueChange(
     input.feedback,
     () => (draggable.feedback = input.feedback ?? 'default')
+  );
+  useOnValueChange(
+    input.alignment,
+    () => (draggable.alignment = input.alignment)
   );
 
   return {

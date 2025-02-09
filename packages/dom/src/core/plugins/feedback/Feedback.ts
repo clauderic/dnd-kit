@@ -19,7 +19,7 @@ import {
   supportsStyle,
   Styles,
 } from '@dnd-kit/dom/utilities';
-import {Coordinates} from '@dnd-kit/geometry';
+import {Coordinates, Rectangle} from '@dnd-kit/geometry';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import type {Draggable} from '../../entities/index.ts';
@@ -510,17 +510,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           };
           const current = new DOMRectangle(feedbackElement, options);
           const final = new DOMRectangle(target, options);
-          const ratio = final.aspectRatio / current.aspectRatio;
-          const delta =
-            ratio > 0.99 && ratio < 1.01
-              ? {
-                  x: current.center.x - final.center.x,
-                  y: current.center.y - final.center.y,
-                }
-              : {
-                  x: current.left - final.left,
-                  y: current.top - final.top,
-                };
+          const delta = Rectangle.delta(current, final, source.alignment);
           const finalTranslate = {
             x: translate.x - delta.x,
             y: translate.y - delta.y,
