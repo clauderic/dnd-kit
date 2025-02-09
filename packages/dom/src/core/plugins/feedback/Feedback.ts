@@ -348,6 +348,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             ) {
               /* Update the position of the placeholder when the source element is moved */
               element.insertAdjacentElement('afterend', placeholder);
+              /* Force the source element to be promoted back to the top layer */
+              showPopover(feedbackElement);
               return;
             }
 
@@ -357,12 +359,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             ) {
               /* Update the position of the source element when the placeholder is moved */
               placeholder.insertAdjacentElement('beforebegin', element);
-
-              /*
-               * Any update in DOM order that affects the source element hides the popover
-               * so we need to force the source element to be promoted to the top layer again
-               */
-              showPopover(element);
+              /* Force the source element to be promoted back to the top layer */
+              showPopover(feedbackElement);
               return;
             }
           }
