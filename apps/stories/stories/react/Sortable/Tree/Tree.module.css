@@ -1,0 +1,63 @@
+.Tree {
+  max-width: 600px;
+  padding: 10px;
+  margin: 10% auto 0px;
+}
+
+.TreeItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  gap: 10px;
+  background-color: #fff;
+  border: 1px solid #dedede;
+  margin-bottom: -1px;
+  color: #222;
+  box-sizing: border-box;
+
+  &:first-child {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+  }
+
+  &:last-child {
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+  }
+
+  &[data-overlay] {
+    width: max-content !important;
+    padding-right: 24px;
+    border-radius: 6px;
+    box-shadow: 0px 15px 15px 0 rgba(34, 33, 81, 0.1);
+  }
+}
+
+.TreeItem[aria-hidden="true"] {
+  opacity: 0.4;
+
+  .Handle {
+    visibility: hidden;
+  }
+}
+
+.Action {
+  margin-left: auto;
+}
+
+.Badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #2389ff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #fff;
+}

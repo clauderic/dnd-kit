@@ -1,5 +1,6 @@
 import {UniqueIdentifier} from '@dnd-kit/abstract';
-import type {Item, FlattenedItem} from './types';
+
+import type {Item, FlattenedItem} from './types.ts';
 
 export function flattenTree(
   items: Item[],
@@ -25,6 +26,8 @@ export function buildTree(flattenedItems: FlattenedItem[]): Item[] {
     const parentId = item.parentId ?? root.id;
     const parent = nodes[parentId] ?? items.find(({id}) => id === parentId);
 
+    if (!parent) continue;
+
     nodes[id] = {id, children};
     parent.children.push(item);
   }
@@ -43,9 +46,10 @@ export function getProjection(
 ) {
   const targetItemIndex = items.findIndex(({id}) => id === targetId);
   const previousItem = items[targetItemIndex - 1];
+  const targetItem = items[targetItemIndex];
   const nextItem = items[targetItemIndex + 1];
-  const maxDepth = getMaxDepth(previousItem);
-  const minDepth = getMinDepth(previousItem, nextItem);
+  const maxDepth = getMaxDepth(targetItem, previousItem);
+  const minDepth = getMinDepth(nextItem);
   let depth = projectedDepth;
 
   if (projectedDepth >= maxDepth) {
@@ -78,22 +82,15 @@ export function getProjection(
   }
 }
 
-function getMaxDepth(previousItem: FlattenedItem) {
-  if (previousItem) {
-    return previousItem.depth + 1;
-  }
+function getMaxDepth(
+  targetItem: FlattenedItem,
+  previousItem: FlattenedItem | undefined
+) {
+  if (!previousItem) return 0;
 
-  return 0;
+  return Math.min(targetItem.depth + 1, previousItem.depth + 1);
 }
 
-function getMinDepth(previousItem: FlattenedItem, nextItem: FlattenedItem) {
-  if (previousItem && nextItem) {
-    return Math.min(previousItem.depth, nextItem.depth);
-  }
-
-  if (nextItem) {
-    return nextItem.depth;
-  }
-
-  return 0;
+function getMinDepth(nextItem: FlattenedItem) {
+  return nextItem ? nextItem.depth : 0;
 }
