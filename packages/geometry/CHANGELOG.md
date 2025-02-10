@@ -1,5 +1,16 @@
 # @dnd-kit/geometry
 
+## 0.0.9
+
+### Patch Changes
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`60e7297`](https://github.com/clauderic/dnd-kit/commit/60e72979850bfe4cbb8e2b2e2b8e84bce9edc9f5) Thanks [@github-actions](https://github.com/apps/github-actions)! - Added `aspectRatio` property to `Shape` interface.
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`8ae7014`](https://github.com/clauderic/dnd-kit/commit/8ae70143bc404bff7678fa8e8390a640c16f2579) Thanks [@github-actions](https://github.com/apps/github-actions)! - - Added `corners` getter to `Rectangle` instances to retrieve the coordinates of all four corners.
+  - Added `delta` static method to the `Rectangle` constructor which makes it easy to calculate the delta between a given reference point of both shapes.
+- Updated dependencies []:
+  - @dnd-kit/state@0.0.9
+
 ## 0.0.8
 
 ### Patch Changes

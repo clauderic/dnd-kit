@@ -1,5 +1,22 @@
 # @dnd-kit/react
 
+## 0.0.9
+
+### Patch Changes
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`d86bbc7`](https://github.com/clauderic/dnd-kit/commit/d86bbc7e73ba16296c48f9af29f1893624157a0f) Thanks [@github-actions](https://github.com/apps/github-actions)! - Added `alignment` configuration option to draggable instances to let consumers decide how to align the draggable during the drop animation and while keyboard sorting. Defaults to the center of the target shape.
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`2b76c19`](https://github.com/clauderic/dnd-kit/commit/2b76c19f7608c69b858eaa52b9b3410289ed543b) Thanks [@github-actions](https://github.com/apps/github-actions)! - Added `style` and `tag` props to `<DragOverlay>` component.
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`b8898bc`](https://github.com/clauderic/dnd-kit/commit/b8898bc7718e26aa5d023e3756085a0cd6614f9e) Thanks [@github-actions](https://github.com/apps/github-actions)! - Re-export `isSortable` from `@dnd-kit/react/sortable` so React consumers don't have to import it from `@dnd-kit/dom/sortable`.
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`c5f25c8`](https://github.com/clauderic/dnd-kit/commit/c5f25c8322ae8e2bdccd51f80352539b88a9e34a) Thanks [@github-actions](https://github.com/apps/github-actions)! - Force synchronous re-render when `isDragSource` property is updated from `true` to `false` to enable seamless transition into idle state after drop animation. Without this change, the drop animation can finish before React has had a chance to update the drag source styles back to its idle state, which can cause some flickering.
+
+- Updated dependencies [[`e36d954`](https://github.com/clauderic/dnd-kit/commit/e36d95420148659ba78bdbefd3a0a24ec5d02b8f), [`bb4abcd`](https://github.com/clauderic/dnd-kit/commit/bb4abcd1957f2562072059ad8b5e701893a0fede), [`d86bbc7`](https://github.com/clauderic/dnd-kit/commit/d86bbc7e73ba16296c48f9af29f1893624157a0f), [`f433fb2`](https://github.com/clauderic/dnd-kit/commit/f433fb21aa76c5b4badeec6423e3c930006c8d70), [`7dc0103`](https://github.com/clauderic/dnd-kit/commit/7dc0103c5e5281e9ee61bcd9c3ab493fc9307073), [`cff3c3c`](https://github.com/clauderic/dnd-kit/commit/cff3c3cbbe96a6f401cb3900a8cd5f727a974c2d), [`b7f1cf8`](https://github.com/clauderic/dnd-kit/commit/b7f1cf8f9e15a285c45f896e092f61001335cdff), [`f87d633`](https://github.com/clauderic/dnd-kit/commit/f87d63347529f5c9600bcffb14ad2d15ff6eb107), [`860759b`](https://github.com/clauderic/dnd-kit/commit/860759b15167616c465eef1738fd02c76aa53cb3), [`54e416f`](https://github.com/clauderic/dnd-kit/commit/54e416f6f0aaa19c11827f80b2df796bfe237ba0), [`3e629cc`](https://github.com/clauderic/dnd-kit/commit/3e629cc81dbaf9d112c4f1d2c10c75eb6779cf4e), [`c51778d`](https://github.com/clauderic/dnd-kit/commit/c51778dde5bcd614b1891c5f7659130769ddc9f8), [`86ed6c8`](https://github.com/clauderic/dnd-kit/commit/86ed6c8e203bb167d451c36605c2a0e0d33f0157), [`afedea9`](https://github.com/clauderic/dnd-kit/commit/afedea930bbfd1ea546c2bcbe5f42a3ea8b913fe), [`ce31da7`](https://github.com/clauderic/dnd-kit/commit/ce31da736ec5d4f48bab45430be7b57223d60ee7)]:
+  - @dnd-kit/abstract@0.0.9
+  - @dnd-kit/dom@0.0.9
+  - @dnd-kit/state@0.0.9
+
 ## 0.0.8
 
 ### Patch Changes

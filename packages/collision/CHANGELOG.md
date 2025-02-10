@@ -1,5 +1,17 @@
 # @dnd-kit/collision
 
+## 0.0.9
+
+### Patch Changes
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`3463da1`](https://github.com/clauderic/dnd-kit/commit/3463da1cac9f26e4b2ab3278ae52206bb99645e4) Thanks [@github-actions](https://github.com/apps/github-actions)! - Changed the `closestCorners` algorithm to use the corners of the drag operation shape instead of the center of the shape.
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`8ae7014`](https://github.com/clauderic/dnd-kit/commit/8ae70143bc404bff7678fa8e8390a640c16f2579) Thanks [@github-actions](https://github.com/apps/github-actions)! - - Added `corners` getter to `Rectangle` instances to retrieve the coordinates of all four corners.
+  - Added `delta` static method to the `Rectangle` constructor which makes it easy to calculate the delta between a given reference point of both shapes.
+- Updated dependencies [[`e36d954`](https://github.com/clauderic/dnd-kit/commit/e36d95420148659ba78bdbefd3a0a24ec5d02b8f), [`60e7297`](https://github.com/clauderic/dnd-kit/commit/60e72979850bfe4cbb8e2b2e2b8e84bce9edc9f5), [`b7f1cf8`](https://github.com/clauderic/dnd-kit/commit/b7f1cf8f9e15a285c45f896e092f61001335cdff), [`3e629cc`](https://github.com/clauderic/dnd-kit/commit/3e629cc81dbaf9d112c4f1d2c10c75eb6779cf4e), [`8ae7014`](https://github.com/clauderic/dnd-kit/commit/8ae70143bc404bff7678fa8e8390a640c16f2579), [`ce31da7`](https://github.com/clauderic/dnd-kit/commit/ce31da736ec5d4f48bab45430be7b57223d60ee7)]:
+  - @dnd-kit/abstract@0.0.9
+  - @dnd-kit/geometry@0.0.9
+
 ## 0.0.8
 
 ### Patch Changes

@@ -1,5 +1,21 @@
 # @dnd-kit/abstract
 
+## 0.0.9
+
+### Patch Changes
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`e36d954`](https://github.com/clauderic/dnd-kit/commit/e36d95420148659ba78bdbefd3a0a24ec5d02b8f) Thanks [@github-actions](https://github.com/apps/github-actions)! - Added `nativeEvent` property to `dragstart`, `dragmove` and `dragend` events. This can be used to distinguish user triggered events from sensor triggered events, as user or plugin triggered events will typically not have an associated `event` attached.
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`b7f1cf8`](https://github.com/clauderic/dnd-kit/commit/b7f1cf8f9e15a285c45f896e092f61001335cdff) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fixed a bug in the `CollisionObserver` where the initial set of collisions when a drag operation is initiated were not being set and notified.
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`3e629cc`](https://github.com/clauderic/dnd-kit/commit/3e629cc81dbaf9d112c4f1d2c10c75eb6779cf4e) Thanks [@github-actions](https://github.com/apps/github-actions)! - Added the option to trigger `move` actions that are not propagated to `dragmove` listeners. This can be useful when firing a `dragmove` action in response to another `dragmove` event to avoid an infinite loop.
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`ce31da7`](https://github.com/clauderic/dnd-kit/commit/ce31da736ec5d4f48bab45430be7b57223d60ee7) Thanks [@github-actions](https://github.com/apps/github-actions)! - Added `dragOperation.shape.initial` to the list of dependencies that cause the `transform` and `modifiers` to be re-calculated.
+
+- Updated dependencies [[`60e7297`](https://github.com/clauderic/dnd-kit/commit/60e72979850bfe4cbb8e2b2e2b8e84bce9edc9f5), [`8ae7014`](https://github.com/clauderic/dnd-kit/commit/8ae70143bc404bff7678fa8e8390a640c16f2579)]:
+  - @dnd-kit/geometry@0.0.9
+  - @dnd-kit/state@0.0.9
+
 ## 0.0.8
 
 ### Patch Changes
