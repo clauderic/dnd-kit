@@ -1,5 +1,39 @@
 # @dnd-kit/dom
 
+## 0.0.9
+
+### Patch Changes
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`e36d954`](https://github.com/clauderic/dnd-kit/commit/e36d95420148659ba78bdbefd3a0a24ec5d02b8f) Thanks [@github-actions](https://github.com/apps/github-actions)! - Added `nativeEvent` property to `dragstart`, `dragmove` and `dragend` events. This can be used to distinguish user triggered events from sensor triggered events, as user or plugin triggered events will typically not have an associated `event` attached.
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`bb4abcd`](https://github.com/clauderic/dnd-kit/commit/bb4abcd1957f2562072059ad8b5e701893a0fede) Thanks [@github-actions](https://github.com/apps/github-actions)! - Make sure the Feedback element is promoted to the top layer when synchronizing the placeholder and element position in the DOM.
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`d86bbc7`](https://github.com/clauderic/dnd-kit/commit/d86bbc7e73ba16296c48f9af29f1893624157a0f) Thanks [@github-actions](https://github.com/apps/github-actions)! - Added `alignment` configuration option to draggable instances to let consumers decide how to align the draggable during the drop animation and while keyboard sorting. Defaults to the center of the target shape.
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`f433fb2`](https://github.com/clauderic/dnd-kit/commit/f433fb21aa76c5b4badeec6423e3c930006c8d70) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fixed a regression in the `Feedback` plugin where the initial `translate` style applied to the element being dragged was not properly accounted for anymore.
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`7dc0103`](https://github.com/clauderic/dnd-kit/commit/7dc0103c5e5281e9ee61bcd9c3ab493fc9307073) Thanks [@github-actions](https://github.com/apps/github-actions)! - Removed some `!important` rules and updated the specificity of the `Feedback` plugin styles to `0-2-0` to make it easier for consumers to override certain styles, such as `width` and `height`.
+
+- [`cff3c3c`](https://github.com/clauderic/dnd-kit/commit/cff3c3cbbe96a6f401cb3900a8cd5f727a974c2d) Thanks [@clauderic](https://github.com/clauderic)! - Fixed a bug with the drop animation by using `intrinsicWidth` and `intrinsicHeight` to determine if the width and height of the source and target differ or not rather than the `width` and `height` properties which may be transformed.
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`f87d633`](https://github.com/clauderic/dnd-kit/commit/f87d63347529f5c9600bcffb14ad2d15ff6eb107) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fixed a regression introduced in `0.0.7` with optimistic updates not being persisted on drag end.
+
+- [`860759b`](https://github.com/clauderic/dnd-kit/commit/860759b15167616c465eef1738fd02c76aa53cb3) Thanks [@clauderic](https://github.com/clauderic)! - Added `intrinsicWidth` and `intrinsicHeight` properties on `DOMRectangle`, which return the intrinsic width and height of an element, before any transforms are applied.
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`54e416f`](https://github.com/clauderic/dnd-kit/commit/54e416f6f0aaa19c11827f80b2df796bfe237ba0) Thanks [@github-actions](https://github.com/apps/github-actions)! - Only handle `dragmove` events that have an associated `KeyboardEvent` as their `event.nativeEvent` property.
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`c51778d`](https://github.com/clauderic/dnd-kit/commit/c51778dde5bcd614b1891c5f7659130769ddc9f8) Thanks [@github-actions](https://github.com/apps/github-actions)! - **PointerSensor**: Use `capture` listener to prevent `dragstart` events.
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`86ed6c8`](https://github.com/clauderic/dnd-kit/commit/86ed6c8e203bb167d451c36605c2a0e0d33f0157) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fixed a regression in the `PointerSensor` where the same drag operation could fire a dragend event twice due to a race condition between `pointerup` and `lostpointercapture`.
+
+- [#1600](https://github.com/clauderic/dnd-kit/pull/1600) [`afedea9`](https://github.com/clauderic/dnd-kit/commit/afedea930bbfd1ea546c2bcbe5f42a3ea8b913fe) Thanks [@github-actions](https://github.com/apps/github-actions)! - **PreventSelection**: Remove text selection when a drag operation is initialized.
+
+- Updated dependencies [[`e36d954`](https://github.com/clauderic/dnd-kit/commit/e36d95420148659ba78bdbefd3a0a24ec5d02b8f), [`60e7297`](https://github.com/clauderic/dnd-kit/commit/60e72979850bfe4cbb8e2b2e2b8e84bce9edc9f5), [`3463da1`](https://github.com/clauderic/dnd-kit/commit/3463da1cac9f26e4b2ab3278ae52206bb99645e4), [`b7f1cf8`](https://github.com/clauderic/dnd-kit/commit/b7f1cf8f9e15a285c45f896e092f61001335cdff), [`3e629cc`](https://github.com/clauderic/dnd-kit/commit/3e629cc81dbaf9d112c4f1d2c10c75eb6779cf4e), [`8ae7014`](https://github.com/clauderic/dnd-kit/commit/8ae70143bc404bff7678fa8e8390a640c16f2579), [`ce31da7`](https://github.com/clauderic/dnd-kit/commit/ce31da736ec5d4f48bab45430be7b57223d60ee7)]:
+  - @dnd-kit/abstract@0.0.9
+  - @dnd-kit/geometry@0.0.9
+  - @dnd-kit/collision@0.0.9
+  - @dnd-kit/state@0.0.9
+
 ## 0.0.8
 
 ### Patch Changes
