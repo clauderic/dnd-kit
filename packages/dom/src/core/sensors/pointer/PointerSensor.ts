@@ -103,7 +103,8 @@ export class PointerSensor extends Sensor<
       event.button !== 0 ||
       !isElement(event.target) ||
       source.disabled ||
-      isCapturedBySensor(event)
+      isCapturedBySensor(event) ||
+      !this.manager.dragOperation.status.idle
     ) {
       return;
     }
