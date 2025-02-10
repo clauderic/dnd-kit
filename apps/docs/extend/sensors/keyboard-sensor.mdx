@@ -1,52 +1,125 @@
 ---
-title: 'Keyboard'
+title: 'Keyboard Sensor'
 description: 'Detect keyboard input to initiate drag and drop operations.'
 icon: 'keyboard'
 ---
 
-The Keyboard sensor responds to [Keyboard events](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent). This sensor is enabled by default.
+## Overview
 
-The keyboard sensor activates when the source `element` or `handle` of a draggable instance is focused and the <kbd>Space</kbd> or <kbd>Enter</kbd> key is pressed.
+The Keyboard sensor enables keyboard-based drag and drop interactions. It is enabled by default in the [DragDropManager](/concepts/drag-drop-manager).
 
 ## Usage
 
-The Keyboard sensor can be configured to respond to different keyboard codes:
-
-```js
+```ts
+import {DragDropManager} from '@dnd-kit/dom';
 import {KeyboardSensor} from '@dnd-kit/dom/sensors';
 
-const sensors = [
-  KeyboardSensor.configure({
-    keyboardCodes: {
-      start: ['Space', 'Enter'],
-      cancel: ['Escape'],
-      end: ['Space', 'Enter'],
-      up: ['ArrowUp'],
-      down: ['ArrowDown'],
-      left: ['ArrowLeft'],
-      right: ['ArrowRight'],
-    },
-  }),
-];
+const manager = new DragDropManager({
+  sensors: [
+    KeyboardSensor.configure({
+      keyboardCodes: {
+        start: ['Space', 'Enter'],
+        cancel: ['Escape'],
+        end: ['Space', 'Enter'],
+        up: ['ArrowUp'],
+        down: ['ArrowDown'],
+        left: ['ArrowLeft'],
+        right: ['ArrowRight'],
+      },
+    }),
+  ],
+});
 ```
+
+## Default Key Bindings
+
+The Keyboard sensor comes with these default key bindings:
+
+```ts
+const defaultKeyboardCodes = {
+  start: ['Space', 'Enter'],    // Start dragging
+  cancel: ['Escape'],           // Cancel drag operation
+  end: ['Space', 'Enter'],      // End dragging
+  up: ['ArrowUp'],             // Move up
+  down: ['ArrowDown'],         // Move down
+  left: ['ArrowLeft'],         // Move left
+  right: ['ArrowRight'],       // Move right
+};
+```
+
+## Customizing Key Bindings
+
+You can customize which keys trigger different actions:
+
+```ts
+KeyboardSensor.configure({
+  keyboardCodes: {
+    // Use Tab to start/end dragging
+    start: ['Tab'],
+    end: ['Tab'],
+
+    // Use WASD for movement
+    up: ['KeyW'],
+    down: ['KeyS'],
+    left: ['KeyA'],
+    right: ['KeyD'],
+
+    // Additional cancel keys
+    cancel: ['Escape', 'KeyQ'],
+  },
+});
+```
+
+## Default behavior
+
+By default, each key press moves the dragged item by 10 pixels. Hold <kbd>Shift</kbd> to move by 50 pixels instead.
 
 ## API Reference
 
 ### Options
 
+<ParamField path="keyboardCodes" type="KeyboardCodes">
+  Configure which keyboard codes trigger different actions:
 
-The `PointerSensor` accepts the following options:
+  ```ts
+  interface KeyboardCodes {
+    start: KeyCode[];    // Start dragging
+    cancel: KeyCode[];   // Cancel operation
+    end: KeyCode[];      // End dragging
+    up: KeyCode[];       // Move up
+    down: KeyCode[];     // Move down
+    left: KeyCode[];     // Move left
+    right: KeyCode[];    // Move right
+  }
 
-<ParamField path="keyboardCodes" type="{[key: string]: string[]}">
-  Use this option to customize the keyboard codes that should trigger different drag operations:
-
-  | Property | Description                                                                  |
-  | -------- | ---------------------------------------------------------------------------- |
-  | `start`  | The keyboard codes that should trigger the start of a drag operation.        |
-  | `cancel` | The keyboard codes that should trigger the cancelation of a drag operation.  |
-  | `end`    | The keyboard codes that should trigger the end of a drag operation.          |
-  | `up`     | The keyboard codes that should trigger the upward movement of a drag operation. |
-  | `down`   | The keyboard codes that should trigger the downward movement of a drag operation. |
-  | `left`   | The keyboard codes that should trigger the leftward movement of a drag operation. |
-  | `right`  | The keyboard codes that should trigger the rightward movement of a drag operation. |
+  type KeyCode = KeyboardEvent['code'];
+  ```
 </ParamField>
+
+### Events
+
+The Keyboard sensor handles these events:
+
+- `keydown`: Key press detection
+- `keyup`: Key release detection
+
+### Activation
+
+The sensor activates when:
+1. A draggable element or its handle has focus
+2. A configured start key is pressed
+3. The element isn't disabled
+
+### Best Practices
+
+1. Provide clear focus indicators:
+   - Use visible focus rings
+   - Maintain sufficient contrast
+
+2. Support screen readers:
+   - Use proper ARIA attributes
+   - Provide clear instructions
+
+3. Consider key combinations:
+   - Avoid conflicts with browser shortcuts
+   - Support standard keyboard patterns

@@ -1,93 +1,234 @@
 ---
-title: 'Manager'
-description: 'The orchestrator of the drag and drop system.'
+title: 'DragDropManager'
+description: 'Orchestrate drag and drop interactions between elements.'
 icon: 'sitemap'
 ---
 
-## Overview
-
-As its name suggests, the `DragDropManager` is the manager of all of draggable and droppable elements, and it coordinates the events between them.
-
-The manager is responsible for:
-
-- Keeping track of all draggable and droppable elements.
-- Firing events when elements are dragged, moved, dropped.
-- Detecting collisions between draggable and droppable elements.
-- Registering and unregistering [plugins](/extend/plugins) to extend the core functionality, [modifiers](/extend/modifiers) to modify the behavior of the drag and drop system, and [sensors](/extend/sensors) to detect user interactions.
-- Lifecycle management to avoid any memory leaks.
-
 ## Usage
 
-To create a new `DragDropManager` instance, you can import the `DragDropManager` class from the `@dnd-kit/dom` package.
+The `DragDropManager` is the central orchestrator of the drag and drop system. It coordinates interactions between [draggable](/concepts/draggable) and [droppable](/concepts/droppable) elements:
 
 ```js
 import {DragDropManager} from '@dnd-kit/dom';
 
 const manager = new DragDropManager();
+
+// Create draggable and droppable elements
+const draggable = new Draggable({
+  id: 'draggable-1',
+  element: draggableElement,
+}, manager);
+
+const droppable = new Droppable({
+  id: 'droppable-1',
+  element: droppableElement,
+}, manager);
+```
+
+## Configuration
+
+The manager comes with sensible defaults, but you can customize its behavior:
+
+```js
+import {
+  DragDropManager,
+  KeyboardSensor,
+  PointerSensor,
+} from '@dnd-kit/dom';
+
+const manager = new DragDropManager({
+  // Custom sensors for detecting drag interactions
+  sensors: [
+    PointerSensor,
+    KeyboardSensor,
+  ],
+
+  // Plugins to extend functionality
+  plugins: [
+    AutoScroller,
+    Accessibility,
+  ],
+
+  // Modifiers to customize drag behavior
+  modifiers: [
+    restrictToWindow,
+  ],
+});
+```
+
+## Default Configuration
+
+By default, the manager includes:
+
+### Sensors
+- `PointerSensor`: Handles mouse and touch interactions with:
+  - Mouse: Immediate activation on drag handle
+  - Touch: 250ms delay with 5px tolerance
+  - Other pointers: 200ms delay with 5px distance threshold
+
+- `KeyboardSensor`: Enables keyboard navigation
+
+### Plugins
+- `Accessibility`: Manages ARIA attributes
+- `AutoScroller`: Handles automatic scrolling
+- `Cursor`: Updates cursor styles
+- `Feedback`: Manages drag feedback
+- `PreventSelection`: Prevents text selection while dragging
+- `ScrollListener`: Tracks scroll events
+- `Scroller`: Handles programmatic scrolling
+
+## Events
+
+The manager's `monitor` property allows you to listen for drag and drop events:
+
+```js
+// Listen for when dragging starts
+manager.monitor.addEventListener('beforedragstart', (event) => {
+  // Can prevent the drag from starting
+  if (shouldPreventDrag(event.operation.source)) {
+    event.preventDefault();
+  }
+});
+
+// Listen for drag movement
+manager.monitor.addEventListener('dragmove', (event) => {
+  const {source, position} = event.operation;
+  console.log(`Dragging ${source.id} to ${position.current}`);
+});
+
+// Listen for collisions with droppable targets
+manager.monitor.addEventListener('collision', (event) => {
+  const [firstCollision] = event.collisions;
+  if (firstCollision) {
+    console.log(`Colliding with ${firstCollision.id}`);
+  }
+});
+
+// Listen for when dragging ends
+manager.monitor.addEventListener('dragend', (event) => {
+  const {source, target, canceled} = event.operation;
+  if (!canceled && target) {
+    console.log(`Dropped ${source.id} onto ${target.id}`);
+  }
+});
+```
+
+### Available Events
+
+| Event | Description | Preventable | Data |
+|-------|-------------|-------------|------|
+| `beforedragstart` | Fired before dragging begins | Yes | `operation` |
+| `dragstart` | Fired when dragging starts | No | `operation`, `nativeEvent` |
+| `dragmove` | Fired when dragging element moves | Yes | `operation`, `to`, `by`, `nativeEvent` |
+| `dragover` | Fired when hovering over a droppable | Yes | `operation` |
+| `collision` | Fired when colliding with droppables | Yes | `collisions` |
+| `dragend` | Fired when dragging ends | No | `operation`, `canceled`, `nativeEvent` |
+
+## Registration
+
+The manager's `registry` handles registration of draggable and droppable elements:
+
+```js
+// Manual registration
+const cleanup = manager.registry.register(draggable);
+
+// Later cleanup
+cleanup();
+
+// Or unregister directly
+manager.registry.unregister(draggable);
+```
+
+Elements are automatically registered when created with a manager reference:
+
+```js
+// Auto-registers with manager
+const draggable = new Draggable({
+  id: 'draggable-1',
+  element,
+}, manager);
+
+// Auto-registers with manager
+const droppable = new Droppable({
+  id: 'droppable-1',
+  element,
+}, manager);
+
+// Prevent auto-registration
+const draggable = new Draggable({
+  id: 'draggable-1',
+  element,
+  register: false // Prevent auto-registration
+}, manager);
 ```
 
 ## API Reference
 
 ### Arguments
 
-The `DragDropManager` class accepts the following arguments:
-
-<ParamField path="plugins" type="Plugin[]">
-  An array of [plugins](/extend/plugins) that can be used to extend the core functionality of the drag and drop system.
-</ParamField>
+The `DragDropManager` constructor accepts the following configuration:
 
 <ParamField path="sensors" type="Sensors[]">
-  An array of [sensors](/extend/sensors) that can be bound to the draggable element to detect drag interactions.
+  An array of [sensors](/sensors/overview) to detect drag interactions. Defaults to `PointerSensor` and `KeyboardSensor`.
+</ParamField>
+
+<ParamField path="plugins" type="Plugin[]">
+  An array of [plugins](/plugins/overview) to extend functionality. Several plugins are included by default.
 </ParamField>
 
 <ParamField path="modifiers" type="Modifier[]">
-  An array of [modifiers](/extend/modifiers) that can be used to modify or restrict the behavior of the draggable element.
+  An array of [modifiers](/plugins/modifiers) to customize drag behavior. Empty by default.
 </ParamField>
 
-<ParamField path="renderer" type="Renderer">
-  The renderer option is an advanced option that allows you to connect the drag and drop system to a custom renderer, such as React or Vue. This allows the manager to await the renderer to finish rendering before firing certain events.
-</ParamField>
+### Properties
 
-### Instance
+The manager instance provides these key properties:
 
-#### Properties
+- `registry`: Registry of all draggable and droppable elements
+  - `draggables`: Map of registered draggable elements
+  - `droppables`: Map of registered droppable elements
+  - `plugins`: Registry of active plugins
+  - `sensors`: Registry of active sensors
+  - `modifiers`: Registry of active modifiers
 
-The `DragDropManager` instance exposes the following properties:
+- `dragOperation`: Current drag operation state
+  - `source`: Currently dragged element
+  - `target`: Current drop target
+  - `position`: Current drag coordinates
+  - `status`: Current operation status
+  - `canceled`: Whether operation was canceled
 
-<ParamField path="actions">
-  The `actions` property exposes a set of methods that can be used to interact with the drag and drop system. This includes methods to start, move, and end drag operations.
-</ParamField>
+- `monitor`: Event monitor for drag operations
+  - `addEventListener`: Register event listener
+  - `removeEventListener`: Remove event listener
 
-<ParamField path="collisionObserver">
-  The `collisionObserver` property is responsible for detecting collisions between draggable and droppable elements.
-</ParamField>
+- `renderer`: Handles visual updates during drag operations
 
-<ParamField path="dragOperation">
-  The `dragOperation` property exposes metadata about the current drag operation.
-</ParamField>
+### Methods
 
-<ParamField path="monitor">
-  The `monitor` can be used to register and unregister event listeners when drag and drop events are emitted.
+- `destroy()`: Clean up the manager and all registered elements
+  - Unregisters all draggables and droppables
+  - Cleans up all plugins, sensors, and modifiers
+  - Removes all event listeners
 
-  The events that can be listened to are:
+### Lifecycle
 
-  | Event Name | Description | Preventable |
-  | ---------- | ----------- | ----------- |
-  | `beforedragstart` | Fired before a drag operation is initiated. | True |
-  | `dragstart` | Fired when a drag operation is initiated. | False |
-  | `dragmove` | Fired when a draggable element is moved. | False |
-  | `dragend` | Fired when a drag operation is ended. | True |
-  | `collision` | Fired when a collision is detected between draggable and droppable elements. | True |
-</ParamField>
+1. **Initialization**
+   - Manager created
+   - Default plugins and sensors registered
+   - Custom configuration applied
 
-<ParamField path="registry">
-  The `registry` property is responsible for registering and unregistering [draggable](/concepts/draggable) and [droppable](/concepts/droppable) instances, along with instances of [plugins](/extend/plugins), [modifiers](/extend/modifiers), and [sensors](/extend/sensors).
-</ParamField>
+2. **Registration**
+   - Draggable and droppable elements register
+   - Plugins initialize
+   - Event listeners bound
 
-#### Methods
+3. **Operation**
+   - Drag operations tracked
+   - Events dispatched
+   - Collisions detected
 
-The `DragDropManager` instance exposes the following methods:
-
-<ParamField path="destroy" type="() => void">
-  The `destroy` method is used to clean up the manager and all of its associated draggable, droppable, plugins, modifiers, and sensors instances.
-</ParamField>
+4. **Cleanup**
+   - Elements unregister
+   - Event listeners removed
+   - Resources released

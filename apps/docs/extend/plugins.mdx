@@ -6,74 +6,158 @@ icon: 'cube'
 
 ## Overview
 
-Plugins are a powerful way to extend the core functionality of @dnd-kit. They can be used to add new features, or modify existing behavior.
+Plugins are a powerful way to extend the core functionality of @dnd-kit. They can be used to add new features, modify existing behavior, or react to drag and drop operations.
 
-Almost every non-essential feature in dnd kit is implemented as a plugin, and can be disabled or replaced. This includes sensors, modifiers and other non-vital functionality, such as:
+## Built-in Plugins
 
-- [Accessibility](https://github.com/clauderic/dnd-kit/blob/experimental/packages/dom/src/core/plugins/accessibility/Accessibility.ts)
-- [Scroller](https://github.com/clauderic/dnd-kit/blob/experimental/packages/dom/src/core/plugins/scrolling/Scroller.ts)
-- [Auto-scroller](https://github.com/clauderic/dnd-kit/blob/experimental/packages/dom/src/core/plugins/scrolling/AutoScroller.ts)
-- [Feedback](https://github.com/clauderic/dnd-kit/blob/experimental/packages/dom/src/core/plugins/feedback/Feedback.ts)
-- [Cursor](https://github.com/clauderic/dnd-kit/blob/experimental/packages/dom/src/core/plugins/cursor/Cursor.ts)
+Several plugins are included by default:
+
+- `Accessibility`: Manages ARIA attributes for drag and drop operations
+- `AutoScroller`: Automatically scrolls containers when dragging near edges
+- `Cursor`: Updates cursor styles during drag operations
+- `Feedback`: Manages visual feedback during dragging
+- `PreventSelection`: Prevents text selection while dragging
+- `ScrollListener`: Tracks scroll events during drag operations
+- `Scroller`: Handles programmatic scrolling
+
+## Creating a Plugin
+
+To create a custom plugin, extend the `Plugin` class:
+
+```ts
+import {Plugin} from '@dnd-kit/abstract';
+
+interface MyPluginOptions {
+  delay?: number;
+}
+
+class MyPlugin extends Plugin {
+  constructor(manager, options?: MyPluginOptions) {
+    super(manager, options);
+
+    // Register effects that will be cleaned up automatically
+    this.registerEffect(() => {
+      const {monitor} = this.manager;
+
+      // Listen for drag events
+      const cleanup = monitor.addEventListener('dragstart', (event) => {
+        console.log('Drag started:', event.operation.source.id);
+      });
+
+      // Return cleanup function
+      return cleanup;
+    });
+  }
+
+  // Optional: Add custom methods
+  public customMethod() {
+    if (this.disabled) return;
+    // Custom functionality
+  }
+}
+```
+
+## Using Plugins
+
+Plugins can be added when creating a DragDropManager:
+
+```ts
+import {DragDropManager} from '@dnd-kit/dom';
+
+const manager = new DragDropManager({
+  plugins: [
+    MyPlugin.configure({ delay: 500 }),
+    AutoScroller,
+  ]
+});
+```
+
+## Plugin Lifecycle
+
+1. **Construction**: Plugin instance created with manager reference
+2. **Configuration**: Options applied if provided
+3. **Registration**: Plugin registered with manager
+4. **Operation**: Plugin effects are run
+5. **Cleanup**: Plugin destroyed when manager is destroyed
 
 ## API Reference
 
-### Plugin
+### Plugin Class
 
-The `Plugin` class is the base interface for all plugins.
+The base class for all plugins:
+
+<ParamField path="manager" type="DragDropManager" required>
+  Reference to the drag and drop manager instance.
+</ParamField>
+
+<ParamField path="options" type="PluginOptions">
+  Optional configuration options for the plugin.
+</ParamField>
+
+### Properties
+
+- `disabled`: Whether the plugin is currently disabled
+- `options`: Current plugin options
+
+### Methods
+
+- `enable()`: Enable the plugin
+- `disable()`: Disable the plugin
+- `isDisabled()`: Check if plugin is disabled
+- `configure(options)`: Update plugin options
+- `destroy()`: Clean up plugin resources
+- `registerEffect(callback)`: Register a reactive effect
+
+### Static Methods
+
+- `configure(options)`: Create a configured plugin descriptor
+
+```ts
+// Example using static configure
+const configuredPlugin = MyPlugin.configure({
+  delay: 500
+});
+
+const manager = new DragDropManager({
+  plugins: [configuredPlugin]
+});
+```
+
+### Plugin Options
+
+Options passed to plugins should be plain objects:
 
 ```ts
 interface PluginOptions {
   [key: string]: any;
 }
+```
 
-export abstract class Plugin {
-  constructor(
-    public manager: DragDropManager,
-    public options?: PluginOptions
-  ) {}
+### Effects
 
-  /**
-   * Whether the plugin instance is disabled.
-   * Triggers effects when accessed.
-   */
-  public disabled: boolean = false;
+Plugins can register effects that automatically clean up:
 
-  /**
-   * Enable a disabled plugin instance.
-   * Triggers effects.
-   */
-  public enable(): void;
+```ts
+class MyPlugin extends Plugin {
+  constructor(manager) {
+    super(manager);
 
-  /**
-   * Disable an enabled plugin instance.
-   * Triggers effects.
-   */
-  public disable(): void;
+    // Effect will be cleaned up when plugin is destroyed
+    this.registerEffect(() => {
+      const interval = setInterval(() => {
+        // Do something periodically
+      }, 100);
 
-  /**
-   * Whether the plugin instance is disabled.
-   * Does not trigger effects when accessed.
-   */
-  public isDisabled(): boolean;
-
-  /**
-   * Configure a plugin instance with new options.
-   */
-  public configure(options?: PluginOptions): void;
-
-  /**
-   * Destroy a plugin instance.
-   * Each plugin is responsible for implementing its own
-   * destroy method to clean up effects and listeners
-   */
-  public destroy(): void;
-
-  /**
-   * Configure a plugin constructor with options.
-   * This method is used to configure the options that the
-   * plugin constructor will use to create plugin instances.
-   */
-  static configure(options: PluginOptions): PluginDescriptor;
+      return () => clearInterval(interval);
+    });
+  }
 }
 ```
+
+### Best Practices
+
+1. **Clean Up Resources**: Always clean up listeners and timers in the `destroy` method
+2. **Check Disabled State**: Check `this.disabled` before performing operations
+3. **Use Type Safety**: Leverage TypeScript for better type checking
+4. **Document Options**: Clearly document all available options
+5. **Follow Patterns**: Study built-in plugins for patterns and conventions

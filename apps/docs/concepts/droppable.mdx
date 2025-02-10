@@ -10,11 +10,7 @@ import {Story} from '/snippets/story.mdx';
 
 ## Usage
 
-First, we'll create a new [DragDropManager](/concepts/drag-drop-manager) instance. This is the orchestrator of the drag and drop system. It manages the state of all draggable and droppable elements, and coordinates the events between them.
-
-Then, we'll import the `Droppable` class to create droppable targets for draggable elements.
-
-The `id` argument is required, and needs to be unique within this manager. We'll also need to supply a reference to the `element` we want to make droppable.
+The `Droppable` class creates drop targets that can receive [draggable](/concepts/draggable) elements. First, create a [DragDropManager](/concepts/drag-drop-manager) instance:
 
 ```js
 import {Droppable, DragDropManager} from '@dnd-kit/dom';
@@ -22,69 +18,89 @@ import {Droppable, DragDropManager} from '@dnd-kit/dom';
 const manager = new DragDropManager();
 
 const element = document.createElement('div');
-element.style.width = '200px';
-element.style.height = '200px';
+element.classList.add('droppable');
 
+// Create a droppable target
 const droppable = new Droppable({
-  id: 'droppable',
+  id: 'drop-zone',
   element,
 }, manager);
 
 document.body.appendChild(element);
 ```
 
-In order for our droppable element to receive draggable elements, you'll need to create some [Draggable elements](/concepts/draggable).
+## Accepting Specific Types
 
-## Detecting collisions
-
-By default, the `Droppable` class uses a simple bounding box collision detection algorithm to detect collisions between the droppable element and the active draggable source element:
-
-<img src="/images/droppable/shape-intersection.svg" />
-
-You can customize this behavior by supplying a custom collision detector function.
-The built-in collision detectors are:
-
-- `shapeIntersection`
-- `pointerIntersection`
-- `closestCenter`
-- `directionBiased`
-
-
-For example, you can import the `closestCenter` collision detector from the `@dnd-kit/collision` package:
+You can restrict which draggable elements can be dropped by using the `accepts` property. See the [draggable types](/concepts/draggable#types) documentation for more details.
 
 ```js
-import {Droppable, DragDropManager} from '@dnd-kit/dom';
-import {closestCenter} from '@dnd-kit/collision';
-
-const manager = new DragDropManager();
+// Accept only draggables with type 'item'
 const droppable = new Droppable({
-  id: 'droppable',
-  collisionDetector: closestCenter,
+  id: 'drop-zone',
+  element,
+  accepts: 'item'
+}, manager);
+
+// Accept multiple types
+const droppable = new Droppable({
+  id: 'drop-zone',
+  element,
+  accepts: ['item', 'card']
+}, manager);
+
+// Use a function for custom logic
+const droppable = new Droppable({
+  id: 'drop-zone',
+  element,
+  accepts: (draggable) => {
+    // Custom acceptance logic
+    return draggable.type === 'item' && draggable.data.category === 'fruit';
+  }
 }, manager);
 ```
 
-This collision detection algorithm will detect collisions based on the distance between the center of the droppable element and the center of the active draggable source element:
+## Collision Detection
+
+By default, the `Droppable` class uses rectangle intersection to detect when draggable elements are over the drop target:
+
+<img src="/images/droppable/shape-intersection.svg" />
+
+You can customize this behavior with different collision detection algorithms:
+
+```js
+import {
+  closestCenter,
+  pointerIntersection,
+  directionBiased
+} from '@dnd-kit/collision';
+
+// Use closest center point for card stacking
+const droppable = new Droppable({
+  id: 'card-stack',
+  element,
+  collisionDetector: closestCenter
+}, manager);
+```
+
+For example, the `closestCenter` detector will detect collisions based on the distance between the center points:
 
 <img src="/images/droppable/closest-center.svg" />
 
-### Prioritizing collisions
+### Collision Priority
 
-You can prioritize collisions between droppable elements by supplying a `collisionPriority` number to the `Droppable` class.
-The higher the number, the higher the priority when detecting collisions.
-This can be useful if there are multiple droppable elements that overlap, or if you want to prioritize certain droppable elements over others.
+When multiple droppable targets overlap, you can set priority to determine which one should receive the drop:
 
 ```js
-import {Droppable, DragDropManager} from '@dnd-kit/dom';
-
-const manager = new DragDropManager();
-
-const firstDroppable = new Droppable({
-  id: '1',
-  collisionPriority: 1,
+const container = new Droppable({
+  id: 'container',
+  element: containerElement,
+  collisionPriority: 1 // Lower priority
 }, manager);
-const secondDroppable = new Droppable({
-  id: '2',
-  collisionPriority: 2,
+
+const item = new Droppable({
+  id: 'item',
+  element: itemElement,
+  collisionPriority: 2 // Higher priority
 }, manager);
 ```
 
@@ -95,34 +111,56 @@ const secondDroppable = new Droppable({
 The `Droppable` class accepts the following arguments:
 
 <ParamField path="id" type="string | number" required>
-  The identifier of the droppable element. Should be unique within the same [drag and drop context provider](/react/components/drag-drop-provider).
+  A unique identifier for this droppable target within the same [drag and drop context provider](/concepts/drag-drop-manager).
 </ParamField>
 
 <ParamField path="element" type="Element">
-  The element that should be made droppable. While this paramater is not required in the constructor, it is required to make the element droppable. You can update the `element` on the instance after creating it.
+  The DOM element to make droppable. While not required in the constructor, it must be set to enable dropping.
 </ParamField>
 
-<ParamField path="accepts" type="string | number | Symbol | (type: string | number | Symbol) => boolean">
-  Optionally supply a type of draggable element to only allow it to be dropped over certina droppable targets that [accept](#) this `type`.
+<ParamField path="accepts" type="string | number | Symbol | ((draggable: Draggable) => boolean)">
+  Specify which draggable elements can be dropped on this target. See [accepting specific types](#accepting-specific-types) for more details.
 </ParamField>
 
-<ParamField path="collisionDetector" type="(input: CollisionDetectorInput) => Collision | null">
-  Optionally supply a [collision detector](#detecting-collisions) function can be used to detect collisions between the droppable element and draggable elements.
+<ParamField path="collisionDetector" type="CollisionDetector">
+  A function to determine when draggable elements are over this target. See [collision detection](#collision-detection) for built-in options, such as:
+  - `shapeIntersection`
+  - `pointerIntersection`
+  - `closestCenter`
+  - `directionBiased`
 </ParamField>
 
 <ParamField path="collisionPriority" type="number">
-  Optionally supply a number to set the collision priority of the droppable element. The higher the number, the higher the priority when detecting collisions. This can be useful if there are multiple droppable elements that overlap.
+  Priority level when multiple droppable targets overlap. See [collision priority](#collision-priority) for more details.
 </ParamField>
 
 <ParamField path="disabled" type="boolean">
-  Set to `true` to prevent the droppable element from being a drop target.
+  Set to `true` to temporarily prevent dropping on this target.
 </ParamField>
 
 <ParamField path="data" type="{[key: string]: any}">
-  The data argument is for advanced use-cases where you may need access to additional data about the droppable element in event handlers, modifiers, sensors or custom plugins.
+  Optional data to associate with this droppable target, available in event handlers.
 </ParamField>
 
 <ParamField path="effects" type="(manager: DragDropManager) => Effect[]">
   <Info>This is an advanced feature and should not need to be used by most consumers.</Info>
   You can supply a function that returns an array of reactive effects that can be set up and automatically cleaned up when invoking the `destroy()` method of this instance.
 </ParamField>
+
+### Properties
+
+The `Droppable` instance provides these key properties:
+
+- `id`: The unique identifier
+- `element`: The DOM element acting as the drop target
+- `disabled`: Whether dropping is currently disabled
+- `isDropTarget`: Whether a draggable is currently over this target
+- `shape`: The current bounding shape of the drop target
+
+### Methods
+
+- `accepts(draggable)`: Check if this target accepts a draggable element
+- `refreshShape()`: Recalculate the target's dimensions
+- `register()`: Register this target with the manager
+- `unregister()`: Remove this target from the manager
+- `destroy()`: Clean up this droppable instance

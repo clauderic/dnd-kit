@@ -1,104 +1,190 @@
 ---
 title: 'Modifiers'
-description: 'Modify or restrict the behavior of draggable elements.'
+description: 'Transform and constrain drag movement.'
 icon: 'arrows-from-line'
 ---
 
 ## Overview
 
-Modifiers are a type of [plugin](/extend/plugins) that modify or restrict the behavior of draggable elements. They can be used to create custom behaviors, such as restricting the movement of draggable elements to a specific axis or container.
+Modifiers transform the movement of draggable elements during drag operations. They can restrict movement to axes or boundaries, adjust positioning, or implement any custom movement logic.
+
+## Built-in Modifiers
+
+### Abstract Modifiers
+
+Available in `@dnd-kit/abstract/modifiers`, these modifiers are environment-agnostic:
+
+<CardGroup cols={2}>
+  <Card title="RestrictToHorizontalAxis">
+    Constrain movement to the horizontal axis only
+  </Card>
+  <Card title="RestrictToVerticalAxis">
+    Constrain movement to the vertical axis only
+  </Card>
+  <Card title="Snap">
+    Snap movement to a grid with configurable size
+  </Card>
+</CardGroup>
+
+Example using axis restriction:
+
+```ts
+import {RestrictToVerticalAxis} from '@dnd-kit/abstract/modifiers';
+
+// Only allow vertical movement
+const manager = new DragDropManager({
+  modifiers: [RestrictToVerticalAxis],
+});
+```
+
+Example combining modifiers:
+
+```ts
+import {
+  Snap,
+  RestrictToHorizontalAxis
+} from '@dnd-kit/abstract/modifiers';
+
+// Horizontal movement that snaps to a grid
+const manager = new DragDropManager({
+  modifiers: [
+    RestrictToHorizontalAxis,
+    Snap.configure({
+      size: {
+        x: 20,  // Snap every 20px horizontally
+        y: 0    // No vertical snapping (already restricted)
+      }
+    })
+  ],
+});
+```
+
+<Info>
+  Modifiers are applied in order, so place restrictions before transformations.
+</Info>
+
+### Concrete Modifiers
+
+Environment-specific modifiers for the DOM, available in `@dnd-kit/dom/modifiers`:
+
+<CardGroup cols={2}>
+  <Card title="RestrictToWindow">
+    Constrain movement within the window boundaries
+  </Card>
+  <Card title="RestrictToElement">
+    Constrain movement within a container element
+  </Card>
+</CardGroup>
 
 ## Usage
 
-Modifiers can be applied globally or to individual draggable elements.
-
-### Global modifiers
-
-Modifiers can be applied globally by passing them to the [DragDropManager instance](/concepts/drag-drop-manager).
-
-For example, if you wanted to only enable the `RestrictToHorizontalAxis` modifier:
-
-```js
-import {DragDropManager} from '@dnd-kit/dom';
-import {RestrictToHorizontalAxis} from '@dnd-kit/abstract/modifiers';
-
-function App() {
-  const manager = new DragDropManager({
-    modifiers: [RestrictToHorizontalAxis],
-  });
-}
-```
-
-### Local modifiers
-
-Modifiers can also be applied to individual [draggable](/concepts/draggable) elements by passing them to the `modifiers` option.
-
-For example, if you wanted to only enable the `RestrictToElement` modifier for this specific draggable element, while using the `RestrictToHorizontalAxis` globally for all other draggable elements:
-
-```js
-import {Draggable} from '@dnd-kit/dom';
-
-function App() {
-  const manager = new DragDropManager({
-    modifiers: [RestrictToHorizontalAxis],
-  });
-
-  const draggable = new Draggable({
-    id: 'draggable',
-    element,
-    modifiers: [RestrictToElement.configure({element: element.parentElement})],
-  }, manager);
-}
-```
-
-## Built-in modifiers
-
-### Abstract modifiers
-
-Abstract modifiers are not tied to a specific environments. These modifiers can be imported from `@dnd-kit/abstract/modifiers`.
-
-<ResponseField name="RestrictToHorizontalAxis">
-  Restricts the movement of draggable elements to the horizontal axis.
-</ResponseField>
-
-<ResponseField name="RestrictToVerticalAxis">
-  Restricts the movement of draggable elements to the vertical axis.
-</ResponseField>
-
-### Concrete modifiers
-
-Concrete modifiers are tied to specific environments, such as the DOM.
-
-#### DOM
-
-These modifiers can be imported from `@dnd-kit/dom/modifiers`.
-
-<ResponseField name="RestrictToWindow">
-  Restricts the movement of draggable elements to the window.
-</ResponseField>
-
-<ResponseField name="RestrictToElement">
-  Restricts the movement of draggable elements to the container element.
-</ResponseField>
-
-## API Reference
-
-### Modifier
+Modifiers can be applied globally or per draggable element:
 
 ```ts
-abstract class Modifier extends Plugin {
-  constructor(
-    public manager: DragDropManager,
-    public options?: {[key: string]: any}
-  ) {
+import {DragDropManager} from '@dnd-kit/dom';
+import {
+  RestrictToWindow,
+  RestrictToElement
+} from '@dnd-kit/dom/modifiers';
+
+// Global modifiers
+const manager = new DragDropManager({
+  modifiers: [
+    RestrictToWindow,
+  ],
+});
+
+// Per-draggable modifiers
+const draggable = new Draggable({
+  id: 'draggable-1',
+  element,
+  modifiers: [
+    RestrictToElement.configure({
+      element: containerElement
+    })
+  ],
+}, manager);
+```
+
+<Info>
+  Local modifiers on draggable elements take precedence over global modifiers.
+</Info>
+
+## Creating Custom Modifiers
+
+Create custom modifiers by extending the `Modifier` class:
+
+```ts
+import {Modifier} from '@dnd-kit/abstract';
+import type {Coordinates} from '@dnd-kit/geometry';
+
+interface GridOptions {
+  gridSize: number;
+}
+
+class SnapToGrid extends Modifier {
+  constructor(manager, options?: GridOptions) {
     super(manager, options);
   }
 
-  public apply(operation: DragDropManager['dragOperation']): Coordinates {
-    /*
-     * Apply modifications to the coordinates of the drag operation.
-     */
-    return operation.transform;
+  public apply(operation): Coordinates {
+    if (this.disabled) return operation.transform;
+
+    const {gridSize = 20} = this.options ?? {};
+    const {transform} = operation;
+
+    return {
+      x: Math.round(transform.x / gridSize) * gridSize,
+      y: Math.round(transform.y / gridSize) * gridSize,
+    };
   }
 }
+```
+
+## Modifier Lifecycle
+
+1. **Construction**
+   - Modifier instance created
+   - Options configured
+
+2. **Application**
+   - `apply()` called during drag
+   - Transforms coordinates
+   - Can access drag operation state
+
+3. **Cleanup**
+   - Resources cleaned up on destroy
+
+## API Reference
+
+### Base Modifier Class
+
+<ParamField path="manager" type="DragDropManager" required>
+  Reference to the drag and drop manager instance.
+</ParamField>
+
+<ParamField path="options" type="Record<string, any>">
+  Optional configuration for the modifier.
+</ParamField>
+
+### Methods
+
+- `apply(operation)`: Transform drag coordinates
+- `enable()`: Enable the modifier
+- `disable()`: Disable the modifier
+- `isDisabled()`: Check if modifier is disabled
+- `destroy()`: Clean up resources
+
+### Static Methods
+
+- `configure(options)`: Create configured modifier
+
+```ts
+const snapToGrid = SnapToGrid.configure({
+  gridSize: 10
+});
+
+const manager = new DragDropManager({
+  modifiers: [snapToGrid]
+});
 ```

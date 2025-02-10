@@ -1,91 +1,116 @@
 ---
 title: 'DragDropProvider'
-description: 'The drag and drop context provider component.'
+description: 'Enable drag and drop interactions in your React application.'
 icon: 'sitemap'
 ---
 
-The `DragDropProvider` component is a context provider that enables drag and drop interactions within its subtree.
+## Overview
 
-## Usage
+The `DragDropProvider` component creates a context that enables drag and drop interactions for its children. It manages the drag and drop state and coordinates between draggable and droppable elements.
 
-### Location
+## Basic Usage
 
-- Wrap your application with the `DragDropProvider` component to enable drag and drop interactions across the entire application.
-
-  ```jsx
-  import {DragDropProvider} from '@dnd-kit/react';
-
-  function App() {
-    return (
-      <DragDropProvider>
-        {/* Your application */}
-      </DragDropProvider>
-    );
-  }
-  ```
-
-- If you want to limit drag and drop interactions to a specific subtree, you can wrap only that subtree with the `DragDropProvider` component.
-- You can use the `DragDropProvider` component multiple times within your application to create separate drag and drop contexts.
-
-  ```jsx
-  import {DragDropProvider} from '@dnd-kit/react';
-
-  function App() {
-    return (
-      <div>
-        <DragDropProvider>
-          {/* Your first drag and drop context */}
-        </DragDropProvider>
-        <DragDropProvider>
-          {/* Your second drag and drop context */}
-        </DragDropProvider>
-      </div>
-    );
-  }
-  ```
-
-- You can also nest `DragDropProvider` components to create a hierarchy of drag and drop contexts.
-
-  ```jsx
-  import {DragDropProvider} from '@dnd-kit/react';
-
-  function App() {
-    return (
-      <DragDropProvider>
-        <div>
-          <DragDropProvider>
-            {/* Your draggable and droppable elements */}
-          </DragDropProvider>
-        </div>
-      </DragDropProvider>
-    );
-  }
-  ```
-
-### Listening to drag and drop events
-
-You can use the `onDragStart`, `onDragMove`, `onDragOver` and `onDragEnd` event listeners to respond to drag and drop events within the subtree of the `DragDropProvider` component.
+Wrap your application or a section with `DragDropProvider`:
 
 ```jsx
 import {DragDropProvider} from '@dnd-kit/react';
 
 function App() {
   return (
+    <DragDropProvider>
+      <YourDraggableContent />
+    </DragDropProvider>
+  );
+}
+```
+
+## Event Handling
+
+Listen to drag and drop events to respond to user interactions:
+
+```jsx
+function App() {
+  return (
     <DragDropProvider
-      onDragStart={(event) => {
-        console.log('Drag started:', event.source);
+      onBeforeDragStart={({source, event}) => {
+        // Optionally prevent dragging
+        if (shouldPreventDrag(source)) {
+          event.preventDefault();
+        }
       }}
-      onDragMove={(event) => {
-        console.log('Drag moved:', event.operation.position);
+      onDragStart={({source}) => {
+        console.log('Started dragging', source.id);
       }}
-      onDragOver={(event) => {
-        console.log('Drag over target:', event.target);
+      onDragMove={({operation}) => {
+        const {position} = operation;
+        console.log('Current position:', position);
       }}
-      onDragEnd={(event) => {
-        console.log('Drag ended:', event.source, event.target);
+      onDragOver={({source, target}) => {
+        console.log(`${source.id} is over ${target.id}`);
+      }}
+      onDragEnd={({source, target}) => {
+        if (target) {
+          console.log(`Dropped ${source.id} onto ${target.id}`);
+        }
       }}
     >
-      {/* Your draggable and droppable elements */}
+      <YourDraggableContent />
+    </DragDropProvider>
+  );
+}
+```
+
+## Multiple Contexts
+
+You can create multiple independent drag and drop contexts:
+
+```jsx
+function App() {
+  return (
+    <div>
+      <DragDropProvider>
+        <FileList /> {/* Files can only be dropped in this context */}
+      </DragDropProvider>
+
+      <DragDropProvider>
+        <TaskList /> {/* Tasks can only be dropped in this context */}
+      </DragDropProvider>
+    </div>
+  );
+}
+```
+
+## Configuration
+
+Customize behavior with plugins, sensors, and modifiers:
+
+```jsx
+import {
+  DragDropProvider,
+  PointerSensor,
+  KeyboardSensor,
+  RestrictToWindow,
+} from '@dnd-kit/react';
+
+function App() {
+  return (
+    <DragDropProvider
+      // Custom input detection
+      sensors={[
+        PointerSensor,
+        KeyboardSensor,
+      ]}
+      // Extend functionality
+      plugins={[
+        AutoScroller,
+        Accessibility,
+      ]}
+      // Modify drag behavior
+      modifiers={[
+        RestrictToWindow,
+      ]}
+    >
+      <YourDraggableContent />
     </DragDropProvider>
   );
 }
@@ -95,46 +120,50 @@ function App() {
 
 ### Props
 
-<ParamField path="onBeforeDragStart" type="(event: BeforeDragStartEvent) => void">
-  A callback that is called before a drag operation starts. Can be used to prevent the drag operation from starting by invoking `event.preventDefault()`.
-</ParamField>
-
-<ParamField path="onDragStart" type="(event: DragStartEvent) => void">
-  A callback that is called when a drag operation starts.
-</ParamField>
-
-<ParamField path="onDragMove" type="(event: DragMoveEvent) => void">
-  A callback that is called when a draggable element is moved.
-</ParamField>
-
-<ParamField path="onCollision" type="(event: CollisionEvent) => void">
-  A callback that is called when new collisions are detected between the draggable source and droppable targets. Invoke `event.preventDefault()` to prevent the first collision from being set as the target of the drag operation.
-</ParamField>
-
-<ParamField path="onDragOver" type="(event: DragOverEvent) => void">
-  A callback that is called when a draggable element is dragged over a droppable target.
-</ParamField>
-
-<ParamField path="onDragEnd" type="(event: DragEndEvent) => void">
-  A callback that is called when a drag operation ends.
-</ParamField>
-
-<ParamField path="children" type="ReactNode">
-  The children of the `DragDropProvider` component.
+<ParamField path="children" type="ReactNode" required>
+  Content where drag and drop should be enabled.
 </ParamField>
 
 <ParamField path="manager" type="DragDropManager">
-  An instance of the `DragDropManager` class that is used to manage the drag and drop interactions within the subtree of the `DragDropProvider` component.
+  Optional custom manager instance. If not provided, one will be created.
+</ParamField>
+
+### Events
+
+<ParamField path="onBeforeDragStart" type="(event: BeforeDragStartEvent) => void">
+  Called before dragging starts. Call `event.preventDefault()` to cancel.
+</ParamField>
+
+<ParamField path="onDragStart" type="(event: DragStartEvent) => void">
+  Called when dragging begins.
+</ParamField>
+
+<ParamField path="onDragMove" type="(event: DragMoveEvent) => void">
+  Called when the dragged element moves.
+</ParamField>
+
+<ParamField path="onDragOver" type="(event: DragOverEvent) => void">
+  Called when dragging over a droppable target.
+</ParamField>
+
+<ParamField path="onDragEnd" type="(event: DragEndEvent) => void">
+  Called when dragging ends, whether dropped on a target or not.
+</ParamField>
+
+<ParamField path="onCollision" type="(event: CollisionEvent) => void">
+  Called when collisions are detected. Call `event.preventDefault()` to prevent automatic target selection.
+</ParamField>
+
+### Configuration
+
+<ParamField path="sensors" type="Sensor[]">
+  Array of [sensors](/extend/sensors) for detecting user input.
 </ParamField>
 
 <ParamField path="plugins" type="Plugin[]">
-  An array of [plugins](/extend/plugins) that can be used to extend the functionality of the drag and drop manager.
-</ParamField>
-
-<ParamField path="sensors" type="Sensor[]">
-  An array of [sensors](/extend/sensors) that can be used to detect user input in the browser.
+  Array of [plugins](/extend/plugins) to extend functionality.
 </ParamField>
 
 <ParamField path="modifiers" type="Modifier[]">
-  An array of [modifiers](/extend/modifiers) that can be used to modify or restrict the behavior of draggable and droppable elements.
+  Array of [modifiers](/extend/modifiers) to customize drag behavior.
 </ParamField>

@@ -12,8 +12,9 @@ import {sortableStyles as styles} from '/snippets/code.mdx';
 
 ## Usage
 
-The `Sortable` class allows you to reorder elements in a list or across multiple lists.
-Sortable elements are both [Droppable](/concepts/droppable) and [Draggable](/concepts/draggable).
+The `Sortable` class allows you to reorder elements in a list or across multiple lists. A sortable element is both [Droppable](/concepts/droppable) and [Draggable](/concepts/draggable), which means you can drag it and drop it to reorder.
+
+First, create a [DragDropManager](/concepts/drag-drop-manager) instance and use it to create sortable items:
 
 export const code = `
 import {DragDropManager} from '@dnd-kit/dom';
@@ -35,7 +36,7 @@ export function App() {
 
     const sortable = new Sortable({
       id: item,
-      index,
+      index, // Required - the position in the list
       element,
     }, manager);
 
@@ -52,7 +53,69 @@ export function App() {
   'styles.css': {code: styles, hidden: true},
 }} height={580} previewHeight={180} template="vanilla" />
 
-Under the hood, the `Sortable` class composes both the `Draggable` and `Droppable` classes, so it accepts most of the same arguments.
+## Multiple Lists
+
+You can create multiple sortable lists by assigning sortable items to different groups:
+
+```js
+const list1 = ['Item 1', 'Item 2'];
+const list2 = ['Item 3', 'Item 4'];
+
+// First list
+list1.forEach((item, index) => {
+  new Sortable({
+    id: item,
+    index,
+    group: 'list1', // Assign to first group
+    element: createItemElement(item),
+  }, manager);
+});
+
+// Second list
+list2.forEach((item, index) => {
+  new Sortable({
+    id: item,
+    index,
+    group: 'list2', // Assign to second group
+    element: createItemElement(item),
+  }, manager);
+});
+```
+
+## Drag Handles
+
+By default, the entire sortable element can be used to initiate dragging. You can restrict dragging to a specific handle element:
+
+```js
+const element = document.createElement('li');
+const handle = document.createElement('div');
+handle.classList.add('handle');
+
+element.appendChild(handle);
+
+new Sortable({
+  id: 'item-1',
+  index: 0,
+  element,
+  handle, // Only allow dragging from the handle
+}, manager);
+```
+
+## Animations
+
+Sortable items automatically animate when their position changes. You can customize the animation through the `transition` option:
+
+```js
+new Sortable({
+  id: 'item-1',
+  index: 0,
+  transition: {
+    duration: 250, // Animation duration in ms
+    easing: 'cubic-bezier(0.25, 1, 0.5, 1)', // Animation easing
+    idle: false, // Whether to animate when no drag is in progress
+  }
+}, manager);
+```
 
 ## API Reference
 
@@ -61,50 +124,80 @@ Under the hood, the `Sortable` class composes both the `Draggable` and `Droppabl
 The `Sortable` class accepts the following arguments:
 
 <ParamField path="id" type="string | number" required>
-  The identifier of the sortable element. Should be unique within the same [drag and drop context provider](/react/components/drag-drop-provider).
+  A unique identifier for this sortable item within the drag and drop manager.
+</ParamField>
+
+<ParamField path="index" type="number" required>
+  The position of this item within its sortable group.
 </ParamField>
 
 <ParamField path="element" type="Element">
-  The element that should be made sortable. While this paramater is not required in the constructor, it is required to make the element sortable. You can update the `element` on the instance after creating it.
+  The DOM element to make sortable. While not required in the constructor, it must be set to enable sorting.
+</ParamField>
+
+<ParamField path="group" type="string | number">
+  Optionally assign this item to a group. Items can only be sorted within their group.
 </ParamField>
 
 <ParamField path="handle" type="Element">
-  Optionally supply a drag handle element to restrict initiating dragging to a specific element. If not provided, the entire `element` will be draggable.
+  Optionally specify a drag handle element. If not provided, the entire element will be draggable.
 </ParamField>
 
-<ParamField path="type" type="string | number | Symbol">
-  Optionally supply a type to only allow this sortable element to only be dropped over droppable targets that [accept](/concept/droppable) this `type`.
+<ParamField path="target" type="Element">
+  Optionally specify a different element to use as the drop target. By default, uses the main element.
 </ParamField>
 
-<ParamField path="accepts" type="string | number | Symbol | (type: string | number | Symbol) => boolean">
-  Optionally supply a type of draggable element to only allow it to be dropped over certina droppable targets that [accept](#) this `type`.
-</ParamField>
-
-<ParamField path="collisionDetector" type="(input: CollisionDetectorInput) => Collision | null">
-  Optionally supply a [collision detector](/concepts/droppable#detecting-collisions) function can be used to detect collisions between the droppable element and draggable elements.
-</ParamField>
-
-<ParamField path="collisionPriority" type="number">
-  Optionally supply a number to set the collision priority of the droppable element. The higher the number, the higher the priority when detecting collisions. This can be useful if there are multiple droppable elements that overlap.
+<ParamField path="transition" type="SortableTransition | null">
+  Configure the animation when items are reordered:
+  ```ts
+  interface SortableTransition {
+    duration?: number; // Duration in ms (default: 250)
+    easing?: string;  // CSS easing function (default: cubic-bezier)
+    idle?: boolean;   // Animate when not dragging (default: false)
+  }
+  ```
 </ParamField>
 
 <ParamField path="disabled" type="boolean">
-  Set to `true` to prevent the sortable element from being sortable.
+  Set to `true` to temporarily disable sorting for this item.
+</ParamField>
+
+<ParamField path="type" type="string | number | Symbol">
+  Optionally restrict which types of items can be sorted together.
+</ParamField>
+
+<ParamField path="accepts" type="string | number | Symbol | ((type) => boolean)">
+  Optionally restrict which types of items can be dropped on this item.
 </ParamField>
 
 <ParamField path="modifiers" type="Modifier[]">
-  An array of [modifiers](/plugins/modifiers) that can be used to modify or restrict the behavior of the sortable element.
+  An array of [modifiers](/plugins/modifiers) to customize drag behavior.
 </ParamField>
 
 <ParamField path="sensors" type="Sensors[]">
-  An array of [sensors](/sensors/overview) that can be bound to the sortable element to detect drag interactions.
+  An array of [sensors](/sensors/overview) to detect drag interactions.
 </ParamField>
 
 <ParamField path="data" type="{[key: string]: any}">
-  The data argument is for advanced use-cases where you may need access to additional data about the sortable element in event handlers, modifiers, sensors or custom plugins.
+  Optional data to associate with this sortable item, available in event handlers.
 </ParamField>
 
-<ParamField path="effects" type="(manager: DragDropManager) => Effect[]">
-  <Info>This is an advanced feature and should not need to be used by most consumers.</Info>
-  You can supply a function that returns an array of reactive effects that can be set up and automatically cleaned up when invoking the `destroy()` method of this instance.
-</ParamField>
+### Properties
+
+The `Sortable` instance provides these key properties:
+
+- `index`: The current position in the list
+- `group`: The assigned group identifier
+- `isDragging`: Whether this item is currently being dragged
+- `isDropTarget`: Whether this item is currently a drop target
+- `disabled`: Whether sorting is disabled for this item
+- `element`: The main DOM element
+- `target`: The drop target element (if different from main element)
+
+### Methods
+
+- `register()`: Register this sortable item with the manager
+- `unregister()`: Remove this item from the manager
+- `destroy()`: Clean up this sortable instance
+- `accepts(draggable)`: Check if this item accepts a draggable
+- `refreshShape()`: Recalculate the item's dimensions
