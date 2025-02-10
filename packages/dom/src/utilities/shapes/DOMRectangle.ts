@@ -24,6 +24,7 @@ export class DOMRectangle extends Rectangle {
     const resetAnimations = forceFinishAnimations(element);
     const boundingRectangle = getBoundingClientRect(element);
     let {top, left, width, height} = boundingRectangle;
+    let updated: BoundingRectangle | undefined;
 
     const computedStyles = getComputedStyles(element);
     const parsedTransform = parseTransform(computedStyles);
@@ -37,18 +38,25 @@ export class DOMRectangle extends Rectangle {
 
     const projectedTransform = getProjectedTransform(element);
 
-    if (parsedTransform && (ignoreTransforms || projectedTransform)) {
-      const updated = inverseTransform(
+    if (parsedTransform) {
+      updated = inverseTransform(
         boundingRectangle,
         parsedTransform,
         computedStyles.transformOrigin
       );
 
-      top = updated.top;
-      left = updated.left;
-      width = updated.width;
-      height = updated.height;
+      if (ignoreTransforms || projectedTransform) {
+        top = updated.top;
+        left = updated.left;
+        width = updated.width;
+        height = updated.height;
+      }
     }
+
+    const intrinsic = {
+      width: updated?.width ?? width,
+      height: updated?.height ?? height,
+    };
 
     if (projectedTransform && !ignoreTransforms) {
       top = top + projectedTransform.y;
@@ -74,7 +82,12 @@ export class DOMRectangle extends Rectangle {
     super(left, top, width, height);
 
     this.scale = scale;
+    this.intrinsicWidth = intrinsic.width;
+    this.intrinsicHeight = intrinsic.height;
   }
+
+  public intrinsicWidth: number;
+  public intrinsicHeight: number;
 }
 
 /*
