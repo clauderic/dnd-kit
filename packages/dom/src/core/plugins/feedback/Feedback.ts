@@ -516,17 +516,31 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             y: translate.y - delta.y,
           };
           const heightKeyframes =
-            Math.round(current.height) !== Math.round(final.height)
+            Math.round(current.intrinsicHeight) !==
+            Math.round(final.intrinsicHeight)
               ? {
-                  minHeight: [`${current.height}px`, `${final.height}px`],
-                  maxHeight: [`${current.height}px`, `${final.height}px`],
+                  minHeight: [
+                    `${current.intrinsicHeight}px`,
+                    `${final.intrinsicHeight}px`,
+                  ],
+                  maxHeight: [
+                    `${current.intrinsicHeight}px`,
+                    `${final.intrinsicHeight}px`,
+                  ],
                 }
               : {};
           const widthKeyframes =
-            Math.round(current.width) !== Math.round(final.width)
+            Math.round(current.intrinsicWidth) !==
+            Math.round(final.intrinsicWidth)
               ? {
-                  minWidth: [`${current.width}px`, `${final.width}px`],
-                  maxWidth: [`${current.width}px`, `${final.width}px`],
+                  minWidth: [
+                    `${current.intrinsicWidth}px`,
+                    `${final.intrinsicWidth}px`,
+                  ],
+                  maxWidth: [
+                    `${current.intrinsicWidth}px`,
+                    `${final.intrinsicWidth}px`,
+                  ],
                 }
               : {};
 
