@@ -111,7 +111,7 @@ export class Accessibility extends Plugin<DragDropManager> {
           }
 
           for (const key of ['aria-pressed', 'aria-grabbed']) {
-            activator.setAttribute(key, String(draggable.isDragSource));
+            activator.setAttribute(key, String(draggable.isDragging));
           }
 
           activator.setAttribute('aria-disabled', String(draggable.disabled));
