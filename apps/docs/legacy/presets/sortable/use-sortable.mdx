@@ -2,7 +2,7 @@
 title: useSortable
 ---
 
-The `useSortable` hook is an abstraction that composes the [`useDroppable`](../../api-documentation/droppable/overview) and [`useDraggable`](../../api-documentation/draggable/overview) hooks.
+The `useSortable` hook is an abstraction that composes the [`useDroppable`](../../api-documentation/droppable) and [`useDraggable`](../../api-documentation/draggable) hooks.
 
 <Info>
 To function properly, the `useSortable` hook needs to be used within a descendant of a [`SortableContext`](./sortable-context) provider higher up in the tree.
@@ -10,7 +10,7 @@ To function properly, the `useSortable` hook needs to be used within a descendan
 
 ## Usage
 
-If you're already familiar with the [`useDraggable`](../../api-documentation/draggable/overview) hook, the `useSortable` hook should look very familiar, since, it is an abstraction on top of it.
+If you're already familiar with the [`useDraggable`](../../api-documentation/draggable) hook, the `useSortable` hook should look very familiar, since, it is an abstraction on top of it.
 
 In addition to the `attributes`, `listeners`,`transform` and `setNodeRef` arguments, which you should already be familiar with if you've used the `useDraggable` hook before, you'll notice that the `useSortable` hook also provides a [`transition`](#transform) argument.
 
@@ -44,19 +44,19 @@ The `listeners` property contains the [activator event handlers](../../api-docum
 
 It should be attached to the node(s) that you wish to use as the activator to begin a sort event. In most cases, that will be the same node as the one passed to `setNodeRef`, though not necessarily. For instance, when implementing a sortable element with a "drag handle", the ref should be attached to the parent node that should be sortable, but the listeners can be attached to the handle node instead.
 
-For additional details on the [`listeners`](../../api-documentation/draggable/#listeners) property, refer to the [`useDraggable`](../../api-documentation/draggable/overview) documentation.
+For additional details on the [`listeners`](../../api-documentation/draggable/#listeners) property, refer to the [`useDraggable`](../../api-documentation/draggable) documentation.
 
 ### Attributes
 
 The `useSortable` hook provides a set of sensible default attributes for draggable items. We recommend you attach these to your draggable elements, though nothing will break if you don't.
 
-For additional details on the [`attributes`](../../api-documentation/draggable/#attributes) property, refer to the [`useDraggable`](../../api-documentation/draggable/overview) documentation.
+For additional details on the [`attributes`](../../api-documentation/draggable/#attributes) property, refer to the [`useDraggable`](../../api-documentation/draggable) documentation.
 
 ### Transform
 
 The `transform` property represents the displacement and change of scale transformation that a sortable item needs to apply to transition to its new position without needing to update the DOM order.
 
-The `transform` property for the `useSortable` hook behaves similarly to the [`transform`](../../api-documentation/draggable/#transforms) property of the [`useDraggable`](../../api-documentation/draggable/overview) hook for the active sortable item, when there is no [`DragOverlay`](../../api-documentation/draggable/drag-overlay) being used.
+The `transform` property for the `useSortable` hook behaves similarly to the [`transform`](../../api-documentation/draggable/#transforms) property of the [`useDraggable`](../../api-documentation/draggable) hook for the active sortable item, when there is no [`DragOverlay`](../../api-documentation/draggable/drag-overlay) being used.
 
 ### Node ref
 

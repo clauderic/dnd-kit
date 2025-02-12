@@ -110,7 +110,7 @@ The sortable preset builds on top of the primitives exposed by `@dnd-kit/core` t
 The sortable preset exposes two main concepts: [`SortableContext`](#sortable-context) and the [`useSortable`](#usesortable) hook:
 
 - The `SortableContext` provides information via context that is consumed by the `useSortable` hook.
-- The `useSortable` hook is an abstraction that composes the [`useDroppable`](../../api-documentation/droppable/overview) and [`useDraggable`](../../api-documentation/draggable/overview) hooks:
+- The `useSortable` hook is an abstraction that composes the [`useDroppable`](../../api-documentation/droppable) and [`useDraggable`](../../api-documentation/draggable) hooks:
 
 ![The useSortable hook](/images/legacy/use-sortable.png)
 
@@ -188,19 +188,19 @@ In order for the `SortableContext` component to function properly, make sure it 
 
 ### useSortable
 
-As outlined above, the `useSortable` hook combines both the [`useDraggable`](../../api-documentation/draggable/overview) and [`useDroppable`](../../api-documentation/droppable/overview) hooks to connect elements as both draggable sources and drop targets:
+As outlined above, the `useSortable` hook combines both the [`useDraggable`](../../api-documentation/draggable) and [`useDroppable`](../../api-documentation/droppable) hooks to connect elements as both draggable sources and drop targets:
 
 <Info>
 In most cases, the draggable and droppable hooks will be attached to the same node, and therefore be identical in size. They are represented as different nodes for illustration purposes above.
 </Info>
 
-If you're already familiar with the [`useDraggable`](../../api-documentation/draggable/overview) hook, the [`useSortable`](./use-sortable) hook should look very familiar, since, it is an abstraction on top of it.
+If you're already familiar with the [`useDraggable`](../../api-documentation/draggable) hook, the [`useSortable`](./use-sortable) hook should look very familiar, since, it is an abstraction on top of it.
 
 In addition to the `attributes`, `listeners`,`transform` and `setNodeRef` properties, which you should already be familiar with if you've used the `useDraggable` hook before, you'll notice that the `useSortable` hook also provides a `transition` property.
 
 The `transform` property for `useSortable` represents the displacement and change of scale transformation that a sortable item needs to apply to transition to its new position without needing to update the DOM order.
 
-The `transform` property for the `useSortable` hook behaves similarly to the [`transform`](../../api-documentation/draggable/#transforms) property of the [`useDraggable`](../../api-documentation/draggable/overview) hook for the active sortable item, when there is no [`DragOverlay`](../../api-documentation/draggable/drag-overlay) being used.
+The `transform` property for the `useSortable` hook behaves similarly to the [`transform`](../../api-documentation/draggable/#transforms) property of the [`useDraggable`](../../api-documentation/draggable) hook for the active sortable item, when there is no [`DragOverlay`](../../api-documentation/draggable/drag-overlay) being used.
 
 <CodeGroup>
 ```jsx SortableItem.jsx

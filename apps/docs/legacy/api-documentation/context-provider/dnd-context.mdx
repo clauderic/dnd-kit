@@ -7,7 +7,7 @@ sidebarTitle: <DndContext>
 
 ## Application structure
 
-In order for your your [Droppable](../droppable/overview) and [Draggable](../draggable/overview) components to interact with each other, you'll need to make sure that the part of your React tree that uses them is nested within a parent `<DndContext>` component. The `<DndContext>` provider makes use of the [React Context API](https://reactjs.org/docs/context.html) to share data between draggable and droppable components and hooks.
+In order for your your [Droppable](../droppable) and [Draggable](../draggable) components to interact with each other, you'll need to make sure that the part of your React tree that uses them is nested within a parent `<DndContext>` component. The `<DndContext>` provider makes use of the [React Context API](https://reactjs.org/docs/context.html) to share data between draggable and droppable components and hooks.
 
 > React context provides a way to pass data through the component tree without having to pass props down manually at every level.
 
@@ -86,11 +86,11 @@ Fires when a drag event that meets the [activation constraints](../sensors/#conc
 
 #### `onDragMove`
 
-Fires anytime as the [draggable](../draggable/overview) item is moved. Depending on the activated [sensor](../sensors/#activators), this could for example be as the [Pointer](../sensors/pointer) is moved or the [Keyboard](../sensors/keyboard) movement keys are pressed.
+Fires anytime as the [draggable](../draggable) item is moved. Depending on the activated [sensor](../sensors/#activators), this could for example be as the [Pointer](../sensors/pointer) is moved or the [Keyboard](../sensors/keyboard) movement keys are pressed.
 
 #### `onDragOver`
 
-Fires when a [draggable](../draggable/overview) item is moved over a [droppable](../droppable/overview) container, along with the unique identifier of that droppable container.
+Fires when a [draggable](../draggable) item is moved over a [droppable](../droppable) container, along with the unique identifier of that droppable container.
 
 #### `onDragEnd`
 
@@ -101,7 +101,7 @@ This event contains information about the active draggable `id` along with infor
 If there are no [collisions detected](./collision-detection-algorithms) when the draggable item is dropped, the `over` property will be `null`. If a collision is detected, the `over` property will contain the `id` of the droppable over which it was dropped.
 
 <Info>
-It's important to understand that the `onDragEnd` event **does not move** [**draggable**](../draggable/overview) **items into** [**droppable**](../droppable/overview) **containers.**
+It's important to understand that the `onDragEnd` event **does not move** [**draggable**](../draggable) **items into** [**droppable**](../droppable) **containers.**
 
 Rather, it provides **information** about which draggable item was dropped and whether it was over a droppable container when it was dropped.
 

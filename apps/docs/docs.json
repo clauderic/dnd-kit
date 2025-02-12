@@ -110,7 +110,7 @@
                   {
                     "group": "Draggable",
                     "pages": [
-                      "legacy/api-documentation/draggable/overview",
+                      "legacy/api-documentation/draggable",
                       "legacy/api-documentation/draggable/use-draggable",
                       "legacy/api-documentation/draggable/drag-overlay"
                     ],
@@ -119,7 +119,7 @@
                   {
                     "group": "Droppable",
                     "pages": [
-                      "legacy/api-documentation/droppable/overview",
+                      "legacy/api-documentation/droppable",
                       "legacy/api-documentation/droppable/use-droppable"
                     ],
                     "icon": "expand"
