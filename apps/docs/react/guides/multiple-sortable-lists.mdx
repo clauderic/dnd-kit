@@ -131,7 +131,7 @@ If we wanted more control over the drag and drop operation, we could also handle
 
 ## Handling canceled drag operations
 
-It's possible for a drag operation to be canceled. For example, users can cancel a drag operation initiated by the [Pointer sensor](/extend/sensors/pointer) by pressing the `Escape` key.
+It's possible for a drag operation to be canceled. For example, users can cancel a drag operation initiated by the [Pointer sensor](/extend/sensors/pointer-sensor) by pressing the `Escape` key.
 
 When you update the order of items in the `onDragOver` callback, you should make sure to check if the user decided to abort the drag operation in the `onDragEnd` callback. If the drag operation was canceled, you should revert the order of items to the state before the drag operation started.
 

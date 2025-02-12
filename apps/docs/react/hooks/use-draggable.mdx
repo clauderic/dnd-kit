@@ -51,11 +51,11 @@ The `useDraggable` hook accepts the following arguments:
 </ParamField>
 
 <ParamField path="modifiers" type="Modifier[]">
-  An array of [modifiers](/plugins/modifiers) that can be used to modify or restrict the behavior of the draggable element.
+  An array of [modifiers](/extend/modifiers) that can be used to modify or restrict the behavior of the draggable element.
 </ParamField>
 
 <ParamField path="sensors" type="Sensors[]">
-  An array of [sensors](/sensors/overview) that can be bound to the draggable element to detect drag interactions.
+  An array of [sensors](/extend/sensors) that can be bound to the draggable element to detect drag interactions.
 </ParamField>
 
 <ParamField path="data" type="{[key: string]: any}">
@@ -126,7 +126,7 @@ function Draggable(props) {
 
 ### Restricting dragging using modifiers
 
-Use [modifiers](/plugins/modifiers) to modify or restrict the behavior of draggable elements.
+Use [modifiers](/extend/modifiers) to modify or restrict the behavior of draggable elements.
 
 Modifiers let you dynamically modify the movement coordinates that are detected by sensors. They can be used for a wide range of use cases, for example:
 
@@ -189,6 +189,7 @@ export function Draggable(props) {
   return <button ref={ref} className="btn">draggable</button>;
 }
 `.trim();
+
 ### Rendering a drag overlay
 
 You can render a completely different element while the draggable element is being dragged by using the `<DragOverlay>` component.

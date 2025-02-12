@@ -64,7 +64,7 @@
           "group": "Sensors",
           "icon": "signal-stream",
           "pages": [
-            "extend/sensors/overview",
+            "extend/sensors",
             "extend/sensors/pointer-sensor",
             "extend/sensors/keyboard-sensor"
           ]

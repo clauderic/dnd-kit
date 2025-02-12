@@ -1,0 +1,26 @@
+---
+title: useDndContext
+---
+
+The `useDndContext` hook can be used within components wrapped in a `DndContext` provider to access the internal context of the `DndContext`. This can be useful if you're building your own custom components or presets on top of `@dnd-kit/core`.
+
+```jsx
+import {useDndContext} from '@dnd-kit/core';
+
+function App() {
+  <DndContext>
+    <MyComponent />
+  </DndContext>
+}
+
+function MyComponent() {
+  const dndContext = useDndContext();
+
+  console.log(dndContext);
+}
+```
+
+<Warning>
+Make sure you use the `useDndContext` hook within a [`<DndContext>`](./dnd-context) provider.
+</Warning>
+

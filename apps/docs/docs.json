@@ -1,0 +1,189 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "@dnd-kit",
+  "colors": {
+    "primary": "#596dff",
+    "light": "#596dff",
+    "dark": "#596dff"
+  },
+  "favicon": "/favicon.png",
+  "navigation": {
+    "versions": [
+      {
+        "version": "Next",
+        "anchors": [
+          {
+            "anchor": "Vanilla",
+            "icon": "js",
+            "groups": [
+              {
+                "group": " ",
+                "pages": ["overview"]
+              },
+              {
+                "group": "Get Started",
+                "pages": ["quickstart"]
+              },
+              {
+                "group": "Concepts",
+                "pages": [
+                  "concepts/drag-drop-manager",
+                  "concepts/draggable",
+                  "concepts/droppable",
+                  "concepts/sortable"
+                ]
+              },
+              {
+                "group": "Extensibility",
+                "pages": [
+                  "extend/plugins",
+                  {
+                    "group": "Sensors",
+                    "icon": "signal-stream",
+                    "pages": [
+                      "extend/sensors",
+                      "extend/sensors/pointer-sensor",
+                      "extend/sensors/keyboard-sensor"
+                    ]
+                  },
+                  "extend/modifiers"
+                ]
+              }
+            ]
+          },
+          {
+            "anchor": "React",
+            "icon": "react",
+            "groups": [
+              {
+                "group": "Get Started",
+                "pages": ["react/quickstart"]
+              },
+              {
+                "group": "Components",
+                "pages": ["react/components/drag-drop-provider"]
+              },
+              {
+                "group": "Hooks",
+                "pages": [
+                  "react/hooks/use-draggable",
+                  "react/hooks/use-droppable",
+                  "react/hooks/use-sortable"
+                ]
+              },
+              {
+                "group": "Guides",
+                "pages": ["react/guides/multiple-sortable-lists"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "version": "Legacy",
+        "anchors": [
+          {
+            "anchor": "React",
+            "icon": "react",
+            "groups": [
+              {
+                "group": "Get started",
+                "pages": [
+                  "legacy/introduction/installation",
+                  "legacy/introduction/getting-started"
+                ]
+              },
+              {
+                "group": "Concepts",
+                "pages": [
+                  {
+                    "group": "Context Provider",
+                    "pages": [
+                      "legacy/api-documentation/context-provider/dnd-context",
+                      "legacy/api-documentation/context-provider/collision-detection-algorithms",
+                      "legacy/api-documentation/context-provider/use-dnd-context",
+                      "legacy/api-documentation/context-provider/use-dnd-monitor"
+                    ],
+                    "icon": "sitemap"
+                  },
+                  {
+                    "group": "Draggable",
+                    "pages": [
+                      "legacy/api-documentation/draggable/overview",
+                      "legacy/api-documentation/draggable/use-draggable",
+                      "legacy/api-documentation/draggable/drag-overlay"
+                    ],
+                    "icon": "bullseye-pointer"
+                  },
+                  {
+                    "group": "Droppable",
+                    "pages": [
+                      "legacy/api-documentation/droppable/overview",
+                      "legacy/api-documentation/droppable/use-droppable"
+                    ],
+                    "icon": "expand"
+                  },
+                  {
+                    "group": "Sortable",
+                    "pages": [
+                      "legacy/presets/sortable/overview",
+                      "legacy/presets/sortable/sortable-context",
+                      "legacy/presets/sortable/use-sortable"
+                    ],
+                    "icon": "layer-group"
+                  }
+                ]
+              },
+              {
+                "group": "Extensibility",
+                "pages": [
+                  {
+                    "group": "Sensors",
+                    "pages": [
+                      "legacy/api-documentation/sensors",
+                      "legacy/api-documentation/sensors/pointer",
+                      "legacy/api-documentation/sensors/mouse",
+                      "legacy/api-documentation/sensors/touch",
+                      "legacy/api-documentation/sensors/keyboard"
+                    ],
+                    "icon": "signal-stream"
+                  },
+                  "legacy/api-documentation/modifiers"
+                ]
+              },
+              {
+                "group": "Guides",
+                "pages": ["legacy/guides/accessibility"]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "logo": "/images/logo/logo.svg",
+  "navbar": {
+    "links": [
+      {
+        "label": "Examples",
+        "href": "https://experimental--5fc05e08a4a65d0021ae0bf2.chromatic.com/"
+      },
+      {
+        "label": "Community",
+        "href": "https://dnd-kit.slack.com/"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Github",
+      "href": "https://github.com/clauderic/dnd-kit"
+    }
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/dndkit",
+      "github": "https://github.com/clauderic/dnd-kit"
+    }
+  }
+}

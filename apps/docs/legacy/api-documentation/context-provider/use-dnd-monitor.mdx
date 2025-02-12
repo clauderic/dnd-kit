@@ -1,0 +1,42 @@
+---
+title: useDndMonitor
+---
+
+The `useDndMonitor` hook can be used within components wrapped in a `DndContext` provider to monitor the different drag and drop events that happen for that `DndContext`.
+
+```jsx
+import {DndContext, useDndMonitor} from '@dnd-kit/core';
+
+function App() {
+  return (
+    <DndContext>
+      <MyComponent />
+    </DndContext>
+  );
+}
+
+function MyComponent() {
+  // Monitor drag and drop events that happen on the parent `DndContext` provider
+  useDndMonitor({
+    onDragStart(event) {
+      console.log('Drag started', event);
+    },
+    onDragMove(event) {
+      console.log('Drag moved', event);
+    },
+    onDragOver(event) {
+      console.log('Drag over', event);
+    },
+    onDragEnd(event) {
+      console.log('Drag ended', event);
+    },
+    onDragCancel(event) {
+      console.log('Drag cancelled', event);
+    },
+  });
+}
+```
+
+<Warning>
+Make sure you use the `useDndMonitor` hook within a [`<DndContext>`](./dnd-context) provider.
+</Warning>
