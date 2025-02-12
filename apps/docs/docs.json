@@ -162,6 +162,40 @@
       }
     ]
   },
+  "redirects": [
+    {
+      "source": "/introduction/getting-started",
+      "destination": "/legacy/introduction/getting-started"
+    },
+    {
+      "source": "/introduction/installation",
+      "destination": "/legacy/introduction/installation"
+    },
+    {
+      "source": "/api-documentation/context-provider/usedndcontext",
+      "destination": "/legacy/api-documentation/context-provider/use-dnd-context"
+    },
+    {
+      "source": "/api-documentation/draggable/usedraggable",
+      "destination": "/legacy/api-documentation/draggable/use-draggable"
+    },
+    {
+      "source": "/api-documentation/droppable/usedroppable",
+      "destination": "/legacy/api-documentation/droppable/use-droppable"
+    },
+    {
+      "source": "/api-documentation/:slug*",
+      "destination": "/legacy/api-documentation/:slug*"
+    },
+    {
+      "source": "/presets/sortable/usesortable",
+      "destination": "/legacy/presets/sortable/use-sortable"
+    },
+    {
+      "source": "/presets/sortable/:slug*",
+      "destination": "/legacy/presets/sortable/:slug*"
+    }
+  ],
   "logo": "/images/logo/logo.svg",
   "navbar": {
     "links": [
