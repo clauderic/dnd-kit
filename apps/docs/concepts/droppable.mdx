@@ -27,6 +27,13 @@ const droppable = new Droppable({
 }, manager);
 
 document.body.appendChild(element);
+
+// Listen for drop events
+manager.monitor.addEventListener('dragend', (event) => {
+  if (event.operation.target?.id === droppable.id) {
+    console.log('Item dropped!', event.operation.source);
+  }
+});
 ```
 
 ## Accepting Specific Types
@@ -63,7 +70,7 @@ const droppable = new Droppable({
 
 By default, the `Droppable` class uses rectangle intersection to detect when draggable elements are over the drop target:
 
-<img src="/images/droppable/shape-intersection.svg" />
+<img src="/images/droppable/shape-intersection.svg" alt="Rectangle intersection collision detection" />
 
 You can customize this behavior with different collision detection algorithms:
 
@@ -82,13 +89,13 @@ const droppable = new Droppable({
 }, manager);
 ```
 
-For example, the `closestCenter` detector will detect collisions based on the distance between the center points:
+For example, the `closestCenter` detector will detect collisions based on the distance between the center points, which is ideal for card stacking:
 
-<img src="/images/droppable/closest-center.svg" />
+<img src="/images/droppable/closest-center.svg" alt="Closest center collision detection" />
 
 ### Collision Priority
 
-When multiple droppable targets overlap, you can set priority to determine which one should receive the drop:
+When multiple droppable targets overlap, you can set priority to determine which one should receive the drop. This is particularly useful for nested containers:
 
 ```js
 const container = new Droppable({
@@ -124,14 +131,14 @@ The `Droppable` class accepts the following arguments:
 
 <ParamField path="collisionDetector" type="CollisionDetector">
   A function to determine when draggable elements are over this target. See [collision detection](#collision-detection) for built-in options, such as:
-  - `shapeIntersection`
-  - `pointerIntersection`
-  - `closestCenter`
-  - `directionBiased`
+  - `shapeIntersection`: Default, uses rectangle intersection
+  - `pointerIntersection`: Uses pointer position for precise detection
+  - `closestCenter`: Uses center point distance, ideal for card stacking
+  - `directionBiased`: Considers drag direction, useful for sortable lists
 </ParamField>
 
 <ParamField path="collisionPriority" type="number">
-  Priority level when multiple droppable targets overlap. See [collision priority](#collision-priority) for more details.
+  Priority level when multiple droppable targets overlap. Higher numbers take precedence. See [collision priority](#collision-priority) for more details.
 </ParamField>
 
 <ParamField path="disabled" type="boolean">
@@ -163,4 +170,4 @@ The `Droppable` instance provides these key properties:
 - `refreshShape()`: Recalculate the target's dimensions
 - `register()`: Register this target with the manager
 - `unregister()`: Remove this target from the manager
-- `destroy()`: Clean up this droppable instance
+- `destroy()`: Clean up this droppable instance and remove all listeners

@@ -11,6 +11,7 @@ The `DragDropManager` is the central orchestrator of the drag and drop system. I
 ```js
 import {DragDropManager} from '@dnd-kit/dom';
 
+// Create a manager instance
 const manager = new DragDropManager();
 
 // Create draggable and droppable elements
@@ -37,66 +38,66 @@ import {
 } from '@dnd-kit/dom';
 
 const manager = new DragDropManager({
-  // Custom sensors for detecting drag interactions
+  // Sensors detect drag interactions
   sensors: [
-    PointerSensor,
-    KeyboardSensor,
+    PointerSensor,  // Handles mouse and touch
+    KeyboardSensor, // Enables keyboard navigation
   ],
 
-  // Plugins to extend functionality
+  // Plugins extend functionality
   plugins: [
-    AutoScroller,
-    Accessibility,
+    AutoScroller,   // Automatic scrolling during drag
+    Accessibility,  // ARIA attributes management
   ],
 
-  // Modifiers to customize drag behavior
+  // Modifiers customize drag behavior
   modifiers: [
-    restrictToWindow,
+    restrictToWindow, // Keeps dragged items within window bounds
   ],
 });
 ```
 
 ## Default Configuration
 
-By default, the manager includes:
+The manager includes these defaults out of the box:
 
 ### Sensors
-- `PointerSensor`: Handles mouse and touch interactions with:
-  - Mouse: Immediate activation on drag handle
-  - Touch: 250ms delay with 5px tolerance
+- `PointerSensor`: Handles mouse and touch interactions
+  - Mouse: Activates immediately on drag handle
+  - Touch: 250ms delay with 5px movement tolerance
   - Other pointers: 200ms delay with 5px distance threshold
 
-- `KeyboardSensor`: Enables keyboard navigation
+- `KeyboardSensor`: Enables keyboard navigation with arrow keys
 
 ### Plugins
-- `Accessibility`: Manages ARIA attributes
-- `AutoScroller`: Handles automatic scrolling
-- `Cursor`: Updates cursor styles
-- `Feedback`: Manages drag feedback
+- `Accessibility`: Manages ARIA attributes and announcements for screen readers
+- `AutoScroller`: Scrolls containers when dragging near edges
+- `Cursor`: Updates cursor appearance during drag
+- `Feedback`: Controls visual feedback during drag
 - `PreventSelection`: Prevents text selection while dragging
-- `ScrollListener`: Tracks scroll events
+- `ScrollListener`: Monitors scroll events during drag
 - `Scroller`: Handles programmatic scrolling
 
 ## Events
 
-The manager's `monitor` property allows you to listen for drag and drop events:
+The manager's `monitor` lets you observe drag and drop events:
 
 ```js
-// Listen for when dragging starts
+// Observe drag start
 manager.monitor.addEventListener('beforedragstart', (event) => {
-  // Can prevent the drag from starting
+  // Optionally prevent dragging
   if (shouldPreventDrag(event.operation.source)) {
     event.preventDefault();
   }
 });
 
-// Listen for drag movement
+// Track movement
 manager.monitor.addEventListener('dragmove', (event) => {
   const {source, position} = event.operation;
   console.log(`Dragging ${source.id} to ${position.current}`);
 });
 
-// Listen for collisions with droppable targets
+// Detect collisions
 manager.monitor.addEventListener('collision', (event) => {
   const [firstCollision] = event.collisions;
   if (firstCollision) {
@@ -117,29 +118,28 @@ manager.monitor.addEventListener('dragend', (event) => {
 
 | Event | Description | Preventable | Data |
 |-------|-------------|-------------|------|
-| `beforedragstart` | Fired before dragging begins | Yes | `operation` |
-| `dragstart` | Fired when dragging starts | No | `operation`, `nativeEvent` |
-| `dragmove` | Fired when dragging element moves | Yes | `operation`, `to`, `by`, `nativeEvent` |
-| `dragover` | Fired when hovering over a droppable | Yes | `operation` |
-| `collision` | Fired when colliding with droppables | Yes | `collisions` |
-| `dragend` | Fired when dragging ends | No | `operation`, `canceled`, `nativeEvent` |
+| `beforedragstart` | Fires before drag begins | Yes | `operation` |
+| `dragstart` | Fires when drag starts | No | `operation`, `nativeEvent` |
+| `dragmove` | Fires during movement | Yes | `operation`, `to`, `by`, `nativeEvent` |
+| `dragover` | Fires when over a droppable | Yes | `operation` |
+| `collision` | Fires on droppable collision | Yes | `collisions` |
+| `dragend` | Fires when drag ends | No | `operation`, `canceled`, `nativeEvent` |
 
 ## Registration
 
-The manager's `registry` handles registration of draggable and droppable elements:
+The manager's `registry` tracks draggable and droppable elements:
 
 ```js
-// Manual registration
+// Manual registration when needed
 const cleanup = manager.registry.register(draggable);
 
-// Later cleanup
+// Cleanup when done
 cleanup();
-
 // Or unregister directly
 manager.registry.unregister(draggable);
 ```
 
-Elements are automatically registered when created with a manager reference:
+Elements auto-register when created with a manager reference:
 
 ```js
 // Auto-registers with manager
@@ -154,11 +154,11 @@ const droppable = new Droppable({
   element,
 }, manager);
 
-// Prevent auto-registration
+// Opt out of auto-registration
 const draggable = new Draggable({
   id: 'draggable-1',
   element,
-  register: false // Prevent auto-registration
+  register: false
 }, manager);
 ```
 
@@ -184,7 +184,7 @@ The `DragDropManager` constructor accepts the following configuration:
 
 The manager instance provides these key properties:
 
-- `registry`: Registry of all draggable and droppable elements
+- `registry`: Tracks active elements and extensions
   - `draggables`: Map of registered draggable elements
   - `droppables`: Map of registered droppable elements
   - `plugins`: Registry of active plugins
@@ -198,11 +198,11 @@ The manager instance provides these key properties:
   - `status`: Current operation status
   - `canceled`: Whether operation was canceled
 
-- `monitor`: Event monitor for drag operations
-  - `addEventListener`: Register event listener
-  - `removeEventListener`: Remove event listener
+- `monitor`: Event system
+  - `addEventListener`: Add event listener
+  - `removeEventListener`: Remove listener
 
-- `renderer`: Handles visual updates during drag operations
+- `renderer`: Integration with asynchronous renderers such as React.
 
 ### Methods
 

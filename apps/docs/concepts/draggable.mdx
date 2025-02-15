@@ -45,6 +45,7 @@ By default, the entire element can be used to initiate dragging. You can restric
 const element = document.createElement('div');
 const handle = document.createElement('div');
 handle.classList.add('handle');
+handle.innerHTML = '⋮'; // Three dots menu icon for drag handle
 
 element.appendChild(handle);
 
@@ -64,11 +65,8 @@ You can assign types to draggable elements to restrict which [droppable targets]
 const draggable = new Draggable({
   id: 'draggable-1',
   element,
-  type: 'item',
+  type: 'item', // Only droppables accepting 'item' type will be valid targets
 }, manager);
-
-// Only droppable targets that accept 'item' type
-// will allow this element to be dropped
 ```
 
 ## Feedback
@@ -84,10 +82,10 @@ const draggable = new Draggable({
 ```
 
 Available feedback options:
-- `'default'`: The original element moves with the drag
-- `'clone'`: A copy of the element stays in place while the original moves
-- `'move'`: The element moves without a placeholder
-- `'none'`: No visual feedback
+- `'default'`: The original element moves with the drag (best for most cases)
+- `'clone'`: A copy of the element stays in place while the original moves (good for drag-to-copy)
+- `'move'`: The element moves without a placeholder (minimal visual feedback)
+- `'none'`: No visual feedback (useful for custom drag overlays)
 
 ## API Reference
 
@@ -104,7 +102,7 @@ The `Draggable` class accepts the following arguments:
 </ParamField>
 
 <ParamField path="handle" type="Element">
-  Optionally specify a drag handle element. If not provided, the entire element will be draggable. See [drag handles](#drag-handles).
+  Optionally specify a drag handle element. If not provided, the entire element will be draggable. See [drag handles](#handles).
 </ParamField>
 
 <ParamField path="type" type="string | number | Symbol">
@@ -112,7 +110,7 @@ The `Draggable` class accepts the following arguments:
 </ParamField>
 
 <ParamField path="feedback" type="'default' | 'clone' | 'move' | 'none'">
-  Specify how the element should behave while being dragged. See [drag feedback](#drag-feedback).
+  Specify how the element should behave while being dragged. See [feedback](#feedback).
 </ParamField>
 
 <ParamField path="disabled" type="boolean">
@@ -152,4 +150,4 @@ The `Draggable` instance provides these key properties:
 
 - `register()`: Register this draggable with the manager
 - `unregister()`: Remove this draggable from the manager
-- `destroy()`: Clean up this draggable instance
+- `destroy()`: Clean up this draggable instance and remove all listeners
