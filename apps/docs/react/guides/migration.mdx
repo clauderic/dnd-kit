@@ -1,7 +1,7 @@
 ---
 title: 'Migration guide'
 description: 'A comprehensive guide to migrate from `@dnd-kit/core` to `@dnd-kit/react`'
-icon: 'arrows-rotate'
+icon: 'swap-arrows'
 ---
 
 This guide will walk you through how to migrate to `@dnd-kit/react`. It covers common scenarios and provide practical examples to make your migration as smooth as possible.
@@ -24,7 +24,7 @@ After updating your package.json, install the new dependencies with your package
 
 ## 2. Provider migration
 
-Start by updating your DragDropContext provider. This is typically at the root of your drag-and-drop enabled components.
+Start by updating your context provider. This is typically at the root of your drag-and-drop enabled components.
 
 ```tsx
 // Before
@@ -116,13 +116,13 @@ function DraggableItem({id}) {
 
 // After
 function DraggableItem({id}) {
-  const {ref, draggable, isDragging} = useDraggable({
+  const draggable = useDraggable({
     id,
   });
 
   return (
     <div
-      ref={ref}
+      ref={draggable.ref}
       className={isDragging ? 'dragging' : ''}
     >
       Item {id}
@@ -154,12 +154,12 @@ function DraggableWithHandle({id}) {
 
 // After
 function DraggableWithHandle({id}) {
-  const {ref, handleRef} = useDraggable({id});
+  const draggable = useDraggable({id});
 
   return (
-    <div ref={ref}>
+    <div ref={draggable.ref}>
       Content
-      <button ref={handleRef}>
+      <button ref={draggable.handleRef}>
         Drag Handle
       </button>
     </div>
@@ -192,15 +192,15 @@ function Dropzone() {
 
 // After
 function Dropzone() {
-  const {ref, isDropTarget} = useDroppable({
+  const droppable = useDroppable({
     id: 'drop-zone'
   });
 
   return (
     <div
-      ref={ref}
+      ref={droppable.ref}
       style={{
-        background: isDropTarget ? '#e2ffe2' : 'white'
+        background: droppable.isDropTarget ? 'green' : 'white'
       }}
     >
       Drop here
@@ -306,15 +306,15 @@ function SortableItem({id, index}) {
 
 // After
 function SortableItem({id, index}) {
-  const {ref, isDragging} = useSortable({
+  const sortable = useSortable({
     id,
     index
   });
 
   return (
     <div
-      ref={ref}
-      className={isDragging ? 'dragging' : ''}
+      ref={sortable.ref}
+      className={sortable.isDragging ? 'dragging' : undefined}
     >
       Item {id}
     </div>
