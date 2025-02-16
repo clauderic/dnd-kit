@@ -1,0 +1,72 @@
+---
+title: 'useDragDropMonitor'
+description: 'Monitor drag and drop events in your React components.'
+icon: 'signal-stream'
+---
+
+## Usage
+
+The `useDragDropMonitor` hook allows you to monitor drag and drop events within a `DragDropProvider`:
+
+```tsx
+import {useDragDropMonitor} from '@dnd-kit/react';
+
+function DragMonitor() {
+  useDragDropMonitor({
+    onBeforeDragStart(event, manager) {
+      // Optionally prevent dragging
+      if (shouldPreventDrag(event.operation.source)) {
+        event.preventDefault();
+      }
+    },
+    onDragStart(event, manager) {
+      console.log('Started dragging', event.operation.source);
+    },
+    onDragMove(event, manager) {
+      console.log('Current position:', event.operation.position);
+    },
+    onDragOver(event, manager) {
+      console.log('Over droppable:', event.operation.target);
+    },
+    onDragEnd(event, manager) {
+      const {operation, canceled} = event;
+
+      if (canceled) {
+        console.log('Drag cancelled');
+        return;
+      }
+
+      if (operation.target) {
+        console.log(`Dropped ${operation.source.id} onto ${operation.target.id}`);
+      }
+    },
+    onCollision(event, manager) {
+      console.log('Collisions:', event.collisions);
+    }
+  });
+
+  return null;
+}
+```
+
+<Warning>
+Make sure to use the `useDragDropMonitor` hook within a component that is wrapped in a [`DragDropProvider` component](/react/core/drag-drop-provider).
+</Warning>
+
+## Events
+
+| Event | Description | Preventable | Data |
+|-------|-------------|-------------|------|
+| `beforeDragStart` | Fires before drag begins | Yes | `operation` |
+| `dragStart` | Fires when drag starts | No | `operation`, `nativeEvent` |
+| `dragMove` | Fires during movement | Yes | `operation`, `to`, `by`, `nativeEvent` |
+| `dragOver` | Fires when over a droppable | Yes | `operation` |
+| `collision` | Fires on droppable collision | Yes | `collisions` |
+| `dragEnd` | Fires when drag ends | No | `operation`, `canceled`, `nativeEvent` |
+
+## Notes
+
+- The hook must be used within a `DragDropProvider`
+- Event handlers receive both the event data and the manager instance
+- Use `event.preventDefault()` on preventable events to stop their default behavior
+- The `dragEnd` event includes a `canceled` property that replaces the old `onDragCancel` event

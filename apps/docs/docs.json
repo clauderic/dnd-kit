@@ -40,7 +40,7 @@
                   "extend/plugins",
                   {
                     "group": "Sensors",
-                    "icon": "signal-stream",
+                    "icon": "monitor-waveform",
                     "pages": [
                       "extend/sensors",
                       "extend/sensors/pointer-sensor",
@@ -69,7 +69,8 @@
                 "pages": [
                   "react/hooks/use-draggable",
                   "react/hooks/use-droppable",
-                  "react/hooks/use-sortable"
+                  "react/hooks/use-sortable",
+                  "react/hooks/use-drag-drop-monitor"
                 ]
               },
               {

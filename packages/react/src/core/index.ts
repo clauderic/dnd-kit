@@ -15,6 +15,8 @@ export {
 
 export {useDragDropManager} from './hooks/useDragDropManager.ts';
 
+export {useDragDropMonitor} from './hooks/useDragDropMonitor.ts';
+
 export {useDragOperation} from './hooks/useDragOperation.ts';
 
 export {useInstance} from './hooks/useInstance.ts';
