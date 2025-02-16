@@ -74,7 +74,10 @@
               },
               {
                 "group": "Guides",
-                "pages": ["react/guides/multiple-sortable-lists"]
+                "pages": [
+                  "react/guides/migration",
+                  "react/guides/multiple-sortable-lists"
+                ]
               }
             ]
           }
