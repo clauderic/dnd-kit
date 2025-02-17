@@ -2,349 +2,319 @@
 title: 'Migration guide'
 description: 'A comprehensive guide to migrate from `@dnd-kit/core` to `@dnd-kit/react`'
 icon: 'swap-arrows'
+mode: 'wide'
 ---
 
-This guide will walk you through how to migrate to `@dnd-kit/react`. It covers common scenarios and provide practical examples to make your migration as smooth as possible.
+<Steps>
+  <Step title="Update dependencies">
+    Update your `package.json` and install the new packages:
 
-## 1. Dependencies
+    ```diff
+      "dependencies": {
+    -   "@dnd-kit/core": "^x.x.x"
+    -   "@dnd-kit/sortable": "^x.x.x"
+    -   "@dnd-kit/utilities": "^x.x.x"
+    +   "@dnd-kit/react": "^1.0.0"
+    +   "@dnd-kit/helpers": "^1.0.0"
+      }
+    ```
 
-The first step is to update your dependencies. Update your `package.json` and install the new packages:
+    After updating your package.json, install the new dependencies with your package manager of choice.
+  </Step>
 
-```diff
-  "dependencies": {
--   "@dnd-kit/core": "^x.x.x"
--   "@dnd-kit/sortable": "^x.x.x"
--   "@dnd-kit/utilities": "^x.x.x"
-+   "@dnd-kit/react": "^1.0.0"
-+   "@dnd-kit/helpers": "^1.0.0"
-  }
-```
+  <Step title="Migrate context provider">
+    Update your context provider. The new [DragDropProvider](/react/components/drag-drop-provider) replaces the legacy `DndContext`:
 
-After updating your package.json, install the new dependencies with your package manager of choice.
+    <CodeGroup>
+    ```tsx Before
+    import {DndContext} from '@dnd-kit/core';
 
-## 2. Provider migration
+    function App() {
+      return (
+        <DndContext
+          onDragStart={({active}) => {
+            console.log(`Started dragging ${active.id}`);
+          }}
+          onDragEnd={({active, over}) => {
+            if (over) {
+              console.log(`Dropped ${active.id} over ${over.id}`);
+            }
+          }}
+          onDragCancel={({active}) => {
+            console.log(`Cancelled dragging ${active.id}`);
+          }}
+        >
+          <YourComponents />
+        </DndContext>
+      );
+    }
+    ```
 
-Start by updating your context provider. This is typically at the root of your drag-and-drop enabled components.
+    ```tsx After {1,6-8,10-24}
+    import {DragDropProvider} from '@dnd-kit/react';
 
-```tsx
-// Before
-import {DndContext} from '@dnd-kit/core';
+    function App() {
+      return (
+        <DragDropProvider
+          onDragStart={(event, manager) => {
+            const {operation} = event;
+            console.log(`Started dragging ${operation.source.id}`);
+          }}
+          onDragEnd={(event, manager) => {
+            const {operation, canceled} = event;
+            const {source, target} = operation;
 
-function App() {
-  return (
-    <DndContext
-      onDragStart={({active}) => {
-        console.log(`Started dragging ${active.id}`);
-      }}
-      onDragEnd={({active, over}) => {
-        if (over) {
-          console.log(`Dropped ${active.id} over ${over.id}`);
-        }
-      }}
-      onDragCancel={({active}) => {
-        console.log(`Cancelled dragging ${active.id}`);
-      }}
-    >
-      <YourComponents />
-    </DndContext>
-  );
-}
+            if (canceled) {
+              // Replaces onDragCancel
+              console.log(`Cancelled dragging ${source.id}`);
+              return;
+            }
 
-// After
-import {DragDropProvider} from '@dnd-kit/react';
+            if (target) {
+              console.log(`Dropped ${source.id} over ${target.id}`);
+              // Access rich data
+              console.log('Source data:', source.data);
+              console.log('Drop position:', operation.position.current);
+            }
+          }}
+        >
+          <YourComponents />
+        </DragDropProvider>
+      );
+    }
+    ```
+    </CodeGroup>
 
-function App() {
-  return (
-    <DragDropProvider
-      onDragStart={(event, manager) => {
-        const {operation} = event;
-        console.log(`Started dragging ${operation.source.id}`);
-      }}
-      onDragEnd={(event, manager) => {
-        const {operation, canceled} = event;
-        const {source, target} = operation;
+    <Info>
+      The new provider gives you access to the `manager` instance in event handlers, enabling more advanced control over the drag and drop system.
+    </Info>
+  </Step>
 
-        if (canceled) {
-          // Replaces onDragCancel
-          console.log(`Cancelled dragging ${source.id}`);
-          return;
-        }
+  <Step title="Update draggable components">
+    Update your [draggable](/concepts/draggable) components using the new [useDraggable](/react/hooks/use-draggable) hook:
 
-        if (target) {
-          console.log(`Dropped ${source.id} over ${target.id}`);
-          // Access rich data
-          console.log('Source data:', source.data);
-          console.log('Drop position:', operation.position.current);
-        }
-      }}
-    >
-      <YourComponents />
-    </DragDropProvider>
-  );
-}
-```
+    <CodeGroup>
+    ```tsx Before
+    function DraggableItem({id}) {
+      const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform
+      } = useDraggable({
+        id
+      });
 
-## 3. Draggable migration
+      return (
+        <div
+          ref={setNodeRef}
+          {...listeners}
+          {...attributes}
+          style={{
+            transform: CSS.Transform.toString(transform)
+          }}
+        >
+          Item {id}
+        </div>
+      );
+    }
+    ```
 
-Update your draggable components:
+    ```tsx After {2-4,7-8}
+    function DraggableItem({id}) {
+      const draggable = useDraggable({
+        id,
+      });
 
-```tsx
-// Before
-function DraggableItem({id}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform
-  } = useDraggable({
-    id
-  });
+      return (
+        <div
+          ref={draggable.ref}
+          className={isDragging ? 'dragging' : ''}
+        >
+          Item {id}
+        </div>
+      );
+    }
+    ```
+    </CodeGroup>
+  </Step>
 
-  return (
-    <div
-      ref={setNodeRef}
-      {...listeners}
-      {...attributes}
-      style={{
-        transform: CSS.Transform.toString(transform)
-      }}
-    >
-      Item {id}
-    </div>
-  );
-}
+  <Step title="Update droppable components">
+    Update your [droppable](/concepts/droppable) components using the new [useDroppable](/react/hooks/use-droppable) hook:
 
-// After
-function DraggableItem({id}) {
-  const draggable = useDraggable({
-    id,
-  });
+    <CodeGroup>
+    ```tsx Before
+    function Dropzone() {
+      const {setNodeRef, isOver} = useDroppable({
+        id: 'drop-zone'
+      });
 
-  return (
-    <div
-      ref={draggable.ref}
-      className={isDragging ? 'dragging' : ''}
-    >
-      Item {id}
-    </div>
-  );
-}
-```
+      return (
+        <div
+          ref={setNodeRef}
+          style={{
+            background: isOver ? 'lightblue' : 'white'
+          }}
+        >
+          Drop here
+        </div>
+      );
+    }
+    ```
 
-### Drag handle
+    ```tsx After {2,8,10}
+    function Dropzone() {
+      const droppable = useDroppable({
+        id: 'drop-zone'
+      });
 
-```tsx
-// Before
-function DraggableWithHandle({id}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef
-  } = useDraggable({id});
+      return (
+        <div
+          ref={droppable.ref}
+          style={{
+            background: droppable.isDropTarget ? 'green' : 'white'
+          }}
+        >
+          Drop here
+        </div>
+      );
+    }
+    ```
+    </CodeGroup>
+  </Step>
 
-  return (
-    <div ref={setNodeRef}>
-      Content
-      <button {...listeners} {...attributes}>
-        Drag Handle
-      </button>
-    </div>
-  );
-}
+  <Step title="Update drag overlay">
+    The [DragOverlay](/react/components/drag-overlay) component has been simplified:
 
-// After
-function DraggableWithHandle({id}) {
-  const draggable = useDraggable({id});
+    <CodeGroup>
+    ```tsx Before
+    function App() {
+      const [activeId, setActiveId] = useState(null);
 
-  return (
-    <div ref={draggable.ref}>
-      Content
-      <button ref={draggable.handleRef}>
-        Drag Handle
-      </button>
-    </div>
-  );
-}
-```
+      return (
+        <DndContext
+          onDragStart={() => setActiveId('item')}
+          onDragEnd={() => setActiveId(null)}
+        >
+          <Draggable id="item" />
+          <DragOverlay>
+            {activeId ? <Item id={activeId} /> : null}
+          </DragOverlay>
+        </DndContext>
+      );
+    }
+    ```
 
-## 4. Droppable migration
+    ```tsx After {2,5,7-9}
+    function App() {
+      return (
+        <DragDropProvider>
+          <Draggable id="item" />
+          <DragOverlay>
+            {source => (
+              <Item id={source.id} />
+            )}
+          </DragOverlay>
+        </DragDropProvider>
+      );
+    }
+    ```
+    </CodeGroup>
 
-Update your droppable components:
+    <Warning>
+      Only render the `DragOverlay` component once per `DragDropProvider`. The hooks have no effect when used within the overlay.
+    </Warning>
+  </Step>
 
-```tsx
-// Before
-function Dropzone() {
-  const {setNodeRef, isOver} = useDroppable({
-    id: 'drop-zone'
-  });
+  <Step title="Migrate sortable components">
+    Update your sortable components using the new [useSortable](/react/hooks/use-sortable) hook:
 
-  return (
-    <div
-      ref={setNodeRef}
-      style={{
-        background: isOver ? 'lightblue' : 'white'
-      }}
-    >
-      Drop here
-    </div>
-  );
-}
+    <CodeGroup>
+    ```tsx Before
+    import {useSortable} from '@dnd-kit/sortable';
 
-// After
-function Dropzone() {
-  const droppable = useDroppable({
-    id: 'drop-zone'
-  });
-
-  return (
-    <div
-      ref={droppable.ref}
-      style={{
-        background: droppable.isDropTarget ? 'green' : 'white'
-      }}
-    >
-      Drop here
-    </div>
-  );
-}
-```
-
-## 5. DragOverlay changes
-
-The `DragOverlay` component exists in both versions but has some key differences in the new version:
-
-```tsx
-// Before
-import {DragOverlay} from '@dnd-kit/core';
-
-function App() {
-  const [activeId, setActiveId] = useState(null);
-
-  return (
-    <DndContext
-      onDragStart={() => setActiveId('item')}
-      onDragEnd={() => setActiveId(null)}
-    >
-      <Draggable id="item" />
-      <DragOverlay>
-        {activeId ? <Item id={activeId} /> : null}
-      </DragOverlay>
-    </DndContext>
-  );
-}
-
-// After
-import {DragOverlay} from '@dnd-kit/react';
-
-function App() {
-  return (
-    <DragDropProvider>
-      <Draggable id="item" />
-      <DragOverlay>
-        {source => (
-          <Item id={source.id} />
-        )}
-      </DragOverlay>
-    </DragDropProvider>
-  );
-}
-```
-
-Key changes:
-- The `DragOverlay` now accepts a render function that receives the `source` draggable
-- No need to manually track the active item - the overlay automatically shows during drag
-- Simpler integration with the core drag and drop system
-- The overlay is automatically positioned relative to the viewport
-
-### Important Notes
-- Only render the `DragOverlay` component once per `DragDropProvider`
-- The use `useDraggable`, `useDroppable` and `useSortable` hooks have no effect when used within the `DragOverlay` component
-- The overlay will automatically handle drop animations
-
-## 6. Sortable migration
-
-If you're using `@dnd-kit/sortable`, you'll need to migrate to the new sortable implementation in `@dnd-kit/react/sortable`:
-
-```tsx
-// Before
-import {useSortable} from '@dnd-kit/sortable';
-
-// After
-import {useSortable} from '@dnd-kit/react/sortable';
-```
-
-The new implementation is simpler and doesn't require wrapping your components in a `SortableContext`. You can use the `useSortable` hook directly:
-
-```tsx
-// Before
-function SortableItem({id, index}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition
-  } = useSortable({
-    id,
-    index
-  });
-
-  return (
-    <div
-      ref={setNodeRef}
-      {...attributes}
-      {...listeners}
-      style={{
-        transform: CSS.Transform.toString(transform),
+    function SortableItem({id, index}) {
+      const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
         transition
-      }}
-    >
-      Item {id}
-    </div>
-  );
-}
+      } = useSortable({
+        id,
+        index
+      });
 
-// After
-function SortableItem({id, index}) {
-  const sortable = useSortable({
-    id,
-    index
-  });
+      return (
+        <div
+          ref={setNodeRef}
+          {...attributes}
+          {...listeners}
+          style={{
+            transform: CSS.Transform.toString(transform),
+            transition
+          }}
+        >
+          Item {id}
+        </div>
+      );
+    }
+    ```
 
-  return (
-    <div
-      ref={sortable.ref}
-      className={sortable.isDragging ? 'dragging' : undefined}
-    >
-      Item {id}
-    </div>
-  );
-}
-```
+    ```tsx After {1,4-7,10-11}
+    import {useSortable} from '@dnd-kit/react/sortable';
 
-The new sortable implementation provides better performance and simpler integration with the core drag and drop system. Use the array manipulation helpers from `@dnd-kit/helpers` to handle the reordering logic.
+    function SortableItem({id, index}) {
+      const sortable = useSortable({
+        id,
+        index
+      });
 
-## 7. Array manipulation
+      return (
+        <div
+          ref={sortable.ref}
+          className={sortable.isDragging ? 'dragging' : undefined}
+        >
+          Item {id}
+        </div>
+      );
+    }
+    ```
+    </CodeGroup>
 
-The `@dnd-kit/helpers` package provides utilities for handling drag and drop operations, particularly useful with sortable lists:
+    Use the array manipulation helpers from `@dnd-kit/helpers` to handle reordering.
+  </Step>
+</Steps>
 
-```tsx
-import {move, swap} from '@dnd-kit/helpers';
+## Next steps
 
-function DraggableList({items: initialItems}) {
-  const [items, setItems] = useState(initialItems);
-
-  return (
-    <DragDropProvider
-      onDragEnd={(event, manager) => {
-        // The move helper handles both flat arrays and nested structures
-        setItems(items => move(items, event));
-      }}
-    >
-      {items.map((item, index) => (
-        <DraggableItem key={item.id} id={item.id} index={index} />
-      ))}
-    </DragDropProvider>
-  );
-}
-```
+<CardGroup cols={2}>
+  <Card
+    title="Quickstart guide"
+    icon="rocket"
+    href="/react/quickstart"
+  >
+    Build beautiful drag and drop interfaces in minutes with the new dnd kit
+  </Card>
+  <Card
+    title="Draggable elements"
+    icon="bullseye-pointer"
+    href="/concepts/draggable"
+  >
+    Learn how to make elements draggable with the new API
+  </Card>
+  <Card
+    title="Droppable targets"
+    icon="expand"
+    href="/concepts/droppable"
+  >
+    Create drop zones and handle collision detection
+  </Card>
+  <Card
+    title="Sortable lists"
+    icon="layer-group"
+    href="/concepts/sortable"
+  >
+    Build sortable interfaces with array manipulation helpers
+  </Card>
+</CardGroup>

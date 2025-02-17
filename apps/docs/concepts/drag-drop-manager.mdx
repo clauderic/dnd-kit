@@ -4,27 +4,52 @@ description: 'Orchestrate drag and drop interactions between elements.'
 icon: 'sitemap'
 ---
 
+The `DragDropManager` is the central orchestrator of the drag and drop system. It coordinates all interactions between draggable and droppable elements.
+
+```mermaid
+graph TD
+    M[Manager]
+    R[Registry]
+    E[Events]
+    I[Entities]
+    D[Draggable]
+    Dr[Droppable]
+    P[Plugins]
+    S[Sensors]
+    Mod[Modifiers]
+    O[Operation]
+
+    M -.-> R
+    R -.-> I
+    R -.-> P
+    R -.-> S
+    R -.-> Mod
+
+    S -.-> |Detect input| O
+    O -.-> |Trigger| E
+    Mod -.-> |Transform| O
+
+
+    I -.-> Dr
+    I -.-> D
+```
+
 ## Usage
 
-The `DragDropManager` is the central orchestrator of the drag and drop system. It coordinates interactions between [draggable](/concepts/draggable) and [droppable](/concepts/droppable) elements:
+Create a manager instance to coordinate drag and drop interactions:
 
 ```js
 import {DragDropManager} from '@dnd-kit/dom';
 
-// Create a manager instance
 const manager = new DragDropManager();
-
-// Create draggable and droppable elements
-const draggable = new Draggable({
-  id: 'draggable-1',
-  element: draggableElement,
-}, manager);
-
-const droppable = new Droppable({
-  id: 'droppable-1',
-  element: droppableElement,
-}, manager);
 ```
+
+<ParamField path="options" type="object">
+  Optional configuration for the manager:
+  - `sensors`: Array of [sensors](/extend/sensors) to detect drag interactions
+  - `plugins`: Array of [plugins](/extend/plugins) to extend functionality
+  - `modifiers`: Array of [modifiers](/extend/modifiers) to customize behavior
+</ParamField>
 
 ## Configuration
 
@@ -57,26 +82,27 @@ const manager = new DragDropManager({
 });
 ```
 
-## Default Configuration
+<AccordionGroup>
+  <Accordion title="Default configuration">
+    The manager includes these defaults out of the box:
 
-The manager includes these defaults out of the box:
+    **Sensors**
+    - `PointerSensor`: Handles mouse and touch interactions
+      - Mouse: Activates immediately on drag handle
+      - Touch: 250ms delay with 5px movement tolerance
+      - Other pointers: 200ms delay with 5px distance threshold
+    - `KeyboardSensor`: Enables keyboard navigation with arrow keys
 
-### Sensors
-- `PointerSensor`: Handles mouse and touch interactions
-  - Mouse: Activates immediately on drag handle
-  - Touch: 250ms delay with 5px movement tolerance
-  - Other pointers: 200ms delay with 5px distance threshold
-
-- `KeyboardSensor`: Enables keyboard navigation with arrow keys
-
-### Plugins
-- `Accessibility`: Manages ARIA attributes and announcements for screen readers
-- `AutoScroller`: Scrolls containers when dragging near edges
-- `Cursor`: Updates cursor appearance during drag
-- `Feedback`: Controls visual feedback during drag
-- `PreventSelection`: Prevents text selection while dragging
-- `ScrollListener`: Monitors scroll events during drag
-- `Scroller`: Handles programmatic scrolling
+    **Plugins**
+    - `Accessibility`: Manages ARIA attributes and announcements
+    - `AutoScroller`: Scrolls containers when dragging near edges
+    - `Cursor`: Updates cursor appearance during drag
+    - `Feedback`: Controls visual feedback during drag
+    - `PreventSelection`: Prevents text selection while dragging
+    - `ScrollListener`: Monitors scroll events during drag
+    - `Scroller`: Handles programmatic scrolling
+  </Accordion>
+</AccordionGroup>
 
 ## Events
 
@@ -116,41 +142,93 @@ manager.monitor.addEventListener('dragend', (event) => {
 
 ### Available Events
 
-| Event | Description | Preventable | Data |
-|-------|-------------|-------------|------|
-| `beforedragstart` | Fires before drag begins | Yes | `operation` |
-| `dragstart` | Fires when drag starts | No | `operation`, `nativeEvent` |
-| `dragmove` | Fires during movement | Yes | `operation`, `to`, `by`, `nativeEvent` |
-| `dragover` | Fires when over a droppable | Yes | `operation` |
-| `collision` | Fires on droppable collision | Yes | `collisions` |
-| `dragend` | Fires when drag ends | No | `operation`, `canceled`, `nativeEvent` |
+<ResponseField name="beforedragstart" type="Event">
+  Fires before drag begins. Can be prevented.
+  <Expandable title="Properties">
+    <ResponseField name="operation" type="object">
+      The drag operation that is about to begin
+    </ResponseField>
+    <ResponseField name="preventDefault" type="function">
+      Call to prevent the drag operation from starting
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="dragstart" type="Event">
+  Fires when drag starts.
+  <Expandable title="Properties">
+    <ResponseField name="operation" type="object">
+      The current drag operation
+    </ResponseField>
+    <ResponseField name="nativeEvent" type="Event">
+      The original browser event that triggered the drag
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="dragmove" type="Event">
+  Fires during movement. Can be prevented.
+  <Expandable title="Properties">
+    <ResponseField name="operation" type="object">
+      The current drag operation
+    </ResponseField>
+    <ResponseField name="to" type="Point">
+      The destination coordinates
+    </ResponseField>
+    <ResponseField name="by" type="Point">
+      The movement delta
+    </ResponseField>
+    <ResponseField name="nativeEvent" type="Event">
+      The original browser event
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="dragover" type="Event">
+  Fires when over a droppable. Can be prevented.
+  <Expandable title="Properties">
+    <ResponseField name="operation" type="object">
+      The current drag operation
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="collision" type="Event">
+  Fires on droppable collision. Can be prevented.
+  <Expandable title="Properties">
+    <ResponseField name="collisions" type="Collision[]">
+      Array of detected collisions with droppable targets
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="dragend" type="Event">
+  Fires when drag ends.
+  <Expandable title="Properties">
+    <ResponseField name="operation" type="object">
+      The completed drag operation
+    </ResponseField>
+    <ResponseField name="canceled" type="boolean">
+      Whether the operation was canceled
+    </ResponseField>
+    <ResponseField name="nativeEvent" type="Event">
+      The original browser event
+    </ResponseField>
+  </Expandable>
+</ResponseField>
 
 ## Registration
 
 The manager's `registry` tracks draggable and droppable elements:
 
 ```js
-// Manual registration when needed
+// Manual registration
 const cleanup = manager.registry.register(draggable);
+cleanup(); // Or manager.registry.unregister(draggable);
 
-// Cleanup when done
-cleanup();
-// Or unregister directly
-manager.registry.unregister(draggable);
-```
-
-Elements auto-register when created with a manager reference:
-
-```js
-// Auto-registers with manager
+// Auto-registration with manager reference
 const draggable = new Draggable({
   id: 'draggable-1',
-  element,
-}, manager);
-
-// Auto-registers with manager
-const droppable = new Droppable({
-  id: 'droppable-1',
   element,
 }, manager);
 
@@ -162,27 +240,13 @@ const draggable = new Draggable({
 }, manager);
 ```
 
+<Tip>
+  Elements automatically register when created with a manager reference. Only use manual registration for advanced use cases.
+</Tip>
+
 ## API Reference
 
-### Arguments
-
-The `DragDropManager` constructor accepts the following configuration:
-
-<ParamField path="sensors" type="Sensors[]">
-  An array of [sensors](/extend/sensors) to detect drag interactions. Defaults to `PointerSensor` and `KeyboardSensor`.
-</ParamField>
-
-<ParamField path="plugins" type="Plugin[]">
-  An array of [plugins](/extend/plugins) to extend functionality. Several plugins are included by default.
-</ParamField>
-
-<ParamField path="modifiers" type="Modifier[]">
-  An array of [modifiers](/extend/modifiers) to customize drag behavior. Empty by default.
-</ParamField>
-
 ### Properties
-
-The manager instance provides these key properties:
 
 - `registry`: Tracks active elements and extensions
   - `draggables`: Map of registered draggable elements
@@ -202,16 +266,18 @@ The manager instance provides these key properties:
   - `addEventListener`: Add event listener
   - `removeEventListener`: Remove listener
 
-- `renderer`: Integration with asynchronous renderers such as React.
+- `renderer`: Integration with asynchronous renderers such as React
 
 ### Methods
 
-- `destroy()`: Clean up the manager and all registered elements
+<ParamField path="destroy()" type="function">
+  Clean up the manager and all registered elements:
   - Unregisters all draggables and droppables
   - Cleans up all plugins, sensors, and modifiers
   - Removes all event listeners
+</ParamField>
 
-### Lifecycle
+## Lifecycle
 
 1. **Initialization**
    - Manager created
