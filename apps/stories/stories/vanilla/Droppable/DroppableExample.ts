@@ -56,10 +56,8 @@ export const DroppableExample = createVanillaStory(() => {
 
     if (event.operation.target?.id === 'droppable') {
       droppableElement.appendChild(draggableElement);
-      droppableElement.setAttribute('data-dropped', 'true');
     } else {
       wrapperElement.prepend(draggableElement);
-      droppableElement.removeAttribute('data-dropped');
     }
   });
 

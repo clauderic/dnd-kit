@@ -7,92 +7,186 @@ icon: 'rocket'
 import Intro from '/snippets/quickstart/intro.mdx';
 import {Story} from '/snippets/story.mdx';
 
+import {CodeSandbox} from '/snippets/sandbox.mdx';
+import {draggableStyles, droppableStyles} from '/snippets/code.mdx';
+
 <Intro />
 
 ## Installation
-Before getting started, make sure you install `@dnd-kit/dom` in your project.
+
+Install `@dnd-kit/dom` in your project:
 
 <CodeGroup>
-  ```plain npm
+  ```bash npm
   npm install @dnd-kit/dom
   ```
 
-  ```plain yarn
-  yarn install @dnd-kit/dom
+  ```bash yarn
+  yarn add @dnd-kit/dom
   ```
 
-  ```plain pnpm
-  pnpm install @dnd-kit/dom
+  ```bash pnpm
+  pnpm add @dnd-kit/dom
   ```
 
-  ```plain bun
-  bun install @dnd-kit/dom
+  ```bash bun
+  bun add @dnd-kit/dom
   ```
 </CodeGroup>
 
-## Creating a draggable element
+## Creating draggable elements
 
 Let's get started by creating draggable elements that can be dropped over droppable targets.
 
-In this example, we'll be using the Draggable class to create a draggable element. The Draggable class requires an element and an id as arguments.
-We'll also need to create a DragDropManager instance to manage the drag and drop interactions.
+In this example, we'll be using the [Draggable](/concepts/draggable) class to create a draggable element. We'll also need to create a [DragDropManager](/concepts/drag-drop-manager) instance to manage the drag and drop interactions.
 
-```tsx
-import {DragDropManager, Draggable} from '@dnd-kit/dom';
+export const draggableCode = `
+function createDraggable(manager) {
+  // Create a DOM element (or use an existing one)
+  const element = document.createElement('button');
+  element.innerText = 'draggable';
+  element.classList.add('btn');
 
-const manager = new DragDropManager();
-const element = document.createElement('button');
-const draggable = new Draggable({
-  element,
-  id: 'draggable',
-}, manager);
+  // Make the element draggable
+  return new Draggable({id: 'draggable-button', element}, manager);
+}
+`.trim();
 
-document.body.appendChild(element);
-```
+export const draggableExample = `
+import {Draggable, DragDropManager} from '@dnd-kit/dom';
 
-<Story id="vanilla-draggable--example" />
+${draggableCode}
 
-## Creating droppable elements
+export default function App() {
+  // Create a manager to coordinate drag and drop
+  const manager = new DragDropManager();
 
-In order for our draggable elements to have targets where they can be dropped, we need to create droppable elements. To do so, we’ll be using the useDroppable hook.
+  // Create a draggable element
+  const draggable = createDraggable(manager);
 
-Like the useDraggable hook, the useDroppable hook requires a unique id, and returns a ref that you can attach to any element to make it droppable.
+  // Add the draggable element to the DOM
+  document.body.append(draggable.element);
+}
+`.trim();
 
-This time, we'll accept the id argument as a prop of the Droppable component.
+<CodeSandbox files={{
+  'index.js': {code: `import './styles.css';\nimport App from './app.js';\n\nApp();`, hidden: true},
+  'app.js': {code: draggableExample, active: true},
+  'styles.css': {code: draggableStyles, hidden: true},
+}} height={475} previewHeight={200} template="vanilla" />
 
-```tsx
-import {Droppable} from '@dnd-kit/dom';
+<ParamField path="options" type="object" required>
+  Configuration for the draggable element:
+  - `id` (required): Unique identifier
+  - `element`: The DOM element to make draggable
+  - `handle`: Optional drag handle element
+  - `disabled`: Whether dragging is disabled
+</ParamField>
 
-const element = document.createElement('div');
-const droppable = new Droppable({
-  element,
-  id: 'droppable',
-}, manager);
+## Creating droppable targets
 
-element.setAttribute('style', 'width: 300px; height: 300px; background: #FEFEFE;');
+In order for our draggable elements to have targets where they can be dropped, we need to create droppable elements. To do so, we'll be using the Droppable class.
 
-document.body.appendChild(element);
-```
+Like the [Draggable](/concepts/draggable) class, the [Droppable](/concepts/droppable) class requires an element and an id as arguments.
 
-## Putting all the pieces together
+export const droppableCode = `
+import {Droppable, DragDropManager} from '@dnd-kit/dom';
+
+export function createDroppable(manager) {
+  const element = document.createElement('div');
+  element.classList.add('droppable');
+
+  const droppable = new Droppable({
+    element,
+    id: 'droppable-container', // Required - must be unique
+    effects(){
+      return [
+        () => droppable.isDropTarget
+          ? element.classList.add('active')
+          : element.classList.remove('active')
+      ];
+    }
+  }, manager);
+
+  return droppable;
+}
+`.trim();
+
+export const appCode = `
+import {DragDropManager} from '@dnd-kit/dom';
+
+import {createDraggable} from './Draggable.js';
+import {createDroppable} from './Droppable.js';
+
+export default function App() {
+  const manager = new DragDropManager();
+  const app = document.getElementById('app');
+
+  const draggable = createDraggable(manager);
+  const droppable = createDroppable(manager);
+
+  app.append(draggable.element, droppable.element);
+}
+`.trim();
+
+<CodeSandbox files={{
+  'index.js': {code: `import './styles.css';\nimport App from './App.js';\n\nApp();`, hidden: true},
+  'App.js': {code: appCode},
+  'Droppable.js': {code: droppableCode, active: true},
+  'Draggable.js': {code: `import {Draggable} from '@dnd-kit/dom';\n\nexport ${draggableCode}`},
+  'styles.css': {code: `${draggableStyles}\n${droppableStyles}`, hidden: true},
+}} height={480} previewHeight={420} template="vanilla" showTabs />
+
+
+<ParamField path="options" type="object" required>
+  Configuration for the droppable target:
+  - `id` (required): Unique identifier
+  - `element`: The DOM element to make droppable
+  - `accepts`: Types of draggable elements to accept
+  - `disabled`: Whether dropping is disabled
+</ParamField>
 
 In order to move the draggable element into the droppable target, we need to monitor the drag and drop events and update the DOM accordingly.
 
-```tsx
-manager.monitor.addEventListener('dragend', (event) => {
-  if (event.canceled) {
-    return;
-  }
+export const finalAppCode = `
+import {DragDropManager} from '@dnd-kit/dom';
 
-  if (event.operation.target?.id === 'droppable') {
-    droppableElement.appendChild(draggableElement);
-  } else {
-    document.body.prependChild(draggableElement);
-  }
-});
-```
+import {createDraggable} from './Draggable.js';
+import {createDroppable} from './Droppable.js';
 
-<Story id="vanilla-droppable--example" height="360" />
+export default function App() {
+  const manager = new DragDropManager();
+  const app = document.getElementById('app');
+
+  const draggable = createDraggable(manager);
+  const droppable = createDroppable(manager);
+
+  manager.monitor.addEventListener('dragend', (event) => {
+    const {operation, canceled} = event;
+    const {source, target} = operation;
+
+    // Skip if drag operation was canceled (e.g. if escape key was pressed)
+    if (canceled) return;
+
+    // Move element to drop target if dropped on droppable
+    if (target && target.id === droppable.id) {
+      droppable.element.append(source.element);
+    } else {
+      app.prepend(source.element);
+    }
+  });
+
+  app.append(draggable.element, droppable.element);
+}
+`.trim();
+
+<CodeSandbox files={{
+  'index.js': {code: `import './styles.css';\nimport App from './App.js';\n\nApp();`, hidden: true},
+  'App.js': {code: finalAppCode, active: true},
+  'Droppable.js': {code: droppableCode},
+  'Draggable.js': {code: `import {Draggable} from '@dnd-kit/dom';\n\nexport ${draggableCode}`},
+  'styles.css': {code: `${draggableStyles}\n${droppableStyles}`, hidden: true},
+}} height={660} previewHeight={420} template="vanilla" showTabs />
 
 ## Next steps
 

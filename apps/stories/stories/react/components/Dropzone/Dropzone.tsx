@@ -14,7 +14,6 @@ export const Dropzone = forwardRef<HTMLDivElement, Props>(function Dropzone(
     {
       ref,
       'data-highlight': String(highlight),
-      'data-dropped': String(children != null),
     },
     children
   );
