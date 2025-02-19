@@ -30,6 +30,15 @@ export const CSS_RULES = `
     max-height: var(${CSS_PREFIX}height, auto);
     box-sizing: border-box;
   }
+
+  :root [${PLACEHOLDER_ATTRIBUTE}] {
+    transition: none;
+  }
+
+  :root [${PLACEHOLDER_ATTRIBUTE}='hidden'] {
+    visibility: hidden;
+  }
+
   [${ATTRIBUTE}] * {
     pointer-events: none !important;
   }

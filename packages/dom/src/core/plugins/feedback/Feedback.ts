@@ -116,7 +116,9 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     const clone = feedback === 'clone';
 
     const placeholder =
-      feedback !== 'move' && !this.overlay ? createPlaceholder(source) : null;
+      feedback !== 'move' && !this.overlay
+        ? createPlaceholder(source, clone ? 'clone' : 'hidden')
+        : null;
     const isKeyboardOperation = untracked(() =>
       isKeyboardEvent(manager.dragOperation.activatorEvent)
     );
@@ -303,9 +305,6 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
           if (attribute.name === 'style') {
             if (supportsStyle(element) && supportsStyle(placeholder)) {
-              placeholder.setAttribute('style', clone ? '' : 'opacity: 0;');
-              placeholder.style.setProperty('transition', 'none');
-
               for (const key of Object.values(element.style)) {
                 if (
                   key.startsWith(CSS_PREFIX) ||

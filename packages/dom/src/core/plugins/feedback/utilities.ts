@@ -14,7 +14,10 @@ import {ATTR_PREFIX, PLACEHOLDER_ATTRIBUTE} from './constants.ts';
  * Creates a placeholder element for a draggable source
  * The placeholder maintains the original element's dimensions and position
  */
-export function createPlaceholder(source: Draggable): Element | undefined {
+export function createPlaceholder(
+  source: Draggable,
+  type = 'hidden'
+): Element | undefined {
   return untracked(() => {
     const {element, manager} = source;
 
@@ -29,7 +32,7 @@ export function createPlaceholder(source: Draggable): Element | undefined {
     const {remove} = placeholder;
 
     proxyDroppableElements(containedDroppables, placeholder, cleanup);
-    configurePlaceholder(placeholder);
+    configurePlaceholder(placeholder, type);
 
     // Override remove to handle cleanup of proxies
     placeholder.remove = () => {
@@ -101,11 +104,11 @@ function proxyDroppableElements(
 /**
  * Configures accessibility and visual attributes for the placeholder
  */
-function configurePlaceholder(placeholder: Element): void {
+function configurePlaceholder(placeholder: Element, type = 'hidden'): void {
   placeholder.setAttribute('inert', 'true');
   placeholder.setAttribute('tab-index', '-1');
   placeholder.setAttribute('aria-hidden', 'true');
-  placeholder.setAttribute(PLACEHOLDER_ATTRIBUTE, '');
+  placeholder.setAttribute(PLACEHOLDER_ATTRIBUTE, type);
 }
 
 /**
