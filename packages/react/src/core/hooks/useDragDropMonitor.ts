@@ -5,10 +5,17 @@ import type {Draggable, Droppable, DragDropManager} from '@dnd-kit/dom';
 import {useDragDropManager} from './useDragDropManager.js';
 import {CleanupFunction} from '@dnd-kit/state';
 
-/**
- * Type helper to convert event names to handler names (e.g. 'dragstart' -> 'onDragStart')
- */
-type EventHandlerName<T extends string> = `on${Capitalize<T>}`;
+// Manual mapping of event names to handler names
+type DragDropEventMap = {
+  beforedragstart: 'onBeforeDragStart';
+};
+
+// Automatically generate the event handler name from the event name
+type EventHandlerName<T extends string> = T extends keyof DragDropEventMap
+  ? DragDropEventMap[T]
+  : T extends `drag${infer Second}${infer Rest}`
+    ? `onDrag${Uppercase<Second>}${Rest}`
+    : `on${Capitalize<T>}`;
 
 /**
  * Type for all possible event handlers
@@ -24,12 +31,12 @@ export type DndMonitorEventHandlers<T extends Data> = {
 };
 
 /**
- * Hook to monitor drag and drop events within a DragDropProvider
+ * Hook to monitor drag and drop events anywhere within a DragDropProvider
  * @param handlers Object containing event handlers for drag and drop events
  */
 export function useDragDropMonitor<T extends Data = Data>(
   handlers: DndMonitorEventHandlers<T>
-) {
+): void {
   const manager = useDragDropManager();
 
   useEffect(() => {
