@@ -1,5 +1,21 @@
 # @dnd-kit/dom
 
+## 0.0.10
+
+### Patch Changes
+
+- [#1606](https://github.com/clauderic/dnd-kit/pull/1606) [`2c53eb9`](https://github.com/clauderic/dnd-kit/commit/2c53eb95a980d143b179af5b7f0a071cdedd9089) Thanks [@github-actions](https://github.com/apps/github-actions)! - Use the `draggable.isDragging` property instead of `draggable.isDragSource` to set `aria-grabbing` and `aria-pressed` attributes.
+
+- [#1606](https://github.com/clauderic/dnd-kit/pull/1606) [`3155941`](https://github.com/clauderic/dnd-kit/commit/3155941608dbf16ed867e931381e7bb2c65a126d) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fixed a bug with the `Feedback` plugin where the placeholder element was visible for a brief moment during the drop animation instead of being hidden until the animation completes.
+
+- [#1606](https://github.com/clauderic/dnd-kit/pull/1606) [`082836e`](https://github.com/clauderic/dnd-kit/commit/082836e517252262b7984b142093ba6c81c43ba8) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fixed a bug with the `PointerSensor` where it was possible for it to activate while a drag operation was already in progress.
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.0.10
+  - @dnd-kit/collision@0.0.10
+  - @dnd-kit/geometry@0.0.10
+  - @dnd-kit/state@0.0.10
+
 ## 0.0.9
 
 ### Patch Changes
