@@ -54,6 +54,29 @@ Restrict movement to only the vertical axis.
 
 ### Restrict motion to a container's bounding rectangle
 
+#### `restrictToSpecificParent`
+
+Restrict movement to a specified parent element's bounding rectangle. This modifier can be useful when you need to constrain movement to a specific container rather than the immediate parent.
+
+```jsx
+import {DndContext} from '@dnd-kit/core';
+import {restrictToSpecificParent} from '@dnd-kit/modifiers';
+
+function App() {
+  const containerRef = useRef(null);
+  
+  return (
+    <div ref={containerRef}>
+      <DndContext modifiers={[restrictToSpecificParent({
+        parentElement: containerRef.current
+      })]}>
+        {/* ... */}
+      </DndContext>
+    </div>
+  );
+}
+```
+
 #### `restrictToWindowEdges`
 
 Restrict movement to the edges of the window. This modifier can be useful to prevent the `DragOverlay` from being moved outside of the bounds of the window.
