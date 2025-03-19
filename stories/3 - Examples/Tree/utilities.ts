@@ -161,19 +161,24 @@ export function setProperty<T extends keyof TreeItem>(
   id: UniqueIdentifier,
   property: T,
   setter: (value: TreeItem[T]) => TreeItem[T]
-) {
-  for (const item of items) {
+): TreeItems {
+  return items.map((item) => {
     if (item.id === id) {
-      item[property] = setter(item[property]);
-      continue;
+      return {
+        ...item,
+        [property]: setter(item[property]),
+      };
     }
 
     if (item.children.length) {
-      item.children = setProperty(item.children, id, property, setter);
+      return {
+        ...item,
+        children: setProperty(item.children, id, property, setter),
+      };
     }
-  }
 
-  return [...items];
+    return item;
+  });
 }
 
 function countChildren(items: TreeItem[], count = 0): number {
