@@ -1,5 +1,18 @@
 # @dnd-kit/react
 
+## 0.0.10
+
+### Patch Changes
+
+- [#1606](https://github.com/clauderic/dnd-kit/pull/1606) [`76d2d65`](https://github.com/clauderic/dnd-kit/commit/76d2d65d6555040dc64aa8f277f531808022000e) Thanks [@github-actions](https://github.com/apps/github-actions)! - Introduce the `useDragDropMonitor` hook to the `@dnd-kit/react` package. This hook allows you to monitor drag and drop events within a `DragDropProvider`.
+
+- [`349f0c0`](https://github.com/clauderic/dnd-kit/commit/349f0c0994cbc01f8f86372a938017362d767fe4) Thanks [@clauderic](https://github.com/clauderic)! - Fixed incorrect types for the `useDragDropMonitor` hook.
+
+- Updated dependencies [[`2c53eb9`](https://github.com/clauderic/dnd-kit/commit/2c53eb95a980d143b179af5b7f0a071cdedd9089), [`3155941`](https://github.com/clauderic/dnd-kit/commit/3155941608dbf16ed867e931381e7bb2c65a126d), [`082836e`](https://github.com/clauderic/dnd-kit/commit/082836e517252262b7984b142093ba6c81c43ba8)]:
+  - @dnd-kit/dom@0.0.10
+  - @dnd-kit/abstract@0.0.10
+  - @dnd-kit/state@0.0.10
+
 ## 0.0.9
 
 ### Patch Changes
