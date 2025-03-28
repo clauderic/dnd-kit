@@ -5,11 +5,5 @@ export function isKeyframeEffect(
 
   if (effect instanceof KeyframeEffect) return true;
 
-  return (
-    typeof effect === 'object' &&
-    'getKeyframes' in effect &&
-    typeof effect.getKeyframes === 'function' &&
-    'composite' in effect &&
-    'iterationComposite' in effect
-  );
+  return 'getKeyframes' in effect && typeof effect.getKeyframes === 'function';
 }

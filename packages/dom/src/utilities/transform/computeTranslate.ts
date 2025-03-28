@@ -8,7 +8,6 @@ function getFinalKeyframe(
   element: Element,
   match: (keyframe: Keyframe) => boolean
 ): Keyframe | null {
-  const {KeyframeEffect} = getWindow(element);
   const animations = element.getAnimations();
 
   if (animations.length > 0) {
