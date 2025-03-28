@@ -3,7 +3,7 @@ import {isHTMLElement} from '../type-guards/isHTMLElement.ts';
 import {isNode} from '../type-guards/isNode.ts';
 import {isWindow} from '../type-guards/isWindow.ts';
 
-export function getDocument(target: Event['target']): Document {
+export function getDocument(target: Event['target'] | undefined): Document {
   if (!target) {
     return document;
   }
