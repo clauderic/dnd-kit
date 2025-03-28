@@ -31,13 +31,16 @@ export class Scroller extends CorePlugin<DragDropManager> {
     let previousElementFromPoint: Element | null = null;
     let previousScrollableElements: Set<Element> | null = null;
     const elementFromPoint = computed(() => {
-      const {position} = manager.dragOperation;
+      const {position, source} = manager.dragOperation;
 
       if (!position) {
         return null;
       }
 
-      const element = getElementFromPoint(document, position.current);
+      const element = getElementFromPoint(
+        getDocument(source?.element),
+        position.current
+      );
 
       if (element) {
         previousElementFromPoint = element;
