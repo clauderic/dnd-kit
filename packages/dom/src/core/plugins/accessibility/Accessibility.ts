@@ -78,7 +78,6 @@ export class Accessibility extends Plugin<DragDropManager> {
       for (const draggable of manager.registry.draggables.value) {
         const {element, handle} = draggable;
         const activator = handle ?? element;
-        const window = getWindow(activator);
 
         if (activator) {
           if (!hiddenTextElement || !liveRegionElement) {
@@ -94,7 +93,7 @@ export class Accessibility extends Plugin<DragDropManager> {
 
           if (
             !activator.hasAttribute('role') &&
-            !(activator instanceof window.HTMLButtonElement)
+            !(activator.tagName.toLowerCase() === 'button')
           ) {
             activator.setAttribute('role', defaultAttributes.role);
           }

@@ -5,6 +5,7 @@ import {
   getFrameElement,
   showPopover,
   ProxiedElements,
+  isElement,
 } from '@dnd-kit/dom/utilities';
 
 import type {Draggable, Droppable} from '../../entities/index.ts';
@@ -126,11 +127,15 @@ export function preventPopoverClose(event: Event) {
   const {target} = event;
 
   if (
-    event instanceof ToggleEvent &&
+    'newState' in event &&
     event.newState === 'closed' &&
-    target instanceof Element &&
+    isElement(target) &&
     target.hasAttribute('popover')
   ) {
     requestAnimationFrame(() => showPopover(target));
   }
+}
+
+export function isTableRow(element: Element): element is HTMLTableRowElement {
+  return element.tagName === 'TR';
 }

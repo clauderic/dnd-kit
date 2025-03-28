@@ -6,7 +6,7 @@ export function getElementFromPoint(
 ): Element | null {
   const element = document.elementFromPoint(x, y);
 
-  if (element instanceof HTMLIFrameElement) {
+  if (isIFrameElement(element)) {
     const {contentDocument} = element;
 
     if (contentDocument) {
@@ -20,4 +20,10 @@ export function getElementFromPoint(
   }
 
   return element;
+}
+
+function isIFrameElement(
+  element: Element | null
+): element is HTMLIFrameElement {
+  return element?.tagName === 'IFRAME';
 }

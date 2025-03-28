@@ -1,5 +1,6 @@
 import {getComputedStyles} from '../styles/getComputedStyles.ts';
 import {getWindow} from '../execution-context/getWindow.ts';
+import {isKeyframeEffect} from '../type-guards/isKeyframeEffect.ts';
 
 import {parseTranslate} from './parseTranslate.ts';
 
@@ -13,8 +14,7 @@ function getFinalKeyframe(
   if (animations.length > 0) {
     for (const animation of animations) {
       const {effect} = animation;
-      const keyframes =
-        effect instanceof KeyframeEffect ? effect.getKeyframes() : [];
+      const keyframes = isKeyframeEffect(effect) ? effect.getKeyframes() : [];
       const matchedKeyframes = keyframes.filter(match);
 
       if (matchedKeyframes.length > 0) {

@@ -4,8 +4,8 @@ import {inverseTransform} from '../transform/inverseTransform.ts';
 import {getComputedStyles} from '../styles/getComputedStyles.ts';
 import {parseTransform, type Transform} from '../transform/index.ts';
 import {getBoundingRectangle} from '../bounding-rectangle/getBoundingRectangle.ts';
-import {getWindow} from '../execution-context/getWindow.ts';
 import {getFrameTransform} from '../frame/getFrameTransform.ts';
+import {isKeyframeEffect} from '../type-guards/isKeyframeEffect.ts';
 
 export interface DOMRectangleOptions {
   getBoundingClientRect?: (element: Element) => BoundingRectangle;
@@ -94,17 +94,15 @@ export class DOMRectangle extends Rectangle {
  * Get the projected transform of an element based on its final keyframe
  */
 function getProjectedTransform(element: Element): Transform | null {
-  const {KeyframeEffect} = getWindow(element);
   const animations = element.getAnimations();
   let projectedTransform: Transform | null = null;
 
   if (!animations.length) return null;
 
   for (const animation of animations) {
-    const keyframes =
-      animation.effect instanceof KeyframeEffect
-        ? animation.effect.getKeyframes()
-        : [];
+    const keyframes = isKeyframeEffect(animation.effect)
+      ? animation.effect.getKeyframes()
+      : [];
     const keyframe = keyframes[keyframes.length - 1];
 
     if (!keyframe) continue;
@@ -143,11 +141,10 @@ function getProjectedTransform(element: Element): Transform | null {
  * of an element without having to wait for the animations to finish.
  */
 function forceFinishAnimations(element: Element): (() => void) | undefined {
-  const {KeyframeEffect} = getWindow(element);
   const animations = element.ownerDocument
     .getAnimations()
     .filter((animation) => {
-      if (animation.effect instanceof KeyframeEffect) {
+      if (isKeyframeEffect(animation.effect)) {
         const {target} = animation.effect;
 
         if (target !== element && target?.contains(element)) {

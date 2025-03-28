@@ -1,6 +1,7 @@
 export {isDocument} from './isDocument.ts';
 export {isElement} from './isElement.ts';
 export {isHTMLElement} from './isHTMLElement.ts';
+export {isKeyframeEffect} from './isKeyframeEffect.ts';
 export {isKeyboardEvent} from './isKeyboardEvent.ts';
 export {isPointerEvent} from './isPointerEvent.ts';
 export {isNode} from './isNode.ts';

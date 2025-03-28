@@ -13,11 +13,13 @@ import {
   getDocument,
   getFrameTransform,
   getWindow,
+  isHTMLElement,
   parseTranslate,
   showPopover,
   supportsPopover,
   supportsStyle,
   Styles,
+  isKeyframeEffect,
 } from '@dnd-kit/dom/utilities';
 import {Coordinates, Rectangle} from '@dnd-kit/geometry';
 
@@ -34,6 +36,7 @@ import {
 import {
   createPlaceholder,
   isSameFrame,
+  isTableRow,
   preventPopoverClose,
 } from './utilities.ts';
 
@@ -264,10 +267,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       const window = getWindow(element);
 
       /* Table cells need to have their width set explicitly because the feedback element is position fixed */
-      if (
-        element instanceof window.HTMLTableRowElement &&
-        placeholder instanceof window.HTMLTableRowElement
-      ) {
+      if (isTableRow(element) && isTableRow(placeholder)) {
         const cells = Array.from(element.cells);
         const placeholderCells = Array.from(placeholder.cells);
 
@@ -417,7 +417,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       const draggable = manager.registry.draggables.get(id);
       const element = draggable?.handle ?? draggable?.element;
 
-      if (element instanceof HTMLElement) {
+      if (isHTMLElement(element)) {
         element.focus();
       }
     };
@@ -492,12 +492,11 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             animations.forEach((animation) => {
               const {effect} = animation;
 
-              if (effect instanceof KeyframeEffect) {
-                if (
-                  effect.getKeyframes().some((keyframe) => keyframe.translate)
-                ) {
-                  animation.finish();
-                }
+              if (
+                isKeyframeEffect(effect) &&
+                effect.getKeyframes().some((keyframe) => keyframe.translate)
+              ) {
+                animation.finish();
               }
             });
           }

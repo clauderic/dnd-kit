@@ -1,5 +1,3 @@
-import {getWindow} from '../execution-context/getWindow.ts';
-
 /*
  * Check if an element has visible overflow.
  * @param element
@@ -10,10 +8,7 @@ export function isOverflowVisible(
   element: Element,
   style?: CSSStyleDeclaration
 ) {
-  if (
-    element instanceof getWindow(element).HTMLDetailsElement &&
-    element.open === false
-  ) {
+  if (isDetailsElement(element) && element.open === false) {
     return false;
   }
 
@@ -22,4 +17,8 @@ export function isOverflowVisible(
   return (
     overflow === 'visible' && overflowX === 'visible' && overflowY === 'visible'
   );
+}
+
+function isDetailsElement(element: Element): element is HTMLDetailsElement {
+  return element.tagName === 'DETAILS';
 }

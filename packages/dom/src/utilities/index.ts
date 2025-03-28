@@ -39,6 +39,7 @@ export {
   supportsStyle,
   isElement,
   isHTMLElement,
+  isKeyframeEffect,
   isKeyboardEvent,
   isPointerEvent,
 } from './type-guards/index.ts';
