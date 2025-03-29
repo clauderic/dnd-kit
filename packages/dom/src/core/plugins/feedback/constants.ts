@@ -55,11 +55,16 @@ export const CSS_RULES = `
   @layer {
     :where([${ATTRIBUTE}][popover]) {
       overflow: visible;
-      background: revert;
-      border: revert;
+      background: unset;
+      border: unset;
       margin: unset;
       padding: unset;
       color: inherit;
+
+      &:is(input, button) {
+        border: revert;
+        background: revert;
+      }
     }
   }
   [${ATTRIBUTE}]::backdrop, [${ATTR_PREFIX}overlay]:not([${ATTRIBUTE}]) {
