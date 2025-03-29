@@ -55,8 +55,8 @@ export const CSS_RULES = `
   @layer {
     :where([${ATTRIBUTE}][popover]) {
       overflow: visible;
-      background: unset;
-      border: unset;
+      background: revert;
+      border: revert;
       margin: unset;
       padding: unset;
       color: inherit;
