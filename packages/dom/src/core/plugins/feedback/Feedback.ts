@@ -237,7 +237,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
     if (supportsPopover(feedbackElement)) {
       if (!feedbackElement.hasAttribute('popover')) {
-        feedbackElement.setAttribute('popover', '');
+        feedbackElement.setAttribute('popover', 'manual');
       }
       showPopover(feedbackElement);
       feedbackElement.addEventListener('beforetoggle', preventPopoverClose);
