@@ -1,6 +1,7 @@
 import {isDocument} from '../type-guards/isDocument.ts';
 import {isHTMLElement} from '../type-guards/isHTMLElement.ts';
 import {isNode} from '../type-guards/isNode.ts';
+import {isSVGElement} from '../type-guards/isSVGElement.ts';
 import {isWindow} from '../type-guards/isWindow.ts';
 
 export function getDocument(target: Event['target'] | undefined): Document {
@@ -20,7 +21,7 @@ export function getDocument(target: Event['target'] | undefined): Document {
     return target;
   }
 
-  if (isHTMLElement(target)) {
+  if (isHTMLElement(target) || isSVGElement(target)) {
     return target.ownerDocument;
   }
 
