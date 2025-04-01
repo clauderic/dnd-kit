@@ -26,7 +26,7 @@ type Events<T extends Data> = DragDropEvents<
   DragDropManager<Draggable<T>, Droppable<T>>
 >;
 
-export type DndMonitorEventHandlers<T extends Data> = {
+export type EventHandlers<T extends Data = Data> = {
   [K in keyof Events<T> as EventHandlerName<K>]?: Events<T>[K];
 };
 
@@ -35,7 +35,7 @@ export type DndMonitorEventHandlers<T extends Data> = {
  * @param handlers Object containing event handlers for drag and drop events
  */
 export function useDragDropMonitor<T extends Data = Data>(
-  handlers: DndMonitorEventHandlers<T>
+  handlers: EventHandlers<T>
 ): void {
   const manager = useDragDropManager();
 
