@@ -1,5 +1,6 @@
 import {Plugin} from '@dnd-kit/abstract';
-import {effect} from '@dnd-kit/state';
+import {computed, effect} from '@dnd-kit/state';
+import {getDocument} from '@dnd-kit/dom/utilities';
 
 import {DragDropManager} from '../../manager/index.ts';
 
@@ -18,18 +19,21 @@ export class Cursor extends Plugin<DragDropManager> {
   ) {
     super(manager, options);
 
+    const doc = computed(() =>
+      getDocument(this.manager.dragOperation.source?.element)
+    );
+
     this.destroy = effect(() => {
       const {dragOperation} = this.manager;
       const {cursor = 'grabbing'} = this.options ?? {};
 
       if (dragOperation.status.initialized) {
+        const document = doc.value;
         const style = document.createElement('style');
         style.innerText = `* { cursor: ${cursor} !important; }`;
         document.head.appendChild(style);
 
-        return () => {
-          style.remove();
-        };
+        return () => style.remove();
       }
     });
   }
