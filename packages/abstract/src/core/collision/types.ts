@@ -24,6 +24,7 @@ export interface Collision {
   priority: CollisionPriority | number;
   type: CollisionType;
   value: number;
+  data?: Record<string, any>;
 }
 
 export type Collisions = Collision[];
