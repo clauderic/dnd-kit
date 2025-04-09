@@ -23,3 +23,5 @@ export {
 export {useDragOperation} from './hooks/useDragOperation.ts';
 
 export {useInstance} from './hooks/useInstance.ts';
+
+export {KeyboardSensor, PointerSensor} from '@dnd-kit/dom';
