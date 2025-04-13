@@ -119,7 +119,7 @@ The `useSortable` hook accepts all of the same arguments as the [useDraggable](/
   The data argument is for advanced use-cases where you may need access to additional data about the sortable element in event handlers, modifiers, sensors or custom plugins.
 </ParamField>
 
-<ParamField path="effects" type="(manager: DragDropManager) => Effect[]">
+<ParamField path="effects" type="() => Effect[]">
   <Info>This is an advanced feature and should not need to be used by most consumers.</Info>
   You can supply a function that returns an array of reactive effects that can be set up and automatically cleaned up when the component invoking the `useSortable` hook element is unmounted.
 </ParamField>

@@ -67,7 +67,7 @@ The `useDroppable` hook accepts the following arguments:
   The data argument is for advanced use-cases where you may need access to additional data about the droppable element in event handlers, modifiers, sensors or custom plugins.
 </ParamField>
 
-<ParamField path="effects" type="(manager: DragDropManager) => Effect[]">
+<ParamField path="effects" type="() => Effect[]">
   <Info>This is an advanced feature and should not need to be used by most consumers.</Info>
   You can supply a function that returns an array of reactive effects that can be set up and automatically cleaned up when the component invoking the `useDraggable` hook element is unmounted.
 </ParamField>
