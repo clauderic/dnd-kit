@@ -1,6 +1,6 @@
 {
   "name": "@dnd-kit/state",
-  "version": "0.0.10",
+  "version": "0.1.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
