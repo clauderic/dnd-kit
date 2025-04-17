@@ -1,6 +1,6 @@
 {
   "name": "@dnd-kit/dom",
-  "version": "0.0.10",
+  "version": "0.1.0",
   "type": "module",
   "main": "./index.cjs",
   "module": "./index.js",
@@ -74,10 +74,10 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
-    "@dnd-kit/abstract": "^0.0.10",
-    "@dnd-kit/collision": "^0.0.10",
-    "@dnd-kit/geometry": "^0.0.10",
-    "@dnd-kit/state": "^0.0.10",
+    "@dnd-kit/abstract": "^0.1.0",
+    "@dnd-kit/collision": "^0.1.0",
+    "@dnd-kit/geometry": "^0.1.0",
+    "@dnd-kit/state": "^0.1.0",
     "tslib": "^2.6.2"
   },
   "devDependencies": {

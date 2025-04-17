@@ -1,5 +1,20 @@
 # @dnd-kit/react
 
+## 0.1.0
+
+### Minor Changes
+
+- [#1650](https://github.com/clauderic/dnd-kit/pull/1650) [`23d694b`](https://github.com/clauderic/dnd-kit/commit/23d694b459d7aded0e5674d6da94652ee2f46faf) Thanks [@MateusJabour](https://github.com/MateusJabour)! - Exports sensors from `@dnd-kit/dom` through `@dnd-kit/react`
+
+### Patch Changes
+
+- [#1644](https://github.com/clauderic/dnd-kit/pull/1644) [`6cb931f`](https://github.com/clauderic/dnd-kit/commit/6cb931f43fc5e24e13644677c7939aca90f415fa) Thanks [@github-actions](https://github.com/apps/github-actions)! - Export `DragDropEventHandlers` type
+
+- Updated dependencies [[`00a33c9`](https://github.com/clauderic/dnd-kit/commit/00a33c99e777ab205a45309a4efc8b3560bafdaf), [`043c280`](https://github.com/clauderic/dnd-kit/commit/043c2807a7aa290ce9838a638422245b0bd89cf1), [`ee40aac`](https://github.com/clauderic/dnd-kit/commit/ee40aacda6c015b1f357182c461650fde4c6704e), [`635d94f`](https://github.com/clauderic/dnd-kit/commit/635d94f6e719bcdf50e0024b6d1f09b9bb46c8a5), [`0235cef`](https://github.com/clauderic/dnd-kit/commit/0235cefcf4942c86189e81fde4dc8f19ad420517), [`1ba8700`](https://github.com/clauderic/dnd-kit/commit/1ba8700fd03f3fdc8f4fabe90befbc8fd54d99f5), [`3080d2c`](https://github.com/clauderic/dnd-kit/commit/3080d2c8c122beabc41fb8d79beceb2188a01947)]:
+  - @dnd-kit/abstract@0.1.0
+  - @dnd-kit/dom@0.1.0
+  - @dnd-kit/state@0.1.0
+
 ## 0.0.10
 
 ### Patch Changes

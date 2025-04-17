@@ -1,6 +1,6 @@
 {
   "name": "@dnd-kit/react",
-  "version": "0.0.10",
+  "version": "0.1.0",
   "main": "./index.cjs",
   "module": "./index.js",
   "type": "module",
@@ -56,9 +56,9 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
-    "@dnd-kit/abstract": "^0.0.10",
-    "@dnd-kit/dom": "^0.0.10",
-    "@dnd-kit/state": "^0.0.10",
+    "@dnd-kit/abstract": "^0.1.0",
+    "@dnd-kit/dom": "^0.1.0",
+    "@dnd-kit/state": "^0.1.0",
     "tslib": "^2.6.2"
   },
   "peerDependencies": {
