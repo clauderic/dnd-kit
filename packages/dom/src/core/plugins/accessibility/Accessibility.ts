@@ -1,6 +1,6 @@
 import {effects} from '@dnd-kit/state';
 import {Plugin} from '@dnd-kit/abstract';
-import {getWindow, isSafari, generateUniqueId} from '@dnd-kit/dom/utilities';
+import {isSafari, generateUniqueId} from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import {
