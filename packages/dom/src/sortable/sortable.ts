@@ -26,8 +26,8 @@ import {
   ProxiedElements,
 } from '@dnd-kit/dom/utilities';
 
-import {SortableKeyboardPlugin} from './SortableKeyboardPlugin.ts';
-import {OptimisticSortingPlugin} from './OptimisticSortingPlugin.ts';
+import {SortableKeyboardPlugin} from './plugins/SortableKeyboardPlugin.ts';
+import {OptimisticSortingPlugin} from './plugins/OptimisticSortingPlugin.ts';
 
 export interface SortableTransition {
   /**

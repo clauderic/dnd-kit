@@ -1,10 +1,10 @@
 import {Plugin, type UniqueIdentifier} from '@dnd-kit/abstract';
 import type {DragDropManager} from '@dnd-kit/dom';
 import {move} from '@dnd-kit/helpers';
-
-import {isSortable} from './utilities.ts';
-import {Sortable, SortableDroppable} from './sortable.ts';
 import {batch} from '@dnd-kit/state';
+
+import {Sortable, SortableDroppable} from '../sortable.ts';
+import {isSortable} from '../utilities.ts';
 
 const defaultGroup = '__default__';
 
