@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {memo, useCallback, useMemo, useRef, useState} from 'react';
 import type {PropsWithChildren} from 'react';
 import {flushSync} from 'react-dom';
 import {CollisionPriority} from '@dnd-kit/abstract';
@@ -8,6 +8,7 @@ import {move} from '@dnd-kit/helpers';
 import {defaultPreset} from '@dnd-kit/dom';
 import {Debug} from '@dnd-kit/dom/plugins/debug';
 import {supportsViewTransition} from '@dnd-kit/dom/utilities';
+import {DragDropEventHandlers} from '@dnd-kit/react';
 
 import {
   Actions,
@@ -50,14 +51,27 @@ export function MultipleLists({
   );
   const [columns, setColumns] = useState(Object.keys(items));
   const snapshot = useRef(cloneDeep(items));
+  const handleRemoveItem = useCallback((id: string, column: string) => {
+    const remove = () =>
+      setItems((items) => ({
+        ...items,
+        [column]: items[column].filter((item) => item !== id),
+      }));
+
+    if (supportsViewTransition(document)) {
+      document.startViewTransition(() => flushSync(remove));
+    } else {
+      remove();
+    }
+  }, []);
 
   return (
     <DragDropProvider
       plugins={debug ? [...defaultPreset.plugins, Debug] : undefined}
-      onDragStart={() => {
+      onDragStart={useCallback<DragDropEventHandlers['onDragStart']>(() => {
         snapshot.current = cloneDeep(items);
-      }}
-      onDragOver={(event) => {
+      }, [])}
+      onDragOver={useCallback<DragDropEventHandlers['onDragOver']>((event) => {
         const {source} = event.operation;
 
         if (source?.type === 'column') {
@@ -66,8 +80,8 @@ export function MultipleLists({
         }
 
         setItems((items) => move(items, event));
-      }}
-      onDragEnd={(event) => {
+      }, [])}
+      onDragEnd={useCallback<DragDropEventHandlers['onDragEnd']>((event) => {
         if (event.canceled) {
           setItems(snapshot.current);
           return;
@@ -78,7 +92,7 @@ export function MultipleLists({
         if (source?.type === 'column') {
           setColumns((columns) => move(columns, event));
         }
-      }}
+      }, [])}
     >
       {rtl ? <style>{`:root { direction: rtl; }`}</style> : null}
       <div
@@ -94,19 +108,6 @@ export function MultipleLists({
       >
         {columns.map((column, columnIndex) => {
           const rows = items[column];
-          const children =
-            rows.length > 0
-              ? rows.map((id, index) => (
-                  <SortableItem
-                    key={id}
-                    id={id}
-                    column={column}
-                    index={index}
-                    onRemove={handleRemoveItem}
-                    style={grid ? {height: 100} : undefined}
-                  />
-                ))
-              : null;
 
           return (
             <SortableColumn
@@ -116,28 +117,14 @@ export function MultipleLists({
               columns={grid ? 2 : 1}
               scrollable={scrollable}
               style={columnStyle}
-            >
-              {children}
-            </SortableColumn>
+              rows={rows}
+              onRemove={handleRemoveItem}
+            />
           );
         })}
       </div>
     </DragDropProvider>
   );
-
-  function handleRemoveItem(id: string, column: string) {
-    const remove = () =>
-      setItems((items) => ({
-        ...items,
-        [column]: items[column].filter((item) => item !== id),
-      }));
-
-    if (supportsViewTransition(document)) {
-      document.startViewTransition(() => flushSync(remove));
-    } else {
-      remove();
-    }
-  }
 }
 
 interface SortableItemProps {
@@ -155,7 +142,7 @@ const COLORS: Record<string, string> = {
   D: '#ff3680',
 };
 
-function SortableItem({
+const SortableItem = memo(function SortableItem({
   id,
   column,
   index,
@@ -192,7 +179,7 @@ function SortableItem({
       {id}
     </Item>
   );
-}
+});
 
 interface SortableColumnProps {
   columns: number;
@@ -200,15 +187,18 @@ interface SortableColumnProps {
   index: number;
   scrollable?: boolean;
   style?: React.CSSProperties;
+  rows: string[];
+  onRemove?: SortableItemProps['onRemove'];
 }
 
-function SortableColumn({
-  children,
+const SortableColumn = memo(function SortableColumn({
+  rows,
   columns,
   id,
   index,
   scrollable,
   style,
+  onRemove,
 }: PropsWithChildren<SortableColumnProps>) {
   const {handleRef, isDragging, ref} = useSortable({
     id,
@@ -217,23 +207,41 @@ function SortableColumn({
     type: 'column',
     index,
   });
+  const actions = useMemo(() => {
+    return (
+      <Actions>
+        <Handle ref={handleRef} />
+      </Actions>
+    );
+  }, [handleRef]);
+  const handleRemoveItem = useCallback(
+    (itemId: string) => {
+      onRemove?.(itemId, id);
+    },
+    [id, onRemove]
+  );
 
   return (
     <Container
       ref={ref}
       label={`${id}`}
-      actions={
-        <Actions>
-          <Handle ref={handleRef} />
-        </Actions>
-      }
+      actions={actions}
       columns={columns}
       shadow={isDragging}
       scrollable={scrollable}
       transitionId={`sortable-column-${id}`}
       style={style}
     >
-      {children}
+      {rows.map((itemId, index) => (
+        <SortableItem
+          key={itemId}
+          id={itemId}
+          column={id}
+          index={index}
+          onRemove={handleRemoveItem}
+          style={columns === 2 ? {height: 100} : undefined}
+        />
+      ))}
     </Container>
   );
-}
+});

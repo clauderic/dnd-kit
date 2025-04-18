@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useRef, useState, memo} from 'react';
 import type {CSSProperties, PropsWithChildren} from 'react';
 import type {
   CollisionDetector,
@@ -90,7 +90,7 @@ interface SortableProps {
   style?: React.CSSProperties;
 }
 
-function SortableItem({
+const SortableItem = memo(function SortableItem({
   id,
   index,
   collisionDetector = directionBiased,
@@ -123,7 +123,7 @@ function SortableItem({
       {id}
     </Item>
   );
-}
+});
 
 function Wrapper({
   layout,
