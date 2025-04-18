@@ -4,7 +4,7 @@ import {
   useState,
   type PropsWithChildren,
 } from 'react';
-import type {DragDropEvents} from '@dnd-kit/abstract';
+import type {Data, DragDropEvents} from '@dnd-kit/abstract';
 import {DragDropManager, defaultPreset} from '@dnd-kit/dom';
 import type {DragDropManagerInput, Draggable, Droppable} from '@dnd-kit/dom';
 import {useLatest, useOnValueChange} from '@dnd-kit/react/hooks';
@@ -13,21 +13,27 @@ import {deepEqual} from '@dnd-kit/state';
 import {DragDropContext} from './context.ts';
 import {useRenderer} from './renderer.ts';
 
-type Events = DragDropEvents<Draggable, Droppable, DragDropManager>;
+export type Events<T extends Data = Data> = DragDropEvents<
+  Draggable<T>,
+  Droppable<T>,
+  DragDropManager<Draggable<T>, Droppable<T>>
+>;
 
-export interface Props extends DragDropManagerInput, PropsWithChildren {
+export interface Props<T extends Data = Data>
+  extends DragDropManagerInput,
+    PropsWithChildren {
   manager?: DragDropManager;
-  onBeforeDragStart?: Events['beforedragstart'];
-  onCollision?: Events['collision'];
-  onDragStart?: Events['dragstart'];
-  onDragMove?: Events['dragmove'];
-  onDragOver?: Events['dragover'];
-  onDragEnd?: Events['dragend'];
+  onBeforeDragStart?: Events<T>['beforedragstart'];
+  onCollision?: Events<T>['collision'];
+  onDragStart?: Events<T>['dragstart'];
+  onDragMove?: Events<T>['dragmove'];
+  onDragOver?: Events<T>['dragover'];
+  onDragEnd?: Events<T>['dragend'];
 }
 
 const options = [undefined, deepEqual] as const;
 
-export function DragDropProvider({
+export function DragDropProvider<T extends Data = Data>({
   children,
   onCollision,
   onBeforeDragStart,
@@ -36,7 +42,7 @@ export function DragDropProvider({
   onDragOver,
   onDragEnd,
   ...input
-}: Props) {
+}: Props<T>) {
   const {renderer, trackRendering} = useRenderer();
   const [manager, setManager] = useState<DragDropManager | null>(
     input.manager ?? null
