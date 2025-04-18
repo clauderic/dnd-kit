@@ -22,6 +22,7 @@ import {defaultPreventable} from './events.ts';
 
 export enum Status {
   Idle = 'idle',
+  InitializationPending = 'initialization-pending',
   Initializing = 'initializing',
   Dragging = 'dragging',
   Dropped = 'dropped',
@@ -271,6 +272,7 @@ export function DragOperationManager<
       }
 
       batch(() => {
+        status.value = Status.InitializationPending;
         shape.initial.value = null;
         shape.current.value = null;
         dragended.value = false;
