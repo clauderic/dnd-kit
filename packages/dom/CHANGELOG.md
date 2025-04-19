@@ -1,5 +1,19 @@
 # @dnd-kit/dom
 
+## 0.1.1
+
+### Patch Changes
+
+- [#1656](https://github.com/clauderic/dnd-kit/pull/1656) [`569b6e3`](https://github.com/clauderic/dnd-kit/commit/569b6e3a1d3b199328f7a2362a10b446e657726f) Thanks [@github-actions](https://github.com/apps/github-actions)! - Export `SortableKeyboardPlugin` and `OptimisticSortingPlugin` from the sortable module to allow consumers to customize their sortable plugin configurations.
+
+- [#1655](https://github.com/clauderic/dnd-kit/pull/1655) [`a176848`](https://github.com/clauderic/dnd-kit/commit/a1768481e3f7dc4d1176a7fcb363acd020f2c46c) Thanks [@blancham](https://github.com/blancham)! - Fixed a bug where auto-scroll does not wotk with inverted element
+
+- Updated dependencies [[`f13cbc9`](https://github.com/clauderic/dnd-kit/commit/f13cbc978229844770d3c8aa03135e4352ee2532)]:
+  - @dnd-kit/abstract@0.1.1
+  - @dnd-kit/collision@0.1.1
+  - @dnd-kit/geometry@0.1.1
+  - @dnd-kit/state@0.1.1
+
 ## 0.1.0
 
 ### Patch Changes

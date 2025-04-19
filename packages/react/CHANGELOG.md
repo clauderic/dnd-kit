@@ -1,5 +1,17 @@
 # @dnd-kit/react
 
+## 0.1.1
+
+### Patch Changes
+
+- [#1656](https://github.com/clauderic/dnd-kit/pull/1656) [`a4f5fc3`](https://github.com/clauderic/dnd-kit/commit/a4f5fc36a3993050eb8ccf693c65f1fffbe455c5) Thanks [@github-actions](https://github.com/apps/github-actions)! - - Update `DragDropEventHandlers` types to be non nullable.
+  - Export `DragDropEvents` and allow them to be generic
+  - Allow `DragDropProvider` to be passed `Data` as a generic
+- Updated dependencies [[`569b6e3`](https://github.com/clauderic/dnd-kit/commit/569b6e3a1d3b199328f7a2362a10b446e657726f), [`a176848`](https://github.com/clauderic/dnd-kit/commit/a1768481e3f7dc4d1176a7fcb363acd020f2c46c), [`f13cbc9`](https://github.com/clauderic/dnd-kit/commit/f13cbc978229844770d3c8aa03135e4352ee2532)]:
+  - @dnd-kit/dom@0.1.1
+  - @dnd-kit/abstract@0.1.1
+  - @dnd-kit/state@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes
