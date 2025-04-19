@@ -1,5 +1,15 @@
 # @dnd-kit/abstract
 
+## 0.1.1
+
+### Patch Changes
+
+- [#1656](https://github.com/clauderic/dnd-kit/pull/1656) [`f13cbc9`](https://github.com/clauderic/dnd-kit/commit/f13cbc978229844770d3c8aa03135e4352ee2532) Thanks [@github-actions](https://github.com/apps/github-actions)! - Add a new `initialization-pending` status to the drag operation lifecycle. This status is set after a dragOperation is initiated but before the `beforedragstart` event fires, which allows consumers to prevent a drag operation from being initialized. This provides better control over the drag operation lifecycle and enables cancellation of drag operations before they are initialized.
+
+- Updated dependencies []:
+  - @dnd-kit/geometry@0.1.1
+  - @dnd-kit/state@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes
