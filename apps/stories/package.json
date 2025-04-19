@@ -10,6 +10,9 @@
     "clean": "rm -rf .turbo && rm -rf node_modules",
     "lint": "eslint ./stories/*.stories.tsx --max-warnings 0"
   },
+  "sideEffects": [
+    "*.css"
+  ],
   "dependencies": {
     "@dnd-kit/abstract": "*",
     "@dnd-kit/dom": "*",
