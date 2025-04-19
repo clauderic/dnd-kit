@@ -51,18 +51,18 @@ dropzone-component:not(:empty)::after {
   transform: translate3d(-50%, 100%, 0) scale(0.8);
 }
 
-:global(.dark) dropzone-component {
+.dark dropzone-component {
   box-shadow: none;
 }
 
-:global(.dark) dropzone-component {
+.dark dropzone-component {
   background-color: #383d40;
 }
 
-:global(.hero) dropzone-component {
+.hero dropzone-component {
   background-color: #f6f8ff;
 }
 
-:global(.dark) dropzone-component[data-highlight="true"] {
+.dark dropzone-component[data-highlight="true"] {
   box-shadow: inset #1eb99d 0 0 0 2px, rgba(0, 0, 0, 0.1) 20px 14px 24px;
 }
