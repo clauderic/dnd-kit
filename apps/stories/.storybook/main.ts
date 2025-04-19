@@ -1,5 +1,5 @@
 import {dirname, join} from 'path';
-import {mergeConfig, optimizeDeps} from 'vite';
+import {mergeConfig} from 'vite';
 
 export default {
   stories: ['../stories/**/*.stories.mdx', '../stories/**/*.stories.tsx'],
@@ -14,7 +14,7 @@ export default {
       strictMode: true,
     },
   },
-  async viteFinal(config, {configType}) {
+  async viteFinal(config) {
     // customize the Vite config here
     return mergeConfig(config, {
       define: {
