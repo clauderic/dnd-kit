@@ -4,7 +4,7 @@ const importMap = {
     'react-dom': 'https://esm.sh/react-dom@18.2.0',
     'react-dom/': 'https://esm.sh/react-dom@18.2.0/',
     '@codesandbox/sandpack-react':
-      'https://esm.sh/@codesandbox/sandpack-react@2.8.0?deps=react@18.2.0&deps=react-dom@18.2.0',
+      'https://esm.sh/@codesandbox/sandpack-react@2.20.0?deps=react@18.2.0&deps=react-dom@18.2.0',
   },
 };
 
