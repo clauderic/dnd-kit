@@ -271,6 +271,12 @@ export function DragOperationManager<
         throw new Error('Cannot start a drag operation without a drag source');
       }
 
+      if (status.peek() !== Status.Idle) {
+        throw new Error(
+          'Cannot start a drag operation while another is active'
+        );
+      }
+
       batch(() => {
         status.value = Status.InitializationPending;
         shape.initial.value = null;
