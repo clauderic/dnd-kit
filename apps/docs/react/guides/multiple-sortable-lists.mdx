@@ -113,9 +113,9 @@ export function App() {
       }}
     >
       <div className="Root">
-        {Object.entries(items).map(([column, items], columnIndex) => (
+        {columnOrder.map((column, columnIndex) => (
           <Column key={column} id={column} index={columnIndex}>
-            {items.map((id, index) => (
+            {items[column].map((id, index) => (
               <Item key={id} id={id} index={index} column={column} />
             ))}
           </Column>
@@ -184,9 +184,9 @@ export function App({style = styles}) {
       }}
     >
       <div className="Root">
-        {Object.entries(items).map(([column, items], columnIndex) => (
+        {columnOrder.map((column, columnIndex) => (
           <Column key={column} id={column} index={columnIndex}>
-            {items.map((id, index) => (
+            {items[column].map((id, index) => (
               <Item key={id} id={id} index={index} column={column} />
             ))}
           </Column>
