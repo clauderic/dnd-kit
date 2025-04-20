@@ -269,7 +269,7 @@ export class PointerSensor extends Sensor<
 
     this.#clearTimeout?.();
 
-    if (!initialCoordinates || manager.dragOperation.status.initialized) {
+    if (!initialCoordinates || !manager.dragOperation.status.idle) {
       return;
     }
 
@@ -277,12 +277,22 @@ export class PointerSensor extends Sensor<
       return;
     }
 
-    event.preventDefault();
+    let aborted = false;
 
     batch(() => {
       manager.actions.setDragSource(source.id);
-      manager.actions.start({coordinates: initialCoordinates, event});
+      aborted =
+        manager.actions.start({coordinates: initialCoordinates, event}) ===
+        false;
     });
+
+    if (aborted) {
+      this.cleanup.forEach((cleanup) => cleanup());
+      this.cleanup.clear();
+      return;
+    }
+
+    event.preventDefault();
 
     const ownerDocument = getDocument(event.target);
     const pointerCaptureTarget = ownerDocument.body;

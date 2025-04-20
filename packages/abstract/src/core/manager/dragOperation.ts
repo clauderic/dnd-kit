@@ -264,7 +264,7 @@ export function DragOperationManager<
     }: {
       event?: Event;
       coordinates: Coordinates;
-    }) {
+    }): boolean {
       const sourceInstance = source.peek();
 
       if (!sourceInstance) {
@@ -287,12 +287,12 @@ export function DragOperationManager<
 
       monitor.dispatch('beforedragstart', beforeStartEvent);
 
-      manager.renderer.rendering.then(() => {
-        if (beforeStartEvent.defaultPrevented) {
-          reset();
-          return;
-        }
+      if (beforeStartEvent.defaultPrevented) {
+        reset();
+        return false;
+      }
 
+      manager.renderer.rendering.then(() => {
         status.value = Status.Initializing;
 
         requestAnimationFrame(() => {
@@ -305,6 +305,8 @@ export function DragOperationManager<
           });
         });
       });
+
+      return true;
     },
     move({
       by,

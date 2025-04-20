@@ -134,17 +134,24 @@ export class KeyboardSensor extends Sensor<
     scrollIntoViewIfNeeded(element);
 
     const {center} = new DOMRectangle(element);
+    let aborted = false;
 
     batch(() => {
       this.manager.actions.setDragSource(source.id);
-      this.manager.actions.start({
-        event,
-        coordinates: {
-          x: center.x,
-          y: center.y,
-        },
-      });
+      aborted =
+        this.manager.actions.start({
+          event,
+          coordinates: {
+            x: center.x,
+            y: center.y,
+          },
+        }) === false;
     });
+
+    if (aborted) {
+      this.cleanup();
+      return;
+    }
 
     this.sideEffects();
 
@@ -259,6 +266,7 @@ export class KeyboardSensor extends Sensor<
 
   protected cleanup() {
     this.#cleanupFunctions.forEach((cleanup) => cleanup());
+    this.#cleanupFunctions = [];
   }
 
   public destroy() {
