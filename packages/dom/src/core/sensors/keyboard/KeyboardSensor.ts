@@ -29,6 +29,7 @@ export type KeyboardCodes = {
 
 export interface KeyboardSensorOptions {
   keyboardCodes?: KeyboardCodes;
+  activateOnPropagatedEvents?: boolean;
 }
 
 const DEFAULT_KEYBOARD_CODES: KeyboardCodes = {
@@ -99,10 +100,9 @@ export class KeyboardSensor extends Sensor<
       return;
     }
 
-    if (
-      (!source.handle && source.element && event.target === source.element) ||
-      (source.handle && event.target === source.handle)
-    ) {
+    const target = source.handle ?? source.element;
+
+    if (event.target === target || options?.activateOnPropagatedEvents) {
       const {keyboardCodes = DEFAULT_KEYBOARD_CODES} = options ?? {};
 
       if (!keyboardCodes.start.includes(event.code)) {
