@@ -134,24 +134,17 @@ export class KeyboardSensor extends Sensor<
     scrollIntoViewIfNeeded(element);
 
     const {center} = new DOMRectangle(element);
-    let aborted = false;
-
-    batch(() => {
-      this.manager.actions.setDragSource(source.id);
-      aborted =
-        this.manager.actions.start({
-          event,
-          coordinates: {
-            x: center.x,
-            y: center.y,
-          },
-        }) === false;
+    const result = this.manager.actions.start({
+      event,
+      coordinates: {
+        x: center.x,
+        y: center.y,
+      },
+      source,
     });
+    const aborted = result === false;
 
-    if (aborted) {
-      this.cleanup();
-      return;
-    }
+    if (aborted) return this.cleanup();
 
     this.sideEffects();
 

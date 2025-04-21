@@ -234,8 +234,11 @@ export function DragOperationManager<
   };
 
   const actions = {
-    setDragSource(identifier: UniqueIdentifier) {
-      sourceIdentifier.value = identifier;
+    setDragSource(source: T | UniqueIdentifier) {
+      sourceIdentifier.value =
+        typeof source === 'string' || typeof source === 'number'
+          ? source
+          : source.id;
     },
     setDropTarget(
       identifier: UniqueIdentifier | null | undefined
@@ -258,13 +261,15 @@ export function DragOperationManager<
 
       return manager.renderer.rendering.then(() => event.defaultPrevented);
     },
-    start({
-      event: nativeEvent,
-      coordinates,
-    }: {
+    start(args: {
       event?: Event;
+      source?: T | UniqueIdentifier;
       coordinates: Coordinates;
     }): boolean {
+      if (args.source != null) {
+        actions.setDragSource(args.source);
+      }
+
       const sourceInstance = source.peek();
 
       if (!sourceInstance) {
@@ -276,6 +281,8 @@ export function DragOperationManager<
           'Cannot start a drag operation while another is active'
         );
       }
+
+      const {event: nativeEvent, coordinates} = args;
 
       batch(() => {
         status.value = Status.InitializationPending;

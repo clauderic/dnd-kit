@@ -1,4 +1,4 @@
-import {batch, effect} from '@dnd-kit/state';
+import {effect} from '@dnd-kit/state';
 import type {CleanupFunction} from '@dnd-kit/state';
 import {Sensor, configurator} from '@dnd-kit/abstract';
 import {
@@ -50,13 +50,13 @@ export class PointerSensor extends Sensor<
   DragDropManager,
   PointerSensorOptions
 > {
-  protected listeners = new Listeners();
-
-  protected cleanup: Set<CleanupFunction> = new Set();
-
-  protected initialCoordinates: Coordinates | undefined;
+  #cleanup: Set<CleanupFunction> = new Set();
 
   #clearTimeout: CleanupFunction | undefined;
+
+  protected listeners = new Listeners();
+
+  protected initialCoordinates: Coordinates | undefined;
 
   constructor(
     public manager: DragDropManager,
@@ -179,7 +179,7 @@ export class PointerSensor extends Sensor<
       this.initialCoordinates = undefined;
     };
 
-    this.cleanup.add(cleanup);
+    this.#cleanup.add(cleanup);
   }
 
   protected handlePointerMove(
@@ -252,9 +252,7 @@ export class PointerSensor extends Sensor<
       this.manager.actions.stop({event, canceled});
     }
 
-    // Remove the pointer move and up event listeners
-    this.cleanup.forEach((cleanup) => cleanup());
-    this.cleanup.clear();
+    this.cleanup();
   }
 
   protected handleKeyDown(event: KeyboardEvent) {
@@ -277,20 +275,14 @@ export class PointerSensor extends Sensor<
       return;
     }
 
-    let aborted = false;
-
-    batch(() => {
-      manager.actions.setDragSource(source.id);
-      aborted =
-        manager.actions.start({coordinates: initialCoordinates, event}) ===
-        false;
+    const result = manager.actions.start({
+      coordinates: initialCoordinates,
+      event,
+      source,
     });
+    const aborted = result === false;
 
-    if (aborted) {
-      this.cleanup.forEach((cleanup) => cleanup());
-      this.cleanup.clear();
-      return;
-    }
+    if (aborted) return this.cleanup();
 
     event.preventDefault();
 
@@ -331,7 +323,7 @@ export class PointerSensor extends Sensor<
       },
     ]);
 
-    this.cleanup.add(unbind);
+    this.#cleanup.add(unbind);
   }
 
   protected handleCancel(event: Event) {
@@ -341,13 +333,16 @@ export class PointerSensor extends Sensor<
       this.manager.actions.stop({event, canceled: true});
     }
 
-    // Remove the pointer move and up event listeners
-    this.cleanup.forEach((cleanup) => cleanup());
-    this.cleanup.clear();
+    this.cleanup();
+  }
+
+  protected cleanup() {
+    this.#cleanup.forEach((cleanup) => cleanup());
+    this.#cleanup.clear();
   }
 
   public destroy() {
-    // Remove all event listeners
+    this.cleanup();
     this.listeners.clear();
   }
 
