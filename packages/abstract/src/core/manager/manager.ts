@@ -4,14 +4,13 @@ import type {Plugins, Plugin} from '../plugins/index.ts';
 import type {Sensor, Sensors} from '../sensors/index.ts';
 import type {Modifier, Modifiers} from '../modifiers/index.ts';
 
+import {DragActions} from './actions.ts';
 import {DragDropRegistry} from './registry.ts';
-import {
-  DragOperationManager,
-  type DragOperation,
-  type DragActions,
-} from './dragOperation.ts';
+import {DragOperation} from './operation.ts';
 import {DragDropMonitor} from './events.ts';
 import {defaultRenderer, type Renderer} from './renderer.ts';
+import {effects, untracked} from '@dnd-kit/state';
+import {descriptor} from '../../../index.js';
 
 export type DragDropManagerInput<T extends DragDropManager<any, any>> = {
   plugins?: Plugins<T>;
@@ -44,16 +43,29 @@ export class DragDropManager<T extends Draggable, U extends Droppable> {
     this.monitor = monitor;
     this.renderer = renderer;
 
-    const {actions, operation, cleanup} = DragOperationManager<T, U, V>(this);
-
-    this.actions = actions;
-    this.dragOperation = operation;
+    this.actions = new DragActions<T, U, V>(this);
+    this.dragOperation = new DragOperation<T, U>(this);
     this.collisionObserver = new CollisionObserver<T, U, V>(this);
     this.plugins = [CollisionNotifier, ...plugins];
     this.modifiers = modifiers;
     this.sensors = sensors;
 
     const {destroy} = this;
+
+    const cleanup = effects(() => {
+      const currentModifiers = untracked(() => this.dragOperation.modifiers);
+      const managerModifiers = this.modifiers;
+
+      if (currentModifiers !== managerModifiers) {
+        currentModifiers.forEach((modifier) => modifier.destroy());
+      }
+
+      this.dragOperation.modifiers =
+        this.dragOperation.source?.modifiers?.map((modifier) => {
+          const {plugin, options} = descriptor(modifier);
+          return new plugin(this, options);
+        }) ?? managerModifiers;
+    });
 
     this.destroy = () => {
       cleanup();
@@ -86,6 +98,12 @@ export class DragDropManager<T extends Draggable, U extends Droppable> {
   }
 
   public destroy = () => {
+    if (!this.dragOperation.status.idle) {
+      this.actions.stop({canceled: true});
+    }
+
+    this.dragOperation.modifiers.forEach((modifier) => modifier.destroy());
+
     this.registry.destroy();
     this.collisionObserver.destroy();
   };

@@ -1,35 +1,20 @@
-import {batch, derived, reactive} from '@dnd-kit/state';
+import {batch, derived, reactive, ValueHistory} from '@dnd-kit/state';
 
 import {Point} from '../point';
 import type {Coordinates} from '../types';
 
-const SENSITIVITY = 10;
-
-export class Position {
+export class Position extends ValueHistory<Point> {
   constructor(initialValue: Coordinates) {
     const point = Point.from(initialValue);
 
-    this.initial = point;
-    this.current = point;
-    this.previous = point;
+    super(point, (a, b) => Point.equals(a, b));
   }
 
   #timestamp = 0;
 
   @reactive
-  public accessor velocity: Point = {
-    x: 0,
-    y: 0,
-  };
-
-  @reactive
-  public accessor initial: Point;
-
-  @reactive
-  public accessor previous: Point;
-
-  @reactive
-  public accessor current: Point;
+  // @ts-ignore
+  public accessor velocity: Point;
 
   @derived
   public get delta() {
@@ -38,9 +23,13 @@ export class Position {
 
   @derived
   public get direction() {
+    const {current, previous} = this;
+
+    if (!previous) return null;
+
     const delta = {
-      x: this.current.x - this.previous.x,
-      y: this.current.y - this.previous.y,
+      x: current.x - previous.x,
+      y: current.y - previous.y,
     };
 
     if (!delta.x && !delta.y) {
@@ -54,25 +43,13 @@ export class Position {
     return delta.y > 0 ? 'down' : 'up';
   }
 
-  public reset(coordinates: Coordinates) {
-    const point = Point.from(coordinates);
-
-    batch(() => {
-      this.#timestamp = 0;
-      this.velocity = {x: 0, y: 0};
-      this.current = point;
-      this.previous = point;
-      this.initial = point;
-    });
+  public get current() {
+    return super.current;
   }
 
-  public update(coordinates: Coordinates) {
+  public set current(coordinates: Coordinates) {
     const {current} = this;
     const point = Point.from(coordinates);
-
-    if (Point.equals(current, point)) {
-      return;
-    }
 
     const delta = {
       x: point.x - current.x,
@@ -82,15 +59,20 @@ export class Position {
     const timeDelta = timestamp - this.#timestamp;
     const velocity = (delta: number) => Math.round((delta / timeDelta) * 100);
 
-    if (Math.abs(delta.x) < SENSITIVITY || Math.abs(delta.y) < SENSITIVITY) {
-      this.previous = current;
-    }
+    batch(() => {
+      this.#timestamp = timestamp;
+      this.velocity = {
+        x: velocity(delta.x),
+        y: velocity(delta.y),
+      };
+      super.current = point;
+    });
+  }
 
-    this.#timestamp = timestamp;
-    this.velocity = {
-      x: velocity(delta.x),
-      y: velocity(delta.y),
-    };
-    this.current = point;
+  public reset(coordinates = this.defaultValue) {
+    batch(() => {
+      super.reset(Point.from(coordinates));
+      this.velocity = {x: 0, y: 0};
+    });
   }
 }

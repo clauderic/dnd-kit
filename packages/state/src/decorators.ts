@@ -44,3 +44,35 @@ export function derived<This, Return>(
     return result.value;
   };
 }
+
+/**
+ * Make a field enumerable (or non‑enumerable) on every instance.
+ *
+ *   @enumerable(true)  – enumerable
+ *   @enumerable(false) – non‑enumerable
+ */
+export function enumerable(enumerable: boolean = true) {
+  return function (
+    _value: unknown,
+    context:
+      | ClassFieldDecoratorContext<any, any>
+      | ClassGetterDecoratorContext<any, any>
+      | ClassSetterDecoratorContext<any, any>
+      | ClassAccessorDecoratorContext<any, any>
+      | ClassMethodDecoratorContext<any, any>
+  ) {
+    context.addInitializer(function () {
+      const host =
+        context.kind === 'field' // own field  → instance
+          ? this
+          : context.static // static member → constructor
+            ? this
+            : Object.getPrototypeOf(this); // prototype member
+      const descriptor = Object.getOwnPropertyDescriptor(host, context.name);
+
+      if (descriptor) {
+        Object.defineProperty(host, context.name, {...descriptor, enumerable});
+      }
+    });
+  };
+}

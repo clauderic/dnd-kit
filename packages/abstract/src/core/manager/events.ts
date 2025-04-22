@@ -3,7 +3,7 @@ import type {Coordinates} from '@dnd-kit/geometry';
 import type {Draggable, Droppable} from '../entities/index.ts';
 import type {Collisions} from '../collision/index.ts';
 import type {DragDropManager} from './manager.ts';
-import type {DragOperation} from './dragOperation.ts';
+import type {DragOperationSnapshot} from './operation.ts';
 
 export type Events = Record<string, (...args: any[]) => void>;
 
@@ -61,7 +61,7 @@ export type DragDropEvents<
   ): void;
   beforedragstart(
     event: Preventable<{
-      operation: DragOperation<T, U>;
+      operation: DragOperationSnapshot<T, U>;
       nativeEvent?: Event;
     }>,
     manager: V
@@ -69,14 +69,14 @@ export type DragDropEvents<
   dragstart(
     event: {
       cancelable: false;
-      operation: DragOperation<T, U>;
+      operation: DragOperationSnapshot<T, U>;
       nativeEvent?: Event;
     },
     manager: V
   ): void;
   dragmove(
     event: Preventable<{
-      operation: DragOperation<T, U>;
+      operation: DragOperationSnapshot<T, U>;
       to?: Coordinates;
       by?: Coordinates;
       nativeEvent?: Event;
@@ -85,13 +85,13 @@ export type DragDropEvents<
   ): void;
   dragover(
     event: Preventable<{
-      operation: DragOperation<T, U>;
+      operation: DragOperationSnapshot<T, U>;
     }>,
     manager: V
   ): void;
   dragend(
     event: {
-      operation: DragOperation<T, U>;
+      operation: DragOperationSnapshot<T, U>;
       nativeEvent?: Event;
       canceled: boolean;
       suspend(): {resume(): void; abort(): void};

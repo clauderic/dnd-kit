@@ -6,7 +6,8 @@ import {
   type PluginConstructor,
   type PluginDescriptor,
 } from '../plugins/index.ts';
-import type {DragDropManager} from '../manager/index.ts';
+import type {DragDropManager} from '../manager/manager.ts';
+import type {DragOperationSnapshot} from '../manager/operation.ts';
 
 export type ModifierOptions = PluginOptions;
 
@@ -21,7 +22,7 @@ export class Modifier<
     super(manager, options);
   }
 
-  public apply(operation: T['dragOperation']): Coordinates {
+  public apply(operation: DragOperationSnapshot<any, any>): Coordinates {
     return operation.transform;
   }
 }
