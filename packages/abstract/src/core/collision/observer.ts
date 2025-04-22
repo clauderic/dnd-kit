@@ -71,9 +71,13 @@ export class CollisionObserver<
     collisionDetector?: CollisionDetector
   ) {
     const {registry, dragOperation} = this.manager;
-    const {source, shape, status} = dragOperation;
+    const {source, status, position, shape} = dragOperation;
 
-    if (!status.initialized || !shape) {
+    // Make sure effects will re-run when those properties change
+    void position.current;
+    void shape;
+
+    if (!status.initialized) {
       return DEFAULT_VALUE;
     }
 
@@ -99,7 +103,7 @@ export class CollisionObserver<
 
       // Force collisions to be recomputed when the shape changes
       void entry.shape;
-
+      void dragOperation.position.current;
       const collision = untracked(() =>
         detectCollision({
           droppable: entry,
