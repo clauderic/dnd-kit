@@ -114,19 +114,20 @@ export class KeyboardSensor extends Sensor<
       return;
     }
 
-    const shouldActivate = options?.shouldActivate ?? DEFAULT_SHOULD_ACTIVATE;
+    const {
+      keyboardCodes = DEFAULT_KEYBOARD_CODES,
+      shouldActivate = DEFAULT_SHOULD_ACTIVATE,
+    } = options ?? {};
+
+    if (!keyboardCodes.start.includes(event.code)) {
+      return;
+    }
+
+    if (!this.manager.dragOperation.status.idle) {
+      return;
+    }
 
     if (shouldActivate({event, source, manager: this.manager})) {
-      const {keyboardCodes = DEFAULT_KEYBOARD_CODES} = options ?? {};
-
-      if (!keyboardCodes.start.includes(event.code)) {
-        return;
-      }
-
-      if (!this.manager.dragOperation.status.idle) {
-        return;
-      }
-
       this.handleStart(event, source, options);
     }
   };
