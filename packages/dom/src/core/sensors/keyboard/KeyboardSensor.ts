@@ -29,7 +29,22 @@ export type KeyboardCodes = {
 
 export interface KeyboardSensorOptions {
   keyboardCodes?: KeyboardCodes;
+  shouldActivate?(args: {
+    event: KeyboardEvent;
+    source: Draggable;
+    manager: DragDropManager;
+  }): boolean;
 }
+
+const DEFAULT_SHOULD_ACTIVATE = (args: {
+  event: KeyboardEvent;
+  source: Draggable;
+  manager: DragDropManager;
+}) => {
+  const {event, source} = args;
+  const target = source.handle ?? source.element;
+  return event.target === target;
+};
 
 const DEFAULT_KEYBOARD_CODES: KeyboardCodes = {
   start: ['Space', 'Enter'],
@@ -99,20 +114,20 @@ export class KeyboardSensor extends Sensor<
       return;
     }
 
-    if (
-      (!source.handle && source.element && event.target === source.element) ||
-      (source.handle && event.target === source.handle)
-    ) {
-      const {keyboardCodes = DEFAULT_KEYBOARD_CODES} = options ?? {};
+    const {
+      keyboardCodes = DEFAULT_KEYBOARD_CODES,
+      shouldActivate = DEFAULT_SHOULD_ACTIVATE,
+    } = options ?? {};
 
-      if (!keyboardCodes.start.includes(event.code)) {
-        return;
-      }
+    if (!keyboardCodes.start.includes(event.code)) {
+      return;
+    }
 
-      if (!this.manager.dragOperation.status.idle) {
-        return;
-      }
+    if (!this.manager.dragOperation.status.idle) {
+      return;
+    }
 
+    if (shouldActivate({event, source, manager: this.manager})) {
       this.handleStart(event, source, options);
     }
   };
