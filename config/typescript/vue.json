@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Vue",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "lib": ["dom", "ES2019"],
+    "target": "es6",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "importHelpers": true,
+    "sourceMap": true
+  }
+}

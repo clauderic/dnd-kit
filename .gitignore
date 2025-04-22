@@ -1,6 +1,7 @@
 .DS_Store
 node_modules
 .turbo
+.idea/
 *.log
 .next
 dist
@@ -17,3 +18,4 @@ storybook-static/
 /packages/**/*.cjs.map
 /packages/**/*.d.ts
 /packages/**/*.d.cts
+!/packages/**/.eslintrc.cjs

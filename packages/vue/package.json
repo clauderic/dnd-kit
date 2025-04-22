@@ -1,0 +1,78 @@
+{
+  "name": "@dnd-kit/vue",
+  "version": "0.1.0",
+  "main": "./index.cjs",
+  "module": "./index.js",
+  "type": "module",
+  "types": "./index.d.ts",
+  "sideEffects": false,
+  "license": "MIT",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "index.js",
+    "index.d.ts",
+    "index.cjs",
+    "composables.js",
+    "composables.d.ts",
+    "composables.cjs",
+    "sortable.js",
+    "sortable.d.ts",
+    "sortable.cjs",
+    "utilities.js",
+    "utilities.d.ts",
+    "utilities.cjs"
+  ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js",
+      "require": "./index.cjs"
+    },
+    "./composables": {
+      "types": "./composables.d.ts",
+      "import": "./composables.js",
+      "require": "./composables.cjs"
+    },
+    "./sortable": {
+      "types": "./sortable.d.ts",
+      "import": "./sortable.js",
+      "require": "./sortable.cjs"
+    },
+    "./utilities": {
+      "types": "./utilities.d.ts",
+      "import": "./utilities.js",
+      "require": "./utilities.cjs"
+    }
+  },
+  "scripts": {
+    "build": "bun build:utilities && bun build:composables && bun build:core && bun build:sortable",
+    "build:core": "tsup src/core/index.ts",
+    "build:composables": "tsup --entry.composables src/composables/index.ts",
+    "build:sortable": "tsup --entry.sortable src/sortable/index.ts",
+    "build:utilities": "tsup --entry.utilities src/utilities/index.ts",
+    "dev": "bun build:utilities --watch & bun build:composables --watch & bun build:core --watch & bun build:sortable --watch",
+    "lint": "TIMING=1 eslint src/**/*.ts* --fix",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "dependencies": {
+    "@dnd-kit/abstract": "^0.1.0",
+    "@dnd-kit/dom": "^0.1.0",
+    "@dnd-kit/state": "^0.1.0",
+    "tslib": "^2.6.2"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@dnd-kit/eslint-config": "*",
+    "eslint": "^8.38.0",
+    "eslint-plugin-vue": "^10.0.0",
+    "tsup": "~8.2.0",
+    "typescript": "^5.5.2",
+    "vue": "^3.5.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
