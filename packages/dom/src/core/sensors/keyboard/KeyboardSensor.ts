@@ -29,8 +29,13 @@ export type KeyboardCodes = {
 
 export interface KeyboardSensorOptions {
   keyboardCodes?: KeyboardCodes;
-  activateOnPropagatedEvents?: boolean;
+  shouldActivate?(event: KeyboardEvent, source: Draggable): boolean;
 }
+
+const DEFAULT_SHOULD_ACTIVATE = (event: KeyboardEvent, source: Draggable) => {
+  const target = source.handle ?? source.element;
+  return event.target === target;
+};
 
 const DEFAULT_KEYBOARD_CODES: KeyboardCodes = {
   start: ['Space', 'Enter'],
@@ -100,9 +105,9 @@ export class KeyboardSensor extends Sensor<
       return;
     }
 
-    const target = source.handle ?? source.element;
+    const shouldActivate = options?.shouldActivate ?? DEFAULT_SHOULD_ACTIVATE;
 
-    if (event.target === target || options?.activateOnPropagatedEvents) {
+    if (shouldActivate(event, source)) {
       const {keyboardCodes = DEFAULT_KEYBOARD_CODES} = options ?? {};
 
       if (!keyboardCodes.start.includes(event.code)) {
