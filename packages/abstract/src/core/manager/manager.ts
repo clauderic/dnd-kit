@@ -1,16 +1,17 @@
+import {effects, untracked} from '@dnd-kit/state';
+
 import type {Draggable, Droppable} from '../entities/index.ts';
 import {CollisionObserver, CollisionNotifier} from '../collision/index.ts';
 import type {Plugins, Plugin} from '../plugins/index.ts';
 import type {Sensor, Sensors} from '../sensors/index.ts';
 import type {Modifier, Modifiers} from '../modifiers/index.ts';
+import {descriptor} from '../plugins/utilities.ts';
 
 import {DragActions} from './actions.ts';
 import {DragDropRegistry} from './registry.ts';
 import {DragOperation} from './operation.ts';
 import {DragDropMonitor} from './events.ts';
 import {defaultRenderer, type Renderer} from './renderer.ts';
-import {effects, untracked} from '@dnd-kit/state';
-import {descriptor} from '../../../index.js';
 
 export type DragDropManagerInput<T extends DragDropManager<any, any>> = {
   plugins?: Plugins<T>;
