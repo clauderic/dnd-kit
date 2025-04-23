@@ -1,5 +1,28 @@
 # @dnd-kit/abstract
 
+## 0.1.2
+
+### Patch Changes
+
+- [#1658](https://github.com/clauderic/dnd-kit/pull/1658) [`4682570`](https://github.com/clauderic/dnd-kit/commit/4682570a6b80868af0e51b1bbbf902430117df43) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fix handling of aborted drag operations across sensors. The `start` method now returns a boolean to indicate whether the operation was aborted, allowing sensors to properly clean up when a drag operation is prevented. This affects the Keyboard and Pointer sensors, ensuring they properly handle cases where `beforeDragStart` events are prevented.
+
+- [#1658](https://github.com/clauderic/dnd-kit/pull/1658) [`f8d69b0`](https://github.com/clauderic/dnd-kit/commit/f8d69b01f4cf53fc368ef1fca9188c313192928d) Thanks [@github-actions](https://github.com/apps/github-actions)! - Allow `actions.start()` to optionally receive a `source` as input.
+
+- [#1658](https://github.com/clauderic/dnd-kit/pull/1658) [`d04e9a2`](https://github.com/clauderic/dnd-kit/commit/d04e9a2879fb00f092c3f8280c8081a48eebf193) Thanks [@github-actions](https://github.com/apps/github-actions)! - Prevent starting a new drag operation while another one is active by adding a status check in the drag operation manager. This change throws an error if an attempt is made to start a drag operation while another one is in progress.
+
+- [#1658](https://github.com/clauderic/dnd-kit/pull/1658) [`ee55f58`](https://github.com/clauderic/dnd-kit/commit/ee55f582f92dc42cc6eea9ad7492fc782ca6455a) Thanks [@github-actions](https://github.com/apps/github-actions)! - Refactor the drag operation system to improve code organization and maintainability:
+
+  - Split `dragOperation.ts` into multiple focused files:
+    - `operation.ts` - Core drag operation logic
+    - `status.ts` - Status management
+    - `actions.ts` - Drag actions
+  - Update imports and exports to reflect new file structure
+  - Improve type definitions and exports
+
+- Updated dependencies [[`ee55f58`](https://github.com/clauderic/dnd-kit/commit/ee55f582f92dc42cc6eea9ad7492fc782ca6455a)]:
+  - @dnd-kit/state@0.1.2
+  - @dnd-kit/geometry@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes

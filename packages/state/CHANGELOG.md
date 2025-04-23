@@ -1,5 +1,16 @@
 # @dnd-kit/state
 
+## 0.1.2
+
+### Patch Changes
+
+- [#1658](https://github.com/clauderic/dnd-kit/pull/1658) [`ee55f58`](https://github.com/clauderic/dnd-kit/commit/ee55f582f92dc42cc6eea9ad7492fc782ca6455a) Thanks [@github-actions](https://github.com/apps/github-actions)! - Add new state management features:
+
+  - Add `ValueHistory` class for tracking value changes over time
+  - Add `enumerable` decorator for controlling property enumeration
+  - Add `snapshot` utility for creating immutable copies of reactive objects
+  - Refactor `Position` class to extend `ValueHistory` for better state tracking
+
 ## 0.1.1
 
 ## 0.1.0
