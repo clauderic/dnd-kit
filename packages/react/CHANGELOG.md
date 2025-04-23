@@ -1,5 +1,27 @@
 # @dnd-kit/react
 
+## 0.1.2
+
+### Patch Changes
+
+- [#1658](https://github.com/clauderic/dnd-kit/pull/1658) [`42bec2c`](https://github.com/clauderic/dnd-kit/commit/42bec2c507adf5659d70a1d5fba33847b0efe016) Thanks [@github-actions](https://github.com/apps/github-actions)! - Add 'use client' directive to DragDropProvider component
+
+  This change ensures proper client-side rendering in Next.js applications by explicitly marking the DragDropProvider component as a client component.
+
+- [#1658](https://github.com/clauderic/dnd-kit/pull/1658) [`ee55f58`](https://github.com/clauderic/dnd-kit/commit/ee55f582f92dc42cc6eea9ad7492fc782ca6455a) Thanks [@github-actions](https://github.com/apps/github-actions)! - Refactor the drag operation system to improve code organization and maintainability:
+
+  - Split `dragOperation.ts` into multiple focused files:
+    - `operation.ts` - Core drag operation logic
+    - `status.ts` - Status management
+    - `actions.ts` - Drag actions
+  - Update imports and exports to reflect new file structure
+  - Improve type definitions and exports
+
+- Updated dependencies [[`ee55f58`](https://github.com/clauderic/dnd-kit/commit/ee55f582f92dc42cc6eea9ad7492fc782ca6455a), [`4682570`](https://github.com/clauderic/dnd-kit/commit/4682570a6b80868af0e51b1bbbf902430117df43), [`f8d69b0`](https://github.com/clauderic/dnd-kit/commit/f8d69b01f4cf53fc368ef1fca9188c313192928d), [`d04e9a2`](https://github.com/clauderic/dnd-kit/commit/d04e9a2879fb00f092c3f8280c8081a48eebf193), [`ee55f58`](https://github.com/clauderic/dnd-kit/commit/ee55f582f92dc42cc6eea9ad7492fc782ca6455a), [`374f81f`](https://github.com/clauderic/dnd-kit/commit/374f81f84c9401729e2e0ee48520c647a48e5afd)]:
+  - @dnd-kit/state@0.1.2
+  - @dnd-kit/abstract@0.1.2
+  - @dnd-kit/dom@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes

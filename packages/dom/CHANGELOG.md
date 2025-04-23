@@ -1,5 +1,30 @@
 # @dnd-kit/dom
 
+## 0.1.2
+
+### Patch Changes
+
+- [#1658](https://github.com/clauderic/dnd-kit/pull/1658) [`4682570`](https://github.com/clauderic/dnd-kit/commit/4682570a6b80868af0e51b1bbbf902430117df43) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fix handling of aborted drag operations across sensors. The `start` method now returns a boolean to indicate whether the operation was aborted, allowing sensors to properly clean up when a drag operation is prevented. This affects the Keyboard and Pointer sensors, ensuring they properly handle cases where `beforeDragStart` events are prevented.
+
+- [#1658](https://github.com/clauderic/dnd-kit/pull/1658) [`f8d69b0`](https://github.com/clauderic/dnd-kit/commit/f8d69b01f4cf53fc368ef1fca9188c313192928d) Thanks [@github-actions](https://github.com/apps/github-actions)! - Allow `actions.start()` to optionally receive a `source` as input.
+
+- [#1658](https://github.com/clauderic/dnd-kit/pull/1658) [`ee55f58`](https://github.com/clauderic/dnd-kit/commit/ee55f582f92dc42cc6eea9ad7492fc782ca6455a) Thanks [@github-actions](https://github.com/apps/github-actions)! - Refactor the drag operation system to improve code organization and maintainability:
+
+  - Split `dragOperation.ts` into multiple focused files:
+    - `operation.ts` - Core drag operation logic
+    - `status.ts` - Status management
+    - `actions.ts` - Drag actions
+  - Update imports and exports to reflect new file structure
+  - Improve type definitions and exports
+
+- [#1660](https://github.com/clauderic/dnd-kit/pull/1660) [`374f81f`](https://github.com/clauderic/dnd-kit/commit/374f81f84c9401729e2e0ee48520c647a48e5afd) Thanks [@GuillaumeSalles](https://github.com/GuillaumeSalles)! - Add option `shouldActivate` on `KeyboardSensor`. By default `KeyboardSensor` activates if the Keyboard event is triggered from the `Draggable` `element` or `handle`. `shouldActivate` let the user override this behavior.
+
+- Updated dependencies [[`ee55f58`](https://github.com/clauderic/dnd-kit/commit/ee55f582f92dc42cc6eea9ad7492fc782ca6455a), [`4682570`](https://github.com/clauderic/dnd-kit/commit/4682570a6b80868af0e51b1bbbf902430117df43), [`f8d69b0`](https://github.com/clauderic/dnd-kit/commit/f8d69b01f4cf53fc368ef1fca9188c313192928d), [`d04e9a2`](https://github.com/clauderic/dnd-kit/commit/d04e9a2879fb00f092c3f8280c8081a48eebf193), [`ee55f58`](https://github.com/clauderic/dnd-kit/commit/ee55f582f92dc42cc6eea9ad7492fc782ca6455a)]:
+  - @dnd-kit/state@0.1.2
+  - @dnd-kit/geometry@0.1.2
+  - @dnd-kit/abstract@0.1.2
+  - @dnd-kit/collision@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes
