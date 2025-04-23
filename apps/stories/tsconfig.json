@@ -1,5 +1,6 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "../../config/typescript/react.json",
   "include": ["."],
-  "exclude": ["dist", "build", "node_modules"],
+  "exclude": ["dist", "build", "node_modules"]
 }
