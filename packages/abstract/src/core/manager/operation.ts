@@ -35,9 +35,20 @@ export interface DragOperationSnapshot<
   readonly target: U | null;
 }
 
+/**
+ * Represents the current state of a drag operation.
+ *
+ * @template T - The type of draggable entities
+ * @template U - The type of droppable entities
+ */
 export class DragOperation<T extends Draggable, U extends Droppable>
   implements DragOperationSnapshot<T, U>
 {
+  /**
+   * Creates a new drag operation instance.
+   *
+   * @param manager - The drag and drop manager that owns this operation
+   */
   constructor(manager: DragDropManager<T, U>) {
     this.#manager = manager;
   }
@@ -50,8 +61,14 @@ export class DragOperation<T extends Draggable, U extends Droppable>
     a && b ? a.equals(b) : a === b
   );
 
+  /** Current status of the drag operation */
   public readonly status = new Status();
 
+  /**
+   * Gets the current shape of the dragged entity with history.
+   *
+   * @returns The shape history or null if no shape is set
+   */
   @derived
   public get shape(): WithHistory<Shape> | null {
     const {current, initial, previous} = this.#shape;
@@ -63,6 +80,11 @@ export class DragOperation<T extends Draggable, U extends Droppable>
     return {current, initial, previous};
   }
 
+  /**
+   * Sets the shape of the dragged entity.
+   *
+   * @param value - The new shape or null to reset
+   */
   public set shape(value: Shape | null) {
     if (!value) {
       this.#shape.reset();
@@ -71,23 +93,34 @@ export class DragOperation<T extends Draggable, U extends Droppable>
     }
   }
 
+  /** Whether the drag operation was canceled */
   @reactive
   public accessor canceled = false;
 
+  /** The event that initiated the drag operation */
   @reactive
   public accessor activatorEvent: Event | null = null;
 
+  /** Unique identifier of the source draggable entity */
   @reactive
   public accessor sourceIdentifier: UniqueIdentifier | null = null;
 
+  /** Unique identifier of the target droppable entity */
   @reactive
   public accessor targetIdentifier: UniqueIdentifier | null = null;
 
+  /** List of modifiers applied to the drag operation */
   @reactive
   public accessor modifiers: Modifier[] = [];
 
+  /** Current position of the dragged entity */
   public position = new Position({x: 0, y: 0});
 
+  /**
+   * Gets the source draggable entity.
+   *
+   * @returns The current draggable entity or the previous one if the current is not found
+   */
   @derived
   public get source(): T | null {
     const identifier = this.sourceIdentifier;
@@ -102,6 +135,11 @@ export class DragOperation<T extends Draggable, U extends Droppable>
     return value ?? this.#previousSource ?? null;
   }
 
+  /**
+   * Gets the target droppable entity.
+   *
+   * @returns The current droppable entity or null if not found
+   */
   @derived
   public get target(): U | null {
     const identifier = this.targetIdentifier;
@@ -112,6 +150,11 @@ export class DragOperation<T extends Draggable, U extends Droppable>
 
   #transform = {x: 0, y: 0};
 
+  /**
+   * Gets the current transform after applying all modifiers.
+   *
+   * @returns The transformed coordinates
+   */
   @derived
   public get transform() {
     const {x, y} = this.position.delta;
@@ -129,6 +172,11 @@ export class DragOperation<T extends Draggable, U extends Droppable>
     return transform;
   }
 
+  /**
+   * Creates a snapshot of the current drag operation state.
+   *
+   * @returns An immutable snapshot of the current operation state
+   */
   public snapshot(): DragOperationSnapshot<T, U> {
     return untracked(() => ({
       source: this.source,
@@ -142,6 +190,17 @@ export class DragOperation<T extends Draggable, U extends Droppable>
     }));
   }
 
+  /**
+   * Resets the drag operation to its initial state.
+   *
+   * @remarks
+   * This method:
+   * - Sets status to idle
+   * - Clears source and target identifiers
+   * - Resets shape history
+   * - Resets position and transform
+   * - Clears modifiers
+   */
   public reset() {
     batch(() => {
       this.status.set(StatusValue.Idle);

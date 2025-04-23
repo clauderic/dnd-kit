@@ -20,14 +20,36 @@ export type DragDropManagerInput<T extends DragDropManager<any, any>> = {
   renderer?: Renderer;
 };
 
+/**
+ * Central manager class that orchestrates drag and drop operations.
+ *
+ * @template T - The type of draggable entities
+ * @template U - The type of droppable entities
+ */
 export class DragDropManager<T extends Draggable, U extends Droppable> {
+  /** Actions that can be performed during drag operations */
   public actions: DragActions<T, U, DragDropManager<T, U>>;
+
+  /** Observes and manages collision detection between draggable and droppable entities */
   public collisionObserver: CollisionObserver<T, U>;
+
+  /** Tracks the current drag operation state and metadata */
   public dragOperation: DragOperation<T, U>;
+
+  /** Monitors and emits drag and drop events */
   public monitor: DragDropMonitor<T, U, DragDropManager<T, U>>;
+
+  /** Registry that manages draggable and droppable entities */
   public registry: DragDropRegistry<T, U, DragDropManager<T, U>>;
+
+  /** Handles rendering of drag and drop visual feedback */
   public renderer: Renderer;
 
+  /**
+   * Creates a new drag and drop manager instance.
+   *
+   * @param config - Optional configuration for plugins, sensors, modifiers, and renderer
+   */
   constructor(config?: DragDropManagerInput<any>) {
     type V = DragDropManager<T, U>;
 
@@ -74,30 +96,63 @@ export class DragDropManager<T extends Draggable, U extends Droppable> {
     };
   }
 
+  /**
+   * Gets the list of active plugins.
+   *
+   * @returns Array of active plugin instances
+   */
   get plugins(): Plugin<any>[] {
     return this.registry.plugins.values;
   }
 
+  /**
+   * Sets the list of plugins to be used by the manager.
+   *
+   * @param plugins - Array of plugin constructors or instances
+   */
   set plugins(plugins: Plugins<any>) {
     this.registry.plugins.values = plugins;
   }
 
+  /**
+   * Gets the list of active modifiers.
+   *
+   * @returns Array of active modifier instances
+   */
   get modifiers(): Modifier<any>[] {
     return this.registry.modifiers.values;
   }
 
+  /**
+   * Sets the list of modifiers to be used by the manager.
+   *
+   * @param modifiers - Array of modifier constructors or instances
+   */
   set modifiers(modifiers: Modifiers<any>) {
     this.registry.modifiers.values = modifiers;
   }
 
+  /**
+   * Gets the list of active sensors.
+   *
+   * @returns Array of active sensor instances
+   */
   get sensors(): Sensor<any>[] {
     return this.registry.sensors.values;
   }
 
+  /**
+   * Sets the list of sensors to be used by the manager.
+   *
+   * @param sensors - Array of sensor constructors or instances
+   */
   set sensors(sensors: Sensors<any>) {
     this.registry.sensors.values = sensors;
   }
 
+  /**
+   * Cleans up resources and stops any active drag operations.
+   */
   public destroy = () => {
     if (!this.dragOperation.status.idle) {
       this.actions.stop({canceled: true});

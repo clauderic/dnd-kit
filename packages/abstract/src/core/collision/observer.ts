@@ -9,11 +9,29 @@ import {sortCollisions} from './utilities.ts';
 
 const DEFAULT_VALUE: Collisions = [];
 
+/**
+ * Observes and manages collision detection between draggable and droppable elements.
+ *
+ * @template T - The type of draggable entities
+ * @template U - The type of droppable entities
+ * @template V - The type of drag drop manager
+ *
+ * @remarks
+ * The CollisionObserver is responsible for:
+ * - Computing collisions between draggable and droppable elements
+ * - Maintaining a signal of current collisions
+ * - Updating collision state based on drag operation changes
+ */
 export class CollisionObserver<
   T extends Draggable = Draggable,
   U extends Droppable = Droppable,
   V extends DragDropManager<T, U> = DragDropManager<T, U>,
 > extends Plugin<V> {
+  /**
+   * Creates a new CollisionObserver instance.
+   *
+   * @param manager - The drag drop manager instance
+   */
   constructor(manager: V) {
     super(manager);
 
@@ -56,6 +74,11 @@ export class CollisionObserver<
 
   #previousCoordinates: Coordinates | undefined;
 
+  /**
+   * Forces an immediate update of collision detection.
+   *
+   * @param immediate - If true, updates collisions immediately. If false, resets previous coordinates.
+   */
   public forceUpdate(immediate = true) {
     untracked(() => {
       if (immediate) {
@@ -66,6 +89,13 @@ export class CollisionObserver<
     });
   }
 
+  /**
+   * Computes collisions between draggable and droppable elements.
+   *
+   * @param entries - Optional array of droppable elements to check. If not provided, uses all registered droppables.
+   * @param collisionDetector - Optional custom collision detector function
+   * @returns Array of detected collisions, sorted by priority
+   */
   public computeCollisions(
     entries?: Droppable[],
     collisionDetector?: CollisionDetector
@@ -125,6 +155,9 @@ export class CollisionObserver<
     return collisions;
   }
 
+  /**
+   * Gets the current collisions signal value.
+   */
   public get collisions() {
     return this.#collisions.value;
   }

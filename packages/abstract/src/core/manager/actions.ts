@@ -11,13 +11,30 @@ import type {DragDropManager} from './manager.ts';
 import {defaultPreventable} from './events.ts';
 import {StatusValue} from './status.ts';
 
+/**
+ * Provides actions for controlling drag and drop operations.
+ *
+ * @template T - The type of draggable entities
+ * @template U - The type of droppable entities
+ * @template V - The type of drag and drop manager
+ */
 export class DragActions<
   T extends Draggable,
   U extends Droppable,
   V extends DragDropManager<T, U>,
 > {
+  /**
+   * Creates a new instance of drag actions.
+   *
+   * @param manager - The drag and drop manager instance
+   */
   constructor(private readonly manager: V) {}
 
+  /**
+   * Sets the source of the drag operation.
+   *
+   * @param source - The draggable entity or its unique identifier
+   */
   setDragSource(source: T | UniqueIdentifier) {
     const {dragOperation} = this.manager;
     dragOperation.sourceIdentifier =
@@ -26,6 +43,12 @@ export class DragActions<
         : source.id;
   }
 
+  /**
+   * Sets the target of the drop operation.
+   *
+   * @param identifier - The unique identifier of the droppable entity or null/undefined
+   * @returns A promise that resolves to true if the drop was prevented
+   */
   setDropTarget(
     identifier: UniqueIdentifier | null | undefined
   ): Promise<boolean> {
@@ -51,9 +74,22 @@ export class DragActions<
     });
   }
 
+  /**
+   * Starts a new drag operation.
+   *
+   * @param args - Configuration for the drag operation
+   * @param args.event - The event that initiated the drag
+   * @param args.source - The source draggable entity or its identifier
+   * @param args.coordinates - The initial coordinates of the drag
+   * @returns true if the drag operation started successfully
+   * @throws {Error} If there is no drag source or another operation is active
+   */
   start(args: {
+    /** The event that initiated the drag. */
     event?: Event;
+    /** The source draggable entity or its identifier. */
     source?: T | UniqueIdentifier;
+    /** The initial coordinates of the drag. */
     coordinates: Coordinates;
   }): boolean {
     return untracked(() => {
@@ -114,11 +150,26 @@ export class DragActions<
     });
   }
 
+  /**
+   * Moves the dragged entity to a new position.
+   *
+   * @param args - Configuration for the move operation
+   * @param args.by - Relative coordinates to move by
+   * @param args.to - Absolute coordinates to move to
+   * @param args.event - The event that triggered the move
+   * @param args.cancelable - Whether the move can be canceled
+   * @param args.propagate - Whether to dispatch dragmove events
+   */
   move(args: {
+    /** The relative coordinates to move by. */
     by?: Coordinates;
+    /** The absolute coordinates to move to. */
     to?: Coordinates;
+    /** The event that triggered the move. */
     event?: Event;
+    /** Whether the move can be canceled. */
     cancelable?: boolean;
+    /** Whether to propagate the dragmove event to the manager. */
     propagate?: boolean;
   }): void {
     return untracked(() => {
@@ -156,7 +207,32 @@ export class DragActions<
     });
   }
 
-  stop(args: {event?: Event; canceled?: boolean} = {}): void {
+  /**
+   * Stops the current drag operation.
+   *
+   * @param args - Configuration for stopping the operation
+   * @param args.event - The event that triggered the stop
+   * @param args.canceled - Whether the operation was canceled
+   * @remarks
+   * This method:
+   * - Dispatches a dragend event
+   * - Allows suspension of the operation
+   * - Handles cleanup of the operation state
+   */
+  stop(
+    args: {
+      /**
+       * The event that triggered the stop.
+       */
+      event?: Event;
+      /**
+       * Whether the operation was canceled.
+       *
+       * @default false
+       */
+      canceled?: boolean;
+    } = {}
+  ): void {
     return untracked(() => {
       const {dragOperation} = this.manager;
       let promise: Promise<void> | undefined;

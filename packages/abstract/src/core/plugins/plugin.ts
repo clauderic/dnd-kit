@@ -10,13 +10,25 @@ import type {PluginOptions} from './types.ts';
 import {configure} from './utilities.ts';
 
 /**
- * An abstract plugin class that can be extended to implement custom
- * functionality that augments the `DragDropManager`'s core capabilities.
+ * Base class for plugins that extend drag and drop functionality.
+ *
+ * @template T - The type of drag and drop manager
+ * @template U - The type of plugin options
+ *
+ * @remarks
+ * Plugins can add new features and behaviors to the drag and drop system
+ * by extending this class and implementing custom functionality.
  */
 export abstract class Plugin<
   T extends DragDropManager<any, any> = DragDropManager<any, any>,
   U extends PluginOptions = PluginOptions,
 > {
+  /**
+   * Creates a new plugin instance.
+   *
+   * @param manager - The drag and drop manager that owns this plugin
+   * @param options - Optional configuration for the plugin
+   */
   constructor(
     public manager: T,
     public options?: U
@@ -24,30 +36,39 @@ export abstract class Plugin<
 
   /**
    * Whether the plugin instance is disabled.
-   * Triggers effects when accessed.
+   *
+   * @remarks
+   * This property is reactive and triggers effects when accessed.
    */
   @reactive
   public accessor disabled: boolean = false;
 
   /**
-   * Enable a disabled plugin instance.
-   * Triggers effects.
+   * Enables a disabled plugin instance.
+   *
+   * @remarks
+   * This method triggers effects when called.
    */
   public enable() {
     this.disabled = false;
   }
 
   /**
-   * Disable an enabled plugin instance.
-   * Triggers effects.
+   * Disables an enabled plugin instance.
+   *
+   * @remarks
+   * This method triggers effects when called.
    */
   public disable() {
     this.disabled = true;
   }
 
   /**
-   * Whether the plugin instance is disabled.
-   * Does not trigger effects when accessed.
+   * Checks if the plugin instance is disabled.
+   *
+   * @returns true if the plugin is disabled
+   * @remarks
+   * This method does not trigger effects when accessed.
    */
   public isDisabled() {
     return untracked(() => {
@@ -56,7 +77,9 @@ export abstract class Plugin<
   }
 
   /**
-   * Configure a plugin instance with new options.
+   * Configures a plugin instance with new options.
+   *
+   * @param options - The new options to apply
    */
   public configure(options?: U) {
     this.options = options;
@@ -65,8 +88,10 @@ export abstract class Plugin<
   #cleanupFunctions = new Set<CleanupFunction>();
 
   /**
-   * Register an effect that will be cleaned up when the plugin instance is destroyed.
-   * Returns a cleanup function that can be used to dispose of the effect.
+   * Registers an effect that will be cleaned up when the plugin is destroyed.
+   *
+   * @param callback - The effect callback to register
+   * @returns A function to dispose of the effect
    */
   protected registerEffect(callback: () => void) {
     const dispose = effect(callback.bind(this));
@@ -77,19 +102,24 @@ export abstract class Plugin<
   }
 
   /**
-   * Destroy a plugin instance.
+   * Destroys a plugin instance and cleans up its resources.
+   *
+   * @remarks
+   * This method:
+   * - Calls all registered cleanup functions
+   * - Should be overridden by subclasses to clean up additional resources
    */
   public destroy() {
-    /*
-     * Each plugin is responsible for implementing its own
-     * destroy method to clean up effects and listeners
-     */
-
     this.#cleanupFunctions.forEach((cleanup) => cleanup());
   }
 
   /**
-   * Configure a plugin constructor with options.
+   * Configures a plugin constructor with options.
+   *
+   * @param options - The options to configure the constructor with
+   * @returns The configured plugin constructor
+   *
+   * @remarks
    * This method is used to configure the options that the
    * plugin constructor will use to create plugin instances.
    */
@@ -98,6 +128,12 @@ export abstract class Plugin<
   }
 }
 
+/**
+ * Base class for core plugins that ship with the library.
+ *
+ * @template T - The type of drag and drop manager
+ * @template U - The type of plugin options
+ */
 export class CorePlugin<
   T extends DragDropManager<any, any> = DragDropManager<any, any>,
   U extends PluginOptions = PluginOptions,

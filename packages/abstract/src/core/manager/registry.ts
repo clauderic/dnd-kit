@@ -20,23 +20,53 @@ import {
 import {Modifier, type ModifierConstructor} from '../modifiers/index.ts';
 import type {DragDropManager} from './manager.ts';
 
+/**
+ * Manages the registration and lifecycle of draggable and droppable entities,
+ * as well as plugins, sensors, and modifiers.
+ *
+ * @template T - The type of draggable entities
+ * @template U - The type of droppable entities
+ * @template V - The type of drag and drop manager
+ */
 export class DragDropRegistry<
   T extends Draggable,
   U extends Droppable,
   V extends DragDropManager<T, U>,
 > {
+  /**
+   * Creates a new registry instance.
+   *
+   * @param manager - The drag and drop manager that owns this registry
+   */
   constructor(manager: V) {
     this.plugins = new PluginRegistry<V, PluginConstructor<V>>(manager);
     this.sensors = new PluginRegistry<V, SensorConstructor<V>>(manager);
     this.modifiers = new PluginRegistry<V, ModifierConstructor<V>>(manager);
   }
 
+  /** Registry for draggable entities */
   public draggables = new EntityRegistry<T>();
+
+  /** Registry for droppable entities */
   public droppables = new EntityRegistry<U>();
+
+  /** Registry for plugins */
   public plugins: PluginRegistry<V, PluginConstructor<V>>;
+
+  /** Registry for sensors */
   public sensors: PluginRegistry<V, SensorConstructor<V>>;
+
+  /** Registry for modifiers */
   public modifiers: PluginRegistry<V, ModifierConstructor<V>>;
 
+  /**
+   * Registers a new entity, plugin, sensor, or modifier.
+   *
+   * @param input - The entity, plugin constructor, sensor constructor, or modifier constructor to register
+   * @param options - Optional configuration for plugins and sensors
+   * @returns A cleanup function or the registered instance
+   * @throws {Error} If the input type is invalid
+   */
   public register(input: Entity): () => void;
   public register(input: Draggable): () => void;
   public register(input: Droppable): () => void;
@@ -67,6 +97,13 @@ export class DragDropRegistry<
     throw new Error('Invalid instance type');
   }
 
+  /**
+   * Unregisters an entity, plugin, sensor, or modifier.
+   *
+   * @param input - The entity, plugin constructor, sensor constructor, or modifier constructor to unregister
+   * @returns A cleanup function
+   * @throws {Error} If the input type is invalid
+   */
   public unregister(input: Entity): CleanupFunction;
   public unregister(input: Draggable): CleanupFunction;
   public unregister(input: Droppable): CleanupFunction;
@@ -102,6 +139,15 @@ export class DragDropRegistry<
     throw new Error('Invalid instance type');
   }
 
+  /**
+   * Destroys all registered entities and cleans up resources.
+   *
+   * @remarks
+   * This method:
+   * - Destroys all draggable and droppable entities
+   * - Destroys all plugins, sensors, and modifiers
+   * - Cleans up any associated resources
+   */
   destroy() {
     this.draggables.destroy();
     this.droppables.destroy();

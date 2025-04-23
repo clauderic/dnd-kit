@@ -7,6 +7,18 @@ import type {Modifiers} from '../../modifiers/index.ts';
 import type {DragDropManager} from '../../manager/index.ts';
 import type {Sensors} from '../../sensors/sensor.ts';
 
+/**
+ * Input configuration for creating a draggable entity.
+ *
+ * @template T - The type of data associated with the draggable
+ *
+ * @remarks
+ * Extends the base entity input with draggable-specific configuration:
+ * - Type for categorization
+ * - Sensors for handling drag interactions
+ * - Modifiers for transforming drag behavior
+ * - Alignment for positioning
+ */
 export interface Input<T extends Data = Data> extends EntityInput<T> {
   type?: Type;
   sensors?: Sensors;
@@ -14,8 +26,29 @@ export interface Input<T extends Data = Data> extends EntityInput<T> {
   alignment?: Alignment;
 }
 
+/**
+ * Possible status values for a draggable entity.
+ *
+ * @remarks
+ * - idle: Not being dragged
+ * - dragging: Currently being dragged
+ * - dropping: Currently being dropped
+ */
 export type DraggableStatus = 'idle' | 'dragging' | 'dropping';
 
+/**
+ * Represents an entity that can be dragged in a drag and drop operation.
+ *
+ * @template T - The type of data associated with the draggable
+ * @template U - The type of drag and drop manager
+ *
+ * @remarks
+ * This class extends the base Entity class with draggable-specific functionality:
+ * - Type-based categorization
+ * - Sensor-based interaction handling
+ * - Modifier-based behavior transformation
+ * - Status tracking during drag operations
+ */
 export class Draggable<
   T extends Data = Data,
   U extends DragDropManager<any, any> = DragDropManager<any, any>,
@@ -32,23 +65,30 @@ export class Draggable<
     this.alignment = input.alignment;
   }
 
+  /** The type of the draggable entity */
   @reactive
   public accessor type: Type | undefined;
 
+  /** The sensors associated with the draggable entity */
   public sensors: Sensors | undefined;
 
+  /** The modifiers associated with the draggable entity */
   @reactive
   public accessor modifiers: Modifiers | undefined;
 
+  /** The alignment of the draggable entity */
   public alignment: Alignment | undefined;
 
+  /** The current status of the draggable entity */
   @reactive
   public accessor status: DraggableStatus = this.isDragSource
     ? 'dragging'
     : 'idle';
 
   /**
-   * A boolean indicating whether the draggable item is being dropped.
+   * Checks if the draggable entity is currently being dropped.
+   *
+   * @returns true if the entity is being dropped and is the drag source
    */
   @derived
   public get isDropping() {
@@ -56,7 +96,9 @@ export class Draggable<
   }
 
   /**
-   * A boolean indicating whether the draggable item is being dropped.
+   * Checks if the draggable entity is currently being dragged.
+   *
+   * @returns true if the entity is being dragged and is the drag source
    */
   @derived
   public get isDragging() {
@@ -64,7 +106,9 @@ export class Draggable<
   }
 
   /**
-   * A boolean indicating whether the draggable item is the source of a drag operation.
+   * Checks if the draggable entity is the source of the current drag operation.
+   *
+   * @returns true if the entity's ID matches the current drag operation's source ID
    */
   @derived
   public get isDragSource() {
