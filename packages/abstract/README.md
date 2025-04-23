@@ -6,9 +6,10 @@ Abstract implementation of @dnd-kit, which can be extended by concrete implement
 
 ## Overview
 
-This package provides the core abstractions and utilities for implementing drag and drop functionality. It serves as the foundation for building concrete implementation layers on top of @dnd-kit.
+This package provides the core abstractions and utilities for implementing drag and drop functionality. It serves as the foundation for building concrete implementation layers on top of @dnd-kit, such as the [DOM implementation layer](../dom).
 
-> **Note**: This package is not meant to be used by most consumers, unless you are planning on building a concrete implementation layer on top of @dnd-kit.
+> [!NOTE]
+> This package is not meant to be used by most consumers, unless you are planning on building a concrete implementation layer on top of @dnd-kit.
 
 ## Core Concepts
 
