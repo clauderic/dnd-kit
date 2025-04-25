@@ -30,6 +30,8 @@ export class DragActions<
    */
   constructor(private readonly manager: V) {}
 
+  #animationFrame: number | undefined;
+
   /**
    * Sets the source of the drag operation.
    *
@@ -133,9 +135,14 @@ export class DragActions<
       }
 
       this.manager.renderer.rendering.then(() => {
-        dragOperation.status.set(StatusValue.Initializing);
+        const {status} = dragOperation;
+        if (status.current !== StatusValue.InitializationPending) return;
 
-        requestAnimationFrame(() => {
+        status.set(StatusValue.Initializing);
+
+        this.#animationFrame = requestAnimationFrame(() => {
+          if (status.current !== StatusValue.Initializing) return;
+
           dragOperation.status.set(StatusValue.Dragging);
 
           this.manager.monitor.dispatch('dragstart', {
@@ -249,6 +256,8 @@ export class DragActions<
 
         return output;
       };
+
+      if (this.#animationFrame) cancelAnimationFrame(this.#animationFrame);
 
       const end = () => {
         this.manager.renderer.rendering.then(() => {
