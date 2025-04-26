@@ -14,7 +14,7 @@ export class ValueHistory<T> implements WithHistory<T> {
     protected readonly equals: (a: T, b: T) => boolean = Object.is
   ) {
     this.reset = this.reset.bind(this);
-    queueMicrotask(this.reset);
+    this.reset();
   }
 
   @reactive
