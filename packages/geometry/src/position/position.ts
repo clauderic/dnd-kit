@@ -1,4 +1,4 @@
-import {batch, derived, reactive, ValueHistory} from '@dnd-kit/state';
+import {batch, derived, ValueHistory} from '@dnd-kit/state';
 
 import {Point} from '../point';
 import type {Coordinates} from '../types';
@@ -12,9 +12,7 @@ export class Position extends ValueHistory<Point> {
 
   #timestamp = 0;
 
-  @reactive
-  // @ts-ignore
-  public accessor velocity: Point;
+  public velocity: Point = {x: 0, y: 0};
 
   @derived
   public get delta() {
@@ -70,9 +68,7 @@ export class Position extends ValueHistory<Point> {
   }
 
   public reset(coordinates = this.defaultValue) {
-    batch(() => {
-      super.reset(Point.from(coordinates));
-      this.velocity = {x: 0, y: 0};
-    });
+    super.reset(Point.from(coordinates));
+    this.velocity = {x: 0, y: 0};
   }
 }
