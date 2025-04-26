@@ -88,7 +88,12 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
     const {element, feedback} = source;
 
-    if (!element || feedback === 'none' || status.initializing) {
+    if (
+      !element ||
+      feedback === 'none' ||
+      !status.initialized ||
+      status.initializing
+    ) {
       return;
     }
 

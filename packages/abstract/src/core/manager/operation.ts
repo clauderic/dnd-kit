@@ -64,6 +64,9 @@ export class DragOperation<T extends Draggable, U extends Droppable>
   /** Current status of the drag operation */
   public readonly status = new Status();
 
+  /** The controller for the currentdrag operation */
+  public controller: AbortController | undefined;
+
   /**
    * Gets the current shape of the dragged entity with history.
    *

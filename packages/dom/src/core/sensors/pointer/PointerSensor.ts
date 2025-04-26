@@ -275,14 +275,13 @@ export class PointerSensor extends Sensor<
       return;
     }
 
-    const result = manager.actions.start({
+    const controller = manager.actions.start({
       coordinates: initialCoordinates,
       event,
       source,
     });
-    const aborted = result === false;
 
-    if (aborted) return this.cleanup();
+    if (controller.signal.aborted) return this.cleanup();
 
     event.preventDefault();
 

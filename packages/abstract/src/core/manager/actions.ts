@@ -30,8 +30,6 @@ export class DragActions<
    */
   constructor(private readonly manager: V) {}
 
-  #animationFrame: number | undefined;
-
   /**
    * Sets the source of the drag operation.
    *
@@ -93,7 +91,7 @@ export class DragActions<
     source?: T | UniqueIdentifier;
     /** The initial coordinates of the drag. */
     coordinates: Coordinates;
-  }): boolean {
+  }): AbortController {
     return untracked(() => {
       const {dragOperation} = this.manager;
 
@@ -113,6 +111,8 @@ export class DragActions<
         );
       }
 
+      const controller = new AbortController();
+
       const {event: nativeEvent, coordinates} = args;
 
       batch(() => {
@@ -131,29 +131,29 @@ export class DragActions<
 
       if (beforeStartEvent.defaultPrevented) {
         dragOperation.reset();
-        return false;
+        controller.abort();
+        return controller;
       }
 
+      dragOperation.status.set(StatusValue.Initializing);
+      dragOperation.controller = controller;
+
       this.manager.renderer.rendering.then(() => {
+        if (controller.signal.aborted) return;
+
         const {status} = dragOperation;
-        if (status.current !== StatusValue.InitializationPending) return;
+        if (status.current !== StatusValue.Initializing) return;
 
-        status.set(StatusValue.Initializing);
+        dragOperation.status.set(StatusValue.Dragging);
 
-        this.#animationFrame = requestAnimationFrame(() => {
-          if (status.current !== StatusValue.Initializing) return;
-
-          dragOperation.status.set(StatusValue.Dragging);
-
-          this.manager.monitor.dispatch('dragstart', {
-            nativeEvent,
-            operation: dragOperation.snapshot(),
-            cancelable: false,
-          });
+        this.manager.monitor.dispatch('dragstart', {
+          nativeEvent,
+          operation: dragOperation.snapshot(),
+          cancelable: false,
         });
       });
 
-      return true;
+      return controller;
     });
   }
 
@@ -181,7 +181,9 @@ export class DragActions<
   }): void {
     return untracked(() => {
       const {dragOperation} = this.manager;
-      if (!dragOperation.status.dragging) {
+      const {status, controller} = dragOperation;
+
+      if (!status.dragging || !controller || controller.signal.aborted) {
         return;
       }
 
@@ -242,6 +244,10 @@ export class DragActions<
   ): void {
     return untracked(() => {
       const {dragOperation} = this.manager;
+      const {controller} = dragOperation;
+
+      if (!controller || controller.signal.aborted) return;
+
       let promise: Promise<void> | undefined;
       const suspend = () => {
         const output = {
@@ -257,7 +263,7 @@ export class DragActions<
         return output;
       };
 
-      if (this.#animationFrame) cancelAnimationFrame(this.#animationFrame);
+      controller.abort();
 
       const end = () => {
         this.manager.renderer.rendering.then(() => {
@@ -267,32 +273,34 @@ export class DragActions<
             () => dragOperation.source?.status === 'dropping'
           );
 
+          const cleanup = () => {
+            if (dragOperation.controller === controller) {
+              dragOperation.controller = undefined;
+            }
+            dragOperation.reset();
+          };
+
           if (dropping) {
-            const currentSource = dragOperation.source;
+            const {source} = dragOperation;
 
             // Wait until the source has finished dropping before resetting the operation
             const dispose = effect(() => {
-              if (currentSource?.status === 'idle') {
+              if (source?.status === 'idle') {
                 dispose();
-
-                if (dragOperation.source !== currentSource) return;
-
-                dragOperation.reset();
+                cleanup();
               }
             });
           } else {
-            this.manager.renderer.rendering.then(() => dragOperation.reset());
+            this.manager.renderer.rendering.then(cleanup);
           }
         });
       };
 
-      batch(() => {
-        dragOperation.canceled = args.canceled ?? false;
-      });
+      dragOperation.canceled = args.canceled ?? false;
 
       this.manager.monitor.dispatch('dragend', {
         nativeEvent: args.event,
-        operation: dragOperation,
+        operation: dragOperation.snapshot(),
         canceled: args.canceled ?? false,
         suspend,
       });

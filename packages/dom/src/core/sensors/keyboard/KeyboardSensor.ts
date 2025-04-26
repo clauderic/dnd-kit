@@ -149,7 +149,7 @@ export class KeyboardSensor extends Sensor<
     scrollIntoViewIfNeeded(element);
 
     const {center} = new DOMRectangle(element);
-    const result = this.manager.actions.start({
+    const controller = this.manager.actions.start({
       event,
       coordinates: {
         x: center.x,
@@ -157,9 +157,8 @@ export class KeyboardSensor extends Sensor<
       },
       source,
     });
-    const aborted = result === false;
 
-    if (aborted) return this.cleanup();
+    if (controller.signal.aborted) return this.cleanup();
 
     this.sideEffects();
 

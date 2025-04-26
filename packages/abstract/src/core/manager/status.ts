@@ -65,7 +65,11 @@ export class Status {
    */
   @derived
   public get initialized(): boolean {
-    return this.value !== StatusValue.Idle;
+    const {value} = this;
+
+    return (
+      value !== StatusValue.Idle && value !== StatusValue.InitializationPending
+    );
   }
 
   /**
