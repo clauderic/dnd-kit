@@ -53,7 +53,6 @@
 
 .Item:not(.Item:has(button)) {
   cursor: grab;
-  touch-action: none;
 }
 
 .Item[data-accent-color] {

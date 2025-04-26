@@ -21,7 +21,6 @@
   transform-origin: 50% 50%;
   min-height: 62px;
   box-shadow: var(--box-shadow);
-  touch-action: none;
   user-select: none;
   -webkit-user-select: none;
 }
@@ -45,7 +44,6 @@
 
 .Button:has(> button) {
   padding-right: 10px;
-  touch-action: auto;
 }
 
 :global(.dark) .Button {
