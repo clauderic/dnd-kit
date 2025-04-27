@@ -70,7 +70,7 @@ export function MultipleLists({
       plugins={debug ? [...defaultPreset.plugins, Debug] : undefined}
       onDragStart={useCallback<DragDropEventHandlers['onDragStart']>(() => {
         snapshot.current = cloneDeep(items);
-      }, [])}
+      }, [items])}
       onDragOver={useCallback<DragDropEventHandlers['onDragOver']>((event) => {
         const {source} = event.operation;
 
@@ -85,12 +85,6 @@ export function MultipleLists({
         if (event.canceled) {
           setItems(snapshot.current);
           return;
-        }
-
-        const {source} = event.operation;
-
-        if (source?.type === 'column') {
-          setColumns((columns) => move(columns, event));
         }
       }, [])}
     >
