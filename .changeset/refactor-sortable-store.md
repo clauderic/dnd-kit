@@ -3,8 +3,7 @@
 '@dnd-kit/state': patch
 ---
 
-Refactor Sortable store implementation to use a new `createStore` utility
+Refactor Sortable store implementation to use a new `WeakStore` class
 
-- Add new `createStore` utility function in `@dnd-kit/state` package
-- Replace Map-based store implementation in Sortable with new store utility
-- Export `createStore` from `@dnd-kit/state` package
+- Add new `WeakStore` constructor in `@dnd-kit/state` package
+- Replace Map-based store implementation in Sortable with new WeakStore utility

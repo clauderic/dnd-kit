@@ -21,4 +21,4 @@ export {snapshot} from './snapshot';
 
 export type {CleanupFunction, Effect} from './types';
 
-export {createStore} from './store';
+export {WeakStore} from './store';
