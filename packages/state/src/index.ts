@@ -20,3 +20,5 @@ export {ValueHistory, type WithHistory} from './history';
 export {snapshot} from './snapshot';
 
 export type {CleanupFunction, Effect} from './types';
+
+export {createStore} from './store';

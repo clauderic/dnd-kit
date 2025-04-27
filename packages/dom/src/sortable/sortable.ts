@@ -1,4 +1,4 @@
-import {batch, reactive, untracked} from '@dnd-kit/state';
+import {batch, reactive, untracked, createStore} from '@dnd-kit/state';
 import type {CollisionPriority, Modifiers} from '@dnd-kit/abstract';
 import type {
   Data,
@@ -87,10 +87,12 @@ export const defaultSortableTransition: SortableTransition = {
   idle: false,
 };
 
-const state = new Map<
-  UniqueIdentifier,
-  {initialIndex: number; initialGroup: UniqueIdentifier | undefined}
->();
+interface TemporaryState {
+  initialIndex: number;
+  initialGroup: UniqueIdentifier | undefined;
+}
+
+const store = createStore<DragDropManager, UniqueIdentifier, TemporaryState>();
 
 export class Sortable<T extends Data = Data> {
   public draggable: Draggable<T>;
@@ -104,11 +106,11 @@ export class Sortable<T extends Data = Data> {
   #previousIndex: number;
 
   get initialIndex() {
-    return state.get(this.id)?.initialIndex ?? this.index;
+    return store.get(this.manager, this.id)?.initialIndex ?? this.index;
   }
 
   get initialGroup() {
-    return state.get(this.id)?.initialGroup ?? this.group;
+    return store.get(this.manager, this.id)?.initialGroup ?? this.group;
   }
 
   @reactive
@@ -141,11 +143,11 @@ export class Sortable<T extends Data = Data> {
               status?.initializing &&
               this.id === this.manager?.dragOperation.source?.id
             ) {
-              state.clear();
+              store.clear(this.manager);
             }
 
             if (status?.initialized) {
-              state.set(this.id, {
+              store.set(this.manager, this.id, {
                 initialIndex: this.index,
                 initialGroup: this.group,
               });
