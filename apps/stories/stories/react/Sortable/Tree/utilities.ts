@@ -94,3 +94,18 @@ function getMaxDepth(
 function getMinDepth(nextItem: FlattenedItem) {
   return nextItem ? nextItem.depth : 0;
 }
+
+export function getDescendants(
+  items: FlattenedItem[],
+  parentId: UniqueIdentifier
+): Set<UniqueIdentifier> {
+  const directChildren = items.filter((item) => item.parentId === parentId);
+
+  return directChildren.reduce((descendants, child) => {
+    return new Set([
+      ...descendants,
+      child.id,
+      ...getDescendants(items, child.id),
+    ]);
+  }, new Set<UniqueIdentifier>());
+}

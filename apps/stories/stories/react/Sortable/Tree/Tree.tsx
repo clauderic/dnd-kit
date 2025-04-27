@@ -9,6 +9,7 @@ import {
   buildTree,
   getProjection,
   getDragDepth,
+  getDescendants,
 } from './utilities.js';
 import {TreeItem} from './TreeItem.js';
 import {TreeItemOverlay} from './TreeItemOverlay.js';
@@ -36,11 +37,17 @@ export function Tree({items, indentation = 50, onChange}: Props) {
 
         const {depth} = flattenedItems.find(({id}) => id === source.id)!;
 
+        // Store the source item's initial depth for later use
+        initialDepth.current = depth;
+
         setFlattenedItems((flattenedItems) => {
           sourceChildren.current = [];
 
+          // Get all descendants of the source item
+          const descendants = getDescendants(flattenedItems, source.id);
+
           return flattenedItems.filter((item) => {
-            if (item.parentId === source.id) {
+            if (descendants.has(item.id)) {
               sourceChildren.current = [...sourceChildren.current, item];
               return false;
             }
