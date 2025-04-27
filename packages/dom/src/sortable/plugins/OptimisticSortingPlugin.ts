@@ -115,9 +115,11 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
             const sourceIndex = newState[targetGroup].indexOf(source.sortable);
             const targetIndex = newState[targetGroup].indexOf(target.sortable);
 
-            reorder(sourceElement, sourceIndex, targetElement, targetIndex);
-
             manager.collisionObserver.disable();
+
+            manager.renderer.rendering.then(() =>
+              reorder(sourceElement, sourceIndex, targetElement, targetIndex)
+            );
 
             batch(() => {
               for (const [index, sortable] of newState[sourceGroup].entries()) {
