@@ -1,25 +1,18 @@
 import type {Meta, StoryObj} from '@storybook/react';
 
-import docs from './docs/DragHandles.mdx';
 import {DraggableExample} from '../DraggableExample.tsx';
 
 const meta: Meta<typeof DraggableExample> = {
-  title: 'React/Draggable/Drag handles',
+  title: 'React/Draggable/Drag overlay',
   component: DraggableExample,
-  tags: ['autodocs'],
-  parameters: {
-    docs: {
-      page: docs,
-    },
-  },
 };
 
 export default meta;
 type Story = StoryObj<typeof DraggableExample>;
 
-export const DragHandle: Story = {
+export const DragOverlay: Story = {
   name: 'Example',
   args: {
-    handle: true,
+    overlay: true,
   },
 };

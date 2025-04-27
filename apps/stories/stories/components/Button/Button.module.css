@@ -1,6 +1,5 @@
 .Button {
   --background: #181a22;
-  --box-shadow: 0 1px 3px 0 rgba(34, 33, 81, 0.15);
 
   display: inline-flex;
   align-items: center;
@@ -16,13 +15,15 @@
   color: #f6f8ff;
   cursor: grab;
   outline: none;
-  transform: scale(1);
-  transition: background 0.3s ease, box-shadow 0.25s ease, transform 0.2s ease-in;
+  transition: background 0.3s ease, box-shadow 0.25s ease, transform 0.2s ease-in, opacity 0.2s ease;
   transform-origin: 50% 50%;
   min-height: 62px;
   box-shadow: var(--box-shadow);
   user-select: none;
   -webkit-user-select: none;
+
+  transform: scale(1);
+  box-shadow: 0 1px 3px 0 rgba(34, 33, 81, 0.15);
 }
 
 .Button:hover, .Button:focus {
@@ -33,12 +34,22 @@
   outline: 3px solid #4c9ffe;
 }
 
+.Button[disabled] {
+  opacity: 0.5;
+}
+
 .Button[data-shadow="true"]:not([aria-hidden="true"]) {
   transform: scale(1.03);
-  --box-shadow: -1px 0 15px 0 rgba(34, 33, 81, 0.01), 0px 15px 15px 0 rgba(34, 33, 81, 0.25);
+  box-shadow: -1px 0 15px 0 rgba(34, 33, 81, 0.01), 0px 15px 15px 0 rgba(34, 33, 81, 0.25);
 
   @media (prefers-color-scheme: dark) {
-    --box-shadow: -1px 0 15px 0 rgba(0, 0, 0, 0.01), 0px 15px 15px 0 rgba(0, 0, 0, 0.15);
+    box-shadow: -1px 0 15px 0 rgba(0, 0, 0, 0.01), 0px 15px 15px 0 rgba(0, 0, 0, 0.15);
+  }
+
+  @starting-style {
+    opacity: 0;
+    transform: scale(1);
+    box-shadow: 0 1px 3px 0 rgba(34, 33, 81, 0.15);
   }
 }
 
