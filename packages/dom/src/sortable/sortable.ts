@@ -234,36 +234,32 @@ export class Sortable<T extends Data = Data> {
           return;
         }
 
-        Promise.resolve().then(() => {
-          const delta = {
-            x:
-              shape.boundingRectangle.left -
-              updatedShape.boundingRectangle.left,
-            y: shape.boundingRectangle.top - updatedShape.boundingRectangle.top,
-          };
+        const delta = {
+          x: shape.boundingRectangle.left - updatedShape.boundingRectangle.left,
+          y: shape.boundingRectangle.top - updatedShape.boundingRectangle.top,
+        };
 
-          const {translate} = getComputedStyles(element);
-          const currentTranslate = computeTranslate(element, translate, false);
-          const finalTranslate = computeTranslate(element, translate);
+        const {translate} = getComputedStyles(element);
+        const currentTranslate = computeTranslate(element, translate, false);
+        const finalTranslate = computeTranslate(element, translate);
 
-          if (delta.x || delta.y) {
-            animateTransform({
-              element,
-              keyframes: {
-                translate: [
-                  `${currentTranslate.x + delta.x}px ${currentTranslate.y + delta.y}px ${currentTranslate.z}`,
-                  `${finalTranslate.x}px ${finalTranslate.y}px ${finalTranslate.z}`,
-                ],
-              },
-              options: transition,
-              onFinish: () => {
-                if (!manager.dragOperation.status.dragging) {
-                  this.droppable.shape = undefined;
-                }
-              },
-            });
-          }
-        });
+        if (delta.x || delta.y) {
+          animateTransform({
+            element,
+            keyframes: {
+              translate: [
+                `${currentTranslate.x + delta.x}px ${currentTranslate.y + delta.y}px ${currentTranslate.z}`,
+                `${finalTranslate.x}px ${finalTranslate.y}px ${finalTranslate.z}`,
+              ],
+            },
+            options: transition,
+            onFinish: () => {
+              if (!manager.dragOperation.status.dragging) {
+                this.droppable.shape = undefined;
+              }
+            },
+          });
+        }
       });
     });
   }
