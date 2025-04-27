@@ -87,6 +87,11 @@ export const defaultSortableTransition: SortableTransition = {
   idle: false,
 };
 
+const state = new Map<
+  UniqueIdentifier,
+  {initialIndex: number; initialGroup: UniqueIdentifier | undefined}
+>();
+
 export class Sortable<T extends Data = Data> {
   public draggable: Draggable<T>;
   public droppable: Droppable<T>;
@@ -94,9 +99,17 @@ export class Sortable<T extends Data = Data> {
   @reactive
   public accessor index: number;
 
-  previousIndex: number;
-  initialIndex: number;
-  initialGroup: UniqueIdentifier | undefined;
+  #previousGroup: UniqueIdentifier | undefined;
+
+  #previousIndex: number;
+
+  get initialIndex() {
+    return state.get(this.id)?.initialIndex ?? this.index;
+  }
+
+  get initialGroup() {
+    return state.get(this.id)?.initialGroup ?? this.group;
+  }
 
   @reactive
   public accessor group: UniqueIdentifier | undefined;
@@ -116,26 +129,37 @@ export class Sortable<T extends Data = Data> {
     }: SortableInput<T>,
     manager: DragDropManager<any, any> | undefined
   ) {
-    let previousGroup = group;
-
     this.droppable = new SortableDroppable<T>(input, manager, this);
     this.draggable = new SortableDraggable<T>(
       {
         ...input,
         effects: () => [
-          () =>
-            this.manager?.monitor.addEventListener('dragstart', () => {
-              this.initialIndex = this.index;
-              this.initialGroup = this.group;
-              this.previousIndex = this.index;
-            }),
           () => {
-            const {index, group, previousIndex, manager: _} = this;
+            const status = this.manager?.dragOperation.status;
+
+            if (
+              status?.initializing &&
+              this.id === this.manager?.dragOperation.source?.id
+            ) {
+              state.clear();
+            }
+
+            if (status?.initialized) {
+              state.set(this.id, {
+                initialIndex: this.index,
+                initialGroup: this.group,
+              });
+            }
+          },
+          () => {
+            const {index, group, manager: _} = this;
+            const previousIndex = this.#previousIndex;
+            const previousGroup = this.#previousGroup;
 
             // Re-run this effect whenever the index changes
             if (index !== previousIndex || group !== previousGroup) {
-              this.previousIndex = index;
-              previousGroup = group;
+              this.#previousIndex = index;
+              this.#previousGroup = group;
 
               this.animate();
             }
@@ -167,9 +191,9 @@ export class Sortable<T extends Data = Data> {
     this.#element = input.element;
     this.manager = manager;
     this.index = index;
-    this.previousIndex = index;
-    this.initialIndex = index;
+    this.#previousIndex = index;
     this.group = group;
+    this.#previousGroup = group;
     this.type = type;
     this.transition = transition;
   }
@@ -200,7 +224,7 @@ export class Sortable<T extends Data = Data> {
           return;
         }
 
-        queueMicrotask(() => {
+        Promise.resolve().then(() => {
           const delta = {
             x:
               shape.boundingRectangle.left -
