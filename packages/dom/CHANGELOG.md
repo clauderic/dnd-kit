@@ -1,5 +1,17 @@
 # @dnd-kit/dom
 
+## 0.1.4
+
+### Patch Changes
+
+- [`b1d798d`](https://github.com/clauderic/dnd-kit/commit/b1d798d9454bf1d4c47c4e13d11bfd092bdc668b) Thanks [@clauderic](https://github.com/clauderic)! - Fixed regressions with keyboard sorting.
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.1.4
+  - @dnd-kit/collision@0.1.4
+  - @dnd-kit/geometry@0.1.4
+  - @dnd-kit/state@0.1.4
+
 ## 0.1.3
 
 ### Patch Changes
