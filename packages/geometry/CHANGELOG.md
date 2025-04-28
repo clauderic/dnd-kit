@@ -1,5 +1,14 @@
 # @dnd-kit/geometry
 
+## 0.1.3
+
+### Patch Changes
+
+- [#1663](https://github.com/clauderic/dnd-kit/pull/1663) [`2522836`](https://github.com/clauderic/dnd-kit/commit/2522836fdb80520913ea35d94c6558bf7784afc9) Thanks [@github-actions](https://github.com/apps/github-actions)! - **Position**: Changed `velocity` to no longer be reactive as it is derived.
+
+- Updated dependencies [[`8f91d91`](https://github.com/clauderic/dnd-kit/commit/8f91d9112608d2077c3b6c8fc939aa052606148c), [`9a0edf6`](https://github.com/clauderic/dnd-kit/commit/9a0edf64cbde1bd761f3650e043b6612e61a5fab), [`a9db4c7`](https://github.com/clauderic/dnd-kit/commit/a9db4c73467d9eda9f95fe5b582948c9fc735f57)]:
+  - @dnd-kit/state@0.1.3
+
 ## 0.1.2
 
 ### Patch Changes

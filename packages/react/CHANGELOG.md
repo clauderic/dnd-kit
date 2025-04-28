@@ -1,5 +1,14 @@
 # @dnd-kit/react
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [[`6c9a9ea`](https://github.com/clauderic/dnd-kit/commit/6c9a9ea060095884c90c72cd5d6b73820467ec29), [`8f91d91`](https://github.com/clauderic/dnd-kit/commit/8f91d9112608d2077c3b6c8fc939aa052606148c), [`79c6519`](https://github.com/clauderic/dnd-kit/commit/79c65195483bee3909177c1b46d1c1073dd2c765), [`52c1ba3`](https://github.com/clauderic/dnd-kit/commit/52c1ba3924be32a9c856d74a3e5221fd05fd91c1), [`6c9a9ea`](https://github.com/clauderic/dnd-kit/commit/6c9a9ea060095884c90c72cd5d6b73820467ec29), [`1bef872`](https://github.com/clauderic/dnd-kit/commit/1bef8722d515079f998dc0608084e1d853e74d3a), [`9a0edf6`](https://github.com/clauderic/dnd-kit/commit/9a0edf64cbde1bd761f3650e043b6612e61a5fab), [`18a7998`](https://github.com/clauderic/dnd-kit/commit/18a7998858e6504f0e3c6f613bd174eb9f68e553), [`a9db4c7`](https://github.com/clauderic/dnd-kit/commit/a9db4c73467d9eda9f95fe5b582948c9fc735f57)]:
+  - @dnd-kit/dom@0.1.3
+  - @dnd-kit/state@0.1.3
+  - @dnd-kit/abstract@0.1.3
+
 ## 0.1.2
 
 ### Patch Changes
