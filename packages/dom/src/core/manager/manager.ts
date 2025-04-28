@@ -20,17 +20,13 @@ import {
 } from '../plugins/index.ts';
 import {KeyboardSensor, PointerSensor} from '../sensors/index.ts';
 
-import {renderer} from './renderer.ts';
-
 export interface Input extends DragDropManagerInput<DragDropManager> {}
 
 export const defaultPreset: {
   modifiers: Modifiers<DragDropManager>;
   plugins: Plugins<DragDropManager>;
-  renderer: Renderer;
   sensors: Sensors<DragDropManager>;
 } = {
-  renderer,
   modifiers: [],
   plugins: [Accessibility, AutoScroller, Cursor, Feedback, PreventSelection],
   sensors: [
@@ -70,7 +66,6 @@ export class DragDropManager<
       plugins = defaultPreset.plugins,
       sensors = defaultPreset.sensors,
       modifiers = [],
-      renderer = defaultPreset.renderer,
     } = input;
 
     super({
@@ -78,7 +73,6 @@ export class DragDropManager<
       plugins: [ScrollListener, Scroller, ...plugins],
       sensors,
       modifiers,
-      renderer,
     });
   }
 }

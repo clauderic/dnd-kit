@@ -143,6 +143,7 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
               target: targetElement,
             } = source.sortable;
             const updated = index !== newIndex || group !== newGroup;
+
             const element = updated ? targetElement : target?.element;
 
             if (!element) return;
