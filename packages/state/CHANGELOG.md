@@ -1,5 +1,18 @@
 # @dnd-kit/state
 
+## 0.1.3
+
+### Patch Changes
+
+- [#1663](https://github.com/clauderic/dnd-kit/pull/1663) [`8f91d91`](https://github.com/clauderic/dnd-kit/commit/8f91d9112608d2077c3b6c8fc939aa052606148c) Thanks [@github-actions](https://github.com/apps/github-actions)! - Remove `queueMicrotask` from constructor of `ValueHistory`.
+
+- [#1663](https://github.com/clauderic/dnd-kit/pull/1663) [`9a0edf6`](https://github.com/clauderic/dnd-kit/commit/9a0edf64cbde1bd761f3650e043b6612e61a5fab) Thanks [@github-actions](https://github.com/apps/github-actions)! - Refactor Sortable store implementation to use a new `WeakStore` class
+
+  - Add new `WeakStore` constructor in `@dnd-kit/state` package
+  - Replace Map-based store implementation in Sortable with new WeakStore utility
+
+- [#1663](https://github.com/clauderic/dnd-kit/pull/1663) [`a9db4c7`](https://github.com/clauderic/dnd-kit/commit/a9db4c73467d9eda9f95fe5b582948c9fc735f57) Thanks [@github-actions](https://github.com/apps/github-actions)! - Update `@preact/signals-core` from v1.6.0 to v1.8.0
+
 ## 0.1.2
 
 ### Patch Changes

@@ -1,5 +1,24 @@
 # @dnd-kit/abstract
 
+## 0.1.3
+
+### Patch Changes
+
+- [#1663](https://github.com/clauderic/dnd-kit/pull/1663) [`6c9a9ea`](https://github.com/clauderic/dnd-kit/commit/6c9a9ea060095884c90c72cd5d6b73820467ec29) Thanks [@github-actions](https://github.com/apps/github-actions)! - Prevent race conditions in `dragOperation` when `actions.stop()` is invoked before `actions.start()` has completed.
+
+- [#1663](https://github.com/clauderic/dnd-kit/pull/1663) [`1bef872`](https://github.com/clauderic/dnd-kit/commit/1bef8722d515079f998dc0608084e1d853e74d3a) Thanks [@github-actions](https://github.com/apps/github-actions)! - Improve drag operation control by:
+
+  - Introducing `AbortController` for better operation lifecycle management
+  - Remove `requestAnimationFram()` from `start()` action
+  - Replacing boolean returns with proper abort control
+  - Ensure proper cleanup of drag operations
+  - Improving status handling and initialization checks
+  - Making feedback plugin respect operation initialization state
+
+- Updated dependencies [[`8f91d91`](https://github.com/clauderic/dnd-kit/commit/8f91d9112608d2077c3b6c8fc939aa052606148c), [`2522836`](https://github.com/clauderic/dnd-kit/commit/2522836fdb80520913ea35d94c6558bf7784afc9), [`9a0edf6`](https://github.com/clauderic/dnd-kit/commit/9a0edf64cbde1bd761f3650e043b6612e61a5fab), [`a9db4c7`](https://github.com/clauderic/dnd-kit/commit/a9db4c73467d9eda9f95fe5b582948c9fc735f57)]:
+  - @dnd-kit/state@0.1.3
+  - @dnd-kit/geometry@0.1.3
+
 ## 0.1.2
 
 ### Patch Changes
