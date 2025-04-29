@@ -33,6 +33,8 @@ export interface ActivationConstraints {
   delay?: DelayConstraint;
 }
 
+type Maybe<T> = T | undefined;
+
 export interface PointerSensorOptions {
   activationConstraints?:
     | ActivationConstraints
@@ -40,6 +42,10 @@ export interface PointerSensorOptions {
         event: PointerEvent,
         source: Draggable
       ) => ActivationConstraints | undefined);
+  activatorElements?:
+    | Maybe<Element>[]
+    | ((source: Draggable) => Maybe<Element>[]);
+}
 
 const defaults = Object.freeze<PointerSensorOptions>({
   activationConstraints(event, source) {
@@ -94,22 +100,31 @@ export class PointerSensor extends Sensor<
 
   public bind(source: Draggable, options = this.options) {
     const unbind = effect(() => {
-      const target = source.handle ?? source.element;
+      const controller = new AbortController();
+      const {signal} = controller;
       const listener: EventListener = (event: Event) => {
         if (isPointerEvent(event)) {
           this.handlePointerDown(event, source, options);
         }
       };
+      let targets = [source.handle ?? source.element];
 
-      if (target) {
-        patchWindow(target.ownerDocument.defaultView);
-
-        target.addEventListener('pointerdown', listener);
-
-        return () => {
-          target.removeEventListener('pointerdown', listener);
-        };
+      if (options?.activatorElements) {
+        if (Array.isArray(options.activatorElements)) {
+          targets = options.activatorElements;
+        } else {
+          targets = options.activatorElements(source);
+        }
       }
+
+      for (const target of targets) {
+        if (!target) continue;
+
+        patchWindow(target.ownerDocument.defaultView);
+        target.addEventListener('pointerdown', listener, {signal});
+      }
+
+      return () => controller.abort();
     });
 
     return unbind;
@@ -369,6 +384,7 @@ export class PointerSensor extends Sensor<
   }
 
   static configure = configurator(PointerSensor);
+
   static defaults = defaults;
 }
 
