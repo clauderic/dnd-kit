@@ -486,90 +486,96 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           return;
         }
 
-        manager.renderer.rendering.then(() => {
-          /* Force the source element to be promoted to the top layer before animating it */
-          showPopover(feedbackElement);
+        const dropAnimation = () => {
+          {
+            /* Force the source element to be promoted to the top layer before animating it */
+            showPopover(feedbackElement);
 
-          const target = placeholder ?? element;
-          const animations = feedbackElement.getAnimations();
+            const target = placeholder ?? element;
+            const animations = feedbackElement.getAnimations();
 
-          if (animations.length) {
-            animations.forEach((animation) => {
-              const {effect} = animation;
+            if (animations.length) {
+              animations.forEach((animation) => {
+                const {effect} = animation;
 
-              if (
-                isKeyframeEffect(effect) &&
-                effect.getKeyframes().some((keyframe) => keyframe.translate)
-              ) {
-                animation.finish();
-              }
+                if (
+                  isKeyframeEffect(effect) &&
+                  effect.getKeyframes().some((keyframe) => keyframe.translate)
+                ) {
+                  animation.finish();
+                }
+              });
+            }
+
+            const options = {
+              frameTransform: isSameFrame(feedbackElement, target)
+                ? null
+                : undefined,
+            };
+            const current = new DOMRectangle(feedbackElement, options);
+            const final = new DOMRectangle(target, options);
+            const delta = Rectangle.delta(current, final, source.alignment);
+            const finalTranslate = {
+              x: translate.x - delta.x,
+              y: translate.y - delta.y,
+            };
+            const heightKeyframes =
+              Math.round(current.intrinsicHeight) !==
+              Math.round(final.intrinsicHeight)
+                ? {
+                    minHeight: [
+                      `${current.intrinsicHeight}px`,
+                      `${final.intrinsicHeight}px`,
+                    ],
+                    maxHeight: [
+                      `${current.intrinsicHeight}px`,
+                      `${final.intrinsicHeight}px`,
+                    ],
+                  }
+                : {};
+            const widthKeyframes =
+              Math.round(current.intrinsicWidth) !==
+              Math.round(final.intrinsicWidth)
+                ? {
+                    minWidth: [
+                      `${current.intrinsicWidth}px`,
+                      `${final.intrinsicWidth}px`,
+                    ],
+                    maxWidth: [
+                      `${current.intrinsicWidth}px`,
+                      `${final.intrinsicWidth}px`,
+                    ],
+                  }
+                : {};
+
+            animateTransform({
+              element: feedbackElement,
+              keyframes: {
+                ...heightKeyframes,
+                ...widthKeyframes,
+                translate: [
+                  `${translate.x}px ${translate.y}px 0`,
+                  `${finalTranslate.x}px ${finalTranslate.y}px 0`,
+                ],
+              },
+              options: {
+                duration: moved || feedbackElement !== element ? 250 : 0,
+                easing: 'ease',
+              },
+              onReady() {
+                styles.remove(['translate'], CSS_PREFIX);
+              },
+              onFinish() {
+                onComplete?.();
+                requestAnimationFrame(restoreFocus);
+              },
             });
           }
+        };
 
-          const options = {
-            frameTransform: isSameFrame(feedbackElement, target)
-              ? null
-              : undefined,
-          };
-          const current = new DOMRectangle(feedbackElement, options);
-          const final = new DOMRectangle(target, options);
-          const delta = Rectangle.delta(current, final, source.alignment);
-          const finalTranslate = {
-            x: translate.x - delta.x,
-            y: translate.y - delta.y,
-          };
-          const heightKeyframes =
-            Math.round(current.intrinsicHeight) !==
-            Math.round(final.intrinsicHeight)
-              ? {
-                  minHeight: [
-                    `${current.intrinsicHeight}px`,
-                    `${final.intrinsicHeight}px`,
-                  ],
-                  maxHeight: [
-                    `${current.intrinsicHeight}px`,
-                    `${final.intrinsicHeight}px`,
-                  ],
-                }
-              : {};
-          const widthKeyframes =
-            Math.round(current.intrinsicWidth) !==
-            Math.round(final.intrinsicWidth)
-              ? {
-                  minWidth: [
-                    `${current.intrinsicWidth}px`,
-                    `${final.intrinsicWidth}px`,
-                  ],
-                  maxWidth: [
-                    `${current.intrinsicWidth}px`,
-                    `${final.intrinsicWidth}px`,
-                  ],
-                }
-              : {};
-
-          animateTransform({
-            element: feedbackElement,
-            keyframes: {
-              ...heightKeyframes,
-              ...widthKeyframes,
-              translate: [
-                `${translate.x}px ${translate.y}px 0`,
-                `${finalTranslate.x}px ${finalTranslate.y}px 0`,
-              ],
-            },
-            options: {
-              duration: moved || feedbackElement !== element ? 250 : 0,
-              easing: 'ease',
-            },
-            onReady() {
-              styles.remove(['translate'], CSS_PREFIX);
-            },
-            onFinish() {
-              onComplete?.();
-              requestAnimationFrame(restoreFocus);
-            },
-          });
-        });
+        manager.renderer.rendering.then(() =>
+          requestAnimationFrame(dropAnimation)
+        );
       }
     });
 
