@@ -29,32 +29,7 @@ export const defaultPreset: {
 } = {
   modifiers: [],
   plugins: [Accessibility, AutoScroller, Cursor, Feedback, PreventSelection],
-  sensors: [
-    PointerSensor.configure({
-      activationConstraints(event, source) {
-        const {pointerType, target} = event;
-
-        if (
-          pointerType === 'mouse' &&
-          isElement(target) &&
-          (source.handle === target || source.handle?.contains(target))
-        ) {
-          return undefined;
-        }
-
-        if (pointerType === 'touch') {
-          return {
-            delay: {value: 250, tolerance: 5},
-          };
-        }
-        return {
-          delay: {value: 200, tolerance: 10},
-          distance: {value: 5},
-        };
-      },
-    }),
-    KeyboardSensor,
-  ],
+  sensors: [PointerSensor, KeyboardSensor],
 };
 
 export class DragDropManager<

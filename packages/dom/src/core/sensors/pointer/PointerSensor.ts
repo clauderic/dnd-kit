@@ -40,7 +40,30 @@ export interface PointerSensorOptions {
         event: PointerEvent,
         source: Draggable
       ) => ActivationConstraints | undefined);
-}
+
+const defaults = Object.freeze<PointerSensorOptions>({
+  activationConstraints(event, source) {
+    const {pointerType, target} = event;
+
+    if (
+      pointerType === 'mouse' &&
+      isElement(target) &&
+      (source.handle === target || source.handle?.contains(target))
+    ) {
+      return undefined;
+    }
+
+    if (pointerType === 'touch') {
+      return {
+        delay: {value: 250, tolerance: 5},
+      };
+    }
+    return {
+      delay: {value: 200, tolerance: 10},
+      distance: {value: 5},
+    };
+  },
+});
 
 /**
  * The PointerSensor class is an input sensor that handles Pointer events,
@@ -122,7 +145,7 @@ export class PointerSensor extends Sensor<
       y: event.clientY * offset.scaleY + offset.y,
     };
 
-    const {activationConstraints} = options;
+    const {activationConstraints = defaults.activationConstraints} = options;
     const constraints =
       typeof activationConstraints === 'function'
         ? activationConstraints(event, source)
@@ -346,6 +369,7 @@ export class PointerSensor extends Sensor<
   }
 
   static configure = configurator(PointerSensor);
+  static defaults = defaults;
 }
 
 function isCapturedBySensor(event: Event) {
