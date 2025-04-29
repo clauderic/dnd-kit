@@ -1,5 +1,5 @@
-import {Sensor} from '@dnd-kit/abstract';
-import {batch, effect} from '@dnd-kit/state';
+import {configurator, Sensor} from '@dnd-kit/abstract';
+import {effect} from '@dnd-kit/state';
 import type {CleanupFunction} from '@dnd-kit/state';
 import {
   getDocument,
@@ -28,7 +28,29 @@ export type KeyboardCodes = {
 };
 
 export interface KeyboardSensorOptions {
+  /**
+   * The offset by which the keyboard sensor should move the draggable.
+   *
+   * @default 10
+   */
+  offset?: number | {x: number; y: number};
+  /**
+   * The keyboard codes that activate the keyboard sensor.
+   *
+   * @default {
+   *   start: ['Space', 'Enter'],
+   *   cancel: ['Escape'],
+   *   end: ['Space', 'Enter', 'Tab'],
+   *   up: ['ArrowUp'],
+   *   down: ['ArrowDown'],
+   *   left: ['ArrowLeft'],
+   *   right: ['ArrowRight']
+   * }
+   */
   keyboardCodes?: KeyboardCodes;
+  /**
+   * Function that determines if the keyboard sensor should activate.
+   */
   shouldActivate?(args: {
     event: KeyboardEvent;
     source: Draggable;
@@ -36,27 +58,27 @@ export interface KeyboardSensorOptions {
   }): boolean;
 }
 
-const DEFAULT_SHOULD_ACTIVATE = (args: {
-  event: KeyboardEvent;
-  source: Draggable;
-  manager: DragDropManager;
-}) => {
-  const {event, source} = args;
-  const target = source.handle ?? source.element;
-  return event.target === target;
-};
-
-const DEFAULT_KEYBOARD_CODES: KeyboardCodes = {
-  start: ['Space', 'Enter'],
-  cancel: ['Escape'],
-  end: ['Space', 'Enter', 'Tab'],
-  up: ['ArrowUp'],
-  down: ['ArrowDown'],
-  left: ['ArrowLeft'],
-  right: ['ArrowRight'],
-};
-
-const DEFAULT_OFFSET = 10;
+const defaults = Object.freeze<Required<KeyboardSensorOptions>>({
+  offset: 10,
+  keyboardCodes: {
+    start: ['Space', 'Enter'],
+    cancel: ['Escape'],
+    end: ['Space', 'Enter', 'Tab'],
+    up: ['ArrowUp'],
+    down: ['ArrowDown'],
+    left: ['ArrowLeft'],
+    right: ['ArrowRight'],
+  },
+  shouldActivate(args: {
+    event: KeyboardEvent;
+    source: Draggable;
+    manager: DragDropManager;
+  }) {
+    const {event, source} = args;
+    const target = source.handle ?? source.element;
+    return event.target === target;
+  },
+});
 
 /**
  * The KeyboardSensor class is an input sensor that handles Keyboard events.
@@ -115,8 +137,8 @@ export class KeyboardSensor extends Sensor<
     }
 
     const {
-      keyboardCodes = DEFAULT_KEYBOARD_CODES,
-      shouldActivate = DEFAULT_SHOULD_ACTIVATE,
+      keyboardCodes = defaults.keyboardCodes,
+      shouldActivate = defaults.shouldActivate,
     } = options ?? {};
 
     if (!keyboardCodes.start.includes(event.code)) {
@@ -187,7 +209,7 @@ export class KeyboardSensor extends Sensor<
     _source: Draggable,
     options: KeyboardSensorOptions | undefined
   ) {
-    const {keyboardCodes = DEFAULT_KEYBOARD_CODES} = options ?? {};
+    const {keyboardCodes = defaults.keyboardCodes} = options ?? {};
 
     if (isKeycode(event, [...keyboardCodes.end, ...keyboardCodes.cancel])) {
       event.preventDefault();
@@ -225,10 +247,15 @@ export class KeyboardSensor extends Sensor<
   ) {
     const {shape} = this.manager.dragOperation;
     const factor = event.shiftKey ? 5 : 1;
-    let offset = {
+    let by = {
       x: 0,
       y: 0,
     };
+    let offset = this.options?.offset ?? defaults.offset;
+
+    if (typeof offset === 'number') {
+      offset = {x: offset, y: offset};
+    }
 
     if (!shape) {
       return;
@@ -236,25 +263,25 @@ export class KeyboardSensor extends Sensor<
 
     switch (direction) {
       case 'up':
-        offset = {x: 0, y: -DEFAULT_OFFSET * factor};
+        by = {x: 0, y: -offset.y * factor};
         break;
       case 'down':
-        offset = {x: 0, y: DEFAULT_OFFSET * factor};
+        by = {x: 0, y: offset.y * factor};
         break;
       case 'left':
-        offset = {x: -DEFAULT_OFFSET * factor, y: 0};
+        by = {x: -offset.x * factor, y: 0};
         break;
       case 'right':
-        offset = {x: DEFAULT_OFFSET * factor, y: 0};
+        by = {x: offset.x * factor, y: 0};
         break;
     }
 
-    if (offset?.x || offset?.y) {
+    if (by.x || by.y) {
       event.preventDefault();
 
       this.manager.actions.move({
         event,
-        by: offset,
+        by,
       });
     }
   }
@@ -281,6 +308,10 @@ export class KeyboardSensor extends Sensor<
     // Remove all event listeners
     this.listeners.clear();
   }
+
+  static configure = configurator(KeyboardSensor);
+
+  static defaults = defaults;
 }
 
 function isKeycode(event: KeyboardEvent, codes: KeyCode[]) {
