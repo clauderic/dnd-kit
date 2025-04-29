@@ -54,9 +54,11 @@ export const DroppableExample = createVanillaStory(() => {
       return;
     }
 
+    const isWithinDroppable = droppableElement.contains(draggableElement);
+
     if (event.operation.target?.id === 'droppable') {
-      droppableElement.appendChild(draggableElement);
-    } else {
+      if (!isWithinDroppable) droppableElement.appendChild(draggableElement);
+    } else if (isWithinDroppable) {
       wrapperElement.prepend(draggableElement);
     }
   });
