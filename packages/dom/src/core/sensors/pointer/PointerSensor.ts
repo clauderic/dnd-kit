@@ -98,6 +98,18 @@ export class PointerSensor extends Sensor<
     this.handleKeyDown = this.handleKeyDown.bind(this);
   }
 
+  protected activationConstraints(event: PointerEvent, source: Draggable) {
+    const {activationConstraints = defaults.activationConstraints} =
+      this.options ?? {};
+
+    const constraints =
+      typeof activationConstraints === 'function'
+        ? activationConstraints(event, source)
+        : activationConstraints;
+
+    return constraints;
+  }
+
   public bind(source: Draggable, options = this.options) {
     const unbind = effect(() => {
       const controller = new AbortController();
@@ -160,11 +172,7 @@ export class PointerSensor extends Sensor<
       y: event.clientY * offset.scaleY + offset.y,
     };
 
-    const {activationConstraints = defaults.activationConstraints} = options;
-    const constraints =
-      typeof activationConstraints === 'function'
-        ? activationConstraints(event, source)
-        : activationConstraints;
+    const constraints = this.activationConstraints(event, source);
 
     (event as any).sensor = this;
 
@@ -251,11 +259,7 @@ export class PointerSensor extends Sensor<
       x: coordinates.x - this.initialCoordinates.x,
       y: coordinates.y - this.initialCoordinates.y,
     };
-    const {activationConstraints} = options;
-    const constraints =
-      typeof activationConstraints === 'function'
-        ? activationConstraints(event, source)
-        : activationConstraints;
+    const constraints = this.activationConstraints(event, source);
     const {distance, delay} = constraints ?? {};
 
     if (distance) {
