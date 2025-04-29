@@ -1,5 +1,31 @@
 # @dnd-kit/dom
 
+## 0.1.5
+
+### Patch Changes
+
+- [#1669](https://github.com/clauderic/dnd-kit/pull/1669) [`8fecc41`](https://github.com/clauderic/dnd-kit/commit/8fecc416fb8503fcb555563a44246cd177677b4e) Thanks [@github-actions](https://github.com/apps/github-actions)! - **PointerSensor**: Add support for multiple activator elements via `activatorElements` option to configure multiple elements that can trigger drag operations.
+
+- [#1669](https://github.com/clauderic/dnd-kit/pull/1669) [`a9c17df`](https://github.com/clauderic/dnd-kit/commit/a9c17df386697dc3236f3ba1b7e319cdf4c5a706) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fix `Feedback` drop animation in Safari by always requesting an animation frame before performing the drop animation.
+
+- [#1669](https://github.com/clauderic/dnd-kit/pull/1669) [`f31589a`](https://github.com/clauderic/dnd-kit/commit/f31589ae579f1ce574207d44e4016e30b82549e9) Thanks [@github-actions](https://github.com/apps/github-actions)! - **KeyboardSensor**: Improve configuration options
+
+  - Add configurable offset for keyboard movements (number or {x, y})
+  - Add static `defaults` and `configure` properties for better configuration
+  - Support different x and y offset values for `offset`
+
+- [#1669](https://github.com/clauderic/dnd-kit/pull/1669) [`616db17`](https://github.com/clauderic/dnd-kit/commit/616db17cdded5974febf69718337db0604c613fc) Thanks [@github-actions](https://github.com/apps/github-actions)! - Refactor PointerSensor configuration:
+
+  - Partially configuring the pointer sensor no longer overrides other defaults. If you wish to override all defaults, you must explicitly set each option.
+  - Moved default pointer sensor configuration into to PointerSensor class.
+  - Add static `defaults` property to PointerSensor class for easier configuration and extension.
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.1.5
+  - @dnd-kit/collision@0.1.5
+  - @dnd-kit/geometry@0.1.5
+  - @dnd-kit/state@0.1.5
+
 ## 0.1.4
 
 ### Patch Changes
