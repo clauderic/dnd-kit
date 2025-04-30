@@ -303,6 +303,11 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         let hasChildrenMutations = false;
 
         for (const mutation of mutations) {
+          if (mutation.target !== element) {
+            hasChildrenMutations = true;
+            continue;
+          }
+
           if (mutation.type !== 'attributes') {
             // Should never happen, but defensive programming just in case
             continue;
@@ -312,14 +317,14 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           // https://developer.mozilla.org/en-US/docs/Web/API/MutationRecord/attributeName#value
           const attributeName = mutation.attributeName!;
 
-          if (mutation.target !== element) {
-            hasChildrenMutations = true;
-          } else if (
+          if (
             attributeName.startsWith('aria-') ||
             IGNORED_ATTRIBUTES.includes(attributeName)
           ) {
             continue;
-          } else if (attributeName === 'style') {
+          }
+
+          if (attributeName === 'style') {
             if (supportsStyle(element) && supportsStyle(placeholder)) {
               for (const key of Object.values(element.style)) {
                 if (
