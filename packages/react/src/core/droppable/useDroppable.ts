@@ -12,6 +12,7 @@ import {
 import {currentValue, type RefOrValue} from '@dnd-kit/react/utilities';
 
 import {useInstance} from '../hooks/useInstance.ts';
+import {defaultCollisionDetection} from '@dnd-kit/collision';
 
 export interface UseDroppableInput<T extends Data = Data>
   extends Omit<DroppableInput<T>, 'element'> {
@@ -37,11 +38,21 @@ export function useDroppable<T extends Data = Data>(
 
   useOnValueChange(id, () => (droppable.id = id));
   useOnElementChange(element, (element) => (droppable.element = element));
-  useOnValueChange(accept, () => (droppable.id = id), undefined, deepEqual);
-  useOnValueChange(collisionDetector, () => (droppable.id = id));
+  useOnValueChange(
+    accept,
+    () => (droppable.accept = accept),
+    undefined,
+    deepEqual
+  );
+  useOnValueChange(
+    collisionDetector,
+    () =>
+      (droppable.collisionDetector =
+        collisionDetector ?? defaultCollisionDetection)
+  );
   useOnValueChange(data, () => data && (droppable.data = data));
   useOnValueChange(disabled, () => (droppable.disabled = disabled === true));
-  useOnValueChange(type, () => (droppable.id = id));
+  useOnValueChange(type, () => (droppable.type = type));
 
   return {
     droppable: trackedDroppalbe,
