@@ -13,6 +13,7 @@ import {
   isPointerEvent,
   Listeners,
   getFrameTransform,
+  scheduler,
 } from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.ts';
@@ -70,6 +71,11 @@ const defaults = Object.freeze<PointerSensorOptions>({
     };
   },
 });
+
+type LatestState = {
+  event: PointerEvent | undefined;
+  coordinates: Coordinates | undefined;
+};
 
 /**
  * The PointerSensor class is an input sensor that handles Pointer events,
@@ -200,7 +206,7 @@ export class PointerSensor extends Sensor<
       {
         type: 'pointermove',
         listener: (event: PointerEvent) =>
-          this.handlePointerMove(event, source, options),
+          this.handlePointerMove(event, source),
       },
       {
         type: 'pointerup',
@@ -228,11 +234,22 @@ export class PointerSensor extends Sensor<
     this.#cleanup.add(cleanup);
   }
 
-  protected handlePointerMove(
-    event: PointerEvent,
-    source: Draggable,
-    options: PointerSensorOptions
-  ) {
+  private latest: LatestState = {
+    event: undefined,
+    coordinates: undefined,
+  };
+
+  protected handleMove = () => {
+    const {event, coordinates: to} = this.latest;
+
+    if (!event || !to) {
+      return;
+    }
+
+    this.manager.actions.move({event, to});
+  };
+
+  protected handlePointerMove(event: PointerEvent, source: Draggable) {
     const coordinates = {
       x: event.clientX,
       y: event.clientY,
@@ -247,7 +264,10 @@ export class PointerSensor extends Sensor<
       event.preventDefault();
       event.stopPropagation();
 
-      this.manager.actions.move({event, to: coordinates});
+      this.latest.event = event;
+      this.latest.coordinates = coordinates;
+
+      scheduler.schedule(this.handleMove);
       return;
     }
 
@@ -378,6 +398,10 @@ export class PointerSensor extends Sensor<
   }
 
   protected cleanup() {
+    this.latest = {
+      event: undefined,
+      coordinates: undefined,
+    };
     this.#cleanup.forEach((cleanup) => cleanup());
     this.#cleanup.clear();
   }
