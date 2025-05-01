@@ -299,16 +299,32 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     if (placeholder) {
       resizeObserver.observe(placeholder);
 
-      elementMutationObserver = new MutationObserver(() => {
-        for (const attribute of Array.from(element.attributes)) {
+      elementMutationObserver = new MutationObserver((mutations) => {
+        let hasChildrenMutations = false;
+
+        for (const mutation of mutations) {
+          if (mutation.target !== element) {
+            hasChildrenMutations = true;
+            continue;
+          }
+
+          if (mutation.type !== 'attributes') {
+            // Should never happen, but defensive programming just in case
+            continue;
+          }
+
+          // Attribute name is guaranteed to be non-null if type is "attributes"
+          // https://developer.mozilla.org/en-US/docs/Web/API/MutationRecord/attributeName#value
+          const attributeName = mutation.attributeName!;
+
           if (
-            attribute.name.startsWith('aria-') ||
-            IGNORED_ATTRIBUTES.includes(attribute.name)
+            attributeName.startsWith('aria-') ||
+            IGNORED_ATTRIBUTES.includes(attributeName)
           ) {
             continue;
           }
 
-          if (attribute.name === 'style') {
+          if (attributeName === 'style') {
             if (supportsStyle(element) && supportsStyle(placeholder)) {
               for (const key of Object.values(element.style)) {
                 if (
@@ -324,13 +340,18 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
                 );
               }
             }
-            continue;
-          }
+          } else {
+            const attributeValue = element.getAttribute(attributeName);
 
-          placeholder.setAttribute(attribute.name, attribute.value);
+            if (attributeValue !== null) {
+              placeholder.setAttribute(attributeName, attributeValue);
+            } else {
+              placeholder.removeAttribute(attributeName);
+            }
+          }
         }
 
-        if (clone) {
+        if (hasChildrenMutations && clone) {
           placeholder.innerHTML = element.innerHTML;
         }
       });
