@@ -1,5 +1,11 @@
 # @dnd-kit/state
 
+## 0.1.6
+
+### Patch Changes
+
+- [`299389b`](https://github.com/clauderic/dnd-kit/commit/299389befcc747fe8d79231ba32f73afae88615e) Thanks [@clauderic](https://github.com/clauderic)! - Fix cycle in `ValueHistory` setter for current
+
 ## 0.1.5
 
 ## 0.1.4

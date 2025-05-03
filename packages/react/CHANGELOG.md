@@ -1,5 +1,16 @@
 # @dnd-kit/react
 
+## 0.1.6
+
+### Patch Changes
+
+- [#1670](https://github.com/clauderic/dnd-kit/pull/1670) [`a69c390`](https://github.com/clauderic/dnd-kit/commit/a69c390d5b00c186e97913e0fbe32760e63f98b0) Thanks [@GuillaumeSalles](https://github.com/GuillaumeSalles)! - Fix useDroppable effects when inputs are updated
+
+- Updated dependencies [[`7ceb799`](https://github.com/clauderic/dnd-kit/commit/7ceb799c7d214bc8223ec845357a0040c28ae40e), [`299389b`](https://github.com/clauderic/dnd-kit/commit/299389befcc747fe8d79231ba32f73afae88615e), [`4f49d1b`](https://github.com/clauderic/dnd-kit/commit/4f49d1b1de317adaa05cc0b7adacbaffda4fd8c2), [`b18115f`](https://github.com/clauderic/dnd-kit/commit/b18115f4b19c45c76c827921b25e47aad16c91ce), [`ac13c92`](https://github.com/clauderic/dnd-kit/commit/ac13c9298cc8b4eb680039cf17fb10582ab8d023)]:
+  - @dnd-kit/abstract@0.1.6
+  - @dnd-kit/state@0.1.6
+  - @dnd-kit/dom@0.1.6
+
 ## 0.1.5
 
 ### Patch Changes

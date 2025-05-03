@@ -1,5 +1,12 @@
 # @dnd-kit/geometry
 
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies [[`299389b`](https://github.com/clauderic/dnd-kit/commit/299389befcc747fe8d79231ba32f73afae88615e)]:
+  - @dnd-kit/state@0.1.6
+
 ## 0.1.5
 
 ### Patch Changes
