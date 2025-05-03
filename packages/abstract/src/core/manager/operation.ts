@@ -186,7 +186,7 @@ export class DragOperation<T extends Draggable, U extends Droppable>
       target: this.target,
       activatorEvent: this.activatorEvent,
       transform: this.#transform,
-      shape: this.shape,
+      shape: this.shape ? snapshot(this.shape) : null,
       position: snapshot(this.position),
       status: snapshot(this.status),
       canceled: this.canceled,
