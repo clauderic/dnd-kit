@@ -60,7 +60,7 @@ export class ValueHistory<T> implements WithHistory<T> {
         this.#initial = value;
       }
 
-      this.#previous = this.#current;
+      this.#previous = current;
       this.#current = value;
     });
   }
