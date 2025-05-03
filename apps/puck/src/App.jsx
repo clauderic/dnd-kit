@@ -1,35 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// App.jsx
+import {Puck} from '@measured/puck';
+import '@measured/puck/puck.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+const config = {
+  components: {
+    Card: {
+      inline: true,
+      render: ({puck}) => {
+        return (
+          <div
+            style={{
+              alignItems: 'center',
+              background: 'white',
+              border: '1px solid black',
+              borderRadius: 8,
+              display: 'flex',
+              justifyContent: 'center',
+              flexGrow: 1,
+              padding: 24,
+              height: 128,
+            }}
+            ref={puck.dragRef} // Use inline ref so we can use flexGrow
+          >
+            Card
+          </div>
+        );
+      },
+    },
+    Container: {
+      fields: {
+        Content: {
+          type: 'slot', // NB This is triggering DropZone deprecation warning when it shouldn't. Puck bug.
+        },
+      },
+      render: ({Content}) => {
+        return (
+          <div style={{background: '#eee', padding: 32}}>
+            <Content style={{display: 'flex', flexWrap: 'wrap', gap: 16}} />
+          </div>
+        );
+      },
+    },
+  },
+};
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+const App = () => {
+  return <Puck config={config} data={{}} />;
+};
 
-export default App
+export default App;
