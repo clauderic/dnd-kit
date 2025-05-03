@@ -1,5 +1,17 @@
 # @dnd-kit/abstract
 
+## 0.1.6
+
+### Patch Changes
+
+- [#1671](https://github.com/clauderic/dnd-kit/pull/1671) [`7ceb799`](https://github.com/clauderic/dnd-kit/commit/7ceb799c7d214bc8223ec845357a0040c28ae40e) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fix shape snapshotting in DragOperation
+
+  - Ensure shape is properly snapshotted when creating operation state snapshot
+
+- Updated dependencies [[`299389b`](https://github.com/clauderic/dnd-kit/commit/299389befcc747fe8d79231ba32f73afae88615e)]:
+  - @dnd-kit/state@0.1.6
+  - @dnd-kit/geometry@0.1.6
+
 ## 0.1.5
 
 ### Patch Changes

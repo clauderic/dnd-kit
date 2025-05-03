@@ -1,5 +1,26 @@
 # @dnd-kit/dom
 
+## 0.1.6
+
+### Patch Changes
+
+- [#1671](https://github.com/clauderic/dnd-kit/pull/1671) [`4f49d1b`](https://github.com/clauderic/dnd-kit/commit/4f49d1b1de317adaa05cc0b7adacbaffda4fd8c2) Thanks [@github-actions](https://github.com/apps/github-actions)! - Improve animation handling and scheduling
+
+  - Refactor Scheduler to be more flexible and generic
+  - Cache successive document.getAnimations() calls
+  - Fix bugs in Safari when projecting animations in DOMRectangle
+  - Fix animation handling in Feedback and Sortable components
+
+- [#1672](https://github.com/clauderic/dnd-kit/pull/1672) [`b18115f`](https://github.com/clauderic/dnd-kit/commit/b18115f4b19c45c76c827921b25e47aad16c91ce) Thanks [@GuillaumeSalles](https://github.com/GuillaumeSalles)! - Improve Feedback clone performance by avoiding innerHtml reset on every mutation
+
+- [#1671](https://github.com/clauderic/dnd-kit/pull/1671) [`ac13c92`](https://github.com/clauderic/dnd-kit/commit/ac13c9298cc8b4eb680039cf17fb10582ab8d023) Thanks [@github-actions](https://github.com/apps/github-actions)! - Optimize pointer move handling in PointerSensor by using the rAF scheduler to batch move events.
+
+- Updated dependencies [[`7ceb799`](https://github.com/clauderic/dnd-kit/commit/7ceb799c7d214bc8223ec845357a0040c28ae40e), [`299389b`](https://github.com/clauderic/dnd-kit/commit/299389befcc747fe8d79231ba32f73afae88615e)]:
+  - @dnd-kit/abstract@0.1.6
+  - @dnd-kit/state@0.1.6
+  - @dnd-kit/collision@0.1.6
+  - @dnd-kit/geometry@0.1.6
+
 ## 0.1.5
 
 ### Patch Changes
