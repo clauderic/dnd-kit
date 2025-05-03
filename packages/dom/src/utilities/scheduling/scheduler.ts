@@ -1,13 +1,18 @@
-export class Scheduler {
-  private animationFrame: number | undefined;
+type Callback = () => void;
+
+export class Scheduler<T extends (callback: Callback) => any> {
+  constructor(private scheduler: T) {}
+
+  private pending: boolean = false;
   private tasks: Set<() => void> = new Set();
   private resolvers: Set<() => void> = new Set();
 
   public schedule(task: () => void): Promise<void> {
     this.tasks.add(task);
 
-    if (!this.animationFrame) {
-      this.animationFrame = requestAnimationFrame(this.flush);
+    if (!this.pending) {
+      this.pending = true;
+      this.scheduler(this.flush);
     }
 
     return new Promise<void>((resolve) => this.resolvers.add(resolve));
@@ -16,7 +21,7 @@ export class Scheduler {
   public flush = () => {
     const {tasks, resolvers} = this;
 
-    this.animationFrame = undefined;
+    this.pending = false;
     this.tasks = new Set();
     this.resolvers = new Set();
 
@@ -30,4 +35,6 @@ export class Scheduler {
   };
 }
 
-export const scheduler = new Scheduler();
+export const scheduler = new Scheduler((callback) =>
+  requestAnimationFrame(callback)
+);

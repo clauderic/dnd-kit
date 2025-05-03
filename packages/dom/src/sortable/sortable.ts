@@ -253,11 +253,10 @@ export class Sortable<T extends Data = Data> {
               ],
             },
             options: transition,
-            onFinish: () => {
-              if (!manager.dragOperation.status.dragging) {
-                this.droppable.shape = undefined;
-              }
-            },
+          }).then(() => {
+            if (!manager.dragOperation.status.dragging) {
+              this.droppable.shape = undefined;
+            }
           });
         }
       });

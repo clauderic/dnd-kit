@@ -1,5 +1,4 @@
 import {getComputedStyles} from '../styles/getComputedStyles.ts';
-import {getWindow} from '../execution-context/getWindow.ts';
 import {isKeyframeEffect} from '../type-guards/isKeyframeEffect.ts';
 
 import {parseTranslate} from './parseTranslate.ts';

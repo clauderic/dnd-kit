@@ -569,6 +569,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
                   }
                 : {};
 
+            styles.remove(['translate', 'transition'], CSS_PREFIX);
+
             animateTransform({
               element: feedbackElement,
               keyframes: {
@@ -583,20 +585,14 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
                 duration: moved || feedbackElement !== element ? 250 : 0,
                 easing: 'ease',
               },
-              onReady() {
-                styles.remove(['translate'], CSS_PREFIX);
-              },
-              onFinish() {
-                onComplete?.();
-                requestAnimationFrame(restoreFocus);
-              },
+            }).then(() => {
+              onComplete?.();
+              requestAnimationFrame(restoreFocus);
             });
           }
         };
 
-        manager.renderer.rendering.then(() =>
-          requestAnimationFrame(dropAnimation)
-        );
+        manager.renderer.rendering.then(dropAnimation);
       }
     });
 

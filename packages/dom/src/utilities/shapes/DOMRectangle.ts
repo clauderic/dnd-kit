@@ -1,5 +1,7 @@
 import {Rectangle, type BoundingRectangle} from '@dnd-kit/geometry';
 
+import {Scheduler} from '../scheduling/scheduler.ts';
+import {isSafari} from '../execution-context/isSafari.ts';
 import {inverseTransform} from '../transform/inverseTransform.ts';
 import {getComputedStyles} from '../styles/getComputedStyles.ts';
 import {parseTransform, type Transform} from '../transform/index.ts';
@@ -94,7 +96,7 @@ export class DOMRectangle extends Rectangle {
  * Get the projected transform of an element based on its final keyframe
  */
 function getProjectedTransform(element: Element): Transform | null {
-  const animations = element.getAnimations();
+  const animations = getAnimations(element);
   let projectedTransform: Transform | null = null;
 
   if (!animations.length) return null;
@@ -133,6 +135,38 @@ function getProjectedTransform(element: Element): Transform | null {
   return projectedTransform;
 }
 
+const scheduler = new Scheduler((callback) => setTimeout(callback, 0));
+const animations = new Map<Document | Element, Animation[]>();
+const clear = animations.clear.bind(animations);
+
+function getDocumentAnimations(element: Element): Animation[] {
+  const document = element.ownerDocument;
+  let documentAnimations = animations.get(document);
+
+  if (documentAnimations) return documentAnimations;
+
+  documentAnimations = document.getAnimations();
+  animations.set(document, documentAnimations);
+  scheduler.schedule(clear);
+
+  const elementAnimations = documentAnimations.filter(
+    (animation) =>
+      isKeyframeEffect(animation.effect) && animation.effect.target === element
+  );
+
+  animations.set(element, elementAnimations);
+
+  return documentAnimations;
+}
+
+function getAnimations(target: Element | Document): Animation[] {
+  const cachedAnimations = animations.get(target);
+
+  if (cachedAnimations) return cachedAnimations;
+
+  return target.getAnimations();
+}
+
 /*
  * Force animations on ancestors of the element into their end state
  * and return a function to reset them back to their current state.
@@ -141,13 +175,13 @@ function getProjectedTransform(element: Element): Transform | null {
  * of an element without having to wait for the animations to finish.
  */
 function forceFinishAnimations(element: Element): (() => void) | undefined {
-  const animations = element.ownerDocument
-    .getAnimations()
+  const animations = getDocumentAnimations(element)
     .filter((animation) => {
       if (isKeyframeEffect(animation.effect)) {
         const {target} = animation.effect;
+        const isValidTarget = target && (isSafari() || target !== element);
 
-        if (target !== element && target?.contains(element)) {
+        if (isValidTarget && target.contains(element)) {
           return animation.effect.getKeyframes().some((keyframe) => {
             const {transform, translate, scale, width, height} = keyframe;
 
