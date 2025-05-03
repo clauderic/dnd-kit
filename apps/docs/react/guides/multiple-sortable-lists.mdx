@@ -109,7 +109,7 @@ export function App() {
 
         if (event.canceled || source.type !== 'column') return;
 
-        setColumnOrder((columns) => move(columns, sevent));
+        setColumnOrder((columns) => move(columns, event));
       }}
     >
       <div className="Root">
