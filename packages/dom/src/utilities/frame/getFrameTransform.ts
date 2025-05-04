@@ -3,6 +3,7 @@ import {isHTMLElement} from '../type-guards/isHTMLElement.ts';
 import type {Transform} from '../transform/index.ts';
 
 import {getFrameElement} from './getFrameElement.ts';
+import {getBoundingRectangle} from '../bounding-rectangle/getBoundingRectangle.ts';
 
 export function getFrameTransform(
   el: Element | undefined,
@@ -24,7 +25,7 @@ export function getFrameTransform(
       return transform;
     }
 
-    const rect = frame.getBoundingClientRect();
+    const rect = getBoundingRectangle(frame);
     const {x: scaleX, y: scaleY} = getScale(frame, rect);
 
     transform.x = transform.x + rect.left;
@@ -40,7 +41,7 @@ export function getFrameTransform(
 
 function getScale(
   element: Element,
-  boundingRectangle = element.getBoundingClientRect()
+  boundingRectangle = getBoundingRectangle(element)
 ) {
   const width = Math.round(boundingRectangle.width);
   const height = Math.round(boundingRectangle.height);
@@ -52,7 +53,7 @@ function getScale(
     };
   }
 
-  const styles = getComputedStyles(element);
+  const styles = getComputedStyles(element, true);
 
   return {
     x: (parseFloat(styles.width) || width) / width,

@@ -2,7 +2,7 @@ import {getComputedStyles} from '../styles/getComputedStyles.ts';
 
 export function isScrollable(
   element: HTMLElement,
-  computedStyle: CSSStyleDeclaration = getComputedStyles(element)
+  computedStyle: CSSStyleDeclaration = getComputedStyles(element, true)
 ): boolean {
   const overflowRegex = /(auto|scroll|overlay)/;
   const properties = ['overflow', 'overflowX', 'overflowY'];

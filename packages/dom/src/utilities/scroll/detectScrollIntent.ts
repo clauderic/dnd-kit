@@ -38,7 +38,7 @@ export function detectScrollIntent(
   const {rect, isTop, isBottom, isLeft, isRight} =
     getScrollPosition(scrollableElement);
   const frameTransform = getFrameTransform(scrollableElement);
-  const computedStyles = getComputedStyles(scrollableElement);
+  const computedStyles = getComputedStyles(scrollableElement, true);
   const parsedTransform = parseTransform(computedStyles);
   const isXAxisInverted =
     parsedTransform !== null ? parsedTransform?.scaleX < 0 : false;

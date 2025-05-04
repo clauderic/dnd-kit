@@ -53,7 +53,7 @@ export function getScrollableAncestors(
       return scrollParents;
     }
 
-    const computedStyle = getComputedStyles(node);
+    const computedStyle = getComputedStyles(node, true);
 
     if (excludeElement && node === element) {
       // no-op

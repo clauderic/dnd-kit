@@ -29,7 +29,7 @@ export function scrollIntoViewIfNeeded(el: Element, centerIfNeeded = false) {
     return;
   }
 
-  const parentComputedStyle = getComputedStyles(parent),
+  const parentComputedStyle = getComputedStyles(parent, true),
     parentBorderTopWidth = parseInt(
       parentComputedStyle.getPropertyValue('border-top-width')
     ),
