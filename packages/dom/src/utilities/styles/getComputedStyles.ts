@@ -15,13 +15,19 @@ export function getComputedStyles(
   element: Element,
   cached = false
 ): CSSStyleDeclaration {
+  if (!cached) return computeStyles(element);
+
   let styles = cachedStyles.get(element);
 
-  if (cached && styles) return styles;
+  if (styles) return styles;
 
-  styles = getWindow(element).getComputedStyle(element);
+  styles = computeStyles(element);
   cachedStyles.set(element, styles);
   scheduler.schedule(clear);
 
   return styles;
+}
+
+function computeStyles(element: Element): CSSStyleDeclaration {
+  return getWindow(element).getComputedStyle(element);
 }
