@@ -7,4 +7,5 @@ export default defineConfig((options) => ({
   format: ['esm', 'cjs'],
   sourcemap: true,
   treeshake: !options.watch,
+  watch: ['src/**/*.(ts,tsx)'],
 }));

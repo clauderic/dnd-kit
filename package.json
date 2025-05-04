@@ -13,10 +13,10 @@
     "release:beta": "changeset publish --snapshot --tag beta"
   },
   "devDependencies": {
-    "@changesets/changelog-github": "^0.5.0",
-    "@changesets/cli": "^2.27.12",
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^2.29.2",
     "prettier": "^3.1.1",
-    "turbo": "^2.3.4"
+    "turbo": "^2.5.2"
   },
   "packageManager": "bun@1.1.12",
   "workspaces": [

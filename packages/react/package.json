@@ -71,7 +71,7 @@
     "eslint": "^8.38.0",
     "@dnd-kit/eslint-config": "*",
     "react": "^19.0.0",
-    "tsup": "~8.2.0",
+    "tsup": "8.3.0",
     "typescript": "^5.5.2"
   },
   "publishConfig": {

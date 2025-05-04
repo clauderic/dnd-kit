@@ -83,7 +83,7 @@
   "devDependencies": {
     "@dnd-kit/eslint-config": "*",
     "eslint": "^8.38.0",
-    "tsup": "~8.2.0",
+    "tsup": "8.3.0",
     "typescript": "^5.5.2"
   },
   "publishConfig": {
