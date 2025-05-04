@@ -106,8 +106,8 @@ export function detectScrollIntent(
   ) {
     // Scroll Right (or Left if inverted)
     direction.x = isXAxisInverted
-      ? ScrollDirection.Forward
-      : ScrollDirection.Reverse;
+      ? ScrollDirection.Reverse
+      : ScrollDirection.Forward;
     speed.x =
       acceleration *
       Math.abs(
@@ -122,8 +122,8 @@ export function detectScrollIntent(
   ) {
     // Scroll Left (or Right if inverted)
     direction.x = isXAxisInverted
-      ? ScrollDirection.Reverse
-      : ScrollDirection.Forward;
+      ? ScrollDirection.Forward
+      : ScrollDirection.Reverse;
     speed.x =
       acceleration *
       Math.abs(
