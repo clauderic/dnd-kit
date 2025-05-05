@@ -18,6 +18,7 @@ import {
   supportsPopover,
   Styles,
   isKeyframeEffect,
+  supportsStyle,
 } from '@dnd-kit/dom/utilities';
 import {Coordinates, Rectangle} from '@dnd-kit/geometry';
 
@@ -30,7 +31,7 @@ import {
   CSS_RULES,
   DROPPING_ATTRIBUTE,
   IGNORED_ATTRIBUTES,
-  ROOT_ATTRIBUTE,
+  IGNORED_STYLES,
 } from './constants.ts';
 import {
   createPlaceholder,
@@ -118,16 +119,9 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       height = height / scaleDelta.y;
     }
 
-    let root = this.overlay ?? feedbackElement.ownerDocument.body;
-
-    if (options?.rootElement) {
-      root =
-        typeof options.rootElement === 'function'
-          ? options.rootElement(source)
-          : options.rootElement;
-    }
-
-    const styles = new Styles(root);
+    let elementMutationObserver: MutationObserver | undefined;
+    let documentMutationObserver: MutationObserver | undefined;
+    const styles = new Styles(feedbackElement);
     const {transition, translate} = getComputedStyles(element);
     const clone = feedback === 'clone';
 
@@ -222,7 +216,6 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     const tY = transform.y * frameTransform.scaleY + initialTranslate.y;
     const translateString = `${tX}px ${tY}px 0`;
 
-    root.setAttribute(ROOT_ATTRIBUTE, '');
     styles.set(
       {
         width: width,
@@ -241,6 +234,11 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       element.insertAdjacentElement('afterend', placeholder);
 
       if (options?.rootElement) {
+        const root =
+          typeof options.rootElement === 'function'
+            ? options.rootElement(source)
+            : options.rootElement;
+
         root.appendChild(element);
       }
     }
@@ -273,6 +271,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         },
         CSS_PREFIX
       );
+      elementMutationObserver?.takeRecords();
 
       /* Table cells need to have their width set explicitly because the feedback element is position fixed */
       if (isTableRow(element) && isTableRow(placeholder)) {
@@ -295,9 +294,6 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     if (untracked(() => source.status) === 'idle') {
       requestAnimationFrame(() => (source.status = 'dragging'));
     }
-
-    let elementMutationObserver: MutationObserver | undefined;
-    let documentMutationObserver: MutationObserver | undefined;
 
     if (placeholder) {
       resizeObserver.observe(placeholder);
@@ -329,7 +325,30 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
           const attributeValue = element.getAttribute(attributeName);
 
-          if (attributeValue !== null) {
+          if (attributeName === 'style') {
+            if (supportsStyle(element) && supportsStyle(placeholder)) {
+              const styles = element.style;
+
+              for (const key of Array.from(placeholder.style)) {
+                if (styles.getPropertyValue(key) === '') {
+                  placeholder.style.removeProperty(key);
+                }
+              }
+
+              for (const key of Array.from(styles)) {
+                if (
+                  IGNORED_STYLES.includes(key) ||
+                  key.startsWith(CSS_PREFIX)
+                ) {
+                  continue;
+                }
+
+                const value = styles.getPropertyValue(key);
+
+                placeholder.style.setProperty(key, value);
+              }
+            }
+          } else if (attributeValue !== null) {
             placeholder.setAttribute(attributeName, attributeValue);
           } else {
             placeholder.removeAttribute(attributeName);
@@ -408,6 +427,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           },
           CSS_PREFIX
         );
+        elementMutationObserver?.takeRecords();
 
         dragOperation.shape = new DOMRectangle(feedbackElement);
 
@@ -464,8 +484,6 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       }
 
       placeholder?.remove();
-
-      root.removeAttribute(ROOT_ATTRIBUTE);
 
       cleanupEffect();
       dropEffectCleanup?.();
@@ -558,6 +576,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
             styles.set({transition}, CSS_PREFIX);
             feedbackElement.setAttribute(DROPPING_ATTRIBUTE, '');
+            elementMutationObserver?.takeRecords();
 
             animateTransform({
               element: feedbackElement,

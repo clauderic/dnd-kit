@@ -1,7 +1,6 @@
 export const ATTR_PREFIX = 'data-dnd-';
 export const DROPPING_ATTRIBUTE = `${ATTR_PREFIX}dropping`;
 export const CSS_PREFIX = '--dnd-';
-export const ROOT_ATTRIBUTE = `${ATTR_PREFIX}root`;
 export const ATTRIBUTE = `${ATTR_PREFIX}dragging`;
 export const PLACEHOLDER_ATTRIBUTE = `${ATTR_PREFIX}placeholder`;
 
@@ -12,6 +11,8 @@ export const IGNORED_ATTRIBUTES = [
   'aria-pressed',
   'aria-grabbing',
 ];
+
+export const IGNORED_STYLES = ['view-transition-name'];
 
 export const CSS_RULES = `
   :root [${ATTRIBUTE}] {
@@ -48,11 +49,9 @@ export const CSS_RULES = `
     translate: var(${CSS_PREFIX}translate) !important;
   }
 
-  [${ROOT_ATTRIBUTE}][style*='${CSS_PREFIX}scale'] {
-    &:is([${ATTRIBUTE}]), [${ATTRIBUTE}] {
-      scale: var(${CSS_PREFIX}scale) !important;
-      transform-origin: var(${CSS_PREFIX}transform-origin) !important;
-    }
+  [${ATTRIBUTE}][style*='${CSS_PREFIX}scale'] {
+    scale: var(${CSS_PREFIX}scale) !important;
+    transform-origin: var(${CSS_PREFIX}transform-origin) !important;
   }
 
   @layer {
