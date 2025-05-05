@@ -12,7 +12,7 @@ export class PreventSelection extends Plugin<DragDropManager> {
 
       if (dragOperation.status.initialized) {
         const style = document.createElement('style');
-        style.innerText = `* { user-select: none !important; -webkit-user-select: none !important; }`;
+        style.textContent = `* { user-select: none !important; -webkit-user-select: none !important; }`;
         document.head.appendChild(style);
 
         removeSelection();

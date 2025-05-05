@@ -30,9 +30,9 @@ export class Debug extends Plugin<DragDropManager> {
           draggableElement = element;
 
           const style = document.createElement('style');
-          style.innerText = `dialog[data-dnd-kit-debug]::backdrop {display: none;}`;
+          style.textContent = `dialog[data-dnd-kit-debug]::backdrop {display: none;}`;
 
-          element.innerText = `${draggable.id}`;
+          element.textContent = `${draggable.id}`;
           element.setAttribute('data-dnd-kit-debug', '');
           element.appendChild(style);
           element.style.backgroundColor = 'rgba(118, 190, 250, 0.5)';
@@ -83,7 +83,7 @@ export class Debug extends Plugin<DragDropManager> {
           debugElement.style.left = `${boundingRectangle.left}px`;
           debugElement.style.width = `${boundingRectangle.width}px`;
           debugElement.style.height = `${boundingRectangle.height}px`;
-          debugElement.innerText = `${droppable.id}`;
+          debugElement.textContent = `${droppable.id}`;
         } else if (element) {
           element.remove();
           elements.delete(droppable.id);

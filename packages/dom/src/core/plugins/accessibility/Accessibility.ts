@@ -57,7 +57,7 @@ export class Accessibility extends Plugin<DragDropManager> {
             const announcement = getAnnouncement?.(event, manager);
 
             if (announcement && liveRegionElement) {
-              liveRegionElement.innerText = announcement;
+              liveRegionElement.textContent = announcement;
             }
           }
         );

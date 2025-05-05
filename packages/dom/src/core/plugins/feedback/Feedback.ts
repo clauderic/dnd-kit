@@ -610,7 +610,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       for (const doc of documents) {
         if (!injectedStyleTags.has(doc)) {
           const style = document.createElement('style');
-          style.innerText = CSS_RULES;
+          style.textContent = CSS_RULES;
           doc.head.prepend(style);
           injectedStyleTags.set(doc, style);
         }

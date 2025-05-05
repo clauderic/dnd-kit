@@ -30,7 +30,7 @@ export class Cursor extends Plugin<DragDropManager> {
       if (dragOperation.status.initialized) {
         const document = doc.value;
         const style = document.createElement('style');
-        style.innerText = `* { cursor: ${cursor} !important; }`;
+        style.textContent = `* { cursor: ${cursor} !important; }`;
         document.head.appendChild(style);
 
         return () => style.remove();

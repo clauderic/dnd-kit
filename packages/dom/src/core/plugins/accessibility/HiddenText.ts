@@ -3,7 +3,7 @@ export function createHiddenText(id: string, value: string) {
 
   element.id = id;
   element.style.setProperty('display', 'none');
-  element.innerText = value;
+  element.textContent = value;
 
   return element;
 }
