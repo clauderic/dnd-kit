@@ -96,7 +96,8 @@ export class DOMRectangle extends Rectangle {
  * Get the projected transform of an element based on its final keyframe
  */
 function getProjectedTransform(element: Element): Transform | null {
-  const animations = getAnimations(element);
+  // Always get the latest animations on the element itself
+  const animations = element.getAnimations();
   let projectedTransform: Transform | null = null;
 
   if (!animations.length) return null;
