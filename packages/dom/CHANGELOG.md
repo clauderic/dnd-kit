@@ -1,5 +1,23 @@
 # @dnd-kit/dom
 
+## 0.1.8
+
+### Patch Changes
+
+- [#1681](https://github.com/clauderic/dnd-kit/pull/1681) [`14dc059`](https://github.com/clauderic/dnd-kit/commit/14dc05950ad31c50240ee864431112d7f1b70da0) Thanks [@github-actions](https://github.com/apps/github-actions)! - Cache repeated calls to `getComputedStyles` when reading properties that are unlikely to change frequently.
+
+- [`fcd9bb5`](https://github.com/clauderic/dnd-kit/commit/fcd9bb56fafc5ec23ded219bfcd7fdfa31a0caff) Thanks [@clauderic](https://github.com/clauderic)! - Moved the CSS variables to the `[data-dnd-root]` element, which defaults to the `document.body` of the source element to avoid triggering `MutationObserver` callbacks every time the `--dnd-translate` CSS variable is updated.
+
+- [#1681](https://github.com/clauderic/dnd-kit/pull/1681) [`93d3c7c`](https://github.com/clauderic/dnd-kit/commit/93d3c7c8b01d640b017cf8d2cddc69cc47c74ca5) Thanks [@github-actions](https://github.com/apps/github-actions)! - Replace `innerText` with `textContent` for better performance across multiple plugins. This change improves performance since `textContent` is generally more efficient than `innerText` as it doesn't trigger layout reflows and doesn't parse HTML entities.
+
+- [`3c625d6`](https://github.com/clauderic/dnd-kit/commit/3c625d61fc8bdba026d445333c2d1ca1d8489294) Thanks [@clauderic](https://github.com/clauderic)! - Do not use cache when getting element animations to compute projected transforms.
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.1.8
+  - @dnd-kit/collision@0.1.8
+  - @dnd-kit/geometry@0.1.8
+  - @dnd-kit/state@0.1.8
+
 ## 0.1.7
 
 ### Patch Changes
