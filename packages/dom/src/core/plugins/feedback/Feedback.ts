@@ -12,12 +12,10 @@ import {
   getComputedStyles,
   getDocument,
   getFrameTransform,
-  getWindow,
   isHTMLElement,
   parseTranslate,
   showPopover,
   supportsPopover,
-  supportsStyle,
   Styles,
   isKeyframeEffect,
 } from '@dnd-kit/dom/utilities';
@@ -30,8 +28,9 @@ import {
   ATTRIBUTE,
   CSS_PREFIX,
   CSS_RULES,
+  DROPPING_ATTRIBUTE,
   IGNORED_ATTRIBUTES,
-  IGNORED_STYLES,
+  ROOT_ATTRIBUTE,
 } from './constants.ts';
 import {
   createPlaceholder,
@@ -119,7 +118,16 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       height = height / scaleDelta.y;
     }
 
-    const styles = new Styles(feedbackElement);
+    let root = this.overlay ?? feedbackElement.ownerDocument.body;
+
+    if (options?.rootElement) {
+      root =
+        typeof options.rootElement === 'function'
+          ? options.rootElement(source)
+          : options.rootElement;
+    }
+
+    const styles = new Styles(root);
     const {transition, translate} = getComputedStyles(element);
     const clone = feedback === 'clone';
 
@@ -214,6 +222,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     const tY = transform.y * frameTransform.scaleY + initialTranslate.y;
     const translateString = `${tX}px ${tY}px 0`;
 
+    root.setAttribute(ROOT_ATTRIBUTE, '');
     styles.set(
       {
         width: width,
@@ -222,6 +231,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         left: projected.left,
         translate: translateString,
         scale: crossFrame ? `${scaleDelta.x} ${scaleDelta.y}` : '',
+        transition,
         'transform-origin': `${transformOrigin.x * 100}% ${transformOrigin.y * 100}%`,
       },
       CSS_PREFIX
@@ -231,11 +241,6 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       element.insertAdjacentElement('afterend', placeholder);
 
       if (options?.rootElement) {
-        const root =
-          typeof options.rootElement === 'function'
-            ? options.rootElement(source)
-            : options.rootElement;
-
         root.appendChild(element);
       }
     }
@@ -268,8 +273,6 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         },
         CSS_PREFIX
       );
-
-      const window = getWindow(element);
 
       /* Table cells need to have their width set explicitly because the feedback element is position fixed */
       if (isTableRow(element) && isTableRow(placeholder)) {
@@ -324,30 +327,12 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             continue;
           }
 
-          if (attributeName === 'style') {
-            if (supportsStyle(element) && supportsStyle(placeholder)) {
-              for (const key of Object.values(element.style)) {
-                if (
-                  key.startsWith(CSS_PREFIX) ||
-                  IGNORED_STYLES.includes(key)
-                ) {
-                  continue;
-                }
+          const attributeValue = element.getAttribute(attributeName);
 
-                placeholder.style.setProperty(
-                  key,
-                  element.style.getPropertyValue(key)
-                );
-              }
-            }
+          if (attributeValue !== null) {
+            placeholder.setAttribute(attributeName, attributeValue);
           } else {
-            const attributeValue = element.getAttribute(attributeName);
-
-            if (attributeValue !== null) {
-              placeholder.setAttribute(attributeName, attributeValue);
-            } else {
-              placeholder.removeAttribute(attributeName);
-            }
+            placeholder.removeAttribute(attributeName);
           }
         }
 
@@ -359,6 +344,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       elementMutationObserver.observe(element, {
         attributes: true,
         subtree: true,
+        childList: true,
       });
 
       /* Make sure the placeholder and the source element positions are always in sync */
@@ -408,13 +394,12 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       }
 
       if (status.dragging) {
-        const translateTransition = isKeyboardOperation
-          ? '250ms cubic-bezier(0.25, 1, 0.5, 1)'
-          : '0ms linear';
-
         const initialTranslate = initial.translate ?? {x: 0, y: 0};
         const x = transform.x / frameTransform.scaleX + initialTranslate.x;
         const y = transform.y / frameTransform.scaleY + initialTranslate.y;
+        const translateTransition = isKeyboardOperation
+          ? '250ms cubic-bezier(0.25, 1, 0.5, 1)'
+          : '0ms linear';
 
         styles.set(
           {
@@ -479,6 +464,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       }
 
       placeholder?.remove();
+
+      root.removeAttribute(ROOT_ATTRIBUTE);
 
       cleanupEffect();
       dropEffectCleanup?.();
@@ -569,7 +556,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
                   }
                 : {};
 
-            styles.remove(['translate', 'transition'], CSS_PREFIX);
+            styles.set({transition}, CSS_PREFIX);
+            feedbackElement.setAttribute(DROPPING_ATTRIBUTE, '');
 
             animateTransform({
               element: feedbackElement,
@@ -586,6 +574,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
                 easing: 'ease',
               },
             }).then(() => {
+              feedbackElement.removeAttribute(DROPPING_ATTRIBUTE);
               onComplete?.();
               requestAnimationFrame(restoreFocus);
             });

@@ -1,5 +1,7 @@
 export const ATTR_PREFIX = 'data-dnd-';
+export const DROPPING_ATTRIBUTE = `${ATTR_PREFIX}dropping`;
 export const CSS_PREFIX = '--dnd-';
+export const ROOT_ATTRIBUTE = `${ATTR_PREFIX}root`;
 export const ATTRIBUTE = `${ATTR_PREFIX}dragging`;
 export const PLACEHOLDER_ATTRIBUTE = `${ATTR_PREFIX}placeholder`;
 
@@ -10,8 +12,6 @@ export const IGNORED_ATTRIBUTES = [
   'aria-pressed',
   'aria-grabbing',
 ];
-
-export const IGNORED_STYLES = ['view-transition-name'];
 
 export const CSS_RULES = `
   :root [${ATTRIBUTE}] {
@@ -29,6 +29,7 @@ export const CSS_RULES = `
     height: var(${CSS_PREFIX}height, auto);
     max-height: var(${CSS_PREFIX}height, auto);
     box-sizing: border-box;
+    transition: var(${CSS_PREFIX}transition) !important;
   }
 
   :root [${PLACEHOLDER_ATTRIBUTE}] {
@@ -42,16 +43,18 @@ export const CSS_RULES = `
   [${ATTRIBUTE}] * {
     pointer-events: none !important;
   }
-  [${ATTRIBUTE}][style*='${CSS_PREFIX}translate'] {
+
+  [${ATTRIBUTE}]:not([${DROPPING_ATTRIBUTE}]) {
     translate: var(${CSS_PREFIX}translate) !important;
   }
-  [style*='${CSS_PREFIX}transition'] {
-    transition: var(${CSS_PREFIX}transition) !important;
+
+  [${ROOT_ATTRIBUTE}][style*='${CSS_PREFIX}scale'] {
+    &:is([${ATTRIBUTE}]), [${ATTRIBUTE}] {
+      scale: var(${CSS_PREFIX}scale) !important;
+      transform-origin: var(${CSS_PREFIX}transform-origin) !important;
+    }
   }
-  [style*='${CSS_PREFIX}scale'] {
-    scale: var(${CSS_PREFIX}scale) !important;
-    transform-origin: var(${CSS_PREFIX}transform-origin) !important;
-  }
+
   @layer {
     :where([${ATTRIBUTE}][popover]) {
       overflow: visible;
