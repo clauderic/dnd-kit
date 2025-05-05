@@ -1,5 +1,17 @@
 # @dnd-kit/dom
 
+## 0.1.10
+
+### Patch Changes
+
+- [`a0f5c44`](https://github.com/clauderic/dnd-kit/commit/a0f5c44985b634e8044415db342354493d201f3e) Thanks [@clauderic](https://github.com/clauderic)! - **Feedback**: Optimistically update `dragOperation.shape` when there are no modifiers for better performance.
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.1.10
+  - @dnd-kit/collision@0.1.10
+  - @dnd-kit/geometry@0.1.10
+  - @dnd-kit/state@0.1.10
+
 ## 0.1.9
 
 ### Patch Changes
