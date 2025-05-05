@@ -86,10 +86,9 @@ export class Accessibility extends Plugin<DragDropManager> {
       document.body.append(hiddenTextElement, liveRegionElement);
     };
 
-    const cleanupEffects = effects(() => {
-      for (const draggable of manager.registry.draggables.value) {
-        const {element, handle} = draggable;
-        const activator = handle ?? element;
+    const updateAttributes = () => {
+      for (const draggable of this.manager.registry.draggables.value) {
+        const activator = draggable.handle ?? draggable.element;
 
         if (activator) {
           if (!hiddenTextElement || !liveRegionElement) {
@@ -128,13 +127,23 @@ export class Accessibility extends Plugin<DragDropManager> {
           activator.setAttribute('aria-disabled', String(draggable.disabled));
         }
       }
+    };
 
-      this.destroy = () => {
-        hiddenTextElement?.remove();
-        liveRegionElement?.remove();
-        eventListeners.forEach((unsubscribe) => unsubscribe());
-        cleanupEffects();
-      };
+    this.registerEffect(() => {
+      // Re-run effect when any of the draggable elements change
+      for (const draggable of this.manager.registry.draggables.value) {
+        void draggable.element;
+        void draggable.handle;
+      }
+
+      scheduler.schedule(updateAttributes);
     });
+
+    this.destroy = () => {
+      super.destroy();
+      hiddenTextElement?.remove();
+      liveRegionElement?.remove();
+      eventListeners.forEach((unsubscribe) => unsubscribe());
+    };
   }
 }
