@@ -1,6 +1,6 @@
 import {effects} from '@dnd-kit/state';
 import {Plugin} from '@dnd-kit/abstract';
-import {isSafari, generateUniqueId} from '@dnd-kit/dom/utilities';
+import {isSafari, generateUniqueId, scheduler} from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import {
@@ -48,16 +48,28 @@ export class Accessibility extends Plugin<DragDropManager> {
 
     let hiddenTextElement: HTMLElement | undefined;
     let liveRegionElement: HTMLElement | undefined;
+    let latestAnnouncement: string | undefined;
+
+    const updateAnnouncement = () => {
+      if (!liveRegionElement || !latestAnnouncement) return;
+      if (liveRegionElement.textContent !== latestAnnouncement) {
+        liveRegionElement.textContent = latestAnnouncement;
+      }
+    };
 
     const eventListeners = Object.entries(announcements).map(
       ([eventName, getAnnouncement]) => {
         return this.manager.monitor.addEventListener(
           eventName as keyof Announcements,
           (event: any, manager: DragDropManager) => {
+            const element = liveRegionElement;
+            if (!element) return;
+
             const announcement = getAnnouncement?.(event, manager);
 
-            if (announcement && liveRegionElement) {
-              liveRegionElement.textContent = announcement;
+            if (announcement && element.textContent !== announcement) {
+              latestAnnouncement = announcement;
+              scheduler.schedule(updateAnnouncement);
             }
           }
         );
