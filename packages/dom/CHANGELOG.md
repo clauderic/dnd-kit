@@ -1,5 +1,17 @@
 # @dnd-kit/dom
 
+## 0.1.9
+
+### Patch Changes
+
+- [`ffdbf52`](https://github.com/clauderic/dnd-kit/commit/ffdbf52a93cbe0c1c785feca57622d4712175a3a) Thanks [@clauderic](https://github.com/clauderic)! - **Feedback**: Revert moving CSS variables to the root as we noticed performance regressions in applications that have complex DOM structures.
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.1.9
+  - @dnd-kit/collision@0.1.9
+  - @dnd-kit/geometry@0.1.9
+  - @dnd-kit/state@0.1.9
+
 ## 0.1.8
 
 ### Patch Changes
