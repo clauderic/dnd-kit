@@ -20,7 +20,7 @@ import {
   isKeyframeEffect,
   supportsStyle,
 } from '@dnd-kit/dom/utilities';
-import {Coordinates, Rectangle} from '@dnd-kit/geometry';
+import {Coordinates, Point, Rectangle} from '@dnd-kit/geometry';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import type {Draggable} from '../../entities/index.ts';
@@ -414,8 +414,10 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
       if (status.dragging) {
         const initialTranslate = initial.translate ?? {x: 0, y: 0};
-        const x = transform.x / frameTransform.scaleX + initialTranslate.x;
-        const y = transform.y / frameTransform.scaleY + initialTranslate.y;
+        const translate = {
+          x: transform.x / frameTransform.scaleX + initialTranslate.x,
+          y: transform.y / frameTransform.scaleY + initialTranslate.y,
+        };
         const translateTransition = isKeyboardOperation
           ? '250ms cubic-bezier(0.25, 1, 0.5, 1)'
           : '0ms linear';
@@ -423,18 +425,27 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         styles.set(
           {
             transition: `${transition}, translate ${translateTransition}`,
-            translate: `${x}px ${y}px 0`,
+            translate: `${translate.x}px ${translate.y}px 0`,
           },
           CSS_PREFIX
         );
         elementMutationObserver?.takeRecords();
 
-        dragOperation.shape = new DOMRectangle(feedbackElement);
+        const previousTranslate = state.current.translate;
+        const modifiers = untracked(() => dragOperation.modifiers);
+        const currentShape = untracked(() => dragOperation.shape?.current);
 
-        state.current.translate = {
-          x,
-          y,
-        };
+        if (currentShape && previousTranslate && !modifiers.length) {
+          const delta = Point.delta(translate, previousTranslate);
+
+          dragOperation.shape = Rectangle.from(
+            currentShape.boundingRectangle
+          ).translate(delta.x, delta.y);
+        } else {
+        dragOperation.shape = new DOMRectangle(feedbackElement);
+        }
+
+        state.current.translate = translate;
       }
     });
 
