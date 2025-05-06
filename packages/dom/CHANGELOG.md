@@ -1,5 +1,17 @@
 # @dnd-kit/dom
 
+## 0.1.11
+
+### Patch Changes
+
+- [#1685](https://github.com/clauderic/dnd-kit/pull/1685) [`2370665`](https://github.com/clauderic/dnd-kit/commit/237066598f7da6cd59d78120260788593371e820) Thanks [@clauderic](https://github.com/clauderic)! - Minimize layout thrashing in `Scroller` and `Accessibility` plugins.
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.1.11
+  - @dnd-kit/collision@0.1.11
+  - @dnd-kit/geometry@0.1.11
+  - @dnd-kit/state@0.1.11
+
 ## 0.1.10
 
 ### Patch Changes
