@@ -1,6 +1,5 @@
-import {effects} from '@dnd-kit/state';
 import {Plugin} from '@dnd-kit/abstract';
-import {isSafari, generateUniqueId} from '@dnd-kit/dom/utilities';
+import {isSafari, generateUniqueId, scheduler} from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import {
@@ -16,14 +15,37 @@ import {createHiddenText} from './HiddenText.ts';
 import {createLiveRegion} from './LiveRegion.ts';
 
 interface Options {
+  /**
+   * Optional id that should be used for the accessibility plugin's screen reader instructions and announcements.
+   */
   id?: string;
+  /**
+   * Optional id prefix to use for the accessibility plugin's screen reader instructions and announcements.
+   */
   idPrefix?: {
     description?: string;
     announcement?: string;
   };
+  /**
+   * The announcements to use for the accessibility plugin.
+   */
   announcements?: Announcements;
+  /**
+   * The screen reader instructions to use for the accessibility plugin.
+   */
   screenReaderInstructions?: ScreenReaderInstructions;
+  /**
+   * The number of milliseconds to debounce the announcement updates.
+   *
+   * @remarks
+   * Only the `dragover` and `dragmove` announcements are debounced.
+   *
+   * @default 500
+   */
+  debounce?: number;
 }
+
+const debouncedEvents = ['dragover', 'dragmove'];
 
 export class Accessibility extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager, options?: Options) {
@@ -37,6 +59,7 @@ export class Accessibility extends Plugin<DragDropManager> {
       } = {},
       announcements = defaultAnnouncements,
       screenReaderInstructions = defaultScreenReaderInstructions,
+      debounce: debounceMs = 500,
     } = options ?? {};
 
     const descriptionId = id
@@ -48,16 +71,41 @@ export class Accessibility extends Plugin<DragDropManager> {
 
     let hiddenTextElement: HTMLElement | undefined;
     let liveRegionElement: HTMLElement | undefined;
+    let liveRegionTextNode: Node | undefined;
+    let latestAnnouncement: string | undefined;
+
+    const updateAnnouncement = (value = latestAnnouncement) => {
+      if (!liveRegionTextNode || !value) return;
+      if (liveRegionTextNode?.nodeValue !== value) {
+        liveRegionTextNode.nodeValue = value;
+      }
+    };
+    const scheduleUpdateAnnouncement = () =>
+      scheduler.schedule(updateAnnouncement);
+    const debouncedUpdateAnnouncement = debounce(
+      scheduleUpdateAnnouncement,
+      debounceMs
+    );
 
     const eventListeners = Object.entries(announcements).map(
       ([eventName, getAnnouncement]) => {
         return this.manager.monitor.addEventListener(
           eventName as keyof Announcements,
           (event: any, manager: DragDropManager) => {
+            const element = liveRegionTextNode;
+            if (!element) return;
+
             const announcement = getAnnouncement?.(event, manager);
 
-            if (announcement && liveRegionElement) {
-              liveRegionElement.textContent = announcement;
+            if (announcement && element.nodeValue !== announcement) {
+              latestAnnouncement = announcement;
+
+              if (debouncedEvents.includes(eventName)) {
+                debouncedUpdateAnnouncement();
+              } else {
+                scheduleUpdateAnnouncement();
+                debouncedUpdateAnnouncement.cancel();
+              }
             }
           }
         );
@@ -70,14 +118,15 @@ export class Accessibility extends Plugin<DragDropManager> {
         screenReaderInstructions.draggable
       );
       liveRegionElement = createLiveRegion(announcementId);
+      liveRegionTextNode = document.createTextNode('');
+      liveRegionElement.appendChild(liveRegionTextNode);
 
       document.body.append(hiddenTextElement, liveRegionElement);
     };
 
-    const cleanupEffects = effects(() => {
-      for (const draggable of manager.registry.draggables.value) {
-        const {element, handle} = draggable;
-        const activator = handle ?? element;
+    const updateAttributes = () => {
+      for (const draggable of this.manager.registry.draggables.value) {
+        const activator = draggable.handle ?? draggable.element;
 
         if (activator) {
           if (!hiddenTextElement || !liveRegionElement) {
@@ -116,13 +165,35 @@ export class Accessibility extends Plugin<DragDropManager> {
           activator.setAttribute('aria-disabled', String(draggable.disabled));
         }
       }
+    };
 
-      this.destroy = () => {
-        hiddenTextElement?.remove();
-        liveRegionElement?.remove();
-        eventListeners.forEach((unsubscribe) => unsubscribe());
-        cleanupEffects();
-      };
+    this.registerEffect(() => {
+      // Re-run effect when any of the draggable elements change
+      for (const draggable of this.manager.registry.draggables.value) {
+        void draggable.element;
+        void draggable.handle;
+      }
+
+      scheduler.schedule(updateAttributes);
     });
+
+    this.destroy = () => {
+      super.destroy();
+      hiddenTextElement?.remove();
+      liveRegionElement?.remove();
+      eventListeners.forEach((unsubscribe) => unsubscribe());
+    };
   }
+}
+
+function debounce(fn: () => void, wait: number) {
+  let timeout: NodeJS.Timeout | undefined;
+  const debounced = () => {
+    clearTimeout(timeout);
+    timeout = setTimeout(fn, wait);
+  };
+
+  debounced.cancel = () => clearTimeout(timeout);
+
+  return debounced;
 }

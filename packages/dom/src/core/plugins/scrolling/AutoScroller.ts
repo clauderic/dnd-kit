@@ -4,6 +4,7 @@ import type {CleanupFunction} from '@dnd-kit/state';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import {Scroller} from './Scroller.ts';
+import {scheduler} from '../../../utilities/scheduling/scheduler.ts';
 
 interface Options {}
 
@@ -35,7 +36,10 @@ export class AutoScroller extends Plugin<DragDropManager> {
 
         if (canScroll) {
           scroller.autoScrolling = true;
-          const interval = setInterval(scroller.scroll, AUTOSCROLL_INTERVAL);
+          const interval = setInterval(
+            () => scheduler.schedule(scroller.scroll),
+            AUTOSCROLL_INTERVAL
+          );
 
           return () => {
             clearInterval(interval);

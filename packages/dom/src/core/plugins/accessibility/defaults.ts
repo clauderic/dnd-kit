@@ -20,7 +20,7 @@ export const defaultAnnouncements: Announcements = {
     return `Picked up draggable item ${source.id}.`;
   },
   dragover({operation: {source, target}}) {
-    if (!source) return;
+    if (!source || source.id === target?.id) return;
 
     if (target) {
       return `Draggable item ${source.id} was moved over droppable target ${target.id}.`;
