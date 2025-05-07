@@ -47,8 +47,6 @@ interface Options {
 
 const debouncedEvents = ['dragover', 'dragmove'];
 
-const elements = new WeakSet<Element>();
-
 export class Accessibility extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager, options?: Options) {
     super(manager);
@@ -126,67 +124,75 @@ export class Accessibility extends Plugin<DragDropManager> {
       document.body.append(hiddenTextElement, liveRegionElement);
     };
 
-    const updateAttributes = () => {
+    const mutations = new Set<() => void>();
+
+    function executeMutations() {
+      for (const operation of mutations) {
+        operation();
+      }
+    }
+
+    this.registerEffect(() => {
+      mutations.clear();
+
+      // Re-run effect when any of the draggable elements change
       for (const draggable of this.manager.registry.draggables.value) {
         const activator = draggable.handle ?? draggable.element;
 
         if (activator) {
-          if (!elements.has(activator)) {
-            elements.add(activator);
-          }
-
-          if (!hiddenTextElement || !liveRegionElement) {
-            initialize();
-          }
+          mutations.add(initialize);
 
           if (
             (!isFocusable(activator) || isSafari()) &&
             !activator.hasAttribute('tabindex')
           ) {
-            activator.setAttribute('tabindex', '0');
+            mutations.add(() => activator.setAttribute('tabindex', '0'));
           }
 
           if (
             !activator.hasAttribute('role') &&
             !(activator.tagName.toLowerCase() === 'button')
           ) {
-            activator.setAttribute('role', defaultAttributes.role);
+            mutations.add(() =>
+              activator.setAttribute('role', defaultAttributes.role)
+            );
           }
 
-          if (!activator.hasAttribute('role-description')) {
-            activator.setAttribute(
-              'aria-roledescription',
-              defaultAttributes.roleDescription
+          if (!activator.hasAttribute('aria-roledescription')) {
+            mutations.add(() =>
+              activator.setAttribute(
+                'aria-roledescription',
+                defaultAttributes.roleDescription
+              )
             );
           }
 
           if (!activator.hasAttribute('aria-describedby')) {
-            activator.setAttribute('aria-describedby', descriptionId);
+            mutations.add(() =>
+              activator.setAttribute('aria-describedby', descriptionId)
+            );
           }
 
           for (const key of ['aria-pressed', 'aria-grabbed']) {
-            activator.setAttribute(key, String(draggable.isDragging));
+            const value = String(draggable.isDragging);
+
+            if (activator.getAttribute(key) !== value) {
+              mutations.add(() => activator.setAttribute(key, value));
+            }
           }
 
-          activator.setAttribute('aria-disabled', String(draggable.disabled));
-        }
-      }
-    };
+          const disabled = String(draggable.disabled);
 
-    this.registerEffect(() => {
-      let dirty = false;
-
-      // Re-run effect when any of the draggable elements change
-      for (const draggable of this.manager.registry.draggables.value) {
-        const activator = draggable.handle ?? draggable.element;
-
-        if (activator && !elements.has(activator)) {
-          dirty = true;
+          if (activator.getAttribute('aria-disabled') !== disabled) {
+            mutations.add(() =>
+              activator.setAttribute('aria-disabled', disabled)
+            );
+          }
         }
       }
 
-      if (dirty) {
-        scheduler.schedule(updateAttributes);
+      if (mutations.size > 0) {
+        scheduler.schedule(executeMutations);
       }
     });
 
