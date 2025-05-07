@@ -1,5 +1,21 @@
 # @dnd-kit/dom
 
+## 0.1.12
+
+### Patch Changes
+
+- [`2e0e2e2`](https://github.com/clauderic/dnd-kit/commit/2e0e2e256d2043831df6a245df9f618ac4b5ecc9) Thanks [@clauderic](https://github.com/clauderic)! - Exported `Cursor` and `PreventSelection` plugins which are used in the default preset.
+
+- [#1687](https://github.com/clauderic/dnd-kit/pull/1687) [`b86867b`](https://github.com/clauderic/dnd-kit/commit/b86867b1426525729357654a62f52fe0554f7f73) Thanks [@github-actions](https://github.com/apps/github-actions)! - Added `visibility: hidden` to the `::backdrop` pseudo element of the `Feedback` plugin to ensure it is not visible on Firefox, there is a bug where it can be shown even with `display: none` when there is a backdrop filter applied to it.
+
+- [#1687](https://github.com/clauderic/dnd-kit/pull/1687) [`a913f5e`](https://github.com/clauderic/dnd-kit/commit/a913f5e68435c5c0a4a073a7437f265bcc0b5d1d) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fix calls to `requestAnimationFrame` scheduler in SSR environment
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.1.12
+  - @dnd-kit/collision@0.1.12
+  - @dnd-kit/geometry@0.1.12
+  - @dnd-kit/state@0.1.12
+
 ## 0.1.11
 
 ### Patch Changes
