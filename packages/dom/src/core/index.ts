@@ -14,7 +14,9 @@ export type {Sensors} from './sensors/index.ts';
 export {
   Accessibility,
   AutoScroller,
+  Cursor,
   Feedback,
+  PreventSelection,
   Scroller,
   ScrollListener,
 } from './plugins/index.ts';
