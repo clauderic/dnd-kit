@@ -1,5 +1,5 @@
-export function parseTranslate(translate: string) {
-  if (translate === 'none') {
+export function parseTranslate(translate?: string) {
+  if (!translate || translate === 'none') {
     return null;
   }
 

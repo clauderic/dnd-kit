@@ -12,7 +12,9 @@ export interface Transform extends Coordinates {
 export function parseTransform(computedStyles: {
   scale: string;
   transform: string;
-  translate: string;
+  // We handled the case where translate is not a string because
+  // some versions of Chrome do not return translate in getComputedStyles despite the spec
+  translate?: string;
 }): Transform | null {
   const {scale, transform, translate} = computedStyles;
   const parsedScale = parseScale(scale);
