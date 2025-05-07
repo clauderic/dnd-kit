@@ -71,6 +71,7 @@ export const CSS_RULES = `
   }
   [${ATTRIBUTE}]::backdrop, [${ATTR_PREFIX}overlay]:not([${ATTRIBUTE}]) {
     display: none;
+    visibility: hidden;
   }
 `
   .replace(/\n+/g, ' ')
