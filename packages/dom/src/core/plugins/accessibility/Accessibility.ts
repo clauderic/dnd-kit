@@ -47,6 +47,8 @@ interface Options {
 
 const debouncedEvents = ['dragover', 'dragmove'];
 
+const elements = new WeakSet<Element>();
+
 export class Accessibility extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager, options?: Options) {
     super(manager);
@@ -129,6 +131,10 @@ export class Accessibility extends Plugin<DragDropManager> {
         const activator = draggable.handle ?? draggable.element;
 
         if (activator) {
+          if (!elements.has(activator)) {
+            elements.add(activator);
+          }
+
           if (!hiddenTextElement || !liveRegionElement) {
             initialize();
           }
@@ -168,13 +174,20 @@ export class Accessibility extends Plugin<DragDropManager> {
     };
 
     this.registerEffect(() => {
+      let dirty = false;
+
       // Re-run effect when any of the draggable elements change
       for (const draggable of this.manager.registry.draggables.value) {
-        void draggable.element;
-        void draggable.handle;
+        const activator = draggable.handle ?? draggable.element;
+
+        if (activator && !elements.has(activator)) {
+          dirty = true;
+        }
       }
 
-      scheduler.schedule(updateAttributes);
+      if (dirty) {
+        scheduler.schedule(updateAttributes);
+      }
     });
 
     this.destroy = () => {

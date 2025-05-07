@@ -35,6 +35,10 @@ export class Scheduler<T extends (callback: Callback) => any> {
   };
 }
 
-export const scheduler = new Scheduler((callback) =>
-  requestAnimationFrame(callback)
-);
+export const scheduler = new Scheduler((callback) => {
+  if (typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(callback);
+  } else {
+    callback();
+  }
+});
