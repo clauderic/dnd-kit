@@ -45,18 +45,11 @@ export const VariableSizes: Story = {
     getItemStyle(_: number, index: number) {
       if (index === 0 || index === 10) {
         return {
-          width: 320,
-          height: 320,
           maxWidth: 'initial',
           gridRowStart: 'span 2',
           gridColumnStart: 'span 2',
         };
       }
-
-      return {
-        height: 150,
-        width: 150,
-      };
     },
   },
 };
@@ -81,11 +74,6 @@ export const Clone: Story = {
           gridRowStart: 'span 2',
         };
       }
-
-      return {
-        height: 150,
-        width: 150,
-      };
     },
     feedback: 'clone',
   },

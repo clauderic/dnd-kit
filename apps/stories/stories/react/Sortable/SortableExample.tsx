@@ -148,6 +148,8 @@ function getWrapperStyles(
         maxWidth: 900,
         marginInline: 'auto',
         gridTemplateColumns: 'repeat(auto-fill, 150px)',
+        gridAutoFlow: 'dense',
+        gridAutoRows: '150px',
         justifyContent: 'center',
       };
     case 'horizontal':
