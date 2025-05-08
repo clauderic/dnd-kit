@@ -14,12 +14,6 @@ type Story = StoryObj<typeof SortableExample>;
 const defaultArgs = {
   debug: false,
   layout: 'grid',
-  getItemStyle() {
-    return {
-      height: 180,
-      width: 180,
-    };
-  },
 } as const;
 
 export const Grid: Story = {
