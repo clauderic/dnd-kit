@@ -43,6 +43,7 @@ export {
   isKeyboardEvent,
   isPointerEvent,
 } from './type-guards/index.ts';
+export {isTextInput} from './type-guards/isTextInput.ts';
 
 export {
   animateTransform,

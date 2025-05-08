@@ -14,6 +14,7 @@ import {
   Listeners,
   getFrameTransform,
   scheduler,
+  isTextInput,
 } from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.ts';
@@ -65,6 +66,13 @@ const defaults = Object.freeze<PointerSensorOptions>({
         delay: {value: 250, tolerance: 5},
       };
     }
+
+    if (isTextInput(target) && !event.defaultPrevented) {
+      return {
+        delay: {value: 200, tolerance: 0},
+      };
+    }
+
     return {
       delay: {value: 200, tolerance: 10},
       distance: {value: 5},
