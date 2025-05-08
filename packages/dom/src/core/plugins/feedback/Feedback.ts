@@ -67,7 +67,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
   };
 
   constructor(manager: DragDropManager, options?: FeedbackOptions) {
-    super(manager);
+    super(manager, options);
 
     this.registerEffect(this.#injectStyles);
     this.registerEffect(this.#render);
@@ -214,7 +214,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     const initialTranslate = initial.translate ?? {x: 0, y: 0};
     const tX = transform.x * frameTransform.scaleX + initialTranslate.x;
     const tY = transform.y * frameTransform.scaleY + initialTranslate.y;
-    const translateString = `${tX}px ${tY}px 0`;
+    const translateString = `${tX}px, ${tY}px, 0`;
 
     styles.set(
       {
@@ -442,7 +442,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             currentShape.boundingRectangle
           ).translate(delta.x, delta.y);
         } else {
-        dragOperation.shape = new DOMRectangle(feedbackElement);
+          dragOperation.shape = new DOMRectangle(feedbackElement);
         }
 
         state.current.translate = translate;
