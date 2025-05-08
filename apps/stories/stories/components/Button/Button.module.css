@@ -15,7 +15,7 @@
   color: #f6f8ff;
   cursor: grab;
   outline: none;
-  transition: background 0.3s ease, box-shadow 0.25s ease, transform 0.2s ease-in, opacity 0.2s ease;
+  transition: background 0.3s ease, box-shadow 0.25s ease, transform 0.2s ease-in, opacity 0.2s ease-in-out;
   transform-origin: 50% 50%;
   min-height: 62px;
   box-shadow: var(--box-shadow);
@@ -35,7 +35,7 @@
 }
 
 .Button[disabled] {
-  opacity: 0.5;
+  opacity: 0.3;
 }
 
 .Button[data-shadow="true"]:not([aria-hidden="true"]) {
@@ -52,6 +52,11 @@
       transform: scale(1);
       box-shadow: 0 1px 3px 0 rgba(34, 33, 81, 0.15);
     }
+  }
+
+  [data-dnd-overlay="true"][data-dnd-dropping] & {
+    opacity: 0;
+    transition: background 0.3s ease, box-shadow 0.25s ease, transform 0.2s ease-in, opacity 0.3s ease-in;
   }
 }
 
