@@ -5,7 +5,7 @@ import {CollisionPriority} from '@dnd-kit/abstract';
 import {DragDropProvider} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
 import {move} from '@dnd-kit/helpers';
-import {defaultPreset} from '@dnd-kit/dom';
+import {defaultPreset, PointerSensor, KeyboardSensor} from '@dnd-kit/dom';
 import {Debug} from '@dnd-kit/dom/plugins/debug';
 import {supportsViewTransition} from '@dnd-kit/dom/utilities';
 import {DragDropEventHandlers} from '@dnd-kit/react';
@@ -31,6 +31,15 @@ interface Props {
   vertical?: boolean;
 }
 
+const sensors = [
+  PointerSensor.configure({
+    activatorElements(source) {
+      return [source.element, source.handle];
+    },
+  }),
+  KeyboardSensor,
+];
+
 export function MultipleLists({
   debug,
   defaultItems,
@@ -49,7 +58,7 @@ export function MultipleLists({
       D: [],
     }
   );
-  const [columns, setColumns] = useState(Object.keys(items));
+  const [columns] = useState(Object.keys(items));
   const snapshot = useRef(cloneDeep(items));
   const handleRemoveItem = useCallback((id: string, column: string) => {
     const remove = () =>
@@ -68,6 +77,7 @@ export function MultipleLists({
   return (
     <DragDropProvider
       plugins={debug ? [...defaultPreset.plugins, Debug] : undefined}
+      sensors={sensors}
       onDragStart={useCallback<DragDropEventHandlers['onDragStart']>(() => {
         snapshot.current = cloneDeep(items);
       }, [items])}
