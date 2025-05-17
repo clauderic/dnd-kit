@@ -122,8 +122,33 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     let elementMutationObserver: MutationObserver | undefined;
     let documentMutationObserver: MutationObserver | undefined;
     const styles = new Styles(feedbackElement);
-    const {transition, translate} = getComputedStyles(element);
+    const {
+      transition,
+      translate,
+      boxSizing,
+      paddingBlockStart,
+      paddingBlockEnd,
+      paddingInlineStart,
+      paddingInlineEnd,
+      borderInlineStartWidth,
+      borderInlineEndWidth,
+      borderBlockStartWidth,
+      borderBlockEndWidth,
+    } = getComputedStyles(element);
     const clone = feedback === 'clone';
+    const contentBox = boxSizing === 'content-box';
+    const widthOffset = contentBox
+      ? parseInt(paddingInlineStart) +
+        parseInt(paddingInlineEnd) +
+        parseInt(borderInlineStartWidth) +
+        parseInt(borderInlineEndWidth)
+      : 0;
+    const heightOffset = contentBox
+      ? parseInt(paddingBlockStart) +
+        parseInt(paddingBlockEnd) +
+        parseInt(borderBlockStartWidth) +
+        parseInt(borderBlockEndWidth)
+      : 0;
 
     const placeholder =
       feedback !== 'move' && !this.overlay
@@ -218,8 +243,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
     styles.set(
       {
-        width: width,
-        height: height,
+        width: width - widthOffset,
+        height: height - heightOffset,
         top: projected.top,
         left: projected.left,
         translate: translateString,
@@ -264,8 +289,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
       styles.set(
         {
-          width: placeholderShape.width,
-          height: placeholderShape.height,
+          width: placeholderShape.width - widthOffset,
+          height: placeholderShape.height - heightOffset,
           top: top + dY,
           left: left + dX,
         },
