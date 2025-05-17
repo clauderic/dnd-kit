@@ -113,15 +113,26 @@ export class Accessibility extends Plugin<DragDropManager> {
     );
 
     const initialize = () => {
-      hiddenTextElement = createHiddenText(
-        descriptionId,
-        screenReaderInstructions.draggable
-      );
-      liveRegionElement = createLiveRegion(announcementId);
-      liveRegionTextNode = document.createTextNode('');
-      liveRegionElement.appendChild(liveRegionTextNode);
+      let elements = [];
 
-      document.body.append(hiddenTextElement, liveRegionElement);
+      if (!hiddenTextElement?.isConnected) {
+        hiddenTextElement = createHiddenText(
+          descriptionId,
+          screenReaderInstructions.draggable
+        );
+        elements.push(hiddenTextElement);
+      }
+
+      if (!liveRegionElement?.isConnected) {
+        liveRegionElement = createLiveRegion(announcementId);
+        liveRegionTextNode = document.createTextNode('');
+        liveRegionElement.appendChild(liveRegionTextNode);
+        elements.push(liveRegionElement);
+      }
+
+      if (elements.length > 0) {
+        document.body.append(...elements);
+      }
     };
 
     const mutations = new Set<() => void>();
@@ -140,7 +151,9 @@ export class Accessibility extends Plugin<DragDropManager> {
         const activator = draggable.handle ?? draggable.element;
 
         if (activator) {
-          mutations.add(initialize);
+          if (!hiddenTextElement || !liveRegionElement) {
+            mutations.add(initialize);
+          }
 
           if (
             (!isFocusable(activator) || isSafari()) &&
