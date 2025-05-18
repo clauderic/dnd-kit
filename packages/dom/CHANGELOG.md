@@ -1,5 +1,25 @@
 # @dnd-kit/dom
 
+## 0.1.13
+
+### Patch Changes
+
+- [`c46415a`](https://github.com/clauderic/dnd-kit/commit/c46415a0733f5cbba49cdbd7b6786a0d9add6800) Thanks [@clauderic](https://github.com/clauderic)! - **Feedback**: Removed `box-sizing: border-box` from the default Feedback plugin styles, and account for `box-sizing: content-box` or `box-sizing: border-box` when setting an explicit wdith and height on the feedback element.
+
+- [#1691](https://github.com/clauderic/dnd-kit/pull/1691) [`382f4e2`](https://github.com/clauderic/dnd-kit/commit/382f4e2f0800a3b85487a1a7a2cefef4484bee70) Thanks [@github-actions](https://github.com/apps/github-actions)! - **Accessiblity**: Fixed a bug where accesibility instructions and announcement nodes were re-created on every drag operation.
+
+- [#1691](https://github.com/clauderic/dnd-kit/pull/1691) [`432a0dd`](https://github.com/clauderic/dnd-kit/commit/432a0dd8c67cfdebf0194205979b7249620e73a8) Thanks [@github-actions](https://github.com/apps/github-actions)! - **Feedback**: Fix a bug where options were not properly being set on the plugin instance.
+
+- [#1689](https://github.com/clauderic/dnd-kit/pull/1689) [`a3496c1`](https://github.com/clauderic/dnd-kit/commit/a3496c15c2dc07cc982608b2a4afb1c61b01dbb8) Thanks [@GuillaumeSalles](https://github.com/GuillaumeSalles)! - Ensure showPopover is not called when popover is already visible
+
+- [#1691](https://github.com/clauderic/dnd-kit/pull/1691) [`4a22b39`](https://github.com/clauderic/dnd-kit/commit/4a22b39267f1fa8d17a62b9c29ff8728733c1478) Thanks [@github-actions](https://github.com/apps/github-actions)! - **PointerSensor**: Update default activation constraints to only allow dragging via the `delay` constraint when the activation event target is a text input to avoid interfering with potential text selections within the text input.
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.1.13
+  - @dnd-kit/collision@0.1.13
+  - @dnd-kit/geometry@0.1.13
+  - @dnd-kit/state@0.1.13
+
 ## 0.1.12
 
 ### Patch Changes
