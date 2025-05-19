@@ -2,6 +2,7 @@ import {Rectangle, type BoundingRectangle} from '@dnd-kit/geometry';
 
 import {Scheduler} from '../scheduling/scheduler.ts';
 import {isSafari} from '../execution-context/isSafari.ts';
+import {applyTransform} from '../transform/applyTransform.ts';
 import {inverseTransform} from '../transform/inverseTransform.ts';
 import {getComputedStyles} from '../styles/getComputedStyles.ts';
 import {parseTransform, type Transform} from '../transform/index.ts';
@@ -38,7 +39,7 @@ export class DOMRectangle extends Rectangle {
 
     resetAnimations?.();
 
-    const projectedTransform = getProjectedTransform(element);
+    const projectedTransform = getProjectedTransform(element, computedStyles);
 
     if (parsedTransform) {
       updated = inverseTransform(
@@ -60,11 +61,17 @@ export class DOMRectangle extends Rectangle {
       height: updated?.height ?? height,
     };
 
-    if (projectedTransform && !ignoreTransforms) {
-      top = top + projectedTransform.y;
-      left = left + projectedTransform.x;
-      width = width * projectedTransform.scaleX;
-      height = height * projectedTransform.scaleY;
+    if (projectedTransform && !ignoreTransforms && updated) {
+      const projected = applyTransform(
+        updated,
+        projectedTransform,
+        computedStyles.transformOrigin
+      );
+
+      top = projected.top;
+      left = projected.left;
+      width = projected.width;
+      height = projected.height;
       scale.x = projectedTransform.scaleX;
       scale.y = projectedTransform.scaleY;
     }
@@ -95,7 +102,10 @@ export class DOMRectangle extends Rectangle {
 /*
  * Get the projected transform of an element based on its final keyframe
  */
-function getProjectedTransform(element: Element): Transform | null {
+function getProjectedTransform(
+  element: Element,
+  computedStyles: CSSStyleDeclaration
+): Transform | null {
   // Always get the latest animations on the element itself
   const animations = element.getAnimations();
   let projectedTransform: Transform | null = null;
@@ -114,9 +124,16 @@ function getProjectedTransform(element: Element): Transform | null {
 
     if (transform || translate || scale) {
       const parsedTransform = parseTransform({
-        transform: typeof transform === 'string' ? transform : '',
-        translate: typeof translate === 'string' ? translate : '',
-        scale: typeof scale === 'string' ? scale : '',
+        transform:
+          typeof transform === 'string' && transform
+            ? transform
+            : computedStyles.transform,
+        translate:
+          typeof translate === 'string' && translate
+            ? translate
+            : computedStyles.translate,
+        scale:
+          typeof scale === 'string' && scale ? scale : computedStyles.scale,
       });
 
       if (parsedTransform) {
