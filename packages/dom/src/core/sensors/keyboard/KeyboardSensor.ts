@@ -3,7 +3,6 @@ import {effect} from '@dnd-kit/state';
 import type {CleanupFunction} from '@dnd-kit/state';
 import {
   getDocument,
-  getWindow,
   isElement,
   isKeyboardEvent,
   scrollIntoViewIfNeeded,
@@ -185,8 +184,6 @@ export class KeyboardSensor extends Sensor<
     this.sideEffects();
 
     const sourceDocument = getDocument(element);
-    const sourceWindow = getWindow(sourceDocument);
-
     const listeners = [
       this.listeners.bind(sourceDocument, [
         {
@@ -195,9 +192,6 @@ export class KeyboardSensor extends Sensor<
             this.handleKeyDown(event, source, options),
           options: {capture: true},
         },
-      ]),
-      this.listeners.bind(sourceWindow, [
-        {type: 'resize', listener: () => this.handleEnd(event, true)},
       ]),
     ];
 

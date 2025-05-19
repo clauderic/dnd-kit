@@ -19,6 +19,7 @@ import {
   Styles,
   isKeyframeEffect,
   supportsStyle,
+  getWindow,
 } from '@dnd-kit/dom/utilities';
 import {Coordinates, Point, Rectangle} from '@dnd-kit/geometry';
 
@@ -314,7 +315,15 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     });
 
     /* Initialize drag operation shape */
-    dragOperation.shape = new DOMRectangle(feedbackElement);
+
+    const feedbackWindow = getWindow(feedbackElement);
+    const handleWindowResize = (event: Event) => {
+      this.manager.actions.stop({event});
+    };
+
+    if (isKeyboardOperation) {
+      feedbackWindow.addEventListener('resize', handleWindowResize);
+    }
 
     if (untracked(() => source.status) === 'idle') {
       requestAnimationFrame(() => (source.status = 'dragging'));
@@ -494,6 +503,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       elementMutationObserver?.disconnect();
       documentMutationObserver?.disconnect();
       resizeObserver.disconnect();
+      feedbackWindow.removeEventListener('resize', handleWindowResize);
 
       if (supportsPopover(feedbackElement)) {
         feedbackElement.removeEventListener(
