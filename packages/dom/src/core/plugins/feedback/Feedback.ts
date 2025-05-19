@@ -240,7 +240,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     const initialTranslate = initial.translate ?? {x: 0, y: 0};
     const tX = transform.x * frameTransform.scaleX + initialTranslate.x;
     const tY = transform.y * frameTransform.scaleY + initialTranslate.y;
-    const translateString = `${tX}px, ${tY}px, 0`;
+    const translateString = `${tX}px ${tY}px 0`;
 
     styles.set(
       {
@@ -250,7 +250,6 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         left: projected.left,
         translate: translateString,
         scale: crossFrame ? `${scaleDelta.x} ${scaleDelta.y}` : '',
-        transition,
         'transform-origin': `${transformOrigin.x * 100}% ${transformOrigin.y * 100}%`,
       },
       CSS_PREFIX
@@ -311,10 +310,12 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         }
       }
 
-      dragOperation.shape = new DOMRectangle(element);
+      dragOperation.shape = new DOMRectangle(feedbackElement);
     });
 
     /* Initialize drag operation shape */
+    const initialShape = new DOMRectangle(feedbackElement);
+    untracked(() => (dragOperation.shape = initialShape));
 
     const feedbackWindow = getWindow(feedbackElement);
     const handleWindowResize = (event: Event) => {
@@ -452,6 +453,9 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           x: transform.x / frameTransform.scaleX + initialTranslate.x,
           y: transform.y / frameTransform.scaleY + initialTranslate.y,
         };
+        const previousTranslate = state.current.translate;
+        const modifiers = untracked(() => dragOperation.modifiers);
+        const currentShape = untracked(() => dragOperation.shape?.current);
         const translateTransition = isKeyboardOperation
           ? '250ms cubic-bezier(0.25, 1, 0.5, 1)'
           : '0ms linear';
@@ -465,11 +469,12 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         );
         elementMutationObserver?.takeRecords();
 
-        const previousTranslate = state.current.translate;
-        const modifiers = untracked(() => dragOperation.modifiers);
-        const currentShape = untracked(() => dragOperation.shape?.current);
-
-        if (currentShape && previousTranslate && !modifiers.length) {
+        if (
+          currentShape &&
+          currentShape !== initialShape &&
+          previousTranslate &&
+          !modifiers.length
+        ) {
           const delta = Point.delta(translate, previousTranslate);
 
           dragOperation.shape = Rectangle.from(
