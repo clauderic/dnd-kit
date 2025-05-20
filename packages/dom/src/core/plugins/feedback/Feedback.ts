@@ -241,6 +241,9 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     const tX = transform.x * frameTransform.scaleX + initialTranslate.x;
     const tY = transform.y * frameTransform.scaleY + initialTranslate.y;
     const translateString = `${tX}px ${tY}px 0`;
+    const transitionString = transition
+      ? `${transition}, translate 0ms linear`
+      : '';
 
     styles.set(
       {
@@ -249,6 +252,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         top: projected.top,
         left: projected.left,
         translate: translateString,
+        transition: transitionString,
         scale: crossFrame ? `${scaleDelta.x} ${scaleDelta.y}` : '',
         'transform-origin': `${transformOrigin.x * 100}% ${transformOrigin.y * 100}%`,
       },
@@ -661,7 +665,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
   #injectStyles() {
     const {status, source, target} = this.manager.dragOperation;
 
-    if (status.initialized) {
+    if (status.initializing) {
       const sourceDocument = getDocument(source?.element ?? null);
       const targetDocument = getDocument(target?.element ?? null);
       const documents = new Set([sourceDocument, targetDocument]);
