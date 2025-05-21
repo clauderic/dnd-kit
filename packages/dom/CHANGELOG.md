@@ -1,5 +1,30 @@
 # @dnd-kit/dom
 
+## 0.1.14
+
+### Patch Changes
+
+- [#1708](https://github.com/clauderic/dnd-kit/pull/1708) [`4c1e05d`](https://github.com/clauderic/dnd-kit/commit/4c1e05d531a1ffbf32b27d997ebd504532b9616a) Thanks [@GuillaumeSalles](https://github.com/GuillaumeSalles)! - Ensure PositionObserver recompute element rect if IntersectionObserver is scheduled in a different frame
+
+- [#1707](https://github.com/clauderic/dnd-kit/pull/1707) [`a97b10c`](https://github.com/clauderic/dnd-kit/commit/a97b10c9d8467c14ef678d3776ea10a2a1e6e027) Thanks [@github-actions](https://github.com/apps/github-actions)! - **Feedback**:
+
+  - Fixed a bug where the initial `translate` string was incorrectly formed, causing it not to be applied.
+  - Fixed a bug with the placeholder ResizeObserver shape update
+  - Fixed a bug with the initial shape of the Feedback element when the source element unmounts and re-mounts during a drag operation
+  - Fixed a bug with the initial `transition` when setting up the Feedback element
+
+- [#1707](https://github.com/clauderic/dnd-kit/pull/1707) [`caa3273`](https://github.com/clauderic/dnd-kit/commit/caa3273af1fcee9b4e3b5f1e80e5573c84ab69e3) Thanks [@github-actions](https://github.com/apps/github-actions)! - **PositionObserver**: Fixed a bug with observing elements contained within same origin iframes. Due to limitations with `IntersectionObserver`, we need to also attach position observers on the containing iframe to ensure the position of elements nested withing the iframe is updated if the iframe position changes.
+
+- [#1707](https://github.com/clauderic/dnd-kit/pull/1707) [`cb47da3`](https://github.com/clauderic/dnd-kit/commit/cb47da3dad7ec617fabb6e8c3b3432a19b354812) Thanks [@github-actions](https://github.com/apps/github-actions)! - **DOMRectangle**: Fixed a bug with projected transforms where scale was not properly being taken into account.
+
+- [#1707](https://github.com/clauderic/dnd-kit/pull/1707) [`f295344`](https://github.com/clauderic/dnd-kit/commit/f2953444cbdb195e169fc615454d6be3170bf2a6) Thanks [@github-actions](https://github.com/apps/github-actions)! - **KeyboardSensor**: Delegated the responsibility of ending the drag operation when the window resizes to the Feedback plugin, as we only need to end the operation if the feedback element's window resizes, which can be different from the source element window.
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.1.14
+  - @dnd-kit/collision@0.1.14
+  - @dnd-kit/geometry@0.1.14
+  - @dnd-kit/state@0.1.14
+
 ## 0.1.13
 
 ### Patch Changes
