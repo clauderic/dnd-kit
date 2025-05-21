@@ -1,7 +1,6 @@
 export {
   getBoundingRectangle,
   getViewportBoundingRectangle,
-  PositionObserver,
 } from './bounding-rectangle/index.ts';
 export {getVisibleBoundingRectangle} from './bounding-rectangle/getVisibleBoundingRectangle.ts';
 
@@ -15,6 +14,9 @@ export {
 } from './element/index.ts';
 
 export {Listeners} from './event-listeners/index.ts';
+
+export {PositionObserver} from './observers/index.ts';
+export {ResizeNotifier} from './observers/ResizeNotifier.ts';
 
 export {showPopover, supportsPopover} from './popover/index.ts';
 

@@ -1,9 +1,12 @@
 export function getFrameElement(el: Element | undefined) {
-  const refWindow = el?.ownerDocument.defaultView;
+  try {
+    const refWindow = el?.ownerDocument.defaultView;
 
-  if (refWindow && refWindow.self !== refWindow.parent) {
-    return refWindow.frameElement;
+    if (refWindow && refWindow.self !== refWindow.parent) {
+      return refWindow.frameElement;
+    }
+  } catch (_) {
+  } finally {
+    return null;
   }
-
-  return null;
 }

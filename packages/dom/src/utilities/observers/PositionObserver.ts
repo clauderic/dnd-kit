@@ -2,26 +2,40 @@ import {BoundingRectangle, Rectangle} from '@dnd-kit/geometry';
 
 import {throttle} from '../scheduling/throttle.ts';
 
-import {isRectEqual} from './isRectEqual.ts';
-import {isVisible} from './isVisible.ts';
-import {getVisibleBoundingRectangle} from './getVisibleBoundingRectangle.ts';
+import {isRectEqual} from '../bounding-rectangle/isRectEqual.ts';
+import {isVisible} from '../bounding-rectangle/isVisible.ts';
+import {getVisibleBoundingRectangle} from '../bounding-rectangle/getVisibleBoundingRectangle.ts';
 
-type PositionObserverCallback = (
+import {ResizeNotifier} from './ResizeNotifier.ts';
+
+export type PositionObserverCallback = (
   boundingClientRect: BoundingRectangle | null
 ) => void;
 
 const threshold = Array.from({length: 100}, (_, index) => index / 100);
-const THROTTLE_INTERVAL = 75;
+export const THROTTLE_INTERVAL = 75;
 
 export class PositionObserver {
   constructor(
-    private element: Element,
-    callback: PositionObserverCallback,
-    options: {debug?: boolean} = {debug: false}
+    public element: Element,
+    public callback: PositionObserverCallback,
+    options: {debug?: boolean; skipInitial?: boolean} = {
+      debug: false,
+      skipInitial: false,
+    }
   ) {
-    this.#callback = callback;
     this.boundingClientRect = element.getBoundingClientRect();
     this.#visible = isVisible(element, this.boundingClientRect);
+
+    let initial = true;
+    this.callback = (boundingClientRect) => {
+      if (initial) {
+        initial = false;
+        if (options.skipInitial) return;
+      }
+
+      callback(boundingClientRect);
+    };
 
     const root = element.ownerDocument;
 
@@ -46,7 +60,7 @@ export class PositionObserver {
 
         if (previousVisible && !visible) {
           this.#positionObserver?.disconnect();
-          this.#callback(null);
+          this.callback(null);
           this.#resizeObserver?.disconnect();
           this.#resizeObserver = undefined;
 
@@ -56,7 +70,7 @@ export class PositionObserver {
         }
 
         if (visible && !this.#resizeObserver) {
-          this.#resizeObserver = new ResizeObserver(this.#observePosition);
+          this.#resizeObserver = new ResizeNotifier(this.#observePosition);
           this.#resizeObserver.observe(element);
         }
       },
@@ -66,8 +80,8 @@ export class PositionObserver {
       }
     );
 
-    if (this.#visible) {
-      this.#callback(this.boundingClientRect);
+    if (this.#visible && !options.skipInitial) {
+      this.callback(this.boundingClientRect);
     }
 
     this.#visibilityObserver.observe(element);
@@ -75,18 +89,17 @@ export class PositionObserver {
 
   public boundingClientRect: DOMRectReadOnly;
 
-  public disconnect() {
+  public disconnect = () => {
     this.#disconnected = true;
     this.#resizeObserver?.disconnect();
     this.#positionObserver?.disconnect();
     this.#visibilityObserver.disconnect();
     this.#debug?.remove();
-  }
+  };
 
-  #callback: PositionObserverCallback;
   #visible = true;
   #previousBoundingClientRect: DOMRectReadOnly | undefined;
-  #resizeObserver: ResizeObserver | undefined;
+  #resizeObserver: ResizeNotifier | undefined;
   #positionObserver: IntersectionObserver | undefined;
   #visibilityObserver: IntersectionObserver;
   #debug: HTMLElement | undefined;
@@ -151,7 +164,7 @@ export class PositionObserver {
     if (isRectEqual(this.boundingClientRect, this.#previousBoundingClientRect))
       return;
 
-    this.#callback(this.boundingClientRect);
+    this.callback(this.boundingClientRect);
     this.#previousBoundingClientRect = this.boundingClientRect;
   }
 
