@@ -483,7 +483,11 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
           dragOperation.shape = Rectangle.from(
             currentShape.boundingRectangle
-          ).translate(delta.x, delta.y);
+          ).translate(
+            // Need to take into account frame transform when optimistically updating shape
+            delta.x * frameTransform.scaleX,
+            delta.y * frameTransform.scaleY
+          );
         } else {
           dragOperation.shape = new DOMRectangle(feedbackElement);
         }
