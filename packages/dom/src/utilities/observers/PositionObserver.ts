@@ -136,10 +136,13 @@ export class PositionObserver {
          * which is not what we want. We want the ratio of the intersectionRect
          * to the rootBounds (visible rect).
          */
-        const intersectionRatio = Rectangle.intersectionRatio(
-          intersectionRect,
-          visibleRect
-        );
+        const intersectionRatio =
+          entry.intersectionRatio !== 1
+            ? entry.intersectionRatio
+            : Rectangle.intersectionRatio(
+                intersectionRect,
+                getVisibleBoundingRectangle(element)
+              );
 
         if (intersectionRatio !== 1) {
           this.#observePosition();
