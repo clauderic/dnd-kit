@@ -138,7 +138,7 @@ export class PositionObserver {
          */
         const intersectionRatio = Rectangle.intersectionRatio(
           intersectionRect,
-          visibleRect
+          getVisibleBoundingRectangle(element, element.getBoundingClientRect())
         );
 
         if (intersectionRatio !== 1) {
