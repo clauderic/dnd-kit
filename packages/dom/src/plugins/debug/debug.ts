@@ -4,6 +4,27 @@ import type {UniqueIdentifier} from '@dnd-kit/abstract';
 import type {DragDropManager} from '@dnd-kit/dom';
 import {supportsPopover, showPopover} from '@dnd-kit/dom/utilities';
 
+/**
+ * Patch the showPopover method to dispatch a custom event when it's called.
+ * This is used to track when the popover is shown and hidden. There is no way
+ * to listen to the popover  event otherwise.
+ */
+function patchShowPopover() {
+  if (typeof HTMLElement.prototype.showPopover !== 'function') return () => {};
+
+  const original = HTMLElement.prototype.showPopover;
+
+  HTMLElement.prototype.showPopover = function (...args) {
+    this.dispatchEvent(new CustomEvent('showpopover'));
+
+    return original.apply(this, args);
+  };
+
+  return () => {
+    HTMLElement.prototype.showPopover = original;
+  };
+}
+
 export class Debug extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager) {
     super(manager);
@@ -16,18 +37,36 @@ export class Debug extends Plugin<DragDropManager> {
       () => {
         const {source} = manager.dragOperation;
 
-        // Re-run effect whenever the source element changes
-        if (source?.element) {
-          if (
-            draggableElement &&
-            supportsPopover(draggableElement) &&
-            draggableElement.matches(':popover-open')
-          ) {
-            // Force element to be re-promoted to the top of the stack
-            // as it can be underneath the Feedback overlay
-            draggableElement.hidePopover();
-            showPopover(draggableElement);
-          }
+        // Re-run effect whenever the source changes
+        if (source) {
+          const options = {capture: true};
+          const onShowPopover = (event: Event) => {
+            if (
+              draggableElement &&
+              supportsPopover(draggableElement) &&
+              event.target !== draggableElement &&
+              !Array.from(elements.values()).includes(
+                event.target as HTMLElement
+              )
+            ) {
+              queueMicrotask(() => {
+                if (!draggableElement) return;
+                if (draggableElement.matches(':popover-open')) {
+                  draggableElement.hidePopover();
+                }
+                // Re-promote the element to the top of the stack
+                showPopover(draggableElement);
+              });
+            }
+          };
+
+          const unpatch = patchShowPopover();
+          document.addEventListener('showpopover', onShowPopover, options);
+
+          return () => {
+            document.removeEventListener('showpopover', onShowPopover, options);
+            unpatch();
+          };
         }
       },
       () => {
