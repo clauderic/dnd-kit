@@ -1,5 +1,19 @@
 # @dnd-kit/dom
 
+## 0.1.16
+
+### Patch Changes
+
+- [#1712](https://github.com/clauderic/dnd-kit/pull/1712) [`93911cc`](https://github.com/clauderic/dnd-kit/commit/93911cca237bea302a12749476d4e18b74ac0fa2) Thanks [@github-actions](https://github.com/apps/github-actions)! - **Debug**: Force the source debug elements to be re-promoted to the top of the top layer.
+
+- [#1712](https://github.com/clauderic/dnd-kit/pull/1712) [`0f68bb6`](https://github.com/clauderic/dnd-kit/commit/0f68bb6c95b1287d5988b1d5d4e94f1462fc36a5) Thanks [@github-actions](https://github.com/apps/github-actions)! - **Feedback**: Account for frame scale when optimistically updating feedback element shape while dragging.
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.1.16
+  - @dnd-kit/collision@0.1.16
+  - @dnd-kit/geometry@0.1.16
+  - @dnd-kit/state@0.1.16
+
 ## 0.1.15
 
 ### Patch Changes
