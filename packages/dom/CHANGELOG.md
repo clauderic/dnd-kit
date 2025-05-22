@@ -1,5 +1,17 @@
 # @dnd-kit/dom
 
+## 0.1.17
+
+### Patch Changes
+
+- [`cfb94d4`](https://github.com/clauderic/dnd-kit/commit/cfb94d4fef372059cb87cf0e63bc3ab87f5c8bd8) Thanks [@clauderic](https://github.com/clauderic)! - Added a `try` / `catch` in `showPopover` and `hidePopover` as the `element.matches(':popover-open')` selector can throw in browsers that don't support the Popover API.
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.1.17
+  - @dnd-kit/collision@0.1.17
+  - @dnd-kit/geometry@0.1.17
+  - @dnd-kit/state@0.1.17
+
 ## 0.1.16
 
 ### Patch Changes
