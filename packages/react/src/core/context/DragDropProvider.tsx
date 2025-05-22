@@ -3,6 +3,7 @@
 import {
   startTransition,
   useEffect,
+  useRef,
   useState,
   type PropsWithChildren,
 } from 'react';
@@ -13,7 +14,7 @@ import {useLatest, useOnValueChange} from '@dnd-kit/react/hooks';
 import {deepEqual} from '@dnd-kit/state';
 
 import {DragDropContext} from './context.ts';
-import {useRenderer} from './renderer.ts';
+import {Renderer, type ReactRenderer} from './renderer.ts';
 
 export type Events<T extends Data = Data> = DragDropEvents<
   Draggable<T>,
@@ -45,7 +46,7 @@ export function DragDropProvider<T extends Data = Data>({
   onDragEnd,
   ...input
 }: Props<T>) {
-  const {renderer, trackRendering} = useRenderer();
+  const rendererRef = useRef<ReactRenderer | null>(null);
   const [manager, setManager] = useState<DragDropManager | null>(
     input.manager ?? null
   );
@@ -58,6 +59,10 @@ export function DragDropProvider<T extends Data = Data>({
   const handleCollision = useLatest(onCollision);
 
   useEffect(() => {
+    if (!rendererRef.current) throw new Error('Renderer not found');
+
+    const {renderer, trackRendering} = rendererRef.current;
+
     const manager = input.manager ?? new DragDropManager(input);
     manager.renderer = renderer;
 
@@ -99,7 +104,7 @@ export function DragDropProvider<T extends Data = Data>({
     startTransition(() => setManager(manager));
 
     return manager.destroy;
-  }, [renderer, input.manager]);
+  }, [input.manager]);
 
   useOnValueChange(
     plugins,
@@ -119,6 +124,7 @@ export function DragDropProvider<T extends Data = Data>({
 
   return (
     <DragDropContext.Provider value={manager}>
+      <Renderer ref={rendererRef}>{children}</Renderer>
       {children}
     </DragDropContext.Provider>
   );
