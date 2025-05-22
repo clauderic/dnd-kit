@@ -18,7 +18,7 @@ export {Listeners} from './event-listeners/index.ts';
 export {PositionObserver} from './observers/index.ts';
 export {ResizeNotifier} from './observers/ResizeNotifier.ts';
 
-export {showPopover, supportsPopover} from './popover/index.ts';
+export {showPopover, hidePopover, supportsPopover} from './popover/index.ts';
 
 export {
   canScroll,
