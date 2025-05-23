@@ -43,30 +43,32 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
 
     const unsubscribe = [
       manager.monitor.addEventListener('dragover', (event, manager) => {
+        if (this.disabled) {
+          return;
+        }
+
+        const {dragOperation} = manager;
+        const {source, target} = dragOperation;
+
+        if (!isSortable(source) || !isSortable(target)) {
+          return;
+        }
+
+        if (source.sortable === target.sortable) {
+          return;
+        }
+
+        const instances = getSortableInstances();
+        const sameGroup = source.sortable.group === target.sortable.group;
+        const sourceInstances = instances.get(source.sortable.group);
+        const targetInstances = sameGroup
+          ? sourceInstances
+          : instances.get(target.sortable.group);
+
+        if (!sourceInstances || !targetInstances) return;
+
         queueMicrotask(() => {
-          if (this.disabled || event.defaultPrevented) {
-            return;
-          }
-
-          const {dragOperation} = manager;
-          const {source, target} = dragOperation;
-
-          if (!isSortable(source) || !isSortable(target)) {
-            return;
-          }
-
-          if (source.sortable === target.sortable) {
-            return;
-          }
-
-          const instances = getSortableInstances();
-          const sameGroup = source.sortable.group === target.sortable.group;
-          const sourceInstances = instances.get(source.sortable.group);
-          const targetInstances = sameGroup
-            ? sourceInstances
-            : instances.get(target.sortable.group);
-
-          if (!sourceInstances || !targetInstances) return;
+          if (event.defaultPrevented) return;
 
           // Wait for the renderer to handle the event before attempting to optimistically update
           manager.renderer.rendering.then(() => {
