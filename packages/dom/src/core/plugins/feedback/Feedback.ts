@@ -8,18 +8,17 @@ import {configurator, Plugin} from '@dnd-kit/abstract';
 import {
   animateTransform,
   DOMRectangle,
-  isKeyboardEvent,
   getComputedStyles,
   getDocument,
   getFrameTransform,
+  getWindow,
   isHTMLElement,
+  isKeyboardEvent,
   parseTranslate,
   showPopover,
-  supportsPopover,
   Styles,
-  isKeyframeEffect,
+  supportsPopover,
   supportsStyle,
-  getWindow,
 } from '@dnd-kit/dom/utilities';
 import {Coordinates, Point, Rectangle} from '@dnd-kit/geometry';
 
@@ -577,21 +576,6 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             showPopover(feedbackElement);
 
             const target = placeholder ?? element;
-            const animations = feedbackElement.getAnimations();
-
-            if (animations.length) {
-              animations.forEach((animation) => {
-                const {effect} = animation;
-
-                if (
-                  isKeyframeEffect(effect) &&
-                  effect.getKeyframes().some((keyframe) => keyframe.translate)
-                ) {
-                  animation.finish();
-                }
-              });
-            }
-
             const options = {
               frameTransform: isSameFrame(feedbackElement, target)
                 ? null

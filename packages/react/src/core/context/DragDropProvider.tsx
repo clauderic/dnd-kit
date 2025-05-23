@@ -16,27 +16,37 @@ import {deepEqual} from '@dnd-kit/state';
 import {DragDropContext} from './context.ts';
 import {Renderer, type ReactRenderer} from './renderer.ts';
 
-export type Events<T extends Data = Data> = DragDropEvents<
-  Draggable<T>,
-  Droppable<T>,
-  DragDropManager<Draggable<T>, Droppable<T>>
->;
+export type Events<
+  T extends Data = Data,
+  U extends Draggable<T> = Draggable<T>,
+  V extends Droppable<T> = Droppable<T>,
+  W extends DragDropManager<T, U, V> = DragDropManager<T, U, V>,
+> = DragDropEvents<U, V, W>;
 
-export interface Props<T extends Data = Data>
-  extends DragDropManagerInput,
+export interface Props<
+  T extends Data = Data,
+  U extends Draggable<T> = Draggable<T>,
+  V extends Droppable<T> = Droppable<T>,
+  W extends DragDropManager<T, U, V> = DragDropManager<T, U, V>,
+> extends DragDropManagerInput,
     PropsWithChildren {
-  manager?: DragDropManager;
-  onBeforeDragStart?: Events<T>['beforedragstart'];
-  onCollision?: Events<T>['collision'];
-  onDragStart?: Events<T>['dragstart'];
-  onDragMove?: Events<T>['dragmove'];
-  onDragOver?: Events<T>['dragover'];
-  onDragEnd?: Events<T>['dragend'];
+  manager?: W;
+  onBeforeDragStart?: Events<T, U, V, W>['beforedragstart'];
+  onCollision?: Events<T, U, V, W>['collision'];
+  onDragStart?: Events<T, U, V, W>['dragstart'];
+  onDragMove?: Events<T, U, V, W>['dragmove'];
+  onDragOver?: Events<T, U, V, W>['dragover'];
+  onDragEnd?: Events<T, U, V, W>['dragend'];
 }
 
 const options = [undefined, deepEqual] as const;
 
-export function DragDropProvider<T extends Data = Data>({
+export function DragDropProvider<
+  T extends Data = Data,
+  U extends Draggable<T> = Draggable<T>,
+  V extends Droppable<T> = Droppable<T>,
+  W extends DragDropManager<T, U, V> = DragDropManager<T, U, V>,
+>({
   children,
   onCollision,
   onBeforeDragStart,
@@ -45,11 +55,9 @@ export function DragDropProvider<T extends Data = Data>({
   onDragOver,
   onDragEnd,
   ...input
-}: Props<T>) {
+}: Props<T, U, V, W>) {
   const rendererRef = useRef<ReactRenderer | null>(null);
-  const [manager, setManager] = useState<DragDropManager | null>(
-    input.manager ?? null
-  );
+  const [manager, setManager] = useState<W | null>(input.manager ?? null);
   const {plugins, modifiers, sensors} = input;
   const handleBeforeDragStart = useLatest(onBeforeDragStart);
   const handleDragStart = useLatest(onDragStart);
@@ -63,41 +71,41 @@ export function DragDropProvider<T extends Data = Data>({
 
     const {renderer, trackRendering} = rendererRef.current;
 
-    const manager = input.manager ?? new DragDropManager(input);
+    const manager = input.manager ?? (new DragDropManager<T, U, V>(input) as W);
     manager.renderer = renderer;
 
-    manager.monitor.addEventListener('beforedragstart', (event, manager) => {
+    manager.monitor.addEventListener('beforedragstart', (event) => {
       const callback = handleBeforeDragStart.current;
 
       if (callback) {
         trackRendering(() => callback(event, manager));
       }
     });
-    manager.monitor.addEventListener('dragstart', (event, manager) =>
+    manager.monitor.addEventListener('dragstart', (event) =>
       handleDragStart.current?.(event, manager)
     );
-    manager.monitor.addEventListener('dragover', (event, manager) => {
+    manager.monitor.addEventListener('dragover', (event) => {
       const callback = handleDragOver.current;
 
       if (callback) {
         trackRendering(() => callback(event, manager));
       }
     });
-    manager.monitor.addEventListener('dragmove', (event, manager) => {
+    manager.monitor.addEventListener('dragmove', (event) => {
       const callback = handleDragMove.current;
 
       if (callback) {
         trackRendering(() => callback(event, manager));
       }
     });
-    manager.monitor.addEventListener('dragend', (event, manager) => {
+    manager.monitor.addEventListener('dragend', (event) => {
       const callback = handleDragEnd.current;
 
       if (callback) {
         trackRendering(() => callback(event, manager));
       }
     });
-    manager.monitor.addEventListener('collision', (event, manager) =>
+    manager.monitor.addEventListener('collision', (event) =>
       handleCollision.current?.(event, manager)
     );
 
@@ -123,7 +131,7 @@ export function DragDropProvider<T extends Data = Data>({
   );
 
   return (
-    <DragDropContext.Provider value={manager}>
+    <DragDropContext.Provider value={manager as DragDropManager | null}>
       <Renderer ref={rendererRef}>{children}</Renderer>
       {children}
     </DragDropContext.Provider>

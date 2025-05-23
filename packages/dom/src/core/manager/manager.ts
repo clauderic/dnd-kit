@@ -1,12 +1,11 @@
 import {
   DragDropManager as AbstractDragDropManager,
   DragDropManagerInput,
-  type Renderer,
+  type Data,
   type Modifiers,
   type Plugins,
   type Sensors,
 } from '@dnd-kit/abstract';
-import {isElement} from '@dnd-kit/dom/utilities';
 
 import type {Draggable, Droppable} from '../entities/index.ts';
 import {
@@ -33,9 +32,10 @@ export const defaultPreset: {
 };
 
 export class DragDropManager<
-  T extends Draggable = Draggable,
-  U extends Droppable = Droppable,
-> extends AbstractDragDropManager<Draggable, Droppable> {
+  T extends Data = Data,
+  U extends Draggable<T> = Draggable<T>,
+  V extends Droppable<T> = Droppable<T>,
+> extends AbstractDragDropManager<U, V> {
   constructor(input: Input = {}) {
     const {
       plugins = defaultPreset.plugins,
