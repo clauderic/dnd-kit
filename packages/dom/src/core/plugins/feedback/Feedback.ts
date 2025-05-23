@@ -66,6 +66,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     current: {},
   };
 
+  #documents = new Map<Document, CleanupFunction>();
+
   constructor(manager: DragDropManager, options?: FeedbackOptions) {
     super(manager, options);
 
@@ -659,11 +661,27 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       const documents = new Set([sourceDocument, targetDocument]);
 
       for (const doc of documents) {
-        if (!injectedStyleTags.has(doc)) {
+        if (!this.#documents.has(doc)) {
           const style = document.createElement('style');
           style.textContent = CSS_RULES;
           doc.head.prepend(style);
-          injectedStyleTags.set(doc, style);
+          const mutationObserver = new MutationObserver((entries) => {
+            for (const entry of entries) {
+              if (entry.type === 'childList') {
+                const removedNodes = Array.from(entry.removedNodes);
+
+                if (removedNodes.length > 0 && removedNodes.includes(style)) {
+                  // Re-inject the style tag if it gets removed from the DOM
+                  doc.head.prepend(style);
+                }
+              }
+            }
+          });
+          mutationObserver.observe(doc.head, {childList: true});
+          this.#documents.set(doc, () => {
+            mutationObserver.disconnect();
+            style.remove();
+          });
         }
       }
     }
@@ -672,11 +690,9 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
   public destroy(): void {
     super.destroy();
 
-    injectedStyleTags.forEach((style) => style.remove());
-    injectedStyleTags.clear();
+    this.#documents.forEach((cleanup) => cleanup());
+    this.#documents.clear();
   }
 
   static configure = configurator(Feedback);
 }
-
-const injectedStyleTags = new Map<Document, HTMLStyleElement>();
