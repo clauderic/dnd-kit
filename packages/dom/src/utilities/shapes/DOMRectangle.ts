@@ -1,7 +1,5 @@
 import {Rectangle, type BoundingRectangle} from '@dnd-kit/geometry';
 
-import {Scheduler} from '../scheduling/scheduler.ts';
-import {isSafari} from '../execution-context/isSafari.ts';
 import {applyTransform} from '../transform/applyTransform.ts';
 import {inverseTransform} from '../transform/inverseTransform.ts';
 import {getComputedStyles} from '../styles/getComputedStyles.ts';
@@ -9,6 +7,8 @@ import {parseTransform, type Transform} from '../transform/index.ts';
 import {getBoundingRectangle} from '../bounding-rectangle/getBoundingRectangle.ts';
 import {getFrameTransform} from '../frame/getFrameTransform.ts';
 import {isKeyframeEffect} from '../type-guards/isKeyframeEffect.ts';
+import {forceFinishAnimations} from '../animations/forceFinishAnimations.ts';
+import {isSafari} from '../execution-context/isSafari.ts';
 
 export interface DOMRectangleOptions {
   getBoundingClientRect?: (element: Element) => BoundingRectangle;
@@ -24,7 +24,11 @@ export class DOMRectangle extends Rectangle {
       ignoreTransforms,
       getBoundingClientRect = getBoundingRectangle,
     } = options;
-    const resetAnimations = forceFinishAnimations(element);
+    const resetAnimations = forceFinishAnimations(element, {
+      properties: ['transform', 'translate', 'scale', 'width', 'height'],
+      isValidTarget: (target) =>
+        (isSafari() || target !== element) && target.contains(element),
+    });
     const boundingRectangle = getBoundingClientRect(element);
     let {top, left, width, height} = boundingRectangle;
     let updated: BoundingRectangle | undefined;
@@ -37,9 +41,9 @@ export class DOMRectangle extends Rectangle {
       y: parsedTransform?.scaleY ?? 1,
     };
 
-    resetAnimations?.();
-
     const projectedTransform = getProjectedTransform(element, computedStyles);
+
+    resetAnimations?.();
 
     if (parsedTransform) {
       updated = inverseTransform(
@@ -151,83 +155,4 @@ function getProjectedTransform(
   }
 
   return projectedTransform;
-}
-
-const scheduler = new Scheduler((callback) => setTimeout(callback, 0));
-const animations = new Map<Document | Element, Animation[]>();
-const clear = animations.clear.bind(animations);
-
-function getDocumentAnimations(element: Element): Animation[] {
-  const document = element.ownerDocument;
-  let documentAnimations = animations.get(document);
-
-  if (documentAnimations) return documentAnimations;
-
-  documentAnimations = document.getAnimations();
-  animations.set(document, documentAnimations);
-  scheduler.schedule(clear);
-
-  const elementAnimations = documentAnimations.filter(
-    (animation) =>
-      isKeyframeEffect(animation.effect) && animation.effect.target === element
-  );
-
-  animations.set(element, elementAnimations);
-
-  return documentAnimations;
-}
-
-function getAnimations(target: Element | Document): Animation[] {
-  const cachedAnimations = animations.get(target);
-
-  if (cachedAnimations) return cachedAnimations;
-
-  return target.getAnimations();
-}
-
-/*
- * Force animations on ancestors of the element into their end state
- * and return a function to reset them back to their current state.
- *
- * This is useful as it allows us to immediately calculate the final position
- * of an element without having to wait for the animations to finish.
- */
-function forceFinishAnimations(element: Element): (() => void) | undefined {
-  const animations = getDocumentAnimations(element)
-    .filter((animation) => {
-      if (isKeyframeEffect(animation.effect)) {
-        const {target} = animation.effect;
-        const isValidTarget = target && (isSafari() || target !== element);
-
-        if (isValidTarget && target.contains(element)) {
-          return animation.effect.getKeyframes().some((keyframe) => {
-            const {transform, translate, scale, width, height} = keyframe;
-
-            return transform || translate || scale || width || height;
-          });
-        }
-      }
-    })
-    .map((animation) => {
-      const {effect, currentTime} = animation;
-      const duration = effect?.getComputedTiming().duration;
-
-      if (animation.pending) return;
-
-      if (
-        typeof duration == 'number' &&
-        typeof currentTime == 'number' &&
-        currentTime < duration
-      ) {
-        animation.currentTime = duration;
-
-        return () => {
-          animation.currentTime = currentTime;
-        };
-      }
-    });
-
-  if (animations.length > 0) {
-    return () => animations.forEach((reset) => reset?.());
-  }
 }
