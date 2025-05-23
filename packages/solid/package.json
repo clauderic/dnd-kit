@@ -1,0 +1,90 @@
+{
+  "name": "@dnd-kit/solid",
+  "version": "0.1.17",
+  "type": "module",
+  "main": "./index.cjs",
+  "module": "./index.js",
+  "types": "./index.d.ts",
+  "sideEffects": false,
+  "license": "MIT",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "index.js",
+    "index.d.ts",
+    "index.cjs",
+    "hooks.js",
+    "hooks.d.ts",
+    "hooks.cjs",
+    "sortable.js",
+    "sortable.d.ts",
+    "sortable.cjs",
+    "utilities.js",
+    "utilities.d.ts",
+    "utilities.cjs",
+    "context.js",
+    "context.d.ts",
+    "context.cjs"
+  ],
+  "exports": {
+    ".": {
+        "types": "./index.d.ts",
+        "import": "./index.js",
+        "require": "./index.cjs"
+    },
+    "./core": {
+        "types": "./core.d.ts",
+        "import": "./core.js",
+        "require": "./core.cjs"
+    },
+    "./sortable": {
+        "types": "./sortable.d.ts",
+        "import": "./sortable.js",
+        "require": "./sortable.cjs"
+    },
+    "./hooks": {
+        "types": "./hooks.d.ts",
+        "import": "./hooks.js",
+        "require": "./hooks.cjs"
+    },
+    "./utilities": {
+        "types": "./utilities.d.ts",
+        "import": "./utilities.js",
+        "require": "./utilities.cjs"
+    },
+    "./context": {
+        "types": "./context.d.ts",
+        "import": "./context.js",
+        "require": "./context.cjs"
+    }
+  },
+  "scripts": {
+    "build": "bun build:utilities && bun build:hooks && bun build:core && bun build:sortable",
+    "build:core": "tsup src/core/index.ts",
+    "build:hooks": "tsup --entry.hooks src/hooks/index.ts",
+    "build:sortable": "tsup --entry.sortable src/sortable/index.ts",
+    "build:utilities": "tsup --entry.utilities src/utilities/index.ts",
+    "dev": "bun build:utilities --watch & bun build:hooks --watch & bun build:core --watch & bun build:sortable --watch",
+    "lint": "TIMING=1 eslint src/**/*.ts* --fix",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "dependencies": {
+    "@dnd-kit/abstract": "^0.1.17",
+    "@dnd-kit/dom": "^0.1.17",
+    "@dnd-kit/state": "^0.1.17",
+    "tslib": "^2.6.2"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.8.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.38.0",
+    "@dnd-kit/eslint-config": "*",
+    "tsup": "8.3.0",
+    "typescript": "^5.5.2",
+    "solid-js": "^1.8.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
