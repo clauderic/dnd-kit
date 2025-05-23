@@ -1,9 +1,16 @@
+import type {Data} from '@dnd-kit/abstract';
+import type {Draggable, Droppable, DragDropManager} from '@dnd-kit/dom';
 import {useComputed} from '@dnd-kit/react/hooks';
 
 import {useDragDropManager} from './useDragDropManager.ts';
 
-export function useDragOperation() {
-  const manager = useDragDropManager();
+export function useDragOperation<
+  T extends Data,
+  U extends Draggable<T>,
+  V extends Droppable<T>,
+  W extends DragDropManager<T, U, V>,
+>() {
+  const manager = useDragDropManager<T, U, V, W>();
   const source = useComputed(() => manager?.dragOperation.source, [manager]);
   const target = useComputed(() => manager?.dragOperation.target, [manager]);
 

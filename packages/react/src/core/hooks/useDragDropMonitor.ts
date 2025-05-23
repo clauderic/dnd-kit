@@ -20,24 +20,33 @@ type EventHandlerName<T extends string> = T extends keyof DragDropEventMap
 /**
  * Type for all possible event handlers
  */
-type Events<T extends Data> = DragDropEvents<
-  Draggable<T>,
-  Droppable<T>,
-  DragDropManager<Draggable<T>, Droppable<T>>
->;
+type Events<
+  T extends Data,
+  U extends Draggable<T>,
+  V extends Droppable<T>,
+  W extends DragDropManager<T, U, V>,
+> = DragDropEvents<U, V, W>;
 
-export type EventHandlers<T extends Data = Data> = {
-  [K in keyof Events<T> as EventHandlerName<K>]: Events<T>[K];
+export type EventHandlers<
+  T extends Data = Data,
+  U extends Draggable<T> = Draggable<T>,
+  V extends Droppable<T> = Droppable<T>,
+  W extends DragDropManager<T, U, V> = DragDropManager<T, U, V>,
+> = {
+  [K in keyof Events<T, U, V, W> as EventHandlerName<K>]: Events<T, U, V, W>[K];
 };
 
 /**
  * Hook to monitor drag and drop events anywhere within a DragDropProvider
  * @param handlers Object containing event handlers for drag and drop events
  */
-export function useDragDropMonitor<T extends Data = Data>(
-  handlers: Partial<EventHandlers<T>>
-): void {
-  const manager = useDragDropManager();
+export function useDragDropMonitor<
+  T extends Data = Data,
+  U extends Draggable<T> = Draggable<T>,
+  V extends Droppable<T> = Droppable<T>,
+  W extends DragDropManager<T, U, V> = DragDropManager<T, U, V>,
+>(handlers: Partial<EventHandlers<T, U, V, W>>): void {
+  const manager = useDragDropManager<T, U, V, W>();
 
   useEffect(() => {
     if (!manager) {
@@ -56,7 +65,7 @@ export function useDragDropMonitor<T extends Data = Data>(
           // Convert handler name (e.g. 'onDragStart') to event name (e.g. 'dragstart')
           const eventName = handlerName
             .replace(/^on/, '')
-            .toLowerCase() as keyof Events<T>;
+            .toLowerCase() as keyof Events<T, U, V, W>;
 
           const unsubscribe = manager.monitor.addEventListener(
             eventName,

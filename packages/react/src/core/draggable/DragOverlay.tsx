@@ -1,18 +1,24 @@
 import {createElement, useEffect, useMemo, useRef, type ReactNode} from 'react';
 import {useComputed, useDeepSignal} from '@dnd-kit/react/hooks';
 import {Draggable, Feedback} from '@dnd-kit/dom';
+import {Data} from '@dnd-kit/abstract';
 
 import {useDragDropManager} from '../hooks/useDragDropManager.ts';
 import {DragDropContext} from '../context/context.ts';
 
-export interface Props {
+export interface Props<T extends Data, U extends Draggable<T>> {
   className?: string;
-  children: ReactNode | ((source: Draggable) => ReactNode);
+  children: ReactNode | ((source: U) => ReactNode);
   style?: React.CSSProperties;
   tag?: string;
 }
 
-export function DragOverlay({children, className, style, tag}: Props) {
+export function DragOverlay<T extends Data, U extends Draggable<T>>({
+  children,
+  className,
+  style,
+  tag,
+}: Props<T, U>) {
   const ref = useRef<HTMLDivElement | null>(null);
   const manager = useDragDropManager();
   const source = useComputed(
@@ -87,12 +93,12 @@ function noop() {
   return () => {};
 }
 
-function Children({
+function Children<T extends Data, U extends Draggable<T>>({
   children,
   source,
 }: {
-  children: (source: Draggable) => ReactNode;
-  source: Draggable;
+  children: (source: U) => ReactNode;
+  source: U;
 }) {
   return children(useDeepSignal(source));
 }
