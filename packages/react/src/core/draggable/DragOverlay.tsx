@@ -1,6 +1,6 @@
 import {createElement, useEffect, useMemo, useRef, type ReactNode} from 'react';
 import {useComputed, useDeepSignal} from '@dnd-kit/react/hooks';
-import {Draggable, Feedback} from '@dnd-kit/dom';
+import {DragDropManager, Draggable, Feedback} from '@dnd-kit/dom';
 import {Data} from '@dnd-kit/abstract';
 
 import {useDragDropManager} from '../hooks/useDragDropManager.ts';
@@ -11,7 +11,7 @@ export interface Props<T extends Data, U extends Draggable<T>> {
   children: ReactNode | ((source: U) => ReactNode);
   style?: React.CSSProperties;
   tag?: string;
-  disabled?: boolean | ((source: U) => boolean);
+  disabled?: boolean | ((source: U | null) => boolean);
 }
 
 export function DragOverlay<T extends Data, U extends Draggable<T>>({
@@ -22,11 +22,9 @@ export function DragOverlay<T extends Data, U extends Draggable<T>>({
   disabled,
 }: Props<T, U>) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const manager = useDragDropManager();
-  const source = useComputed(
-    () => manager?.dragOperation.source,
-    [manager]
-  ).value;
+  const manager = useDragDropManager<T, U>();
+  const source =
+    useComputed(() => manager?.dragOperation.source, [manager]).value ?? null;
   const isDisabled =
     typeof disabled === 'function' ? disabled(source) : disabled;
 
@@ -72,7 +70,7 @@ export function DragOverlay<T extends Data, U extends Draggable<T>>({
   }, [manager]);
 
   return (
-    <DragDropContext.Provider value={patchedManager}>
+    <DragDropContext.Provider value={patchedManager as DragDropManager | null}>
       {createElement(
         tag || 'div',
         {ref, className, style, 'data-dnd-overlay': true},
