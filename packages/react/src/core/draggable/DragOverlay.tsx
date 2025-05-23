@@ -11,6 +11,7 @@ export interface Props<T extends Data, U extends Draggable<T>> {
   children: ReactNode | ((source: U) => ReactNode);
   style?: React.CSSProperties;
   tag?: string;
+  disabled?: boolean | ((source: U) => boolean);
 }
 
 export function DragOverlay<T extends Data, U extends Draggable<T>>({
@@ -18,6 +19,7 @@ export function DragOverlay<T extends Data, U extends Draggable<T>>({
   className,
   style,
   tag,
+  disabled,
 }: Props<T, U>) {
   const ref = useRef<HTMLDivElement | null>(null);
   const manager = useDragDropManager();
@@ -25,9 +27,11 @@ export function DragOverlay<T extends Data, U extends Draggable<T>>({
     () => manager?.dragOperation.source,
     [manager]
   ).value;
+  const isDisabled =
+    typeof disabled === 'function' ? disabled(source) : disabled;
 
   useEffect(() => {
-    if (!ref.current || !manager) return;
+    if (!ref.current || !manager || isDisabled) return;
 
     const feedback = manager.plugins.find(
       (plugin) => plugin instanceof Feedback
@@ -40,7 +44,7 @@ export function DragOverlay<T extends Data, U extends Draggable<T>>({
     return () => {
       feedback.overlay = undefined;
     };
-  }, [manager]);
+  }, [manager, isDisabled]);
 
   // Prevent children of the overlay from registering themselves as draggables or droppables
   const patchedManager = useMemo(() => {
@@ -79,7 +83,7 @@ export function DragOverlay<T extends Data, U extends Draggable<T>>({
   );
 
   function renderChildren() {
-    if (!source) return null;
+    if (!source || isDisabled) return null;
 
     if (typeof children === 'function') {
       return <Children source={source}>{children}</Children>;
