@@ -57,6 +57,9 @@ interface State {
   };
 }
 
+const styles = new Map<Document, CleanupFunction>();
+const feedbackInstances = new Set<Feedback>();
+
 export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
   @reactive
   public accessor overlay: Element | undefined;
@@ -65,8 +68,6 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     initial: {},
     current: {},
   };
-
-  #documents = new Map<Document, CleanupFunction>();
 
   constructor(manager: DragDropManager, options?: FeedbackOptions) {
     super(manager, options);
@@ -661,7 +662,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       const documents = new Set([sourceDocument, targetDocument]);
 
       for (const doc of documents) {
-        if (!this.#documents.has(doc)) {
+        if (!styles.has(doc)) {
           const style = document.createElement('style');
           style.textContent = CSS_RULES;
           doc.head.prepend(style);
@@ -678,7 +679,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             }
           });
           mutationObserver.observe(doc.head, {childList: true});
-          this.#documents.set(doc, () => {
+          styles.set(doc, () => {
             mutationObserver.disconnect();
             style.remove();
           });
@@ -690,8 +691,14 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
   public destroy(): void {
     super.destroy();
 
-    this.#documents.forEach((cleanup) => cleanup());
-    this.#documents.clear();
+    feedbackInstances.delete(this);
+
+    if (feedbackInstances.size === 0) {
+      for (const cleanup of styles.values()) {
+        cleanup();
+      }
+      styles.clear();
+    }
   }
 
   static configure = configurator(Feedback);
