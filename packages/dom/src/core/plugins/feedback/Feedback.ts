@@ -57,8 +57,12 @@ interface State {
   };
 }
 
-const styles = new Map<Document, CleanupFunction>();
-const feedbackInstances = new Set<Feedback>();
+interface StyleSheetRegistration {
+  cleanup: CleanupFunction;
+  instances: Set<Feedback>;
+}
+
+const styleSheetRegistry = new Map<Document, StyleSheetRegistration>();
 
 export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
   @reactive
@@ -662,7 +666,9 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       const documents = new Set([sourceDocument, targetDocument]);
 
       for (const doc of documents) {
-        if (!styles.has(doc)) {
+        let registration = styleSheetRegistry.get(doc);
+
+        if (!registration) {
           const style = document.createElement('style');
           style.textContent = CSS_RULES;
           doc.head.prepend(style);
@@ -679,11 +685,19 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             }
           });
           mutationObserver.observe(doc.head, {childList: true});
-          styles.set(doc, () => {
-            mutationObserver.disconnect();
-            style.remove();
-          });
+
+          registration = {
+            cleanup: () => {
+              mutationObserver.disconnect();
+              style.remove();
+            },
+            instances: new Set(),
+          };
+          styleSheetRegistry.set(doc, registration);
         }
+
+        // Track this instance for this document
+        registration.instances.add(this);
       }
     }
   }
@@ -691,13 +705,17 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
   public destroy(): void {
     super.destroy();
 
-    feedbackInstances.delete(this);
+    // Clean up documents this instance was tracking
+    for (const [doc, registration] of styleSheetRegistry.entries()) {
+      if (registration.instances.has(this)) {
+        registration.instances.delete(this);
 
-    if (feedbackInstances.size === 0) {
-      for (const cleanup of styles.values()) {
-        cleanup();
+        // If no more instances are using this document, clean it up
+        if (registration.instances.size === 0) {
+          registration.cleanup();
+          styleSheetRegistry.delete(doc);
+        }
       }
-      styles.clear();
     }
   }
 
