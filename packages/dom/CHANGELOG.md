@@ -1,5 +1,32 @@
 # @dnd-kit/dom
 
+## 0.1.18
+
+### Patch Changes
+
+- [#1715](https://github.com/clauderic/dnd-kit/pull/1715) [`e502979`](https://github.com/clauderic/dnd-kit/commit/e502979375b9211fef277b8d657d9411f84be96c) Thanks [@github-actions](https://github.com/apps/github-actions)! - Improved TypeScript generics for better type safety and flexibility
+
+  - Enhanced `DragDropManager` to accept generic type parameters with proper constraints, allowing for more flexible type usage while maintaining type safety
+  - Updated `DragDropProvider` to support custom generic types for draggable and droppable entities
+  - Modified React hooks (`useDragDropManager`, `useDragDropMonitor`, `useDragOperation`) to properly infer and return the correct generic types
+  - Changed from concrete `Draggable` and `Droppable` types to generic parameters constrained by `Data` type
+
+- [`88942be`](https://github.com/clauderic/dnd-kit/commit/88942be007a743673644ba531fd5c6b1a501bf2e) Thanks [@clauderic](https://github.com/clauderic)! - **DOMRectangle**: Fix bugs with projected transforms.
+
+- [#1715](https://github.com/clauderic/dnd-kit/pull/1715) [`9326d43`](https://github.com/clauderic/dnd-kit/commit/9326d43ba0b9b682ee377011b96d4713711571a5) Thanks [@github-actions](https://github.com/apps/github-actions)! - **Feedback**: Re-inject the feedback styles if they get removed from the DOM before the `Feedback` plugin is torn down.
+
+- [#1715](https://github.com/clauderic/dnd-kit/pull/1715) [`7af261f`](https://github.com/clauderic/dnd-kit/commit/7af261f4e3214a9ebef46d26df607221306eb697) Thanks [@github-actions](https://github.com/apps/github-actions)! - **Feedback**: Fix an issue that caused styles to be removed when another instance of the Feedback plugin was torn down even if other instances of the Feedback plugin are still active.
+
+- [#1714](https://github.com/clauderic/dnd-kit/pull/1714) [`b9b182e`](https://github.com/clauderic/dnd-kit/commit/b9b182ef39f7aa8bfe2d331cb20c696b1e9fc15a) Thanks [@clauderic](https://github.com/clauderic)! - **OptimisticSortingPlugin**: Fixed a bug where using `queueMicrotask` in the `dragover` event of to check if `event.defaultPrevented()` was called by consumers was causing the order that we capture to be stale in the event that the consumer updates the order of sortable items before the micortask runs, which can happen in React for consumers using `useOptimistic` to update state optimistically.
+
+- [#1715](https://github.com/clauderic/dnd-kit/pull/1715) [`bb790c9`](https://github.com/clauderic/dnd-kit/commit/bb790c928a9955bd5c7c4312875090e16d891c23) Thanks [@github-actions](https://github.com/apps/github-actions)! - **Feedback**: Fix a regression with the drop animation on Safari.
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.1.18
+  - @dnd-kit/collision@0.1.18
+  - @dnd-kit/geometry@0.1.18
+  - @dnd-kit/state@0.1.18
+
 ## 0.1.17
 
 ### Patch Changes

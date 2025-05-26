@@ -1,5 +1,25 @@
 # @dnd-kit/react
 
+## 0.1.18
+
+### Patch Changes
+
+- [#1715](https://github.com/clauderic/dnd-kit/pull/1715) [`e502979`](https://github.com/clauderic/dnd-kit/commit/e502979375b9211fef277b8d657d9411f84be96c) Thanks [@github-actions](https://github.com/apps/github-actions)! - Improved TypeScript generics for better type safety and flexibility
+
+  - Enhanced `DragDropManager` to accept generic type parameters with proper constraints, allowing for more flexible type usage while maintaining type safety
+  - Updated `DragDropProvider` to support custom generic types for draggable and droppable entities
+  - Modified React hooks (`useDragDropManager`, `useDragDropMonitor`, `useDragOperation`) to properly infer and return the correct generic types
+  - Changed from concrete `Draggable` and `Droppable` types to generic parameters constrained by `Data` type
+
+- [#1715](https://github.com/clauderic/dnd-kit/pull/1715) [`d6b5736`](https://github.com/clauderic/dnd-kit/commit/d6b57365dce694ecbc86f9c507dab42d0c698a99) Thanks [@github-actions](https://github.com/apps/github-actions)! - **<DragOverlay>**: Added `disabled` prop to temporarily disable `<DragOverlay>` without unmounting it. The `disabled` prop accepts either a `boolean` or function that receives the `source` as input and returns a `boolean`, which can be useful to disable the `<DragOverlay>` based on the `type` or `data` of the `source`.
+
+- [#1714](https://github.com/clauderic/dnd-kit/pull/1714) [`6a27d87`](https://github.com/clauderic/dnd-kit/commit/6a27d87402916b736f8bc1f58d9cb434d079ccef) Thanks [@clauderic](https://github.com/clauderic)! - Refactor renderer to better handle calls to `useOptimistic` to update state during transitions.
+
+- Updated dependencies [[`e502979`](https://github.com/clauderic/dnd-kit/commit/e502979375b9211fef277b8d657d9411f84be96c), [`88942be`](https://github.com/clauderic/dnd-kit/commit/88942be007a743673644ba531fd5c6b1a501bf2e), [`9326d43`](https://github.com/clauderic/dnd-kit/commit/9326d43ba0b9b682ee377011b96d4713711571a5), [`7af261f`](https://github.com/clauderic/dnd-kit/commit/7af261f4e3214a9ebef46d26df607221306eb697), [`b9b182e`](https://github.com/clauderic/dnd-kit/commit/b9b182ef39f7aa8bfe2d331cb20c696b1e9fc15a), [`bb790c9`](https://github.com/clauderic/dnd-kit/commit/bb790c928a9955bd5c7c4312875090e16d891c23)]:
+  - @dnd-kit/dom@0.1.18
+  - @dnd-kit/abstract@0.1.18
+  - @dnd-kit/state@0.1.18
+
 ## 0.1.17
 
 ### Patch Changes
