@@ -35,6 +35,7 @@ import {
 
 import {createRange} from '../../utilities';
 import {Item, List, Wrapper} from '../../components';
+import {Props as ContainerProps} from '../../components/GridContainer/GridContainer';
 
 export interface Props {
   activationConstraint?: PointerActivationConstraint;
@@ -42,7 +43,7 @@ export interface Props {
   adjustScale?: boolean;
   collisionDetection?: CollisionDetection;
   coordinateGetter?: KeyboardCoordinateGetter;
-  Container?: any; // To-do: Fix me
+  Container?: ContainerProps;
   dropAnimation?: DropAnimation | null;
   getNewIndex?: NewIndexGetter;
   handle?: boolean;
