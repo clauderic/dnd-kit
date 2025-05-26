@@ -10,6 +10,7 @@ import {
   DOMRectangle,
   getComputedStyles,
   getDocument,
+  getFinalKeyframe,
   getFrameTransform,
   getWindow,
   isHTMLElement,
@@ -582,6 +583,15 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             /* Force the source element to be promoted to the top layer before animating it */
             showPopover(feedbackElement);
 
+            // Pause any translate transitions that are running on the feedback element
+            const [, animation] =
+              getFinalKeyframe(
+                feedbackElement,
+                (keyframe) => 'translate' in keyframe
+              ) ?? [];
+
+            animation?.pause();
+
             const target = placeholder ?? element;
             const options = {
               frameTransform: isSameFrame(feedbackElement, target)
@@ -589,11 +599,16 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
                 : undefined,
             };
             const current = new DOMRectangle(feedbackElement, options);
+            // With a keyboard activator, since there is a transition on the translate property,
+            // the translate value may not be the same as the computed value if the transition is still running.
+            const currentTranslate =
+              parseTranslate(getComputedStyles(feedbackElement).translate) ??
+              translate;
             const final = new DOMRectangle(target, options);
             const delta = Rectangle.delta(current, final, source.alignment);
             const finalTranslate = {
-              x: translate.x - delta.x,
-              y: translate.y - delta.y,
+              x: currentTranslate.x - delta.x,
+              y: currentTranslate.y - delta.y,
             };
             const heightKeyframes =
               Math.round(current.intrinsicHeight) !==
@@ -634,7 +649,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
                 ...heightKeyframes,
                 ...widthKeyframes,
                 translate: [
-                  `${translate.x}px ${translate.y}px 0`,
+                  `${currentTranslate.x}px ${currentTranslate.y}px 0`,
                   `${finalTranslate.x}px ${finalTranslate.y}px 0`,
                 ],
               },
@@ -644,6 +659,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
               },
             }).then(() => {
               feedbackElement.removeAttribute(DROPPING_ATTRIBUTE);
+              animation?.finish();
               onComplete?.();
               requestAnimationFrame(restoreFocus);
             });
