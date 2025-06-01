@@ -104,8 +104,8 @@ function App() {
       onDragEnd={(event) => {
         if (event.canceled) return;
 
-        const isDropped = event.target?.id === 'droppable';
-        setIsDropped(isDropped);
+        const {target} = event.operation;
+        setIsDropped(target?.id === 'droppable');
       }}
     >
       {!isDropped && <Draggable />}
@@ -178,7 +178,7 @@ function App() {
       onDragEnd={(event) => {
         if (event.canceled) return;
 
-        setTarget(event.target?.id);
+        setTarget(event.operation.target?.id);
       }}
     >
       {!target ? draggable : null}
