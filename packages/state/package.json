@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@dnd-kit/eslint-config": "*",
+    "bun-types": "^1.2.15",
     "eslint": "^8.38.0",
     "tsup": "8.3.0",
     "typescript": "^5.5.2"
