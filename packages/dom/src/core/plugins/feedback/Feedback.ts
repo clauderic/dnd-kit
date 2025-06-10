@@ -558,6 +558,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     // Drop animation
     dropEffectCleanup = effect(() => {
       if (dragOperation.status.dropped) {
+        queueMicrotask(() => dropEffectCleanup?.());
+
         const onComplete = cleanup;
         cleanup = undefined;
 
