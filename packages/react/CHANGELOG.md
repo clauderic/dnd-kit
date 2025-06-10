@@ -1,5 +1,14 @@
 # @dnd-kit/react
 
+## 0.1.19
+
+### Patch Changes
+
+- Updated dependencies [[`cc7feac`](https://github.com/clauderic/dnd-kit/commit/cc7feacb003b95a744c81e7c75c2aa26d071971f), [`d848327`](https://github.com/clauderic/dnd-kit/commit/d848327b242c6714b36207071ad30e6b4183e865)]:
+  - @dnd-kit/dom@0.1.19
+  - @dnd-kit/state@0.1.19
+  - @dnd-kit/abstract@0.1.19
+
 ## 0.1.18
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @dnd-kit/dom
 
+## 0.1.19
+
+### Patch Changes
+
+- [#1735](https://github.com/clauderic/dnd-kit/pull/1735) [`cc7feac`](https://github.com/clauderic/dnd-kit/commit/cc7feacb003b95a744c81e7c75c2aa26d071971f) Thanks [@MateusJabour](https://github.com/MateusJabour)! - Fixes cleanup issue where user would be stuck in dragging mode
+
+- Updated dependencies [[`d848327`](https://github.com/clauderic/dnd-kit/commit/d848327b242c6714b36207071ad30e6b4183e865)]:
+  - @dnd-kit/state@0.1.19
+  - @dnd-kit/abstract@0.1.19
+  - @dnd-kit/collision@0.1.19
+  - @dnd-kit/geometry@0.1.19
+
 ## 0.1.18
 
 ### Patch Changes
