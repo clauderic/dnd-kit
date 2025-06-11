@@ -1,5 +1,5 @@
 import {
-  effect,
+  effects,
   reactive,
   untracked,
   type CleanupFunction,
@@ -119,7 +119,6 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       y: elementFrameTransform.scaleY / frameTransform.scaleY,
     };
 
-    let cleanup: CleanupFunction | undefined;
     let {width, height, top, left} = shape;
 
     if (crossFrame) {
@@ -450,59 +449,6 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       });
     }
 
-    // Update transform on move
-    const cleanupEffect = effect(() => {
-      const {transform, status} = dragOperation;
-
-      if (!transform.x && !transform.y && !state.current.translate) {
-        return;
-      }
-
-      if (status.dragging) {
-        const initialTranslate = initial.translate ?? {x: 0, y: 0};
-        const translate = {
-          x: transform.x / frameTransform.scaleX + initialTranslate.x,
-          y: transform.y / frameTransform.scaleY + initialTranslate.y,
-        };
-        const previousTranslate = state.current.translate;
-        const modifiers = untracked(() => dragOperation.modifiers);
-        const currentShape = untracked(() => dragOperation.shape?.current);
-        const translateTransition = isKeyboardOperation
-          ? '250ms cubic-bezier(0.25, 1, 0.5, 1)'
-          : '0ms linear';
-
-        styles.set(
-          {
-            transition: `${transition}, translate ${translateTransition}`,
-            translate: `${translate.x}px ${translate.y}px 0`,
-          },
-          CSS_PREFIX
-        );
-        elementMutationObserver?.takeRecords();
-
-        if (
-          currentShape &&
-          currentShape !== initialShape &&
-          previousTranslate &&
-          !modifiers.length
-        ) {
-          const delta = Point.delta(translate, previousTranslate);
-
-          dragOperation.shape = Rectangle.from(
-            currentShape.boundingRectangle
-          ).translate(
-            // Need to take into account frame transform when optimistically updating shape
-            delta.x * frameTransform.scaleX,
-            delta.y * frameTransform.scaleY
-          );
-        } else {
-          dragOperation.shape = new DOMRectangle(feedbackElement);
-        }
-
-        state.current.translate = translate;
-      }
-    });
-
     const id = manager.dragOperation.source?.id;
 
     const restoreFocus = () => {
@@ -517,9 +463,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         element.focus();
       }
     };
-
-    let dropEffectCleanup: CleanupFunction | undefined;
-    cleanup = () => {
+    const cleanup = () => {
       elementMutationObserver?.disconnect();
       documentMutationObserver?.disconnect();
       resizeObserver.disconnect();
@@ -550,129 +494,181 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       }
 
       placeholder?.remove();
-
-      cleanupEffect();
-      dropEffectCleanup?.();
     };
 
-    // Drop animation
-    dropEffectCleanup = effect(() => {
-      if (dragOperation.status.dropped) {
-        queueMicrotask(() => dropEffectCleanup?.());
+    const cleanupEffects = effects(
+      // Update transform on move
+      () => {
+        const {transform, status} = dragOperation;
 
-        const onComplete = cleanup;
-        cleanup = undefined;
-
-        source.status = 'dropping';
-
-        let translate = state.current.translate;
-        const moved = translate != null;
-
-        if (!translate && element !== feedbackElement) {
-          translate = {
-            x: 0,
-            y: 0,
-          };
-        }
-
-        if (!translate) {
-          onComplete?.();
+        if (!transform.x && !transform.y && !state.current.translate) {
           return;
         }
 
-        const dropAnimation = () => {
-          {
-            /* Force the source element to be promoted to the top layer before animating it */
-            showPopover(feedbackElement);
+        if (status.dragging) {
+          const initialTranslate = initial.translate ?? {x: 0, y: 0};
+          const translate = {
+            x: transform.x / frameTransform.scaleX + initialTranslate.x,
+            y: transform.y / frameTransform.scaleY + initialTranslate.y,
+          };
+          const previousTranslate = state.current.translate;
+          const modifiers = untracked(() => dragOperation.modifiers);
+          const currentShape = untracked(() => dragOperation.shape?.current);
+          const translateTransition = isKeyboardOperation
+            ? '250ms cubic-bezier(0.25, 1, 0.5, 1)'
+            : '0ms linear';
 
-            // Pause any translate transitions that are running on the feedback element
-            const [, animation] =
-              getFinalKeyframe(
-                feedbackElement,
-                (keyframe) => 'translate' in keyframe
-              ) ?? [];
+          styles.set(
+            {
+              transition: `${transition}, translate ${translateTransition}`,
+              translate: `${translate.x}px ${translate.y}px 0`,
+            },
+            CSS_PREFIX
+          );
+          elementMutationObserver?.takeRecords();
 
-            animation?.pause();
+          if (
+            currentShape &&
+            currentShape !== initialShape &&
+            previousTranslate &&
+            !modifiers.length
+          ) {
+            const delta = Point.delta(translate, previousTranslate);
 
-            const target = placeholder ?? element;
-            const options = {
-              frameTransform: isSameFrame(feedbackElement, target)
-                ? null
-                : undefined,
-            };
-            const current = new DOMRectangle(feedbackElement, options);
-            // With a keyboard activator, since there is a transition on the translate property,
-            // the translate value may not be the same as the computed value if the transition is still running.
-            const currentTranslate =
-              parseTranslate(getComputedStyles(feedbackElement).translate) ??
-              translate;
-            const final = new DOMRectangle(target, options);
-            const delta = Rectangle.delta(current, final, source.alignment);
-            const finalTranslate = {
-              x: currentTranslate.x - delta.x,
-              y: currentTranslate.y - delta.y,
-            };
-            const heightKeyframes =
-              Math.round(current.intrinsicHeight) !==
-              Math.round(final.intrinsicHeight)
-                ? {
-                    minHeight: [
-                      `${current.intrinsicHeight}px`,
-                      `${final.intrinsicHeight}px`,
-                    ],
-                    maxHeight: [
-                      `${current.intrinsicHeight}px`,
-                      `${final.intrinsicHeight}px`,
-                    ],
-                  }
-                : {};
-            const widthKeyframes =
-              Math.round(current.intrinsicWidth) !==
-              Math.round(final.intrinsicWidth)
-                ? {
-                    minWidth: [
-                      `${current.intrinsicWidth}px`,
-                      `${final.intrinsicWidth}px`,
-                    ],
-                    maxWidth: [
-                      `${current.intrinsicWidth}px`,
-                      `${final.intrinsicWidth}px`,
-                    ],
-                  }
-                : {};
-
-            styles.set({transition}, CSS_PREFIX);
-            feedbackElement.setAttribute(DROPPING_ATTRIBUTE, '');
-            elementMutationObserver?.takeRecords();
-
-            animateTransform({
-              element: feedbackElement,
-              keyframes: {
-                ...heightKeyframes,
-                ...widthKeyframes,
-                translate: [
-                  `${currentTranslate.x}px ${currentTranslate.y}px 0`,
-                  `${finalTranslate.x}px ${finalTranslate.y}px 0`,
-                ],
-              },
-              options: {
-                duration: moved || feedbackElement !== element ? 250 : 0,
-                easing: 'ease',
-              },
-            }).then(() => {
-              feedbackElement.removeAttribute(DROPPING_ATTRIBUTE);
-              animation?.finish();
-              onComplete?.();
-              requestAnimationFrame(restoreFocus);
-            });
+            dragOperation.shape = Rectangle.from(
+              currentShape.boundingRectangle
+            ).translate(
+              // Need to take into account frame transform when optimistically updating shape
+              delta.x * frameTransform.scaleX,
+              delta.y * frameTransform.scaleY
+            );
+          } else {
+            dragOperation.shape = new DOMRectangle(feedbackElement);
           }
-        };
 
-        manager.renderer.rendering.then(dropAnimation);
+          state.current.translate = translate;
+        }
+      },
+      // Drop animation
+      function () {
+        if (dragOperation.status.dropped) {
+          // Dispose of the effect
+          this.dispose();
+
+          source.status = 'dropping';
+
+          let translate = state.current.translate;
+          const moved = translate != null;
+
+          if (!translate && element !== feedbackElement) {
+            translate = {
+              x: 0,
+              y: 0,
+            };
+          }
+
+          if (!translate) {
+            cleanup();
+            return;
+          }
+
+          const dropAnimation = () => {
+            {
+              /* Force the source element to be promoted to the top layer before animating it */
+              showPopover(feedbackElement);
+
+              // Pause any translate transitions that are running on the feedback element
+              const [, animation] =
+                getFinalKeyframe(
+                  feedbackElement,
+                  (keyframe) => 'translate' in keyframe
+                ) ?? [];
+
+              animation?.pause();
+
+              const target = placeholder ?? element;
+              const options = {
+                frameTransform: isSameFrame(feedbackElement, target)
+                  ? null
+                  : undefined,
+              };
+              const current = new DOMRectangle(feedbackElement, options);
+              // With a keyboard activator, since there is a transition on the translate property,
+              // the translate value may not be the same as the computed value if the transition is still running.
+              const currentTranslate =
+                parseTranslate(getComputedStyles(feedbackElement).translate) ??
+                translate;
+              const final = new DOMRectangle(target, options);
+              const delta = Rectangle.delta(current, final, source.alignment);
+              const finalTranslate = {
+                x: currentTranslate.x - delta.x,
+                y: currentTranslate.y - delta.y,
+              };
+              const heightKeyframes =
+                Math.round(current.intrinsicHeight) !==
+                Math.round(final.intrinsicHeight)
+                  ? {
+                      minHeight: [
+                        `${current.intrinsicHeight}px`,
+                        `${final.intrinsicHeight}px`,
+                      ],
+                      maxHeight: [
+                        `${current.intrinsicHeight}px`,
+                        `${final.intrinsicHeight}px`,
+                      ],
+                    }
+                  : {};
+              const widthKeyframes =
+                Math.round(current.intrinsicWidth) !==
+                Math.round(final.intrinsicWidth)
+                  ? {
+                      minWidth: [
+                        `${current.intrinsicWidth}px`,
+                        `${final.intrinsicWidth}px`,
+                      ],
+                      maxWidth: [
+                        `${current.intrinsicWidth}px`,
+                        `${final.intrinsicWidth}px`,
+                      ],
+                    }
+                  : {};
+
+              styles.set({transition}, CSS_PREFIX);
+              feedbackElement.setAttribute(DROPPING_ATTRIBUTE, '');
+              elementMutationObserver?.takeRecords();
+
+              animateTransform({
+                element: feedbackElement,
+                keyframes: {
+                  ...heightKeyframes,
+                  ...widthKeyframes,
+                  translate: [
+                    `${currentTranslate.x}px ${currentTranslate.y}px 0`,
+                    `${finalTranslate.x}px ${finalTranslate.y}px 0`,
+                  ],
+                },
+                options: {
+                  duration: moved || feedbackElement !== element ? 250 : 0,
+                  easing: 'ease',
+                },
+              }).then(() => {
+                feedbackElement.removeAttribute(DROPPING_ATTRIBUTE);
+                animation?.finish();
+                cleanup();
+                requestAnimationFrame(restoreFocus);
+              });
+            }
+          };
+
+          manager.renderer.rendering.then(dropAnimation);
+        }
       }
-    });
+    );
 
-    return () => cleanup?.();
+    return () => {
+      cleanup();
+      cleanupEffects();
+    };
   }
 
   #injectStyles() {
