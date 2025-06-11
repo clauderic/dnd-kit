@@ -150,7 +150,7 @@ export class Sortable<T extends Data = Data> {
               store.clear(this.manager);
             }
 
-            if (status?.initialized) {
+            if (status?.dragging) {
               store.set(
                 this.manager,
                 this.id,
