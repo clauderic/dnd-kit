@@ -40,7 +40,11 @@ export function deepEqual<T>(a: T, b: T): boolean {
     const bKeys = Object.keys(b);
     if (aKeys.length !== bKeys.length) return false;
 
-    return aKeys.some((key) => deepEqual(a[key as keyof T], b[key as keyof T]));
+    const hasDifferentValues = aKeys.some(
+      (key) => !deepEqual(a[key as keyof T], b[key as keyof T])
+    );
+
+    return !hasDifferentValues;
   }
 
   return false;
