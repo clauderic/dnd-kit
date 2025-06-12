@@ -1,4 +1,4 @@
-name: Release experimental branch
+name: Release
 on:
   push:
     branches:

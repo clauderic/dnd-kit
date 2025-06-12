@@ -2,13 +2,11 @@ name: Continuous Release
 on:
   pull_request:
   push:
-    branches:
-      - "**"
-    tags:
-      - "!**"
+    branches: [experimental]
 
 jobs:
   build:
+    name: Continuous release
     runs-on: ubuntu-latest
     environment: production
 

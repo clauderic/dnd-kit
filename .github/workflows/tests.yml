@@ -1,9 +1,9 @@
-name: CI
+name: Tests
 
 on:
-  push:
-    branches: [main]
   pull_request:
+  push:
+    branches: [experimental]
 
 jobs:
   test:
@@ -16,14 +16,6 @@ jobs:
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
-
-      - name: Cache Bun dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.bun/install/cache
-          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
 
       - name: Install Dependencies
         run: bun install

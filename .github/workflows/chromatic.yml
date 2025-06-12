@@ -1,9 +1,13 @@
 name: 'Chromatic'
 
-on: [push]
+on:
+  pull_request:
+  push:
+    branches: [experimental]
 
 jobs:
-  test:
+  chromatic:
+    name: Chromatic
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
