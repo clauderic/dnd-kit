@@ -38,4 +38,8 @@ describe('deepEqual', () => {
     expect(deepEqual({a: 1, b: 2}, {b: 2, a: 1})).toBe(true);
     expect(deepEqual({a: 1}, {a: 2})).toBe(false);
   });
+
+  it('should detect differing values when only some keys match', () => {
+    expect(deepEqual({a: 1, b: 1}, {a: 1, b: 2})).toBe(false);
+  });
 });
