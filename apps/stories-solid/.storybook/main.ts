@@ -1,6 +1,8 @@
 import {mergeConfig} from 'vite';
-import reactPlugin from '@vitejs/plugin-react';
+// import reactPlugin from '@vitejs/plugin-react';
 import path from 'path';
+
+const rootDir = path.resolve(__dirname, '..');
 
 export default {
   framework: 'storybook-solidjs-vite',
@@ -8,15 +10,16 @@ export default {
 
   addons: [
     '@storybook/addon-links',
-    'storybook-dark-mode',
+    '@vueless/storybook-dark-mode',
     "@storybook/addon-docs"
   ],
 
   async viteFinal(config) {
-    // const { default: solidPlugin } = await import('vite-plugin-solid');
+    const { default: solidPlugin } = await import('vite-plugin-solid');
     
-    // config.plugins = config.plugins.filter((plugin) => plugin.name && !plugin.name.includes('solid'));
-    // config.plugins.push(
+    config.plugins = config.plugins.filter((plugin) => plugin.name && !plugin.name.includes('solid'));
+    
+    config.plugins.push(
       // Compile *.react.tsx files as React components
       // reactPlugin({
       //   jsxRuntime: 'automatic',
@@ -24,11 +27,14 @@ export default {
       //   include: ['**/*.react.tsx'],
       // }),
       // And anything else as Solid components
-      // solidPlugin({
-        // include: ['**/*.tsx'],
-        // exclude: ['**/*.mdx', '**/*.react.tsx'],
-      // })
-    // );
+      solidPlugin({
+        include: [
+          path.resolve(rootDir, '**/*.tsx'),
+          path.resolve(rootDir, '../../packages/solid/**/*.tsx'),
+        ],
+        exclude: ['**/*.mdx', '**/*.react.tsx'],
+      })
+    );
     
     return mergeConfig(config, {
       define: {
@@ -39,7 +45,7 @@ export default {
       },
       resolve: {
         alias: {
-          '@': path.resolve(__dirname, '../'), // adjust as needed
+          '@': rootDir,
         },
       },
     });

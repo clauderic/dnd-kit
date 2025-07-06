@@ -14,6 +14,8 @@ interface Props {
   sensors?: Sensors;
 }
 
+console.log(`DraggableExample`, DragDropProvider);
+
 export function DraggableExample(props: Props) {
   return (
     <DragDropProvider sensors={props.sensors}>

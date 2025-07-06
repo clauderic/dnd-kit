@@ -2,13 +2,7 @@
 import { createEffect, JSX } from 'solid-js';
 import React from 'react';
 
-import { Button, Dropzone, Item } from '../../stories/stories/components';
 import { Code } from '../components-docs';
-
-// Register web components
-customElements.define('button-component', Button);
-customElements.define('dropzone-component', Dropzone);
-customElements.define('item-component', Item);
 
 const DarkModeProvider = (props: { children: JSX.Element }) => {
   createEffect(() => {
@@ -60,7 +54,7 @@ const preview = {
       storySort: {
         order: [
           'Docs',
-          'React',
+          'Solid',
           [
             'Draggable',
             'Droppable',

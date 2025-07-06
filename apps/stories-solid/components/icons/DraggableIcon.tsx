@@ -1,8 +1,6 @@
-import draggableIcon from '../assets/draggableIcon.svg';
-
 export const DraggableIcon = () => (
   <img
-    src={draggableIcon}
+    src="/components/assets/draggableIcon.svg"
     width="140"
     alt="Draggable"
     draggable={false}

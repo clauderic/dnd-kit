@@ -7,7 +7,7 @@
     "jsxImportSource": "solid-js",
     "lib": ["dom", "ES2015"],
     "target": "es6",
-    "module": "NodeNext",
+    "module": "esnext",
     "moduleResolution": "bundler",
     "importHelpers": true
   }
