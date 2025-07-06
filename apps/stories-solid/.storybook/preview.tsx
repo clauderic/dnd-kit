@@ -2,8 +2,8 @@
 import { createEffect, JSX } from 'solid-js';
 import React from 'react';
 
-import { Button, Dropzone, Item } from '../components';
-import { Code } from '../components/docs';
+import { Button, Dropzone, Item } from '../../stories/stories/components';
+import { Code } from '../components-docs';
 
 // Register web components
 customElements.define('button-component', Button);
@@ -35,8 +35,6 @@ const DarkModeProvider = (props: { children: JSX.Element }) => {
 
   return props.children;
 };
-
-console.log('Code', Code);
 
 const preview = {
   decorators: [

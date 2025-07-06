@@ -1,5 +1,6 @@
 import {mergeConfig} from 'vite';
 import reactPlugin from '@vitejs/plugin-react';
+import path from 'path';
 
 export default {
   framework: 'storybook-solidjs-vite',
@@ -12,23 +13,22 @@ export default {
   ],
 
   async viteFinal(config) {
-    config.plugins = config.plugins.filter((plugin) => plugin.name && !plugin.name.includes('solid'));
+    // const { default: solidPlugin } = await import('vite-plugin-solid');
     
-    const { default: solidPlugin } = await import('vite-plugin-solid');
-
-    config.plugins.push(
+    // config.plugins = config.plugins.filter((plugin) => plugin.name && !plugin.name.includes('solid'));
+    // config.plugins.push(
       // Compile *.react.tsx files as React components
-      reactPlugin({
-        jsxRuntime: 'automatic',
-        jsxImportSource: 'react',
-        include: ['**/*.react.tsx', '**/*.mdx'],
-      }),
+      // reactPlugin({
+      //   jsxRuntime: 'automatic',
+      //   jsxImportSource: 'react',
+      //   include: ['**/*.react.tsx'],
+      // }),
       // And anything else as Solid components
-      solidPlugin({
-        include: ['**/*.tsx'],
-        exclude: ['**/*.mdx', '**/*.react.tsx'],
-      })
-    );
+      // solidPlugin({
+        // include: ['**/*.tsx'],
+        // exclude: ['**/*.mdx', '**/*.react.tsx'],
+      // })
+    // );
     
     return mergeConfig(config, {
       define: {
@@ -36,6 +36,11 @@ export default {
       },
       optimizeDeps: {
         exclude: ['@dnd-kit/*'],
+      },
+      resolve: {
+        alias: {
+          '@': path.resolve(__dirname, '../'), // adjust as needed
+        },
       },
     });
   },

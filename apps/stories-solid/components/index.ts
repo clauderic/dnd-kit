@@ -1,4 +1,3 @@
-export {Code, Info, Preview} from './docs';
-export {Button} from './Button';
-export {Dropzone} from './Dropzone';
-export {Item} from './Item';
+export {Button} from './button';
+export {Dropzone} from './dropzone';
+export {Item} from './item';
