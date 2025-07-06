@@ -6,7 +6,7 @@ icon: 'layer-group'
 
 import {Story} from '/snippets/story.mdx';
 import {CodeSandbox} from '/snippets/sandbox.mdx';
-import {sortableStyles as styles} from '/snippets/code.mdx';
+import {sortableStyles} from '/snippets/code.mdx';
 
 <Story id="react-sortable--example" height="320" hero />
 
@@ -50,7 +50,7 @@ export function App() {
 <CodeSandbox files={{
   'index.js': {code: `import './styles.css';\nimport {App} from './sortable.js';\n\nApp();`, hidden: true},
   'sortable.js': {code, active: true},
-  'styles.css': {code: styles, hidden: true},
+  'styles.css': {code: sortableStyles, hidden: true},
 }} height={580} previewHeight={180} template="vanilla" />
 
 ## Multiple Lists

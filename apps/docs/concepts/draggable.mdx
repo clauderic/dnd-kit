@@ -6,7 +6,7 @@ icon: 'bullseye-pointer'
 
 import {Story} from '/snippets/story.mdx';
 import {CodeSandbox} from '/snippets/sandbox.mdx';
-import {draggableStyles as styles} from '/snippets/code.mdx';
+import {draggableStyles} from '/snippets/code.mdx';
 
 ## Usage
 
@@ -34,7 +34,7 @@ export function App() {
 <CodeSandbox files={{
   'index.js': {code: `import './styles.css';\nimport {App} from './draggable.js';\n\nApp();`, hidden: true},
   'draggable.js': {code, active: true},
-  'styles.css': {code: styles, hidden: true},
+  'styles.css': {code: draggableStyles, hidden: true},
 }} height={360} previewHeight={200} template="vanilla" hero />
 
 ## Handles

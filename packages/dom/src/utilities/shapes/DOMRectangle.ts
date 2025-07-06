@@ -27,7 +27,7 @@ export class DOMRectangle extends Rectangle {
     const resetAnimations = forceFinishAnimations(element, {
       properties: ['transform', 'translate', 'scale', 'width', 'height'],
       isValidTarget: (target) =>
-        (isSafari() || target !== element) && target.contains(element),
+        (target !== element || isSafari()) && target.contains(element),
     });
     const boundingRectangle = getBoundingClientRect(element);
     let {top, left, width, height} = boundingRectangle;
@@ -117,6 +117,7 @@ function getProjectedTransform(
   if (!animations.length) return null;
 
   for (const animation of animations) {
+    if (animation.playState !== 'running') continue;
     const keyframes = isKeyframeEffect(animation.effect)
       ? animation.effect.getKeyframes()
       : [];
@@ -124,7 +125,7 @@ function getProjectedTransform(
 
     if (!keyframe) continue;
 
-    const {transform = '', translate = '', scale = ''} = keyframe;
+    const {transform, translate, scale} = keyframe;
 
     if (transform || translate || scale) {
       const parsedTransform = parseTransform({

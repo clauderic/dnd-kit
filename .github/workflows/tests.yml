@@ -1,0 +1,24 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [experimental]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        run: bun install
+
+      - name: Run Tests
+        run: bun test

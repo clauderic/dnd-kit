@@ -1,6 +1,6 @@
 {
   "name": "@dnd-kit/state",
-  "version": "0.1.17",
+  "version": "0.1.19",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -12,15 +12,17 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --external react",
     "dev": "tsup src/index.ts --format esm,cjs --watch --dts --external react",
+    "test": "bun test",
     "lint": "TIMING=1 eslint src/**/*.ts* --fix",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
-    "@preact/signals-core": "^1.8.0",
+    "@preact/signals-core": "^1.10.0",
     "tslib": "^2.6.2"
   },
   "devDependencies": {
     "@dnd-kit/eslint-config": "*",
+    "bun-types": "^1.2.15",
     "eslint": "^8.38.0",
     "tsup": "8.3.0",
     "typescript": "^5.5.2"

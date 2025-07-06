@@ -1,3 +1,5 @@
+export {getFinalKeyframe} from './animations/getFinalKeyframe.ts';
+
 export {
   getBoundingRectangle,
   getViewportBoundingRectangle,

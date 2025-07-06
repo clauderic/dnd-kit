@@ -1,28 +1,7 @@
+import {getFinalKeyframe} from '../animations/getFinalKeyframe.ts';
 import {getComputedStyles} from '../styles/getComputedStyles.ts';
-import {isKeyframeEffect} from '../type-guards/isKeyframeEffect.ts';
 
 import {parseTranslate} from './parseTranslate.ts';
-
-function getFinalKeyframe(
-  element: Element,
-  match: (keyframe: Keyframe) => boolean
-): Keyframe | null {
-  const animations = element.getAnimations();
-
-  if (animations.length > 0) {
-    for (const animation of animations) {
-      const {effect} = animation;
-      const keyframes = isKeyframeEffect(effect) ? effect.getKeyframes() : [];
-      const matchedKeyframes = keyframes.filter(match);
-
-      if (matchedKeyframes.length > 0) {
-        return matchedKeyframes[matchedKeyframes.length - 1];
-      }
-    }
-  }
-
-  return null;
-}
 
 export function computeTranslate(
   element: Element,
@@ -40,7 +19,7 @@ export function computeTranslate(
     );
 
     if (keyframe) {
-      const {translate = ''} = keyframe;
+      const {translate = ''} = keyframe[0];
 
       if (typeof translate === 'string') {
         const finalTranslate = parseTranslate(translate);

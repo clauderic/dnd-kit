@@ -1,5 +1,13 @@
 # @dnd-kit/state
 
+## 0.1.19
+
+### Patch Changes
+
+- [#1724](https://github.com/clauderic/dnd-kit/pull/1724) [`d848327`](https://github.com/clauderic/dnd-kit/commit/d848327b242c6714b36207071ad30e6b4183e865) Thanks [@project42da](https://github.com/project42da)! - Replaced JSON.stringify() with a recursive comparison for plain objects.
+
+## 0.1.18
+
 ## 0.1.17
 
 ## 0.1.16
