@@ -1,5 +1,5 @@
-import {addons} from '@storybook/manager-api';
-import type {API_PreparedIndexEntry, API_StatusObject} from '@storybook/types';
+import {addons} from 'storybook/manager-api';
+import type {API_PreparedIndexEntry} from 'storybook/internal/types';
 
 import {theme} from './theme';
 
@@ -12,9 +12,7 @@ addons.setConfig({
   sidebar: {
     filters: {
       patterns: (
-        item: API_PreparedIndexEntry & {
-          status: Record<string, API_StatusObject | null>;
-        }
+        item: API_PreparedIndexEntry
       ): boolean => {
         return !(item.tags ?? []).includes('hidden');
       },

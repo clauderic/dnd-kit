@@ -1,4 +1,4 @@
-import {create} from '@storybook/theming/create';
+import {create} from 'storybook/theming/create';
 import {default as brandImage} from './assets/dnd-kit-banner.svg';
 
 export const theme = create({
