@@ -42,6 +42,7 @@ const preview = {
   ],
   parameters: {
     docs: {
+      codePanel: false,
       components: {
         // pre: (props: any) => React.createElement('pre', { ...props, className: 'sb-unstyled' }),
         // code: Code,

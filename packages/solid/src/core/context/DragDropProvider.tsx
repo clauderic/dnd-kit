@@ -1,5 +1,5 @@
-import { DragDropManager } from '@dnd-kit/dom';
-import { createEffect, createMemo, onCleanup, splitProps } from 'solid-js';
+import { DragDropManager, defaultPreset } from '@dnd-kit/dom';
+import { createEffect, createMemo, onCleanup, splitProps, untrack } from 'solid-js';
 
 import { DragDropContext } from './context.ts';
 import { useRenderer } from '../hooks/useRenderer.ts';
@@ -20,8 +20,10 @@ export interface DragDropProviderProps extends DragDropManagerInput, ParentProps
     onDragEnd?: Events['dragend'];
 }
 
-export function DragDropProvider(props: DragDropProviderProps) {
-    const [local, input] = splitProps(props, [
+export function DragDropProvider(_props: DragDropProviderProps) {
+    let localManager: DragDropManager | undefined;
+    
+    const [props, input] = splitProps(_props, [
         'children',
         'manager',
         'onCollision',
@@ -33,11 +35,11 @@ export function DragDropProvider(props: DragDropProviderProps) {
     ]);
 
     const { renderer, trackRendering } = useRenderer();
-    const manager = createMemo(() => local.manager ?? new DragDropManager(input));
+    const manager = createMemo(() => props.manager ?? new DragDropManager());
 
     // Destroy the manager if we created it ourselves
     onCleanup(() => {
-        if (!local.manager) {
+        if (!props.manager) {
             manager().destroy();
         }
     });
@@ -49,27 +51,18 @@ export function DragDropProvider(props: DragDropProviderProps) {
         }
 
         manager().renderer = renderer;
-
-        if (input.plugins) {
-            manager().plugins = input.plugins;
-        }
-
-        if (input.sensors) {
-            manager().sensors = input.sensors;
-        }
-
-        if (input.modifiers) {
-            manager().modifiers = input.modifiers;
-        }
+        manager().plugins = input.plugins ?? defaultPreset.plugins;
+        manager().sensors = input.sensors ?? defaultPreset.sensors;
+        manager().modifiers = input.modifiers ?? defaultPreset.modifiers;
     });
 
     // Set up event listeners
     createEffect(() => {
         const disposers: (() => void)[] = [];
-
+        
         disposers.push(
             manager().monitor.addEventListener('beforedragstart', (event, manager) => {
-                const callback = local.onBeforeDragStart;
+                const callback = props.onBeforeDragStart;
 
                 if (callback) {
                     trackRendering(() => callback(event, manager));
@@ -77,11 +70,11 @@ export function DragDropProvider(props: DragDropProviderProps) {
             }),
 
             manager().monitor.addEventListener('dragstart', (event, manager) => {
-                local.onDragStart?.(event, manager);
+                props.onDragStart?.(event, manager);
             }),
 
             manager().monitor.addEventListener('dragover', (event, manager) => {
-                const callback = local.onDragOver;
+                const callback = props.onDragOver;
 
                 if (callback) {
                     trackRendering(() => callback(event, manager));
@@ -89,7 +82,7 @@ export function DragDropProvider(props: DragDropProviderProps) {
             }),
 
             manager().monitor.addEventListener('dragmove', (event, manager) => {
-                const callback = local.onDragMove;
+                const callback = props.onDragMove;
 
                 if (callback) {
                     trackRendering(() => callback(event, manager));
@@ -97,7 +90,7 @@ export function DragDropProvider(props: DragDropProviderProps) {
             }),
 
             manager().monitor.addEventListener('dragend', (event, manager) => {
-                const callback = local.onDragEnd;
+                const callback = props.onDragEnd;
 
                 if (callback) {
                     trackRendering(() => callback(event, manager));
@@ -105,11 +98,13 @@ export function DragDropProvider(props: DragDropProviderProps) {
             }),
 
             manager().monitor.addEventListener('collision', (event, manager) =>
-                local.onCollision?.(event, manager))
+                props.onCollision?.(event, manager))
         );
 
         // Clean up all event listeners
         onCleanup(() => {
+            console.log('Cleaning up event listeners');
+            
             disposers.forEach(cleanup => cleanup());
         });
     });
@@ -117,7 +112,7 @@ export function DragDropProvider(props: DragDropProviderProps) {
     return (
     /* eslint-disable-next-line solid/reactivity */
         <DragDropContext.Provider value={ manager() }>
-            {local.children}
+            {props.children}
         </DragDropContext.Provider>
     );
 }

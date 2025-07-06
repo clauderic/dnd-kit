@@ -32,7 +32,7 @@
     "build:utilities": "tsup --entry.utilities src/utilities/index.ts",
     "dev": "bun build:utilities --watch & bun build:hooks --watch & bun build:core --watch & bun build:sortable --watch",
     "lint": "TIMING=1 eslint src/**/*.ts* --fix",
-    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+    "clean": "rm -rf .turbo node_modules dist"
   },
   "dependencies": {
     "@dnd-kit/abstract": "^0.1.17",

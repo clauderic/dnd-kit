@@ -46,6 +46,7 @@ const preview = {
   ],
   parameters: {
     docs: {
+      codePanel: false,
       components: {
         pre: (props) => (
           <Unstyled>
