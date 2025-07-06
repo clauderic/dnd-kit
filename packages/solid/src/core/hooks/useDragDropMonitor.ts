@@ -12,11 +12,11 @@ import type { CleanupFunction } from '@dnd-kit/state';
 export type Events<T extends Data> = DragDropEvents<
     Draggable<T>,
     Droppable<T>,
-    DragDropManager<Draggable<T>, Droppable<T>>
+    DragDropManager<any, Draggable<T>, Droppable<T>>
 >;
 
 export interface UseDragDropMonitorProps<T extends Data = Data> {
-    manager?: DragDropManager<Draggable<T>, Droppable<T>>;
+    manager?: DragDropManager<any, Draggable<T>, Droppable<T>>;
 
     onBeforeDragStart?: Events<T>['beforedragstart'];
     onCollision?: Events<T>['collision'];
@@ -71,7 +71,7 @@ export function useDragDropMonitor<T extends Data = Data>(
                     acc.push(
                         monitor.addEventListener(
                             eventName,
-                            handler
+                            handler as any
                         )
                     );
                 }

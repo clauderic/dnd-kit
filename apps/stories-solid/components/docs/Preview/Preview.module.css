@@ -1,0 +1,76 @@
+.Preview {
+  --background-color: #FCFCFC;
+
+  overflow-y: auto;
+  padding: 30px 40px;
+  margin: 25px 0 40px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.10), inset 0 0 1px hsla(203, 50%, 30%, 0.5);
+  background: var(--background-color);
+}
+
+.Preview:has( + .Code) {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-bottom: 0;
+}
+
+.Preview + .Code > div > div {
+  margin-top: 0px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.hero {
+  position: relative;
+  --gradient: linear-gradient(65deg, #56fff420, #001AFF20, #5F6AF220, #F25FD020, #56FFF520, #F25FD020, #001AFF20, #56fff420);
+  display: grid;
+  align-items: center;
+  min-height: 200px;
+  max-height: 400px;
+  background-image: var(--gradient);
+  animation: gradient 16s linear infinite;
+  animation-direction: alternate;
+  background-size: 600% 100%;
+}
+
+.hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+
+:global(.dark) .hero {
+  --gradient: linear-gradient(65deg, #56fff480, #001AFF80, #5F6AF280, #F25FD080, #56FFF580, #F25FD080, #001AFF80, #56fff480);
+
+  animation: background 16s linear infinite, gradient 60s linear infinite;
+}
+
+:global(.dark) .Preview {
+  --background-color: #38393c;
+}
+
+@keyframes background {
+  0% {
+    background-color: #ff0000;
+  }
+  25% {
+    background-color: #7f00ff;
+  }
+  50% {
+    background-color: #00affa;
+  }
+  75% {
+    background-color: #00f594;
+  }
+  100% {
+    background-color: #ff0000
+  }
+}
+
+
+@keyframes gradient {
+  0% {background-position: 0%}
+  100% {background-position: 100%}
+}
+

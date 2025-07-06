@@ -1,0 +1,42 @@
+{
+  "name": "@dnd-kit/stories-solid",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "storybook dev -p 6006",
+    "build": "storybook build",
+    "preview-storybook": "serve storybook-static",
+    "clean": "rm -rf .turbo && rm -rf node_modules",
+    "lint": "eslint ./stories/*.stories.tsx --max-warnings 0"
+  },
+  "dependencies": {
+    "@dnd-kit/abstract": "*",
+    "@dnd-kit/dom": "*",
+    "@dnd-kit/react": "*",
+    "@dnd-kit/helpers": "*",
+    "@tanstack/react-virtual": "^3.0.0-beta.54",
+    "clipboard": "^2.0.11",
+    "prismjs": "^1.29.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-tiny-virtual-list": "^2.2.0",
+    "react-window": "1.8.9"
+  },
+  "devDependencies": {
+    "@dnd-kit/eslint-config": "*",
+    "@measured/auto-frame-component": "^0.1.7",
+    "@storybook/addon-docs": "^9.0.15",
+    "@storybook/addon-links": "^9.0.15",
+    "@storybook/react-vite": "^9.0.15",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.56.0",
+    "eslint-plugin-storybook": "9.0.15",
+    "serve": "^14.2.4",
+    "storybook": "^9.0.15",
+    "storybook-dark-mode": "^4.0.2",
+    "storybook-solidjs-vite": "^9.0.2",
+    "typescript": "^5.7.3",
+    "vite": "^5.4.14"
+  }
+}
