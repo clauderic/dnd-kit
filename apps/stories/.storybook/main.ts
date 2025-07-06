@@ -3,17 +3,20 @@ import {mergeConfig} from 'vite';
 
 export default {
   stories: ['../stories/**/*.stories.mdx', '../stories/**/*.stories.tsx'],
+
   addons: [
     getAbsolutePath('@storybook/addon-links'),
-    getAbsolutePath('@storybook/addon-essentials'),
     getAbsolutePath('storybook-dark-mode'),
+    getAbsolutePath("@storybook/addon-docs")
   ],
+
   framework: {
     name: getAbsolutePath('@storybook/react-vite'),
     options: {
       strictMode: true,
     },
   },
+
   async viteFinal(config) {
     // customize the Vite config here
     return mergeConfig(config, {
@@ -24,10 +27,7 @@ export default {
         exclude: ['@dnd-kit/*'],
       },
     });
-  },
-  docs: {
-    autodocs: 'tag',
-  },
+  }
 };
 
 /**
