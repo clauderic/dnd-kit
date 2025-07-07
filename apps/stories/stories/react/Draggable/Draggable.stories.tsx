@@ -1,4 +1,4 @@
-import type {Meta, StoryObj} from '@storybook/react';
+import type {Meta, StoryObj} from '@storybook/react-vite';
 
 import {DraggableExample} from './DraggableExample';
 import docs from './docs/DraggableDocs.mdx';

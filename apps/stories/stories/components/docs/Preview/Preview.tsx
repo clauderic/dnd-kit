@@ -1,5 +1,5 @@
 import React from 'react';
-import {Story, Unstyled} from '@storybook/blocks';
+import {Story, Unstyled} from '@storybook/addon-docs/blocks';
 import {type StoryFn} from '@storybook/react';
 
 import {classNames} from '../../../utilities';

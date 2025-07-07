@@ -1,4 +1,4 @@
-import type {Meta, StoryObj} from '@storybook/react';
+import type {Meta, StoryObj} from '@storybook/react-vite';
 import {RestrictToHorizontalAxis} from '@dnd-kit/abstract/modifiers';
 
 import {SortableExample} from '../SortableExample';

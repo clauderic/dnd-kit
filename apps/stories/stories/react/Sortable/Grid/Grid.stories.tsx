@@ -1,4 +1,4 @@
-import type {Meta, StoryObj} from '@storybook/react';
+import type {Meta, StoryObj} from '@storybook/react-vite';
 import {pointerIntersection} from '@dnd-kit/collision';
 
 import {SortableExample} from '../SortableExample';
