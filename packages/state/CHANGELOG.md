@@ -1,5 +1,13 @@
 # @dnd-kit/state
 
+## 0.1.20
+
+### Patch Changes
+
+- [#1739](https://github.com/clauderic/dnd-kit/pull/1739) [`98d4cd4`](https://github.com/clauderic/dnd-kit/commit/98d4cd4047c56589cdf21067526426717bba01c4) Thanks [@clauderic](https://github.com/clauderic)! - Fixed a bug in the `deepEqual` comparator when comparing the keys of same length objects.
+
+- [#1737](https://github.com/clauderic/dnd-kit/pull/1737) [`32448ff`](https://github.com/clauderic/dnd-kit/commit/32448ff11eb3e86a28fc8f6ef7a8a3761e092412) Thanks [@github-actions](https://github.com/apps/github-actions)! - Bump `@preact/signals-core` to `1.10.0`
+
 ## 0.1.19
 
 ### Patch Changes
