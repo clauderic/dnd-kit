@@ -1,6 +1,6 @@
 /** @jsxImportSource react */
 import React, {useState} from 'react';
-import {Unstyled} from '@storybook/blocks';
+import {Unstyled} from '@storybook/addon-docs/blocks';
 
 import {CodeHighlighter} from './CodeHighlighter';
 import styles from './Code.module.css';

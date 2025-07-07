@@ -1,5 +1,5 @@
-import {addons} from '@storybook/manager-api';
-import type {API_PreparedIndexEntry} from '@storybook/types';
+import {addons} from 'storybook/manager-api';
+import type {API_PreparedIndexEntry} from 'storybook/internal/types';
 
 import {theme} from './theme';
 
