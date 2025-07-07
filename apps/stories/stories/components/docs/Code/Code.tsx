@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Unstyled} from '@storybook/blocks';
+import {Unstyled} from '@storybook/addon-docs/blocks';
 
 import {CodeHighlighter} from './components';
 import styles from './Code.module.css';

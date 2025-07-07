@@ -28,7 +28,6 @@
     "@measured/auto-frame-component": "^0.1.7",
     "@storybook/addon-docs": "^9.0.15",
     "@storybook/addon-links": "^9.0.15",
-    "@storybook/blocks": "^8.6.14",
     "@storybook/react-vite": "^9.0.15",
     "@vitejs/plugin-react": "^4.2.1",
     "@vueless/storybook-dark-mode": "^9.0.6",
