@@ -18,7 +18,6 @@ export default {
   },
 
   async viteFinal(config) {
-    // customize the Vite config here
     return mergeConfig(config, {
       define: {
         'process.env': {},

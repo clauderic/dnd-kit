@@ -1,10 +1,13 @@
+/* @jsxImportSource solid-js */
+import './tailwind.css';
+
 // @ts-nocheck
 import { createEffect, JSX } from 'solid-js';
 import React from 'react';
 
 import { Code } from '../components-docs';
 
-const DarkModeProvider = (props: { children: JSX.Element }) => {
+const DarkModeProvider = (props: { children?: JSX.Element }) => {
   createEffect(() => {
     if (typeof window === 'undefined') {
       return;
@@ -44,8 +47,8 @@ const preview = {
     docs: {
       codePanel: false,
       components: {
-        // pre: (props: any) => React.createElement('pre', { ...props, className: 'sb-unstyled' }),
-        // code: Code,
+        pre: (props: any) => React.createElement('pre', { ...props, className: 'sb-unstyled' }),
+        code: Code,
       },
     },
     darkMode: {

@@ -13,15 +13,17 @@
   "dependencies": {
     "@dnd-kit/abstract": "*",
     "@dnd-kit/dom": "*",
-    "@dnd-kit/react": "*",
     "@dnd-kit/helpers": "*",
+    "@dnd-kit/react": "*",
+    "@tailwindcss/vite": "^4.1.11",
     "@tanstack/react-virtual": "^3.0.0-beta.54",
     "clipboard": "^2.0.11",
     "prismjs": "^1.29.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-tiny-virtual-list": "^2.2.0",
-    "react-window": "1.8.9"
+    "react-window": "1.8.9",
+    "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
     "@dnd-kit/eslint-config": "*",

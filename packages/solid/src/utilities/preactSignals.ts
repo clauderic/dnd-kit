@@ -129,13 +129,13 @@ export function wrapStore<T extends object>(obj: T): ProxiedStore<T> {
             if (property === 'dispose') {
                 return dispose;
             }
-
+            
             // If we already have a signal for this property, return its value
             if (signalCache.has(property)) {
                 return signalCache.get(property)!.get();
             }
-
-            if (!Object.getOwnPropertyDescriptor(target, property)) {
+            
+            if (!(property in target)) {
                 return Reflect.get(target, property);
             }
 
@@ -150,7 +150,7 @@ export function wrapStore<T extends object>(obj: T): ProxiedStore<T> {
 
                 return value;
             });
-
+            
             signalCache.set(property, signal);
 
             // Return the signal's value

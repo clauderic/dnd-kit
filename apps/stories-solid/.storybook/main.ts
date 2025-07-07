@@ -1,5 +1,5 @@
 import {mergeConfig} from 'vite';
-// import reactPlugin from '@vitejs/plugin-react';
+import reactPlugin from '@vitejs/plugin-react';
 import path from 'path';
 
 const rootDir = path.resolve(__dirname, '..');
@@ -17,23 +17,25 @@ export default {
   async viteFinal(config) {
     const { default: solidPlugin } = await import('vite-plugin-solid');
     
-    config.plugins = config.plugins.filter((plugin) => plugin.name && !plugin.name.includes('solid'));
+    config.plugins = await Promise.all(config.plugins);
+    config.plugins = config.plugins.filter((plugin) => !plugin.name.includes('solid'));
     
     config.plugins.push(
       // Compile *.react.tsx files as React components
-      // reactPlugin({
-      //   jsxRuntime: 'automatic',
-      //   jsxImportSource: 'react',
-      //   include: ['**/*.react.tsx'],
-      // }),
+      reactPlugin({
+        jsxRuntime: 'automatic',
+        jsxImportSource: 'react',
+        include: ['**/*.react.tsx'],
+      }),
       // And anything else as Solid components
       solidPlugin({
-        include: [
-          path.resolve(rootDir, '**/*.tsx'),
-          path.resolve(rootDir, '../../packages/solid/**/*.tsx'),
-        ],
+        include: ['**/*.tsx', '**/*.jsx'],
         exclude: ['**/*.mdx', '**/*.react.tsx'],
       })
+    );
+    
+    config.plugins.push(
+      await import('@tailwindcss/vite').then(module => module.default())
     );
     
     return mergeConfig(config, {

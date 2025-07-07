@@ -1,0 +1,244 @@
+import {Preview, Info, Solid} from '@/components-docs';
+import {Example as Hero} from './Draggable.stories';
+
+{/* Examples */}
+import {Example} from './examples/Example';
+import {ExampleWithHandle} from './examples/ExampleWithHandle';
+import {ExampleWithModifier} from './examples/ExampleWithModifier';
+
+{/* Source code text */}
+import ExampleSource from './examples/Example?raw';
+import ExampleWithHandleSource from './examples/ExampleWithHandle?raw';
+import ExampleWithModifierSource from './examples/ExampleWithModifier?raw';
+
+import DraggableSource from './examples/Draggable?raw';
+import DraggableWithHandleSource from './examples/DraggableWithHandle?raw';
+
+# Draggable
+ 
+Make elements draggable and drop them over targets.
+
+<Preview of={Hero} hero />
+
+## Basic usage
+
+Use the `useDraggable` hook to create draggable elements that `draggable` elements can be dropped over `droppable` targets.
+
+```jsx
+import {useDraggable} from '@dnd-kit/solid';
+
+function Draggable(props) {
+  const {ref} = useDraggable({
+    id: props.id,
+  });
+
+  return <button ref={ref}>{props.children}</button>;
+}
+```
+
+## Getting started
+
+To get started, we will create two files, `App.jsx` and `Draggable.jsx`.
+
+<Preview
+  tabs={['Example.jsx', 'Draggable.jsx']}
+  code={[ExampleSource, DraggableSource]}
+>
+  <Solid of={Example} />
+</Preview>
+
+## Drag handles
+
+Restrict dragging to a specific element within a draggable element.
+
+To create a drag handle, provide a `handle` element to the `useDraggable` hook by consuming the `handleRef` from the output object of the `useDraggable` hook.
+
+
+<Preview
+  tabs={['DraggableWithHandle.jsx']}
+  code={[DraggableWithHandleSource]}
+>
+  <Solid of={ExampleWithHandle} />
+</Preview>
+
+Alternatively, you can also pass an `Element` as an argument to the `handle` option of `useDraggable`:
+
+```jsx
+import {useDraggable} from '@dnd-kit/solid';
+
+function Draggable(props) {
+  const {ref} = useDraggable({
+    id: props.id,
+    handle: props.handle,
+  });
+
+  return (
+    <div ref={ref}>
+      {props.children}
+      <button ref={handle}>Drag handle</button>
+    </div>
+  );
+}
+```
+
+
+
+## Sensors
+
+Sensors are an abstraction to detect different input methods in order to initiate drag operations, respond to movement and end or cancel the operation.
+
+
+### Built-in sensors
+
+The `@dnd-kit/dom/modifiers` package provides a set of built-in sensors that can be used to detect user input in the browser.
+
+#### **Pointer sensor**
+
+The Pointer sensor responds to [Pointer events](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events). This sensor is enabled by default.
+
+> Pointer events are DOM events that are fired for a pointing device. They are designed to create a single DOM event model to handle pointing input devices such as a mouse, pen/stylus or touch (such as one or more fingers).
+> The pointer is a hardware-agnostic device that can target a specific set of screen coordinates.
+>
+> – Source: [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events)
+
+**Activation constraints**
+
+The Pointer sensor has two types of activation constraints:
+
+- Distance constraint
+- Delay constraint
+
+These activation constraints are not mutually exclusive, they can be used simultaneously. In case both constraints are used, the Pointer sensor will activate as soon as one of the constraints is met.
+
+```js
+import {PointerSensor} from '@dnd-kit/dom/sensors';
+
+const sensors = [
+  PointerSensor.configure({
+    activationConstraints: {
+      distance: {value: 5},
+      delay: {value: 200, tolerance: 10},
+    },
+  }),
+];
+```
+
+The **distance** `value` property represents the distance, in _pixels_, that a pointer needs to be moved by before a drag operation is initiated.
+
+The **delay** `value` property represents the duration, in _milliseconds_, that a draggable item needs to be held by the primary pointer for before a drag start event is emitted.
+
+The `tolerance` property represents the distance, in pixels, of motion that is tolerated before the drag operation is aborted. If the pointer is moved during the delay duration and the tolerance is set to zero, the drag operation will be immediately aborted. If a higher tolerance is set, for example, a tolerance of 5 pixels, the operation will only be aborted if the pointer is moved by more than 5 pixels during the delay.
+
+This property is particularly useful for touch input, where some tolerance should be accounted for when using a delay constraint, as touch input is less precise than mouse input.
+
+#### **Keyboard sensor**
+
+The Keyboard sensor responds to [Keyboard events](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent). This sensor is enabled by default.
+
+The keyboard sensor activates when the `handle` or `element` of a draggable source is focused and the `Space` or `Enter` key is pressed.
+
+**Configuration**
+
+The Keyboard sensor can be configured to respond to different keyboard codes:
+
+```js
+import {KeyboardSensor} from '@dnd-kit/dom/sensors';
+
+const sensors = [
+  KeyboardSensor.configure({
+    keyboardCodes: {
+      start: ['Space', 'Enter'],
+      cancel: ['Escape'],
+      end: ['Space', 'Enter'],
+      up: ['ArrowUp'],
+      down: ['ArrowDown'],
+      left: ['ArrowLeft'],
+      right: ['ArrowRight'],
+    },
+  }),
+];
+```
+
+You may customize these values, but do keep in mind that the [third rule of ARIA](https://www.w3.org/TR/using-aria/#3rdrule) requires that a user must be able to activate the action associated with a draggable widget using both the enter (on Windows) or return (on macOS) and the space key. To learn more, read the in-depth accessibility guide.
+
+### Usage
+
+Sensors can be applied globally or to individual draggable elements.
+
+#### **Global sensors**
+
+Sensors can be applied globally by passing them to the `<DragDropProvider>` component.
+
+```jsx
+import {DragDropProvider} from '@dnd-kit/solid';
+import {PointerSensor, KeyboardSensor} from '@dnd-kit/dom/sensors';
+
+function App() {
+  return (
+    <DragDropProvider sensors={[PointerSensor, KeyboardSensor]}>
+      {...}
+    </DragDropProvider>
+  )
+}
+```
+
+#### **Local sensors**
+
+Sensors can also be applied to individual draggable elements by passing them to the `modifiers` prop.
+
+```jsx
+import {useDraggable} from '@dnd-kit/solid';
+import {KeyboardSensor} from '@dnd-kit/dom/sensors';
+
+function Draggable({id}) {
+  const {ref} = useDraggable({
+    id,
+    sensors: [KeyboardSensor],
+  });
+}
+```
+
+<Info>Local sensors take precedence over global sensors.</Info>
+
+
+## Modifiers
+
+Modifiers let you dynamically modify the movement coordinates that are detected by sensors. They can be used for a wide range of use cases, for example:
+
+- Restricting motion to a single axis
+- Restricting motion to the draggable node container's bounding rectangle
+- Restricting motion to the draggable node's scroll container bounding rectangle
+- Applying resistance or clamping the motion
+
+Modifiers can be applied globally or to individual draggable elements.
+
+### Global modifiers
+
+Modifiers can be applied globally by passing them to the `<DragDropProvider>` component.
+
+<Preview
+  code={[ExampleWithModifierSource]}
+>
+  <Solid of={ExampleWithModifier} />
+</Preview>
+
+### Local modifiers
+
+Modifiers can also be applied to individual draggable elements by passing them to the `modifiers` prop.
+
+```jsx
+import {useDraggable} from '@dnd-kit/solid';
+import {RestrictToHorizontalAxis} from '@dnd-kit/abstract/modifiers';
+import {RestrictToWindow} from '@dnd-kit/dom/modifiers';
+
+function Draggable(props) {
+  const {ref} = useDraggable({
+    id: props.id,
+    modifiers: [RestrictToHorizontalAxis, RestrictToWindow],
+  });
+  
+  return <div ref={ref}>{props.children}</div>;
+}
+```
+
+<Info>Local modifiers take precedence over global modifiers.</Info>

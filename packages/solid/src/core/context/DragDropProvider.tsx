@@ -103,8 +103,6 @@ export function DragDropProvider(_props: DragDropProviderProps) {
 
         // Clean up all event listeners
         onCleanup(() => {
-            console.log('Cleaning up event listeners');
-            
             disposers.forEach(cleanup => cleanup());
         });
     });

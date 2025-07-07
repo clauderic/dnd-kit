@@ -5,6 +5,7 @@ import { wrapSignal } from '../../utilities/index.ts';
 import { useDragDropMonitor, type UseDragDropMonitorProps } from '../hooks/useDragDropMonitor.ts';
 
 import type { Data } from '@dnd-kit/abstract';
+import { createReactiveSignal } from '../../utilities/createReactiveSignal';
 
 export interface UseDraggableInput<T extends Data = Data> extends DraggableInput<T>, Partial<UseDragDropMonitorProps<T>> {
     manager?: DragDropManager;
@@ -22,8 +23,8 @@ export function useDraggable<T extends Data = Data>(
         'onDragEnd',
     ]);
 
-    const [elementRef, setElementRef] = createSignal<Element | undefined>(input.element);
-    const [handleRef, setHandleRef] = createSignal<Element | undefined>(input.handle);
+    const [elementRef, setElementRef] = createReactiveSignal<Element | undefined>(() => input.element);
+    const [handleRef, setHandleRef] = createReactiveSignal<Element | undefined>(() => input.handle);
 
     const manager = createMemo(() => input.manager ?? useDragDropManager() ?? new DragDropManager());
     const draggable = new Draggable(input, manager());

@@ -2,7 +2,7 @@
 import React, {useState} from 'react';
 import {Unstyled} from '@storybook/addon-docs/blocks';
 
-import {CodeHighlighter} from './CodeHighlighter';
+import {CodeHighlighter} from '@/components-docs/CodeHighlighter';
 import styles from './Code.module.css';
 
 interface Props {
