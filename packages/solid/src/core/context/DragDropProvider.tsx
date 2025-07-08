@@ -1,5 +1,5 @@
 import { DragDropManager, defaultPreset } from '@dnd-kit/dom';
-import { createEffect, createMemo, onCleanup, splitProps, untrack } from 'solid-js';
+import { createEffect, createMemo, onCleanup, onMount, splitProps, untrack } from 'solid-js';
 
 import { DragDropContext } from './context.ts';
 import { useRenderer } from '../hooks/useRenderer.ts';
@@ -20,20 +20,7 @@ export interface DragDropProviderProps extends DragDropManagerInput, ParentProps
     onDragEnd?: Events['dragend'];
 }
 
-export function DragDropProvider(_props: DragDropProviderProps) {
-    let localManager: DragDropManager | undefined;
-    
-    const [props, input] = splitProps(_props, [
-        'children',
-        'manager',
-        'onCollision',
-        'onBeforeDragStart',
-        'onDragStart',
-        'onDragMove',
-        'onDragOver',
-        'onDragEnd',
-    ]);
-
+export function DragDropProvider(props: DragDropProviderProps) {
     const { renderer, trackRendering } = useRenderer();
     const manager = createMemo(() => props.manager ?? new DragDropManager());
 
@@ -49,11 +36,11 @@ export function DragDropProvider(_props: DragDropProviderProps) {
         if (!manager()) {
             return;
         }
-
+        
         manager().renderer = renderer;
-        manager().plugins = input.plugins ?? defaultPreset.plugins;
-        manager().sensors = input.sensors ?? defaultPreset.sensors;
-        manager().modifiers = input.modifiers ?? defaultPreset.modifiers;
+        manager().plugins = props.plugins ?? defaultPreset.plugins;
+        manager().sensors = props.sensors ?? defaultPreset.sensors;
+        manager().modifiers = props.modifiers ?? defaultPreset.modifiers;
     });
 
     // Set up event listeners
@@ -108,7 +95,6 @@ export function DragDropProvider(_props: DragDropProviderProps) {
     });
 
     return (
-    /* eslint-disable-next-line solid/reactivity */
         <DragDropContext.Provider value={ manager() }>
             {props.children}
         </DragDropContext.Provider>

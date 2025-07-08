@@ -1,11 +1,12 @@
 import { DragDropManager, Droppable, type DroppableInput } from '@dnd-kit/dom';
-import { createEffect, createMemo, createSignal, splitProps } from 'solid-js';
+import { createEffect, createMemo, createSignal, getOwner, splitProps } from 'solid-js';
 
 import { useDragDropMonitor, type UseDragDropMonitorProps } from '../hooks/useDragDropMonitor.ts';
 import { useDragDropManager } from '../hooks/useDragDropManager.ts';
 import { wrapSignal } from '../../utilities/index.ts';
 
 import type { Data } from '@dnd-kit/abstract';
+import { createReactiveSignal } from '../../utilities/createReactiveSignal';
 
 export interface UseDroppableInput<T extends Data = Data> extends DroppableInput<T>, Partial<UseDragDropMonitorProps<T>> {
     manager?: DragDropManager;
@@ -23,7 +24,7 @@ export function useDroppable<T extends Data = Data>(
         'onDragEnd',
     ]);
 
-    const [elementRef, setElementRef] = createSignal<Element | undefined>(input.element);
+    const [elementRef, setElementRef] = createReactiveSignal<Element | undefined>(() => input.element);
 
     const manager = createMemo(() => input.manager ?? useDragDropManager() ?? new DragDropManager());
 

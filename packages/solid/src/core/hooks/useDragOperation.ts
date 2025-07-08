@@ -1,4 +1,4 @@
-import { createComputed, onCleanup, type Accessor } from 'solid-js';
+import { createComputed, createEffect, onCleanup, type Accessor } from 'solid-js';
 
 import { useDragDropManager } from '../hooks/useDragDropManager.ts';
 import { wrapStore, type ProxiedStore } from '../../utilities/preactSignals.ts';

@@ -1,5 +1,5 @@
 import { effect } from '@dnd-kit/state';
-import { createEffect, createSignal, onCleanup, type Accessor } from 'solid-js';
+import { createEffect, createMemo, createSignal, onCleanup, untrack, type Accessor } from 'solid-js';
 
 type SignalLike<T> = (() => T) | { value: T };
 
@@ -25,16 +25,18 @@ export function createPreactEffect(fn: () => void): void {
 /**
  * Creates a simple signal that tracks a value without cleanup
  * @template T - The type of the signal value
- * @param read - Function to read the current value
+ * @param accessor - Function to read the current value
  * @returns A signal with getter and dispose function
  */
-function createSimpleSignal<T>(read: () => T): SignalWithDispose<T> {
-    const [get, set] = createSignal<T>(read());
+function createSimpleSignal<T>(accessor: Accessor<T>): SignalWithDispose<T> {
+    const [get, set] = createSignal<T>(null as T);
 
     const dispose = effect(() => {
-        const value = read();
+        const value = accessor();
 
-        set(() => value);
+        untrack(() => {
+            set(() => value);
+        });
     });
 
     return { get, dispose };
@@ -58,7 +60,7 @@ function createSimpleSignal<T>(read: () => T): SignalWithDispose<T> {
  * @example
  * ```ts
  * // Function signal
- * const preactSignal = signal(42); // or () => signal.value
+ * const preactSignal = signal(42);
  * const solidSignal = wrapSignal(preactSignal);
  *
  * // Object signal
@@ -70,7 +72,7 @@ function createSimpleSignal<T>(read: () => T): SignalWithDispose<T> {
  * ```
  */
 export function wrapSignal<T>(signal: SignalLike<T>): Accessor<T> {
-    const read = () => {
+    const { get, dispose } = createSimpleSignal(() => {
         if (typeof signal === 'function') {
             return signal();
         }
@@ -80,9 +82,7 @@ export function wrapSignal<T>(signal: SignalLike<T>): Accessor<T> {
         }
 
         return signal;
-    };
-
-    const { get, dispose } = createSimpleSignal(read);
+    });
 
     onCleanup(() => {
         dispose();
