@@ -58,21 +58,61 @@ const meta: Meta<typeof SortableExample> = {
       table: { disable: true },
     },
   },
-  // parameters: {
-    // docs: {
-      // page: docs,
-    // },
-  // },
 };
 
 export default meta;
 type Story = StoryObj<typeof SortableExample>;
 
-export const Example: Story = {
-  name: 'Example',
+export const Basic: Story = {
+  name: 'Basic setup',
+  args: {},
+};
+
+export const WithDragHandle: Story = {
+  name: 'Drag handle',
   args: {
     dragHandle: true,
+  },
+};
+
+export const Clone: Story = {
+  name: 'Clone feedback',
+  args: {
+    feedback: 'clone',
+  },
+};
+
+export const DisabledItems: Story = {
+  name: 'Disabled items',
+  args: {
     debug: false,
-    itemCount: 5,
+    disabled: [1, 3],
+  },
+};
+
+export const CustomTransition: Story = {
+  name: 'Custom transition',
+  args: {
+    transition: {
+      duration: 450,
+      easing: 'cubic-bezier(0.68, -0.55, 0.27, 1.55)',
+    },
+  },
+};
+
+export const DisableTransition: Story = {
+  name: 'Disable transition',
+  args: {
+    debug: false,
+    transition: {
+      duration: 0,
+    },
+  },
+};
+
+export const Debug: Story = {
+  name: 'Debug mode',
+  args: {
+    debug: true,
   },
 };

@@ -1,4 +1,4 @@
-import { createEffect, createSignal, type Accessor, type Signal } from "solid-js";
+import { createEffect, createSignal, type Accessor, type Signal } from 'solid-js';
 
 /**
  * Creates a reactive signal that updates when the initial value changes.

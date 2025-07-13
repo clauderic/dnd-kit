@@ -1,5 +1,3 @@
-export * from './context';
+export * from './core';
 export * from './sortable';
-export * from './draggable';
-export * from './droppable';
-export * from './hooks';
+export * from './utilities';

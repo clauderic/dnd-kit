@@ -1,4 +1,4 @@
-import { createEffect, createMemo, onCleanup, splitProps } from 'solid-js';
+import { createEffect, createMemo, onCleanup, splitProps, type Accessor } from 'solid-js';
 
 import { useDragDropManager } from '../hooks/useDragDropManager.ts';
 
@@ -16,7 +16,7 @@ export type Events<T extends Data> = DragDropEvents<
 >;
 
 export interface UseDragDropMonitorProps<T extends Data = Data> {
-    manager?: DragDropManager<any, Draggable<T>, Droppable<T>>;
+    manager?: Accessor<DragDropManager<any, Draggable<T>, Droppable<T>>>;
 
     onBeforeDragStart?: Events<T>['beforedragstart'];
     onCollision?: Events<T>['collision'];
@@ -35,7 +35,8 @@ export function useDragDropMonitor<T extends Data = Data>(
     props: UseDragDropMonitorProps<T>
 ): () => void {
     const [local, handlers] = splitProps(props, ['manager']);
-    const manager = createMemo(() => local.manager ?? useDragDropManager());
+    
+    const manager = createMemo(() => local.manager ? local.manager() : useDragDropManager());
 
     if (!manager()) {
         console.warn(

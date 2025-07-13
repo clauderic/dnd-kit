@@ -10,6 +10,7 @@
       "@dnd-kit/geometry",
       "@dnd-kit/helpers",
       "@dnd-kit/react",
+      "@dnd-kit/solid",
       "@dnd-kit/state"
     ]
   ],

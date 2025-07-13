@@ -1,14 +1,12 @@
 import { createSignal, JSX, For, splitProps, createMemo, Show, createEffect } from 'solid-js';
 import type { JSX as SolidJSX } from 'solid-js';
 
-import { createStore } from 'solid-js/store';
-// CSSProperties is a local type for style objects
-type CSSProperties = Record<string, string>;
 import type {
   CollisionDetector,
   Modifiers,
   UniqueIdentifier,
 } from '@dnd-kit/abstract';
+
 import {FeedbackType, defaultPreset} from '@dnd-kit/dom';
 import {type SortableTransition} from '@dnd-kit/dom/sortable';
 import {DragDropProvider} from '@dnd-kit/solid';
@@ -20,6 +18,9 @@ import {Debug} from '@dnd-kit/dom/plugins/debug';
 import { Item } from '../../components/Item';
 import { Handle } from '../../components/Actions/Handle.tsx';
 import {createRange} from '../../utilities/createRange.ts';
+
+// CSSProperties is a local type for style objects
+type CSSProperties = JSX.CSSProperties;
 
 interface SortableExampleProps {
   debug?: boolean;
@@ -33,6 +34,19 @@ interface SortableExampleProps {
   optimistic?: boolean;
   collisionDetector?: CollisionDetector;
   getItemStyle?: (id: UniqueIdentifier, index: number) => CSSProperties;
+}
+
+
+interface SortableProps {
+  id: UniqueIdentifier;
+  index: number;
+  collisionDetector?: CollisionDetector;
+  disabled?: boolean;
+  dragHandle?: boolean;
+  feedback?: FeedbackType;
+  optimistic?: boolean;
+  transition?: SortableTransition;
+  style?: CSSProperties;
 }
 
 export function SortableExample(props: SortableExampleProps) {
@@ -50,14 +64,23 @@ export function SortableExample(props: SortableExampleProps) {
     'getItemStyle',
   ]);
 
-  const [items, setItems] = createSignal(createRange(local.itemCount ?? 15));
+  const [items, setItems] = createSignal(createRange(local.itemCount ?? 5));
 
+  // createEffect(() => {
+  //   console.log('items', items());
+  // });
+  
   function handleDragOver(event: any) {
+    console.log('handleDragOver', items(), move(items(), event));
+    
     if (local.optimistic ?? true) return;
+     
     setItems(move(items(), event));
   }
 
   function handleDragEnd(event: any) {
+    console.log('handleDragEnd', items(), move(items(), event));
+    
     setItems(move(items(), event));
   }
   
@@ -66,10 +89,10 @@ export function SortableExample(props: SortableExampleProps) {
       setItems(createRange(local.itemCount));
     }
   });
-
+  
   return (
     <DragDropProvider
-      plugins={local.debug ? [Debug, ...defaultPreset.plugins] : undefined}
+      plugins={local.debug ? [...defaultPreset.plugins, Debug] : undefined}
       modifiers={local.modifiers}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
@@ -94,17 +117,6 @@ export function SortableExample(props: SortableExampleProps) {
   );
 }
 
-interface SortableProps {
-  id: UniqueIdentifier;
-  index: number;
-  collisionDetector?: CollisionDetector;
-  disabled?: boolean;
-  dragHandle?: boolean;
-  feedback?: FeedbackType;
-  optimistic?: boolean;
-  transition?: SortableTransition;
-  style?: CSSProperties;
-}
 
 function SortableItem(props: SortableProps) {
   const [sortableProps, rest] = splitProps(props, [

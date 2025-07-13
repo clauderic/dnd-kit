@@ -1,5 +1,5 @@
 import { DragDropManager, defaultPreset } from '@dnd-kit/dom';
-import { createEffect, createMemo, onCleanup, onMount, splitProps, untrack } from 'solid-js';
+import { createEffect, createMemo, onCleanup } from 'solid-js';
 
 import { DragDropContext } from './context.ts';
 import { useRenderer } from '../hooks/useRenderer.ts';
@@ -33,22 +33,25 @@ export function DragDropProvider(props: DragDropProviderProps) {
 
     // Sync the manager with the input
     createEffect(() => {
-        if (!manager()) {
+        const _manager = manager();
+        
+        if (!_manager) {
             return;
         }
-        
-        manager().renderer = renderer;
-        manager().plugins = props.plugins ?? defaultPreset.plugins;
-        manager().sensors = props.sensors ?? defaultPreset.sensors;
-        manager().modifiers = props.modifiers ?? defaultPreset.modifiers;
-    });
 
+        _manager.renderer = renderer;
+        _manager.plugins = props.plugins ?? defaultPreset.plugins;
+        _manager.sensors = props.sensors ?? defaultPreset.sensors;
+        _manager.modifiers = props.modifiers ?? defaultPreset.modifiers;
+    });
+    
     // Set up event listeners
     createEffect(() => {
         const disposers: (() => void)[] = [];
+        const monitor = manager().monitor;
         
         disposers.push(
-            manager().monitor.addEventListener('beforedragstart', (event, manager) => {
+            monitor.addEventListener('beforedragstart', (event, manager) => {
                 const callback = props.onBeforeDragStart;
 
                 if (callback) {
@@ -56,11 +59,11 @@ export function DragDropProvider(props: DragDropProviderProps) {
                 }
             }),
 
-            manager().monitor.addEventListener('dragstart', (event, manager) => {
+            monitor.addEventListener('dragstart', (event, manager) => {
                 props.onDragStart?.(event, manager);
             }),
 
-            manager().monitor.addEventListener('dragover', (event, manager) => {
+            monitor.addEventListener('dragover', (event, manager) => {
                 const callback = props.onDragOver;
 
                 if (callback) {
@@ -68,7 +71,7 @@ export function DragDropProvider(props: DragDropProviderProps) {
                 }
             }),
 
-            manager().monitor.addEventListener('dragmove', (event, manager) => {
+            monitor.addEventListener('dragmove', (event, manager) => {
                 const callback = props.onDragMove;
 
                 if (callback) {
@@ -76,16 +79,22 @@ export function DragDropProvider(props: DragDropProviderProps) {
                 }
             }),
 
-            manager().monitor.addEventListener('dragend', (event, manager) => {
+            monitor.addEventListener('dragend', (event, manager) => {
                 const callback = props.onDragEnd;
+                console.log('dragend', event, manager, callback);
 
                 if (callback) {
                     trackRendering(() => callback(event, manager));
                 }
             }),
 
-            manager().monitor.addEventListener('collision', (event, manager) =>
-                props.onCollision?.(event, manager))
+            monitor.addEventListener('collision', (event, manager) => {
+                const callback = props.onCollision;
+
+                if (callback) {
+                    callback(event, manager);
+                }
+            }),
         );
 
         // Clean up all event listeners
