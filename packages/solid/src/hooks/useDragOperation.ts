@@ -1,7 +1,7 @@
 import { createComputed, createEffect, onCleanup, type Accessor } from 'solid-js';
 
 import { useDragDropManager } from '../hooks/useDragDropManager.ts';
-import { wrapStore, type ProxiedStore } from '../../utilities/preactSignals.ts';
+import { wrapStore, type ProxiedStore } from '../utilities/preactSignals.ts';
 
 import type {Draggable, Droppable, DragDropManager} from '@dnd-kit/dom';
 import type { Data } from '@dnd-kit/abstract';

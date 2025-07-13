@@ -17,20 +17,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
-    },
-    "./*": {
-      "types": "./dist/*.d.ts",
-      "import": "./dist/*.js",
-      "require": "./dist/*.cjs"
     }
   },
   "scripts": {
-    "build": "bun build:utilities && bun build:hooks && bun build:core && bun build:sortable",
-    "build:core": "tsup src/core/index.ts",
-    "build:hooks": "tsup --entry.hooks src/hooks/index.ts",
-    "build:sortable": "tsup --entry.sortable src/sortable/index.ts",
-    "build:utilities": "tsup --entry.utilities src/utilities/index.ts",
-    "dev": "bun build:utilities --watch & bun build:hooks --watch & bun build:core --watch & bun build:sortable --watch",
+    "build": "tsup src/index.ts",
+    "dev": "tsup src/index.ts --watch",
     "lint": "TIMING=1 eslint src/**/*.ts* --fix",
     "clean": "rm -rf .turbo node_modules dist"
   },

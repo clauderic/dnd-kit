@@ -1,11 +1,11 @@
 import { DragDropManager, Draggable, type DraggableInput } from '@dnd-kit/dom';
-import { createEffect, createMemo, createSignal, splitProps } from 'solid-js';
+import { createEffect, splitProps } from 'solid-js';
 import { useDragDropManager } from '../hooks/useDragDropManager.ts';
-import { wrapSignal } from '../../utilities/index.ts';
+import { wrapSignal } from '../utilities/index.ts';
 import { useDragDropMonitor, type UseDragDropMonitorProps } from '../hooks/useDragDropMonitor.ts';
 
 import type { Data, Droppable } from '@dnd-kit/abstract';
-import { createReactiveSignal } from '../../utilities/createReactiveSignal';
+import { createReactiveSignal } from '../utilities/createReactiveSignal.ts';
 
 export interface UseDraggableInput<T extends Data = Data> extends DraggableInput<T>, Partial<Omit<UseDragDropMonitorProps<T>, 'manager'>> {
     manager?: DragDropManager;

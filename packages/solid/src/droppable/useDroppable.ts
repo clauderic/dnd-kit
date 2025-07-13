@@ -3,10 +3,10 @@ import { createEffect, createMemo, createSignal, getOwner, splitProps } from 'so
 
 import { useDragDropMonitor, type UseDragDropMonitorProps } from '../hooks/useDragDropMonitor.ts';
 import { useDragDropManager } from '../hooks/useDragDropManager.ts';
-import { wrapSignal } from '../../utilities/index.ts';
+import { wrapSignal } from '../utilities/index.ts';
 
 import type { Data } from '@dnd-kit/abstract';
-import { createReactiveSignal } from '../../utilities/createReactiveSignal';
+import { createReactiveSignal } from '../utilities/createReactiveSignal.ts';
 
 export interface UseDroppableInput<T extends Data = Data> extends DroppableInput<T>, Partial<Omit<UseDragDropMonitorProps<T>, 'manager'>> {
     manager?: DragDropManager;

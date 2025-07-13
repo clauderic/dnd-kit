@@ -1,5 +1,5 @@
 import { effect } from '@dnd-kit/state';
-import { createEffect, createMemo, createSignal, onCleanup, untrack, type Accessor } from 'solid-js';
+import { createEffect, createSignal, onCleanup, untrack, type Accessor } from 'solid-js';
 
 type SignalLike<T> = (() => T) | { value: T };
 

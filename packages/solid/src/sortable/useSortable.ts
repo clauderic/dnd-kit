@@ -1,10 +1,10 @@
 import { DragDropManager } from '@dnd-kit/dom';
 import { Sortable, type SortableInput } from '@dnd-kit/dom/sortable';
 import { createEffect } from 'solid-js';
-import { useDragDropManager } from '@dnd-kit/solid';
-import { createReactiveSignal } from '@dnd-kit/solid/utilities';
 
 import type { Data } from '@dnd-kit/abstract';
+import { createReactiveSignal } from '../utilities';
+import { useDragDropManager } from '../hooks/useDragDropManager';
 
 export interface UseSortableInput<T extends Data = Data> extends Omit<SortableInput<T>, 'source'> {
     manager?: DragDropManager;
