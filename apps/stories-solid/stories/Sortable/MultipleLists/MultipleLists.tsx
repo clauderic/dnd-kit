@@ -1,18 +1,20 @@
-import { createSignal, createMemo, createEffect, For, Show } from 'solid-js';
+import { createEffect, createMemo, For, Show } from 'solid-js';
+import { createStore } from 'solid-js/store';
 import { DragDropProvider, useSortable } from '@dnd-kit/solid';
 import { move } from '@dnd-kit/helpers';
 import { defaultPreset, PointerSensor, KeyboardSensor } from '@dnd-kit/dom';
 import { Debug } from '@dnd-kit/dom/plugins/debug';
-import { CollisionPriority, type DragDropManager, type Draggable, type Droppable, type UniqueIdentifier } from '@dnd-kit/abstract';
+import { CollisionPriority } from '@dnd-kit/abstract';
 
 import { Actions } from '../../../components/Actions/Actions';
 import { Handle } from '../../../components/Actions/Handle';
 import { Remove } from '../../../components/Actions/Remove';
 import { Item } from '../../../components/Item/Item';
+import { Container } from '../../../components/Item/Container';
 
 import { createRange } from '../../../utilities/createRange';
 import { cloneDeep } from '../../../utilities/cloneDeep';
-import { SortableDroppable, type Sortable } from '@dnd-kit/dom/sortable';
+import { supportsViewTransition } from '@dnd-kit/dom/utilities';
 
 interface Props {
   debug?: boolean;
@@ -37,88 +39,58 @@ const sensors = [
 const COLORS: Record<string, string> = {
   A: '#7193f1',
   B: '#FF851B',
-  C: '#2ECC40',
-  D: '#ff3680',
-};
-
-
-function sortByIndex(a: Sortable, b: Sortable) {
-  return a.index - b.index;
-}
-
-function sort(instances: Set<Sortable>) {
-  return Array.from(instances).sort(sortByIndex);
-}
-
-const getSortableInstances = (manager: DragDropManager<Draggable, Droppable>) => {
-  const sortableInstances = new Map<
-    UniqueIdentifier | undefined,
-    Set<Sortable>
-  >();
-
-  for (const droppable of manager.registry.droppables) {
-    if (droppable instanceof SortableDroppable) {
-      const {sortable} = droppable;
-      const {group} = sortable;
-
-      let instances = sortableInstances.get(group);
-
-      if (!instances) {
-        instances = new Set();
-        sortableInstances.set(group, instances);
-      }
-
-      instances.add(sortable);
-    }
-  }
-
-  for (const [group, instances] of sortableInstances) {
-    sortableInstances.set(group, new Set(sort(instances)));
-  }
-
-  return sortableInstances;
+  C: '#ff3680',
 };
 
 export function MultipleLists(props: Props) {
-  const [items, setItems] = createSignal(
+  const [items, setItems] = createStore<Record<string, string[]>>(
     props.defaultItems ?? {
       A: createRange(props.itemCount).map((id) => `A${id}`),
       B: createRange(props.itemCount).map((id) => `B${id}`),
-      C: createRange(props.itemCount).map((id) => `C${id}`),
-      D: [],
+      C: [],
     }
   );
-  const columns = createMemo(() => Object.keys(items()));
-  let snapshot = cloneDeep(items());
+  // Use a plain object for snapshot
+  let snapshot: Record<string, string[]> = {};
 
   function handleRemoveItem(id: string, column: string) {
-    setItems((prev) => ({
-      ...prev,
-      [column]: prev[column].filter((item) => item !== id),
-    }));
+    const remove = () => setItems(
+      column, 
+      (list) => {
+        return list.filter((item) => item !== id)
+      }
+    );
+    
+    if (supportsViewTransition(document)) {
+      document.startViewTransition(() => remove());
+    } else {
+      remove();
+    }
   }
 
   function handleDragStart(event: any) {
-    snapshot = cloneDeep(items());
-        const instances = getSortableInstances(event.operation.source.manager);
-    
-    debugger;
-    
+    snapshot = cloneDeep(items);
   }
 
   function handleDragOver(event: any) {
-    const { source } = event.operation;
-    if (source?.type === 'column') {
-      // We can rely on optimistic sorting for columns
+    const { source, target } = event.operation;
+    
+    if (source?.type === 'column' || target?.type === 'column') {
       return;
     }
-    setItems((prev) => move(prev, event));
+    
+    console.log('dragover', move(cloneDeep(items), event), event);
+    
+    // move returns a new object, so we need to set the store with the new object
+    // setItems(move(items, event));
   }
 
   function handleDragEnd(event: any) {
     if (event.canceled) {
       setItems(snapshot);
-      return;
+    }
+    else {
+      debugger;
     }
   }
 
@@ -133,32 +105,30 @@ export function MultipleLists(props: Props) {
       <Show when={props.rtl}>
         <style>{`:root { direction: rtl; }`}</style>
       </Show>
-      
       <div
-        style={{
-          display: props.grid ? 'grid' : 'flex',
-          width: props.grid ? '60%' : undefined,
-          'grid-template-columns': props.grid ? '1fr 1fr' : undefined,
-          'align-items': props.vertical ? 'center' : undefined,
-          margin: props.grid ? '0 auto' : undefined,
-          'flex-direction': props.vertical ? 'column' : 'row',
-          gap: '20px',
-        }}
+        class={
+          (props.grid
+            ? 'grid w-3/5 grid-cols-2 mx-auto'
+            : 'flex') +
+          ' gap-5' +
+          (props.vertical ? ' flex-col items-center' : ' flex-row')
+        }
       >
-        <For each={columns()}>{(column, columnIndex) => {
-          const rows = items()[column];
-          return (
-            <SortableColumn
-              id={column}
-              index={columnIndex()}
-              columns={props.grid ? 2 : 1}
-              scrollable={props.scrollable}
-              style={props.columnStyle}
-              rows={rows}
-              onRemove={handleRemoveItem}
-            />
-          );
-        }}</For>
+        <For each={Object.entries(items)}>
+          {([column, rows], columnIndex) => {
+            return (
+              <SortableColumn
+                id={column}
+                rows={rows}
+                index={columnIndex()}
+                columns={props.grid ? 2 : 1}
+                scrollable={props.scrollable}
+                style={props.columnStyle}
+                onRemove={handleRemoveItem}
+              />
+            );
+          }}
+        </For>
       </div>
     </DragDropProvider>
   );
@@ -186,20 +156,22 @@ function SortableItem(props: SortableItemProps) {
   return (
     <Item
       ref={ref}
-      actions={
-        <Actions>
-          <Show when={props.onRemove && !isDragging()}>
-            <Remove onClick={() => props.onRemove?.(props.id, props.column)} />
-          </Show>
-          <Handle ref={handleRef} />
-        </Actions>
-      }
       accentColor={COLORS[props.column]}
       shadow={isDragging()}
       style={props.style}
       transitionId={`sortable-${props.column}-${props.id}`}
     >
-      {props.id}
+      <div>
+        {props.id}
+      </div>
+      
+      <Actions>
+        <Show when={props.onRemove && !isDragging()}>
+          <Remove onClick={() => props.onRemove?.(props.id, props.column)} />
+        </Show>
+        
+        <Handle ref={handleRef} />
+      </Actions>
     </Item>
   );
 }
@@ -209,7 +181,7 @@ interface SortableColumnProps {
   id: string;
   index: number;
   scrollable?: boolean;
-  style?: any;
+  style?: Record<string, string>;
   rows: string[];
   onRemove?: (id: string, column: string) => void;
 }
@@ -217,48 +189,38 @@ interface SortableColumnProps {
 function SortableColumn(props: SortableColumnProps) {
   const { handleRef, isDragging, ref } = useSortable({
     id: props.id,
-    accept: ['column'],
+    accept: ['column', 'item'],
     collisionPriority: CollisionPriority.Low,
     type: 'column',
     index: props.index,
   });
 
-  function handleRemoveItem(itemId: string) {
-    props.onRemove?.(itemId, props.id);
-  }
 
+  // Use Container for columns, matching React
   return (
-    <div
+    <Container
       ref={ref}
-      style={{
-        display: 'flex',
-        flex: 1,
-        'flex-direction': 'column',
-        'align-items': 'stretch',
-        'box-shadow': isDragging() ? '0 2px 8px rgba(0,0,0,0.15)' : undefined,
-        'background': '#fff',
-        'border-radius': '5px',
-        'margin': '8px',
-        ...props.style,
-      }}
-    >
-      <div style={{ display: 'flex', 'align-items': 'center', 'padding': '8px 20px', 'border-bottom': '1px solid #eee' }}>
-        {props.id}
+      label={props.id}
+      actions={
         <Actions>
           <Handle ref={handleRef} />
         </Actions>
-      </div>
-      <div style={{ display: 'grid', gap: '16px', 'grid-template-columns': `repeat(${props.columns}, 1fr)`, padding: '15px' }}>
-        <For each={props.rows}>{(itemId, index) => (
-          <SortableItem
-            id={itemId}
-            column={props.id}
-            index={index()}
-            onRemove={handleRemoveItem}
-            style={props.columns === 2 ? { height: '100px' } : undefined}
-          />
-        )}</For>
-      </div>
-    </div>
+      }
+      columns={props.columns}
+      shadow={isDragging()}
+      scrollable={props.scrollable}
+      transitionId={`sortable-column-${props.id}`}
+      style={props.style}
+    >
+      <For each={props.rows}>{(itemId, index) => (
+        <SortableItem
+          id={itemId}
+          column={props.id}
+          index={index()}
+          onRemove={ () => props.onRemove?.(itemId, props.id)}
+          style={props.columns === 2 ? { height: '100px' } : undefined}
+        />
+      )}</For>
+    </Container>
   );
 }
