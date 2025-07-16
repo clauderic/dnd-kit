@@ -1,0 +1,82 @@
+import type {Meta, StoryObj} from 'storybook-solidjs-vite';
+
+import {MultipleLists} from './MultipleLists';
+
+const meta: Meta<typeof MultipleLists> = {
+  title: 'Solid/Sortable/Multiple lists',
+  component: MultipleLists,
+};
+
+export default meta;
+type Story = StoryObj<typeof MultipleLists>;
+
+export const Example: Story = {
+  name: 'Example',
+  args: {
+    debug: false,
+    itemCount: 6,
+  },
+};
+
+export const Hero: Story = {
+  name: 'Hero',
+  tags: ['hidden'],
+  args: {
+    columnStyle: {
+      '--min-width': '250px',
+      flexGrow: '1',
+      flexBasis: '33%',
+      backgroundColor: 'rgba(246, 246, 246, 0.7)',
+    },
+    defaultItems: {
+      A: ['A1', 'A2', 'A3'],
+      B: ['B1', 'B2'],
+      C: [],
+    },
+  },
+};
+
+export const Scrollable: Story = {
+  name: 'Scrollable containers',
+  args: {
+    debug: false,
+    itemCount: 25,
+    scrollable: true,
+  },
+};
+
+export const Grid: Story = {
+  name: 'Grid',
+  args: {
+    debug: false,
+    itemCount: 5,
+    grid: true,
+  },
+};
+
+export const VerticalSetup: Story = {
+  name: 'Vertical',
+  args: {
+    debug: false,
+    itemCount: 3,
+    vertical: true,
+  },
+};
+
+export const VerticalScrollable: Story = {
+  name: 'Vertical & scrollable',
+  args: {
+    debug: false,
+    itemCount: 25,
+    scrollable: true,
+    vertical: true,
+  },
+};
+
+export const RightToLeft: Story = {
+  name: 'RTL',
+  args: {
+    rtl: true,
+    itemCount: 6,
+  },
+};

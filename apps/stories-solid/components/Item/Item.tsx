@@ -1,5 +1,5 @@
 import './Item.css';
-import { JSX, splitProps, mergeProps } from 'solid-js';
+import { JSX, splitProps, mergeProps, createEffect } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
 
 interface ItemProps extends JSX.HTMLAttributes<HTMLElement> {

@@ -1,22 +1,22 @@
-import { createSignal, JSX, For, splitProps, createMemo, Show, createEffect } from 'solid-js';
+import { createSignal, JSX, For, splitProps, createMemo, Show, createEffect, mergeProps } from 'solid-js';
 import type { JSX as SolidJSX } from 'solid-js';
 
 import type {
   CollisionDetector,
+  DragDropManager,
   Modifiers,
   UniqueIdentifier,
 } from '@dnd-kit/abstract';
 
-import {FeedbackType, defaultPreset} from '@dnd-kit/dom';
-import {type SortableTransition} from '@dnd-kit/dom/sortable';
-import {DragDropProvider, useSortable} from '@dnd-kit/solid';
+import {FeedbackType, defaultPreset, type Draggable} from '@dnd-kit/dom';
+import {type SortableTransition } from '@dnd-kit/dom/sortable';
+import {DragDropProvider, useSortable, type DragDropEvents} from '@dnd-kit/solid';
 import {directionBiased} from '@dnd-kit/collision';
 import {move} from '@dnd-kit/helpers';
 import {Debug} from '@dnd-kit/dom/plugins/debug';
 
 import { Item } from '../../components/Item';
 import { Handle } from '../../components/Actions/Handle.tsx';
-import {createRange} from '../../utilities/createRange.ts';
 
 // CSSProperties is a local type for style objects
 type CSSProperties = JSX.CSSProperties;
@@ -30,7 +30,6 @@ interface SortableExampleProps {
   layout?: 'vertical' | 'horizontal' | 'grid';
   transition?: SortableTransition;
   itemCount?: number;
-  optimistic?: boolean;
   collisionDetector?: CollisionDetector;
   getItemStyle?: (id: UniqueIdentifier, index: number) => CSSProperties;
 }
@@ -43,12 +42,26 @@ interface SortableProps {
   disabled?: boolean;
   dragHandle?: boolean;
   feedback?: FeedbackType;
-  optimistic?: boolean;
   transition?: SortableTransition;
   style?: CSSProperties;
 }
 
-export function SortableExample(props: SortableExampleProps) {
+
+export function createRange(count: number): { id: UniqueIdentifier, index: number }[] {
+  return Array.from(Array(count).keys()).map(index => ({ id: index, index }));
+}
+
+
+export function SortableExample(_props: SortableExampleProps) {
+  const props = mergeProps({
+    debug: false,
+    itemCount: 5,
+    collisionDetector: directionBiased,
+    dragHandle: false,
+    feedback: 'default',
+    layout: 'vertical',
+  } as const, _props);
+  
   const [local, rest] = splitProps(props, [
     'debug',
     'itemCount',
@@ -57,65 +70,63 @@ export function SortableExample(props: SortableExampleProps) {
     'dragHandle',
     'feedback',
     'layout',
-    'optimistic',
     'modifiers',
     'transition',
     'getItemStyle',
   ]);
 
-  const [items, setItems] = createSignal(createRange(local.itemCount ?? 5));
+  const [items, setItems] = createSignal(createRange(local.itemCount));
 
-  // createEffect(() => {
-  //   console.log('items', items());
-  // });
-  
-  function handleDragOver(event: any) {
-    console.log('handleDragOver', items(), move(items(), event));
-    
-    if (local.optimistic ?? true) return;
-     
-    setItems(move(items(), event));
-  }
-
-  function handleDragEnd(event: any) {
-    console.log('handleDragEnd', items(), move(items(), event));
-    
-    setItems(move(items(), event));
-  }
-  
   createEffect(() => {
     if (local.itemCount != null) {
       setItems(createRange(local.itemCount));
     }
   });
+
+  const handleDragEnd: DragDropEvents['dragend'] = (event) => {
+    setItems(items => [...move(items, event)]);
+  }
+  
+  createEffect(() => {
+    console.log('items changed', items());
+  });
+  
+  const plugins = createMemo(() => {
+    let plugins = [...defaultPreset.plugins];
+    
+    if (local.debug) {
+      plugins.push(Debug);
+    }
+    
+    return plugins;
+  });
   
   return (
     <DragDropProvider
-      plugins={local.debug ? [...defaultPreset.plugins, Debug] : undefined}
+      plugins={plugins()}
       modifiers={local.modifiers}
-      onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
       {...rest}
     >
-      <Wrapper layout={local.layout ?? 'vertical'}>
-        <For each={items()}>{(id, index) => (
-          <SortableItem
-            id={id}
-            index={index()}
-            collisionDetector={local.collisionDetector ?? directionBiased}
-            disabled={local.disabled?.includes(id)}
-            dragHandle={local.dragHandle}
-            feedback={local.feedback}
-            optimistic={local.optimistic}
-            transition={local.transition}
-            style={local.getItemStyle?.(id, index())}
-          />
-        )}</For>
+      <Wrapper layout={local.layout}>
+        <For each={items()}>
+          {(value, index) => (
+              <SortableItem
+                id={value.id}
+                index={index()}
+                collisionDetector={local.collisionDetector}
+                disabled={local.disabled?.includes(value.id)}
+                dragHandle={local.dragHandle}
+                feedback={local.feedback}
+                transition={local.transition}
+                style={local.getItemStyle?.(value.id, index())}
+              />
+          )}
+        </For>
       </Wrapper>
     </DragDropProvider>
   );
 }
-
 
 function SortableItem(props: SortableProps) {
   const [sortableProps, rest] = splitProps(props, [
@@ -146,19 +157,18 @@ function SortableItem(props: SortableProps) {
 }
 
 function Wrapper(props: { layout: 'vertical' | 'horizontal' | 'grid'; children: SolidJSX.Element }) {
-  return <div style={getWrapperStyles(props.layout)}>
-    {props.children}
-  </div>;
-}
-
-function getWrapperStyles(layout: 'vertical' | 'horizontal' | 'grid'): CSSProperties {
+  const { layout, children } = props;
+  
   const baseStyles: CSSProperties = {
     gap: '18px',
     padding: '0 30px',
   };
+  
+  let style: CSSProperties;
+  
   switch (layout) {
     case 'grid':
-      return {
+      style = {
         ...baseStyles,
         display: 'grid',
         'max-width': '900px',
@@ -168,20 +178,26 @@ function getWrapperStyles(layout: 'vertical' | 'horizontal' | 'grid'): CSSProper
         'grid-auto-rows': '150px',
         'justify-content': 'center',
       };
+      break;
     case 'horizontal':
-      return {
+      style = {
         ...baseStyles,
         display: 'inline-flex',
         'flex-direction': 'row',
         'align-items': 'stretch',
         height: '180px',
       };
+      break;
     case 'vertical':
-      return {
+    default:
+      style = {
         ...baseStyles,
         display: 'flex',
         'flex-direction': 'column',
         'align-items': 'center',
       };
+      break;
   }
+  
+  return <div style={style}>{children}</div>;
 }

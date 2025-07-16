@@ -1,5 +1,6 @@
-import { DragDropManager, defaultPreset } from '@dnd-kit/dom';
 import { createEffect, createMemo, onCleanup } from 'solid-js';
+import { DragDropManager, defaultPreset } from '@dnd-kit/dom';
+import { isSortable } from '@dnd-kit/dom/sortable';
 
 import { DragDropContext } from './context.ts';
 import { useRenderer } from '../hooks/useRenderer.ts';
@@ -7,6 +8,8 @@ import { useRenderer } from '../hooks/useRenderer.ts';
 import type { DragDropEvents } from '@dnd-kit/abstract';
 import type { DragDropManagerInput, Draggable, Droppable } from '@dnd-kit/dom';
 import type { ParentProps } from 'solid-js';
+import { createSaveElementPosition } from '../utilities/saveElementPosition';
+
 
 export type Events = DragDropEvents<Draggable, Droppable, DragDropManager>;
 
@@ -21,6 +24,7 @@ export interface DragDropProviderProps extends DragDropManagerInput, ParentProps
 }
 
 export function DragDropProvider(props: DragDropProviderProps) {
+    const { savePosition, restorePosition } = createSaveElementPosition();
     const { renderer, trackRendering } = useRenderer();
     const manager = createMemo(() => props.manager ?? new DragDropManager());
 
@@ -53,6 +57,10 @@ export function DragDropProvider(props: DragDropProviderProps) {
         disposers.push(
             monitor.addEventListener('beforedragstart', (event, manager) => {
                 const callback = props.onBeforeDragStart;
+                
+                if (isSortable(event.operation.source)) {
+                    savePosition(event.operation.source);
+                }
 
                 if (callback) {
                     trackRendering(() => callback(event, manager));
@@ -81,7 +89,10 @@ export function DragDropProvider(props: DragDropProviderProps) {
 
             monitor.addEventListener('dragend', (event, manager) => {
                 const callback = props.onDragEnd;
-                console.log('dragend', event, manager, callback);
+                
+                if (isSortable(event.operation.source)) {
+                    restorePosition(event.operation.source!.element!);
+                }
 
                 if (callback) {
                     trackRendering(() => callback(event, manager));
@@ -89,11 +100,7 @@ export function DragDropProvider(props: DragDropProviderProps) {
             }),
 
             monitor.addEventListener('collision', (event, manager) => {
-                const callback = props.onCollision;
-
-                if (callback) {
-                    callback(event, manager);
-                }
+                props.onCollision?.(event, manager);
             }),
         );
 

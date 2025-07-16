@@ -28,15 +28,16 @@
   "devDependencies": {
     "@dnd-kit/eslint-config": "*",
     "@measured/auto-frame-component": "^0.1.7",
+    "@solid-primitives/keyed": "^1.5.2",
     "@storybook/addon-docs": "^9.0.15",
     "@storybook/addon-links": "^9.0.15",
     "@storybook/react-vite": "^9.0.15",
     "@vitejs/plugin-react": "^4.2.1",
+    "@vueless/storybook-dark-mode": "^9.0.6",
     "eslint": "^8.56.0",
     "eslint-plugin-storybook": "9.0.15",
     "serve": "^14.2.4",
     "storybook": "^9.0.15",
-    "@vueless/storybook-dark-mode": "^9.0.6",
     "storybook-solidjs-vite": "^9.0.2",
     "typescript": "^5.7.3",
     "vite": "^5.4.14"

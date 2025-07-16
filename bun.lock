@@ -63,6 +63,7 @@
       "devDependencies": {
         "@dnd-kit/eslint-config": "*",
         "@measured/auto-frame-component": "^0.1.7",
+        "@solid-primitives/keyed": "^1.5.2",
         "@storybook/addon-docs": "^9.0.15",
         "@storybook/addon-links": "^9.0.15",
         "@storybook/react-vite": "^9.0.15",
@@ -190,7 +191,7 @@
     },
     "packages/solid": {
       "name": "@dnd-kit/solid",
-      "version": "0.1.17",
+      "version": "0.1.18",
       "dependencies": {
         "@dnd-kit/abstract": "^0.1.17",
         "@dnd-kit/dom": "^0.1.17",
@@ -511,6 +512,8 @@
     "@rtsao/scc": ["@rtsao/scc@1.1.0", "", {}, "sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g=="],
 
     "@rushstack/eslint-patch": ["@rushstack/eslint-patch@1.10.4", "", {}, "sha512-WJgX9nzTqknM393q1QJDJmoW28kUfEnybeTfVNcNAPnIx210RXm2DiXiHzfNPJNIUUb1tJnz/l4QGtJ30PgWmA=="],
+
+    "@solid-primitives/keyed": ["@solid-primitives/keyed@1.5.2", "", { "peerDependencies": { "solid-js": "^1.6.12" } }, "sha512-BgoEdqPw48URnI+L5sZIHdF4ua4Las1eWEBBPaoSFs42kkhnHue+rwCBPL2Z9ebOyQ75sUhUfOETdJfmv0D6Kg=="],
 
     "@storybook/addon-docs": ["@storybook/addon-docs@9.0.15", "", { "dependencies": { "@mdx-js/react": "^3.0.0", "@storybook/csf-plugin": "9.0.15", "@storybook/icons": "^1.2.12", "@storybook/react-dom-shim": "9.0.15", "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "ts-dedent": "^2.0.0" }, "peerDependencies": { "storybook": "^9.0.15" } }, "sha512-HOb45DkF23T1tRzakb9q33qnBRso15S/GM28ippPZWi5ZXR9RAyKVgOSMA/ViEpK4ezASxN+Tee+H7m4ksEFZw=="],
 

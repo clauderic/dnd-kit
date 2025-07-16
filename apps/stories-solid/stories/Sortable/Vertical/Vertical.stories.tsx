@@ -13,11 +13,16 @@ export default meta;
 type Story = StoryObj<typeof SortableExample>;
 
 const heights: Record<UniqueIdentifier, number> = {
-  1: 100,
-  2: 150,
-  3: 200,
-  4: 100,
-  5: 150,
+  0: 100,
+  1: 150,
+  2: 200,
+  3: 100,
+  4: 150,
+};
+
+export const Basic: Story = {
+  name: 'Equal heights',
+  args: {},
 };
       
 export const VariableHeights: Story = {
@@ -27,19 +32,6 @@ export const VariableHeights: Story = {
     getItemStyle(id: UniqueIdentifier, index: number) {
       return {
         height: `${heights[id]}px`,
-      };
-    },
-  },
-};
-
-export const DynamicHeights: Story = {
-  name: 'Dynamic heights',
-  args: {
-    debug: false,
-    optimistic: false, // NOTE: apply sort immediately on drag over
-    getItemStyle(_: UniqueIdentifier, index: number) {
-      return {
-        height: `${heights[index]}px`,
       };
     },
   },

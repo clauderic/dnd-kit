@@ -3,7 +3,7 @@ import { Sortable, type SortableInput } from '@dnd-kit/dom/sortable';
 import { createEffect } from 'solid-js';
 
 import type { Data } from '@dnd-kit/abstract';
-import { createReactiveSignal } from '../utilities';
+import { createReactiveSignal, wrapSignal } from '../utilities';
 import { useDragDropManager } from '../hooks/useDragDropManager';
 
 export interface UseSortableInput<T extends Data = Data> extends Omit<SortableInput<T>, 'source'> {
@@ -34,6 +34,11 @@ export function useSortable<T extends Data = Data>(
         transition: DEFAULT_TRANSITION,
         ...props,
     }, manager());
+    
+    const isDragging = wrapSignal(() => sortable.isDragging);
+    const isDropping = wrapSignal(() => sortable.isDropping);
+    const isDragSource = wrapSignal(() => sortable.isDragSource);
+    const isDropTarget = wrapSignal(() => sortable.isDropTarget);
     
     createEffect(() => {
         if (handleRef()) {
@@ -78,10 +83,10 @@ export function useSortable<T extends Data = Data>(
     
     return {
         sortable,
-        isDragging: () => sortable.isDragging,
-        isDropping: () => sortable.isDropping,
-        isDragSource: () => sortable.isDragSource,
-        isDropTarget: () => sortable.isDropTarget,
+        isDragging,
+        isDropping,
+        isDragSource,
+        isDropTarget,
 
         ref: setElementRef,
         targetRef: setTargetRef,
