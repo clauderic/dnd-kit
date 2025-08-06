@@ -43,6 +43,7 @@ import {
 
 export interface FeedbackOptions {
   rootElement?: Element | ((source: Draggable) => Element);
+  nonce?: string;
 }
 
 interface State {
@@ -673,6 +674,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
   #injectStyles() {
     const {status, source, target} = this.manager.dragOperation;
+    const {nonce} = this.options ?? {};
 
     if (status.initializing) {
       const sourceDocument = getDocument(source?.element ?? null);
@@ -685,6 +687,9 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         if (!registration) {
           const style = document.createElement('style');
           style.textContent = CSS_RULES;
+          if (nonce) {
+            style.setAttribute('nonce', nonce);
+          }
           doc.head.prepend(style);
           const mutationObserver = new MutationObserver((entries) => {
             for (const entry of entries) {

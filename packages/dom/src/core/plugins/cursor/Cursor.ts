@@ -10,6 +10,10 @@ interface CursorPluginOptions {
    * @default 'grabbing'
    */
   cursor?: string;
+  /**
+   * The nonce to be applied to the style element.
+   */
+  nonce?: string;
 }
 
 export class Cursor extends Plugin<DragDropManager> {
@@ -25,11 +29,16 @@ export class Cursor extends Plugin<DragDropManager> {
 
     this.destroy = effect(() => {
       const {dragOperation} = this.manager;
-      const {cursor = 'grabbing'} = this.options ?? {};
+      const {cursor = 'grabbing', nonce} = this.options ?? {};
 
       if (dragOperation.status.initialized) {
         const document = doc.value;
         const style = document.createElement('style');
+
+        if (nonce) {
+          style.setAttribute('nonce', nonce);
+        }
+
         style.textContent = `* { cursor: ${cursor} !important; }`;
         document.head.appendChild(style);
 
