@@ -1,5 +1,17 @@
 # @dnd-kit/dom
 
+## 0.1.21
+
+### Patch Changes
+
+- [#1775](https://github.com/clauderic/dnd-kit/pull/1775) [`3d6219d`](https://github.com/clauderic/dnd-kit/commit/3d6219db072551945556fdac2788e738f77b92c7) Thanks [@fpronto](https://github.com/fpronto)! - Added nonce as an option for every plugin that inject styles in html
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.1.21
+  - @dnd-kit/collision@0.1.21
+  - @dnd-kit/geometry@0.1.21
+  - @dnd-kit/state@0.1.21
+
 ## 0.1.20
 
 ### Patch Changes
