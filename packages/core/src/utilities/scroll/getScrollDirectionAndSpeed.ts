@@ -31,7 +31,9 @@ export function getScrollDirectionAndSpeed(
     width: scrollContainerRect.width * thresholdPercentage.x,
   };
 
-  if (!isTop && top <= scrollContainerRect.top + threshold.height) {
+  if (threshold.height === 0) {
+    speed.y = 0;
+  } else if (!isTop && top <= scrollContainerRect.top + threshold.height) {
     // Scroll Up
     direction.y = Direction.Backward;
     speed.y =
@@ -53,7 +55,9 @@ export function getScrollDirectionAndSpeed(
       );
   }
 
-  if (!isRight && right >= scrollContainerRect.right - threshold.width) {
+  if (threshold.width === 0) {
+    speed.x = 0;
+  } else if (!isRight && right >= scrollContainerRect.right - threshold.width) {
     // Scroll Right
     direction.x = Direction.Forward;
     speed.x =
