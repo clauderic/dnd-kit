@@ -33,6 +33,7 @@ export interface KeyboardSensorOptions extends SensorOptions {
   coordinateGetter?: KeyboardCoordinateGetter;
   scrollBehavior?: ScrollBehavior;
   onActivation?({event}: {event: KeyboardEvent}): void;
+  cancelOnWindowResize?: boolean;
 }
 
 export type KeyboardSensorProps = SensorProps<KeyboardSensorOptions>;
@@ -58,9 +59,15 @@ export class KeyboardSensor implements SensorInstance {
   }
 
   private attach() {
+    const {
+      options: {cancelOnWindowResize = true},
+    } = this.props;
+
     this.handleStart();
 
-    this.windowListeners.add(EventName.Resize, this.handleCancel);
+    if (cancelOnWindowResize) {
+      this.windowListeners.add(EventName.Resize, this.handleCancel);
+    }
     this.windowListeners.add(EventName.VisibilityChange, this.handleCancel);
 
     setTimeout(() => this.listeners.add(EventName.Keydown, this.handleKeyDown));

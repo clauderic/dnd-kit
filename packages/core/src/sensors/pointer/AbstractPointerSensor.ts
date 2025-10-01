@@ -60,6 +60,7 @@ export interface AbstractPointerSensorOptions extends SensorOptions {
     props: Pick<AbstractPointerSensorProps, 'activeNode' | 'event' | 'options'>
   ): boolean;
   onActivation?({event}: {event: Event}): void;
+  cancelOnWindowResize?: boolean;
 }
 
 export type AbstractPointerSensorProps =
@@ -104,7 +105,11 @@ export class AbstractPointerSensor implements SensorInstance {
     const {
       events,
       props: {
-        options: {activationConstraint, bypassActivationConstraint},
+        options: {
+          activationConstraint,
+          bypassActivationConstraint,
+          cancelOnWindowResize = true,
+        },
       },
     } = this;
 
@@ -115,7 +120,9 @@ export class AbstractPointerSensor implements SensorInstance {
       this.listeners.add(events.cancel.name, this.handleCancel);
     }
 
-    this.windowListeners.add(EventName.Resize, this.handleCancel);
+    if (cancelOnWindowResize) {
+      this.windowListeners.add(EventName.Resize, this.handleCancel);
+    }
     this.windowListeners.add(EventName.DragStart, preventDefault);
     this.windowListeners.add(EventName.VisibilityChange, this.handleCancel);
     this.windowListeners.add(EventName.ContextMenu, preventDefault);
