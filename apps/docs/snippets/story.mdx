@@ -1,8 +1,8 @@
-export const Story = ({ id, width = "100%", height = 250, hero = false }) => {
+export const Story = ({ id, width = "100%", height = "250", hero = false }) => {
   const branch = 'experimental';
   const productionHost = `https://${branch}--5fc05e08a4a65d0021ae0bf2.chromatic.com`;
   const localPort = 6006;
-  const host = typeof window !== 'undefined' && window.location.host.includes('localhost') ? `//localhost:${localPort}` : productionHost;
+  const host = typeof window !== 'undefined' && window.location?.hostname === 'localhost' ? `//localhost:${localPort}` : productionHost;
   const dark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
 
   return (
