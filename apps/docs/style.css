@@ -165,6 +165,10 @@ html:not(.dark) .hero .sp-layout {
   min-height: 100px;
 }
 
+[data-as="iframe"] {
+  width: 100%;
+}
+
 code-sandbox[style*="--preview-height"] .sp-preview {
   height: var(--preview-height) !important;
 }
