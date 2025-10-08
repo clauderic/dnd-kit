@@ -1,7 +1,6 @@
 {
   "name": "@dnd-kit/playground",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
   "scripts": {
     "start": "parcel index.html",
@@ -12,7 +11,7 @@
   },
   "alias": {
     "@dnd-kit/core": "../packages/core",
-    "@dnd-kit/accesssibility": "../packages/accesssibility",
+    "@dnd-kit/accessibility": "../packages/accessibility",
     "@dnd-kit/modifiers": "../packages/modifiers",
     "@dnd-kit/sortable": "../packages/sortable",
     "@dnd-kit/utilities": "../packages/utilities",
@@ -23,7 +22,7 @@
   "devDependencies": {
     "@types/react": "^16.9.11",
     "@types/react-dom": "^16.8.4",
-    "parcel": "^1.12.3",
+    "parcel": "^2.16.0",
     "typescript": "^3.4.5"
   }
 }
