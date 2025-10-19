@@ -1,5 +1,5 @@
 {
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
   "typescript.tsdk": "node_modules/typescript/lib",
   "search.exclude": {
     "**/dist": true,
