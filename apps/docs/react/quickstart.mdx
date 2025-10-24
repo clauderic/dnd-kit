@@ -14,7 +14,6 @@ import Intro from '/snippets/quickstart/intro.mdx';
 The `@dnd-kit/react` package provides a set of React components and hooks that you can use to build drag and drop interfaces. It is thin React integration layer built on top of the [vanilla](/overview) library, so all of the same concepts are shared and can be used. You can refer to the vanilla documentation of these concepts, such as [plugins](/extend/plugins), [modifiers](/extend/modifiers), and [sensors](/extend/sensors).
 
 ## Installation
-
 Before getting started, make sure you install `@dnd-kit/react` in your project:
 
 <CodeGroup>
@@ -22,17 +21,17 @@ Before getting started, make sure you install `@dnd-kit/react` in your project:
   npm install @dnd-kit/react
   ```
 
-```bash yarn
-yarn add @dnd-kit/react
-```
+  ```bash yarn
+  yarn add @dnd-kit/react
+  ```
 
-```bash pnpm
-pnpm add @dnd-kit/react
-```
+  ```bash pnpm
+  pnpm add @dnd-kit/react
+  ```
 
-```bash bun
-bun add @dnd-kit/react
-```
+  ```bash bun
+  bun add @dnd-kit/react
+  ```
 
 </CodeGroup>
 
@@ -50,7 +49,11 @@ function Draggable() {
     id: 'draggable',
   });
 
-  return <button ref={ref}>Draggable</button>;
+  return (
+    <button ref={ref}>
+      Draggable
+    </button>
+  );
 }
 ```
 
@@ -95,13 +98,12 @@ import Draggable from './Draggable';
 import Droppable from './Droppable';
 
 function App() {
-const [isDropped, setIsDropped] = useState(false);
+  const [isDropped, setIsDropped] = useState(false);
 
-return (
-
-<DragDropProvider
-onDragEnd={(event) => {
-if (event.canceled) return;
+  return (
+    <DragDropProvider
+      onDragEnd={(event) => {
+        if (event.canceled) return;
 
         const {target} = event.operation;
         setIsDropped(target?.id === 'droppable');
@@ -113,11 +115,9 @@ if (event.canceled) return;
         {isDropped && <Draggable />}
       </Droppable>
     </DragDropProvider>
-
-);
+  );
 }
-
-````
+```
 ```jsx Draggable.js
 import {useDraggable} from '@dnd-kit/react';
 
@@ -132,8 +132,7 @@ export function Draggable() {
     </button>
   );
 }
-````
-
+```
 ```jsx Droppable.js
 import {useDroppable} from '@dnd-kit/react';
 
@@ -149,7 +148,6 @@ function Droppable({id, children}) {
   );
 }
 ```
-
 </CodeGroup>
 
 <div class="mt-8">
@@ -172,7 +170,9 @@ import {Draggable} from './Draggable';
 function App() {
   const targets = ['A', 'B', 'C'];
   const [target, setTarget] = useState();
-  const draggable = <Draggable id="draggable">Drag me</Draggable>;
+  const draggable = (
+    <Draggable id="draggable">Drag me</Draggable>
+  );
 
   return (
     <DragDropProvider
@@ -191,7 +191,7 @@ function App() {
       ))}
     </DragDropProvider>
   );
-}
+};
 ```
 
 <Story id="react-droppable-multiple-drop-targets--example" height="740" />
@@ -205,21 +205,13 @@ Now that you have a basic understanding of how to make elements draggable and dr
     Create drag and drop contexts for your draggable and droppable elements.
   </Card>
 
-{' '}
+  <Card title="useDraggable" icon="bullseye-pointer" href="/react/hooks/use-draggable">
+    Learn how to make elements draggable with the `useDraggable` hook.
+  </Card>
 
-<Card
-  title="useDraggable"
-  icon="bullseye-pointer"
-  href="/react/hooks/use-draggable"
->
-  Learn how to make elements draggable with the `useDraggable` hook.
-</Card>
-
-{' '}
-
-<Card title="useDroppable" icon="expand" href="/react/hooks/use-droppable">
-  Learn how to create droppable targets with the `useDroppable` hook.
-</Card>
+  <Card title="useDroppable" icon="expand" href="/react/hooks/use-droppable">
+    Learn how to create droppable targets with the `useDroppable` hook.
+  </Card>
 
   <Card title="useSortable" icon="layer-group" href="/react/hooks/use-sortable">
     Learn how to create sortable elements with the `useSortable` hook.
