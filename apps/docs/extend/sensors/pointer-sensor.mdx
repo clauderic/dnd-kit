@@ -12,22 +12,17 @@ The Pointer sensor responds to [Pointer events](https://developer.mozilla.org/en
 
 ```ts
 import {DragDropManager} from '@dnd-kit/dom';
-import {PointerSensor} from '@dnd-kit/dom/sensors';
+import {PointerSensor, PointerActivationConstraints} from '@dnd-kit/dom';
 
 const manager = new DragDropManager({
   sensors: [
     PointerSensor.configure({
-      activationConstraints: {
+      activationConstraints: [
         // Start dragging after moving 5px
-        distance: {
-          value: 5,
-        },
-        // Or after holding for 200ms
-        delay: {
-          value: 200,
-          tolerance: 10,
-        },
-      },
+        new PointerActivationConstraints.Distance({value: 5}),
+        // Or after holding for 200ms with 10px tolerance
+        new PointerActivationConstraints.Delay({value: 200, tolerance: 10}),
+      ],
     }),
   ],
 });
@@ -35,56 +30,78 @@ const manager = new DragDropManager({
 
 ## Activation Constraints
 
-The Pointer sensor supports two types of activation constraints that can be used together:
+The Pointer sensor supports composable activation constraints through the `PointerActivationConstraints` class. Multiple constraints can be combined to create sophisticated activation behaviors.
 
 ### Distance Constraint
 
 Activates dragging after the pointer moves a certain distance:
 
 ```ts
+import {PointerActivationConstraints} from '@dnd-kit/dom';
+
 PointerSensor.configure({
-  activationConstraints: {
-    distance: {
+  activationConstraints: [
+    new PointerActivationConstraints.Distance({
       // Required distance in pixels
       value: 5,
-      // Optional tolerance per axis
-      tolerance: {
-        x: 5,
-        y: 0, // Restrict to vertical movement
-      },
-    },
-  },
+      // Optional tolerance - aborts if exceeded
+      tolerance: 10,
+    }),
+  ],
 });
 ```
+
+The `tolerance` option defines a movement threshold that, if exceeded, will abort the activation. This is useful for distinguishing between intentional drags and accidental movements.
 
 ### Delay Constraint
 
 Activates dragging after holding the pointer for a duration:
 
 ```ts
+import {PointerActivationConstraints} from '@dnd-kit/dom';
+
 PointerSensor.configure({
-  activationConstraints: {
-    delay: {
+  activationConstraints: [
+    new PointerActivationConstraints.Delay({
       // Required hold duration in ms
       value: 200,
-      // Movement tolerance during delay
+      // Movement tolerance during delay (in pixels)
       tolerance: 5,
-    },
-  },
+    }),
+  ],
+});
+```
+
+The `tolerance` option specifies how much the pointer can move during the delay period before the activation is aborted.
+
+### Combining Constraints
+
+Multiple constraints can be combined in an array. The drag operation activates when any constraint is satisfied:
+
+```ts
+PointerSensor.configure({
+  activationConstraints: [
+    // Activate after 200ms delay OR 5px movement
+    new PointerActivationConstraints.Delay({value: 200, tolerance: 10}),
+    new PointerActivationConstraints.Distance({value: 5}),
+  ],
 });
 ```
 
 ## Default Behavior
 
-By default, the Pointer sensor uses different activation constraints based on the pointer type:
+By default, the Pointer sensor uses different activation constraints based on the pointer type and context:
 
-- **Mouse**: Immediate activation on drag handle
+- **Mouse on handle**: Immediate activation
 - **Touch**: 250ms delay with 5px tolerance
-- **Other pointers**: 200ms delay with 5px distance threshold
+- **Text inputs**: 200ms delay with 0px tolerance
+- **Other pointers**: 200ms delay with 10px tolerance + 5px distance
 
-You can customize this behavior:
+You can customize this behavior by providing a function that returns constraints based on the event and source:
 
 ```ts
+import {PointerActivationConstraints} from '@dnd-kit/dom';
+
 PointerSensor.configure({
   activationConstraints(event, source) {
     const {pointerType, target} = event;
@@ -92,18 +109,18 @@ PointerSensor.configure({
     // Custom constraints based on pointer type
     switch (pointerType) {
       case 'mouse':
-        return {
-          distance: {value: 5},
-        };
+        return [
+          new PointerActivationConstraints.Distance({value: 5}),
+        ];
       case 'touch':
-        return {
-          delay: {value: 250, tolerance: 5},
-        };
+        return [
+          new PointerActivationConstraints.Delay({value: 250, tolerance: 5}),
+        ];
       default:
-        return {
-          delay: {value: 200},
-          distance: {value: 5},
-        };
+        return [
+          new PointerActivationConstraints.Delay({value: 200, tolerance: 10}),
+          new PointerActivationConstraints.Distance({value: 5}),
+        ];
     }
   },
 });
@@ -113,25 +130,52 @@ PointerSensor.configure({
 
 ### Options
 
-<ParamField path="activationConstraints" type="ActivationConstraints | ((event: PointerEvent, source: Draggable) => ActivationConstraints)">
-  Configure when dragging should start:
+<ParamField path="activationConstraints" type="ActivationConstraints<PointerEvent> | ((event: PointerEvent, source: Draggable) => ActivationConstraints<PointerEvent>)">
+  Configure when dragging should start using an array of constraint instances:
 
   ```ts
-  interface ActivationConstraints {
-    // Distance-based activation
-    distance?: {
-      value: number;
-      tolerance?: number | {x?: number; y?: number};
-    };
-    // Time-based activation
-    delay?: {
-      value: number;
-      tolerance: number | {x?: number; y?: number};
-    };
-  }
+  import {PointerActivationConstraints} from '@dnd-kit/dom';
+
+  // Array of constraint instances
+  type ActivationConstraints<E extends Event> = ActivationConstraint<E>[];
+
+  // Distance type
+  type Distance = number | {x?: number; y?: number};
+
+  // Distance constraint
+  new PointerActivationConstraints.Distance({
+    value: number;        // Required distance in pixels
+    tolerance?: Distance; // Optional abort threshold
+  });
+
+  // Delay constraint
+  new PointerActivationConstraints.Delay({
+    value: number;        // Required duration in ms
+    tolerance: Distance;  // Movement tolerance
+  });
   ```
 
-  Can be a fixed configuration or a function that returns constraints based on the event and source.
+  Can be a fixed array of constraints or a function that returns constraints based on the event and source.
+</ParamField>
+
+### PointerActivationConstraints
+
+The `PointerActivationConstraints` class provides composable constraint primitives:
+
+<ParamField path="Distance" type="class">
+  Activates when the pointer moves beyond a specified distance.
+
+  **Options:**
+  - `value` (number): Required distance in pixels.
+  - `tolerance` (number | {x?: number; y?: number}, optional): If specified, aborts activation if movement exceeds this threshold. Can be a number or an object with optional x and y properties.
+</ParamField>
+
+<ParamField path="Delay" type="class">
+  Activates after holding the pointer for a specified duration.
+
+  **Options:**
+  - `value` (number): Required hold duration in milliseconds.
+  - `tolerance` (number | {x?: number; y?: number}): Maximum movement allowed during delay. Can be a number or an object with optional x and y properties. Exceeding this aborts activation.
 </ParamField>
 
 ### Events
@@ -141,20 +185,34 @@ The Pointer sensor handles these events:
 - `pointerdown`: Initial pointer contact
 - `pointermove`: Pointer movement
 - `pointerup`: Pointer release
-- `lostpointercapture`: Lost pointer tracking
+
+The sensor automatically binds listeners across all same-origin documents, enabling drag operations across iframes.
 
 ### Coordinates
 
-The sensor provides pointer coordinates relative to the viewport:
+The sensor provides pointer coordinates relative to the viewport using the `getEventCoordinates` utility:
 
 ```ts
-{
-  x: event.clientX, // Horizontal position
-  y: event.clientY  // Vertical position
-}
+import {getEventCoordinates} from '@dnd-kit/dom/utilities';
+
+const coordinates = getEventCoordinates(event);
+// Returns: {x: event.clientX, y: event.clientY}
 ```
 
-These coordinates are automatically adjusted for scroll position and zoom level.
+These coordinates are automatically adjusted for scroll position and zoom level when used within the sensor.
+
+### Cross-frame Support
+
+The Pointer sensor automatically listens across all same-origin documents using the `getDocuments` utility:
+
+```ts
+import {getDocuments} from '@dnd-kit/dom/utilities';
+
+// Returns all same-origin documents (current + iframes + parent frames)
+const documents = getDocuments();
+```
+
+This enables seamless drag operations across iframes without additional configuration.
 
 ### Best Practices
 

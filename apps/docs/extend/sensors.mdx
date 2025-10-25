@@ -37,18 +37,19 @@ Sensors can be configured both globally and per draggable element:
 import {DragDropManager} from '@dnd-kit/dom';
 import {
   PointerSensor,
+  PointerActivationConstraints,
   KeyboardSensor
-} from '@dnd-kit/dom/sensors';
+} from '@dnd-kit/dom';
 
 // Global sensors
 const manager = new DragDropManager({
   sensors: [
     PointerSensor.configure({
-      // Activation constraints
-      activationConstraints: {
-        distance: 5, // Start after moving 5px
-        delay: 200,  // Or after holding for 200ms
-      }
+      // Composable activation constraints
+      activationConstraints: [
+        new PointerActivationConstraints.Distance({value: 5}), // Start after moving 5px
+        new PointerActivationConstraints.Delay({value: 200, tolerance: 10}),  // Or after holding for 200ms
+      ]
     }),
     KeyboardSensor,
   ]
