@@ -140,7 +140,7 @@ PointerSensor.configure({
   type ActivationConstraints<E extends Event> = ActivationConstraint<E>[];
 
   // Distance type
-  type Distance = number | Coordinates | Pick<Coordinates, Axis.Horizontal> | Pick<Coordinates, Axis.Vertical>;
+  type Distance = number | {x?: number; y?: number};
 
   // Distance constraint
   new PointerActivationConstraints.Distance({
