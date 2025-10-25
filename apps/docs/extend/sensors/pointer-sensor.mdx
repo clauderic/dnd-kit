@@ -30,42 +30,61 @@ const manager = new DragDropManager({
 
 ## Activation Constraints
 
-The Pointer sensor supports two types of activation constraints that can be used together:
+The Pointer sensor supports composable activation constraints through the `PointerActivationConstraints` class. Multiple constraints can be combined to create sophisticated activation behaviors.
 
 ### Distance Constraint
 
 Activates dragging after the pointer moves a certain distance:
 
 ```ts
+import {PointerActivationConstraints} from '@dnd-kit/dom';
+
 PointerSensor.configure({
-  activationConstraints: {
-    distance: {
+  activationConstraints: [
+    new PointerActivationConstraints.Distance({
       // Required distance in pixels
       value: 5,
-      // Optional tolerance per axis
-      tolerance: {
-        x: 5,
-        y: 0, // Restrict to vertical movement
-      },
-    },
-  },
+      // Optional tolerance - aborts if exceeded
+      tolerance: 10,
+    }),
+  ],
 });
 ```
+
+The `tolerance` option defines a movement threshold that, if exceeded, will abort the activation. This is useful for distinguishing between intentional drags and accidental movements.
 
 ### Delay Constraint
 
 Activates dragging after holding the pointer for a duration:
 
 ```ts
+import {PointerActivationConstraints} from '@dnd-kit/dom';
+
 PointerSensor.configure({
-  activationConstraints: {
-    delay: {
+  activationConstraints: [
+    new PointerActivationConstraints.Delay({
       // Required hold duration in ms
       value: 200,
-      // Movement tolerance during delay
+      // Movement tolerance during delay (in pixels)
       tolerance: 5,
-    },
-  },
+    }),
+  ],
+});
+```
+
+The `tolerance` option specifies how much the pointer can move during the delay period before the activation is aborted.
+
+### Combining Constraints
+
+Multiple constraints can be combined in an array. The drag operation activates when any constraint is satisfied:
+
+```ts
+PointerSensor.configure({
+  activationConstraints: [
+    // Activate after 200ms delay OR 5px movement
+    new PointerActivationConstraints.Delay({value: 200, tolerance: 10}),
+    new PointerActivationConstraints.Distance({value: 5}),
+  ],
 });
 ```
 
