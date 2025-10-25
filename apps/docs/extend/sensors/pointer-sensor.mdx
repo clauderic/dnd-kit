@@ -90,15 +90,18 @@ PointerSensor.configure({
 
 ## Default Behavior
 
-By default, the Pointer sensor uses different activation constraints based on the pointer type:
+By default, the Pointer sensor uses different activation constraints based on the pointer type and context:
 
-- **Mouse**: Immediate activation on drag handle
+- **Mouse on handle**: Immediate activation
 - **Touch**: 250ms delay with 5px tolerance
-- **Other pointers**: 200ms delay with 5px distance threshold
+- **Text inputs**: 200ms delay with 0px tolerance
+- **Other pointers**: 200ms delay with 10px tolerance + 5px distance
 
-You can customize this behavior:
+You can customize this behavior by providing a function that returns constraints based on the event and source:
 
 ```ts
+import {PointerActivationConstraints} from '@dnd-kit/dom';
+
 PointerSensor.configure({
   activationConstraints(event, source) {
     const {pointerType, target} = event;
@@ -106,18 +109,18 @@ PointerSensor.configure({
     // Custom constraints based on pointer type
     switch (pointerType) {
       case 'mouse':
-        return {
-          distance: {value: 5},
-        };
+        return [
+          new PointerActivationConstraints.Distance({value: 5}),
+        ];
       case 'touch':
-        return {
-          delay: {value: 250, tolerance: 5},
-        };
+        return [
+          new PointerActivationConstraints.Delay({value: 250, tolerance: 5}),
+        ];
       default:
-        return {
-          delay: {value: 200},
-          distance: {value: 5},
-        };
+        return [
+          new PointerActivationConstraints.Delay({value: 200, tolerance: 10}),
+          new PointerActivationConstraints.Distance({value: 5}),
+        ];
     }
   },
 });
