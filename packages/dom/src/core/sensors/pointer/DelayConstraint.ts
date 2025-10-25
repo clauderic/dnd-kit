@@ -37,18 +37,16 @@ export class DelayConstraint extends ActivationConstraint<
         };
 
         if (exceedsDistance(delta, this.options.tolerance)) {
-          this.abort(event);
+          this.abort();
         }
         break;
       case 'pointerup':
-        this.abort(event);
+        this.abort();
         break;
     }
   }
 
-  abort(event?: PointerEvent) {
-    super.abort(event);
-
+  abort() {
     if (this.#timeout) {
       clearTimeout(this.#timeout);
       this.#coordinates = undefined;

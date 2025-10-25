@@ -63,9 +63,7 @@ export abstract class ActivationConstraint<
   /**
    * Called when the activation is aborted.
    */
-  public abort(event?: E): void {
-    this.#controller?.abort(event);
-  }
+  public abstract abort(event?: E): void;
 
   /**
    * Called when an input event is received by the sensor.

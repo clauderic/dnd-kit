@@ -34,7 +34,7 @@ export class DistanceConstraint extends ActivationConstraint<
         const {tolerance} = this.options;
 
         if (tolerance && exceedsDistance(delta, tolerance)) {
-          this.abort(event);
+          this.abort();
           return;
         }
 
@@ -43,14 +43,12 @@ export class DistanceConstraint extends ActivationConstraint<
         }
         break;
       case 'pointerup':
-        this.abort(event);
+        this.abort();
         break;
     }
   }
 
-  abort(event?: PointerEvent) {
-    super.abort(event);
-
+  abort() {
     this.#coordinates = undefined;
   }
 }
