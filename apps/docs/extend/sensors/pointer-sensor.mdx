@@ -130,25 +130,49 @@ PointerSensor.configure({
 
 ### Options
 
-<ParamField path="activationConstraints" type="ActivationConstraints | ((event: PointerEvent, source: Draggable) => ActivationConstraints)">
-  Configure when dragging should start:
+<ParamField path="activationConstraints" type="ActivationConstraints<PointerEvent> | ((event: PointerEvent, source: Draggable) => ActivationConstraints<PointerEvent>)">
+  Configure when dragging should start using an array of constraint instances:
 
   ```ts
-  interface ActivationConstraints {
-    // Distance-based activation
-    distance?: {
-      value: number;
-      tolerance?: number | {x?: number; y?: number};
-    };
-    // Time-based activation
-    delay?: {
-      value: number;
-      tolerance: number | {x?: number; y?: number};
-    };
-  }
+  import {PointerActivationConstraints} from '@dnd-kit/dom';
+
+  // Array of constraint instances
+  type ActivationConstraints<E extends Event> = ActivationConstraint<E>[];
+
+  // Distance constraint
+  new PointerActivationConstraints.Distance({
+    value: number;      // Required distance in pixels
+    tolerance?: number; // Optional abort threshold
+  });
+
+  // Delay constraint
+  new PointerActivationConstraints.Delay({
+    value: number;      // Required duration in ms
+    tolerance: number;  // Movement tolerance in pixels
+  });
   ```
 
-  Can be a fixed configuration or a function that returns constraints based on the event and source.
+  Can be a fixed array of constraints or a function that returns constraints based on the event and source.
+</ParamField>
+
+### PointerActivationConstraints
+
+The `PointerActivationConstraints` class provides composable constraint primitives:
+
+<ParamField path="Distance" type="class">
+  Activates when the pointer moves beyond a specified distance.
+
+  **Options:**
+  - `value` (number): Required distance in pixels.
+  - `tolerance` (number, optional): If specified, aborts activation if movement exceeds this threshold.
+</ParamField>
+
+<ParamField path="Delay" type="class">
+  Activates after holding the pointer for a specified duration.
+
+  **Options:**
+  - `value` (number): Required hold duration in milliseconds.
+  - `tolerance` (number): Maximum movement allowed during delay (in pixels). Exceeding this aborts activation.
 </ParamField>
 
 ### Events
