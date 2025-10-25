@@ -139,10 +139,13 @@ PointerSensor.configure({
   // Array of constraint instances
   type ActivationConstraints<E extends Event> = ActivationConstraint<E>[];
 
+  // Distance type
+  type Distance = number | Coordinates | Pick<Coordinates, Axis.Horizontal> | Pick<Coordinates, Axis.Vertical>;
+
   // Distance constraint
   new PointerActivationConstraints.Distance({
-    value: number;      // Required distance in pixels
-    tolerance?: number; // Optional abort threshold
+    value: number;        // Required distance in pixels
+    tolerance?: Distance; // Optional abort threshold
   });
 
   // Delay constraint
