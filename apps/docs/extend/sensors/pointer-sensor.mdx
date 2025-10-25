@@ -167,7 +167,7 @@ The `PointerActivationConstraints` class provides composable constraint primitiv
 
   **Options:**
   - `value` (number): Required distance in pixels.
-  - `tolerance` (Distance, optional): If specified, aborts activation if movement exceeds this threshold. Can be a number, Coordinates object, or axis-specific coordinates.
+  - `tolerance` (number | {x?: number; y?: number}, optional): If specified, aborts activation if movement exceeds this threshold. Can be a number or an object with optional x and y properties.
 </ParamField>
 
 <ParamField path="Delay" type="class">
