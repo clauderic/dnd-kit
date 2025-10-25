@@ -187,16 +187,29 @@ The sensor automatically binds listeners across all same-origin documents, enabl
 
 ### Coordinates
 
-The sensor provides pointer coordinates relative to the viewport:
+The sensor provides pointer coordinates relative to the viewport using the `getEventCoordinates` utility:
 
 ```ts
-{
-  x: event.clientX, // Horizontal position
-  y: event.clientY  // Vertical position
-}
+import {getEventCoordinates} from '@dnd-kit/dom/utilities';
+
+const coordinates = getEventCoordinates(event);
+// Returns: {x: event.clientX, y: event.clientY}
 ```
 
-These coordinates are automatically adjusted for scroll position and zoom level.
+These coordinates are automatically adjusted for scroll position and zoom level when used within the sensor.
+
+### Cross-frame Support
+
+The Pointer sensor automatically listens across all same-origin documents using the `getDocuments` utility:
+
+```ts
+import {getDocuments} from '@dnd-kit/dom/utilities';
+
+// Returns all same-origin documents (current + iframes + parent frames)
+const documents = getDocuments();
+```
+
+This enables seamless drag operations across iframes without additional configuration.
 
 ### Best Practices
 
