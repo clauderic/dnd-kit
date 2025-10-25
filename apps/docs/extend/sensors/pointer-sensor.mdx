@@ -175,7 +175,7 @@ The `PointerActivationConstraints` class provides composable constraint primitiv
 
   **Options:**
   - `value` (number): Required hold duration in milliseconds.
-  - `tolerance` (Distance): Maximum movement allowed during delay. Can be a number, Coordinates object, or axis-specific coordinates. Exceeding this aborts activation.
+  - `tolerance` (number | {x?: number; y?: number}): Maximum movement allowed during delay. Can be a number or an object with optional x and y properties. Exceeding this aborts activation.
 </ParamField>
 
 ### Events
