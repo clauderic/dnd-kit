@@ -1,49 +1,39 @@
 import {effect} from '@dnd-kit/state';
 import type {CleanupFunction} from '@dnd-kit/state';
-import {Sensor, configurator} from '@dnd-kit/abstract';
 import {
-  exceedsDistance,
-  type Distance,
-  type Coordinates,
-} from '@dnd-kit/geometry';
+  Sensor,
+  configurator,
+  ActivationController,
+  type ActivationConstraints,
+} from '@dnd-kit/abstract';
+import type {Coordinates} from '@dnd-kit/geometry';
 import {
   getDocument,
+  getDocuments,
+  getEventCoordinates,
+  getFrameTransform,
   isElement,
   isHTMLElement,
   isPointerEvent,
-  Listeners,
-  getFrameTransform,
-  scheduler,
   isTextInput,
+  Listeners,
+  scheduler,
 } from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import type {Draggable} from '../../entities/index.ts';
 
-export interface DelayConstraint {
-  value: number;
-  tolerance: Distance;
-}
-
-export interface DistanceConstraint {
-  value: Distance;
-  tolerance?: Distance;
-}
-
-export interface ActivationConstraints {
-  distance?: DistanceConstraint;
-  delay?: DelayConstraint;
-}
+import {PointerActivationConstraints} from './PointerActivationConstraints.ts';
 
 type Maybe<T> = T | undefined;
 
 export interface PointerSensorOptions {
   activationConstraints?:
-    | ActivationConstraints
+    | ActivationConstraints<PointerEvent>
     | ((
         event: PointerEvent,
         source: Draggable
-      ) => ActivationConstraints | undefined);
+      ) => ActivationConstraints<PointerEvent> | undefined);
   activatorElements?:
     | Maybe<Element>[]
     | ((source: Draggable) => Maybe<Element>[]);
@@ -62,21 +52,21 @@ const defaults = Object.freeze<PointerSensorOptions>({
     }
 
     if (pointerType === 'touch') {
-      return {
-        delay: {value: 250, tolerance: 5},
-      };
+      return [
+        new PointerActivationConstraints.Delay({value: 250, tolerance: 5}),
+      ];
     }
 
     if (isTextInput(target) && !event.defaultPrevented) {
-      return {
-        delay: {value: 200, tolerance: 0},
-      };
+      return [
+        new PointerActivationConstraints.Delay({value: 200, tolerance: 0}),
+      ];
     }
 
-    return {
-      delay: {value: 200, tolerance: 10},
-      distance: {value: 5},
-    };
+    return [
+      new PointerActivationConstraints.Delay({value: 200, tolerance: 10}),
+      new PointerActivationConstraints.Distance({value: 5}),
+    ];
   },
 });
 
@@ -95,11 +85,11 @@ export class PointerSensor extends Sensor<
 > {
   #cleanup: Set<CleanupFunction> = new Set();
 
-  #clearTimeout: CleanupFunction | undefined;
-
   protected listeners = new Listeners();
 
   protected initialCoordinates: Coordinates | undefined;
+
+  protected controller: ActivationController<PointerEvent> | undefined;
 
   constructor(
     public manager: DragDropManager,
@@ -180,37 +170,28 @@ export class PointerSensor extends Sensor<
       target.getAttribute('draggable') === 'true';
 
     const offset = getFrameTransform(source.element);
+    const {x, y} = getEventCoordinates(event);
 
     this.initialCoordinates = {
-      x: event.clientX * offset.scaleX + offset.x,
-      y: event.clientY * offset.scaleY + offset.y,
+      x: x * offset.scaleX + offset.x,
+      y: y * offset.scaleY + offset.y,
     };
 
     const constraints = this.activationConstraints(event, source);
-
     (event as any).sensor = this;
 
-    if (!constraints?.delay && !constraints?.distance) {
-      this.handleStart(source, event);
-    } else {
-      const {delay} = constraints;
+    const controller = new ActivationController<PointerEvent>(
+      constraints,
+      (event) => this.handleStart(source, event)
+    );
 
-      if (delay) {
-        const timeout = setTimeout(
-          () => this.handleStart(source, event),
-          delay.value
-        );
+    controller.signal.onabort = () => this.handleCancel(event);
+    controller.onEvent(event);
 
-        this.#clearTimeout = () => {
-          clearTimeout(timeout);
-          this.#clearTimeout = undefined;
-        };
-      }
-    }
+    this.controller = controller;
 
-    const ownerDocument = getDocument(event.target);
-
-    const unbindListeners = this.listeners.bind(ownerDocument, [
+    const documents = getDocuments();
+    const unbindListeners = this.listeners.bind(documents, [
       {
         type: 'pointermove',
         listener: (event: PointerEvent) =>
@@ -235,7 +216,6 @@ export class PointerSensor extends Sensor<
 
     const cleanup = () => {
       unbindListeners();
-      this.#clearTimeout?.();
       this.initialCoordinates = undefined;
     };
 
@@ -258,17 +238,18 @@ export class PointerSensor extends Sensor<
   };
 
   protected handlePointerMove(event: PointerEvent, source: Draggable) {
-    const coordinates = {
-      x: event.clientX,
-      y: event.clientY,
-    };
-
-    const offset = getFrameTransform(source.element);
-
-    coordinates.x = coordinates.x * offset.scaleX + offset.x;
-    coordinates.y = coordinates.y * offset.scaleY + offset.y;
+    if (this.controller?.activated === false) {
+      this.controller?.onEvent(event);
+      return;
+    }
 
     if (this.manager.dragOperation.status.dragging) {
+      const coordinates = getEventCoordinates(event);
+      const offset = getFrameTransform(source.element);
+
+      coordinates.x = coordinates.x * offset.scaleX + offset.x;
+      coordinates.y = coordinates.y * offset.scaleY + offset.y;
+
       event.preventDefault();
       event.stopPropagation();
 
@@ -276,36 +257,6 @@ export class PointerSensor extends Sensor<
       this.latest.coordinates = coordinates;
 
       scheduler.schedule(this.handleMove);
-      return;
-    }
-
-    if (!this.initialCoordinates) {
-      return;
-    }
-
-    const delta = {
-      x: coordinates.x - this.initialCoordinates.x,
-      y: coordinates.y - this.initialCoordinates.y,
-    };
-    const constraints = this.activationConstraints(event, source);
-    const {distance, delay} = constraints ?? {};
-
-    if (distance) {
-      if (
-        distance.tolerance != null &&
-        exceedsDistance(delta, distance.tolerance)
-      ) {
-        return this.handleCancel(event);
-      }
-      if (exceedsDistance(delta, distance.value)) {
-        return this.handleStart(source, event);
-      }
-    }
-
-    if (delay) {
-      if (exceedsDistance(delta, delay.tolerance)) {
-        return this.handleCancel(event);
-      }
     }
   }
 
@@ -335,8 +286,6 @@ export class PointerSensor extends Sensor<
   protected handleStart(source: Draggable, event: PointerEvent) {
     const {manager, initialCoordinates} = this;
 
-    this.#clearTimeout?.();
-
     if (!initialCoordinates || !manager.dragOperation.status.idle) {
       return;
     }
@@ -360,7 +309,11 @@ export class PointerSensor extends Sensor<
 
     pointerCaptureTarget.setPointerCapture(event.pointerId);
 
-    const unbind = this.listeners.bind(ownerDocument, [
+    const listenerTargets = isElement(event.target)
+      ? [event.target, ownerDocument.body]
+      : ownerDocument.body;
+
+    const unbind = this.listeners.bind(listenerTargets, [
       {
         // Prevent scrolling on touch devices
         type: 'touchmove',
@@ -381,14 +334,6 @@ export class PointerSensor extends Sensor<
       {
         type: 'keydown',
         listener: this.handleKeyDown,
-      },
-      {
-        type: 'lostpointercapture',
-        listener: (event: PointerEvent) => {
-          if (event.target !== pointerCaptureTarget) return;
-
-          this.handlePointerUp(event);
-        },
       },
     ]);
 

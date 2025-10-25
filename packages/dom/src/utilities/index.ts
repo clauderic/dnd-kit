@@ -6,7 +6,12 @@ export {
 } from './bounding-rectangle/index.ts';
 export {getVisibleBoundingRectangle} from './bounding-rectangle/getVisibleBoundingRectangle.ts';
 
-export {canUseDOM, getDocument, getWindow} from './execution-context/index.ts';
+export {getEventCoordinates} from './coordinates/getEventCoordinates.ts';
+
+export {canUseDOM} from './execution-context/canUseDOM.ts';
+export {getDocument} from './execution-context/getDocument.ts';
+export {getWindow} from './execution-context/getWindow.ts';
+export {getDocuments} from './execution-context/getDocuments.ts';
 export {isSafari} from './execution-context/isSafari.ts';
 
 export {
@@ -16,7 +21,6 @@ export {
 } from './element/index.ts';
 
 export {Listeners} from './event-listeners/index.ts';
-
 export {PositionObserver} from './observers/index.ts';
 export {ResizeNotifier} from './observers/ResizeNotifier.ts';
 

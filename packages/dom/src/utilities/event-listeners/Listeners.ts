@@ -13,17 +13,20 @@ export class Listeners {
 
   constructor() {}
 
-  public bind(target: EventTarget, input: EventListenerInput) {
+  public bind(target: EventTarget | EventTarget[], input: EventListenerInput) {
+    const eventTargets = Array.isArray(target) ? target : [target];
     const listeners = Array.isArray(input) ? input : [input];
     const entries: EventListenerEntry[] = [];
 
-    for (const descriptor of listeners) {
-      const {type, listener, options} = descriptor;
-      const entry: EventListenerEntry = [target, descriptor];
+    for (const target of eventTargets) {
+      for (const descriptor of listeners) {
+        const {type, listener, options} = descriptor;
+        const entry: EventListenerEntry = [target, descriptor];
 
-      target.addEventListener(type, listener, options);
-      this.entries.add(entry);
-      entries.push(entry);
+        target.addEventListener(type, listener, options);
+        this.entries.add(entry);
+        entries.push(entry);
+      }
     }
 
     return function cleanup() {

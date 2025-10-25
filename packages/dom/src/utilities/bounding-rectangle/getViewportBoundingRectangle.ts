@@ -1,6 +1,6 @@
 import type {BoundingRectangle} from '@dnd-kit/geometry';
 
-import {getDocument} from '../execution-context/index.ts';
+import {getDocument} from '../execution-context/getDocument.ts';
 
 /**
  * Returns the bounding rectangle of the viewport

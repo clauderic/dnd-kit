@@ -17,7 +17,8 @@ import {
   ScrollListener,
   PreventSelection,
 } from '../plugins/index.ts';
-import {KeyboardSensor, PointerSensor} from '../sensors/index.ts';
+import {KeyboardSensor} from '../sensors/keyboard/KeyboardSensor.ts';
+import {PointerSensor} from '../sensors/pointer/PointerSensor.ts';
 
 export interface Input extends DragDropManagerInput<DragDropManager> {}
 
