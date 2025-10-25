@@ -8,8 +8,16 @@ export type {
   DroppableInput,
 } from './entities/index.ts';
 
-export {PointerSensor, KeyboardSensor} from './sensors/index.ts';
-export type {Sensors} from './sensors/index.ts';
+export type {Sensors} from './sensors/types.ts';
+export {
+  PointerSensor,
+  type PointerSensorOptions,
+} from './sensors/pointer/PointerSensor.ts';
+export {PointerActivationConstraints} from './sensors/pointer/PointerActivationConstraints.ts';
+export {
+  KeyboardSensor,
+  type KeyboardSensorOptions,
+} from './sensors/keyboard/KeyboardSensor.ts';
 
 export {
   Accessibility,

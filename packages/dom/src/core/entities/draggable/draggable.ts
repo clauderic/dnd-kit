@@ -7,7 +7,7 @@ import type {Data, DraggableInput} from '@dnd-kit/abstract';
 import {reactive} from '@dnd-kit/state';
 
 import type {DragDropManager} from '../../manager/index.ts';
-import type {Sensors} from '../../sensors/index.ts';
+import type {Sensors} from '../../sensors/types.ts';
 
 export type FeedbackType = 'default' | 'move' | 'clone' | 'none';
 

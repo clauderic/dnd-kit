@@ -42,8 +42,13 @@ export type {
   PluginOptions,
 } from './plugins/index.ts';
 
-export {Sensor} from './sensors/index.ts';
+export {
+  ActivationConstraint,
+  ActivationController,
+  Sensor,
+} from './sensors/index.ts';
 export type {
+  ActivationConstraints,
   Sensors,
   SensorConstructor,
   SensorDescriptor,
