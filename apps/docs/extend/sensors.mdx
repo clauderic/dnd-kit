@@ -47,8 +47,14 @@ const manager = new DragDropManager({
     PointerSensor.configure({
       // Composable activation constraints
       activationConstraints: [
-        new PointerActivationConstraints.Distance({value: 5}), // Start after moving 5px
-        new PointerActivationConstraints.Delay({value: 200, tolerance: 10}),  // Or after holding for 200ms
+        // Activate after moving 5px
+        new PointerActivationConstraints.Distance({value: 5}),
+        // Or after holding for 200ms
+        new PointerActivationConstraints.Delay({
+          value: 200,
+          // With 10px tolerance on the x-axis and 5px on the y-axis
+          tolerance: {x: 10, y: 5},
+        }),
       ]
     }),
     KeyboardSensor,
