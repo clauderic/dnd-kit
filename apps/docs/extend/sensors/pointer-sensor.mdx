@@ -130,7 +130,7 @@ PointerSensor.configure({
 
 ### Options
 
-<ParamField path="activationConstraints" type="ActivationConstraints&lt;PointerEvent&gt; | ((event: PointerEvent, source: Draggable) =&gt; ActivationConstraints&lt;PointerEvent&gt;)">
+<ParamField path="activationConstraints" type="ActivationConstraints&lt;PointerEvent&gt; | (event: PointerEvent, source: Draggable) =&gt; ActivationConstraints&lt;PointerEvent&gt;">
   Configure when dragging should start using an array of constraint instances:
 
   ```ts
@@ -158,24 +158,36 @@ PointerSensor.configure({
   Can be a fixed array of constraints or a function that returns constraints based on the event and source.
 </ParamField>
 
-### PointerActivationConstraints
+### Built-in constraints
 
-The `PointerActivationConstraints` class provides composable constraint primitives:
+The `PointerActivationConstraints` class provides built-in constraint primitives. You can also create your own custom activation constraints by extending the `ActivationConstraint` class.
 
-<ParamField path="Distance" type="class">
-  Activates when the pointer moves beyond a specified distance.
+#### Distance
 
-  **Options:**
-  - `value` (number): Required distance in pixels.
-  - `tolerance` (number | {x?: number; y?: number}, optional): If specified, aborts activation if movement exceeds this threshold. Can be a number or an object with optional x and y properties.
+Activates dragging after the pointer moves a certain distance.
+
+##### Options for `Distance`
+
+<ParamField path="value" type="number" required>
+  Required distance in pixels.
 </ParamField>
 
-<ParamField path="Delay" type="class">
-  Activates after holding the pointer for a specified duration.
+<ParamField path="tolerance" type="number | {x?: number; y?: number}" optional>
+  If specified, aborts activation if movement exceeds this threshold. Can be a number or an object with optional x and y properties.
+</ParamField>
 
-  **Options:**
-  - `value` (number): Required hold duration in milliseconds.
-  - `tolerance` (number | {x?: number; y?: number}): Maximum movement allowed during delay. Can be a number or an object with optional x and y properties. Exceeding this aborts activation.
+#### Delay
+
+Activates dragging after holding the pointer for a duration.
+
+##### Options
+
+<ParamField path="value" type="number" required>
+  Required hold duration in milliseconds.
+</ParamField>
+
+<ParamField path="tolerance" type="number | {x?: number; y?: number}" optional>
+  Maximum movement allowed during delay. Can be a number or an object with optional x and y properties. Exceeding this aborts activation.
 </ParamField>
 
 ### Events
@@ -186,33 +198,7 @@ The Pointer sensor handles these events:
 - `pointermove`: Pointer movement
 - `pointerup`: Pointer release
 
-The sensor automatically binds listeners across all same-origin documents, enabling drag operations across iframes.
-
-### Coordinates
-
-The sensor provides pointer coordinates relative to the viewport using the `getEventCoordinates` utility:
-
-```ts
-import {getEventCoordinates} from '@dnd-kit/dom/utilities';
-
-const coordinates = getEventCoordinates(event);
-// Returns: {x: event.clientX, y: event.clientY}
-```
-
-These coordinates are automatically adjusted for scroll position and zoom level when used within the sensor.
-
-### Cross-frame Support
-
-The Pointer sensor automatically listens across all same-origin documents using the `getDocuments` utility:
-
-```ts
-import {getDocuments} from '@dnd-kit/dom/utilities';
-
-// Returns all same-origin documents (current + iframes + parent frames)
-const documents = getDocuments();
-```
-
-This enables seamless drag operations across iframes without additional configuration.
+The sensor automatically binds listeners across all same-origin documents, enabling drag operations across same-origin iframes.
 
 ### Best Practices
 
