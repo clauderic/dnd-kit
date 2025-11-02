@@ -1,10 +1,9 @@
 'use client';
 
 import {
-  startTransition,
   useEffect,
   useRef,
-  useState,
+  useInsertionEffect,
   type PropsWithChildren,
 } from 'react';
 import type {Data, DragDropEvents} from '@dnd-kit/abstract';
@@ -57,7 +56,6 @@ export function DragDropProvider<
   ...input
 }: Props<T, U, V, W>) {
   const rendererRef = useRef<ReactRenderer | null>(null);
-  const [manager, setManager] = useState<W | null>(input.manager ?? null);
   const {plugins, modifiers, sensors} = input;
   const handleBeforeDragStart = useLatest(onBeforeDragStart);
   const handleDragStart = useLatest(onDragStart);
@@ -65,54 +63,57 @@ export function DragDropProvider<
   const handleDragMove = useLatest(onDragMove);
   const handleDragEnd = useLatest(onDragEnd);
   const handleCollision = useLatest(onCollision);
+  const manager = useStableInstance<W>(() => {
+    return input.manager ?? (new DragDropManager<T, U, V>(input) as W);
+  });
 
   useEffect(() => {
     if (!rendererRef.current) throw new Error('Renderer not found');
 
     const {renderer, trackRendering} = rendererRef.current;
+    const {monitor} = manager;
 
-    const manager = input.manager ?? (new DragDropManager<T, U, V>(input) as W);
     manager.renderer = renderer;
 
-    manager.monitor.addEventListener('beforedragstart', (event) => {
-      const callback = handleBeforeDragStart.current;
+    const listeners = [
+      monitor.addEventListener('beforedragstart', (event) => {
+        const callback = handleBeforeDragStart.current;
 
-      if (callback) {
-        trackRendering(() => callback(event, manager));
-      }
-    });
-    manager.monitor.addEventListener('dragstart', (event) =>
-      handleDragStart.current?.(event, manager)
-    );
-    manager.monitor.addEventListener('dragover', (event) => {
-      const callback = handleDragOver.current;
+        if (callback) {
+          trackRendering(() => callback(event, manager));
+        }
+      }),
+      monitor.addEventListener('dragstart', (event) =>
+        handleDragStart.current?.(event, manager)
+      ),
+      monitor.addEventListener('dragover', (event) => {
+        const callback = handleDragOver.current;
 
-      if (callback) {
-        trackRendering(() => callback(event, manager));
-      }
-    });
-    manager.monitor.addEventListener('dragmove', (event) => {
-      const callback = handleDragMove.current;
+        if (callback) {
+          trackRendering(() => callback(event, manager));
+        }
+      }),
+      monitor.addEventListener('dragmove', (event) => {
+        const callback = handleDragMove.current;
 
-      if (callback) {
-        trackRendering(() => callback(event, manager));
-      }
-    });
-    manager.monitor.addEventListener('dragend', (event) => {
-      const callback = handleDragEnd.current;
+        if (callback) {
+          trackRendering(() => callback(event, manager));
+        }
+      }),
+      monitor.addEventListener('dragend', (event) => {
+        const callback = handleDragEnd.current;
 
-      if (callback) {
-        trackRendering(() => callback(event, manager));
-      }
-    });
-    manager.monitor.addEventListener('collision', (event) =>
-      handleCollision.current?.(event, manager)
-    );
+        if (callback) {
+          trackRendering(() => callback(event, manager));
+        }
+      }),
+      monitor.addEventListener('collision', (event) =>
+        handleCollision.current?.(event, manager)
+      ),
+    ];
 
-    startTransition(() => setManager(manager));
-
-    return manager.destroy;
-  }, [input.manager]);
+    return () => listeners.forEach((dispose) => dispose());
+  }, [manager]);
 
   useOnValueChange(
     plugins,
@@ -131,9 +132,23 @@ export function DragDropProvider<
   );
 
   return (
-    <DragDropContext.Provider value={manager as DragDropManager | null}>
+    <DragDropContext.Provider value={manager as any}>
       <Renderer ref={rendererRef}>{children}</Renderer>
       {children}
     </DragDropContext.Provider>
   );
+}
+
+function useStableInstance<T extends {destroy(): void}>(create: () => T): T {
+  const ref = useRef<T>(null);
+
+  if (!ref.current) {
+    ref.current = create();
+  }
+
+  useInsertionEffect(() => {
+    return () => ref.current?.destroy();
+  }, []);
+
+  return ref.current;
 }
