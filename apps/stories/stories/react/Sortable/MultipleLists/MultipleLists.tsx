@@ -2,7 +2,7 @@ import React, {memo, useCallback, useMemo, useRef, useState} from 'react';
 import type {PropsWithChildren} from 'react';
 import {flushSync} from 'react-dom';
 import {CollisionPriority} from '@dnd-kit/abstract';
-import {DragDropProvider} from '@dnd-kit/react';
+import {DragDropProvider, useDragOperation} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
 import {move} from '@dnd-kit/helpers';
 import {defaultPreset, PointerSensor, KeyboardSensor} from '@dnd-kit/dom';
@@ -204,7 +204,8 @@ const SortableColumn = memo(function SortableColumn({
   style,
   onRemove,
 }: PropsWithChildren<SortableColumnProps>) {
-  const {handleRef, isDragging, ref} = useSortable({
+  const {source} = useDragOperation();
+  const {handleRef, isDragging, isColliding, ref} = useSortable({
     id,
     accept: ['column', 'item'],
     collisionPriority: CollisionPriority.Low,
@@ -232,6 +233,7 @@ const SortableColumn = memo(function SortableColumn({
       actions={actions}
       columns={columns}
       shadow={isDragging}
+      highlight={isColliding && source?.type === 'item'}
       scrollable={scrollable}
       transitionId={`sortable-column-${id}`}
       style={style}

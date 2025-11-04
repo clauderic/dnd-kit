@@ -21,8 +21,7 @@ export {
 } from './element/index.ts';
 
 export {Listeners} from './event-listeners/index.ts';
-export {PositionObserver} from './observers/index.ts';
-export {ResizeNotifier} from './observers/ResizeNotifier.ts';
+export {observePosition} from './observers/PositionObserver.ts';
 
 export {showPopover, hidePopover, supportsPopover} from './popover/index.ts';
 
@@ -36,7 +35,9 @@ export {
   scrollIntoViewIfNeeded,
 } from './scroll/index.ts';
 
-export {scheduler, Scheduler, timeout} from './scheduling/index.ts';
+export {scheduler, Scheduler} from './scheduling/scheduler.ts';
+export {timeout} from './scheduling/timeout.ts';
+export {throttle} from './scheduling/throttle.ts';
 
 export {DOMRectangle, type DOMRectangleOptions} from './shapes/index.ts';
 

@@ -6,8 +6,8 @@ import type {
 import {defaultCollisionDetection} from '@dnd-kit/collision';
 import type {CollisionDetector} from '@dnd-kit/collision';
 import {reactive, signal, untracked} from '@dnd-kit/state';
-import type {BoundingRectangle, Shape} from '@dnd-kit/geometry';
-import {DOMRectangle, PositionObserver} from '@dnd-kit/dom/utilities';
+import type {Shape} from '@dnd-kit/geometry';
+import {DOMRectangle, observePosition, throttle} from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/manager.ts';
 
@@ -28,10 +28,10 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<
     manager: DragDropManager | undefined
   ) {
     const {collisionDetector = defaultCollisionDetection} = input;
-    const updateShape = (boundingClientRect?: BoundingRectangle | null) => {
+    const updateShape = (visible: boolean) => {
       const {manager, element} = this;
 
-      if (!element || boundingClientRect === null) {
+      if (!element || !visible) {
         this.shape = undefined;
         return undefined;
       }
@@ -39,8 +39,8 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<
       if (!manager) return;
 
       const updatedShape = new DOMRectangle(element);
-
       const shape = untracked(() => this.shape);
+
       if (updatedShape && shape?.equals(updatedShape)) {
         return shape;
       }
@@ -50,7 +50,7 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<
       return updatedShape;
     };
 
-    const observePosition = signal(false);
+    const shouldObservePosition = signal(false);
 
     super(
       {
@@ -65,7 +65,7 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<
             const {dragOperation} = manager;
             const {source} = dragOperation;
 
-            observePosition.value = Boolean(
+            shouldObservePosition.value = Boolean(
               source &&
                 dragOperation.status.initialized &&
                 element &&
@@ -76,14 +76,14 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<
           () => {
             const {element} = this;
 
-            if (observePosition.value && element) {
-              const positionObserver = new PositionObserver(
-                element,
-                updateShape
+            if (shouldObservePosition.value && element) {
+              updateShape(true);
+              const unobserve = observePosition(element, () =>
+                updateShape(true)
               );
 
               return () => {
-                positionObserver.disconnect();
+                unobserve();
                 this.shape = undefined;
               };
             }
@@ -101,7 +101,7 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<
     );
 
     this.element = element;
-    this.refreshShape = () => updateShape();
+    this.refreshShape = () => updateShape(true);
   }
 
   @reactive
