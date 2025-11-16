@@ -146,6 +146,44 @@ export type DragDropEvents<
   ): void;
 };
 
+/** Export the types from DragDropEvents in a more
+ * ergonomic manner for downstream consuemrs **/
+export type CollisionEvent<
+  T extends Draggable,
+  U extends Droppable,
+  V extends DragDropManager<T, U>,
+> = DragDropEvents<T,U,V>['collision'];
+
+export type BeforeDragStartEvent<
+  T extends Draggable,
+  U extends Droppable,
+  V extends DragDropManager<T, U>,
+> = DragDropEvents<T,U,V>['beforedragstart'];
+
+export type DragStartEvent<
+  T extends Draggable,
+  U extends Droppable,
+  V extends DragDropManager<T, U>,
+> = DragDropEvents<T,U,V>['dragstart'];
+
+export type DragMoveEvent<
+  T extends Draggable,
+  U extends Droppable,
+  V extends DragDropManager<T, U>,
+> = DragDropEvents<T,U,V>['dragmove'];
+
+export type DragOverEvent<
+  T extends Draggable,
+  U extends Droppable,
+  V extends DragDropManager<T, U>,
+> = DragDropEvents<T,U,V>['dragover'];
+
+export type DragEndEvent<
+  T extends Draggable,
+  U extends Droppable,
+  V extends DragDropManager<T, U>,
+> = DragDropEvents<T,U,V>['dragend'];
+
 /**
  * Monitors and dispatches drag and drop events.
  *
