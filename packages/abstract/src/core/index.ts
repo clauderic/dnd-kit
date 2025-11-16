@@ -3,6 +3,12 @@ export type {
   DragDropManagerInput,
   DragActions,
   DragDropEvents,
+  CollisionEvent,
+  BeforeDragStartEvent,
+  DragStartEvent,
+  DragMoveEvent,
+  DragOverEvent,
+  DragEndEvent,
   DragOperation,
   Renderer,
 } from './manager/index.ts';

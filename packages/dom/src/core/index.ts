@@ -1,6 +1,15 @@
 export {DragDropManager, defaultPreset} from './manager/index.ts';
 export type {DragDropManagerInput} from './manager/index.ts';
 
+export type {
+  CollisionEvent,
+  BeforeDragStartEvent,
+  DragStartEvent,
+  DragMoveEvent,
+  DragOverEvent,
+  DragEndEvent,
+} from './manager/events.ts';
+
 export {Draggable, Droppable} from './entities/index.ts';
 export type {
   DraggableInput,
