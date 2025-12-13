@@ -1,34 +1,20 @@
 import React, {useEffect, type PropsWithChildren} from 'react';
-import {Unstyled} from '@storybook/addon-docs/blocks';
 
-import {Button, Dropzone, Code, Item} from '../stories/components';
+import {
+  registerWebComponents,
+  setupDarkMode,
+  sharedParameters,
+} from './preview-shared';
+
+// Import shared global styles
+import '../shared/styles/global.css';
 
 // Register web components
-customElements.define('button-component', Button);
-customElements.define('dropzone-component', Dropzone);
-customElements.define('item-component', Item);
+registerWebComponents();
 
 function DarkModeProvider({children}: PropsWithChildren) {
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    if (window.location.search) {
-      const params = new URLSearchParams(window.location.search);
-      const dark = params.get('dark');
-      const hero = params.get('hero');
-
-      if (dark === 'false') {
-        document.body.classList.remove('dark');
-      } else if (dark === 'true') {
-        document.body.classList.add('dark');
-      }
-
-      if (hero === 'true') {
-        document.body.classList.add('hero');
-      }
-    }
+    setupDarkMode();
   }, []);
 
   return children;
@@ -45,38 +31,10 @@ const preview = {
     },
   ],
   parameters: {
-    docs: {
-      components: {
-        pre: (props) => (
-          <Unstyled>
-            <pre {...props} />
-          </Unstyled>
-        ),
-        code: Code,
-      },
-    },
-    darkMode: {
-      stylePreview: true,
-    },
+    ...sharedParameters,
     options: {
       storySort: {
-        order: [
-          'Docs',
-          'React',
-          [
-            'Draggable',
-            'Droppable',
-            'Sortable',
-            [
-              'Vertical list',
-              'Horizontal list',
-              'Grid',
-              'Multiple lists',
-              'Iframe',
-              'Virtualized',
-            ],
-          ],
-        ],
+        order: ['Docs'],
       },
     },
   },

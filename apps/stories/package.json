@@ -3,6 +3,15 @@
   "version": "0.0.0",
   "type": "module",
   "private": true,
+  "exports": {
+    "./shared/components": "./shared/components/index.ts",
+    "./shared/utilities": "./shared/utilities/index.ts",
+    "./shared/styles/global.css": "./shared/styles/global.css",
+    "./shared/assets/*": "./shared/assets/*",
+    "./.storybook/theme": "./.storybook/theme.ts",
+    "./.storybook/shared": "./.storybook/shared.ts",
+    "./.storybook/preview-shared": "./.storybook/preview-shared.ts"
+  },
   "scripts": {
     "dev": "storybook dev -p 6006",
     "build": "storybook build",

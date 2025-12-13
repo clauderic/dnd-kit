@@ -1,14 +1,30 @@
-import {dirname, join} from 'path';
-import {mergeConfig} from 'vite';
+import {getAbsolutePath, getAddons, sharedViteFinal} from './shared';
 
 export default {
-  stories: ['../stories/**/*.stories.mdx', '../stories/**/*.stories.tsx'],
+  // Only docs/MDX files in the composition host
+  stories: ['../stories/**/*.stories.mdx'],
 
-  addons: [
-    getAbsolutePath('@storybook/addon-links'),
-    getAbsolutePath('@vueless/storybook-dark-mode'),
-    getAbsolutePath("@storybook/addon-docs")
-  ],
+  addons: getAddons(),
+
+  // Composition: reference other framework-specific Storybooks
+  refs: (config, {configType}) => {
+    const isDev = configType === 'DEVELOPMENT';
+    return {
+      react: {
+        title: 'React',
+        url: isDev ? 'http://localhost:6007' : '/react',
+      },
+      vue: {
+        title: 'Vue',
+        url: isDev ? 'http://localhost:6008' : '/vue',
+      },
+      // Future frameworks can be added here:
+      // svelte: {
+      //   title: 'Svelte',
+      //   url: isDev ? 'http://localhost:6009' : '/svelte',
+      // },
+    };
+  },
 
   framework: {
     name: getAbsolutePath('@storybook/react-vite'),
@@ -17,23 +33,5 @@ export default {
     },
   },
 
-  async viteFinal(config) {
-    // customize the Vite config here
-    return mergeConfig(config, {
-      define: {
-        'process.env': {},
-      },
-      optimizeDeps: {
-        exclude: ['@dnd-kit/*'],
-      },
-    });
-  }
+  viteFinal: sharedViteFinal,
 };
-
-/**
- * This function is used to resolve the absolute path of a package.
- * It is needed in projects that use Yarn PnP or are set up within a monorepo.
- */
-function getAbsolutePath(value) {
-  return dirname(require.resolve(join(value, 'package.json')));
-}
