@@ -11,7 +11,11 @@
     "version-packages": "changeset version",
     "release": "changeset publish",
     "version-packages:beta": "changeset version --snapshot beta",
-    "release:beta": "changeset publish --snapshot --tag beta"
+    "release:beta": "changeset publish --snapshot --tag beta",
+    "storybook": "turbo run dev --filter=@dnd-kit/stories* --concurrency 10",
+    "storybook:react": "turbo run dev --filter=@dnd-kit/stories-react",
+    "storybook:vue": "turbo run dev --filter=@dnd-kit/stories-vue",
+    "storybook:host": "turbo run dev --filter=@dnd-kit/stories"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
