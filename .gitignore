@@ -1,4 +1,5 @@
 .DS_Store
+.idea/
 node_modules
 .turbo
 *.log
@@ -17,3 +18,4 @@ storybook-static/
 /packages/**/*.cjs.map
 /packages/**/*.d.ts
 /packages/**/*.d.cts
+!eslint.config.js

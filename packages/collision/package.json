@@ -31,8 +31,6 @@
   "devDependencies": {
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.4",
-    "eslint": "^8.38.0",
-    "@dnd-kit/eslint-config": "*",
     "tsup": "8.3.0",
     "typescript": "^5.5.2"
   },

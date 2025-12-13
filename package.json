@@ -1,10 +1,12 @@
 {
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --concurrency 15",
     "test": "turbo run test",
-    "lint": "turbo run lint",
+    "lint": "eslint --flag v10_config_lookup_from_file .",
+    "lint:fix": "eslint --fix --flag v10_config_lookup_from_file .",
     "clean": "turbo run clean && rm -rf node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "changeset": "changeset",
@@ -16,8 +18,13 @@
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.29.2",
+    "@eslint/js": "^9.17.0",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^10.0.1",
+    "globals": "^15.14.0",
     "prettier": "^3.1.1",
-    "turbo": "^2.5.2"
+    "turbo": "^2.5.2",
+    "typescript-eslint": "^8.18.1"
   },
   "packageManager": "bun@1.1.12",
   "workspaces": [
