@@ -1,0 +1,46 @@
+import {Preview} from '../../components/docs';
+import {Example as Hero} from '../Draggable.stories';
+import {Example} from './examples/QuickStart';
+import ExampleSource from './examples/QuickStart?raw';
+import DraggableSource from './examples/Draggable?raw';
+import {Example as MultipleDraggableExample} from './examples/MultipleDraggable';
+import MultipleDraggableExampleSource from './examples/MultipleDraggable?raw';
+
+# Draggable
+
+Make elements draggable and drop them over targets.
+
+<Preview of={Hero} hero />
+
+## Usage
+
+Use the `useDraggable` hook to create draggable elements that `draggable` elements can be dropped over `droppable` targets.
+
+```jsx
+import {useDraggable} from '@dnd-kit/react';
+
+function Draggable(props) {
+  const {ref} = useDraggable({
+    id: props.id,
+  });
+
+  return <button ref={ref}>{props.children}</button>;
+}
+```
+
+## Getting started
+
+To get started, we will create two files, `App.js` and `Draggable.js`.
+
+<Preview
+  code={[ExampleSource, DraggableSource]}
+  tabs={['App.js', 'Draggable.js']}
+>
+  <Example />
+</Preview>
+
+To render multiple draggable elements, we can simply render the `<Draggable>` component multiple times:
+
+<Preview code={[MultipleDraggableExampleSource]} tabs={['App.js']}>
+  <MultipleDraggableExample />
+</Preview>

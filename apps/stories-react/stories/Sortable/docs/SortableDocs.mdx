@@ -1,0 +1,76 @@
+import {Code, Preview} from '../../components/docs';
+import {Example as Hero} from '../Sortable.stories';
+import BasicSetupSource from '../SortableExample?raw';
+import {Example} from './examples/Example';
+import {Example as UncontrolledExample} from './examples/UncontrolledExample';
+import UncontrolledExampleSource from './examples/UncontrolledExample?raw';
+import ControlledExampleSource from './examples/ControlledExample?raw';
+import image from './assets/useSortable.png';
+
+# Sortable
+
+Reorder elements in a list or across multiple lists.
+
+<Preview of={Hero} hero />
+
+## Installation
+
+Before getting started, make sure to install the `@dnd-kit/react` package:
+
+```bash
+npm install @dnd-kit/react
+```
+
+## Getting started
+
+The fastest way to get started is to the `useSortable` hook and provide it an `id` and an `index`:
+<Preview code={UncontrolledExampleSource}>
+  <UncontrolledExample />
+</Preview>
+
+This will create an uncontrolled sortable list that will automatically update the order of the items in the DOM when they are dragged and dropped.
+
+To create a controlled sortable list and update the order of the items in React, we can listen to the `onDragEnd` event emitted by the `<DragDropProvider>` component:
+<Preview code={ControlledExampleSource}>
+  <Example />
+</Preview>
+
+To create a vertical list, we can update the of the `flex-direction` style property to `column`, without any other configuration changes.
+
+<Preview>
+  <Example style={{display: 'inline-flex', flexDirection: 'column', gap: 20}} />
+</Preview>
+
+To create a grid list, we can update the of the `display` style property to `grid`, and set the `grid-template-columns` property to the desired number of columns.
+
+<Preview>
+  <Example
+    style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(2, 150px)',
+      gridAutoRows: '150px',
+      gap: 20,
+    }}
+  />
+</Preview>
+
+## Architecture
+
+The sortable plugin composes the `Draggable` and `Droppable` items to provide a simple API for building sortable interfaces.
+
+The `useSortable` hook is an abstraction that composes the `useDroppable` and `useDraggable` hooks:
+
+<img src={image} width="70%" />
+
+As a result, the `useSortable` hook accepts all of the props that the `useDraggable` and `useDroppable` hooks accept.
+
+## Modifiers
+
+Because the `useSortable` hook invokes the `useDraggable` hook under the hood, we can pass local `modifiers` to the `useSortable` hook just as we would with the `useDraggable` hook:
+
+```jsx
+const sortable = useSortable({
+  id,
+  modifiers: [RestrictToVerticalAxis],
+});
+```

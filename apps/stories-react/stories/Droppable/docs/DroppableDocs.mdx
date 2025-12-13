@@ -1,0 +1,51 @@
+import {Preview} from '../../components/docs';
+import {Example as Hero} from '../Droppable.stories';
+import {Example} from './examples/QuickStart';
+import ExampleSource from './examples/QuickStart?raw';
+import DraggableSource from './examples/Draggable?raw';
+import DroppableSource from './examples/Droppable?raw';
+import {Example as MultipleDroppableExample} from './examples/MultipleDroppable';
+import MultipleDroppableExampleSource from './examples/MultipleDroppable?raw';
+
+# Droppable
+
+Create droppable targets for draggable elements.
+
+<Preview of={Hero} hero />
+
+## Usage
+
+Use the `useDroppable` hook to create droppable targets that `draggable` elements can be dropped over.
+
+```jsx
+import {useDroppable} from '@dnd-kit/react';
+
+function Droppable(props) {
+  const {ref} = useDroppable({
+    id: props.id,
+  });
+
+  return <div ref={ref}>{props.children}</div>;
+}
+```
+
+On its own, the `useDroppable` hook does not provide a lot of functionality. It is meant to be used in conjunction with the `useDraggable` hook, along with a parent `<DragDropProvider>` component to listen for and respond to drag and drop events.
+
+You can set up as many droppable targets as needed, either by calling the `useDroppable` hook multiple times within the same component, or by setting up a generic component that calls `useDroppable` and rendering that component multiple times. Just remember to make sure they all have a unique `id` so that they can be differentiated.
+
+## Getting started
+
+To get started, we will create three files, `App.js`, `Droppable.js`, and `Draggable.js`.
+
+<Preview
+  code={[ExampleSource, DroppableSource, DraggableSource]}
+  tabs={['App.js', 'Droppable.js', 'Draggable.js']}
+>
+  <Example />
+</Preview>
+
+To render multiple droppable targets, we can simply render the `<Droppable>` component multiple times:
+
+<Preview code={[MultipleDroppableExampleSource]} tabs={['App.js']}>
+  <MultipleDroppableExample />
+</Preview>
