@@ -50,11 +50,7 @@ export interface KeyboardSensorOptions {
   /**
    * Function that determines if the keyboard sensor should activate.
    */
-  shouldActivate?(args: {
-    event: KeyboardEvent;
-    source: Draggable;
-    manager: DragDropManager;
-  }): boolean;
+  preventActivation?: (event: KeyboardEvent, source: Draggable) => boolean;
 }
 
 const defaults = Object.freeze<Required<KeyboardSensorOptions>>({
@@ -68,12 +64,7 @@ const defaults = Object.freeze<Required<KeyboardSensorOptions>>({
     left: ['ArrowLeft'],
     right: ['ArrowRight'],
   },
-  shouldActivate(args: {
-    event: KeyboardEvent;
-    source: Draggable;
-    manager: DragDropManager;
-  }) {
-    const {event, source} = args;
+  preventActivation(event, source) {
     const target = source.handle ?? source.element;
     return event.target === target;
   },
@@ -137,7 +128,7 @@ export class KeyboardSensor extends Sensor<
 
     const {
       keyboardCodes = defaults.keyboardCodes,
-      shouldActivate = defaults.shouldActivate,
+      preventActivation = defaults.preventActivation,
     } = options ?? {};
 
     if (!keyboardCodes.start.includes(event.code)) {
@@ -148,9 +139,9 @@ export class KeyboardSensor extends Sensor<
       return;
     }
 
-    if (shouldActivate({event, source, manager: this.manager})) {
-      this.handleStart(event, source, options);
-    }
+    if (preventActivation?.(event, source)) return;
+
+    this.handleStart(event, source, options);
   };
 
   protected handleStart(

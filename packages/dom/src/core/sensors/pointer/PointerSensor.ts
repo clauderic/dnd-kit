@@ -14,6 +14,7 @@ import {
   getFrameTransform,
   isElement,
   isHTMLElement,
+  isInteractiveElement,
   isPointerEvent,
   isTextInput,
   Listeners,
@@ -37,6 +38,7 @@ export interface PointerSensorOptions {
   activatorElements?:
     | Maybe<Element>[]
     | ((source: Draggable) => Maybe<Element>[]);
+  preventActivation?: (event: PointerEvent, source: Draggable) => boolean;
 }
 
 const defaults = Object.freeze<PointerSensorOptions>({
@@ -67,6 +69,16 @@ const defaults = Object.freeze<PointerSensorOptions>({
       new PointerActivationConstraints.Delay({value: 200, tolerance: 10}),
       new PointerActivationConstraints.Distance({value: 5}),
     ];
+  },
+  preventActivation(event, source) {
+    const {target} = event;
+
+    return (
+      target != source.element &&
+      target != source.handle &&
+      isElement(target) &&
+      isInteractiveElement(target)
+    );
   },
 });
 
@@ -149,7 +161,7 @@ export class PointerSensor extends Sensor<
   protected handlePointerDown(
     event: PointerEvent,
     source: Draggable,
-    options: PointerSensorOptions = {}
+    options: PointerSensorOptions = defaults
   ) {
     if (
       this.disabled ||
@@ -160,6 +172,10 @@ export class PointerSensor extends Sensor<
       isCapturedBySensor(event) ||
       !this.manager.dragOperation.status.idle
     ) {
+      return;
+    }
+
+    if (options.preventActivation?.(event, source)) {
       return;
     }
 
