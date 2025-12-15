@@ -73,12 +73,12 @@ const defaults = Object.freeze<PointerSensorOptions>({
   preventActivation(event, source) {
     const {target} = event;
 
-    return (
-      target != source.element &&
-      target != source.handle &&
-      isElement(target) &&
-      isInteractiveElement(target)
-    );
+    if (target === source.element) return false;
+    if (target === source.handle) return false;
+    if (!isElement(target)) return false;
+    if (source.handle?.contains(target)) return false;
+
+    return isInteractiveElement(target);
   },
 });
 
@@ -161,7 +161,7 @@ export class PointerSensor extends Sensor<
   protected handlePointerDown(
     event: PointerEvent,
     source: Draggable,
-    options: PointerSensorOptions = defaults
+    options: PointerSensorOptions | undefined
   ) {
     if (
       this.disabled ||
@@ -175,7 +175,9 @@ export class PointerSensor extends Sensor<
       return;
     }
 
-    if (options.preventActivation?.(event, source)) {
+    const {preventActivation = defaults.preventActivation} = options ?? {};
+
+    if (preventActivation?.(event, source)) {
       return;
     }
 
