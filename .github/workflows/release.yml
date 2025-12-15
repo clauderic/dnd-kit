@@ -40,9 +40,13 @@ jobs:
         uses: changesets/action@v1
         with:
           publish: npm run release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish packages on npm with @beta tag
         if: matrix.channel == 'beta'
         run: |
           npm run version-packages:beta
           npm run release:beta
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
