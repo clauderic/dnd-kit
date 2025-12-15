@@ -21,16 +21,16 @@ jobs:
           - current
           - beta
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
           # https://github.com/atlassian/changesets/issues/550#issuecomment-811245508
-          registry-url: https://registry.npmjs.org
+          registry-url: 'https://registry.npmjs.org'
 
       - uses: oven-sh/setup-bun@v1
       - run: bun install && bun run build
@@ -40,13 +40,9 @@ jobs:
         uses: changesets/action@v1
         with:
           publish: npm run release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish packages on npm with @beta tag
         if: matrix.channel == 'beta'
         run: |
           npm run version-packages:beta
           npm run release:beta
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
