@@ -3,6 +3,11 @@ on:
   push:
     branches:
       - experimental
+
+permissions:
+  id-token: write # Required for OIDC
+  contents: read
+
 jobs:
   release:
     name: ${{ matrix.channel }}
