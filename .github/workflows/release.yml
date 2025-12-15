@@ -6,7 +6,7 @@ on:
 
 permissions:
   id-token: write # Required for OIDC
-  contents: read
+  contents: write # Required for changesets/action@v1
 
 jobs:
   release:
