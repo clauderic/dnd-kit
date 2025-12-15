@@ -36,7 +36,7 @@ jobs:
 
       - name: Create Release Pull Request or Publish to npm
         if: matrix.channel == 'current'
-        uses: changesets/action@master
+        uses: changesets/action@v1
         with:
           publish: npm run release
         env:
