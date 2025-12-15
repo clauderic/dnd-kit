@@ -32,6 +32,8 @@ jobs:
           # https://github.com/atlassian/changesets/issues/550#issuecomment-811245508
           registry-url: 'https://registry.npmjs.org'
 
+      - run: npm install -g npm@latest
+
       - uses: oven-sh/setup-bun@v1
       - run: bun install && bun run build
 
