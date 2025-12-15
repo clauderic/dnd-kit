@@ -1,5 +1,16 @@
 # @dnd-kit/react
 
+## 0.2.0
+
+### Patch Changes
+
+- [#1823](https://github.com/clauderic/dnd-kit/pull/1823) [`3058ede`](https://github.com/clauderic/dnd-kit/commit/3058ede91dff4e1f5ff399d5c1d04c8681c411f6) Thanks [@github-actions](https://github.com/apps/github-actions)! - Simplified instance management of `manager` to fix a bug where the `manager` returned by `useDragDropManager` was `null` on first mount.
+
+- Updated dependencies [[`e95a9c8`](https://github.com/clauderic/dnd-kit/commit/e95a9c8f448d6b339e0b6fd37546ac7cfdf18edb), [`e95a9c8`](https://github.com/clauderic/dnd-kit/commit/e95a9c8f448d6b339e0b6fd37546ac7cfdf18edb), [`9849887`](https://github.com/clauderic/dnd-kit/commit/984988774a6ff2f19cae4a27612bbd50cfcfa574)]:
+  - @dnd-kit/abstract@0.2.0
+  - @dnd-kit/dom@0.2.0
+  - @dnd-kit/state@0.2.0
+
 ## 0.1.21
 
 ### Patch Changes
