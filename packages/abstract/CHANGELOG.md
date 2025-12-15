@@ -1,5 +1,18 @@
 # @dnd-kit/abstract
 
+## 0.2.0
+
+### Minor Changes
+
+- [#1821](https://github.com/clauderic/dnd-kit/pull/1821) [`e95a9c8`](https://github.com/clauderic/dnd-kit/commit/e95a9c8f448d6b339e0b6fd37546ac7cfdf18edb) Thanks [@clauderic](https://github.com/clauderic)! - - Added `ActivationController` and `ActivationConstraint` primitives for input activation orchestration.
+  - Exported `ActivationConstraints<E extends Event>` type for composing multiple constraints.
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @dnd-kit/geometry@0.2.0
+  - @dnd-kit/state@0.2.0
+
 ## 0.1.21
 
 ### Patch Changes
