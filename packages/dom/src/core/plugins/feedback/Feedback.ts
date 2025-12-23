@@ -9,11 +9,12 @@ import {
   animateTransform,
   DOMRectangle,
   getComputedStyles,
-  getDocument,
+  getRoot,
   getFinalKeyframe,
   getFrameTransform,
   getWindow,
   isHTMLElement,
+  isShadowRoot,
   isKeyboardEvent,
   parseTranslate,
   showPopover,
@@ -64,7 +65,7 @@ interface StyleSheetRegistration {
   instances: Set<Feedback>;
 }
 
-const styleSheetRegistry = new Map<Document, StyleSheetRegistration>();
+const styleSheetRegistry = new Map<Document | ShadowRoot, StyleSheetRegistration>();
 
 export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
   @reactive
@@ -677,12 +678,25 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     const {nonce} = this.options ?? {};
 
     if (status.initializing) {
-      const sourceDocument = getDocument(source?.element ?? null);
-      const targetDocument = getDocument(target?.element ?? null);
-      const documents = new Set([sourceDocument, targetDocument]);
-
-      for (const doc of documents) {
-        let registration = styleSheetRegistry.get(doc);
+      const sourceRoot = getRoot(source?.element ?? null);
+      const targetRoot = getRoot(target?.element ?? null);
+      const roots = new Set([sourceRoot, targetRoot]);
+      function getRootInjectStyleTarget(root: Document | ShadowRoot): Element | Node {
+        if (isShadowRoot(root)) {
+          return root;
+        }
+        return root.head;
+      }
+      function injectStyleToRoot(root: Document | ShadowRoot, style: HTMLStyleElement) {
+        if (isShadowRoot(root)) {
+          root.prepend(style);
+        }
+        else if (root instanceof Document) {
+          root.head.prepend(style);
+        }
+      }
+      for (const root of roots) {
+        let registration = styleSheetRegistry.get(root);
 
         if (!registration) {
           const style = document.createElement('style');
@@ -690,7 +704,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           if (nonce) {
             style.setAttribute('nonce', nonce);
           }
-          doc.head.prepend(style);
+          injectStyleToRoot(root, style);
           const mutationObserver = new MutationObserver((entries) => {
             for (const entry of entries) {
               if (entry.type === 'childList') {
@@ -698,12 +712,12 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
                 if (removedNodes.length > 0 && removedNodes.includes(style)) {
                   // Re-inject the style tag if it gets removed from the DOM
-                  doc.head.prepend(style);
+                  injectStyleToRoot(root, style);
                 }
               }
             }
           });
-          mutationObserver.observe(doc.head, {childList: true});
+          mutationObserver.observe(getRootInjectStyleTarget(root), { childList: true });
 
           registration = {
             cleanup: () => {
@@ -712,7 +726,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             },
             instances: new Set(),
           };
-          styleSheetRegistry.set(doc, registration);
+          styleSheetRegistry.set(root, registration);
         }
 
         // Track this instance for this document
@@ -725,14 +739,14 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     super.destroy();
 
     // Clean up documents this instance was tracking
-    for (const [doc, registration] of styleSheetRegistry.entries()) {
+    for (const [root, registration] of styleSheetRegistry.entries()) {
       if (registration.instances.has(this)) {
         registration.instances.delete(this);
 
         // If no more instances are using this document, clean it up
         if (registration.instances.size === 0) {
           registration.cleanup();
-          styleSheetRegistry.delete(doc);
+          styleSheetRegistry.delete(root);
         }
       }
     }

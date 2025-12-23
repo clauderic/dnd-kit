@@ -15,7 +15,7 @@ export const IGNORED_ATTRIBUTES = [
 export const IGNORED_STYLES = ['view-transition-name'];
 
 export const CSS_RULES = `
-  :root [${ATTRIBUTE}] {
+  :is(:root,:host) [${ATTRIBUTE}] {
     position: fixed !important;
     pointer-events: none !important;
     touch-action: none;
@@ -32,11 +32,11 @@ export const CSS_RULES = `
     transition: var(${CSS_PREFIX}transition) !important;
   }
 
-  :root [${PLACEHOLDER_ATTRIBUTE}] {
+  :is(:root,:host) [${PLACEHOLDER_ATTRIBUTE}] {
     transition: none;
   }
 
-  :root [${PLACEHOLDER_ATTRIBUTE}='hidden'] {
+  :is(:root,:host) [${PLACEHOLDER_ATTRIBUTE}='hidden'] {
     visibility: hidden;
   }
 
