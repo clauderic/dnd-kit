@@ -328,8 +328,8 @@ export class PointerSensor extends Sensor<
     pointerCaptureTarget.setPointerCapture(event.pointerId);
 
     const listenerTargets = isElement(event.target)
-      ? [event.target, ownerDocument.body]
-      : ownerDocument.body;
+      ? [event.target, pointerCaptureTarget]
+      : pointerCaptureTarget;
 
     const unbind = this.listeners.bind(listenerTargets, [
       {

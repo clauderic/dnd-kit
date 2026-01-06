@@ -10,6 +10,7 @@ import {
   isKeyboardEvent,
   getDocument,
   getFrameTransform,
+  getRoot,
 } from '@dnd-kit/dom/utilities';
 import {Axes, type Coordinates} from '@dnd-kit/geometry';
 
@@ -38,7 +39,7 @@ export class Scroller extends CorePlugin<DragDropManager> {
       }
 
       const element = getElementFromPoint(
-        getDocument(source?.element),
+        getRoot(source?.element),
         position.current
       );
 

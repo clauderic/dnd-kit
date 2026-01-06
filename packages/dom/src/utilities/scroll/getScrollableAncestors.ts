@@ -5,21 +5,24 @@ import {isSVGElement} from '../type-guards/isSVGElement.ts';
 import {getComputedStyles} from '../styles/getComputedStyles.ts';
 import {isFixed} from './isFixed.ts';
 import {isScrollable} from './isScrollable.ts';
+import { isShadowRoot } from '../type-guards/isShadowRoot.ts';
 
 interface Options {
   limit?: number;
   excludeElement?: boolean;
+  escapeShadowDOM?: boolean; // if false, stop at shadowRoot; otherwise keep finding upwards outside shadow host
 }
 
 const defaultOptions: Options = {
   excludeElement: true,
+  escapeShadowDOM: true,
 };
 
 export function getScrollableAncestors(
   element: Node | null,
   options: Options = defaultOptions
 ): Set<Element> {
-  const {limit, excludeElement} = options;
+  const {limit, excludeElement, escapeShadowDOM} = options;
   const scrollParents = new Set<Element>();
 
   function findScrollableAncestors(node: Node | null): Set<Element> {
@@ -39,6 +42,10 @@ export function getScrollableAncestors(
       scrollParents.add(node.scrollingElement);
 
       return scrollParents;
+    }
+
+    if (escapeShadowDOM && isShadowRoot(node)){
+      return findScrollableAncestors(node.host);
     }
 
     if (!isHTMLElement(node)) {
