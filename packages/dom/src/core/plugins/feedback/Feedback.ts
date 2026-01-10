@@ -14,6 +14,7 @@ import {
   getFrameTransform,
   getWindow,
   isHTMLElement,
+  isDocument,
   isShadowRoot,
   isKeyboardEvent,
   parseTranslate,
@@ -675,54 +676,42 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
   #injectStyles() {
     const {status, source, target} = this.manager.dragOperation;
-    const {nonce} = this.options ?? {};
 
     if (status.initializing) {
       const sourceRoot = getRoot(source?.element ?? null);
       const targetRoot = getRoot(target?.element ?? null);
       const roots = new Set([sourceRoot, targetRoot]);
-      function getRootInjectStyleTarget(root: Document | ShadowRoot): Element | Node {
-        if (isShadowRoot(root)) {
-          return root;
-        }
-        return root.head;
-      }
-      function injectStyleToRoot(root: Document | ShadowRoot, style: HTMLStyleElement) {
-        if (isShadowRoot(root)) {
-          root.prepend(style);
-        }
-        else if (root instanceof Document) {
-          root.head.prepend(style);
-        }
-      }
       for (const root of roots) {
         let registration = styleSheetRegistry.get(root);
 
         if (!registration) {
-          const style = document.createElement('style');
-          style.textContent = CSS_RULES;
-          if (nonce) {
-            style.setAttribute('nonce', nonce);
+          // check adoptedStyleSheets support
+          if (
+            !(
+              typeof CSSStyleSheet !== 'undefined' &&
+              'adoptedStyleSheets' in root &&
+              Array.isArray(root.adoptedStyleSheets)
+            ) && process.env.NODE_ENV !== 'production'
+          ) {
+            console.error("Cannot inject styles: This browser doesn't support adoptedStyleSheets");
           }
-          injectStyleToRoot(root, style);
-          const mutationObserver = new MutationObserver((entries) => {
-            for (const entry of entries) {
-              if (entry.type === 'childList') {
-                const removedNodes = Array.from(entry.removedNodes);
-
-                if (removedNodes.length > 0 && removedNodes.includes(style)) {
-                  // Re-inject the style tag if it gets removed from the DOM
-                  injectStyleToRoot(root, style);
-                }
-              }
-            }
-          });
-          mutationObserver.observe(getRootInjectStyleTarget(root), { childList: true });
+          // apply the stylesheet to the root
+          const sheet = new CSSStyleSheet();
+          sheet.replaceSync(CSS_RULES);
+          root.adoptedStyleSheets.push(sheet);
 
           registration = {
             cleanup: () => {
-              mutationObserver.disconnect();
-              style.remove();
+              if (
+                isDocument(root) ||
+                (isShadowRoot(root) && root.host?.isConnected)
+              ) {
+                // remove the stylesheet from the root's adoptedStyleSheets
+                const index = root.adoptedStyleSheets.indexOf(sheet);
+                if (index != -1) {
+                  root.adoptedStyleSheets.splice(index, 1);
+                }
+              }
             },
             instances: new Set(),
           };

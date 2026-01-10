@@ -48,6 +48,7 @@ export {
   supportsViewTransition,
   supportsStyle,
   isElement,
+  isDocument,
   isHTMLElement,
   isKeyframeEffect,
   isKeyboardEvent,
