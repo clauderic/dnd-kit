@@ -1,10 +1,10 @@
 const importMap = {
   imports: {
-    react: 'https://esm.sh/react@18.2.0',
-    'react-dom': 'https://esm.sh/react-dom@18.2.0',
-    'react-dom/': 'https://esm.sh/react-dom@18.2.0/',
+    react: 'https://esm.sh/react@19.2.3',
+    'react-dom': 'https://esm.sh/react-dom@19.2.3',
+    'react-dom/': 'https://esm.sh/react-dom@19.2.3/',
     '@codesandbox/sandpack-react':
-      'https://esm.sh/@codesandbox/sandpack-react@2.20.0?deps=react@18.2.0&deps=react-dom@18.2.0',
+      'https://esm.sh/@codesandbox/sandpack-react@2.20.0?deps=react@19.2.3&deps=react-dom@19.2.3',
   },
 };
 
