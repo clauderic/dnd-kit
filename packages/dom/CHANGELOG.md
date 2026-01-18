@@ -1,5 +1,17 @@
 # @dnd-kit/dom
 
+## 0.2.3
+
+### Patch Changes
+
+- [#1861](https://github.com/clauderic/dnd-kit/pull/1861) [`f90571d`](https://github.com/clauderic/dnd-kit/commit/f90571db8b8a94d751d3eeb80d91b6cd34716f47) Thanks [@xuxucode](https://github.com/xuxucode)! - Fixed a bug where custom `PointerSensor` options passed to the `bind()` method were not being respected by the `activationConstraints()` method.
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.2.3
+  - @dnd-kit/collision@0.2.3
+  - @dnd-kit/geometry@0.2.3
+  - @dnd-kit/state@0.2.3
+
 ## 0.2.2
 
 ### Patch Changes
