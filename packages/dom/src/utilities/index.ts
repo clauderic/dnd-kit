@@ -13,6 +13,7 @@ export {getDocument} from './execution-context/getDocument.ts';
 export {getWindow} from './execution-context/getWindow.ts';
 export {getDocuments} from './execution-context/getDocuments.ts';
 export {isSafari} from './execution-context/isSafari.ts';
+export {getRoot} from './execution-context/getRoot.ts';
 
 export {
   cloneElement,
@@ -47,10 +48,12 @@ export {
   supportsViewTransition,
   supportsStyle,
   isElement,
+  isDocument,
   isHTMLElement,
   isKeyframeEffect,
   isKeyboardEvent,
   isPointerEvent,
+  isShadowRoot,
 } from './type-guards/index.ts';
 export {isTextInput} from './type-guards/isTextInput.ts';
 

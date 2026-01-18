@@ -2,6 +2,7 @@ import {
   effects,
   reactive,
   untracked,
+  derived,
   type CleanupFunction,
 } from '@dnd-kit/state';
 import {configurator, Plugin} from '@dnd-kit/abstract';
@@ -9,11 +10,13 @@ import {
   animateTransform,
   DOMRectangle,
   getComputedStyles,
-  getDocument,
+  getRoot,
   getFinalKeyframe,
   getFrameTransform,
   getWindow,
   isHTMLElement,
+  isDocument,
+  isShadowRoot,
   isKeyboardEvent,
   parseTranslate,
   showPopover,
@@ -64,7 +67,7 @@ interface StyleSheetRegistration {
   instances: Set<Feedback>;
 }
 
-const styleSheetRegistry = new Map<Document, StyleSheetRegistration>();
+const styleSheetRegistry = new Map<Document | ShadowRoot, StyleSheetRegistration>();
 
 export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
   @reactive
@@ -672,52 +675,87 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     };
   }
 
+  @derived
+  private get sourceRoot() {
+    const {source} = this.manager.dragOperation;
+    return getRoot(source?.element ?? null);
+  }
+
+  @derived
+  private get targetRoot() {
+    const {target} = this.manager.dragOperation;
+    return getRoot(target?.element ?? null);
+  }
+
+  @derived
+  private get roots(): Set<Document | ShadowRoot> {
+    const {status} = this.manager.dragOperation;
+
+    if (status.initializing || status.initialized) {
+      const roots = [this.sourceRoot, this.targetRoot].filter(root => root != null);
+      return new Set(roots);
+    }
+
+    return new Set();
+  }
+
   #injectStyles() {
-    const {status, source, target} = this.manager.dragOperation;
-    const {nonce} = this.options ?? {};
+    const {roots} = this;
 
-    if (status.initializing) {
-      const sourceDocument = getDocument(source?.element ?? null);
-      const targetDocument = getDocument(target?.element ?? null);
-      const documents = new Set([sourceDocument, targetDocument]);
+    for (const root of roots) {
+      let registration = styleSheetRegistry.get(root);
 
-      for (const doc of documents) {
-        let registration = styleSheetRegistry.get(doc);
-
-        if (!registration) {
-          const style = document.createElement('style');
-          style.textContent = CSS_RULES;
-          if (nonce) {
-            style.setAttribute('nonce', nonce);
-          }
-          doc.head.prepend(style);
-          const mutationObserver = new MutationObserver((entries) => {
-            for (const entry of entries) {
-              if (entry.type === 'childList') {
-                const removedNodes = Array.from(entry.removedNodes);
-
-                if (removedNodes.length > 0 && removedNodes.includes(style)) {
-                  // Re-inject the style tag if it gets removed from the DOM
-                  doc.head.prepend(style);
-                }
-              }
-            }
-          });
-          mutationObserver.observe(doc.head, {childList: true});
-
-          registration = {
-            cleanup: () => {
-              mutationObserver.disconnect();
-              style.remove();
-            },
-            instances: new Set(),
-          };
-          styleSheetRegistry.set(doc, registration);
+      if (!registration) {
+        // check adoptedStyleSheets support
+        if (
+          !(
+            'adoptedStyleSheets' in root &&
+            Array.isArray(root.adoptedStyleSheets)
+          ) && process.env.NODE_ENV !== 'production'
+        ) {
+          console.error("Cannot inject styles: This browser doesn't support adoptedStyleSheets");
         }
 
-        // Track this instance for this document
-        registration.instances.add(this);
+        // Get the CSSStyleSheet constructor from the target document's context
+        // This is necessary because CSSStyleSheet instances cannot be shared across documents
+        // (e.g., between a parent document and a same-origin iframe)
+        const targetWindow = isDocument(root)
+          ? root.defaultView
+          : root.ownerDocument.defaultView;
+        const {CSSStyleSheet} = targetWindow ?? {};
+
+        if (!CSSStyleSheet) {
+          if (process.env.NODE_ENV !== 'production') {
+            console.error("Cannot inject styles: CSSStyleSheet constructor not available");
+          }
+          continue;
+        }
+
+        // Create the stylesheet in the target document's context
+        const sheet = new CSSStyleSheet();
+        sheet.replaceSync(CSS_RULES);
+        root.adoptedStyleSheets.push(sheet);
+
+        registration = {
+          cleanup: () => {
+            if (
+              isDocument(root) ||
+              (isShadowRoot(root) && root.host?.isConnected)
+            ) {
+              // remove the stylesheet from the root's adoptedStyleSheets
+              const index = root.adoptedStyleSheets.indexOf(sheet);
+              if (index != -1) {
+                root.adoptedStyleSheets.splice(index, 1);
+              }
+            }
+          },
+          instances: new Set(),
+        };
+        styleSheetRegistry.set(root, registration);
       }
+
+      // Track this instance for this document
+      registration.instances.add(this);
     }
   }
 
@@ -725,14 +763,14 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     super.destroy();
 
     // Clean up documents this instance was tracking
-    for (const [doc, registration] of styleSheetRegistry.entries()) {
+    for (const [root, registration] of styleSheetRegistry.entries()) {
       if (registration.instances.has(this)) {
         registration.instances.delete(this);
 
         // If no more instances are using this document, clean it up
         if (registration.instances.size === 0) {
           registration.cleanup();
-          styleSheetRegistry.delete(doc);
+          styleSheetRegistry.delete(root);
         }
       }
     }

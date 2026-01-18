@@ -7,5 +7,6 @@ export {isPointerEvent} from './isPointerEvent.ts';
 export {isNode} from './isNode.ts';
 export {isSVGElement} from './isSVGElement.ts';
 export {isWindow} from './isWindow.ts';
+export {isShadowRoot} from './isShadowRoot.ts'
 export {supportsViewTransition} from './supportsViewTransition.ts';
 export {supportsStyle} from './supportsStyle.ts';
