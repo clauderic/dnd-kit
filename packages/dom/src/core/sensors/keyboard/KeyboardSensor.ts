@@ -66,7 +66,7 @@ const defaults = Object.freeze<Required<KeyboardSensorOptions>>({
   },
   preventActivation(event, source) {
     const target = source.handle ?? source.element;
-    return event.target === target;
+    return event.target !== target;
   },
 });
 
