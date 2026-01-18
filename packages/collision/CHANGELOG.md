@@ -1,5 +1,13 @@
 # @dnd-kit/collision
 
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.2.3
+  - @dnd-kit/geometry@0.2.3
+
 ## 0.2.2
 
 ### Patch Changes
