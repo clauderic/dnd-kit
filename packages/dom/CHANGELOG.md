@@ -1,5 +1,17 @@
 # @dnd-kit/dom
 
+## 0.2.2
+
+### Patch Changes
+
+- [`5c80bcf`](https://github.com/clauderic/dnd-kit/commit/5c80bcf8affe6accb5b70df3e372f5e864f54b4a) Thanks [@clauderic](https://github.com/clauderic)! - Fixed inverted `preventActivation` default option on `KeyboardSensor`
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.2.2
+  - @dnd-kit/collision@0.2.2
+  - @dnd-kit/geometry@0.2.2
+  - @dnd-kit/state@0.2.2
+
 ## 0.2.1
 
 ### Patch Changes
