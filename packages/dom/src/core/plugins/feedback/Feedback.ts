@@ -2,6 +2,7 @@ import {
   effects,
   reactive,
   untracked,
+  derived,
   type CleanupFunction,
 } from '@dnd-kit/state';
 import {configurator, Plugin} from '@dnd-kit/abstract';
@@ -674,53 +675,87 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     };
   }
 
+  @derived
+  private get sourceRoot() {
+    const {source} = this.manager.dragOperation;
+    return getRoot(source?.element ?? null);
+  }
+
+  @derived
+  private get targetRoot() {
+    const {target} = this.manager.dragOperation;
+    return getRoot(target?.element ?? null);
+  }
+
+  @derived
+  private get roots(): Set<Document | ShadowRoot> {
+    const {status} = this.manager.dragOperation;
+
+    if (status.initializing || status.initialized) {
+      const roots = [this.sourceRoot, this.targetRoot].filter(root => root != null);
+      return new Set(roots);
+    }
+
+    return new Set();
+  }
+
   #injectStyles() {
-    const {status, source, target} = this.manager.dragOperation;
+    const {roots} = this;
 
-    if (status.initializing) {
-      const sourceRoot = getRoot(source?.element ?? null);
-      const targetRoot = getRoot(target?.element ?? null);
-      const roots = new Set([sourceRoot, targetRoot]);
-      for (const root of roots) {
-        let registration = styleSheetRegistry.get(root);
+    for (const root of roots) {
+      let registration = styleSheetRegistry.get(root);
 
-        if (!registration) {
-          // check adoptedStyleSheets support
-          if (
-            !(
-              typeof CSSStyleSheet !== 'undefined' &&
-              'adoptedStyleSheets' in root &&
-              Array.isArray(root.adoptedStyleSheets)
-            ) && process.env.NODE_ENV !== 'production'
-          ) {
-            console.error("Cannot inject styles: This browser doesn't support adoptedStyleSheets");
-          }
-          // apply the stylesheet to the root
-          const sheet = new CSSStyleSheet();
-          sheet.replaceSync(CSS_RULES);
-          root.adoptedStyleSheets.push(sheet);
-
-          registration = {
-            cleanup: () => {
-              if (
-                isDocument(root) ||
-                (isShadowRoot(root) && root.host?.isConnected)
-              ) {
-                // remove the stylesheet from the root's adoptedStyleSheets
-                const index = root.adoptedStyleSheets.indexOf(sheet);
-                if (index != -1) {
-                  root.adoptedStyleSheets.splice(index, 1);
-                }
-              }
-            },
-            instances: new Set(),
-          };
-          styleSheetRegistry.set(root, registration);
+      if (!registration) {
+        // check adoptedStyleSheets support
+        if (
+          !(
+            'adoptedStyleSheets' in root &&
+            Array.isArray(root.adoptedStyleSheets)
+          ) && process.env.NODE_ENV !== 'production'
+        ) {
+          console.error("Cannot inject styles: This browser doesn't support adoptedStyleSheets");
         }
 
-        // Track this instance for this document
-        registration.instances.add(this);
+        // Get the CSSStyleSheet constructor from the target document's context
+        // This is necessary because CSSStyleSheet instances cannot be shared across documents
+        // (e.g., between a parent document and a same-origin iframe)
+        const targetWindow = isDocument(root)
+          ? root.defaultView
+          : root.ownerDocument.defaultView;
+        const {CSSStyleSheet} = targetWindow ?? {};
+
+        if (!CSSStyleSheet) {
+          if (process.env.NODE_ENV !== 'production') {
+            console.error("Cannot inject styles: CSSStyleSheet constructor not available");
+          }
+          continue;
+        }
+
+        // Create the stylesheet in the target document's context
+        const sheet = new CSSStyleSheet();
+        sheet.replaceSync(CSS_RULES);
+        root.adoptedStyleSheets.push(sheet);
+
+        registration = {
+          cleanup: () => {
+            if (
+              isDocument(root) ||
+              (isShadowRoot(root) && root.host?.isConnected)
+            ) {
+              // remove the stylesheet from the root's adoptedStyleSheets
+              const index = root.adoptedStyleSheets.indexOf(sheet);
+              if (index != -1) {
+                root.adoptedStyleSheets.splice(index, 1);
+              }
+            }
+          },
+          instances: new Set(),
+        };
+        styleSheetRegistry.set(root, registration);
       }
+
+      // Track this instance for this document
+      registration.instances.add(this);
     }
   }
 
