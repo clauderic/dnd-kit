@@ -115,10 +115,7 @@ export const sortableKeyboardCoordinates: KeyboardCoordinateGetter = (
           y: newRect.top,
         };
 
-        const newCoordinates =
-          offset.x && offset.y
-            ? rectCoordinates
-            : subtract(rectCoordinates, offset);
+        const newCoordinates = subtract(rectCoordinates, offset);
 
         return newCoordinates;
       }
