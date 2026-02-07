@@ -10,24 +10,6 @@ const meta: Meta<typeof TableExample> = {
 export default meta;
 type Story = StoryObj<typeof TableExample>;
 
-export const DragHandle: Story = {
-  name: 'Drag handle',
-  args: {
-    dragHandle: true,
-  },
-};
-
-export const FullRow: Story = {
-  name: 'Full row',
-  args: {
-    dragHandle: false,
-  },
-};
-
-export const SortableColumns: Story = {
-  name: 'Sortable columns',
-  args: {
-    dragHandle: true,
-    sortableColumns: true,
-  },
+export const Example: Story = {
+  name: 'Example',
 };

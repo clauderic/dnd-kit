@@ -40,17 +40,15 @@ const initialData: RowData[] = [
   {id: 8, name: 'Hank Davis', role: 'Designer', email: 'hank@example.com', status: 'Active'},
 ];
 
-interface Props {
-  dragHandle?: boolean;
-  sortableColumns?: boolean;
-}
-
-export function TableExample({dragHandle = true, sortableColumns = false}: Props) {
+export function TableExample() {
   const [rows, setRows] = useState(initialData);
   const [columns, setColumns] = useState(initialColumns);
 
   return (
     <DragDropProvider
+      onDragOver={(event) => {
+        setColumns((columns) => move(columns, event));
+      }}
       onDragEnd={(event) => {
         setRows((rows) => move(rows, event));
         setColumns((columns) => move(columns, event));
@@ -60,14 +58,10 @@ export function TableExample({dragHandle = true, sortableColumns = false}: Props
         <table style={tableStyles}>
           <thead>
             <tr>
-              {dragHandle ? <th style={thStyles} /> : null}
-              {columns.map((column, index) =>
-                sortableColumns ? (
-                  <SortableColumn key={column.id} column={column} index={index} />
-                ) : (
-                  <th key={column.id} style={thStyles}>{column.label}</th>
-                )
-              )}
+              <th style={thStyles} />
+              {columns.map((column, index) => (
+                <SortableColumn key={column.id} column={column} index={index} />
+              ))}
             </tr>
           </thead>
           <tbody>
@@ -77,7 +71,6 @@ export function TableExample({dragHandle = true, sortableColumns = false}: Props
                 row={row}
                 columns={columns}
                 index={index}
-                dragHandle={dragHandle}
               />
             ))}
           </tbody>
@@ -96,6 +89,8 @@ function SortableColumn({column, index}: SortableColumnProps) {
   const {ref, isDragging} = useSortable({
     id: column.id,
     index,
+    type: 'column',
+    accept: 'column',
     modifiers: [RestrictToHorizontalAxis],
   });
 
@@ -119,18 +114,19 @@ interface SortableRowProps {
   row: RowData;
   columns: Column[];
   index: number;
-  dragHandle?: boolean;
 }
 
-function SortableRow({row, columns, index, dragHandle}: SortableRowProps) {
+function SortableRow({row, columns, index}: SortableRowProps) {
   const [element, setElement] = useState<Element | null>(null);
   const handleRef = useRef<HTMLButtonElement | null>(null);
 
   const {isDragging} = useSortable({
     id: row.id,
     index,
+    type: 'row',
+    accept: 'row',
     element,
-    handle: dragHandle ? handleRef : undefined,
+    handle: handleRef,
   });
 
   return (
@@ -142,11 +138,9 @@ function SortableRow({row, columns, index, dragHandle}: SortableRowProps) {
         opacity: isDragging ? 0.9 : undefined,
       }}
     >
-      {dragHandle ? (
-        <td style={tdStyles}>
-          <Handle ref={handleRef} />
-        </td>
-      ) : null}
+      <td style={tdStyles}>
+        <Handle ref={handleRef} />
+      </td>
       {columns.map((column) => (
         <td key={column.id} style={tdStyles}>
           {column.id === 'status' ? (
