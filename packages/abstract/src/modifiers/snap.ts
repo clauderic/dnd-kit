@@ -1,10 +1,8 @@
 import {
   configurator,
   Modifier,
-  type DragOperation,
   type DragDropManager,
-  type Draggable,
-  type Droppable,
+  type DragOperation,
 } from '@dnd-kit/abstract';
 
 /**
@@ -35,10 +33,7 @@ interface Options {
  * const modifier = SnapModifier.configure({ size: { x: 10, y: 20 } });
  * ```
  */
-export class SnapModifier extends Modifier<
-  DragDropManager<Draggable, Droppable>,
-  Options
-> {
+export class SnapModifier extends Modifier<DragDropManager<any, any>, Options> {
   /**
    * Applies the snap grid to the drag operation.
    *

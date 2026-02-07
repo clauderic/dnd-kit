@@ -1,10 +1,8 @@
 import {
   configurator,
   Modifier,
-  type DragOperation,
   type DragDropManager,
-  type Draggable,
-  type Droppable,
+  type DragOperation,
 } from '@dnd-kit/abstract';
 
 /**
@@ -27,10 +25,7 @@ interface Options {
  * - Set a fixed value for the specified axis
  * - Create horizontal or vertical movement constraints
  */
-export class AxisModifier extends Modifier<
-  DragDropManager<Draggable, Droppable>,
-  Options
-> {
+export class AxisModifier extends Modifier<DragDropManager<any, any>, Options> {
   /**
    * Applies the axis restriction to the drag operation.
    *
