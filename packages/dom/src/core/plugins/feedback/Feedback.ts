@@ -132,6 +132,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
     let elementMutationObserver: MutationObserver | undefined;
     let documentMutationObserver: MutationObserver | undefined;
+    let savedCellWidths: string[] | undefined;
     const styles = new Styles(feedbackElement);
     const {
       transition,
@@ -317,10 +318,14 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         const cells = Array.from(element.cells);
         const placeholderCells = Array.from(placeholder.cells);
 
+        if (!savedCellWidths) {
+          savedCellWidths = cells.map((cell) => cell.style.width);
+        }
+
         for (const [index, cell] of cells.entries()) {
           const placeholderCell = placeholderCells[index];
 
-          cell.style.width = `${placeholderCell.offsetWidth}px`;
+          cell.style.width = `${placeholderCell.getBoundingClientRect().width}px`;
         }
       }
 
@@ -483,6 +488,14 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
       feedbackElement.removeAttribute(ATTRIBUTE);
       styles.reset();
+
+      if (savedCellWidths && isTableRow(element)) {
+        const cells = Array.from(element.cells);
+
+        for (const [index, cell] of cells.entries()) {
+          cell.style.width = savedCellWidths[index] ?? '';
+        }
+      }
 
       source.status = 'idle';
 
