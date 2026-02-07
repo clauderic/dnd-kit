@@ -54,7 +54,7 @@ export function TableExample() {
         setColumns((columns) => move(columns, event));
       }}
     >
-      <div style={{padding: '0 30px'}}>
+      <div style={{padding: '0 30px', overflow: 'hidden', borderRadius: 8, border: '1px solid #e2e8f0'}}>
         <table style={tableStyles}>
           <thead>
             <tr>
