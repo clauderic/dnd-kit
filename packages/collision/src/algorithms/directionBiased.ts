@@ -23,20 +23,25 @@ export const directionBiased: CollisionDetector = ({
     return defaultCollisionDetection({dragOperation, droppable});
   }
 
-  const {center, boundingRectangle} = shape.current;
+  const {center} = shape.current;
+  const rect = droppable.shape.boundingRectangle;
+  const isBelow = rect.bottom >= center.y;
+  const isAbove = rect.top <= center.y;
+  const isLeft = rect.left <= center.x;
+  const isRight = rect.right >= center.x;
 
   if (
-    (direction === 'down' &&
-      boundingRectangle.bottom >= droppable.shape.center.y) ||
-    (direction === 'up' && boundingRectangle.top <= droppable.shape.center.y) ||
-    (direction === 'left' &&
-      boundingRectangle.left <= droppable.shape.center.x) ||
-    (direction === 'right' &&
-      boundingRectangle.right >= droppable.shape.center.x)
+    (direction === 'down' && isBelow) ||
+    (direction === 'up' && isAbove) ||
+    (direction === 'left' && isLeft) ||
+    (direction === 'right' && isRight)
   ) {
+    const distance = Point.distance(droppable.shape.center, center);
+    const value = distance === 0 ? 1 : 1 / distance;
+
     return {
       id: droppable.id,
-      value: 1 / Point.distance(droppable.shape.center, center),
+      value,
       type: CollisionType.Collision,
       priority: CollisionPriority.Normal,
     };
