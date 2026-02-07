@@ -30,31 +30,105 @@ interface RowData {
 }
 
 const initialData: RowData[] = [
-  {id: 1, name: 'Alice Johnson', role: 'Engineer', email: 'alice@example.com', status: 'Active'},
-  {id: 2, name: 'Bob Smith', role: 'Designer', email: 'bob@example.com', status: 'Active'},
-  {id: 3, name: 'Charlie Brown', role: 'Manager', email: 'charlie@example.com', status: 'Away'},
-  {id: 4, name: 'Diana Ross', role: 'Engineer', email: 'diana@example.com', status: 'Active'},
-  {id: 5, name: 'Eve Williams', role: 'Designer', email: 'eve@example.com', status: 'Offline'},
-  {id: 6, name: 'Frank Miller', role: 'Engineer', email: 'frank@example.com', status: 'Active'},
-  {id: 7, name: 'Grace Lee', role: 'Manager', email: 'grace@example.com', status: 'Away'},
-  {id: 8, name: 'Hank Davis', role: 'Designer', email: 'hank@example.com', status: 'Active'},
+  {
+    id: 1,
+    name: 'Alice Johnson',
+    role: 'Engineer',
+    email: 'alice@example.com',
+    status: 'Active',
+  },
+  {
+    id: 2,
+    name: 'Bob Smith',
+    role: 'Designer',
+    email: 'bob@example.com',
+    status: 'Active',
+  },
+  {
+    id: 3,
+    name: 'Charlie Brown',
+    role: 'Manager',
+    email: 'charlie@example.com',
+    status: 'Away',
+  },
+  {
+    id: 4,
+    name: 'Diana Ross',
+    role: 'Engineer',
+    email: 'diana@example.com',
+    status: 'Active',
+  },
+  {
+    id: 5,
+    name: 'Eve Williams',
+    role: 'Designer',
+    email: 'eve@example.com',
+    status: 'Offline',
+  },
+  {
+    id: 6,
+    name: 'Frank Miller',
+    role: 'Engineer',
+    email: 'frank@example.com',
+    status: 'Active',
+  },
+  {
+    id: 7,
+    name: 'Grace Lee',
+    role: 'Manager',
+    email: 'grace@example.com',
+    status: 'Away',
+  },
+  {
+    id: 8,
+    name: 'Hank Davis',
+    role: 'Designer',
+    email: 'hank@example.com',
+    status: 'Active',
+  },
 ];
 
 export function TableExample() {
   const [rows, setRows] = useState(initialData);
   const [columns, setColumns] = useState(initialColumns);
+  const initialOrder = useRef({
+    columns,
+    rows,
+  });
 
   return (
     <DragDropProvider
+      onDragStart={() => {
+        initialOrder.current = {
+          columns,
+          rows,
+        };
+      }}
       onDragOver={(event) => {
-        setColumns((columns) => move(columns, event));
+        const {source} = event.operation;
+
+        if (source?.type === 'column') {
+          setColumns((columns) => move(columns, event));
+        } else {
+          setRows((rows) => move(rows, event));
+        }
       }}
       onDragEnd={(event) => {
-        setRows((rows) => move(rows, event));
-        setColumns((columns) => move(columns, event));
+        if (event.canceled) {
+          setColumns(initialOrder.current.columns);
+          setRows(initialOrder.current.rows);
+        }
       }}
     >
-      <div style={{padding: '0 30px', overflow: 'hidden', borderRadius: 8, border: '1px solid #e2e8f0'}}>
+      <div
+        style={{
+          maxWidth: 800,
+          marginInline: 'auto',
+          overflow: 'hidden',
+          borderRadius: 8,
+          border: '1px solid #e2e8f0',
+        }}
+      >
         <table style={tableStyles}>
           <thead>
             <tr>
@@ -71,6 +145,7 @@ export function TableExample() {
                 row={row}
                 columns={columns}
                 index={index}
+                lastRow={index === rows.length - 1}
               />
             ))}
           </tbody>
@@ -114,37 +189,37 @@ interface SortableRowProps {
   row: RowData;
   columns: Column[];
   index: number;
+  lastRow?: boolean;
 }
 
-function SortableRow({row, columns, index}: SortableRowProps) {
-  const [element, setElement] = useState<Element | null>(null);
-  const handleRef = useRef<HTMLButtonElement | null>(null);
-
-  const {isDragging} = useSortable({
+function SortableRow({row, columns, index, lastRow}: SortableRowProps) {
+  const {ref, handleRef, isDragging} = useSortable({
     id: row.id,
     index,
     type: 'row',
     accept: 'row',
-    element,
-    handle: handleRef,
   });
 
   return (
     <tr
-      ref={setElement}
+      ref={ref}
       style={{
         ...trStyles,
-        boxShadow: isDragging ? '0 0 0 1px rgba(63, 63, 68, 0.05), 0px 15px 15px 0 rgba(34, 33, 81, 0.25)' : undefined,
+        boxShadow: isDragging
+          ? '0 0 0 1px rgba(63, 63, 68, 0.05), 0px 15px 15px 0 rgba(34, 33, 81, 0.25)'
+          : undefined,
         opacity: isDragging ? 0.9 : undefined,
       }}
     >
-      <td style={tdStyles}>
+      <td style={lastRow ? tdLastRowStyles : tdStyles}>
         <Handle ref={handleRef} />
       </td>
       {columns.map((column) => (
-        <td key={column.id} style={tdStyles}>
+        <td key={column.id} style={lastRow ? tdLastRowStyles : tdStyles}>
           {column.id === 'status' ? (
-            <span style={getStatusStyles(row[column.id])}>{row[column.id]}</span>
+            <span style={getStatusStyles(row[column.id])}>
+              {row[column.id]}
+            </span>
           ) : (
             row[column.id]
           )}
@@ -156,7 +231,8 @@ function SortableRow({row, columns, index}: SortableRowProps) {
 
 const tableStyles: React.CSSProperties = {
   width: '100%',
-  borderCollapse: 'collapse',
+  borderCollapse: 'separate',
+  borderSpacing: 0,
   fontFamily: 'system-ui, sans-serif',
   fontSize: 14,
 };
@@ -179,6 +255,10 @@ const trStyles: React.CSSProperties = {
 const tdStyles: React.CSSProperties = {
   padding: '12px 16px',
   borderBottom: '1px solid #e2e8f0',
+};
+
+const tdLastRowStyles: React.CSSProperties = {
+  padding: '12px 16px',
 };
 
 function getStatusStyles(status: string): React.CSSProperties {
