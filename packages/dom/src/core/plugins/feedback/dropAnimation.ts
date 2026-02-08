@@ -3,7 +3,9 @@ import {
   DOMRectangle,
   getComputedStyles,
   getFinalKeyframe,
+  getWindow,
   parseTranslate,
+  prefersReducedMotion,
   showPopover,
   type Styles,
 } from '@dnd-kit/dom/utilities';
@@ -140,8 +142,11 @@ export function runDropAnimation(ctx: DropAnimationContext): void {
       ],
     },
     options: {
-      duration:
-        ctx.moved || ctx.feedbackElement !== ctx.element ? duration : 0,
+      duration: prefersReducedMotion(getWindow(ctx.feedbackElement))
+        ? 0
+        : ctx.moved || ctx.feedbackElement !== ctx.element
+          ? duration
+          : 0,
       easing,
     },
   }).then(() => {

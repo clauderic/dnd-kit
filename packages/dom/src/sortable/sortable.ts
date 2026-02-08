@@ -22,7 +22,9 @@ import type {
 import {
   animateTransform,
   getComputedStyles,
+  getWindow,
   computeTranslate,
+  prefersReducedMotion,
   ProxiedElements,
 } from '@dnd-kit/dom/utilities';
 
@@ -244,6 +246,10 @@ export class Sortable<T extends Data = Data> {
         const finalTranslate = computeTranslate(element, translate);
 
         if (delta.x || delta.y) {
+          const resolvedTransition = prefersReducedMotion(getWindow(element))
+            ? {...transition, duration: 0}
+            : transition;
+
           animateTransform({
             element,
             keyframes: {
@@ -252,7 +258,7 @@ export class Sortable<T extends Data = Data> {
                 `${finalTranslate.x}px ${finalTranslate.y}px ${finalTranslate.z}`,
               ],
             },
-            options: transition,
+            options: resolvedTransition,
           }).then(() => {
             if (!manager.dragOperation.status.dragging) {
               this.droppable.shape = undefined;

@@ -47,20 +47,36 @@ test.describe('Auto-scrolling', () => {
     });
 
     test('scrolls when moving with keyboard arrow keys', async ({dnd}) => {
-      const first = dnd.items.nth(0);
-      const initialBox = await first.boundingBox();
+      await dnd.page.emulateMedia({reducedMotion: 'reduce'});
 
-      await dnd.keyboard.pickup(first);
-      await dnd.keyboard.move('down', 10);
+      // Find the last visible item (closest to bottom of viewport)
+      const viewport = dnd.page.viewportSize()!;
+      const count = await dnd.items.count();
+      let lastVisibleIndex = 0;
+
+      for (let i = 0; i < count; i++) {
+        const box = await dnd.items.nth(i).boundingBox();
+        if (!box || box.y + box.height > viewport.height) break;
+        lastVisibleIndex = i;
+      }
+
+      const item = dnd.items.nth(lastVisibleIndex);
+
+      await dnd.keyboard.pickup(item);
+      await dnd.keyboard.move('down');
+
+      await expect
+        .poll(
+          () =>
+            dnd.page.evaluate(
+              () => document.scrollingElement?.scrollTop ?? 0
+            ),
+          {timeout: 5_000}
+        )
+        .toBeGreaterThan(0);
+
       await dnd.keyboard.drop();
       await dnd.waitForDrop();
-
-      // After moving 10 positions, the item should have moved
-      // well past its initial position, proving the view scrolled
-      // or the item moved significantly within the list
-      const movedItem = dnd.items.filter({hasText: /^0$/});
-      const finalBox = await movedItem.boundingBox();
-      expect(finalBox!.y).toBeGreaterThan(initialBox!.y);
     });
   });
 

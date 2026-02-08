@@ -7,6 +7,7 @@ import {
   getRoot,
   getWindow,
   isHTMLElement,
+  prefersReducedMotion,
   isKeyboardEvent,
   parseTranslate,
   showPopover,
@@ -337,6 +338,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       this.manager.actions.stop({event});
     };
 
+    const reducedMotion = prefersReducedMotion(feedbackWindow);
+
     if (isKeyboardOperation) {
       feedbackWindow.addEventListener('resize', handleWindowResize);
     }
@@ -438,9 +441,10 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           const previousTranslate = state.current.translate;
           const modifiers = untracked(() => dragOperation.modifiers);
           const currentShape = untracked(() => dragOperation.shape?.current);
-          const translateTransition = isKeyboardOperation
-            ? '250ms cubic-bezier(0.25, 1, 0.5, 1)'
-            : '0ms linear';
+          const translateTransition =
+            isKeyboardOperation && !reducedMotion
+              ? '250ms cubic-bezier(0.25, 1, 0.5, 1)'
+              : '0ms linear';
 
           styles.set(
             {
