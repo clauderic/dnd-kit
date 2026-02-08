@@ -1,5 +1,15 @@
 # @dnd-kit/collision
 
+## 0.2.4
+
+### Patch Changes
+
+- [#1866](https://github.com/clauderic/dnd-kit/pull/1866) [`256432d`](https://github.com/clauderic/dnd-kit/commit/256432dec8823342765eebdb78ee791c25fea382) Thanks [@github-actions](https://github.com/apps/github-actions)! - **directionBiased**: Fix inverted logic to bias towards shapes above or below the drag operation shape.
+
+- Updated dependencies [[`de27fbc`](https://github.com/clauderic/dnd-kit/commit/de27fbca9df12eece3cd53ccbbac34e0eaf113e1), [`be7cfe3`](https://github.com/clauderic/dnd-kit/commit/be7cfe3b6cf6a989aefd3e39fd145fe271942b3a)]:
+  - @dnd-kit/abstract@0.2.4
+  - @dnd-kit/geometry@0.2.4
+
 ## 0.2.3
 
 ### Patch Changes

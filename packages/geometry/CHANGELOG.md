@@ -1,5 +1,12 @@
 # @dnd-kit/geometry
 
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @dnd-kit/state@0.2.4
+
 ## 0.2.3
 
 ### Patch Changes
