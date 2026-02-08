@@ -14,6 +14,7 @@ export {getWindow} from './execution-context/getWindow.ts';
 export {getDocuments} from './execution-context/getDocuments.ts';
 export {isSafari} from './execution-context/isSafari.ts';
 export {getRoot} from './execution-context/getRoot.ts';
+export {prefersReducedMotion} from './execution-context/prefersReducedMotion.ts';
 
 export {
   cloneElement,

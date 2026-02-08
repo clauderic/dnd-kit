@@ -21,4 +21,4 @@ jobs:
         run: bun install
 
       - name: Run Tests
-        run: bun test
+        run: bun run test

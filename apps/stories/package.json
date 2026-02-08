@@ -8,7 +8,9 @@
     "build": "storybook build",
     "preview-storybook": "serve storybook-static",
     "clean": "rm -rf .turbo && rm -rf node_modules",
-    "lint": "eslint ./stories/*.stories.tsx --max-warnings 0"
+    "lint": "eslint ./stories/*.stories.tsx --max-warnings 0",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@dnd-kit/abstract": "*",
@@ -26,6 +28,7 @@
   "devDependencies": {
     "@dnd-kit/eslint-config": "*",
     "@measured/auto-frame-component": "^0.1.7",
+    "@playwright/test": "^1.58.2",
     "@storybook/addon-docs": "^9.0.15",
     "@storybook/addon-links": "^9.0.15",
     "@storybook/react-vite": "^9.0.15",
@@ -33,6 +36,7 @@
     "@vueless/storybook-dark-mode": "^9.0.6",
     "eslint": "^8.56.0",
     "eslint-plugin-storybook": "9.0.15",
+    "http-server": "^14.1.1",
     "serve": "^14.2.4",
     "storybook": "^9.0.15",
     "typescript": "^5.7.3",
