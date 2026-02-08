@@ -112,7 +112,7 @@ export const test = base.extend<{dnd: DndFixture}>({
         await page.goto(
           `/iframe.html?id=${storyId}&viewMode=story`
         );
-        await page.waitForLoadState('domcontentloaded');
+        await page.waitForLoadState('networkidle');
       },
 
       pointer,

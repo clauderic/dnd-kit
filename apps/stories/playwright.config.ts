@@ -22,9 +22,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: CI
-      ? 'npx serve storybook-static -l 6006'
-      : 'bun run storybook dev -p 6006',
+    command: 'npx http-server storybook-static --port 6006 --silent',
     port: 6006,
     reuseExistingServer: !CI,
     timeout: 120_000,
