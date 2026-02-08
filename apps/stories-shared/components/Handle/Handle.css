@@ -1,0 +1,41 @@
+.Handle {
+  display: flex;
+  width: 12px;
+  padding: 15px;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  touch-action: none;
+  cursor: grab;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  appearance: none;
+  background-color: transparent;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+
+  --fill: #919eab;
+}
+
+.Handle:hover, .Handle:active {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.Handle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0), inset 0 0px 0px 2.5px #4c9ffe;
+}
+
+.Handle svg {
+  flex: 0 0 auto;
+  margin: auto;
+  height: 100%;
+  overflow: visible;
+  fill: var(--fill);
+}
+
+.Handle:active, .Handle:hover {
+  --fill: #6f7b88;
+}

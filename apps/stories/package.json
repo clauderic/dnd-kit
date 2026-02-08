@@ -17,6 +17,7 @@
     "@dnd-kit/dom": "*",
     "@dnd-kit/react": "*",
     "@dnd-kit/helpers": "*",
+    "@dnd-kit/stories-shared": "*",
     "@tanstack/react-virtual": "^3.0.0-beta.54",
     "clipboard": "^2.0.11",
     "prismjs": "^1.29.0",

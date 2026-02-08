@@ -1,4 +1,4 @@
-import draggableIcon from '../../assets/draggableIcon.svg';
+import draggableIcon from '@dnd-kit/stories-shared/assets/draggableIcon.svg';
 
 export const DraggableIcon = () => (
   <img

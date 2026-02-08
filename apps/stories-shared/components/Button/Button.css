@@ -64,10 +64,10 @@
   padding-right: 10px;
 }
 
-:global(.dark) .Button {
+.dark .Button {
   --background: #000;
 }
 
-:global(.dark) .Button[data-shadow="true"] {
+.dark .Button[data-shadow="true"] {
   --box-shadow: -1px 0 15px 0 rgba(0, 0, 0, 0.1), 0px 15px 15px 0 rgba(0, 0, 0, 0.25);
 }
