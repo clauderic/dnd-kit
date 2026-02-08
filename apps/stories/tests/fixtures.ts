@@ -12,6 +12,7 @@ interface DndFixture {
   rows: Locator;
   columns: Locator;
   goto(storyId: string): Promise<void>;
+  disableTransitions(): Promise<void>;
   pointer: PointerActions;
   keyboard: KeyboardActions;
   waitForDrop(): Promise<void>;
@@ -113,6 +114,13 @@ export const test = base.extend<{dnd: DndFixture}>({
           `/iframe.html?id=${storyId}&viewMode=story`
         );
         await page.waitForLoadState('domcontentloaded');
+      },
+
+      async disableTransitions() {
+        await page.addStyleTag({
+          content:
+            '*, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; }',
+        });
       },
 
       pointer,

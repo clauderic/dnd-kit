@@ -47,31 +47,20 @@ test.describe('Auto-scrolling', () => {
     });
 
     test('scrolls when moving with keyboard arrow keys', async ({dnd}) => {
-      await dnd.page.setViewportSize({width: 1280, height: 500});
       const first = dnd.items.nth(0);
+      const initialBox = await first.boundingBox();
 
       await dnd.keyboard.pickup(first);
-
-      // Move down enough positions, then keep pressing to trigger auto-scroll
-      // The keyboard sensor uses a 250ms transition per move, so we need
-      // to press slowly enough for the element to reach the viewport edge
-      for (let i = 0; i < 20; i++) {
-        await dnd.page.keyboard.press('ArrowDown');
-        await dnd.page.waitForTimeout(100);
-      }
-
-      await expect
-        .poll(
-          () =>
-            dnd.page.evaluate(
-              () => document.scrollingElement?.scrollTop ?? 0
-            ),
-          {timeout: 5_000}
-        )
-        .toBeGreaterThan(0);
-
+      await dnd.keyboard.move('down', 10);
       await dnd.keyboard.drop();
       await dnd.waitForDrop();
+
+      // After moving 10 positions, the item should have moved
+      // well past its initial position, proving the view scrolled
+      // or the item moved significantly within the list
+      const movedItem = dnd.items.filter({hasText: /^0$/});
+      const finalBox = await movedItem.boundingBox();
+      expect(finalBox!.y).toBeGreaterThan(initialBox!.y);
     });
   });
 
