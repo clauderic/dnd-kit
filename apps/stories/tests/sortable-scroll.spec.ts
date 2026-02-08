@@ -31,14 +31,16 @@ test.describe('Auto-scrolling', () => {
         {steps: 20}
       );
 
-      // Hold near the edge to trigger auto-scroll
-      await dnd.page.waitForTimeout(1000);
-
-      const scrollAfter = await dnd.page.evaluate(
-        () => document.scrollingElement?.scrollTop ?? 0
-      );
-
-      expect(scrollAfter).toBeGreaterThan(scrollBefore);
+      // Wait for auto-scroll to kick in
+      await expect
+        .poll(
+          () =>
+            dnd.page.evaluate(
+              () => document.scrollingElement?.scrollTop ?? 0
+            ),
+          {timeout: 3_000}
+        )
+        .toBeGreaterThan(scrollBefore);
 
       await dnd.page.mouse.up();
       await dnd.waitForDrop();
@@ -52,11 +54,15 @@ test.describe('Auto-scrolling', () => {
       // Move down many positions to trigger scrolling
       await dnd.keyboard.move('down', 15);
 
-      const scrollAfter = await dnd.page.evaluate(
-        () => document.scrollingElement?.scrollTop ?? 0
-      );
-
-      expect(scrollAfter).toBeGreaterThan(0);
+      await expect
+        .poll(
+          () =>
+            dnd.page.evaluate(
+              () => document.scrollingElement?.scrollTop ?? 0
+            ),
+          {timeout: 3_000}
+        )
+        .toBeGreaterThan(0);
 
       await dnd.keyboard.drop();
       await dnd.waitForDrop();
@@ -72,17 +78,12 @@ test.describe('Auto-scrolling', () => {
     test('auto-scrolls within a scrollable container with pointer', async ({
       dnd,
     }) => {
-      // Find the first scrollable container
-      const container = dnd.page
-        .locator('#storybook-root ul')
-        .first();
+      const container = dnd.page.locator('#storybook-root ul').first();
       const firstItem = container.locator('.Item').first();
       const containerBox = await container.boundingBox();
       const itemBox = await firstItem.boundingBox();
 
-      const scrollBefore = await container.evaluate(
-        (el) => el.scrollTop
-      );
+      const scrollBefore = await container.evaluate((el) => el.scrollTop);
 
       await dnd.page.mouse.move(
         itemBox!.x + itemBox!.width / 2,
@@ -90,21 +91,18 @@ test.describe('Auto-scrolling', () => {
       );
       await dnd.page.mouse.down();
 
-      // Drag toward the bottom edge of the container
       await dnd.page.mouse.move(
         containerBox!.x + containerBox!.width / 2,
         containerBox!.y + containerBox!.height - 10,
         {steps: 20}
       );
 
-      // Hold near the edge to trigger auto-scroll
-      await dnd.page.waitForTimeout(1000);
-
-      const scrollAfter = await container.evaluate(
-        (el) => el.scrollTop
-      );
-
-      expect(scrollAfter).toBeGreaterThan(scrollBefore);
+      // Wait for auto-scroll to kick in
+      await expect
+        .poll(() => container.evaluate((el) => el.scrollTop), {
+          timeout: 3_000,
+        })
+        .toBeGreaterThan(scrollBefore);
 
       await dnd.page.mouse.up();
       await dnd.waitForDrop();

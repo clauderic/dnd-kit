@@ -87,7 +87,7 @@ export const test = base.extend<{dnd: DndFixture}>({
 
         for (let i = 0; i < times; i++) {
           await page.keyboard.press(key);
-          await page.waitForTimeout(50);
+          await page.waitForTimeout(30);
         }
       },
       async drop() {
@@ -112,7 +112,7 @@ export const test = base.extend<{dnd: DndFixture}>({
         await page.goto(
           `/iframe.html?id=${storyId}&viewMode=story`
         );
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
       },
 
       pointer,

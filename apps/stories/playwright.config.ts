@@ -4,7 +4,7 @@ const CI = !!process.env.CI;
 
 export default defineConfig({
   testDir: './tests',
-  timeout: 30_000,
+  timeout: 15_000,
   expect: {
     timeout: 5_000,
   },
@@ -13,7 +13,7 @@ export default defineConfig({
   reporter: CI ? 'html' : 'list',
   use: {
     baseURL: 'http://localhost:6006',
-    actionTimeout: 10_000,
+    actionTimeout: 5_000,
   },
   projects: [
     {
