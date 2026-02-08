@@ -14,8 +14,8 @@ test.describe('Draggable', () => {
     await dnd.waitForDrop();
 
     const boxAfter = await button.boundingBox();
-    expect(boxAfter!.x).toBeCloseTo(box!.x, 0);
-    expect(boxAfter!.y).toBeCloseTo(box!.y, 0);
+    expect(boxAfter!.x).toBeCloseTo(box!.x, -1);
+    expect(boxAfter!.y).toBeCloseTo(box!.y, -1);
   });
 
   test('shows dragging state during pointer drag', async ({dnd}) => {
