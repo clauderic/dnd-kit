@@ -36,5 +36,11 @@ export {
   PreventSelection,
   Scroller,
   ScrollListener,
+  StyleSheetManager,
 } from './plugins/index.ts';
-export type {Transition} from './plugins/index.ts';
+export type {
+  Transition,
+  DropAnimation,
+  DropAnimationOptions,
+  DropAnimationFunction,
+} from './plugins/index.ts';

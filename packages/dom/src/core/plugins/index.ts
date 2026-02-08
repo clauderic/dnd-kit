@@ -4,7 +4,14 @@ export {Cursor} from './cursor/index.ts';
 
 export {Feedback} from './feedback/index.ts';
 export type {Transition} from './feedback/types.ts';
+export type {
+  DropAnimation,
+  DropAnimationOptions,
+  DropAnimationFunction,
+} from './feedback/index.ts';
 
 export {AutoScroller, Scroller, ScrollListener} from './scrolling/index.ts';
 
 export {PreventSelection} from './selection/PreventSelection.ts';
+
+export {StyleSheetManager} from './stylesheet/StyleSheetManager.ts';
