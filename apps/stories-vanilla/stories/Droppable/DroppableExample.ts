@@ -1,16 +1,15 @@
 import {DragDropManager, Draggable, Droppable} from '@dnd-kit/dom';
 
 import draggableIconSrc from '@dnd-kit/stories-shared/assets/draggableIcon.svg';
-import {createVanillaStory} from '../utilities.ts';
 
-export const DroppableExample = createVanillaStory(() => {
+export function DroppableExample() {
+  const root = document.createElement('section');
+
   const manager = new DragDropManager();
-  const wrapperElement = createWrapperElement();
   const droppableElement = createDroppableElement();
   const draggableElement = createDraggableElement();
 
-  wrapperElement.append(draggableElement, droppableElement);
-  document.body.appendChild(wrapperElement);
+  root.append(draggableElement, droppableElement);
 
   const draggable = new Draggable(
     {
@@ -59,34 +58,22 @@ export const DroppableExample = createVanillaStory(() => {
     if (event.operation.target?.id === 'droppable') {
       if (!isWithinDroppable) droppableElement.appendChild(draggableElement);
     } else if (isWithinDroppable) {
-      wrapperElement.prepend(draggableElement);
+      root.prepend(draggableElement);
     }
   });
 
-  return () => {
-    draggable.destroy();
-    droppable.destroy();
-    manager.destroy();
-    wrapperElement.remove();
+  return {
+    root,
+    cleanup: () => {
+      draggable.destroy();
+      droppable.destroy();
+      manager.destroy();
+    },
   };
-});
-
-function createWrapperElement() {
-  const wrapper = document.createElement('div');
-
-  wrapper.style.setProperty('display', 'grid');
-  wrapper.style.setProperty('grid-template-columns', '250px max-content');
-  wrapper.style.setProperty('align-items', 'center');
-  wrapper.style.setProperty('justify-content', 'center');
-  wrapper.style.setProperty('gap', '50px');
-
-  return wrapper;
 }
 
 function createDroppableElement() {
   const element = document.createElement('dropzone-component');
-  element.style.setProperty('grid-column-start', '2');
-
   return element;
 }
 

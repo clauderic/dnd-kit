@@ -1,0 +1,46 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&Inter:wght@300;400&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --font-family: "Poppins",-apple-system,".SFNSText-Regular","San Francisco",BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+
+    font-family: var(--font-family);
+  }
+
+  body {
+    background-color: #FCFCFC;
+  }
+
+  body.dark {
+    background-color: #2a2c2e;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .sb-main-padded {
+    padding-top: 2rem !important;
+
+    @media (min-width: 750px) {
+      padding-top: 3rem !important;
+    }
+  }
+
+  section {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 700px;
+    margin: 0 auto;
+    gap: 20px;
+  }
+
+  section > * {
+    width: calc(50% - 10px);
+  }
+</style>

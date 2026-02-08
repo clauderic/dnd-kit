@@ -17,6 +17,16 @@ export default {
     },
   },
 
+  refs: (_config, {configType}) => {
+    if (configType === 'DEVELOPMENT') {
+      return {
+        vanilla: {title: 'Vanilla', url: 'http://localhost:6007'},
+      };
+    }
+
+    return {};
+  },
+
   async viteFinal(config) {
     // customize the Vite config here
     return mergeConfig(config, {
