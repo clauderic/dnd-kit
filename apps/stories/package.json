@@ -8,7 +8,7 @@
     "build": "storybook build",
     "preview-storybook": "serve storybook-static",
     "clean": "rm -rf .turbo && rm -rf node_modules",
-    "lint": "eslint ./stories/*.stories.tsx --max-warnings 0"
+    "lint": "eslint ./stories --max-warnings 0"
   },
   "dependencies": {
     "@dnd-kit/abstract": "*",
@@ -24,15 +24,13 @@
     "react-window": "1.8.9"
   },
   "devDependencies": {
-    "@dnd-kit/eslint-config": "*",
     "@measured/auto-frame-component": "^0.1.7",
     "@storybook/addon-docs": "^9.0.15",
     "@storybook/addon-links": "^9.0.15",
     "@storybook/react-vite": "^9.0.15",
     "@vitejs/plugin-react": "^4.2.1",
     "@vueless/storybook-dark-mode": "^9.0.6",
-    "eslint": "^8.56.0",
-    "eslint-plugin-storybook": "9.0.15",
+    "eslint-plugin-storybook": "^0.11.3",
     "serve": "^14.2.4",
     "storybook": "^9.0.15",
     "typescript": "^5.7.3",
