@@ -1,5 +1,17 @@
 # @dnd-kit/abstract
 
+## 0.2.4
+
+### Patch Changes
+
+- [#1874](https://github.com/clauderic/dnd-kit/pull/1874) [`de27fbc`](https://github.com/clauderic/dnd-kit/commit/de27fbca9df12eece3cd53ccbbac34e0eaf113e1) Thanks [@clauderic](https://github.com/clauderic)! - Expose ergonomic type aliases for drag and drop event handlers: `CollisionEvent`, `BeforeDragStartEvent`, `DragStartEvent`, `DragMoveEvent`, `DragOverEvent`, and `DragEndEvent`. These types are re-exported from `@dnd-kit/dom` and `@dnd-kit/react` for convenience.
+
+- [#1866](https://github.com/clauderic/dnd-kit/pull/1866) [`be7cfe3`](https://github.com/clauderic/dnd-kit/commit/be7cfe3b6cf6a989aefd3e39fd145fe271942b3a) Thanks [@github-actions](https://github.com/apps/github-actions)! - Fix TypeScript type incompatibility when using abstract modifiers (`RestrictToVerticalAxis`, `RestrictToHorizontalAxis`, `SnapModifier`) with DOM or React `DragDropManager`. The `AxisModifier` and `SnapModifier` classes no longer over-constrain their generic manager type parameter.
+
+- Updated dependencies []:
+  - @dnd-kit/geometry@0.2.4
+  - @dnd-kit/state@0.2.4
+
 ## 0.2.3
 
 ### Patch Changes

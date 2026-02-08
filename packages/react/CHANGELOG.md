@@ -1,5 +1,16 @@
 # @dnd-kit/react
 
+## 0.2.4
+
+### Patch Changes
+
+- [#1874](https://github.com/clauderic/dnd-kit/pull/1874) [`de27fbc`](https://github.com/clauderic/dnd-kit/commit/de27fbca9df12eece3cd53ccbbac34e0eaf113e1) Thanks [@clauderic](https://github.com/clauderic)! - Expose ergonomic type aliases for drag and drop event handlers: `CollisionEvent`, `BeforeDragStartEvent`, `DragStartEvent`, `DragMoveEvent`, `DragOverEvent`, and `DragEndEvent`. These types are re-exported from `@dnd-kit/dom` and `@dnd-kit/react` for convenience.
+
+- Updated dependencies [[`de27fbc`](https://github.com/clauderic/dnd-kit/commit/de27fbca9df12eece3cd53ccbbac34e0eaf113e1), [`c2097c9`](https://github.com/clauderic/dnd-kit/commit/c2097c92df0af496e973cea6b9824f82d0aba92e), [`be7cfe3`](https://github.com/clauderic/dnd-kit/commit/be7cfe3b6cf6a989aefd3e39fd145fe271942b3a), [`6d80680`](https://github.com/clauderic/dnd-kit/commit/6d80680454001f42ab9ec4bd7ae3c764ca33287a), [`0923bc6`](https://github.com/clauderic/dnd-kit/commit/0923bc674273acffd5cf1c35e24f6ff505acc26e), [`5f1b19a`](https://github.com/clauderic/dnd-kit/commit/5f1b19a1f39d845618712bb34314c6133030d557)]:
+  - @dnd-kit/abstract@0.2.4
+  - @dnd-kit/dom@0.2.4
+  - @dnd-kit/state@0.2.4
+
 ## 0.2.3
 
 ### Patch Changes

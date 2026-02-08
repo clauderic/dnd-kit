@@ -1,5 +1,40 @@
 # @dnd-kit/dom
 
+## 0.2.4
+
+### Patch Changes
+
+- [#1874](https://github.com/clauderic/dnd-kit/pull/1874) [`de27fbc`](https://github.com/clauderic/dnd-kit/commit/de27fbca9df12eece3cd53ccbbac34e0eaf113e1) Thanks [@clauderic](https://github.com/clauderic)! - Expose ergonomic type aliases for drag and drop event handlers: `CollisionEvent`, `BeforeDragStartEvent`, `DragStartEvent`, `DragMoveEvent`, `DragOverEvent`, and `DragEndEvent`. These types are re-exported from `@dnd-kit/dom` and `@dnd-kit/react` for convenience.
+
+- [#1854](https://github.com/clauderic/dnd-kit/pull/1854) [`c2097c9`](https://github.com/clauderic/dnd-kit/commit/c2097c92df0af496e973cea6b9824f82d0aba92e) Thanks [@du33169](https://github.com/du33169)! - Fixed Feedback plugin style injection in Shadow DOM (fix #1765)
+
+- [#1875](https://github.com/clauderic/dnd-kit/pull/1875) [`6d80680`](https://github.com/clauderic/dnd-kit/commit/6d80680454001f42ab9ec4bd7ae3c764ca33287a) Thanks [@clauderic](https://github.com/clauderic)! - **Feedback plugin**: Fix table cell width handling during drag operations. Use `getBoundingClientRect().width` instead of `offsetWidth` for sub-pixel precision, and restore original cell widths after dragging ends instead of leaving hardcoded values permanently.
+
+- [#1877](https://github.com/clauderic/dnd-kit/pull/1877) [`0923bc6`](https://github.com/clauderic/dnd-kit/commit/0923bc674273acffd5cf1c35e24f6ff505acc26e) Thanks [@clauderic](https://github.com/clauderic)! - Respect `prefers-reduced-motion` media query across all animations. When the user prefers reduced motion, the following animations are disabled:
+
+  - Keyboard drag move transitions (250ms translate)
+  - Drop animation (250ms slide-back)
+  - Sortable item swap transitions (250ms position shift)
+
+- [#1876](https://github.com/clauderic/dnd-kit/pull/1876) [`5f1b19a`](https://github.com/clauderic/dnd-kit/commit/5f1b19a1f39d845618712bb34314c6133030d557) Thanks [@clauderic](https://github.com/clauderic)! - Refactor the Feedback plugin for improved modularity and extensibility.
+
+  **StyleSheetManager** – Introduced a new generic `CorePlugin` that manages CSS stylesheet injection into document and shadow roots. Plugins can call `register(cssRules)` to declare styles and `addRoot(root)` to track additional roots. The manager reactively injects and cleans up adopted stylesheets as the drag operation's source and target roots change. The Feedback plugin now delegates all stylesheet management to the StyleSheetManager.
+
+  **Configurable drop animation** – The `Feedback` plugin now accepts a `dropAnimation` option:
+
+  - Pass `{ duration, easing }` to customize the built-in animation timing
+  - Pass a function for full custom animation control (receives context, return a promise)
+  - Pass `null` to disable the drop animation entirely
+  - Omit for the default 250ms ease animation
+
+  **Extracted helpers** – Observer setup (`createElementMutationObserver`, `createDocumentMutationObserver`, `createResizeObserver`) and the drop animation logic (`runDropAnimation`) are now in dedicated modules within the feedback plugin directory.
+
+- Updated dependencies [[`de27fbc`](https://github.com/clauderic/dnd-kit/commit/de27fbca9df12eece3cd53ccbbac34e0eaf113e1), [`256432d`](https://github.com/clauderic/dnd-kit/commit/256432dec8823342765eebdb78ee791c25fea382), [`be7cfe3`](https://github.com/clauderic/dnd-kit/commit/be7cfe3b6cf6a989aefd3e39fd145fe271942b3a)]:
+  - @dnd-kit/abstract@0.2.4
+  - @dnd-kit/collision@0.2.4
+  - @dnd-kit/geometry@0.2.4
+  - @dnd-kit/state@0.2.4
+
 ## 0.2.3
 
 ### Patch Changes
