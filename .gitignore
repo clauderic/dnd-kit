@@ -11,6 +11,8 @@ dist-ssr
 server/dist
 public/dist
 storybook-static/
+test-results/
+playwright-report/
 /packages/**/*.js
 /packages/**/*.js.map
 /packages/**/*.cjs
