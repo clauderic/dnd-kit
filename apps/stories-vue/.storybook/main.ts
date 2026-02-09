@@ -1,5 +1,6 @@
 import {dirname, join} from 'path';
 import {mergeConfig} from 'vite';
+import vue from '@vitejs/plugin-vue';
 
 export default {
   stories: ['../stories/**/*.stories.ts'],
@@ -16,6 +17,7 @@ export default {
 
   async viteFinal(config) {
     return mergeConfig(config, {
+      plugins: [vue()],
       define: {
         'process.env': {},
       },
