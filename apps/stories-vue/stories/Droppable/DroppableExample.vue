@@ -1,16 +1,11 @@
 <script setup lang="ts">
 import {ref} from 'vue';
 import type {UniqueIdentifier} from '@dnd-kit/abstract';
-import {DragDropProvider, useDraggable, useDroppable} from '@dnd-kit/vue';
-import draggableIconSrc from '@dnd-kit/stories-shared/assets/draggableIcon.svg';
+import {DragDropProvider} from '@dnd-kit/vue';
+import DraggableItem from './DraggableItem.vue';
+import DroppableZone from './DroppableZone.vue';
 
 const parent = ref<UniqueIdentifier | undefined>();
-
-const draggableElement = ref<HTMLElement | null>(null);
-const {isDragging} = useDraggable({id: 'draggable', element: draggableElement});
-
-const droppableElement = ref<HTMLElement | null>(null);
-const {isDropTarget} = useDroppable({id: 'droppable', element: droppableElement});
 
 function onDragEnd(event: any) {
   if (event.canceled) return;
@@ -22,26 +17,11 @@ function onDragEnd(event: any) {
   <DragDropProvider @dragEnd="onDragEnd">
     <section>
       <div style="display: flex; justify-content: center">
-        <button-component
-          v-if="parent == null"
-          ref="draggableElement"
-          :data-shadow="isDragging"
-        >
-          <img :src="draggableIconSrc" alt="Draggable" :width="140" draggable="false" style="pointer-events: none" />
-        </button-component>
+        <DraggableItem v-if="parent == null" />
       </div>
-      <dropzone-component
-        ref="droppableElement"
-        :data-highlight="`${isDropTarget}`"
-      >
-        <button-component
-          v-if="parent === 'droppable'"
-          ref="draggableElement"
-          :data-shadow="isDragging"
-        >
-          <img :src="draggableIconSrc" alt="Draggable" :width="140" draggable="false" style="pointer-events: none" />
-        </button-component>
-      </dropzone-component>
+      <DroppableZone>
+        <DraggableItem v-if="parent === 'droppable'" />
+      </DroppableZone>
     </section>
   </DragDropProvider>
 </template>

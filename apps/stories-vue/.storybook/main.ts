@@ -17,7 +17,15 @@ export default {
 
   async viteFinal(config) {
     return mergeConfig(config, {
-      plugins: [vue()],
+      plugins: [
+        vue({
+          template: {
+            compilerOptions: {
+              isCustomElement: (tag) => tag.includes('-'),
+            },
+          },
+        }),
+      ],
       define: {
         'process.env': {},
       },

@@ -1,18 +1,12 @@
 <script setup lang="ts">
-import {ref} from 'vue';
-import {DragDropProvider, useDraggable} from '@dnd-kit/vue';
-import draggableIconSrc from '@dnd-kit/stories-shared/assets/draggableIcon.svg';
-
-const element = ref<HTMLElement | null>(null);
-const {isDragging} = useDraggable({id: 'draggable', element});
+import {DragDropProvider} from '@dnd-kit/vue';
+import DraggableItem from './DraggableItem.vue';
 </script>
 
 <template>
   <DragDropProvider>
     <div>
-      <button-component ref="element" :data-shadow="isDragging">
-        <img :src="draggableIconSrc" alt="Draggable" :width="140" draggable="false" style="pointer-events: none" />
-      </button-component>
+      <DraggableItem />
     </div>
   </DragDropProvider>
 </template>
