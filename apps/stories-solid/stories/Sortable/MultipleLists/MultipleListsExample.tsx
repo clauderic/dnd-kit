@@ -23,13 +23,13 @@ const sensors = [
 
 function SortableItem(props: {id: string; column: string; index: number}) {
   const {isDragging, ref, handleRef} = useSortable({
-    id: props.id,
-    index: props.index,
-    group: props.column,
+    get id() { return props.id; },
+    get index() { return props.index; },
+    get group() { return props.column; },
+    get data() { return {group: props.column}; },
     accept: 'item',
     type: 'item',
     feedback: 'clone',
-    data: {group: props.column},
   });
 
   return (
@@ -48,8 +48,8 @@ function SortableItem(props: {id: string; column: string; index: number}) {
 
 function SortableColumn(props: {id: string; index: number; rows: string[]}) {
   const {isDragging, ref, handleRef} = useSortable({
-    id: props.id,
-    index: props.index,
+    get id() { return props.id; },
+    get index() { return props.index; },
     accept: ['column', 'item'],
     collisionPriority: CollisionPriority.Low,
     type: 'column',

@@ -9,8 +9,8 @@ interface SortableItemProps {
 
 export function SortableItem(props: SortableItemProps) {
   const {isDragging, ref} = useSortable({
-    id: props.id,
-    index: props.index,
+    get id() { return props.id; },
+    get index() { return props.index; },
   });
 
   const style = () => {
