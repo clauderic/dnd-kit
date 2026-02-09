@@ -17,21 +17,15 @@ export default {
     },
   },
 
-  refs: (_config, {configType}) => {
+  refs: () => {
     const refs: Record<string, {title: string; url: string}> = {};
 
-    const vanillaUrl =
-      configType === 'DEVELOPMENT'
-        ? 'http://localhost:6007'
-        : process.env.VANILLA_STORYBOOK_URL;
-
-    const vueUrl =
-      configType === 'DEVELOPMENT'
-        ? 'http://localhost:6008'
-        : process.env.VUE_STORYBOOK_URL;
-
-    if (vanillaUrl) refs.vanilla = {title: 'Vanilla', url: vanillaUrl};
-    if (vueUrl) refs.vue = {title: 'Vue', url: vueUrl};
+    if (process.env.VANILLA_STORYBOOK_URL) {
+      refs.vanilla = {title: 'Vanilla', url: process.env.VANILLA_STORYBOOK_URL};
+    }
+    if (process.env.VUE_STORYBOOK_URL) {
+      refs.vue = {title: 'Vue', url: process.env.VUE_STORYBOOK_URL};
+    }
 
     return refs;
   },
