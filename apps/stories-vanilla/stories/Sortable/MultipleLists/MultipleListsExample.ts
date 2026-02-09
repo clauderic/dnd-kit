@@ -1,6 +1,6 @@
+import type {UniqueIdentifier} from '@dnd-kit/abstract';
 import {DragDropManager, PointerSensor, KeyboardSensor} from '@dnd-kit/dom';
 import {Sortable} from '@dnd-kit/dom/sortable';
-import {move} from '@dnd-kit/helpers';
 import {batch} from '@dnd-kit/state';
 
 import {createRange} from '@dnd-kit/stories-shared/utilities';
@@ -29,7 +29,7 @@ export function MultipleListsExample(itemCount = 5) {
     ],
   });
 
-  let items: Record<string, string[]> = {
+  let items: Record<string, UniqueIdentifier[]> = {
     A: createRange(itemCount).map((id) => `A${id}`),
     B: createRange(itemCount).map((id) => `B${id}`),
     C: createRange(itemCount).map((id) => `C${id}`),
@@ -38,7 +38,7 @@ export function MultipleListsExample(itemCount = 5) {
 
   const columns = Object.keys(items);
   const columnElements: Record<string, HTMLElement> = {};
-  const itemSortables = new Map<string, Sortable>();
+  const itemSortables = new Map<UniqueIdentifier, Sortable>();
   const allSortables: Sortable[] = [];
 
   // Create columns
@@ -68,10 +68,10 @@ export function MultipleListsExample(itemCount = 5) {
     }
   }
 
-  function createItem(itemId: string, column: string, index: number) {
+  function createItem(itemId: UniqueIdentifier, column: string, index: number) {
     const element = document.createElement('div');
     element.classList.add('Item');
-    element.textContent = itemId;
+    element.textContent = `${itemId}`;
     element.style.setProperty('--accent-color', COLORS[column]);
     element.setAttribute('data-accent-color', column);
     columnElements[column].append(element);
@@ -102,70 +102,104 @@ export function MultipleListsExample(itemCount = 5) {
     allSortables.push(sortable);
   }
 
-  // Find which column an item belongs to
-  function findColumn(itemId: string): string | undefined {
-    for (const [column, columnItems] of Object.entries(items)) {
-      if (columnItems.includes(itemId)) return column;
+  function moveItemToColumn(
+    sortable: Sortable,
+    targetColumn: string,
+    index: number
+  ) {
+    const element = sortable.element;
+    if (!element) return;
+
+    const targetList = columnElements[targetColumn];
+    const referenceNode = targetList.children[index];
+
+    if (referenceNode) {
+      targetList.insertBefore(element, referenceNode);
+    } else {
+      targetList.appendChild(element);
     }
-    return undefined;
+
+    (element as HTMLElement).style.setProperty(
+      '--accent-color',
+      COLORS[targetColumn]
+    );
+    element.setAttribute('data-accent-color', targetColumn);
+
+    batch(() => {
+      sortable.group = targetColumn;
+      sortable.index = index;
+    });
+    sortable.data = {group: targetColumn};
   }
 
   manager.monitor.addEventListener('dragover', (event) => {
-    const {source} = event.operation;
+    const {source, target} = event.operation;
 
-    if (source?.type === 'column') {
-      // Optimistic sorting handles column reordering
-      return;
-    }
+    if (!source || !target) return;
 
-    const prevItems = items;
-    items = move(items, event);
+    // Optimistic sorting handles column reordering
+    if (source.type === 'column') return;
 
-    // Find items that changed columns and update accordingly
-    for (const column of columns) {
-      for (const [index, itemId] of items[column].entries()) {
-        const sortable = itemSortables.get(itemId);
-        if (!sortable) continue;
+    // Optimistic sorting handles within-column reordering
+    const sourceColumn = source.group ?? findColumn(source.id);
+    const targetColumn =
+      target.type === 'column' ? `${target.id}` : target.group;
 
-        const prevColumn = findColumnIn(prevItems, itemId);
-        const movedColumns = prevColumn !== column;
+    if (sourceColumn === targetColumn) return;
 
-        if (movedColumns) {
-          // Move the DOM element to the new column
-          const targetList = columnElements[column];
-          const element = sortable.element;
+    // Item dragged onto an empty column
+    if (source.type === 'item' && target.type === 'column') {
+      const sortable = itemSortables.get(source.id);
+      if (!sortable) return;
 
-          if (element) {
-            // Insert at the correct position
-            const referenceNode = targetList.children[index];
-            if (referenceNode) {
-              targetList.insertBefore(element, referenceNode);
-            } else {
-              targetList.appendChild(element);
-            }
-
-            // Update accent color
-            (element as HTMLElement).style.setProperty(
-              '--accent-color',
-              COLORS[column]
-            );
-            element.setAttribute('data-accent-color', column);
-          }
-        }
-
-        // Update the sortable's group and index
-        batch(() => {
-          sortable.group = column;
-          sortable.index = index;
-        });
-        sortable.data = {group: column};
-      }
+      moveItemToColumn(sortable, `${target.id}`, 0);
     }
   });
 
   manager.monitor.addEventListener('dragend', (event) => {
-    if (event.canceled) {
-      return;
+    if (event.canceled) return;
+
+    // Reconcile local state from the sortable instances
+    const newItems: Record<string, UniqueIdentifier[]> = {};
+    for (const column of columns) {
+      newItems[column] = [];
+    }
+
+    for (const [itemId, sortable] of itemSortables) {
+      const column = `${sortable.group}`;
+      if (newItems[column]) {
+        newItems[column].push(itemId);
+      }
+    }
+
+    // Sort by index within each column
+    for (const column of columns) {
+      newItems[column].sort((a, b) => {
+        const sa = itemSortables.get(a)!;
+        const sb = itemSortables.get(b)!;
+        return sa.index - sb.index;
+      });
+    }
+
+    items = newItems;
+
+    // Move DOM elements to match final positions
+    for (const column of columns) {
+      const listEl = columnElements[column];
+
+      for (const itemId of items[column]) {
+        const sortable = itemSortables.get(itemId);
+        const element = sortable?.element;
+        if (!element) continue;
+
+        listEl.appendChild(element);
+
+        (element as HTMLElement).style.setProperty(
+          '--accent-color',
+          COLORS[column]
+        );
+        element.setAttribute('data-accent-color', column);
+      }
     }
   });
 
@@ -180,13 +214,10 @@ export function MultipleListsExample(itemCount = 5) {
   };
 }
 
-function findColumnIn(
-  items: Record<string, string[]>,
-  itemId: string
+function findColumn(
+  itemId: UniqueIdentifier
 ): string | undefined {
-  for (const [column, columnItems] of Object.entries(items)) {
-    if (columnItems.includes(itemId)) return column;
-  }
+  // This is a fallback; prefer reading from sortable.group directly
   return undefined;
 }
 
