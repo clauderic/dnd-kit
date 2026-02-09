@@ -18,16 +18,22 @@ export default {
   },
 
   refs: (_config, {configType}) => {
+    const refs: Record<string, {title: string; url: string}> = {};
+
     const vanillaUrl =
       configType === 'DEVELOPMENT'
         ? 'http://localhost:6007'
         : process.env.VANILLA_STORYBOOK_URL;
 
-    if (!vanillaUrl) return {};
+    const vueUrl =
+      configType === 'DEVELOPMENT'
+        ? 'http://localhost:6008'
+        : process.env.VUE_STORYBOOK_URL;
 
-    return {
-      vanilla: {title: 'Vanilla', url: vanillaUrl},
-    };
+    if (vanillaUrl) refs.vanilla = {title: 'Vanilla', url: vanillaUrl};
+    if (vueUrl) refs.vue = {title: 'Vue', url: vueUrl};
+
+    return refs;
   },
 
   async viteFinal(config) {
