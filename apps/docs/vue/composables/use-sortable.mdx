@@ -1,0 +1,104 @@
+---
+title: 'useSortable'
+description: 'Create sortable elements with the useSortable composable.'
+icon: 'layer-group'
+---
+
+## Usage
+
+The `useSortable` composable combines draggable and droppable behavior with sorting logic. Import it from `@dnd-kit/vue/sortable`.
+
+```vue
+<script setup>
+import {ref, computed} from 'vue';
+import {useSortable} from '@dnd-kit/vue/sortable';
+
+const props = defineProps(['id', 'index']);
+const element = ref(null);
+const {isDragging} = useSortable({
+  id: computed(() => props.id),
+  index: computed(() => props.index),
+  element,
+});
+</script>
+
+<template>
+  <div ref="element" :data-shadow="isDragging">
+    {{ id }}
+  </div>
+</template>
+```
+
+<Note>
+  When passing props to `useSortable`, wrap reactive values in `computed()` to maintain reactivity. Plain values like `props.id` are read once during setup and won't update.
+</Note>
+
+## Input
+
+All input properties accept plain values or Vue refs/getters (`MaybeRefOrGetter`).
+
+<ParamField path="id" type="MaybeRefOrGetter<UniqueIdentifier>" required>
+  A unique identifier for this sortable instance.
+</ParamField>
+
+<ParamField path="index" type="MaybeRefOrGetter<number>" required>
+  The current index of this item in the sorted list.
+</ParamField>
+
+<ParamField path="element" type="MaybeRefOrGetter<HTMLElement | null>" required>
+  A template ref pointing to the sortable element.
+</ParamField>
+
+<ParamField path="group" type="MaybeRefOrGetter<string>" optional>
+  The group this sortable belongs to. Used for sorting across multiple lists.
+</ParamField>
+
+<ParamField path="handle" type="MaybeRefOrGetter<HTMLElement | null>" optional>
+  A template ref for a drag handle.
+</ParamField>
+
+<ParamField path="accept" type="MaybeRefOrGetter<string | string[]>" optional>
+  The types of draggable elements this sortable accepts.
+</ParamField>
+
+<ParamField path="type" type="MaybeRefOrGetter<string>" optional>
+  The type of this sortable element.
+</ParamField>
+
+<ParamField path="feedback" type="MaybeRefOrGetter<'default' | 'clone' | 'move' | 'none'>" optional>
+  The type of visual feedback. Defaults to `'default'`.
+</ParamField>
+
+<ParamField path="transition" type="MaybeRefOrGetter<SortableTransition>" optional>
+  Animation transition configuration for sort operations.
+</ParamField>
+
+<ParamField path="disabled" type="MaybeRefOrGetter<boolean>" optional>
+  Whether the sortable is disabled.
+</ParamField>
+
+<ParamField path="data" type="MaybeRefOrGetter<Data>" optional>
+  Custom data to attach to this sortable instance.
+</ParamField>
+
+## Output
+
+<ResponseField name="isDragging" type="ComputedRef<boolean>">
+  Whether this element is currently being dragged.
+</ResponseField>
+
+<ResponseField name="isDropping" type="ComputedRef<boolean>">
+  Whether this element is in the process of being dropped.
+</ResponseField>
+
+<ResponseField name="isDragSource" type="ComputedRef<boolean>">
+  Whether this element is the source of the current drag operation.
+</ResponseField>
+
+<ResponseField name="isDropTarget" type="ComputedRef<boolean>">
+  Whether this element is currently a drop target.
+</ResponseField>
+
+<ResponseField name="sortable" type="ShallowReadonly<Ref<Sortable>>">
+  The underlying `Sortable` instance.
+</ResponseField>

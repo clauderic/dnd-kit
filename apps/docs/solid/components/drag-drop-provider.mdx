@@ -1,0 +1,56 @@
+---
+title: 'DragDropProvider'
+description: 'The DragDropProvider component creates and manages a DragDropManager instance for your SolidJS application.'
+icon: 'sitemap'
+---
+
+## Overview
+
+The `DragDropProvider` component is the root component for drag and drop interactions. It creates a [DragDropManager](/concepts/drag-drop-manager) instance and makes it available to all descendant components via Solid's context API.
+
+## Usage
+
+```tsx
+import {DragDropProvider} from '@dnd-kit/solid';
+
+function App() {
+  return (
+    <DragDropProvider
+      onDragEnd={(event) => {
+        // Handle drop
+      }}
+    >
+      {/* Your draggable and droppable elements */}
+    </DragDropProvider>
+  );
+}
+```
+
+## Props
+
+<ParamField path="manager" type="DragDropManager" optional>
+  An optional externally created `DragDropManager` instance. If not provided, one will be created automatically.
+</ParamField>
+
+<ParamField path="plugins" type="Plugin[]" optional>
+  An array of plugins to use. Defaults to the default preset.
+</ParamField>
+
+<ParamField path="sensors" type="Sensor[]" optional>
+  An array of sensors to use. Defaults to `PointerSensor` and `KeyboardSensor`.
+</ParamField>
+
+<ParamField path="modifiers" type="Modifier[]" optional>
+  An array of modifiers to apply to drag operations.
+</ParamField>
+
+## Event Props
+
+| Prop | Description |
+|------|-------------|
+| `onBeforeDragStart` | Called before a drag operation begins. |
+| `onDragStart` | Called when a drag operation starts. |
+| `onDragMove` | Called when the dragged element moves. |
+| `onDragOver` | Called when the dragged element moves over a droppable target. |
+| `onDragEnd` | Called when a drag operation ends (dropped or canceled). |
+| `onCollision` | Called when collisions are detected. |

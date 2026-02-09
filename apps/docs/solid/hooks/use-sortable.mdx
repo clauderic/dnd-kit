@@ -1,0 +1,110 @@
+---
+title: 'useSortable'
+description: 'Create sortable elements with the useSortable hook.'
+icon: 'layer-group'
+---
+
+## Usage
+
+The `useSortable` hook combines draggable and droppable behavior with sorting logic. Import it from `@dnd-kit/solid/sortable`.
+
+```tsx
+import {useSortable} from '@dnd-kit/solid/sortable';
+
+function SortableItem(props) {
+  const {ref, isDragging} = useSortable({
+    get id() { return props.id; },
+    get index() { return props.index; },
+  });
+
+  return (
+    <div ref={ref} data-shadow={isDragging}>
+      {props.id}
+    </div>
+  );
+}
+```
+
+<Note>
+  Use **getter syntax** for reactive props to maintain Solid's fine-grained reactivity. Without getters, the hook reads prop values once during setup and never re-runs its effects when they change.
+</Note>
+
+## Input
+
+<ParamField path="id" type="UniqueIdentifier" required>
+  A unique identifier. Use `get id() { return props.id }` for reactive values.
+</ParamField>
+
+<ParamField path="index" type="number" required>
+  The current index in the sorted list. Use `get index() { return props.index }` for reactive values.
+</ParamField>
+
+<ParamField path="group" type="string" optional>
+  The group this sortable belongs to. Used for sorting across multiple lists.
+</ParamField>
+
+<ParamField path="handle" type="Element" optional>
+  A handle element. Use the `handleRef` callback to set it.
+</ParamField>
+
+<ParamField path="accept" type="string | string[]" optional>
+  The types of draggable elements this sortable accepts.
+</ParamField>
+
+<ParamField path="type" type="string" optional>
+  The type of this sortable element.
+</ParamField>
+
+<ParamField path="feedback" type="'default' | 'clone' | 'move' | 'none'" optional>
+  The type of visual feedback. Defaults to `'default'`.
+</ParamField>
+
+<ParamField path="transition" type="SortableTransition" optional>
+  Animation transition configuration.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" optional>
+  Whether the sortable is disabled.
+</ParamField>
+
+<ParamField path="data" type="Data" optional>
+  Custom data to attach to this sortable instance.
+</ParamField>
+
+## Output
+
+<ResponseField name="ref" type="(element: Element) => void">
+  A callback ref to attach to the sortable element.
+</ResponseField>
+
+<ResponseField name="handleRef" type="(element: Element) => void">
+  A callback ref for a drag handle.
+</ResponseField>
+
+<ResponseField name="sourceRef" type="(element: Element) => void">
+  A callback ref for the drag source element.
+</ResponseField>
+
+<ResponseField name="targetRef" type="(element: Element) => void">
+  A callback ref for the drop target element.
+</ResponseField>
+
+<ResponseField name="isDragging" type="boolean" note="getter">
+  Whether this element is currently being dragged.
+</ResponseField>
+
+<ResponseField name="isDropping" type="boolean" note="getter">
+  Whether this element is in the process of being dropped.
+</ResponseField>
+
+<ResponseField name="isDragSource" type="boolean" note="getter">
+  Whether this element is the source of the current drag operation.
+</ResponseField>
+
+<ResponseField name="isDropTarget" type="boolean" note="getter">
+  Whether this element is currently a drop target.
+</ResponseField>
+
+<ResponseField name="sortable" type="Sortable">
+  The underlying `Sortable` instance.
+</ResponseField>

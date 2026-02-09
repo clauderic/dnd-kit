@@ -1,0 +1,177 @@
+---
+title: 'Quickstart'
+description: 'Start building drag and drop interfaces with Vue in minutes.'
+icon: 'rocket'
+---
+
+import {Story} from '/snippets/story.mdx';
+import Intro from '/snippets/quickstart/intro.mdx';
+
+<Intro />
+
+## Overview
+
+The `@dnd-kit/vue` package provides a set of Vue composables and components that you can use to build drag and drop interfaces. It is a thin Vue integration layer built on top of the [vanilla](/overview) library, so all of the same concepts are shared and can be used. You can refer to the vanilla documentation of these concepts, such as [plugins](/extend/plugins), [modifiers](/extend/modifiers), and [sensors](/extend/sensors).
+
+<Note>
+  `@dnd-kit/vue` requires Vue 3.5 or later.
+</Note>
+
+## Installation
+Before getting started, make sure you install `@dnd-kit/vue` in your project:
+
+<CodeGroup>
+  ```bash npm
+  npm install @dnd-kit/vue
+  ```
+
+  ```bash yarn
+  yarn add @dnd-kit/vue
+  ```
+
+  ```bash pnpm
+  pnpm add @dnd-kit/vue
+  ```
+
+  ```bash bun
+  bun add @dnd-kit/vue
+  ```
+</CodeGroup>
+
+## Making elements draggable
+
+Let's get started by creating draggable elements that can be dropped over droppable targets. To do so, we'll be using the `useDraggable` composable.
+
+The `useDraggable` composable requires a unique `id` and a template ref for the `element`. It returns reactive properties like `isDragging` that you can use in your template.
+
+```vue
+<script setup>
+import {ref} from 'vue';
+import {useDraggable} from '@dnd-kit/vue';
+
+const element = ref(null);
+const {isDragging} = useDraggable({id: 'draggable', element});
+</script>
+
+<template>
+  <button ref="element">
+    Draggable
+  </button>
+</template>
+```
+
+## Creating droppable elements
+
+In order for our draggable elements to have targets where they can be dropped, we need to create droppable elements. To do so, we'll be using the `useDroppable` composable.
+
+Like `useDraggable`, the `useDroppable` composable requires a unique `id` and an `element` ref.
+
+```vue Droppable.vue
+<script setup>
+import {ref} from 'vue';
+import {useDroppable} from '@dnd-kit/vue';
+
+const element = ref(null);
+const {isDropTarget} = useDroppable({id: 'droppable', element});
+</script>
+
+<template>
+  <div ref="element" :style="{width: '300px', height: '300px'}">
+    <slot />
+  </div>
+</template>
+```
+
+## Putting all the pieces together
+
+Now that we have both draggable and droppable elements, we can put them together to create a simple drag and drop interaction.
+
+We'll be using the `DragDropProvider` component to wrap our draggable and droppable elements. This component handles the drag and drop interactions and allows us to listen to drag and drop events.
+
+<Note>
+  In Vue, composables like `useDraggable` and `useDroppable` must be called in a **child component** of `DragDropProvider`, not in the same component that renders the provider. This is because Vue's `provide`/`inject` requires the injection to be from an ancestor component.
+</Note>
+
+<CodeGroup>
+```vue App.vue
+<script setup>
+import {ref} from 'vue';
+import {DragDropProvider} from '@dnd-kit/vue';
+import Draggable from './Draggable.vue';
+import Droppable from './Droppable.vue';
+
+const parent = ref(undefined);
+
+function onDragEnd(event) {
+  if (event.canceled) return;
+  parent.value = event.operation.target?.id;
+}
+</script>
+
+<template>
+  <DragDropProvider @dragEnd="onDragEnd">
+    <Draggable v-if="parent == null" />
+
+    <Droppable id="droppable">
+      <Draggable v-if="parent === 'droppable'" />
+    </Droppable>
+  </DragDropProvider>
+</template>
+```
+```vue Draggable.vue
+<script setup>
+import {ref} from 'vue';
+import {useDraggable} from '@dnd-kit/vue';
+
+const element = ref(null);
+const {isDragging} = useDraggable({id: 'draggable', element});
+</script>
+
+<template>
+  <button ref="element">
+    Draggable
+  </button>
+</template>
+```
+```vue Droppable.vue
+<script setup>
+import {ref} from 'vue';
+import {useDroppable} from '@dnd-kit/vue';
+
+const props = defineProps(['id']);
+const element = ref(null);
+const {isDropTarget} = useDroppable({
+  id: props.id,
+  element,
+});
+</script>
+
+<template>
+  <div ref="element" :style="{width: '300px', height: '300px'}">
+    <slot />
+  </div>
+</template>
+```
+</CodeGroup>
+
+## Next steps
+
+Now that you have a basic understanding of how to make elements draggable and droppable, you can explore the concepts covered in this quickstart guide in more detail:
+
+<CardGroup>
+  <Card title="DragDropProvider" icon="sitemap" href="/vue/components/drag-drop-provider">
+    Create drag and drop contexts for your draggable and droppable elements.
+  </Card>
+
+  <Card title="useDraggable" icon="bullseye-pointer" href="/vue/composables/use-draggable">
+    Learn how to make elements draggable with the `useDraggable` composable.
+  </Card>
+
+  <Card title="useDroppable" icon="expand" href="/vue/composables/use-droppable">
+    Learn how to create droppable targets with the `useDroppable` composable.
+  </Card>
+
+  <Card title="useSortable" icon="layer-group" href="/vue/composables/use-sortable">
+    Learn how to create sortable elements with the `useSortable` composable.
+  </Card>
+</CardGroup>

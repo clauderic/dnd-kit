@@ -1,0 +1,61 @@
+---
+title: 'useDroppable'
+description: 'Create droppable targets with the useDroppable composable.'
+icon: 'expand'
+---
+
+## Usage
+
+The `useDroppable` composable requires a unique `id` and an `element` template ref.
+
+```vue
+<script setup>
+import {ref} from 'vue';
+import {useDroppable} from '@dnd-kit/vue';
+
+const element = ref(null);
+const {isDropTarget} = useDroppable({id: 'my-droppable', element});
+</script>
+
+<template>
+  <div ref="element" :data-highlight="isDropTarget">
+    Drop here
+  </div>
+</template>
+```
+
+## Input
+
+<ParamField path="id" type="MaybeRefOrGetter<UniqueIdentifier>" required>
+  A unique identifier for this droppable instance.
+</ParamField>
+
+<ParamField path="element" type="MaybeRefOrGetter<HTMLElement | null>" required>
+  A template ref pointing to the droppable element.
+</ParamField>
+
+<ParamField path="accept" type="MaybeRefOrGetter<string | string[]>" optional>
+  The types of draggable elements this droppable accepts.
+</ParamField>
+
+<ParamField path="collisionDetector" type="MaybeRefOrGetter<CollisionDetector>" optional>
+  A custom collision detection algorithm.
+</ParamField>
+
+<ParamField path="disabled" type="MaybeRefOrGetter<boolean>" optional>
+  Whether the droppable is disabled.
+</ParamField>
+
+<ParamField path="data" type="MaybeRefOrGetter<Data>" optional>
+  Custom data to attach to this droppable instance.
+</ParamField>
+
+## Output
+
+<ResponseField name="isDropTarget" type="ComputedRef<boolean>">
+  Whether this element is currently a drop target (a draggable is hovering over it).
+</ResponseField>
+
+<ResponseField name="droppable" type="ShallowReadonly<Ref<Droppable>>">
+  The underlying `Droppable` instance.
+</ResponseField>
