@@ -1,4 +1,4 @@
-.Button {
+button-component {
   --background: #181a22;
 
   display: inline-flex;
@@ -26,19 +26,19 @@
   box-shadow: 0 1px 3px 0 rgba(34, 33, 81, 0.15);
 }
 
-.Button:hover, .Button:focus {
+button-component:hover, button-component:focus {
   background-color: #111;
 }
 
-.Button:focus-visible {
+button-component:focus-visible {
   outline: 3px solid #4c9ffe;
 }
 
-.Button[disabled] {
+button-component[disabled] {
   opacity: 0.3;
 }
 
-.Button[data-shadow="true"]:not([aria-hidden="true"]) {
+button-component[data-shadow="true"]:not([aria-hidden="true"]) {
   transform: scale(1.03);
   box-shadow: -1px 0 15px 0 rgba(34, 33, 81, 0.01), 0px 15px 15px 0 rgba(34, 33, 81, 0.25);
 
@@ -60,14 +60,14 @@
   }
 }
 
-.Button:has(handle-component) {
+button-component:has(handle-component) {
   padding-right: 10px;
 }
 
-.dark .Button {
+.dark button-component {
   --background: #000;
 }
 
-.dark .Button[data-shadow="true"] {
+.dark button-component[data-shadow="true"] {
   --box-shadow: -1px 0 15px 0 rgba(0, 0, 0, 0.1), 0px 15px 15px 0 rgba(0, 0, 0, 0.25);
 }
