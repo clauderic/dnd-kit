@@ -1,7 +1,3 @@
 import './Container.css';
 
-export class Container extends HTMLElement {
-  connectedCallback() {
-    this.classList.add('Container');
-  }
-}
+export class Container extends HTMLElement {}
