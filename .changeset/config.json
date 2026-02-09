@@ -10,7 +10,8 @@
       "@dnd-kit/geometry",
       "@dnd-kit/helpers",
       "@dnd-kit/react",
-      "@dnd-kit/state"
+      "@dnd-kit/state",
+      "@dnd-kit/vue"
     ]
   ],
   "access": "public",
