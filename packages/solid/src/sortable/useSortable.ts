@@ -4,8 +4,8 @@ import {defaultSortableTransition, Sortable} from '@dnd-kit/dom/sortable';
 import {batch} from '@dnd-kit/state';
 import {createEffect, createSignal, on} from 'solid-js';
 
-import {useDeepSignal} from '../hooks/useDeepSignal.ts';
-import {useInstance} from '../core/hooks/useInstance.ts';
+import {useDeepSignal} from '@dnd-kit/solid/hooks';
+import {useInstance} from '@dnd-kit/solid';
 
 export interface UseSortableInput<T extends Data = Data>
   extends Omit<SortableInput<T>, 'handle' | 'element' | 'source' | 'target'> {
