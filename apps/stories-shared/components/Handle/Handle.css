@@ -17,10 +17,11 @@
   -webkit-user-select: none;
 
   --fill: #919eab;
+  --background: rgba(0, 0, 0, 0.05);
 }
 
 .Handle:hover, .Handle:active {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--background);
 }
 
 .Handle:focus-visible {
@@ -38,4 +39,8 @@
 
 .Handle:active, .Handle:hover {
   --fill: #6f7b88;
+}
+
+.Handle.dark {
+  --background: rgba(255, 255, 255, 0.1);
 }
