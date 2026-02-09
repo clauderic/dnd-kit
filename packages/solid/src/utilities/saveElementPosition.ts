@@ -32,6 +32,9 @@ export function createSaveElementPosition() {
   const restorePosition = (element: Element) => {
     if (!savedPosition) return;
 
+    // Don't restore if the element moved to a different container
+    if (element.parentElement !== savedPosition.parentElement) return;
+
     const {prevElement, nextElement, parentElement} = savedPosition;
 
     if (prevElement && element.previousElementSibling !== prevElement) {
