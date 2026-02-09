@@ -26,8 +26,12 @@ jobs:
       - name: Build Packages
         run: bun run build
 
-      - name: Run Playwright Tests
+      - name: Run Playwright Tests (React)
         working-directory: apps/stories
+        run: bunx playwright test
+
+      - name: Run Playwright Tests (Vue)
+        working-directory: apps/stories-vue
         run: bunx playwright test
 
       - name: Upload Test Results
@@ -35,5 +39,7 @@ jobs:
         if: ${{ !cancelled() }}
         with:
           name: playwright-report
-          path: apps/stories/playwright-report/
+          path: |
+            apps/stories/playwright-report/
+            apps/stories-vue/playwright-report/
           retention-days: 14
