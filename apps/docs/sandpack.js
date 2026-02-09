@@ -69,12 +69,14 @@ class SandpackElement extends HTMLElement {
     const sharedDependencies = {
       "@dnd-kit/helpers": "beta",
     }
-    const dependencies = template === "react" ? {
+    const templateDependencies = {
+      react: {"@dnd-kit/react": "beta"},
+      vue3: {"@dnd-kit/vue": "beta"},
+      solid: {"@dnd-kit/solid": "beta"},
+    };
+    const dependencies = {
       ...sharedDependencies,
-      "@dnd-kit/react": "beta"
-    } : {
-      ...sharedDependencies,
-      "@dnd-kit/dom": "beta",
+      ...(templateDependencies[template] || {"@dnd-kit/dom": "beta"}),
     };
 
     try {

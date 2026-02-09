@@ -4,6 +4,13 @@ description: 'Make elements draggable with the useDraggable composable.'
 icon: 'bullseye-pointer'
 ---
 
+import {CodeSandbox} from '/snippets/sandbox.mdx';
+
+<CodeSandbox template="vue3" files={{
+  'src/App.vue': {code: app, hidden: true},
+  'src/Draggable.vue': {code: code, active: true},
+}} height={220} previewHeight={200} hero />
+
 ## Usage
 
 The `useDraggable` composable requires a unique `id` and an `element` template ref. It returns reactive computed properties for the drag state.
@@ -77,3 +84,29 @@ All input properties accept plain values or Vue refs/getters (`MaybeRefOrGetter`
 <ResponseField name="draggable" type="ShallowReadonly<Ref<Draggable>>">
   The underlying `Draggable` instance.
 </ResponseField>
+
+export const app = `
+<script setup>
+import Draggable from './Draggable.vue';
+</script>
+
+<template>
+  <Draggable id="draggable" />
+</template>
+`.trim();
+
+export const code = `
+<script setup>
+import { ref } from 'vue';
+import { DragDropProvider, useDraggable } from '@dnd-kit/vue';
+
+const element = ref(null);
+const { ref: dragRef } = useDraggable({ id: 'draggable', element });
+</script>
+
+<template>
+  <DragDropProvider>
+    <button ref="element" class="btn">draggable</button>
+  </DragDropProvider>
+</template>
+`.trim();

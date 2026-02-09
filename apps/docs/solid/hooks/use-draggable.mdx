@@ -4,6 +4,12 @@ description: 'Make elements draggable with the useDraggable hook.'
 icon: 'bullseye-pointer'
 ---
 
+import {CodeSandbox} from '/snippets/sandbox.mdx';
+
+<CodeSandbox template="solid" files={{
+  'App.tsx': {code: app, active: true},
+}} height={220} previewHeight={200} hero />
+
 ## Usage
 
 The `useDraggable` hook requires a unique `id` and returns a `ref` callback and reactive getters for drag state.
@@ -77,3 +83,21 @@ function Draggable() {
 <ResponseField name="draggable" type="Draggable">
   The underlying `Draggable` instance.
 </ResponseField>
+
+export const app = `
+import {DragDropProvider, useDraggable} from '@dnd-kit/solid';
+
+function Draggable() {
+  const {ref} = useDraggable({id: 'draggable'});
+
+  return <button ref={ref} class="btn">draggable</button>;
+}
+
+export default function App() {
+  return (
+    <DragDropProvider>
+      <Draggable />
+    </DragDropProvider>
+  );
+}
+`.trim();
