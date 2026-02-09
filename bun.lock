@@ -49,6 +49,24 @@
       "name": "@dnd-kit/stories-shared",
       "version": "0.0.0",
     },
+    "apps/stories-vanilla": {
+      "name": "@dnd-kit/stories-vanilla",
+      "version": "0.0.0",
+      "dependencies": {
+        "@dnd-kit/abstract": "*",
+        "@dnd-kit/dom": "*",
+        "@dnd-kit/helpers": "*",
+        "@dnd-kit/stories-shared": "*",
+      },
+      "devDependencies": {
+        "@storybook/addon-links": "^9.0.15",
+        "@storybook/html-vite": "^9.0.15",
+        "@vueless/storybook-dark-mode": "^9.0.6",
+        "storybook": "^9.0.15",
+        "typescript": "^5.7.3",
+        "vite": "^5.4.14",
+      },
+    },
     "packages/abstract": {
       "name": "@dnd-kit/abstract",
       "version": "0.2.3",
@@ -279,6 +297,8 @@
 
     "@dnd-kit/stories-shared": ["@dnd-kit/stories-shared@workspace:apps/stories-shared"],
 
+    "@dnd-kit/stories-vanilla": ["@dnd-kit/stories-vanilla@workspace:apps/stories-vanilla"],
+
     "@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.23.1", "", { "os": "aix", "cpu": "ppc64" }, "sha512-6VhYk1diRqrhBAqpJEdjASR/+WVRtfjpqKuNw11cLiaWpAT/Uu+nokB+UJnevzy/P9C/ty6AOe0dwueMrGh/iQ=="],
 
     "@esbuild/android-arm": ["@esbuild/android-arm@0.23.1", "", { "os": "android", "cpu": "arm" }, "sha512-uz6/tEy2IFm9RYOyvKl88zdzZfwEfKZmnX9Cj1BHjeSGNuGLuMD1kR8y5bteYmwqKm1tj8m4cb/aKEorr6fHWQ=="],
@@ -448,6 +468,10 @@
     "@storybook/csf-plugin": ["@storybook/csf-plugin@9.0.15", "", { "dependencies": { "unplugin": "^1.3.1" }, "peerDependencies": { "storybook": "^9.0.15" } }, "sha512-KszyGjrocMiNbkmpBGARF1ugLYMVaw1J8Z31kmwTHsMgMZwAKcOsofJ0fPgFno0yV59DUVkWxVBdPs9V0hhvxA=="],
 
     "@storybook/global": ["@storybook/global@5.0.0", "", {}, "sha512-FcOqPAXACP0I3oJ/ws6/rrPT9WGhu915Cg8D02a9YxLo0DE9zI+a9A5gRGvmQ09fiWPukqI8ZAEoQEdWUKMQdQ=="],
+
+    "@storybook/html": ["@storybook/html@9.1.17", "", { "dependencies": { "@storybook/global": "^5.0.0", "ts-dedent": "^2.0.0" }, "peerDependencies": { "storybook": "^9.1.17" } }, "sha512-WyFnz1kAw0UlIsizd9VFckSB3vbL7yfZyDVHnv8JYWHuyZ3Pm9cTu4jnGDKOTC0EIqw6k8f7BEqoKAtCmQxlug=="],
+
+    "@storybook/html-vite": ["@storybook/html-vite@9.1.17", "", { "dependencies": { "@storybook/builder-vite": "9.1.17", "@storybook/html": "9.1.17" }, "peerDependencies": { "storybook": "^9.1.17" } }, "sha512-UOjeJ4BkpQU7acrssc9KDV0kTHxBqQn5mj3rXJA7DHFDWU4pmxzmLosoPBeFCtIrPwsbinJTsvLgqo8JuTluDg=="],
 
     "@storybook/icons": ["@storybook/icons@1.2.12", "", { "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0", "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0" } }, "sha512-UxgyK5W3/UV4VrI3dl6ajGfHM4aOqMAkFLWe2KibeQudLf6NJpDrDMSHwZj+3iKC4jFU7dkKbbtH2h/al4sW3Q=="],
 
@@ -1821,6 +1845,8 @@
 
     "@rollup/pluginutils/@types/estree": ["@types/estree@1.0.6", "", {}, "sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw=="],
 
+    "@storybook/html-vite/@storybook/builder-vite": ["@storybook/builder-vite@9.1.17", "", { "dependencies": { "@storybook/csf-plugin": "9.1.17", "ts-dedent": "^2.0.0" }, "peerDependencies": { "storybook": "^9.1.17", "vite": "^5.0.0 || ^6.0.0 || ^7.0.0" } }, "sha512-OQCYaFWoTBvovN2IJmkAW+7FgHMJiih1WA/xqgpKIx0ImZjB4z5FrKgzQeXsrYcLEsynyaj+xN3JFUKsz5bzGQ=="],
+
     "@storybook/icons/react": ["react@18.3.1", "", { "dependencies": { "loose-envify": "^1.1.0" } }, "sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ=="],
 
     "@storybook/icons/react-dom": ["react-dom@18.3.1", "", { "dependencies": { "loose-envify": "^1.1.0", "scheduler": "^0.23.2" }, "peerDependencies": { "react": "^18.3.1" } }, "sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw=="],
@@ -2054,6 +2080,8 @@
     "@nicolo-ribaudo/eslint-scope-5-internals/eslint-scope/estraverse": ["estraverse@4.3.0", "", {}, "sha512-39nnKffWz8xN1BU/2c79n9nB9HDzo0niYUqx6xyqUnyoAnQyyWpOTdZEeiCch8BBu515t4wp9ZmgVfVhn9EBpw=="],
 
     "@npmcli/map-workspaces/minimatch/brace-expansion": ["brace-expansion@2.0.1", "", { "dependencies": { "balanced-match": "^1.0.0" } }, "sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA=="],
+
+    "@storybook/html-vite/@storybook/builder-vite/@storybook/csf-plugin": ["@storybook/csf-plugin@9.1.17", "", { "dependencies": { "unplugin": "^1.3.1" }, "peerDependencies": { "storybook": "^9.1.17" } }, "sha512-o+ebQDdSfZHDRDhu2hNDGhCLIazEB4vEAqJcHgz1VsURq+l++bgZUcKojPMCAbeblptSEz2bwS0eYAOvG7aSXg=="],
 
     "@storybook/icons/react-dom/scheduler": ["scheduler@0.23.2", "", { "dependencies": { "loose-envify": "^1.1.0" } }, "sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ=="],
 

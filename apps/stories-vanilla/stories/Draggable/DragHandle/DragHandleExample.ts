@@ -1,20 +1,22 @@
 import {DragDropManager, Draggable} from '@dnd-kit/dom';
 
 import draggableIconSrc from '@dnd-kit/stories-shared/assets/draggableIcon.svg';
-import {createVanillaStory} from '../utilities.ts';
 
-export const DraggableExample = createVanillaStory(() => {
+export function DragHandleExample() {
+  const root = document.createElement('div');
+
   const manager = new DragDropManager();
-  const wrapperElement = createWrapperElement();
   const draggableElement = createDraggableElement();
 
-  wrapperElement.append(draggableElement);
-  document.body.appendChild(wrapperElement);
+  root.append(draggableElement);
+
+  const handleElement = draggableElement.querySelector('handle-component')!;
 
   const draggable = new Draggable(
     {
       id: 'draggable',
       element: draggableElement,
+      handle: handleElement,
       effects: () => [
         () => {
           if (draggable.isDragging) {
@@ -30,22 +32,11 @@ export const DraggableExample = createVanillaStory(() => {
     manager
   );
 
-  return () => {
-    draggable.destroy();
-    manager.destroy();
-    wrapperElement.remove();
-  };
-});
-
-function createWrapperElement() {
-  const wrapper = document.createElement('div');
-
-  return wrapper;
+  return {root, cleanup: () => { draggable.destroy(); manager.destroy(); }};
 }
 
 function createDraggableElement() {
   const element = document.createElement('button-component');
-  element.style.setProperty('width', 'max-content');
 
   const image = document.createElement('img');
   image.src = draggableIconSrc;
@@ -53,6 +44,9 @@ function createDraggableElement() {
   image.width = 140;
   image.style.pointerEvents = 'none';
   element.appendChild(image);
+
+  const handle = document.createElement('handle-component');
+  element.appendChild(handle);
 
   return element;
 }

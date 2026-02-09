@@ -72,12 +72,6 @@ const preview = {
               'Virtualized',
             ],
           ],
-          'Vanilla',
-          [
-            'Draggable',
-            'Droppable',
-            'Sortable',
-          ],
         ],
       },
     },

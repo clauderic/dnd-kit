@@ -17,6 +17,19 @@ export default {
     },
   },
 
+  refs: (_config, {configType}) => {
+    const vanillaUrl =
+      configType === 'DEVELOPMENT'
+        ? 'http://localhost:6007'
+        : process.env.VANILLA_STORYBOOK_URL;
+
+    if (!vanillaUrl) return {};
+
+    return {
+      vanilla: {title: 'Vanilla', url: vanillaUrl},
+    };
+  },
+
   async viteFinal(config) {
     // customize the Vite config here
     return mergeConfig(config, {
