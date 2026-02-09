@@ -4,6 +4,14 @@ description: 'Create sortable elements with the useSortable hook.'
 icon: 'layer-group'
 ---
 
+import {CodeSandbox} from '/snippets/sandbox.mdx';
+import {sortableStyles} from '/snippets/code.mdx';
+
+<CodeSandbox template="solid" files={{
+  'App.tsx': {code: appCode, active: true},
+  'styles.css': {code: sortableStyles, hidden: true},
+}} height={455} previewHeight={180} />
+
 ## Usage
 
 The `useSortable` hook combines draggable and droppable behavior with sorting logic. Import it from `@dnd-kit/solid/sortable`.
@@ -108,3 +116,38 @@ function SortableItem(props) {
 <ResponseField name="sortable" type="Sortable">
   The underlying `Sortable` instance.
 </ResponseField>
+
+export const appCode = `
+import {createSignal, For} from 'solid-js';
+import {DragDropProvider} from '@dnd-kit/solid';
+import {useSortable} from '@dnd-kit/solid/sortable';
+import {move} from '@dnd-kit/helpers';
+import './styles.css';
+
+function SortableItem(props) {
+  const {ref} = useSortable({
+    get id() { return props.id; },
+    get index() { return props.index; },
+  });
+
+  return <li ref={ref} class="item">Item {props.id}</li>;
+}
+
+export default function App() {
+  const [items, setItems] = createSignal([1, 2, 3, 4]);
+
+  return (
+    <DragDropProvider
+      onDragEnd={(event) => {
+        setItems((items) => move(items, event));
+      }}
+    >
+      <ul class="list">
+        <For each={items()}>
+          {(id, index) => <SortableItem id={id} index={index()} />}
+        </For>
+      </ul>
+    </DragDropProvider>
+  );
+}
+`.trim();

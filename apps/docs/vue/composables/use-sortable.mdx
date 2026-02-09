@@ -4,6 +4,15 @@ description: 'Create sortable elements with the useSortable composable.'
 icon: 'layer-group'
 ---
 
+import {CodeSandbox} from '/snippets/sandbox.mdx';
+import {sortableStyles} from '/snippets/code.mdx';
+
+<CodeSandbox template="vue3" files={{
+  'src/App.vue': {code: appCode, active: true},
+  'src/SortableItem.vue': {code: itemCode},
+  'src/styles.css': {code: sortableStyles, hidden: true},
+}} height={455} previewHeight={180} />
+
 ## Usage
 
 The `useSortable` composable combines draggable and droppable behavior with sorting logic. Import it from `@dnd-kit/vue/sortable`.
@@ -102,3 +111,53 @@ All input properties accept plain values or Vue refs/getters (`MaybeRefOrGetter`
 <ResponseField name="sortable" type="ShallowReadonly<Ref<Sortable>>">
   The underlying `Sortable` instance.
 </ResponseField>
+
+export const itemCode = `
+<script setup>
+import { ref, computed } from 'vue';
+import { useSortable } from '@dnd-kit/vue/sortable';
+
+const props = defineProps(['id', 'index']);
+const element = ref(null);
+const { isDragging } = useSortable({
+  id: computed(() => props.id),
+  index: computed(() => props.index),
+  element,
+});
+</script>
+
+<template>
+  <li ref="element" class="item">
+    Item {{ id }}
+  </li>
+</template>
+`.trim();
+
+export const appCode = `
+<script setup>
+import { ref } from 'vue';
+import { DragDropProvider } from '@dnd-kit/vue';
+import { move } from '@dnd-kit/helpers';
+import SortableItem from './SortableItem.vue';
+import './styles.css';
+
+const items = ref([1, 2, 3, 4]);
+
+function onDragEnd(event) {
+  items.value = move(items.value, event);
+}
+</script>
+
+<template>
+  <DragDropProvider @dragEnd="onDragEnd">
+    <ul class="list">
+      <SortableItem
+        v-for="(id, index) in items"
+        :key="id"
+        :id="id"
+        :index="index"
+      />
+    </ul>
+  </DragDropProvider>
+</template>
+`.trim();
