@@ -5,7 +5,7 @@ import {DragDropProvider, useDraggable, useDroppable} from '@dnd-kit/react';
 import {defaultPreset} from '@dnd-kit/dom';
 import {Debug} from '@dnd-kit/dom/plugins/debug';
 
-import {createRange} from '../../utilities/createRange.ts';
+import {createRange} from '@dnd-kit/stories-shared/utilities';
 import {Button} from '../components/Button/Button.tsx';
 import {Dropzone} from '../components/Dropzone/Dropzone.tsx';
 import {DraggableIcon} from '../icons/DraggableIcon.tsx';

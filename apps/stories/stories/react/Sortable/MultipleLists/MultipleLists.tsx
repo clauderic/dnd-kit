@@ -17,8 +17,7 @@ import {
   Handle,
   Remove,
 } from '../../components/index.ts';
-import {createRange} from '../../../utilities/createRange.ts';
-import {cloneDeep} from '../../../utilities/cloneDeep.ts';
+import {createRange, cloneDeep} from '@dnd-kit/stories-shared/utilities';
 
 interface Props {
   debug?: boolean;

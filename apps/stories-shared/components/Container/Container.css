@@ -1,4 +1,4 @@
-.Container {
+container-component {
   display: flex;
   flex-direction: column;
   grid-auto-rows: max-content;
@@ -17,21 +17,20 @@
   font-size: 1em;
 }
 
-.shadow {
+container-component[data-shadow="true"] {
   transform: scale(1.01);
   box-shadow: -1px 0 15px 0 rgba(34, 33, 81, 0.01), 0px 15px 15px 0 rgba(34, 33, 81, 0.25);
 }
 
-.Container:hover, .shadow {
+container-component:hover, container-component[data-shadow="true"] {
   background-color: rgb(240, 240, 240);
 }
 
-.Container[aria-hidden="true"] {
+container-component[aria-hidden="true"] {
   opacity: 0.5;
 }
 
-
-.Container > ul {
+container-component > ul {
   display: grid;
   gap: 16px;
   grid-template-columns: repeat(var(--columns, 1), 1fr);
@@ -40,12 +39,12 @@
   margin: 0;
 }
 
-.scrollable > ul {
+container-component[data-scrollable="true"] > ul {
   max-height: calc(80vh - 100px);
   overflow-y: auto;
 }
 
-.Header {
+container-component > .Header {
   display: flex;
   min-height: 59px;
   padding: 8px 20px;
@@ -59,13 +58,11 @@
   font-family: var(--font-family);
 }
 
-:global(.dark) .Container {
+.dark container-component {
   border: none;
   background-color: rgb(76, 79, 80);
 
-  &:hover, &.shadow {
+  &:hover, &[data-shadow="true"] {
     background-color: rgb(67 69 70);
   }
 }
-
-

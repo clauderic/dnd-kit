@@ -14,7 +14,7 @@ import {move} from '@dnd-kit/helpers';
 import {Debug} from '@dnd-kit/dom/plugins/debug';
 
 import {Item, Handle} from '../components/index.ts';
-import {createRange} from '../../utilities/createRange.ts';
+import {createRange} from '@dnd-kit/stories-shared/utilities';
 
 interface Props {
   debug?: boolean;

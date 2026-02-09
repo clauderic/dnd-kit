@@ -9,8 +9,7 @@ import {Debug} from '@dnd-kit/dom/plugins/debug';
 import AutoFrameComponent from '@measured/auto-frame-component';
 
 import {Container, Item} from '../../components/index.ts';
-import {createRange} from '../../../utilities/createRange.ts';
-import {cloneDeep} from '../../../utilities/cloneDeep.ts';
+import {createRange, cloneDeep} from '@dnd-kit/stories-shared/utilities';
 
 const AutoFrame = AutoFrameComponent.default || AutoFrameComponent;
 

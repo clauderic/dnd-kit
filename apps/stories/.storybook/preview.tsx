@@ -1,12 +1,8 @@
 import React, {useEffect, type PropsWithChildren} from 'react';
 import {Unstyled} from '@storybook/addon-docs/blocks';
 
-import {Button, Dropzone, Code, Item} from '../stories/components';
-
-// Register web components
-customElements.define('button-component', Button);
-customElements.define('dropzone-component', Dropzone);
-customElements.define('item-component', Item);
+import '@dnd-kit/stories-shared/register';
+import {Code} from '../stories/components';
 
 function DarkModeProvider({children}: PropsWithChildren) {
   useEffect(() => {
@@ -75,6 +71,12 @@ const preview = {
               'Iframe',
               'Virtualized',
             ],
+          ],
+          'Vanilla',
+          [
+            'Draggable',
+            'Droppable',
+            'Sortable',
           ],
         ],
       },

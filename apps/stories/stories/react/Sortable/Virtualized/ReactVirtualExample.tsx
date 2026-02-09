@@ -9,7 +9,7 @@ import {move} from '@dnd-kit/helpers';
 import {useWindowVirtualizer} from '@tanstack/react-virtual';
 
 import {Item, Handle} from '../../components';
-import {createRange, cloneDeep} from '../../../utilities';
+import {createRange, cloneDeep} from '@dnd-kit/stories-shared/utilities';
 
 interface Props {
   debug?: boolean;

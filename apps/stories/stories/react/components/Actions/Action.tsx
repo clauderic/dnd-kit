@@ -1,6 +1,6 @@
 import React, {forwardRef, CSSProperties, Ref} from 'react';
 
-import {classNames} from '../../../utilities';
+import {classNames} from '@dnd-kit/stories-shared/utilities';
 
 import styles from './Actions.module.css';
 

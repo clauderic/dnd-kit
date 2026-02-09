@@ -1,6 +1,6 @@
 import {HTMLProps} from 'react';
 
-import sortableIcon from '../../assets/sortableIcon.svg';
+import sortableIcon from '@dnd-kit/stories-shared/assets/sortableIcon.svg';
 
 export const SortableIcon = (props: HTMLProps<HTMLImageElement>) => (
   <img
