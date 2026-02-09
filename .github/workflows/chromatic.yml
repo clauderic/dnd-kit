@@ -6,9 +6,27 @@ on:
     branches: [experimental]
 
 jobs:
+  chromatic-vanilla:
+    name: Chromatic (Vanilla)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install && bun run build
+      - uses: chromaui/action@v1
+        id: vanilla
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          projectToken: ${{ secrets.CHROMATIC_VANILLA_TOKEN }}
+          buildScriptName: 'build'
+          workingDir: 'apps/stories-vanilla'
+    outputs:
+      storybookUrl: ${{ steps.vanilla.outputs.storybookUrl }}
+
   chromatic:
     name: Chromatic
     runs-on: ubuntu-latest
+    needs: chromatic-vanilla
     steps:
       - uses: actions/checkout@v1
       - uses: oven-sh/setup-bun@v1
@@ -19,3 +37,5 @@ jobs:
           projectToken: ${{ secrets.CHROMATIC_TOKEN }}
           buildScriptName: 'build'
           workingDir: 'apps/stories'
+        env:
+          VANILLA_STORYBOOK_URL: ${{ needs.chromatic-vanilla.outputs.storybookUrl }}

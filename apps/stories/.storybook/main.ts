@@ -18,13 +18,16 @@ export default {
   },
 
   refs: (_config, {configType}) => {
-    if (configType === 'DEVELOPMENT') {
-      return {
-        vanilla: {title: 'Vanilla', url: 'http://localhost:6007'},
-      };
-    }
+    const vanillaUrl =
+      configType === 'DEVELOPMENT'
+        ? 'http://localhost:6007'
+        : process.env.VANILLA_STORYBOOK_URL;
 
-    return {};
+    if (!vanillaUrl) return {};
+
+    return {
+      vanilla: {title: 'Vanilla', url: vanillaUrl},
+    };
   },
 
   async viteFinal(config) {
