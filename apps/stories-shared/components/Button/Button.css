@@ -60,7 +60,7 @@
   }
 }
 
-.Button:has(> button) {
+.Button:has(handle-component) {
   padding-right: 10px;
 }
 
