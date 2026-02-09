@@ -15,6 +15,7 @@ const preview = {
             'Vertical list',
             'Horizontal list',
             'Grid',
+            'Multiple lists',
           ],
         ],
       },
