@@ -2,9 +2,9 @@ import {type Data} from '@dnd-kit/abstract';
 import type {SortableInput} from '@dnd-kit/dom/sortable';
 import {defaultSortableTransition, Sortable} from '@dnd-kit/dom/sortable';
 import {batch} from '@dnd-kit/state';
-import {useDeepSignal} from '../composables/useDeepSignal.ts';
-import {toValueDeep, unrefElement} from '../utilities/index.ts';
-import {useInstance} from '../core/hooks/useInstance.ts';
+import {useDeepSignal} from '@dnd-kit/vue/composables';
+import {toValueDeep, unrefElement} from '@dnd-kit/vue/utilities';
+import {useInstance} from '@dnd-kit/vue';
 import type {MaybeRefOrGetter} from 'vue';
 import {
   computed,
