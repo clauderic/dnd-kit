@@ -77,7 +77,7 @@ export function DragDropProvider(props: DragDropProviderProps) {
         }
       }),
       monitor.addEventListener('dragend', (event, manager) => {
-        if (isSortable(event.operation.source)) {
+        if (event.canceled && isSortable(event.operation.source)) {
           restorePosition(event.operation.source!.element!);
         }
 
