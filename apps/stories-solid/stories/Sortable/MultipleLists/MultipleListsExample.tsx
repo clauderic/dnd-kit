@@ -2,6 +2,8 @@ import {createSignal, For} from 'solid-js';
 import {CollisionPriority} from '@dnd-kit/abstract';
 import {PointerSensor, KeyboardSensor, DragDropProvider} from '@dnd-kit/solid';
 import {useSortable} from '@dnd-kit/solid/sortable';
+import {defaultPreset} from '@dnd-kit/dom';
+import {Debug} from '@dnd-kit/dom/plugins/debug';
 import {move} from '@dnd-kit/helpers';
 import {createRange, cloneDeep} from '@dnd-kit/stories-shared/utilities';
 
@@ -36,7 +38,7 @@ function SortableItem(props: {id: string; column: string; index: number}) {
     <div
       ref={ref}
       class="Item"
-      data-shadow={isDragging}
+      data-shadow={isDragging() ? 'true' : undefined}
       data-accent-color={props.column}
       style={{'--accent-color': COLORS[props.column]}}
     >
@@ -56,7 +58,10 @@ function SortableColumn(props: {id: string; index: number; rows: string[]}) {
   });
 
   return (
-    <container-component ref={ref} data-shadow={isDragging ? 'true' : undefined}>
+    <container-component
+      ref={ref}
+      attr:data-shadow={isDragging() ? 'true' : undefined}
+    >
       <div class="Header">
         {props.id}
         <handle-component ref={handleRef} />
@@ -72,7 +77,7 @@ function SortableColumn(props: {id: string; index: number; rows: string[]}) {
   );
 }
 
-export function MultipleListsExample(props: {itemCount?: number}) {
+export function MultipleListsExample(props: {itemCount?: number; debug?: boolean}) {
   const itemCount = () => props.itemCount ?? 5;
 
   const [items, setItems] = createSignal<Record<string, string[]>>({
@@ -87,6 +92,7 @@ export function MultipleListsExample(props: {itemCount?: number}) {
 
   return (
     <DragDropProvider
+      plugins={props.debug ? [...defaultPreset.plugins, Debug] : undefined}
       sensors={sensors}
       onDragStart={() => {
         snapshot = cloneDeep(items());
@@ -94,6 +100,7 @@ export function MultipleListsExample(props: {itemCount?: number}) {
       onDragOver={(event) => {
         const {source} = event.operation;
         if (source?.type === 'column') return;
+        event.preventDefault();
         setItems((items) => move(items, event));
       }}
       onDragEnd={(event) => {

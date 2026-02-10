@@ -5,7 +5,7 @@ function DraggableItem() {
   const {isDragging, ref} = useDraggable({id: 'draggable'});
 
   return (
-    <button-component ref={ref} data-shadow={isDragging}>
+    <button-component ref={ref} attr:data-shadow={isDragging() ? 'true' : undefined}>
       <img src={draggableIconSrc} alt="Draggable" width={140} draggable={false} style={{"pointer-events": 'none'}} />
     </button-component>
   );

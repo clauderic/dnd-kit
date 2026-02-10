@@ -5,6 +5,12 @@ import {MultipleListsExample} from './MultipleListsExample';
 const meta: Meta = {
   title: 'Sortable/Multiple lists',
   component: MultipleListsExample,
+  argTypes: {
+    debug: {control: 'boolean'},
+  },
+  args: {
+    debug: false,
+  },
 };
 
 export default meta;

@@ -27,7 +27,12 @@ export function SortableItem(props: SortableItemProps) {
   };
 
   return (
-    <div ref={ref} class="Item" data-shadow={isDragging} style={style()}>
+    <div
+      ref={ref}
+      class="Item"
+      data-shadow={isDragging() ? 'true' : undefined}
+      style={style()}
+    >
       {props.id}
     </div>
   );

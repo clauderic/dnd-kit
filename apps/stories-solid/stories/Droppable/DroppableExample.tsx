@@ -7,7 +7,7 @@ function DraggableItem() {
   const {isDragging, ref} = useDraggable({id: 'draggable'});
 
   return (
-    <button-component ref={ref} data-shadow={isDragging}>
+    <button-component ref={ref} attr:data-shadow={isDragging() ? 'true' : undefined}>
       <img src={draggableIconSrc} alt="Draggable" width={140} draggable={false} style={{"pointer-events": 'none'}} />
     </button-component>
   );
@@ -17,7 +17,10 @@ function DroppableZone(props: {children?: any}) {
   const {isDropTarget, ref} = useDroppable({id: 'droppable'});
 
   return (
-    <dropzone-component ref={ref} data-highlight={`${isDropTarget}`}>
+    <dropzone-component
+      ref={ref}
+      attr:data-highlight={isDropTarget() ? 'true' : undefined}
+    >
       {props.children}
     </dropzone-component>
   );
