@@ -36,7 +36,7 @@ export function useDeepSignal<T extends object | null | undefined>(
         }
       })
     );
-  });
+  }, {flush: 'post'});
 
   return computed(() => {
     const _target = toValue(target);
