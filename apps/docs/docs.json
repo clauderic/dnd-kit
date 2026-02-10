@@ -106,7 +106,7 @@
           },
           {
             "anchor": "Solid",
-            "icon": "js",
+            "icon": "solidjs",
             "groups": [
               {
                 "group": "Get Started",

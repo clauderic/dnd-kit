@@ -18,7 +18,7 @@
   }
 }
 
-#navbar a:is([href="/react/quickstart"],[href="/javascript/quickstart"]) {
+#navbar a:is([href="/react/quickstart"], [href="/javascript/quickstart"]) {
   display: inline-flex;
   gap: 0.5rem;
   align-items: center;
@@ -34,7 +34,7 @@
   }
 }
 
-#navbar a[href="/react/quickstart"]::before  {
+#navbar a[href="/react/quickstart"]::before {
   mask-image: url("https://mintlify.b-cdn.net/v6.4.0/brands/react.svg");
 }
 
@@ -42,7 +42,12 @@
   mask-image: url("https://mintlify.b-cdn.net/v6.4.0/brands/js.svg");
 }
 
-.font-extrabold, .prose :where(h2):not(:where([class~=not-prose] *)) {
+svg[style*="solidjs.svg"] {
+  mask-image: url("/images/logo/solid.svg") !important;
+}
+
+.font-extrabold,
+.prose :where(h2):not(:where([class~=not-prose] *)) {
   font-weight: 600;
 }
 
@@ -70,12 +75,12 @@ kbd {
   word-spacing: -.1em;
   border-radius: 0.25em;
   height: fit-content;
-  background-color: rgba(255,255,255);
+  background-color: rgba(255, 255, 255);
   box-shadow: color(display-p3 0.024 0.024 0.349 / 0.024) 0px -0.6px 6px 0px inset, color(display-p3 1 1 1 / 0.95) 0px 0.6px 0px 0px inset, color(display-p3 0.024 0.024 0.349 / 0.024) 0px 3px 6px 0px inset, color(display-p3 0.008 0.008 0.165 / 0.15) 0px -0.6px 0px 0px inset, color(display-p3 0.004 0.039 0.2 / 0.122) 0px 0px 0px 0.6px, color(display-p3 0.008 0.027 0.184 / 0.197) 0px 0.96px 2.04px 0px;
 }
 
 .dark kbd {
-  background-color: rgba(0,0,0);
+  background-color: rgba(0, 0, 0);
   box-shadow: color(display-p3 0.882 0.933 0.992 / 0.077) 0px -0.6px 6px 0px inset, color(display-p3 0.949 0.969 0.996 / 0.708) 0px 0.6px 0px 0px inset, color(display-p3 0.875 0.992 1 / 0.034) 0px 3px 6px 0px inset, color(display-p3 0 0 0 / 0.9) 0px -1.2px 0px 0px inset, color(display-p3 0.882 0.929 1 / 0.246) 0px 0px 0px 0.9px, color(display-p3 0 0 0 / 0.95) 0px 0.96px 2.04px 0px;
 }
 
@@ -114,8 +119,8 @@ kbd {
 }
 
 .sp-layout {
-  border-radius: var(--rounded-xl,.75rem);
-  --tw-ring-color: rgba(0,0,0,.05);
+  border-radius: var(--rounded-xl, .75rem);
+  --tw-ring-color: rgba(0, 0, 0, .05);
   --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
   --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color);
   box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
@@ -157,7 +162,8 @@ html:not(.dark) .hero .sp-layout {
   flex-basis: 100% !important;
 }
 
-.sp-preview, .sp-preview-container {
+.sp-preview,
+.sp-preview-container {
   background-color: transparent;
 }
 
@@ -173,11 +179,13 @@ code-sandbox[style*="--preview-height"] .sp-preview {
   height: var(--preview-height) !important;
 }
 
-.sp-preview-container, .sp-overlay {
+.sp-preview-container,
+.sp-overlay {
   background-color: #fafafd;
 }
 
-.dark .sp-preview-container, .dark .sp-overlay {
+.dark .sp-preview-container,
+.dark .sp-overlay {
   background-color: #11131b;
 }
 
@@ -186,7 +194,8 @@ code-sandbox[style*="--preview-height"] .sp-preview {
   color-scheme: normal;
 }
 
-.hero .sp-preview-container, .hero .sp-overlay {
+.hero .sp-preview-container,
+.hero .sp-overlay {
   --gradient: linear-gradient(65deg, #56fff420, #001AFF20, #5F6AF220, #F25FD020, #56FFF520, #F25FD020, #001AFF20, #56fff420);
   background-image: var(--gradient);
   animation: background 16s linear infinite;
@@ -194,7 +203,8 @@ code-sandbox[style*="--preview-height"] .sp-preview {
   background-size: 600% 100%;
 }
 
-.dark .hero .sp-preview-container, .dark .hero .sp-overlay {
+.dark .hero .sp-preview-container,
+.dark .hero .sp-overlay {
   --gradient: linear-gradient(65deg, #56fff480, #001AFF80, #5F6AF280, #F25FD080, #56FFF580, #F25FD080, #001AFF80, #56fff480);
   animation: gradient 16s linear infinite;
 }
@@ -204,15 +214,19 @@ code-sandbox[style*="--preview-height"] .sp-preview {
   0% {
     background-color: #ff0000;
   }
+
   25% {
     background-color: #7f00ff;
   }
+
   50% {
     background-color: #00affa;
   }
+
   75% {
     background-color: #00f594;
   }
+
   100% {
     background-color: #ff0000
   }
@@ -222,6 +236,7 @@ code-sandbox[style*="--preview-height"] .sp-preview {
   0% {
     background-position: 0% 50%;
   }
+
   100% {
     background-position: 100% 50%;
   }
