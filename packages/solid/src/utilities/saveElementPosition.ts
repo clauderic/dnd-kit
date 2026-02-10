@@ -43,8 +43,13 @@ export function createSaveElementPosition() {
     }
   };
 
+  const clearPosition = () => {
+    savedPosition = null;
+  };
+
   return {
     savePosition,
+    clearPosition,
     restorePosition,
   };
 }

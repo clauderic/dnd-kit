@@ -25,7 +25,7 @@ export interface DragDropProviderProps
 }
 
 export function DragDropProvider(props: DragDropProviderProps) {
-  const {savePosition, restorePosition} = createSaveElementPosition();
+  const {savePosition, restorePosition, clearPosition} = createSaveElementPosition();
   const {renderer, trackRendering} = useRenderer();
   const manager = createMemo(
     () => props.manager ?? new DragDropManager(props)
@@ -68,6 +68,14 @@ export function DragDropProvider(props: DragDropProviderProps) {
         const callback = props.onDragOver;
         if (callback) {
           trackRendering(() => callback(event, manager));
+
+
+          // Update saved position to match what Solid just rendered.
+          if (isSortable(event.operation.source)) {
+            const source = event.operation.source;
+
+            queueMicrotask(() => savePosition(source));
+          }
         }
       }),
       monitor.addEventListener('dragmove', (event, manager) => {
@@ -77,7 +85,7 @@ export function DragDropProvider(props: DragDropProviderProps) {
         }
       }),
       monitor.addEventListener('dragend', (event, manager) => {
-        if (event.canceled && isSortable(event.operation.source)) {
+        if (isSortable(event.operation.source)) {
           restorePosition(event.operation.source!.element!);
         }
 
@@ -85,6 +93,8 @@ export function DragDropProvider(props: DragDropProviderProps) {
         if (callback) {
           trackRendering(() => callback(event, manager));
         }
+
+        clearPosition();
       }),
       monitor.addEventListener('collision', (event, manager) => {
         props.onCollision?.(event, manager);
