@@ -11,7 +11,8 @@
       "@dnd-kit/helpers",
       "@dnd-kit/react",
       "@dnd-kit/state",
-      "@dnd-kit/vue"
+      "@dnd-kit/vue",
+      "@dnd-kit/solid"
     ]
   ],
   "access": "public",

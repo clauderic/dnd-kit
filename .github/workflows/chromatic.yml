@@ -23,10 +23,47 @@ jobs:
     outputs:
       storybookUrl: ${{ steps.vanilla.outputs.storybookUrl }}
 
+  chromatic-vue:
+    name: Chromatic (Vue)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install && bun run build
+      - uses: chromaui/action@v1
+        id: vue
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          projectToken: ${{ secrets.CHROMATIC_VUE_TOKEN }}
+          buildScriptName: 'build'
+          workingDir: 'apps/stories-vue'
+    outputs:
+      storybookUrl: ${{ steps.vue.outputs.storybookUrl }}
+
+  chromatic-solid:
+    name: Chromatic (Solid)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install && bun run build
+      - uses: chromaui/action@v1
+        id: solid
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          projectToken: ${{ secrets.CHROMATIC_SOLID_TOKEN }}
+          buildScriptName: 'build'
+          workingDir: 'apps/stories-solid'
+    outputs:
+      storybookUrl: ${{ steps.solid.outputs.storybookUrl }}
+
   chromatic:
     name: Chromatic
     runs-on: ubuntu-latest
-    needs: chromatic-vanilla
+    needs:
+      - chromatic-vanilla
+      - chromatic-vue
+      - chromatic-solid
     steps:
       - uses: actions/checkout@v1
       - uses: oven-sh/setup-bun@v1
@@ -39,3 +76,5 @@ jobs:
           workingDir: 'apps/stories'
         env:
           VANILLA_STORYBOOK_URL: ${{ needs.chromatic-vanilla.outputs.storybookUrl }}
+          VUE_STORYBOOK_URL: ${{ needs.chromatic-vue.outputs.storybookUrl }}
+          SOLID_STORYBOOK_URL: ${{ needs.chromatic-solid.outputs.storybookUrl }}

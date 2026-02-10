@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/tsconfig",
+  "display": "Solid",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "lib": ["dom", "ES2022"],
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "importHelpers": true,
+    "sourceMap": true
+  }
+}
