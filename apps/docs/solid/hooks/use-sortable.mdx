@@ -26,7 +26,7 @@ function SortableItem(props) {
   });
 
   return (
-    <div ref={ref} data-shadow={isDragging}>
+    <div ref={ref} data-shadow={isDragging()}>
       {props.id}
     </div>
   );
@@ -71,6 +71,22 @@ function SortableItem(props) {
   Animation transition configuration.
 </ParamField>
 
+<ParamField path="modifiers" type="Modifier[]" optional>
+  Modifiers to apply to this sortable instance.
+</ParamField>
+
+<ParamField path="sensors" type="Sensor[]" optional>
+  Sensors to use for this sortable instance.
+</ParamField>
+
+<ParamField path="collisionDetector" type="CollisionDetector" optional>
+  A custom collision detection algorithm.
+</ParamField>
+
+<ParamField path="collisionPriority" type="number" optional>
+  The collision priority of this sortable element. Higher values take precedence when multiple droppable elements overlap.
+</ParamField>
+
 <ParamField path="disabled" type="boolean" optional>
   Whether the sortable is disabled.
 </ParamField>
@@ -97,20 +113,20 @@ function SortableItem(props) {
   A callback ref for the drop target element.
 </ResponseField>
 
-<ResponseField name="isDragging" type="boolean" note="getter">
-  Whether this element is currently being dragged.
+<ResponseField name="isDragging" type="() => boolean" note="accessor">
+  Whether this element is currently being dragged. Call as `isDragging()` in JSX.
 </ResponseField>
 
-<ResponseField name="isDropping" type="boolean" note="getter">
-  Whether this element is in the process of being dropped.
+<ResponseField name="isDropping" type="() => boolean" note="accessor">
+  Whether this element is in the process of being dropped. Call as `isDropping()` in JSX.
 </ResponseField>
 
-<ResponseField name="isDragSource" type="boolean" note="getter">
-  Whether this element is the source of the current drag operation.
+<ResponseField name="isDragSource" type="() => boolean" note="accessor">
+  Whether this element is the source of the current drag operation. Call as `isDragSource()` in JSX.
 </ResponseField>
 
-<ResponseField name="isDropTarget" type="boolean" note="getter">
-  Whether this element is currently a drop target.
+<ResponseField name="isDropTarget" type="() => boolean" note="accessor">
+  Whether this element is currently a drop target. Call as `isDropTarget()` in JSX.
 </ResponseField>
 
 <ResponseField name="sortable" type="Sortable">

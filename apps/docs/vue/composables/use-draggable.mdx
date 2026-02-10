@@ -6,7 +6,7 @@ icon: 'bullseye-pointer'
 
 import {CodeSandbox} from '/snippets/sandbox.mdx';
 
-<CodeSandbox template="vue3" files={{
+<CodeSandbox template="vue" files={{
   'src/App.vue': {code: app, hidden: true},
   'src/Draggable.vue': {code: code, active: true},
 }} height={220} previewHeight={200} hero />
@@ -101,7 +101,7 @@ import { ref } from 'vue';
 import { DragDropProvider, useDraggable } from '@dnd-kit/vue';
 
 const element = ref(null);
-const { ref: dragRef } = useDraggable({ id: 'draggable', element });
+useDraggable({ id: 'draggable', element });
 </script>
 
 <template>

@@ -1,10 +1,11 @@
 const importMap = {
   imports: {
     react: 'https://esm.sh/react@19.2.3',
+    'react/': 'https://esm.sh/react@19.2.3/',
     'react-dom': 'https://esm.sh/react-dom@19.2.3',
     'react-dom/': 'https://esm.sh/react-dom@19.2.3/',
     '@codesandbox/sandpack-react':
-      'https://esm.sh/@codesandbox/sandpack-react@2.20.0?deps=react@19.2.3&deps=react-dom@19.2.3',
+      'https://esm.sh/@codesandbox/sandpack-react@2.20.0?external=react,react-dom',
   },
 };
 
@@ -71,7 +72,7 @@ class SandpackElement extends HTMLElement {
     }
     const templateDependencies = {
       react: {"@dnd-kit/react": "beta"},
-      vue3: {"@dnd-kit/vue": "beta"},
+      vue: {"@dnd-kit/vue": "beta"},
       solid: {"@dnd-kit/solid": "beta"},
     };
     const dependencies = {

@@ -4,6 +4,14 @@ description: 'Create droppable targets with the useDroppable hook.'
 icon: 'expand'
 ---
 
+import {CodeSandbox} from '/snippets/sandbox.mdx';
+
+<CodeSandbox template="solid" files={{
+  'App.tsx': {code: app, hidden: true},
+  'Droppable.tsx': {code, active: true},
+  'styles.css': {code: styles, hidden: true},
+}} height={350} previewHeight={330} hero />
+
 ## Usage
 
 The `useDroppable` hook requires a unique `id` and returns a `ref` callback.
@@ -15,7 +23,7 @@ function Droppable(props) {
   const {ref, isDropTarget} = useDroppable({id: props.id});
 
   return (
-    <div ref={ref} data-highlight={isDropTarget}>
+    <div ref={ref} data-highlight={isDropTarget()}>
       {props.children}
     </div>
   );
@@ -30,6 +38,10 @@ function Droppable(props) {
 
 <ParamField path="accept" type="string | string[]" optional>
   The types of draggable elements this droppable accepts.
+</ParamField>
+
+<ParamField path="type" type="string" optional>
+  The type of this droppable element.
 </ParamField>
 
 <ParamField path="collisionDetector" type="CollisionDetector" optional>
@@ -50,10 +62,109 @@ function Droppable(props) {
   A callback ref to attach to the droppable element.
 </ResponseField>
 
-<ResponseField name="isDropTarget" type="boolean" note="getter">
-  Whether this element is currently a drop target.
+<ResponseField name="isDropTarget" type="() => boolean" note="accessor">
+  Whether this element is currently a drop target. Call as `isDropTarget()` in JSX.
 </ResponseField>
 
 <ResponseField name="droppable" type="Droppable">
   The underlying `Droppable` instance.
 </ResponseField>
+
+export const app = `
+import {createSignal} from 'solid-js';
+import {DragDropProvider, useDraggable} from '@dnd-kit/solid';
+import {Droppable} from './Droppable';
+import './styles.css';
+
+function Draggable() {
+  const {ref} = useDraggable({id: 'draggable'});
+  return <button ref={ref} class="btn">draggable</button>;
+}
+
+export default function App() {
+  const [parent, setParent] = createSignal(undefined);
+  return (
+    <DragDropProvider
+      onDragEnd={(event) => {
+        if (event.canceled) return;
+        setParent(event.operation.target?.id);
+      }}
+    >
+      <div class="container">
+        {parent() == null ? <Draggable /> : null}
+        <Droppable>
+          {parent() === 'droppable' ? <Draggable /> : null}
+        </Droppable>
+      </div>
+    </DragDropProvider>
+  );
+}
+`.trim();
+
+export const code = `
+import {useDroppable} from '@dnd-kit/solid';
+
+export function Droppable(props) {
+  const {ref, isDropTarget} = useDroppable({id: 'droppable'});
+
+  return (
+    <div ref={ref} class={isDropTarget() ? "droppable highlight" : "droppable"}>
+      {props.children}
+    </div>
+  );
+}
+`.trim();
+
+export const styles = `
+body {
+  padding: 1.5em;
+  font-family: system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: grab;
+  padding: 12px 18px;
+  background: #000;
+  color: #FFF;
+  border-radius: 8px;
+  border: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn[aria-grabbed="true"] {
+  transform: scale(1.025);
+  box-shadow: 0px 15px 15px 0 rgba(34, 33, 81, 0.25);
+}
+
+.droppable {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 280px;
+  min-height: 120px;
+  padding: 20px;
+  border-radius: 10px;
+  box-sizing: border-box;
+  background-color: #fff;
+  box-shadow: inset rgba(201, 211, 219, 0.5) 0 0 0 2px;
+  transition: box-shadow 250ms ease, background-color 250ms ease;
+}
+
+.droppable.highlight {
+  background-color: rgba(30, 185, 157, 0.05);
+  box-shadow: inset #1eb99d 0 0 0 2px;
+}
+`.trim();

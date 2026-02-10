@@ -7,7 +7,7 @@ icon: 'layer-group'
 import {CodeSandbox} from '/snippets/sandbox.mdx';
 import {sortableStyles} from '/snippets/code.mdx';
 
-<CodeSandbox template="vue3" files={{
+<CodeSandbox template="vue" files={{
   'src/App.vue': {code: appCode, active: true},
   'src/SortableItem.vue': {code: itemCode},
   'src/styles.css': {code: sortableStyles, hidden: true},
@@ -80,6 +80,22 @@ All input properties accept plain values or Vue refs/getters (`MaybeRefOrGetter`
 
 <ParamField path="transition" type="MaybeRefOrGetter<SortableTransition>" optional>
   Animation transition configuration for sort operations.
+</ParamField>
+
+<ParamField path="modifiers" type="MaybeRefOrGetter<Modifier[]>" optional>
+  Modifiers to apply to this sortable instance.
+</ParamField>
+
+<ParamField path="sensors" type="MaybeRefOrGetter<Sensor[]>" optional>
+  Sensors to use for this sortable instance.
+</ParamField>
+
+<ParamField path="collisionDetector" type="MaybeRefOrGetter<CollisionDetector>" optional>
+  A custom collision detection algorithm.
+</ParamField>
+
+<ParamField path="collisionPriority" type="MaybeRefOrGetter<number>" optional>
+  The collision priority of this sortable element. Higher values take precedence when multiple droppable elements overlap.
 </ParamField>
 
 <ParamField path="disabled" type="MaybeRefOrGetter<boolean>" optional>

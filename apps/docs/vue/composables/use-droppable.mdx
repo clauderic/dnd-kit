@@ -4,6 +4,15 @@ description: 'Create droppable targets with the useDroppable composable.'
 icon: 'expand'
 ---
 
+import {CodeSandbox} from '/snippets/sandbox.mdx';
+
+<CodeSandbox template="vue" files={{
+  'src/App.vue': {code: app, hidden: true},
+  'src/Draggable.vue': {code: draggableCode, hidden: true},
+  'src/Droppable.vue': {code, active: true},
+  'src/styles.css': {code: styles, hidden: true},
+}} height={350} previewHeight={330} hero />
+
 ## Usage
 
 The `useDroppable` composable requires a unique `id` and an `element` template ref.
@@ -38,6 +47,10 @@ const {isDropTarget} = useDroppable({id: 'my-droppable', element});
   The types of draggable elements this droppable accepts.
 </ParamField>
 
+<ParamField path="type" type="MaybeRefOrGetter<string>" optional>
+  The type of this droppable element.
+</ParamField>
+
 <ParamField path="collisionDetector" type="MaybeRefOrGetter<CollisionDetector>" optional>
   A custom collision detection algorithm.
 </ParamField>
@@ -59,3 +72,115 @@ const {isDropTarget} = useDroppable({id: 'my-droppable', element});
 <ResponseField name="droppable" type="ShallowReadonly<Ref<Droppable>>">
   The underlying `Droppable` instance.
 </ResponseField>
+
+export const app = `
+<script setup>
+import { ref } from 'vue';
+import { DragDropProvider } from '@dnd-kit/vue';
+import Draggable from './Draggable.vue';
+import Droppable from './Droppable.vue';
+import './styles.css';
+
+const parent = ref(undefined);
+
+function onDragEnd(event) {
+  if (event.canceled) return;
+  parent.value = event.operation.target?.id;
+}
+</script>
+
+<template>
+  <DragDropProvider @dragEnd="onDragEnd">
+    <div class="container">
+      <Draggable v-if="parent == null" />
+      <Droppable>
+        <Draggable v-if="parent === 'droppable'" />
+      </Droppable>
+    </div>
+  </DragDropProvider>
+</template>
+`.trim();
+
+export const draggableCode = `
+<script setup>
+import { ref } from 'vue';
+import { useDraggable } from '@dnd-kit/vue';
+
+const element = ref(null);
+useDraggable({ id: 'draggable', element });
+</script>
+
+<template>
+  <button ref="element" class="btn">draggable</button>
+</template>
+`.trim();
+
+export const code = `
+<script setup>
+import { ref } from 'vue';
+import { useDroppable } from '@dnd-kit/vue';
+
+const element = ref(null);
+const { isDropTarget } = useDroppable({ id: 'droppable', element });
+</script>
+
+<template>
+  <div ref="element" :class="['droppable', { highlight: isDropTarget }]">
+    <slot />
+  </div>
+</template>
+`.trim();
+
+export const styles = `
+body {
+  padding: 1.5em;
+  font-family: system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: grab;
+  padding: 12px 18px;
+  background: #000;
+  color: #FFF;
+  border-radius: 8px;
+  border: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn[aria-grabbed="true"] {
+  transform: scale(1.025);
+  box-shadow: 0px 15px 15px 0 rgba(34, 33, 81, 0.25);
+}
+
+.droppable {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 280px;
+  min-height: 120px;
+  padding: 20px;
+  border-radius: 10px;
+  box-sizing: border-box;
+  background-color: #fff;
+  box-shadow: inset rgba(201, 211, 219, 0.5) 0 0 0 2px;
+  transition: box-shadow 250ms ease, background-color 250ms ease;
+}
+
+.droppable.highlight {
+  background-color: rgba(30, 185, 157, 0.05);
+  box-shadow: inset #1eb99d 0 0 0 2px;
+}
+`.trim();

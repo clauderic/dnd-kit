@@ -21,7 +21,7 @@ function Draggable() {
   const {ref, isDragging} = useDraggable({id: 'my-draggable'});
 
   return (
-    <button ref={ref} data-dragging={isDragging}>
+    <button ref={ref} data-dragging={isDragging()}>
       Drag me
     </button>
   );
@@ -68,16 +68,16 @@ function Draggable() {
   A callback ref to attach to a drag handle element.
 </ResponseField>
 
-<ResponseField name="isDragging" type="boolean" note="getter">
-  Whether this element is currently being dragged.
+<ResponseField name="isDragging" type="() => boolean" note="accessor">
+  Whether this element is currently being dragged. Call as `isDragging()` in JSX.
 </ResponseField>
 
-<ResponseField name="isDropping" type="boolean" note="getter">
-  Whether this element is in the process of being dropped.
+<ResponseField name="isDropping" type="() => boolean" note="accessor">
+  Whether this element is in the process of being dropped. Call as `isDropping()` in JSX.
 </ResponseField>
 
-<ResponseField name="isDragSource" type="boolean" note="getter">
-  Whether this element is the source of the current drag operation.
+<ResponseField name="isDragSource" type="() => boolean" note="accessor">
+  Whether this element is the source of the current drag operation. Call as `isDragSource()` in JSX.
 </ResponseField>
 
 <ResponseField name="draggable" type="Draggable">

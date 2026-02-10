@@ -36,6 +36,16 @@
       "name": "React",
       "url": "react",
       "icon": "react"
+    },
+    {
+      "name": "Vue",
+      "url": "vue",
+      "icon": "vuejs"
+    },
+    {
+      "name": "Solid",
+      "url": "solid",
+      "icon": "js"
     }
   ],
   "navigation": [
@@ -87,6 +97,38 @@
     {
       "group": "Guides",
       "pages": ["react/guides/multiple-sortable-lists"]
+    },
+    {
+      "group": "Get Started",
+      "pages": ["vue/quickstart"]
+    },
+    {
+      "group": "Components",
+      "pages": ["vue/components/drag-drop-provider"]
+    },
+    {
+      "group": "Composables",
+      "pages": [
+        "vue/composables/use-draggable",
+        "vue/composables/use-droppable",
+        "vue/composables/use-sortable"
+      ]
+    },
+    {
+      "group": "Get Started",
+      "pages": ["solid/quickstart"]
+    },
+    {
+      "group": "Components",
+      "pages": ["solid/components/drag-drop-provider"]
+    },
+    {
+      "group": "Hooks",
+      "pages": [
+        "solid/hooks/use-draggable",
+        "solid/hooks/use-droppable",
+        "solid/hooks/use-sortable"
+      ]
     }
   ],
   "footerSocials": {
