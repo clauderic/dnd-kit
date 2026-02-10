@@ -1,0 +1,161 @@
+---
+title: 'useDroppable'
+description: 'Create droppable targets with the useDroppable composable.'
+icon: 'expand'
+---
+
+import {CodeSandbox} from '/snippets/sandbox.mdx';
+import {draggableStyles} from '/snippets/code.mdx';
+
+<CodeSandbox template="vue" files={{
+  'src/App.vue': {code: app, hidden: true},
+  'src/Draggable.vue': {code: draggableCode, hidden: true},
+  'src/Droppable.vue': {code, active: true},
+  'src/styles.css': {code: draggableStyles + '\n\n' + droppableStyles, hidden: true},
+}} height={350} previewHeight={400} hero />
+
+## Usage
+
+The `useDroppable` composable requires a unique `id` and an `element` template ref.
+
+```vue
+<script setup>
+import {ref} from 'vue';
+import {useDroppable} from '@dnd-kit/vue';
+
+const element = ref(null);
+const {isDropTarget} = useDroppable({id: 'my-droppable', element});
+</script>
+
+<template>
+  <div ref="element" :data-highlight="isDropTarget">
+    Drop here
+  </div>
+</template>
+```
+
+## Input
+
+<ParamField path="id" type="MaybeRefOrGetter<UniqueIdentifier>" required>
+  A unique identifier for this droppable instance.
+</ParamField>
+
+<ParamField path="element" type="MaybeRefOrGetter<HTMLElement | null>" required>
+  A template ref pointing to the droppable element.
+</ParamField>
+
+<ParamField path="accept" type="MaybeRefOrGetter<string | string[]>" optional>
+  The types of draggable elements this droppable accepts.
+</ParamField>
+
+<ParamField path="type" type="MaybeRefOrGetter<string>" optional>
+  The type of this droppable element.
+</ParamField>
+
+<ParamField path="collisionDetector" type="MaybeRefOrGetter<CollisionDetector>" optional>
+  A custom collision detection algorithm.
+</ParamField>
+
+<ParamField path="disabled" type="MaybeRefOrGetter<boolean>" optional>
+  Whether the droppable is disabled.
+</ParamField>
+
+<ParamField path="data" type="MaybeRefOrGetter<Data>" optional>
+  Custom data to attach to this droppable instance.
+</ParamField>
+
+## Output
+
+<ResponseField name="isDropTarget" type="ComputedRef<boolean>">
+  Whether this element is currently a drop target (a draggable is hovering over it).
+</ResponseField>
+
+<ResponseField name="droppable" type="ShallowReadonly<Ref<Droppable>>">
+  The underlying `Droppable` instance.
+</ResponseField>
+
+export const app = `
+<script setup>
+import { ref } from 'vue';
+import { DragDropProvider } from '@dnd-kit/vue';
+import Draggable from './Draggable.vue';
+import Droppable from './Droppable.vue';
+import './styles.css';
+
+const parent = ref(undefined);
+
+function onDragEnd(event) {
+  if (event.canceled) return;
+  parent.value = event.operation.target?.id;
+}
+</script>
+
+<template>
+  <DragDropProvider @dragEnd="onDragEnd">
+    <div class="container">
+      <Draggable v-if="parent == null" />
+      <Droppable>
+        <Draggable v-if="parent === 'droppable'" />
+      </Droppable>
+    </div>
+  </DragDropProvider>
+</template>
+`.trim();
+
+export const draggableCode = `
+<script setup>
+import { ref } from 'vue';
+import { useDraggable } from '@dnd-kit/vue';
+
+const element = ref(null);
+useDraggable({ id: 'draggable', element });
+</script>
+
+<template>
+  <button ref="element" class="btn">draggable</button>
+</template>
+`.trim();
+
+export const code = `
+<script setup>
+import { ref } from 'vue';
+import { useDroppable } from '@dnd-kit/vue';
+
+const element = ref(null);
+const { isDropTarget } = useDroppable({ id: 'droppable', element });
+</script>
+
+<template>
+  <div ref="element" :class="['droppable', { highlight: isDropTarget }]">
+    <slot />
+  </div>
+</template>
+`.trim();
+
+export const droppableStyles = `
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 20px;
+  padding: 10px;
+}
+
+.droppable {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;
+  grid-column: 2;
+  padding: 20px;
+  border-radius: 10px;
+  box-sizing: border-box;
+  background-color: #fff;
+  box-shadow: inset rgba(201, 211, 219, 0.5) 0 0 0 2px;
+  transition: box-shadow 250ms ease, background-color 250ms ease;
+}
+
+.droppable.highlight {
+  box-shadow: inset #1eb99d 0 0 0 2px, rgba(0, 0, 0, 0.1) 20px 14px 24px;
+}
+`.trim();

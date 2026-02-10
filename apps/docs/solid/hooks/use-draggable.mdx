@@ -1,0 +1,106 @@
+---
+title: 'useDraggable'
+description: 'Make elements draggable with the useDraggable hook.'
+icon: 'bullseye-pointer'
+---
+
+import {CodeSandbox} from '/snippets/sandbox.mdx';
+import {draggableStyles} from '/snippets/code.mdx';
+
+<CodeSandbox template="solid" files={{
+  'App.tsx': {code: app, active: true},
+  'styles.css': {code: draggableStyles, hidden: true},
+}} height={220} previewHeight={200} hero />
+
+## Usage
+
+The `useDraggable` hook requires a unique `id` and returns a `ref` callback and reactive getters for drag state.
+
+```tsx
+import {useDraggable} from '@dnd-kit/solid';
+
+function Draggable() {
+  const {ref, isDragging} = useDraggable({id: 'my-draggable'});
+
+  return (
+    <button ref={ref} data-dragging={isDragging()}>
+      Drag me
+    </button>
+  );
+}
+```
+
+## Input
+
+<ParamField path="id" type="UniqueIdentifier" required>
+  A unique identifier for this draggable instance. Use getter syntax (`get id() { return props.id }`) for reactive values.
+</ParamField>
+
+<ParamField path="handle" type="Element" optional>
+  A handle element. When set, only this element activates dragging. Use the `handleRef` callback to set it.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" optional>
+  Whether the draggable is disabled.
+</ParamField>
+
+<ParamField path="feedback" type="'default' | 'clone' | 'move' | 'none'" optional>
+  The type of visual feedback to show during drag. Defaults to `'default'`.
+</ParamField>
+
+<ParamField path="modifiers" type="Modifier[]" optional>
+  Modifiers to apply to this draggable instance.
+</ParamField>
+
+<ParamField path="sensors" type="Sensor[]" optional>
+  Sensors to use for this draggable instance.
+</ParamField>
+
+<ParamField path="data" type="Data" optional>
+  Custom data to attach to this draggable instance.
+</ParamField>
+
+## Output
+
+<ResponseField name="ref" type="(element: Element) => void">
+  A callback ref to attach to the draggable element.
+</ResponseField>
+
+<ResponseField name="handleRef" type="(element: Element) => void">
+  A callback ref to attach to a drag handle element.
+</ResponseField>
+
+<ResponseField name="isDragging" type="() => boolean" note="accessor">
+  Whether this element is currently being dragged. Call as `isDragging()` in JSX.
+</ResponseField>
+
+<ResponseField name="isDropping" type="() => boolean" note="accessor">
+  Whether this element is in the process of being dropped. Call as `isDropping()` in JSX.
+</ResponseField>
+
+<ResponseField name="isDragSource" type="() => boolean" note="accessor">
+  Whether this element is the source of the current drag operation. Call as `isDragSource()` in JSX.
+</ResponseField>
+
+<ResponseField name="draggable" type="Draggable">
+  The underlying `Draggable` instance.
+</ResponseField>
+
+export const app = `
+import {DragDropProvider, useDraggable} from '@dnd-kit/solid';
+import './styles.css';
+
+function Draggable() {
+  const {ref} = useDraggable({id: 'draggable'});
+
+  return <button ref={ref} class="btn">draggable</button>;
+}
+
+export default function App() {
+  return (
+    <DragDropProvider>
+      <Draggable />
+    </DragDropProvider>
+  );
+}
+`.trim();

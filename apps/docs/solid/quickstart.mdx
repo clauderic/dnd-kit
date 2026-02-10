@@ -1,0 +1,143 @@
+---
+title: 'Quickstart'
+description: 'Start building drag and drop interfaces with SolidJS in minutes.'
+icon: 'rocket'
+---
+
+import {Story} from '/snippets/story.mdx';
+import Intro from '/snippets/quickstart/intro.mdx';
+
+<Intro />
+
+## Overview
+
+The `@dnd-kit/solid` package provides a set of SolidJS hooks and components that you can use to build drag and drop interfaces. It is a thin SolidJS integration layer built on top of the [vanilla](/overview) library, so all of the same concepts are shared and can be used. You can refer to the vanilla documentation of these concepts, such as [plugins](/extend/plugins), [modifiers](/extend/modifiers), and [sensors](/extend/sensors).
+
+<Note>
+  `@dnd-kit/solid` requires SolidJS 1.8 or later.
+</Note>
+
+## Installation
+Before getting started, make sure you install `@dnd-kit/solid` in your project:
+
+<CodeGroup>
+  ```bash npm
+  npm install @dnd-kit/solid
+  ```
+
+  ```bash yarn
+  yarn add @dnd-kit/solid
+  ```
+
+  ```bash pnpm
+  pnpm add @dnd-kit/solid
+  ```
+
+  ```bash bun
+  bun add @dnd-kit/solid
+  ```
+</CodeGroup>
+
+## Making elements draggable
+
+Let's get started by creating draggable elements. The `useDraggable` hook requires a unique `id`, and returns a `ref` callback that you can attach to any element.
+
+```tsx
+import {useDraggable} from '@dnd-kit/solid';
+
+function Draggable() {
+  const {ref} = useDraggable({id: 'draggable'});
+
+  return (
+    <button ref={ref}>
+      Draggable
+    </button>
+  );
+}
+```
+
+## Creating droppable elements
+
+To create drop targets, use the `useDroppable` hook.
+
+```tsx
+import {useDroppable} from '@dnd-kit/solid';
+
+function Droppable(props) {
+  const {ref, isDropTarget} = useDroppable({id: props.id});
+
+  return (
+    <div ref={ref} style={{width: '300px', height: '300px'}}>
+      {props.children}
+    </div>
+  );
+}
+```
+
+## Putting all the pieces together
+
+Wrap your draggable and droppable elements in a `DragDropProvider` to enable drag and drop interactions.
+
+```tsx
+import {createSignal} from 'solid-js';
+import {DragDropProvider, useDraggable, useDroppable} from '@dnd-kit/solid';
+
+function Draggable() {
+  const {ref} = useDraggable({id: 'draggable'});
+  return <button ref={ref}>Draggable</button>;
+}
+
+function Droppable(props) {
+  const {ref, isDropTarget} = useDroppable({id: 'droppable'});
+  return <div ref={ref}>{props.children}</div>;
+}
+
+function App() {
+  const [parent, setParent] = createSignal(undefined);
+
+  return (
+    <DragDropProvider
+      onDragEnd={(event) => {
+        if (event.canceled) return;
+        setParent(event.operation.target?.id);
+      }}
+    >
+      {parent() == null ? <Draggable /> : null}
+
+      <Droppable id="droppable">
+        {parent() === 'droppable' ? <Draggable /> : null}
+      </Droppable>
+    </DragDropProvider>
+  );
+}
+```
+
+<Note>
+  When passing reactive props to hooks like `useSortable`, use getter syntax to maintain Solid's fine-grained reactivity:
+  ```tsx
+  useSortable({
+    get id() { return props.id; },
+    get index() { return props.index; },
+  });
+  ```
+</Note>
+
+## Next steps
+
+<CardGroup>
+  <Card title="DragDropProvider" icon="sitemap" href="/solid/components/drag-drop-provider">
+    Create drag and drop contexts for your draggable and droppable elements.
+  </Card>
+
+  <Card title="useDraggable" icon="bullseye-pointer" href="/solid/hooks/use-draggable">
+    Learn how to make elements draggable with the `useDraggable` hook.
+  </Card>
+
+  <Card title="useDroppable" icon="expand" href="/solid/hooks/use-droppable">
+    Learn how to create droppable targets with the `useDroppable` hook.
+  </Card>
+
+  <Card title="useSortable" icon="layer-group" href="/solid/hooks/use-sortable">
+    Learn how to create sortable elements with the `useSortable` hook.
+  </Card>
+</CardGroup>

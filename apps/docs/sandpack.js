@@ -1,10 +1,11 @@
 const importMap = {
   imports: {
     react: 'https://esm.sh/react@19.2.3',
+    'react/': 'https://esm.sh/react@19.2.3/',
     'react-dom': 'https://esm.sh/react-dom@19.2.3',
     'react-dom/': 'https://esm.sh/react-dom@19.2.3/',
     '@codesandbox/sandpack-react':
-      'https://esm.sh/@codesandbox/sandpack-react@2.20.0?deps=react@19.2.3&deps=react-dom@19.2.3',
+      'https://esm.sh/@codesandbox/sandpack-react@2.20.0?external=react,react-dom',
   },
 };
 
@@ -66,33 +67,85 @@ class SandpackElement extends HTMLElement {
     const height = parseInt(this.getAttribute("height"));
     const showTabs = Boolean(this.getAttribute("showTabs"));
     const template = this.getAttribute("template") || "react";
+    const isSolid = template === "solid";
     const sharedDependencies = {
       "@dnd-kit/helpers": "beta",
     }
-    const dependencies = template === "react" ? {
+    const templateDependencies = {
+      react: {"@dnd-kit/react": "beta"},
+      vue: {"@dnd-kit/vue": "beta"},
+      solid: {"@dnd-kit/solid": "beta"},
+    };
+    const dependencies = {
       ...sharedDependencies,
-      "@dnd-kit/react": "beta"
-    } : {
-      ...sharedDependencies,
-      "@dnd-kit/dom": "beta",
+      ...(templateDependencies[template] || {"@dnd-kit/dom": "beta"}),
     };
 
     try {
       files = JSON.parse(this.getAttribute("files"));
     } catch {}
 
+    // The classic Sandpack "solid" bundler environment has a bug where its
+    // internal babel-preset-solid generates _$$component() dev-mode wrappers,
+    // but resolves solid-js/web to the production build which doesn't export
+    // that function. To work around this, we use Vite + Nodebox for Solid
+    // examples, which properly compiles Solid JSX and resolves conditional
+    // exports.
+    if (isSolid) {
+      const solidInfraFiles = {
+        '/index.html': {
+          code: \`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solid App</title>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module" src="/index.tsx"><\\/script>
+</body>
+</html>\`,
+          hidden: true,
+        },
+        '/index.tsx': {
+          code: 'import { render } from "solid-js/web";\\nimport App from "./App";\\nrender(() => <App />, document.getElementById("app"));',
+          hidden: true,
+        },
+        '/vite.config.ts': {
+          code: 'import { defineConfig } from "vite";\\nimport solidPlugin from "vite-plugin-solid";\\nexport default defineConfig({ plugins: [solidPlugin()] });',
+          hidden: true,
+        },
+        '/package.json': {
+          code: JSON.stringify({
+            scripts: { dev: "vite" },
+            dependencies: {
+              "solid-js": "^1.9.0",
+            },
+            devDependencies: {
+              "vite": "4.2.0",
+              "vite-plugin-solid": "^2.10.0",
+              "esbuild-wasm": "0.17.12",
+            },
+          }),
+          hidden: true,
+        },
+      };
+      files = { ...solidInfraFiles, ...files };
+    }
+
     const sandpackComponent = React.createElement(Sandpack, {
       files,
-      template,
+      template: isSolid ? undefined : template,
       theme,
       options: {
         showTabs,
         resizablePanels: false,
         editorHeight: height || undefined,
       },
-      customSetup: {
-        dependencies
-      }
+      customSetup: isSolid
+        ? { environment: "node", dependencies }
+        : { dependencies },
     }, null);
     root.render(sandpackComponent);
   }

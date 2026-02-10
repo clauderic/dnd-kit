@@ -1,0 +1,116 @@
+---
+title: 'useDraggable'
+description: 'Make elements draggable with the useDraggable composable.'
+icon: 'bullseye-pointer'
+---
+
+import {CodeSandbox} from '/snippets/sandbox.mdx';
+import {draggableStyles} from '/snippets/code.mdx';
+
+<CodeSandbox template="vue" files={{
+  'src/App.vue': {code: app, hidden: true},
+  'src/Draggable.vue': {code: code, active: true},
+  'src/styles.css': {code: draggableStyles, hidden: true},
+}} height={220} previewHeight={200} hero />
+
+## Usage
+
+The `useDraggable` composable requires a unique `id` and an `element` template ref. It returns reactive computed properties for the drag state.
+
+```vue
+<script setup>
+import {ref} from 'vue';
+import {useDraggable} from '@dnd-kit/vue';
+
+const element = ref(null);
+const {isDragging} = useDraggable({id: 'my-draggable', element});
+</script>
+
+<template>
+  <button ref="element" :data-dragging="isDragging">
+    Drag me
+  </button>
+</template>
+```
+
+## Input
+
+All input properties accept plain values or Vue refs/getters (`MaybeRefOrGetter`), so they can be reactive.
+
+<ParamField path="id" type="MaybeRefOrGetter<UniqueIdentifier>" required>
+  A unique identifier for this draggable instance.
+</ParamField>
+
+<ParamField path="element" type="MaybeRefOrGetter<HTMLElement | null>" required>
+  A template ref pointing to the draggable element.
+</ParamField>
+
+<ParamField path="handle" type="MaybeRefOrGetter<HTMLElement | null>" optional>
+  A template ref for a drag handle. When set, only this element activates dragging.
+</ParamField>
+
+<ParamField path="disabled" type="MaybeRefOrGetter<boolean>" optional>
+  Whether the draggable is disabled.
+</ParamField>
+
+<ParamField path="feedback" type="MaybeRefOrGetter<'default' | 'clone' | 'move' | 'none'>" optional>
+  The type of visual feedback to show during drag. Defaults to `'default'`.
+</ParamField>
+
+<ParamField path="modifiers" type="MaybeRefOrGetter<Modifier[]>" optional>
+  Modifiers to apply to this draggable instance.
+</ParamField>
+
+<ParamField path="sensors" type="MaybeRefOrGetter<Sensor[]>" optional>
+  Sensors to use for this draggable instance.
+</ParamField>
+
+<ParamField path="data" type="MaybeRefOrGetter<Data>" optional>
+  Custom data to attach to this draggable instance.
+</ParamField>
+
+## Output
+
+<ResponseField name="isDragging" type="ComputedRef<boolean>">
+  Whether this element is currently being dragged (visually).
+</ResponseField>
+
+<ResponseField name="isDropping" type="ComputedRef<boolean>">
+  Whether this element is in the process of being dropped (animating to final position).
+</ResponseField>
+
+<ResponseField name="isDragSource" type="ComputedRef<boolean>">
+  Whether this element is the source of the current drag operation.
+</ResponseField>
+
+<ResponseField name="draggable" type="ShallowReadonly<Ref<Draggable>>">
+  The underlying `Draggable` instance.
+</ResponseField>
+
+export const app = `
+<script setup>
+import { DragDropProvider } from '@dnd-kit/vue';
+import Draggable from './Draggable.vue';
+import './styles.css';
+</script>
+
+<template>
+  <DragDropProvider>
+    <Draggable id="draggable" />
+  </DragDropProvider>
+</template>
+`.trim();
+
+export const code = `
+<script setup>
+import { ref } from 'vue';
+import { useDraggable } from '@dnd-kit/vue';
+
+const element = ref(null);
+useDraggable({ id: 'draggable', element });
+</script>
+
+<template>
+  <button ref="element" class="btn">draggable</button>
+</template>
+`.trim();

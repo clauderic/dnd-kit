@@ -1,0 +1,54 @@
+---
+title: 'DragDropProvider'
+description: 'The DragDropProvider component creates and manages a DragDropManager instance for your Vue application.'
+icon: 'sitemap'
+---
+
+## Overview
+
+The `DragDropProvider` component is the root component for drag and drop interactions. It creates a [DragDropManager](/concepts/drag-drop-manager) instance and makes it available to all descendant components via Vue's `provide`/`inject` system.
+
+## Usage
+
+```vue
+<script setup>
+import {DragDropProvider} from '@dnd-kit/vue';
+</script>
+
+<template>
+  <DragDropProvider @dragEnd="handleDragEnd">
+    <!-- Your draggable and droppable elements -->
+  </DragDropProvider>
+</template>
+```
+
+## Events
+
+The `DragDropProvider` emits Vue events for all drag and drop lifecycle stages:
+
+| Event | Description |
+|-------|-------------|
+| `@beforeDragStart` | Fired before a drag operation begins. Can be used to prepare state. |
+| `@dragStart` | Fired when a drag operation starts. |
+| `@dragMove` | Fired when the dragged element moves. |
+| `@dragOver` | Fired when the dragged element moves over a droppable target. |
+| `@dragEnd` | Fired when a drag operation ends (dropped or canceled). |
+| `@collision` | Fired when collisions are detected between draggable and droppable elements. |
+
+## Props
+
+<ParamField path="manager" type="DragDropManager" optional>
+  An optional externally created `DragDropManager` instance. If not provided, one will be created automatically.
+</ParamField>
+
+<ParamField path="plugins" type="Plugin[]" optional>
+  An array of plugins to use. Defaults to the default preset.
+</ParamField>
+
+<ParamField path="sensors" type="Sensor[]" optional>
+  An array of sensors to use. Defaults to `PointerSensor` and `KeyboardSensor`.
+</ParamField>
+
+<ParamField path="modifiers" type="Modifier[]" optional>
+  An array of modifiers to apply to drag operations.
+</ParamField>
