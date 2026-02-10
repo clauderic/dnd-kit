@@ -60,7 +60,10 @@ jobs:
   chromatic:
     name: Chromatic
     runs-on: ubuntu-latest
-    needs: chromatic-vanilla
+    needs:
+      - chromatic-vanilla
+      - chromatic-vue
+      - chromatic-solid
     steps:
       - uses: actions/checkout@v1
       - uses: oven-sh/setup-bun@v1
