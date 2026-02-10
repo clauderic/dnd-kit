@@ -5,10 +5,12 @@ icon: 'bullseye-pointer'
 ---
 
 import {CodeSandbox} from '/snippets/sandbox.mdx';
+import {draggableStyles} from '/snippets/code.mdx';
 
 <CodeSandbox template="vue" files={{
   'src/App.vue': {code: app, hidden: true},
   'src/Draggable.vue': {code: code, active: true},
+  'src/styles.css': {code: draggableStyles, hidden: true},
 }} height={220} previewHeight={200} hero />
 
 ## Usage
@@ -87,26 +89,28 @@ All input properties accept plain values or Vue refs/getters (`MaybeRefOrGetter`
 
 export const app = `
 <script setup>
+import { DragDropProvider } from '@dnd-kit/vue';
 import Draggable from './Draggable.vue';
+import './styles.css';
 </script>
 
 <template>
-  <Draggable id="draggable" />
+  <DragDropProvider>
+    <Draggable id="draggable" />
+  </DragDropProvider>
 </template>
 `.trim();
 
 export const code = `
 <script setup>
 import { ref } from 'vue';
-import { DragDropProvider, useDraggable } from '@dnd-kit/vue';
+import { useDraggable } from '@dnd-kit/vue';
 
 const element = ref(null);
 useDraggable({ id: 'draggable', element });
 </script>
 
 <template>
-  <DragDropProvider>
-    <button ref="element" class="btn">draggable</button>
-  </DragDropProvider>
+  <button ref="element" class="btn">draggable</button>
 </template>
 `.trim();

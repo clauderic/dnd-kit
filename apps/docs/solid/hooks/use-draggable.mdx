@@ -5,9 +5,11 @@ icon: 'bullseye-pointer'
 ---
 
 import {CodeSandbox} from '/snippets/sandbox.mdx';
+import {draggableStyles} from '/snippets/code.mdx';
 
 <CodeSandbox template="solid" files={{
   'App.tsx': {code: app, active: true},
+  'styles.css': {code: draggableStyles, hidden: true},
 }} height={220} previewHeight={200} hero />
 
 ## Usage
@@ -86,6 +88,7 @@ function Draggable() {
 
 export const app = `
 import {DragDropProvider, useDraggable} from '@dnd-kit/solid';
+import './styles.css';
 
 function Draggable() {
   const {ref} = useDraggable({id: 'draggable'});

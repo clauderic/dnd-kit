@@ -5,12 +5,13 @@ icon: 'expand'
 ---
 
 import {CodeSandbox} from '/snippets/sandbox.mdx';
+import {draggableStyles} from '/snippets/code.mdx';
 
 <CodeSandbox template="solid" files={{
   'App.tsx': {code: app, hidden: true},
   'Droppable.tsx': {code, active: true},
-  'styles.css': {code: styles, hidden: true},
-}} height={350} previewHeight={330} hero />
+  'styles.css': {code: draggableStyles + '\n\n' + droppableStyles, hidden: true},
+}} height={350} previewHeight={400} hero />
 
 ## Usage
 
@@ -115,46 +116,21 @@ export function Droppable(props) {
 }
 `.trim();
 
-export const styles = `
-body {
-  padding: 1.5em;
-  font-family: system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-
+export const droppableStyles = `
 .container {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
   gap: 20px;
-}
-
-.btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: grab;
-  padding: 12px 18px;
-  background: #000;
-  color: #FFF;
-  border-radius: 8px;
-  border: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.btn[aria-grabbed="true"] {
-  transform: scale(1.025);
-  box-shadow: 0px 15px 15px 0 rgba(34, 33, 81, 0.25);
+  padding: 10px;
 }
 
 .droppable {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 280px;
-  min-height: 120px;
+  aspect-ratio: 1 / 1;
+  grid-column: 2;
   padding: 20px;
   border-radius: 10px;
   box-sizing: border-box;
@@ -164,7 +140,6 @@ body {
 }
 
 .droppable.highlight {
-  background-color: rgba(30, 185, 157, 0.05);
-  box-shadow: inset #1eb99d 0 0 0 2px;
+  box-shadow: inset #1eb99d 0 0 0 2px, rgba(0, 0, 0, 0.1) 20px 14px 24px;
 }
 `.trim();
