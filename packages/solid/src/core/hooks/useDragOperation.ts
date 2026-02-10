@@ -8,14 +8,8 @@ export function useDragOperation() {
   );
 
   return {
-    get source() {
-      return trackedDragOperation()?.source;
-    },
-    get target() {
-      return trackedDragOperation()?.target;
-    },
-    get status() {
-      return trackedDragOperation()?.status;
-    },
+    source: () => trackedDragOperation()?.source,
+    target: () => trackedDragOperation()?.target,
+    status: () => trackedDragOperation()?.status,
   };
 }

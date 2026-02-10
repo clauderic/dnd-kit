@@ -29,7 +29,7 @@ export function DragOverlay<T extends Data, U extends Draggable<T>>(
   const patchedManager = createPatchedManager(() => manager);
   const dragOperation = useDragOperation();
 
-  const source = () => dragOperation.source as U | null;
+  const source = () => dragOperation.source() as U | null;
 
   const isDisabled = () => {
     if (typeof props.disabled === 'function') {

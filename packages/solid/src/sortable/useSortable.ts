@@ -112,18 +112,10 @@ export function useSortable<T extends Data = Data>(
     get sortable() {
       return sortable;
     },
-    get isDragging() {
-      return trackedSortable().isDragging;
-    },
-    get isDropping() {
-      return trackedSortable().isDropping;
-    },
-    get isDragSource() {
-      return trackedSortable().isDragSource;
-    },
-    get isDropTarget() {
-      return trackedSortable().isDropTarget;
-    },
+    isDragging: () => trackedSortable().isDragging,
+    isDropping: () => trackedSortable().isDropping,
+    isDragSource: () => trackedSortable().isDragSource,
+    isDropTarget: () => trackedSortable().isDropTarget,
     ref: setElement,
     handleRef: setHandle,
     sourceRef: setSource,

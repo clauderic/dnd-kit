@@ -57,15 +57,9 @@ export function useDraggable<T extends Data = Data>(
     get draggable() {
       return draggable;
     },
-    get isDragging() {
-      return trackedDraggable().isDragging;
-    },
-    get isDropping() {
-      return trackedDraggable().isDropping;
-    },
-    get isDragSource() {
-      return trackedDraggable().isDragSource;
-    },
+    isDragging: () => trackedDraggable().isDragging,
+    isDropping: () => trackedDraggable().isDropping,
+    isDragSource: () => trackedDraggable().isDragSource,
     ref: setElement,
     handleRef: setHandle,
   };

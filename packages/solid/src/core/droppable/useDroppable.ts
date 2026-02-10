@@ -53,9 +53,7 @@ export function useDroppable<T extends Data = Data>(
     get droppable() {
       return droppable;
     },
-    get isDropTarget() {
-      return trackedDroppable().isDropTarget;
-    },
+    isDropTarget: () => trackedDroppable().isDropTarget,
     ref: setElement,
   };
 }
