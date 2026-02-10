@@ -241,3 +241,15 @@ code-sandbox[style*="--preview-height"] .sp-preview {
     background-position: 100% 50%;
   }
 }
+
+header:has(+ [data-page-title="Overview"]) #page-context-menu {
+  display: none;
+}
+
+#page-context-menu {
+  align-items: stretch;
+}
+
+#page-context-menu-button svg+span {
+  display: none;
+}

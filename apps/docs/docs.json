@@ -210,6 +210,14 @@
       }
     ]
   },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude"
+    ]
+  },
   "redirects": [
     {
       "source": "/introduction/getting-started",
