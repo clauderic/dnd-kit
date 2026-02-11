@@ -85,49 +85,35 @@ class SandpackElement extends HTMLElement {
       files = JSON.parse(this.getAttribute("files"));
     } catch {}
 
-    // The classic Sandpack "solid" bundler environment has a bug where its
-    // internal babel-preset-solid generates _$$component() dev-mode wrappers,
-    // but resolves solid-js/web to the production build which doesn't export
-    // that function. To work around this, we use Vite + Nodebox for Solid
-    // examples, which properly compiles Solid JSX and resolves conditional
-    // exports.
     if (isSolid) {
+      dependencies["solid-js"] = "^1.9.0";
+      dependencies["babel-preset-solid"] = "latest";
+
       const solidInfraFiles = {
         '/index.html': {
           code: \`<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+  <title>Solid Demo</title>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Solid App</title>
 </head>
 <body>
   <div id="app"></div>
-  <script type="module" src="/index.tsx"><\\/script>
+  <script src="src/index.js"><\\/script>
 </body>
 </html>\`,
           hidden: true,
         },
-        '/index.tsx': {
-          code: 'import { render } from "solid-js/web";\\nimport App from "./App";\\nrender(() => <App />, document.getElementById("app"));',
+        '/index.ts': {
+          code: 'import "./styles.css";\\nimport {render} from "solid-js/web";\\nimport App from "./App";\\n\\nrender(App, document.getElementById("app"));',
           hidden: true,
         },
-        '/vite.config.ts': {
-          code: 'import { defineConfig } from "vite";\\nimport solidPlugin from "vite-plugin-solid";\\nexport default defineConfig({ plugins: [solidPlugin()] });',
+        '/.babelrc': {
+          code: JSON.stringify({presets: ["babel-preset-solid"]}, null, 2),
           hidden: true,
         },
-        '/package.json': {
-          code: JSON.stringify({
-            scripts: { dev: "vite" },
-            dependencies: {
-              "solid-js": "^1.9.0",
-            },
-            devDependencies: {
-              "vite": "4.2.0",
-              "vite-plugin-solid": "^2.10.0",
-              "esbuild-wasm": "0.17.12",
-            },
-          }),
+        '/tsconfig.json': {
+          code: JSON.stringify({compilerOptions: {jsx: "preserve", jsxImportSource: "solid-js", noEmit: true}}, null, 2),
           hidden: true,
         },
       };
@@ -136,16 +122,14 @@ class SandpackElement extends HTMLElement {
 
     const sandpackComponent = React.createElement(Sandpack, {
       files,
-      template: isSolid ? undefined : template,
+      template: isSolid ? "vanilla-ts" : template,
       theme,
       options: {
         showTabs,
         resizablePanels: false,
         editorHeight: height || undefined,
       },
-      customSetup: isSolid
-        ? { environment: "node", dependencies }
-        : { dependencies },
+      customSetup: { dependencies },
     }, null);
     root.render(sandpackComponent);
   }

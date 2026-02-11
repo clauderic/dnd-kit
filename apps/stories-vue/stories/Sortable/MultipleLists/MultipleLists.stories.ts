@@ -1,15 +1,33 @@
 import type {Meta, StoryObj} from '@storybook/vue3-vite';
+import {h} from 'vue';
 
-import MultipleListsExample from './MultipleListsExample.vue';
+import MultipleListsApp from './MultipleListsApp.vue';
+import multipleListsSource from './MultipleListsApp.vue?raw';
+import {baseStyles, sortableStyles, multipleListsStyles} from '@dnd-kit/stories-shared/styles/sandbox';
 
-const meta: Meta<typeof MultipleListsExample> = {
+const styles = [baseStyles, sortableStyles, multipleListsStyles].join('\n\n');
+
+const meta: Meta<typeof MultipleListsApp> = {
   title: 'Sortable/Multiple lists',
-  component: MultipleListsExample,
+  component: MultipleListsApp,
 };
 
 export default meta;
-type Story = StoryObj<typeof MultipleListsExample>;
+type Story = StoryObj<typeof MultipleListsApp>;
 
 export const BasicSetup: Story = {
   name: 'Basic setup',
+  render: () => ({
+    setup() {
+      return () => h('div', [h('style', styles), h(MultipleListsApp)]);
+    },
+  }),
+  parameters: {
+    codesandbox: {
+      files: {
+        'src/App.vue': multipleListsSource,
+        'src/styles.css': styles,
+      },
+    },
+  },
 };

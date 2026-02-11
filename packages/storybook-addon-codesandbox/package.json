@@ -1,0 +1,19 @@
+{
+  "name": "@dnd-kit/storybook-addon-codesandbox",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts"
+    },
+    "./manager": "./src/manager.tsx",
+    "./preset": "./src/preset.ts",
+    "./decorator": "./src/preview/decorator.tsx",
+    "./decorator-dom": "./src/preview/decorator-dom.ts",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "storybook": "^9.0.15"
+  }
+}

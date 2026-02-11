@@ -16,6 +16,7 @@
     "@dnd-kit/solid": "*",
     "@dnd-kit/helpers": "*",
     "@dnd-kit/stories-shared": "*",
+    "@dnd-kit/storybook-addon-codesandbox": "*",
     "solid-js": "^1.9.0"
   },
   "devDependencies": {

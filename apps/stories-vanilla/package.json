@@ -12,7 +12,8 @@
     "@dnd-kit/abstract": "*",
     "@dnd-kit/dom": "*",
     "@dnd-kit/helpers": "*",
-    "@dnd-kit/stories-shared": "*"
+    "@dnd-kit/stories-shared": "*",
+    "@dnd-kit/storybook-addon-codesandbox": "*"
   },
   "devDependencies": {
     "@storybook/addon-links": "^9.0.15",

@@ -19,6 +19,7 @@
         "@dnd-kit/helpers": "*",
         "@dnd-kit/react": "*",
         "@dnd-kit/stories-shared": "*",
+        "@dnd-kit/storybook-addon-codesandbox": "*",
         "@tanstack/react-virtual": "^3.0.0-beta.54",
         "clipboard": "^2.0.11",
         "prismjs": "^1.29.0",
@@ -58,6 +59,7 @@
         "@dnd-kit/helpers": "*",
         "@dnd-kit/solid": "*",
         "@dnd-kit/stories-shared": "*",
+        "@dnd-kit/storybook-addon-codesandbox": "*",
         "solid-js": "^1.9.0",
       },
       "devDependencies": {
@@ -79,6 +81,7 @@
         "@dnd-kit/dom": "*",
         "@dnd-kit/helpers": "*",
         "@dnd-kit/stories-shared": "*",
+        "@dnd-kit/storybook-addon-codesandbox": "*",
       },
       "devDependencies": {
         "@storybook/addon-links": "^9.0.15",
@@ -97,6 +100,7 @@
         "@dnd-kit/dom": "*",
         "@dnd-kit/helpers": "*",
         "@dnd-kit/stories-shared": "*",
+        "@dnd-kit/storybook-addon-codesandbox": "*",
         "@dnd-kit/vue": "*",
         "vue": "^3.5.0",
       },
@@ -203,9 +207,9 @@
       "name": "@dnd-kit/react",
       "version": "0.2.4",
       "dependencies": {
-        "@dnd-kit/abstract": "^0.2.3",
-        "@dnd-kit/dom": "^0.2.3",
-        "@dnd-kit/state": "^0.2.3",
+        "@dnd-kit/abstract": "^0.2.4",
+        "@dnd-kit/dom": "^0.2.4",
+        "@dnd-kit/state": "^0.2.4",
         "tslib": "^2.6.2",
       },
       "devDependencies": {
@@ -254,6 +258,14 @@
         "eslint": "^8.38.0",
         "tsup": "8.3.0",
         "typescript": "^5.5.2",
+      },
+    },
+    "packages/storybook-addon-codesandbox": {
+      "name": "@dnd-kit/storybook-addon-codesandbox",
+      "version": "0.0.0",
+      "dependencies": {
+        "@dnd-kit/stories-shared": "workspace:*",
+        "storybook": "^9.0.15",
       },
     },
     "packages/vue": {
@@ -409,6 +421,8 @@
     "@dnd-kit/stories-vanilla": ["@dnd-kit/stories-vanilla@workspace:apps/stories-vanilla"],
 
     "@dnd-kit/stories-vue": ["@dnd-kit/stories-vue@workspace:apps/stories-vue"],
+
+    "@dnd-kit/storybook-addon-codesandbox": ["@dnd-kit/storybook-addon-codesandbox@workspace:packages/storybook-addon-codesandbox"],
 
     "@dnd-kit/vue": ["@dnd-kit/vue@workspace:packages/vue"],
 
@@ -2108,13 +2122,7 @@
 
     "@dnd-kit/react/@types/react-dom": ["@types/react-dom@19.0.3", "", { "peerDependencies": { "@types/react": "^19.0.0" } }, "sha512-0Knk+HJiMP/qOZgMyNFamlIjw9OFCsyC2ZbigmEEyXXixgre6IQpm/4V+r3qH4GC1JPvRJKInw+on2rV6YZLeA=="],
 
-    "@dnd-kit/react/typescript": ["typescript@5.7.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-84MVSjMEHP+FQRPy3pX9sTVV/INIex71s9TL2Gm5FG/WG1SqXeKyZ0k7/blY/4FdOzI12CBy1vGc4og/eus0fw=="],
-
     "@dnd-kit/stories/eslint-plugin-storybook": ["eslint-plugin-storybook@9.0.15", "", { "dependencies": { "@typescript-eslint/utils": "^8.8.1" }, "peerDependencies": { "eslint": ">=8", "storybook": "^9.0.15" } }, "sha512-HKQtF90khC45uLJhsrMasgaH1Ou+TLzwnuFHDoHDVLryg6yIXRgSTXqRUwge9x6iitEYwUz5Y2YMqg92yzmyQQ=="],
-
-    "@dnd-kit/stories/typescript": ["typescript@5.7.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-84MVSjMEHP+FQRPy3pX9sTVV/INIex71s9TL2Gm5FG/WG1SqXeKyZ0k7/blY/4FdOzI12CBy1vGc4og/eus0fw=="],
-
-    "@dnd-kit/stories-vanilla/typescript": ["typescript@5.7.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-84MVSjMEHP+FQRPy3pX9sTVV/INIex71s9TL2Gm5FG/WG1SqXeKyZ0k7/blY/4FdOzI12CBy1vGc4og/eus0fw=="],
 
     "@isaacs/cliui/strip-ansi": ["strip-ansi@7.1.0", "", { "dependencies": { "ansi-regex": "^6.0.1" } }, "sha512-iq6eVVI64nQQTRYq2KtEg2d2uU7LElhTJwsH4YzIHZshxlgZms/wIc4VoDQTlG/IvVIrBKG06CrZnp0qv7hkcQ=="],
 
@@ -2851,6 +2859,8 @@
     "@dnd-kit/stories/eslint-plugin-storybook/@typescript-eslint/utils/@typescript-eslint/types": ["@typescript-eslint/types@8.35.1", "", {}, "sha512-q/O04vVnKHfrrhNAscndAn1tuQhIkwqnaW+eu5waD5IPts2eX1dgJxgqcPx5BX109/qAz7IG6VrEPTOYKCNfRQ=="],
 
     "@dnd-kit/stories/eslint-plugin-storybook/@typescript-eslint/utils/@typescript-eslint/typescript-estree": ["@typescript-eslint/typescript-estree@8.35.1", "", { "dependencies": { "@typescript-eslint/project-service": "8.35.1", "@typescript-eslint/tsconfig-utils": "8.35.1", "@typescript-eslint/types": "8.35.1", "@typescript-eslint/visitor-keys": "8.35.1", "debug": "^4.3.4", "fast-glob": "^3.3.2", "is-glob": "^4.0.3", "minimatch": "^9.0.4", "semver": "^7.6.0", "ts-api-utils": "^2.1.0" }, "peerDependencies": { "typescript": ">=4.8.4 <5.9.0" } }, "sha512-Vvpuvj4tBxIka7cPs6Y1uvM7gJgdF5Uu9F+mBJBPY4MhvjrjWGK4H0lVgLJd/8PWZ23FTqsaJaLEkBCFUk8Y9g=="],
+
+    "@dnd-kit/stories/eslint-plugin-storybook/@typescript-eslint/utils/typescript": ["typescript@5.7.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-84MVSjMEHP+FQRPy3pX9sTVV/INIex71s9TL2Gm5FG/WG1SqXeKyZ0k7/blY/4FdOzI12CBy1vGc4og/eus0fw=="],
 
     "@manypkg/find-root/find-up/locate-path/p-locate": ["p-locate@4.1.0", "", { "dependencies": { "p-limit": "^2.2.0" } }, "sha512-R79ZZ/0wAxKGu3oYMlz8jy/kbhsNrS7SKZ7PxEHBgJ5+F2mtFW2fK2cOtBh1cHYkQsbzFV7I+EoRKe6Yt0oK7A=="],
 

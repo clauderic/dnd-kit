@@ -8,6 +8,7 @@ export default {
   addons: [
     getAbsolutePath('@storybook/addon-links'),
     getAbsolutePath('@vueless/storybook-dark-mode'),
+    getAbsolutePath('@dnd-kit/storybook-addon-codesandbox'),
   ],
 
   framework: {

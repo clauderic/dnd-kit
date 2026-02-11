@@ -1,11 +1,19 @@
 import {createSignal, For} from 'solid-js';
 import {CollisionPriority} from '@dnd-kit/abstract';
-import {PointerSensor, KeyboardSensor, DragDropProvider} from '@dnd-kit/solid';
+import {DragDropProvider} from '@dnd-kit/solid';
 import {useSortable} from '@dnd-kit/solid/sortable';
-import {defaultPreset} from '@dnd-kit/dom';
-import {Debug} from '@dnd-kit/dom/plugins/debug';
+import {defaultPreset, PointerSensor, KeyboardSensor} from '@dnd-kit/dom';
 import {move} from '@dnd-kit/helpers';
-import {createRange, cloneDeep} from '@dnd-kit/stories-shared/utilities';
+
+function createRange(length: number) {
+  return Array.from({length}, (_, i) => i + 1);
+}
+
+function cloneDeep<T>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+const ITEM_COUNT = 6;
 
 const COLORS: Record<string, string> = {
   A: '#7193f1',
@@ -35,16 +43,16 @@ function SortableItem(props: {id: string; column: string; index: number}) {
   });
 
   return (
-    <div
+    <li
       ref={ref}
-      class="Item"
+      class="item"
       data-shadow={isDragging() ? 'true' : undefined}
       data-accent-color={props.column}
       style={{'--accent-color': COLORS[props.column]}}
     >
       {props.id}
-      <handle-component ref={handleRef} />
-    </div>
+      <button ref={handleRef} class="handle" />
+    </li>
   );
 }
 
@@ -58,32 +66,31 @@ function SortableColumn(props: {id: string; index: number; rows: string[]}) {
   });
 
   return (
-    <container-component
+    <div
       ref={ref}
-      attr:data-shadow={isDragging() ? 'true' : undefined}
+      class="container"
+      data-shadow={isDragging() ? 'true' : undefined}
     >
-      <div class="Header">
+      <div class="container-header">
         {props.id}
-        <handle-component ref={handleRef} />
+        <button ref={handleRef} class="handle" />
       </div>
-      <ul style={{"list-style": 'none', padding: '15px', margin: '0', display: 'grid', gap: '16px'}}>
+      <ul>
         <For each={props.rows}>
           {(itemId, itemIndex) => (
             <SortableItem id={itemId} column={props.id} index={itemIndex()} />
           )}
         </For>
       </ul>
-    </container-component>
+    </div>
   );
 }
 
-export function MultipleListsExample(props: {itemCount?: number; debug?: boolean}) {
-  const itemCount = () => props.itemCount ?? 5;
-
+export default function App() {
   const [items, setItems] = createSignal<Record<string, string[]>>({
-    A: createRange(itemCount()).map((id) => `A${id}`),
-    B: createRange(itemCount()).map((id) => `B${id}`),
-    C: createRange(itemCount()).map((id) => `C${id}`),
+    A: createRange(ITEM_COUNT).map((id) => `A${id}`),
+    B: createRange(ITEM_COUNT).map((id) => `B${id}`),
+    C: createRange(ITEM_COUNT).map((id) => `C${id}`),
     D: [],
   });
 
@@ -92,7 +99,7 @@ export function MultipleListsExample(props: {itemCount?: number; debug?: boolean
 
   return (
     <DragDropProvider
-      plugins={props.debug ? [...defaultPreset.plugins, Debug] : undefined}
+      plugins={defaultPreset.plugins}
       sensors={sensors}
       onDragStart={() => {
         snapshot = cloneDeep(items());
@@ -100,7 +107,6 @@ export function MultipleListsExample(props: {itemCount?: number; debug?: boolean
       onDragOver={(event) => {
         const {source} = event.operation;
         if (source?.type === 'column') return;
-        event.preventDefault();
         setItems((items) => move(items, event));
       }}
       onDragEnd={(event) => {
@@ -109,7 +115,7 @@ export function MultipleListsExample(props: {itemCount?: number; debug?: boolean
         }
       }}
     >
-      <div style={{display: 'flex', "flex-direction": 'row', gap: '20px'}}>
+      <div class="multiple-lists-container">
         <For each={columns}>
           {(column, columnIndex) => (
             <SortableColumn

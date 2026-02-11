@@ -16,6 +16,7 @@
     "@dnd-kit/vue": "*",
     "@dnd-kit/helpers": "*",
     "@dnd-kit/stories-shared": "*",
+    "@dnd-kit/storybook-addon-codesandbox": "*",
     "vue": "^3.5.0"
   },
   "devDependencies": {

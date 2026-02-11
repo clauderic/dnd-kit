@@ -8,7 +8,7 @@
     "./components/*": "./components/*/index.ts",
     "./utilities": "./utilities/index.ts",
     "./assets/*": "./assets/*",
-    "./styles/*": "./styles/*",
+    "./styles/sandbox": "./styles/sandbox.ts",
     "./register": "./register.ts"
   }
 }

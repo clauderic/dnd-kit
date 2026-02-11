@@ -1,7 +1,10 @@
 import type {Meta, StoryObj} from '@storybook/react-vite';
 
 import {MultipleLists} from './MultipleLists';
+import MultipleListsApp from './MultipleListsApp';
 import docs from './docs/MultipleLists.mdx';
+import multipleListsSource from './MultipleListsApp.tsx?raw';
+import {baseStyles, sortableStyles, multipleListsStyles} from '@dnd-kit/stories-shared/styles/sandbox';
 
 const meta: Meta<typeof MultipleLists> = {
   title: 'React/Sortable/Multiple lists',
@@ -19,9 +22,14 @@ type Story = StoryObj<typeof MultipleLists>;
 
 export const Example: Story = {
   name: 'Example',
-  args: {
-    debug: false,
-    itemCount: 6,
+  render: () => <MultipleListsApp />,
+  parameters: {
+    codesandbox: {
+      files: {
+        'src/App.tsx': multipleListsSource,
+        'src/styles.css': [baseStyles, sortableStyles, multipleListsStyles].join('\n\n'),
+      },
+    },
   },
 };
 
