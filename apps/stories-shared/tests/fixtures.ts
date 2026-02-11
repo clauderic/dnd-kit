@@ -4,6 +4,7 @@ export {expect};
 
 interface DndFixture {
   page: Page;
+  buttons: Locator;
   items: Locator;
   dragging: Locator;
   placeholder: Locator;
@@ -39,11 +40,12 @@ interface KeyboardActions {
 export const test = base.extend<{dnd: DndFixture}>({
   dnd: async ({page}, use) => {
     const root = page.locator('#storybook-root');
-    const items = root.locator('.Item');
+    const buttons = root.locator('button-component, .btn');
+    const items = root.locator('.Item, .item');
     const dragging = page.locator('[data-dnd-dragging]');
     const placeholder = page.locator('[data-dnd-placeholder]');
-    const dropzones = root.locator('dropzone-component');
-    const handles = root.locator('[data-cypress="draggable-handle"]');
+    const dropzones = root.locator('dropzone-component, .droppable');
+    const handles = root.locator('handle-component, .handle');
     const rows = root.locator('tbody tr');
     const columns = root.locator('thead th');
 
@@ -101,6 +103,7 @@ export const test = base.extend<{dnd: DndFixture}>({
 
     const dnd: DndFixture = {
       page,
+      buttons,
       items,
       dragging,
       placeholder,

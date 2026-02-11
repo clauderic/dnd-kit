@@ -1,4 +1,4 @@
-import {test, expect} from './fixtures.ts';
+import {test, expect} from '../../stories-shared/tests/fixtures.ts';
 
 test.describe('Sortable iframe', () => {
   test.beforeEach(async ({dnd}) => {

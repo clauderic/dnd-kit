@@ -3,6 +3,8 @@ import {h} from 'vue';
 
 import MultipleListsApp from './MultipleListsApp.vue';
 import multipleListsSource from './MultipleListsApp.vue?raw';
+import sortableColumnSource from './SortableColumn.vue?raw';
+import sortableItemSource from './SortableItem.vue?raw';
 import {baseStyles, sortableStyles, multipleListsStyles} from '@dnd-kit/stories-shared/styles/sandbox';
 
 const styles = [baseStyles, sortableStyles, multipleListsStyles].join('\n\n');
@@ -26,6 +28,8 @@ export const BasicSetup: Story = {
     codesandbox: {
       files: {
         'src/App.vue': multipleListsSource,
+        'src/SortableColumn.vue': sortableColumnSource,
+        'src/SortableItem.vue': sortableItemSource,
         'src/styles.css': styles,
       },
     },

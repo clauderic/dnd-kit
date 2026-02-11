@@ -6,7 +6,7 @@ import type {CodeSandboxParameters} from '../types.ts';
 
 /**
  * Framework-agnostic Storybook decorator that adds a floating
- * "Open in CodeSandbox" button using plain DOM APIs.
+ * "Open Sandbox" button using plain DOM APIs.
  *
  * Works with any Storybook renderer (HTML, Vue, Solid, etc.).
  * For React stories, prefer the React-based decorator from

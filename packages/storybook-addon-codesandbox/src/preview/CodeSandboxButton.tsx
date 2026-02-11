@@ -49,8 +49,8 @@ const themes = {
 };
 
 function useDarkMode() {
-  const [dark, setDark] = useState(
-    () => document.body.classList.contains('dark')
+  const [dark, setDark] = useState(() =>
+    document.body.classList.contains('dark')
   );
 
   useEffect(() => {
@@ -139,15 +139,11 @@ export function CodeSandboxButton({params}: Props) {
         ? 'Opened!'
         : state === 'error'
           ? 'Failed'
-          : 'Open in CodeSandbox';
+          : 'Open Sandbox';
 
   const isActive = state !== 'idle';
   const statusColor =
-    state === 'success'
-      ? '#1eb99d'
-      : state === 'error'
-        ? '#e53e3e'
-        : undefined;
+    state === 'success' ? '#1eb99d' : state === 'error' ? '#e53e3e' : undefined;
 
   return (
     <button

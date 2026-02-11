@@ -5,8 +5,12 @@ import {move} from '@dnd-kit/helpers';
 
 function Sortable(props: {id: number; index: number}) {
   const {isDragging, ref, handleRef} = useSortable({
-    get id() { return props.id; },
-    get index() { return props.index; },
+    get id() {
+      return props.id;
+    },
+    get index() {
+      return props.index;
+    },
   });
 
   return (
@@ -18,9 +22,7 @@ function Sortable(props: {id: number; index: number}) {
 }
 
 export default function App() {
-  const [items, setItems] = createSignal(
-    Array.from({length: 100}, (_, i) => i + 1)
-  );
+  const [items, setItems] = createSignal(createRange(100));
 
   return (
     <DragDropProvider
@@ -35,4 +37,8 @@ export default function App() {
       </ul>
     </DragDropProvider>
   );
+}
+
+function createRange(length: number) {
+  return Array.from({length}, (_, i) => i + 1);
 }

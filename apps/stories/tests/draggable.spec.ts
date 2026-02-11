@@ -1,13 +1,13 @@
-import {test, expect} from './fixtures.ts';
+import {test, expect} from '../../stories-shared/tests/fixtures.ts';
 
 test.describe('Draggable', () => {
   test.beforeEach(async ({dnd}) => {
     await dnd.goto('react-draggable--example');
-    await expect(dnd.page.locator('#storybook-root button-component')).toBeVisible();
+    await expect(dnd.buttons.first()).toBeVisible();
   });
 
   test('can be picked up and dropped with pointer', async ({dnd}) => {
-    const button = dnd.page.locator('#storybook-root button-component');
+    const button = dnd.buttons.first();
 
     const box = await button.boundingBox();
     await dnd.pointer.drag(button, button);
@@ -19,7 +19,7 @@ test.describe('Draggable', () => {
   });
 
   test('shows dragging state during pointer drag', async ({dnd}) => {
-    const button = dnd.page.locator('#storybook-root button-component');
+    const button = dnd.buttons.first();
     const box = await button.boundingBox();
 
     await dnd.page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
@@ -36,7 +36,7 @@ test.describe('Draggable', () => {
 test.describe('Draggable with drag handle', () => {
   test('can be dragged using the handle with keyboard', async ({dnd}) => {
     await dnd.goto('react-draggable-drag-handles--drag-handle');
-    const handle = dnd.page.locator('[data-cypress="draggable-handle"]');
+    const handle = dnd.handles.first();
     await expect(handle).toBeVisible({timeout: 10_000});
 
     await dnd.keyboard.pickup(handle);

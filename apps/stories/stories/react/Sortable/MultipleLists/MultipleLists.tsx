@@ -17,7 +17,7 @@ import {
   Handle,
   Remove,
 } from '../../components/index.ts';
-import {createRange, cloneDeep} from '@dnd-kit/stories-shared/utilities';
+import {createRange} from '@dnd-kit/stories-shared/utilities';
 
 interface Props {
   debug?: boolean;
@@ -58,7 +58,7 @@ export function MultipleLists({
     }
   );
   const [columns] = useState(Object.keys(items));
-  const snapshot = useRef(cloneDeep(items));
+  const snapshot = useRef(structuredClone(items));
   const handleRemoveItem = useCallback((id: string, column: string) => {
     const remove = () =>
       setItems((items) => ({
@@ -78,7 +78,7 @@ export function MultipleLists({
       plugins={debug ? [...defaultPreset.plugins, Debug] : undefined}
       sensors={sensors}
       onDragStart={useCallback<DragDropEventHandlers['onDragStart']>(() => {
-        snapshot.current = cloneDeep(items);
+        snapshot.current = structuredClone(items);
       }, [items])}
       onDragOver={useCallback<DragDropEventHandlers['onDragOver']>((event) => {
         const {source} = event.operation;

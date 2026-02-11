@@ -8,7 +8,7 @@ import {move} from '@dnd-kit/helpers';
 import {FixedSizeList as List} from 'react-window';
 
 import {Item, Handle} from '../../components';
-import {createRange, cloneDeep} from '@dnd-kit/stories-shared/utilities';
+import {createRange} from '@dnd-kit/stories-shared/utilities';
 
 interface Props {
   debug?: boolean;
@@ -16,13 +16,13 @@ interface Props {
 
 export function ReactWindowExample({debug}: Props) {
   const [items, setItems] = useState<UniqueIdentifier[]>(createRange(1000));
-  const snapshot = useRef(cloneDeep(items));
+  const snapshot = useRef(structuredClone(items));
 
   return (
     <DragDropProvider
       plugins={debug ? [Debug, ...defaultPreset.plugins] : undefined}
       onDragStart={() => {
-        snapshot.current = cloneDeep(items);
+        snapshot.current = structuredClone(items);
       }}
       onDragOver={(event) => {
         setItems((items) => move(items, event));

@@ -1,13 +1,16 @@
-import {test, expect} from './fixtures.ts';
+import {test, expect} from '../../stories-shared/tests/fixtures.ts';
 
 test.describe('Sortable multiple lists', () => {
+  const columnItems = (dnd: any, id: string) =>
+    dnd.page.locator(`#storybook-root ul#${id}`).locator('.Item, .item');
+
   test.beforeEach(async ({dnd}) => {
     await dnd.goto('react-sortable-multiple-lists--example');
     await expect(dnd.items.first()).toBeVisible();
   });
 
   test('reorder items within a list with pointer', async ({dnd}) => {
-    const columnA = dnd.page.locator('#storybook-root ul#A .Item');
+    const columnA = columnItems(dnd, 'A');
     const first = columnA.nth(0);
     const third = columnA.nth(2);
 
@@ -21,8 +24,8 @@ test.describe('Sortable multiple lists', () => {
   });
 
   test('move item from column A to column B with pointer', async ({dnd}) => {
-    const columnA = dnd.page.locator('#storybook-root ul#A .Item');
-    const columnB = dnd.page.locator('#storybook-root ul#B .Item');
+    const columnA = columnItems(dnd, 'A');
+    const columnB = columnItems(dnd, 'B');
 
     const countA = await columnA.count();
     const countB = await columnB.count();
@@ -42,7 +45,7 @@ test.describe('Sortable multiple lists', () => {
   test('move item from column A to empty column D with pointer', async ({
     dnd,
   }) => {
-    const columnA = dnd.page.locator('#storybook-root ul#A .Item');
+    const columnA = columnItems(dnd, 'A');
     const columnD = dnd.page.locator('#storybook-root ul#D');
 
     const countA = await columnA.count();
@@ -65,16 +68,14 @@ test.describe('Sortable multiple lists', () => {
     await dnd.waitForDrop();
 
     const newCountA = await columnA.count();
-    const countD = await dnd.page
-      .locator('#storybook-root ul#D .Item')
-      .count();
+    const countD = await columnItems(dnd, 'D').count();
 
     expect(newCountA).toBe(countA - 1);
     expect(countD).toBe(1);
   });
 
   test('cancel drag restores original order', async ({dnd}) => {
-    const columnA = dnd.page.locator('#storybook-root ul#A .Item');
+    const columnA = columnItems(dnd, 'A');
     const originalTexts = await columnA.allTextContents();
 
     const firstHandle = dnd.handles.nth(0);

@@ -4,7 +4,7 @@ import {CodeSandboxButton} from './CodeSandboxButton.tsx';
 import type {CodeSandboxParameters} from '../types.ts';
 
 /**
- * Storybook decorator that adds a floating "Open in CodeSandbox" button
+ * Storybook decorator that adds a floating "Open Sandbox" button
  * to the bottom-right corner of stories that have sandbox source defined.
  *
  * Usage in .storybook/preview.tsx:

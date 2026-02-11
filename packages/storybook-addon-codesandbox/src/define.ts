@@ -33,7 +33,7 @@ export async function createSandbox(
 
   if (!response.ok) {
     throw new Error(
-      `Failed to create CodeSandbox: ${response.status} ${response.statusText}`
+      `Failed to create sandbox: ${response.status} ${response.statusText}`
     );
   }
 

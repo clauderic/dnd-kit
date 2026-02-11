@@ -11,10 +11,6 @@ function createRange(length: number) {
   return Array.from({length}, (_, i) => i + 1);
 }
 
-function cloneDeep<T>(obj: T): T {
-  return JSON.parse(JSON.stringify(obj));
-}
-
 const ITEM_COUNT = 6;
 
 const sensors = [
@@ -96,11 +92,11 @@ const SortableColumn = memo(function SortableColumn({
       className="container"
       data-shadow={isDragging || undefined}
     >
-      <div className="container-header">
+      <h2>
         {id}
         <button ref={handleRef as any} className="handle" />
-      </div>
-      <ul style={{'--columns': 1} as React.CSSProperties}>
+      </h2>
+      <ul id={id} style={{'--columns': 1} as React.CSSProperties}>
         {rows.map((itemId, itemIndex) => (
           <SortableItem
             key={itemId}
@@ -123,19 +119,19 @@ export default function App() {
     D: [],
   });
   const [columns] = useState(Object.keys(items));
-  const snapshot = useRef(cloneDeep(items));
+  const snapshot = useRef(structuredClone(items));
 
   return (
     <DragDropProvider
       plugins={defaultPreset.plugins}
       sensors={sensors}
       onDragStart={useCallback<DragDropEventHandlers['onDragStart']>(() => {
-        snapshot.current = cloneDeep(items);
+        snapshot.current = structuredClone(items);
       }, [items])}
       onDragOver={useCallback<DragDropEventHandlers['onDragOver']>((event) => {
         const {source} = event.operation;
 
-        if (source?.type === 'column') {
+        if (source && source.type === 'column') {
           return;
         }
 
@@ -148,9 +144,9 @@ export default function App() {
         }
       }, [])}
     >
-      <div className="multiple-lists-container">
+      <div className="wrapper">
         {columns.map((column, columnIndex) => {
-          const rows = items[column];
+          const rows = items[column as keyof typeof items];
 
           return (
             <SortableColumn

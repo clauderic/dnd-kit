@@ -9,7 +9,7 @@ import {move} from '@dnd-kit/helpers';
 import {useWindowVirtualizer} from '@tanstack/react-virtual';
 
 import {Item, Handle} from '../../components';
-import {createRange, cloneDeep} from '@dnd-kit/stories-shared/utilities';
+import {createRange} from '@dnd-kit/stories-shared/utilities';
 
 interface Props {
   debug?: boolean;
@@ -17,7 +17,7 @@ interface Props {
 
 export function ReactVirtualExample({debug}: Props) {
   const [items, setItems] = useState<UniqueIdentifier[]>(createRange(1000));
-  const snapshot = useRef(cloneDeep(items));
+  const snapshot = useRef(structuredClone(items));
 
   const parentRef = React.useRef<HTMLDivElement>(null);
   const parentOffsetRef = React.useRef(0);
@@ -38,7 +38,7 @@ export function ReactVirtualExample({debug}: Props) {
     <DragDropProvider
       plugins={debug ? [Debug, ...defaultPreset.plugins] : undefined}
       onDragStart={() => {
-        snapshot.current = cloneDeep(items);
+        snapshot.current = structuredClone(items);
       }}
       onDragOver={(event) => {
         setItems((items) => move(items, event));

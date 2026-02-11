@@ -9,7 +9,7 @@ export default function App() {
   root.appendChild(list);
 
   const manager = new DragDropManager();
-  const items = Array.from({length: 100}, (_, i) => i + 1);
+  const items = createRange(100);
 
   for (const id of items) {
     const li = document.createElement('li');
@@ -22,19 +22,26 @@ export default function App() {
 
     list.appendChild(li);
 
-    new Sortable({
-      id,
-      element: li,
-      handle,
-      index: id - 1,
-      effects: () => [
-        (sortable) => {
-          if (sortable.isDragging) {
-            li.dataset.shadow = '';
-            return () => delete li.dataset.shadow;
-          }
-        },
-      ],
-    }, manager);
+    new Sortable(
+      {
+        id,
+        element: li,
+        handle,
+        index: id - 1,
+        effects: () => [
+          (sortable) => {
+            if (sortable.isDragging) {
+              li.dataset.shadow = '';
+              return () => delete li.dataset.shadow;
+            }
+          },
+        ],
+      },
+      manager
+    );
   }
+}
+
+function createRange(length: number) {
+  return Array.from({length}, (_, i) => i + 1);
 }

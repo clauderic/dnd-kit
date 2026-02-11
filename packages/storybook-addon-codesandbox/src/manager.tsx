@@ -1,7 +1,11 @@
 import React, {useCallback, useState} from 'react';
 import {addons, types} from 'storybook/manager-api';
 import {IconButton} from 'storybook/internal/components';
-import {useStorybookApi, useParameter, useStorybookState} from 'storybook/manager-api';
+import {
+  useStorybookApi,
+  useParameter,
+  useStorybookState,
+} from 'storybook/manager-api';
 
 import {ADDON_ID, TOOL_ID} from './constants.ts';
 import {collectFiles} from './collect-files.ts';
@@ -70,9 +74,8 @@ function CodeSandboxTool() {
         );
       }
 
-      const sourceContent = typeof storySource === 'string'
-        ? storySource
-        : storySource.content;
+      const sourceContent =
+        typeof storySource === 'string' ? storySource : storySource.content;
 
       // Get global parameters from the store
       // Storybook merges parameters, so storyParams already contains the merged result.
@@ -111,7 +114,7 @@ function CodeSandboxTool() {
         ? 'Sandbox created!'
         : state === 'error'
           ? 'Failed to create sandbox'
-          : 'Open in CodeSandbox';
+          : 'Open Sandbox';
 
   return (
     <IconButton
@@ -137,7 +140,7 @@ function CodeSandboxTool() {
 addons.register(ADDON_ID, () => {
   addons.add(TOOL_ID, {
     type: types.TOOL,
-    title: 'Open in CodeSandbox',
+    title: 'Open Sandbox',
     match: ({viewMode}) => viewMode === 'story',
     render: () => <CodeSandboxTool />,
   });

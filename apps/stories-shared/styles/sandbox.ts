@@ -197,7 +197,7 @@ export const sortableStyles = `
 `.trim();
 
 export const multipleListsStyles = `
-.multiple-lists-container {
+.wrapper {
   display: flex;
   flex-direction: row;
   gap: 20px;
@@ -232,10 +232,11 @@ export const multipleListsStyles = `
   margin: 0;
 }
 
-.container-header {
+.container > h2 {
   display: flex;
   min-height: 59px;
   padding: 0px 20px;
+  margin: 0;
   padding-inline-end: 8px;
   align-items: center;
   justify-content: space-between;
@@ -244,6 +245,7 @@ export const multipleListsStyles = `
   border-top-right-radius: 5px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   font-weight: 300;
+  font-size: 16px;
   font-family: system-ui, sans-serif;
 }
 

@@ -9,7 +9,7 @@ import {Debug} from '@dnd-kit/dom/plugins/debug';
 import AutoFrameComponent from '@measured/auto-frame-component';
 
 import {Container, Item} from '../../components/index.ts';
-import {createRange, cloneDeep} from '@dnd-kit/stories-shared/utilities';
+import {createRange} from '@dnd-kit/stories-shared/utilities';
 
 const AutoFrame = AutoFrameComponent.default || AutoFrameComponent;
 
@@ -36,7 +36,7 @@ export function IframeLists({
       iframe: createRange(itemCount).map((id) => `Iframe: ${id}`),
     }
   );
-  const snapshot = useRef(cloneDeep(items));
+  const snapshot = useRef(structuredClone(items));
 
   const [bodyClassName, setBodyClassName] = useState('');
 
@@ -54,7 +54,7 @@ export function IframeLists({
     <DragDropProvider
       plugins={debug ? [...defaultPreset.plugins, Debug] : undefined}
       onDragStart={() => {
-        snapshot.current = cloneDeep(items);
+        snapshot.current = structuredClone(items);
       }}
       onDragOver={(event) => {
         setItems((items) => move(items, event));

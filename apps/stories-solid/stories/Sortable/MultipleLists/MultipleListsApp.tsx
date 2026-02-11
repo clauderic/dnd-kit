@@ -9,10 +9,6 @@ function createRange(length: number) {
   return Array.from({length}, (_, i) => i + 1);
 }
 
-function cloneDeep<T>(obj: T): T {
-  return JSON.parse(JSON.stringify(obj));
-}
-
 const ITEM_COUNT = 6;
 
 const COLORS: Record<string, string> = {
@@ -33,10 +29,18 @@ const sensors = [
 
 function SortableItem(props: {id: string; column: string; index: number}) {
   const {isDragging, ref, handleRef} = useSortable({
-    get id() { return props.id; },
-    get index() { return props.index; },
-    get group() { return props.column; },
-    get data() { return {group: props.column}; },
+    get id() {
+      return props.id;
+    },
+    get index() {
+      return props.index;
+    },
+    get group() {
+      return props.column;
+    },
+    get data() {
+      return {group: props.column};
+    },
     accept: 'item',
     type: 'item',
     feedback: 'clone',
@@ -58,8 +62,12 @@ function SortableItem(props: {id: string; column: string; index: number}) {
 
 function SortableColumn(props: {id: string; index: number; rows: string[]}) {
   const {isDragging, ref, handleRef} = useSortable({
-    get id() { return props.id; },
-    get index() { return props.index; },
+    get id() {
+      return props.id;
+    },
+    get index() {
+      return props.index;
+    },
     accept: ['column', 'item'],
     collisionPriority: CollisionPriority.Low,
     type: 'column',
@@ -71,10 +79,10 @@ function SortableColumn(props: {id: string; index: number; rows: string[]}) {
       class="container"
       data-shadow={isDragging() ? 'true' : undefined}
     >
-      <div class="container-header">
+      <h2>
         {props.id}
         <button ref={handleRef} class="handle" />
-      </div>
+      </h2>
       <ul>
         <For each={props.rows}>
           {(itemId, itemIndex) => (
@@ -95,18 +103,19 @@ export default function App() {
   });
 
   const columns = Object.keys(items());
-  let snapshot = cloneDeep(items());
+  let snapshot = structuredClone(items());
 
   return (
     <DragDropProvider
       plugins={defaultPreset.plugins}
       sensors={sensors}
       onDragStart={() => {
-        snapshot = cloneDeep(items());
+        snapshot = structuredClone(items());
       }}
       onDragOver={(event) => {
         const {source} = event.operation;
-        if (source?.type === 'column') return;
+        if (source && source.type === 'column') return;
+        event.preventDefault();
         setItems((items) => move(items, event));
       }}
       onDragEnd={(event) => {
@@ -115,7 +124,7 @@ export default function App() {
         }
       }}
     >
-      <div class="multiple-lists-container">
+      <div class="wrapper">
         <For each={columns}>
           {(column, columnIndex) => (
             <SortableColumn

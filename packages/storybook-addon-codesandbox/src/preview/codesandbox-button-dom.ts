@@ -69,7 +69,7 @@ export function createCodeSandboxButton(
 
   // Label
   const labelSpan = document.createElement('span');
-  labelSpan.textContent = 'Open in CodeSandbox';
+  labelSpan.textContent = 'Open Sandbox';
 
   btn.appendChild(iconSpan);
   btn.appendChild(labelSpan);
@@ -143,7 +143,7 @@ export function createCodeSandboxButton(
           ? 'Opened!'
           : state === 'error'
             ? 'Failed'
-            : 'Open in CodeSandbox';
+            : 'Open Sandbox';
   }
 
   // Hover effects

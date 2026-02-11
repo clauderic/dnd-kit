@@ -17,9 +17,7 @@ function Sortable({id, index}: {id: number; index: number}) {
 }
 
 export default function App() {
-  const [items, setItems] = useState(
-    Array.from({length: 100}, (_, i) => i + 1)
-  );
+  const [items, setItems] = useState(createRange(100));
 
   return (
     <DragDropProvider
@@ -34,4 +32,8 @@ export default function App() {
       </ul>
     </DragDropProvider>
   );
+}
+
+function createRange(length: number) {
+  return Array.from({length}, (_, i) => i + 1);
 }

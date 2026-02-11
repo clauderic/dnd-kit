@@ -1,4 +1,4 @@
-import {test, expect} from './fixtures.ts';
+import {test, expect} from '../../stories-shared/tests/fixtures.ts';
 
 test.describe('Auto-scrolling', () => {
   test.describe('Vertical list (100 items)', () => {
