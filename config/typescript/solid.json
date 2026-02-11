@@ -4,7 +4,7 @@
   "extends": "./base.json",
   "compilerOptions": {
     "lib": ["dom", "ES2022"],
-    "target": "ES2022",
+    "target": "es6",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "jsx": "preserve",
