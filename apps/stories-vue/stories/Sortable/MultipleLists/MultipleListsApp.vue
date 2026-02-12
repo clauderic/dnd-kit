@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref} from 'vue';
+import {ref, toRaw} from 'vue';
 import {DragDropProvider, PointerSensor, KeyboardSensor} from '@dnd-kit/vue';
 import {defaultPreset} from '@dnd-kit/dom';
 import {move} from '@dnd-kit/helpers';
@@ -36,10 +36,10 @@ const items = ref<Record<string, string[]>>({
 });
 
 const columns = Object.keys(items.value);
-let snapshot = structuredClone(items.value);
+let snapshot = structuredClone(toRaw(items.value));
 
 function onDragStart() {
-  snapshot = structuredClone(items.value);
+  snapshot = structuredClone(toRaw(items.value));
 }
 
 function onDragOver(event: any) {
