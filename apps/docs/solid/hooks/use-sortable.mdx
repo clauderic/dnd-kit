@@ -4,34 +4,20 @@ description: 'Create sortable elements with the useSortable hook.'
 icon: 'layer-group'
 ---
 
+import {Story} from '/snippets/story.mdx';
 import {CodeSandbox} from '/snippets/sandbox.mdx';
 import {sortableStyles} from '/snippets/code.mdx';
 
-<CodeSandbox template="solid" files={{
-  'App.tsx': {code: appCode, active: true},
-  'styles.css': {code: sortableStyles, hidden: true},
-}} height={455} previewHeight={180} hero />
+<Story id="sortable-vertical-list--basic-setup" framework="solid" height="320" hero />
 
 ## Usage
 
 The `useSortable` hook combines draggable and droppable behavior with sorting logic. Import it from `@dnd-kit/solid/sortable`.
 
-```tsx
-import {useSortable} from '@dnd-kit/solid/sortable';
-
-function SortableItem(props) {
-  const {ref, isDragging} = useSortable({
-    get id() { return props.id; },
-    get index() { return props.index; },
-  });
-
-  return (
-    <div ref={ref} data-shadow={isDragging()}>
-      {props.id}
-    </div>
-  );
-}
-```
+<CodeSandbox template="solid" files={{
+  'App.tsx': {code: appCode, active: true},
+  'styles.css': {code: sortableStyles, hidden: true},
+}} height={560} previewHeight={180} />
 
 <Note>
   Use **getter syntax** for reactive props to maintain Solid's fine-grained reactivity. Without getters, the hook reads prop values once during setup and never re-runs its effects when they change.

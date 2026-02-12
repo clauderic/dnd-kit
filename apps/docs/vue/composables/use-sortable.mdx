@@ -4,39 +4,22 @@ description: 'Create sortable elements with the useSortable composable.'
 icon: 'layer-group'
 ---
 
+import {Story} from '/snippets/story.mdx';
 import {CodeSandbox} from '/snippets/sandbox.mdx';
 import {sortableStyles} from '/snippets/code.mdx';
 
-<CodeSandbox template="vue" files={{
-  'src/App.vue': {code: appCode, active: true},
-  'src/SortableItem.vue': {code: itemCode},
-  'src/styles.css': {code: sortableStyles, hidden: true},
-}} height={455} previewHeight={180} hero />
+<Story id="sortable-vertical-list--basic-setup" framework="vue" height="320" hero />
 
 ## Usage
 
 The `useSortable` composable combines draggable and droppable behavior with sorting logic. Import it from `@dnd-kit/vue/sortable`.
 
-```vue
-<script setup>
-import {ref, computed} from 'vue';
-import {useSortable} from '@dnd-kit/vue/sortable';
+<CodeSandbox template="vue" files={{
+  'src/App.vue': {code: appCode, active: true},
+  'src/SortableItem.vue': {code: itemCode},
+  'src/styles.css': {code: sortableStyles, hidden: true},
+}} height={560} previewHeight={180} />
 
-const props = defineProps(['id', 'index']);
-const element = ref(null);
-const {isDragging} = useSortable({
-  id: computed(() => props.id),
-  index: computed(() => props.index),
-  element,
-});
-</script>
-
-<template>
-  <div ref="element" :data-shadow="isDragging">
-    {{ id }}
-  </div>
-</template>
-```
 
 <Note>
   When passing props to `useSortable`, wrap reactive values in `computed()` to maintain reactivity. Plain values like `props.id` are read once during setup and won't update.

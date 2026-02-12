@@ -4,7 +4,8 @@ export default function App() {
   const root = document.getElementById('root')!;
 
   const section = document.createElement('section');
-  section.style.cssText = 'display:grid;grid-template-columns:2fr 1fr;gap:20px;align-items:center;max-width:700px;margin:0 auto';
+  section.style.cssText =
+    'display:grid;grid-template-columns:2fr 1fr;gap:20px;align-items:center;max-width:700px;margin:0 auto';
 
   const left = document.createElement('div');
   left.style.cssText = 'display:flex;justify-content:center';
@@ -24,18 +25,21 @@ export default function App() {
 
   const draggable = new Draggable({id: 'draggable', element: button}, manager);
 
-  const droppable = new Droppable({
-    id: 'droppable',
-    element: dropzone,
-    effects: () => [
-      () => {
-        if (droppable.isDropTarget) {
-          dropzone.classList.add('active');
-          return () => dropzone.classList.remove('active');
-        }
-      },
-    ],
-  }, manager);
+  const droppable = new Droppable(
+    {
+      id: 'droppable',
+      element: dropzone,
+      effects: () => [
+        () => {
+          if (droppable.isDropTarget) {
+            dropzone.classList.add('active');
+            return () => dropzone.classList.remove('active');
+          }
+        },
+      ],
+    },
+    manager
+  );
 
   manager.monitor.addEventListener('dragend', (event) => {
     if (event.canceled) return;

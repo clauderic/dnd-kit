@@ -17,6 +17,45 @@
     background-color: #2a2c2e;
   }
 
+  body.hero {
+    --gradient: linear-gradient(65deg, #56fff420, #001AFF20, #5F6AF220, #F25FD020, #56FFF520, #F25FD020, #001AFF20, #56fff420);
+    min-height: 100vh;
+    background-image: var(--gradient);
+    animation: gradient 16s linear infinite;
+    animation-direction: alternate;
+    background-size: 600% 100%;
+    background-repeat: no-repeat;
+  }
+
+  body.dark.hero {
+    --gradient: linear-gradient(65deg, #ff56d580, #001AFF80, #5F6AF280, #F25FD080, #56FFF580, #F25FD080, #001AFF80, #56fff480);
+
+    animation: background 16s linear infinite, gradient 60s linear infinite;
+  }
+
+  @keyframes background {
+    0% {
+      background-color: #ff0000;
+    }
+    25% {
+      background-color: #7f00ff;
+    }
+    50% {
+      background-color: #00affa;
+    }
+    75% {
+      background-color: #00f594;
+    }
+    100% {
+      background-color: #ff0000
+    }
+  }
+
+  @keyframes gradient {
+    0% {background-position: 0%}
+    100% {background-position: 100%}
+  }
+
   * {
     box-sizing: border-box;
   }

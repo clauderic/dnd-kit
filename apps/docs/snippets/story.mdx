@@ -1,8 +1,25 @@
-export const Story = ({ id, width = "100%", height = "250", hero = false }) => {
-  const branch = 'experimental';
-  const productionHost = `https://${branch}--5fc05e08a4a65d0021ae0bf2.chromatic.com`;
-  const localPort = 6006;
-  const host = typeof window !== 'undefined' && window.location?.hostname === 'localhost' ? `//localhost:${localPort}` : productionHost;
+export const Story = ({ id, framework = "react", width = "100%", height = "250", hero = false }) => {
+  const BRANCH = 'experimental';
+  const STORYBOOKS = {
+    react: {
+      localPort: 6006,
+      productionHost: '5fc05e08a4a65d0021ae0bf2',
+    },
+    vue: {
+      localPort: 6008,
+      productionHost: '6989440ed560d70abcd6bcc7',
+    },
+    vanilla: {
+      localPort: 6007,
+      productionHost: '69892d294eb9040f0d29aa81',
+    },
+    solid: {
+      localPort: 6009,
+      productionHost: '698944444eb9040f0d2a0217',
+    },
+  };
+  const config = STORYBOOKS[framework] ?? STORYBOOKS.react;
+  const host = typeof window !== 'undefined' && window.location?.hostname === 'localhost' ? `//localhost:${config.localPort}` : `https://${BRANCH}--${config.productionHost}.chromatic.com`;
   const dark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
 
   return (

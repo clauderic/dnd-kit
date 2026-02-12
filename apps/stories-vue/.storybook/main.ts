@@ -1,8 +1,15 @@
+import {readFileSync} from 'fs';
 import {dirname, join} from 'path';
 import {mergeConfig} from 'vite';
 import vue from '@vitejs/plugin-vue';
 
+const sharedPreviewHead = readFileSync(
+  join(__dirname, '..', '..', 'stories-shared', 'preview-head.html'),
+  'utf-8'
+);
+
 export default {
+  previewHead: (head: string) => `${sharedPreviewHead}\n${head}`,
   stories: ['../stories/**/*.stories.ts'],
 
   addons: [

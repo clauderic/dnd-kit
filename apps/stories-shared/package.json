@@ -9,6 +9,7 @@
     "./utilities": "./utilities/index.ts",
     "./assets/*": "./assets/*",
     "./styles/sandbox": "./styles/sandbox.ts",
-    "./register": "./register.ts"
+    "./register": "./register.ts",
+    "./preview-head.html": "./preview-head.html"
   }
 }

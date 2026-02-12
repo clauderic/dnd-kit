@@ -4,12 +4,15 @@ import draggableIconSrc from '@dnd-kit/stories-shared/assets/draggableIcon.svg';
 
 export function DroppableExample() {
   const root = document.createElement('section');
+  const left = document.createElement('div');
+  left.style.cssText = 'display:flex;justify-content:center';
 
   const manager = new DragDropManager();
   const droppableElement = createDroppableElement();
   const draggableElement = createDraggableElement();
 
-  root.append(draggableElement, droppableElement);
+  left.append(draggableElement);
+  root.append(left, droppableElement);
 
   const draggable = new Draggable(
     {
@@ -58,7 +61,7 @@ export function DroppableExample() {
     if (event.operation.target?.id === 'droppable') {
       if (!isWithinDroppable) droppableElement.appendChild(draggableElement);
     } else if (isWithinDroppable) {
-      root.prepend(draggableElement);
+      left.prepend(draggableElement);
     }
   });
 
