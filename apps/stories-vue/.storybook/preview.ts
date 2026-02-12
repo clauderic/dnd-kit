@@ -56,6 +56,10 @@ const preview = {
       storySort: {
         order: [
           'Draggable',
+          [
+            'Basic setup',
+            'Drag overlay',
+          ],
           'Droppable',
           'Sortable',
           [

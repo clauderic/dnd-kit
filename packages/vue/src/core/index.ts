@@ -4,6 +4,9 @@ export type {
   DragDropProviderEmits,
 } from './context/DragDropProvider.ts';
 
+export {default as DragOverlay} from './draggable/DragOverlay.ts';
+export type {DragOverlayProps} from './draggable/DragOverlay.ts';
+
 export {
   useDraggable,
   type UseDraggableInput,

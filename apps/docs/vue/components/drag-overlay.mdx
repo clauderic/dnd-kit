@@ -1,0 +1,104 @@
+---
+title: 'DragOverlay'
+description: 'Render a custom element as visual feedback during drag operations.'
+icon: 'clone'
+---
+
+## Overview
+
+The `DragOverlay` component renders a custom overlay element while a drag operation is in progress. This allows you to display a completely different element than the one being dragged, which is useful for rendering a styled clone, a preview, or a simplified representation of the dragged element.
+
+<img src="/images/draggable/drag-overlay.png" />
+
+## Usage
+
+Import and place the `DragOverlay` component inside a [`DragDropProvider`](/vue/components/drag-drop-provider). Its children will only be rendered when a drag operation is active.
+
+```vue
+<script setup>
+import {ref} from 'vue';
+import {DragDropProvider, DragOverlay, useDraggable} from '@dnd-kit/vue';
+
+const element = ref(null);
+useDraggable({id: 'my-item', element});
+</script>
+
+<template>
+  <DragDropProvider>
+    <button ref="element">Drag me</button>
+    <DragOverlay>
+      <div>I will be rendered while dragging...</div>
+    </DragOverlay>
+  </DragDropProvider>
+</template>
+```
+
+<Warning>
+  You should only render the `DragOverlay` component once per [DragDropProvider](/vue/components/drag-drop-provider).
+</Warning>
+
+### Rendering based on the drag source
+
+You can use the scoped slot to access the current drag `source` and render different content depending on which element is being dragged:
+
+```vue
+<script setup>
+import {DragDropProvider, DragOverlay} from '@dnd-kit/vue';
+</script>
+
+<template>
+  <DragDropProvider>
+    <Draggable id="foo" />
+    <Draggable id="bar" />
+    <DragOverlay>
+      <template #default="{ source }">
+        <div>Dragging {{ source.id }}</div>
+      </template>
+    </DragOverlay>
+  </DragDropProvider>
+</template>
+```
+
+### Customizing the drop animation
+
+By default, when a drag operation ends, the overlay animates back to the position of the source element. You can customize or disable this animation using the `drop-animation` prop.
+
+```vue
+<!-- Disable the drop animation -->
+<DragOverlay :drop-animation="null">
+  <div>No animation on drop</div>
+</DragOverlay>
+
+<!-- Customize the animation timing -->
+<DragOverlay :drop-animation="{ duration: 150, easing: 'ease-out' }">
+  <div>Fast drop animation</div>
+</DragOverlay>
+```
+
+## Props
+
+<ParamField path="tag" type="string" default="'div'">
+  The HTML tag to render as the overlay wrapper element.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  Whether the drag overlay is disabled. When `true`, the overlay will not render its children during drag operations.
+</ParamField>
+
+<ParamField path="drop-animation" type="DropAnimation | null" optional>
+  Customize or disable the drop animation that plays when a drag operation ends.
+
+  - `undefined` – use the default animation (`250ms` ease)
+  - `null` – disable the drop animation entirely
+  - `{duration, easing}` – customize the animation timing
+  - `(context) => Promise<void> | void` – provide a fully custom animation function
+</ParamField>
+
+## Slots
+
+<ParamField path="default" type="Slot">
+  The content to render as the drag overlay. Only rendered when a drag operation is in progress.
+
+  **Slot props:**
+  - `source` – the [Draggable](/concepts/draggable) instance that is the source of the current drag operation.
+</ParamField>

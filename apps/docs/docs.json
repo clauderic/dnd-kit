@@ -92,7 +92,10 @@
               },
               {
                 "group": "Components",
-                "pages": ["vue/components/drag-drop-provider"]
+                "pages": [
+                  "vue/components/drag-drop-provider",
+                  "vue/components/drag-overlay"
+                ]
               },
               {
                 "group": "Composables",

@@ -87,6 +87,59 @@ All input properties accept plain values or Vue refs/getters (`MaybeRefOrGetter`
   The underlying `Draggable` instance.
 </ResponseField>
 
+## Guides
+
+### Rendering a drag overlay
+
+You can render a completely different element while the draggable element is being dragged by using the [`<DragOverlay>`](/vue/components/drag-overlay) component.
+
+<img src="/images/draggable/drag-overlay.png" />
+
+```vue
+<script setup>
+import {ref} from 'vue';
+import {DragDropProvider, DragOverlay, useDraggable} from '@dnd-kit/vue';
+
+const element = ref(null);
+useDraggable({id: 'draggable', element});
+</script>
+
+<template>
+  <DragDropProvider>
+    <button ref="element">Draggable</button>
+    <DragOverlay>
+      <div>I will be rendered while dragging...</div>
+    </DragOverlay>
+  </DragDropProvider>
+</template>
+```
+
+The `<DragOverlay>` component will only render its children when a drag operation is in progress. This can be useful for rendering a completely different element while the draggable element is being dragged.
+
+<Warning>
+  You should only render the `<DragOverlay>` component once per [DragDropProvider](/vue/components/drag-drop-provider).
+</Warning>
+
+To render different content depending on which element is being dragged, use the scoped slot to access the drag `source`:
+
+```vue
+<script setup>
+import {DragDropProvider, DragOverlay} from '@dnd-kit/vue';
+</script>
+
+<template>
+  <DragDropProvider>
+    <Draggable id="foo" />
+    <Draggable id="bar" />
+    <DragOverlay>
+      <template #default="{ source }">
+        <div>Dragging {{ source.id }}</div>
+      </template>
+    </DragOverlay>
+  </DragDropProvider>
+</template>
+```
+
 export const app = `
 <script setup>
 import { DragDropProvider } from '@dnd-kit/vue';

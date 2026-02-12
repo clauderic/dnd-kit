@@ -21,7 +21,7 @@ export const draggableStyles = `
   color: #FFF;
   border-radius: 10px;
   border: none;
-  transition: transform 0.25s ease, box-shadow 0.2s ease;
+  transition: transform 0.25s ease, box-shadow 0.2s ease, opacity 0.2s ease;
 }
 
 .btn::before {
@@ -34,9 +34,13 @@ export const draggableStyles = `
   background-repeat: no-repeat;
 }
 
-.btn[aria-grabbed="true"] {
+.btn[aria-grabbed="true"]:not([disabled]) {
   transform: scale(1.025);
   box-shadow: inset 0px 0px 1px rgba(0,0,0,0.5), -1px 0 15px 0 rgba(34, 33, 81, 0.01), 0px 15px 15px 0 rgba(34, 33, 81, 0.25)
+}
+
+.btn[disabled] {
+  opacity: 0.3;
 }
 `.trim();
 

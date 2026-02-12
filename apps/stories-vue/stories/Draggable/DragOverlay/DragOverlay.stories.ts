@@ -1,20 +1,20 @@
 import {h} from 'vue';
 import type {Meta, StoryObj} from '@storybook/vue3-vite';
 
-import DraggableApp from './DraggableApp.vue';
-import draggableSource from './DraggableApp.vue?raw';
+import DragOverlayApp from './DragOverlayApp.vue';
+import dragOverlaySource from './DragOverlayApp.vue?raw';
 import {
   baseStyles,
   draggableStyles,
 } from '@dnd-kit/stories-shared/styles/sandbox';
 
-const meta: Meta<typeof DraggableApp> = {
-  title: 'Draggable/Basic setup',
-  component: DraggableApp,
+const meta: Meta<typeof DragOverlayApp> = {
+  title: 'Draggable/Drag overlay',
+  component: DragOverlayApp,
 };
 
 export default meta;
-type Story = StoryObj<typeof DraggableApp>;
+type Story = StoryObj<typeof DragOverlayApp>;
 
 export const Example: Story = {
   decorators: [
@@ -32,7 +32,7 @@ export const Example: Story = {
   parameters: {
     codesandbox: {
       files: {
-        'src/App.vue': draggableSource,
+        'src/App.vue': dragOverlaySource,
         'src/styles.css': [baseStyles, draggableStyles].join('\n\n'),
       },
     },
