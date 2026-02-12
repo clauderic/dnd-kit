@@ -86,6 +86,57 @@ function Draggable() {
   The underlying `Draggable` instance.
 </ResponseField>
 
+## Guides
+
+### Rendering a drag overlay
+
+You can render a completely different element while the draggable element is being dragged by using the [`<DragOverlay>`](/solid/components/drag-overlay) component.
+
+<img src="/images/draggable/drag-overlay.png" />
+
+```tsx
+import {DragDropProvider, DragOverlay, useDraggable} from '@dnd-kit/solid';
+
+function Draggable() {
+  const {ref} = useDraggable({id: 'draggable'});
+
+  return (
+    <>
+      <button ref={ref}>Draggable</button>
+      <DragOverlay>
+        <div>I will be rendered while dragging...</div>
+      </DragOverlay>
+    </>
+  );
+}
+```
+
+The `<DragOverlay>` component will only render its children when a drag operation is in progress. This can be useful for rendering a completely different element while the draggable element is being dragged.
+
+<Warning>
+  You should only render the `<DragOverlay>` component once per [DragDropProvider](/solid/components/drag-drop-provider) component.
+</Warning>
+
+To render different content depending on which element is being dragged, pass a function as a child that receives the drag `source`:
+
+```tsx
+import {DragDropProvider, DragOverlay} from '@dnd-kit/solid';
+
+function App() {
+  return (
+    <DragDropProvider>
+      <Draggable id="foo" />
+      <Draggable id="bar" />
+      <DragOverlay>
+        {source => (
+          <div>Dragging {source.id}</div>
+        )}
+      </DragOverlay>
+    </DragDropProvider>
+  );
+}
+```
+
 export const app = `
 import {DragDropProvider, useDraggable} from '@dnd-kit/solid';
 import './styles.css';

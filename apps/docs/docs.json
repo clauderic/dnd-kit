@@ -62,7 +62,10 @@
               },
               {
                 "group": "Components",
-                "pages": ["react/components/drag-drop-provider"]
+                "pages": [
+                  "react/components/drag-drop-provider",
+                  "react/components/drag-overlay"
+                ]
               },
               {
                 "group": "Hooks",
@@ -117,7 +120,10 @@
               },
               {
                 "group": "Components",
-                "pages": ["solid/components/drag-drop-provider"]
+                "pages": [
+                  "solid/components/drag-drop-provider",
+                  "solid/components/drag-overlay"
+                ]
               },
               {
                 "group": "Hooks",
