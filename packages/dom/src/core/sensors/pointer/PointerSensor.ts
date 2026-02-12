@@ -226,6 +226,10 @@ export class PointerSensor extends Sensor<
           capture: true,
         },
       },
+      {                                                                     
+        type: 'pointercancel',                 
+        listener: this.handleCancel,                                        
+      },   
       {
         // Cancel activation if there is a competing Drag and Drop interaction
         type: 'dragstart',
