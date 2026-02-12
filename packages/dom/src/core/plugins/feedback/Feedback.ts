@@ -57,6 +57,16 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
   @reactive
   public accessor overlay: Element | undefined;
 
+  /**
+   * Override the drop animation configuration for this Feedback instance.
+   *
+   * - `undefined` – use the default from plugin options
+   * - `null` – disable the drop animation entirely
+   * - `DropAnimationOptions` – customize duration / easing
+   * - `DropAnimationFunction` – provide a fully custom animation
+   */
+  public dropAnimation: DropAnimation | null | undefined;
+
   private state: State = {
     initial: {},
     current: {},
@@ -421,7 +431,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
     /* ---- Reactive effects ---- */
 
-    const dropAnimationConfig = options?.dropAnimation;
+    const optionsDropAnimation = options?.dropAnimation;
+    const feedbackPlugin = this;
 
     const cleanupEffects = effects(
       // Update transform on move
@@ -482,6 +493,11 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           this.dispose();
 
           source.status = 'dropping';
+
+          const dropAnimationConfig =
+            feedbackPlugin.dropAnimation !== undefined
+              ? feedbackPlugin.dropAnimation
+              : optionsDropAnimation;
 
           let translate = state.current.translate;
           const moved = translate != null;

@@ -1,6 +1,7 @@
 import {createElement, useEffect, useMemo, useRef, type ReactNode} from 'react';
 import {useComputed, useDeepSignal} from '@dnd-kit/react/hooks';
 import {DragDropManager, Draggable, Feedback} from '@dnd-kit/dom';
+import type {DropAnimation} from '@dnd-kit/dom';
 import {Data} from '@dnd-kit/abstract';
 
 import {useDragDropManager} from '../hooks/useDragDropManager.ts';
@@ -9,6 +10,15 @@ import {DragDropContext} from '../context/context.ts';
 export interface Props<T extends Data, U extends Draggable<T>> {
   className?: string;
   children: ReactNode | ((source: U) => ReactNode);
+  /**
+   * Customize or disable the drop animation that plays when a drag operation ends.
+   *
+   * - `undefined` – use the default animation (250ms ease)
+   * - `null` – disable the drop animation entirely
+   * - `{duration, easing}` – customize the animation timing
+   * - `(context) => Promise<void> | void` – provide a fully custom animation function
+   */
+  dropAnimation?: DropAnimation | null;
   style?: React.CSSProperties;
   tag?: string;
   disabled?: boolean | ((source: U | null) => boolean);
@@ -17,6 +27,7 @@ export interface Props<T extends Data, U extends Draggable<T>> {
 export function DragOverlay<T extends Data, U extends Draggable<T>>({
   children,
   className,
+  dropAnimation,
   style,
   tag,
   disabled,
@@ -43,6 +54,22 @@ export function DragOverlay<T extends Data, U extends Draggable<T>>({
       feedback.overlay = undefined;
     };
   }, [manager, isDisabled]);
+
+  useEffect(() => {
+    if (!manager) return;
+
+    const feedback = manager.plugins.find(
+      (plugin) => plugin instanceof Feedback
+    );
+
+    if (!feedback) return;
+
+    feedback.dropAnimation = dropAnimation;
+
+    return () => {
+      feedback.dropAnimation = undefined;
+    };
+  }, [manager, dropAnimation]);
 
   // Prevent children of the overlay from registering themselves as draggables or droppables
   const patchedManager = useMemo(() => {

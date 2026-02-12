@@ -6,7 +6,7 @@ import {DragDropContext} from '../context/context.ts';
 import {useDragDropManager} from '../hooks/useDragDropManager.ts';
 import {useDragOperation} from '../hooks/useDragOperation.ts';
 
-import type {DragDropManager, Draggable, Droppable} from '@dnd-kit/dom';
+import type {DragDropManager, Draggable, Droppable, DropAnimation} from '@dnd-kit/dom';
 import type {JSX, ValidComponent} from 'solid-js';
 import type {Data} from '@dnd-kit/abstract';
 
@@ -16,6 +16,15 @@ export interface DragOverlayProps<
 > {
   class?: string;
   children: JSX.Element | ((source: U) => JSX.Element);
+  /**
+   * Customize or disable the drop animation that plays when a drag operation ends.
+   *
+   * - `undefined` – use the default animation (250ms ease)
+   * - `null` – disable the drop animation entirely
+   * - `{duration, easing}` – customize the animation timing
+   * - `(context) => Promise<void> | void` – provide a fully custom animation function
+   */
+  dropAnimation?: DropAnimation | null;
   style?: JSX.CSSProperties;
   tag?: ValidComponent;
   disabled?: boolean | ((source: U | null) => boolean);
@@ -56,9 +65,11 @@ export function DragOverlay<T extends Data, U extends Draggable<T>>(
     if (!feedback) return;
 
     feedback.overlay = element();
+    feedback.dropAnimation = props.dropAnimation;
 
     onCleanup(() => {
       feedback.overlay = undefined;
+      feedback.dropAnimation = undefined;
     });
   });
 
