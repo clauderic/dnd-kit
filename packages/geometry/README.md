@@ -2,14 +2,18 @@
 
 [![Stable release](https://img.shields.io/npm/v/@dnd-kit/geometry.svg)](https://npm.im/@dnd-kit/geometry)
 
-## Installation
+Geometry types and utilities for **@dnd-kit**. Provides the spatial primitives used by collision detection, shape tracking, and coordinate calculations.
 
-To get started, install the `@dnd-kit/geometry` package via npm or yarn:
+> **Note:** This is an internal package used by `@dnd-kit/abstract` and `@dnd-kit/dom`. You generally don't need to install or use it directly.
 
-```
-npm install @dnd-kit/geometry
-```
+## Overview
 
-## Usage
+### Types
 
-Visit [docs.dndkit.com](https://docs.dndkit.com) to learn how to get started with @dnd-kit.
+- `Shape`, `Rectangle`, `BoundingRectangle` — Geometric shapes
+- `Point`, `Position`, `Coordinates` — Spatial positioning
+- `Distance`, `Axis`, `Axes`, `Alignment` — Measurement and layout
+
+### Utilities
+
+- `exceedsDistance(delta, distance)` — Check if a movement vector exceeds a threshold distance
