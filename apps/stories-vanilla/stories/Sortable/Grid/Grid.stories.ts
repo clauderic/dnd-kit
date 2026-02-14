@@ -1,6 +1,8 @@
 import type {Meta, StoryObj} from '@storybook/html-vite';
 
-import {SortableExample} from '../SortableExample.ts';
+import App from './GridSortableApp.ts';
+import gridSortableSource from './GridSortableApp.ts?raw';
+import {baseStyles, sortableStyles} from '@dnd-kit/stories-shared/styles/sandbox';
 
 const meta: Meta = {
   title: 'Sortable/Grid',
@@ -11,5 +13,13 @@ type Story = StoryObj;
 
 export const BasicSetup: Story = {
   name: 'Basic setup',
-  render: () => SortableExample({layout: 'grid', itemCount: 20}).root,
+  render: () => App(),
+  parameters: {
+    codesandbox: {
+      files: {
+        'src/App.ts': gridSortableSource,
+        'src/styles.css': [baseStyles, sortableStyles].join('\n\n'),
+      },
+    },
+  },
 };

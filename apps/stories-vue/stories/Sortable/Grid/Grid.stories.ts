@@ -1,19 +1,25 @@
 import type {Meta, StoryObj} from '@storybook/vue3-vite';
 
-import SortableExample from '../SortableExample.vue';
+import GridSortableApp from './GridSortableApp.vue';
+import gridSortableSource from './GridSortableApp.vue?raw';
+import {baseStyles, sortableStyles} from '@dnd-kit/stories-shared/styles/sandbox';
 
-const meta: Meta<typeof SortableExample> = {
+const meta: Meta = {
   title: 'Sortable/Grid',
-  component: SortableExample,
 };
 
 export default meta;
-type Story = StoryObj<typeof SortableExample>;
+type Story = StoryObj;
 
 export const BasicSetup: Story = {
   name: 'Basic setup',
-  args: {
-    layout: 'grid',
-    itemCount: 20,
+  render: () => ({components: {GridSortableApp}, template: '<GridSortableApp />'}),
+  parameters: {
+    codesandbox: {
+      files: {
+        'src/App.vue': gridSortableSource,
+        'src/styles.css': [baseStyles, sortableStyles].join('\n\n'),
+      },
+    },
   },
 };

@@ -2,6 +2,8 @@ import type {Meta, StoryObj} from '@storybook/react-vite';
 import {RestrictToHorizontalAxis} from '@dnd-kit/abstract/modifiers';
 
 import {SortableExample} from '../SortableExample';
+import horizontalSortableSource from './HorizontalSortableApp.tsx?raw';
+import {baseStyles, sortableStyles} from '@dnd-kit/stories-shared/styles/sandbox';
 
 const meta: Meta<typeof SortableExample> = {
   title: 'React/Sortable/Horizontal list',
@@ -22,6 +24,14 @@ const defaultArgs = {
 export const Horizontal: Story = {
   name: 'Basic setup',
   args: defaultArgs,
+  parameters: {
+    codesandbox: {
+      files: {
+        'src/App.tsx': horizontalSortableSource,
+        'src/styles.css': [baseStyles, sortableStyles].join('\n\n'),
+      },
+    },
+  },
 };
 
 export const DragHandle: Story = {

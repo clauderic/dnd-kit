@@ -1,19 +1,25 @@
 import type {Meta, StoryObj} from '@storybook/vue3-vite';
 
-import SortableExample from '../SortableExample.vue';
+import HorizontalSortableApp from './HorizontalSortableApp.vue';
+import horizontalSortableSource from './HorizontalSortableApp.vue?raw';
+import {baseStyles, sortableStyles} from '@dnd-kit/stories-shared/styles/sandbox';
 
-const meta: Meta<typeof SortableExample> = {
+const meta: Meta = {
   title: 'Sortable/Horizontal list',
-  component: SortableExample,
 };
 
 export default meta;
-type Story = StoryObj<typeof SortableExample>;
+type Story = StoryObj;
 
 export const BasicSetup: Story = {
   name: 'Basic setup',
-  args: {
-    layout: 'horizontal',
-    itemCount: 10,
+  render: () => ({components: {HorizontalSortableApp}, template: '<HorizontalSortableApp />'}),
+  parameters: {
+    codesandbox: {
+      files: {
+        'src/App.vue': horizontalSortableSource,
+        'src/styles.css': [baseStyles, sortableStyles].join('\n\n'),
+      },
+    },
   },
 };

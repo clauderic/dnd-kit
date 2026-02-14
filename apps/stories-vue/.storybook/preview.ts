@@ -58,6 +58,7 @@ const preview = {
           'Draggable',
           [
             'Basic setup',
+            'Drag handles',
             'Drag overlay',
           ],
           'Droppable',

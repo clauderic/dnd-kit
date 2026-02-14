@@ -1,25 +1,17 @@
 import {DragDropManager, Draggable, Droppable} from '@dnd-kit/dom';
 
 export default function App() {
-  const root = document.getElementById('root')!;
-
   const section = document.createElement('section');
-  section.style.cssText =
-    'display:grid;grid-template-columns:2fr 1fr;gap:20px;align-items:center;max-width:700px;margin:0 auto';
-
-  const left = document.createElement('div');
-  left.style.cssText = 'display:flex;justify-content:center';
+  section.className = 'drop-layout';
 
   const button = document.createElement('button');
   button.className = 'btn';
   button.textContent = 'draggable';
-  left.appendChild(button);
 
   const dropzone = document.createElement('div');
   dropzone.className = 'droppable';
 
-  section.append(left, dropzone);
-  root.appendChild(section);
+  section.append(button, dropzone);
 
   const manager = new DragDropManager();
 
@@ -49,7 +41,9 @@ export default function App() {
     if (event.operation.target?.id === 'droppable') {
       if (!isInside) dropzone.appendChild(button);
     } else if (isInside) {
-      left.appendChild(button);
+      section.prepend(button);
     }
   });
+
+  return section;
 }

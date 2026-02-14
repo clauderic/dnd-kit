@@ -1,10 +1,12 @@
 import type {Meta, StoryObj} from 'storybook-solidjs';
 
-import {SortableExample} from '../SortableExample';
+import App from './GridSortableApp';
+import gridSortableSource from './GridSortableApp.tsx?raw';
+import {baseStyles, sortableStyles} from '@dnd-kit/stories-shared/styles/sandbox';
 
 const meta: Meta = {
   title: 'Sortable/Grid',
-  component: SortableExample,
+  component: App,
 };
 
 export default meta;
@@ -12,8 +14,12 @@ type Story = StoryObj;
 
 export const BasicSetup: Story = {
   name: 'Basic setup',
-  args: {
-    layout: 'grid',
-    itemCount: 20,
+  parameters: {
+    codesandbox: {
+      files: {
+        'src/App.tsx': gridSortableSource,
+        'src/styles.css': [baseStyles, sortableStyles].join('\n\n'),
+      },
+    },
   },
 };

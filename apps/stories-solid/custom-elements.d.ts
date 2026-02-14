@@ -17,9 +17,6 @@ declare module "solid-js" {
     // Declare custom elements used in stories
     interface IntrinsicElements {
       "container-component": HTMLAttributes<HTMLElement>;
-      "button-component": HTMLAttributes<HTMLElement>;
-      "handle-component": HTMLAttributes<HTMLElement>;
-      "dropzone-component": HTMLAttributes<HTMLElement>;
       "item-component": HTMLAttributes<HTMLElement>;
     }
   }

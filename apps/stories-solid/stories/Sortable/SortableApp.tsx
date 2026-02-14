@@ -4,7 +4,7 @@ import {useSortable} from '@dnd-kit/solid/sortable';
 import {move} from '@dnd-kit/helpers';
 
 function Sortable(props: {id: number; index: number}) {
-  const {isDragging, ref, handleRef} = useSortable({
+  const {isDragging, ref} = useSortable({
     get id() {
       return props.id;
     },
@@ -16,7 +16,6 @@ function Sortable(props: {id: number; index: number}) {
   return (
     <li ref={ref} class="item" data-shadow={isDragging() ? '' : undefined}>
       {props.id}
-      <button ref={handleRef} class="handle" />
     </li>
   );
 }

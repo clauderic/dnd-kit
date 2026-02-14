@@ -8,7 +8,6 @@ import {Debug} from '@dnd-kit/dom/plugins/debug';
 import {createRange} from '@dnd-kit/stories-shared/utilities';
 import {Button} from '../components/Button/Button.tsx';
 import {Dropzone} from '../components/Dropzone/Dropzone.tsx';
-import {DraggableIcon} from '../icons/DraggableIcon.tsx';
 
 interface Props {
   droppableCount?: number;
@@ -60,7 +59,7 @@ function Draggable({id}: DraggableProps) {
 
   return (
     <Button ref={setElement} shadow={isDragging}>
-      <DraggableIcon />
+      draggable
     </Button>
   );
 }

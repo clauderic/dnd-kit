@@ -5,6 +5,7 @@ export {expect};
 interface DndFixture {
   page: Page;
   buttons: Locator;
+  buttonsIn(parent: Locator): Locator;
   items: Locator;
   dragging: Locator;
   placeholder: Locator;
@@ -40,12 +41,12 @@ interface KeyboardActions {
 export const test = base.extend<{dnd: DndFixture}>({
   dnd: async ({page}, use) => {
     const root = page.locator('#storybook-root');
-    const buttons = root.locator('button-component, .btn');
+    const buttons = root.locator('.btn');
     const items = root.locator('.Item, .item');
     const dragging = page.locator('[data-dnd-dragging]');
     const placeholder = page.locator('[data-dnd-placeholder]');
-    const dropzones = root.locator('dropzone-component, .droppable');
-    const handles = root.locator('handle-component, .handle');
+    const dropzones = root.locator('.droppable');
+    const handles = root.locator('.handle');
     const rows = root.locator('tbody tr');
     const columns = root.locator('thead th');
 
@@ -104,6 +105,9 @@ export const test = base.extend<{dnd: DndFixture}>({
     const dnd: DndFixture = {
       page,
       buttons,
+      buttonsIn(parent: Locator) {
+        return parent.locator('.btn');
+      },
       items,
       dragging,
       placeholder,
@@ -197,7 +201,7 @@ expect.extend({
     let pass: boolean;
 
     try {
-      await expect(locator).toHaveAttribute('data-highlight', 'true', {
+      await expect(locator).toHaveClass(/active/, {
         timeout: 3_000,
       });
       pass = true;
@@ -209,7 +213,7 @@ expect.extend({
       message: () =>
         pass
           ? 'expected element NOT to be a drop target'
-          : 'expected element to be a drop target (have [data-highlight="true"])',
+          : 'expected element to be a drop target (have "active" class)',
       pass,
       name: assertionName,
     };

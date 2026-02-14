@@ -21,19 +21,16 @@ const SortableItem = defineComponent({
   },
   setup(props) {
     const element = ref<HTMLElement | null>(null);
-    const handle = ref<HTMLElement | null>(null);
     const {isDragging} = useSortable({
       id: computed(() => props.id),
       index: computed(() => props.index),
       element,
-      handle,
     });
-    return {element, handle, isDragging};
+    return {element, isDragging};
   },
   template: `
     <li ref="element" class="item" :data-shadow="isDragging || undefined">
       {{ id }}
-      <button ref="handle" class="handle" />
     </li>
   `,
 });

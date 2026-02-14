@@ -36,10 +36,8 @@ export default defineComponent({components: {DraggableItem, DroppableZone}});
 
 <template>
   <DragDropProvider @dragEnd="onDragEnd">
-    <section style="display:grid;grid-template-columns:2fr 1fr;gap:20px;align-items:center;max-width:700px;margin:0 auto">
-      <div style="display:flex;justify-content:center">
-        <DraggableItem v-if="parent == null" />
-      </div>
+    <section class="drop-layout">
+      <DraggableItem v-if="parent == null" />
       <DroppableZone>
         <DraggableItem v-if="parent === 'droppable'" />
       </DroppableZone>

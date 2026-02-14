@@ -10,19 +10,18 @@ export interface Props extends HTMLAttributes<HTMLElement> {
   shadow?: boolean;
 }
 
-export const Button = forwardRef<HTMLElement, PropsWithChildren<Props>>(
+export const Button = forwardRef<HTMLButtonElement, PropsWithChildren<Props>>(
   function Button({actions, children, shadow, ...props}, ref) {
-    return React.createElement(
-      'button-component',
-      {
-        ref,
-        'data-shadow': String(shadow),
-        ...props,
-      },
-      <Fragment>
+    return (
+      <button
+        ref={ref}
+        className="btn"
+        data-shadow={shadow ? 'true' : undefined}
+        {...props}
+      >
         {children}
         {actions}
-      </Fragment>
+      </button>
     );
   }
 );

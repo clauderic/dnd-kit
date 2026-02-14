@@ -1,25 +1,24 @@
 import type {Meta, StoryObj} from '@storybook/react-vite';
 
-import {DroppableExample} from '../DroppableExample';
+import MultipleDroppableApp from './MultipleDroppableApp';
+import multipleDroppableSource from './MultipleDroppableApp.tsx?raw';
+import {baseStyles, draggableStyles, droppableStyles} from '@dnd-kit/stories-shared/styles/sandbox';
 
-const meta: Meta<typeof DroppableExample> = {
+const meta: Meta<typeof MultipleDroppableApp> = {
   title: 'React/Droppable/Multiple drop targets',
-  component: DroppableExample,
+  component: MultipleDroppableApp,
 };
 
 export default meta;
-type Story = StoryObj<typeof DroppableExample>;
+type Story = StoryObj<typeof MultipleDroppableApp>;
 
 export const Example: Story = {
-  args: {
-    droppableCount: 3,
-    debug: false,
-  },
-};
-
-export const Debug: Story = {
-  args: {
-    droppableCount: 3,
-    debug: true,
+  parameters: {
+    codesandbox: {
+      files: {
+        'src/App.tsx': multipleDroppableSource,
+        'src/styles.css': [baseStyles, draggableStyles, droppableStyles].join('\n\n'),
+      },
+    },
   },
 };

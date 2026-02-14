@@ -28,10 +28,8 @@ export default function App() {
         setParent(event.operation.target?.id as string);
       }}
     >
-      <section style={{display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 20, alignItems: 'center', maxWidth: 700, margin: '0 auto'}}>
-        <div style={{display: 'flex', justifyContent: 'center'}}>
-          {parent == null ? draggable : null}
-        </div>
+      <section className="drop-layout">
+        {parent == null ? draggable : null}
         <Droppable id="droppable">
           {parent === 'droppable' ? draggable : null}
         </Droppable>

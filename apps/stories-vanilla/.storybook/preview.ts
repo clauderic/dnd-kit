@@ -17,7 +17,7 @@ const preview = {
         "",
         "App();",
       ].join('\n'),
-      mainFile: 'src/App.js',
+      mainFile: 'src/App.ts',
     },
     darkMode: {
       stylePreview: true,
@@ -26,6 +26,10 @@ const preview = {
       storySort: {
         order: [
           'Draggable',
+          [
+            'Basic setup',
+            'Drag handle',
+          ],
           'Droppable',
           'Sortable',
           [

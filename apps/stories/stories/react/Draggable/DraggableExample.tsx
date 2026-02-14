@@ -9,7 +9,6 @@ import type {FeedbackType} from '@dnd-kit/dom';
 import {DragDropProvider, DragOverlay, useDraggable} from '@dnd-kit/react';
 
 import {Button, Handle} from '../components';
-import {DraggableIcon} from '../icons';
 
 interface Props {
   container?: React.FC<PropsWithChildren<{}>> | string;
@@ -30,7 +29,7 @@ export function DraggableExample(props: Props) {
         {overlay && (
           <DragOverlay>
             <Button shadow style={{width: '100%'}}>
-              Drag overlay
+              overlay
               <Handle variant="dark" />
             </Button>
           </DragOverlay>
@@ -76,7 +75,7 @@ export function Draggable({
       shadow={isDragging && !overlay}
       style={style}
     >
-      <DraggableIcon />
+      draggable
     </Button>
   );
 }

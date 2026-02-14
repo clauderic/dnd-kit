@@ -1,12 +1,12 @@
 import type {Meta, StoryObj} from 'storybook-solidjs';
 
-import {DroppableExample} from './DroppableExample';
+import App from './DroppableApp';
 import droppableSource from './DroppableApp.tsx?raw';
 import {baseStyles, draggableStyles, droppableStyles} from '@dnd-kit/stories-shared/styles/sandbox';
 
 const meta: Meta = {
   title: 'Droppable/Basic setup',
-  component: DroppableExample,
+  component: App,
 };
 
 export default meta;

@@ -1,12 +1,12 @@
 import type {Meta, StoryObj} from 'storybook-solidjs';
 
-import {DraggableExample} from './DraggableExample';
+import App from './DraggableApp';
 import draggableSource from './DraggableApp.tsx?raw';
 import {baseStyles, draggableStyles} from '@dnd-kit/stories-shared/styles/sandbox';
 
 const meta: Meta = {
   title: 'Draggable/Basic setup',
-  component: DraggableExample,
+  component: App,
 };
 
 export default meta;

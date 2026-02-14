@@ -13,8 +13,9 @@ export const draggableStyles = `
   height: min-content;
   align-items: center;
   gap: 6px;
+  font-family: inherit;
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 800;
   cursor: grab;
   padding: 14px 18px;
   background: #000;
@@ -34,7 +35,12 @@ export const draggableStyles = `
   background-repeat: no-repeat;
 }
 
-.btn[aria-grabbed="true"]:not([disabled]) {
+.btn:has(.handle) {
+  padding-inline-end: 10px;
+}
+
+.btn[aria-grabbed="true"]:not([disabled]),
+.btn[data-shadow="true"]:not([disabled]) {
   transform: scale(1.025);
   box-shadow: inset 0px 0px 1px rgba(0,0,0,0.5), -1px 0 15px 0 rgba(34, 33, 81, 0.01), 0px 15px 15px 0 rgba(34, 33, 81, 0.25)
 }
@@ -92,9 +98,87 @@ export const droppableStyles = `
   opacity: 0.5;
 }
 
+.drop-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  align-items: center;
+  justify-items: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.drop-layout > .droppable {
+  grid-column: 2;
+  justify-self: stretch;
+}
+
 .droppable:not(:empty)::after {
   opacity: 0.2;
   transform: translate3d(-50%, 100%, 0) scale(0.8);
+}
+`.trim();
+
+export const handleStyles = `
+.handle {
+  display: flex;
+  width: 12px;
+  padding: 15px;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  touch-action: none;
+  cursor: grab;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  appearance: none;
+  background-color: transparent;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.handle:hover, .handle:active {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.handle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0), inset 0 0 0 2.5px #4c9ffe;
+}
+
+.handle::before {
+  content: ' ';
+  display: block;
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z' fill='%23919eab'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.handle:hover::before, .handle:active::before {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z' fill='%236f7b88'/%3E%3C/svg%3E");
+}
+
+.btn .handle {
+  margin-block: -4px;
+}
+
+.btn .handle:hover, .btn .handle:active {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn .handle::before {
+  filter: brightness(0) invert(1);
+  opacity: 0.5;
+}
+
+.btn .handle:hover::before, .btn .handle:active::before {
+  filter: brightness(0) invert(1);
+  opacity: 0.8;
 }
 `.trim();
 
@@ -156,48 +240,7 @@ export const sortableStyles = `
   transform: none;
 }
 
-.handle {
-  display: flex;
-  width: 12px;
-  padding: 15px;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  touch-action: none;
-  cursor: grab;
-  border-radius: 5px;
-  border: none;
-  outline: none;
-  appearance: none;
-  background-color: transparent;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.handle:hover, .handle:active {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.handle:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0), inset 0 0 0 2.5px #4c9ffe;
-}
-
-.handle::before {
-  content: ' ';
-  display: block;
-  width: 12px;
-  height: 12px;
-  flex-shrink: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z' fill='%23919eab'/%3E%3C/svg%3E");
-  background-size: contain;
-  background-repeat: no-repeat;
-}
-
-.handle:hover::before, .handle:active::before {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z' fill='%236f7b88'/%3E%3C/svg%3E");
-}
+${handleStyles}
 `.trim();
 
 export const multipleListsStyles = `

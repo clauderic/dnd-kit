@@ -1,19 +1,15 @@
-import {Button, Container, Dropzone, Handle, Item} from './components/index.ts';
+import {Container, Item} from './components/index.ts';
+import {draggableStyles, droppableStyles, handleStyles, sortableStyles} from './styles/sandbox.ts';
 
-if (!customElements.get('button-component')) {
-  customElements.define('button-component', Button);
+// Inject shared styles globally for Storybook display
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style');
+  style.textContent = [draggableStyles, droppableStyles, handleStyles, sortableStyles].join('\n');
+  document.head.appendChild(style);
 }
 
 if (!customElements.get('container-component')) {
   customElements.define('container-component', Container);
-}
-
-if (!customElements.get('dropzone-component')) {
-  customElements.define('dropzone-component', Dropzone);
-}
-
-if (!customElements.get('handle-component')) {
-  customElements.define('handle-component', Handle);
 }
 
 if (!customElements.get('item-component')) {

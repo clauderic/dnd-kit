@@ -2,6 +2,8 @@ import type {Meta, StoryObj} from '@storybook/react-vite';
 import {pointerIntersection} from '@dnd-kit/collision';
 
 import {SortableExample} from '../SortableExample';
+import gridSortableSource from './GridSortableApp.tsx?raw';
+import {baseStyles, sortableStyles} from '@dnd-kit/stories-shared/styles/sandbox';
 
 const meta: Meta<typeof SortableExample> = {
   title: 'React/Sortable/Grid',
@@ -19,6 +21,14 @@ const defaultArgs = {
 export const Grid: Story = {
   name: 'Basic setup',
   args: defaultArgs,
+  parameters: {
+    codesandbox: {
+      files: {
+        'src/App.tsx': gridSortableSource,
+        'src/styles.css': [baseStyles, sortableStyles].join('\n\n'),
+      },
+    },
+  },
 };
 
 export const DragHandle: Story = {
