@@ -2,7 +2,7 @@ import type {Data} from '@dnd-kit/abstract';
 import type {DroppableInput} from '@dnd-kit/dom';
 import {Droppable} from '@dnd-kit/dom';
 
-import {useDeepSignal} from '../../hooks/useDeepSignal.svelte.js';
+import {createDeepSignal} from '../../utilities/createDeepSignal.svelte.js';
 import {createInstance} from '../hooks/createInstance.svelte.js';
 
 export type CreateDroppableInput<T extends Data = Data> = Omit<
@@ -24,7 +24,7 @@ export function createDroppable<T extends Data = Data>(
       )
   );
 
-  const tracked = useDeepSignal(() => droppable);
+  const tracked = createDeepSignal(() => droppable);
 
   // Sync reactive properties from input getters
   $effect(() => {

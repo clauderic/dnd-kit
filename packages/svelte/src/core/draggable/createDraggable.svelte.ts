@@ -2,7 +2,7 @@ import type {Data} from '@dnd-kit/abstract';
 import type {DraggableInput} from '@dnd-kit/dom';
 import {Draggable} from '@dnd-kit/dom';
 
-import {useDeepSignal} from '../../hooks/useDeepSignal.svelte.js';
+import {createDeepSignal} from '../../utilities/createDeepSignal.svelte.js';
 import {createInstance} from '../hooks/createInstance.svelte.js';
 
 export type CreateDraggableInput<T extends Data = Data> = Omit<
@@ -24,7 +24,7 @@ export function createDraggable<T extends Data = Data>(
       )
   );
 
-  const tracked = useDeepSignal(() => draggable);
+  const tracked = createDeepSignal(() => draggable);
 
   // Sync reactive properties from input getters
   $effect(() => {

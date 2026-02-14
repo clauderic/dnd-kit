@@ -1,2 +1,1 @@
-// Utilities for @dnd-kit/svelte
-// Currently empty — reserved for future utility exports.
+export {createDeepSignal} from './createDeepSignal.svelte.js';

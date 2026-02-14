@@ -10,7 +10,7 @@
     type Droppable,
   } from '@dnd-kit/dom';
 
-  import {useRenderer} from './renderer.svelte.js';
+  import {createRenderer} from './renderer.svelte.js';
   import {setDragDropContext} from './context.js';
 
   type Events = DragDropEvents<Draggable, Droppable, DragDropManager>;
@@ -40,7 +40,7 @@
     onCollision,
   }: Props = $props();
 
-  const {renderer, trackRendering} = useRenderer();
+  const {renderer, trackRendering} = createRenderer();
 
   // Create manager once; plugins/sensors/modifiers are synced reactively via $effect below
   const manager = managerProp ?? new DragDropManager({});

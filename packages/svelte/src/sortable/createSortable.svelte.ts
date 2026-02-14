@@ -3,7 +3,7 @@ import type {SortableInput} from '@dnd-kit/dom/sortable';
 import {defaultSortableTransition, Sortable} from '@dnd-kit/dom/sortable';
 import {batch} from '@dnd-kit/state';
 
-import {useDeepSignal} from '../hooks/useDeepSignal.svelte.js';
+import {createDeepSignal} from '../utilities/createDeepSignal.svelte.js';
 import {createInstance} from '../core/hooks/createInstance.svelte.js';
 
 export type CreateSortableInput<T extends Data = Data> = Omit<
@@ -28,7 +28,7 @@ export function createSortable<T extends Data = Data>(
     );
   });
 
-  const tracked = useDeepSignal(() => sortable);
+  const tracked = createDeepSignal(() => sortable);
 
   // Sync reactive properties from input getters
   $effect(() => {

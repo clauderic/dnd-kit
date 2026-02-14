@@ -3,7 +3,7 @@ import {tick} from 'svelte';
 
 type Renderer = DragDropManager['renderer'];
 
-export function useRenderer(): {
+export function createRenderer(): {
   renderer: Renderer;
   trackRendering: (callback: () => void) => void;
 } {

@@ -1,9 +1,9 @@
-import {useDeepSignal} from '../../hooks/useDeepSignal.svelte.js';
+import {createDeepSignal} from '../../utilities/createDeepSignal.svelte.js';
 import {getDragDropManager} from './getDragDropManager.js';
 
 export function createDragOperation() {
   const manager = getDragDropManager();
-  const trackedDragOperation = useDeepSignal(() => manager.dragOperation);
+  const trackedDragOperation = createDeepSignal(() => manager.dragOperation);
 
   return {
     get source() {

@@ -3,7 +3,7 @@
   import type {DragDropManager, Draggable, DropAnimation} from '@dnd-kit/dom';
   import {Feedback} from '@dnd-kit/dom';
 
-  import {useDeepSignal} from '../../hooks/useDeepSignal.svelte.js';
+  import {createDeepSignal} from '../../utilities/createDeepSignal.svelte.js';
   import {getDragDropManager} from '../hooks/getDragDropManager.js';
   import {DND_CONTEXT_KEY, setDragDropContext} from '../context/context.js';
 
@@ -33,7 +33,7 @@
   const manager = getDragDropManager();
   let overlayElement = $state<HTMLElement | null>(null);
 
-  const trackedDragOperation = useDeepSignal(() => manager.dragOperation);
+  const trackedDragOperation = createDeepSignal(() => manager.dragOperation);
 
   // Provide a patched manager that prevents children from registering
   const noop = () => () => {};

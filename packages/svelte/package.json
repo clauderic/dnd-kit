@@ -17,11 +17,6 @@
       "svelte": "./dist/core/index.js",
       "default": "./dist/core/index.js"
     },
-    "./hooks": {
-      "types": "./dist/hooks/index.d.ts",
-      "svelte": "./dist/hooks/index.js",
-      "default": "./dist/hooks/index.js"
-    },
     "./sortable": {
       "types": "./dist/sortable/index.d.ts",
       "svelte": "./dist/sortable/index.js",

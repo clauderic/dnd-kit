@@ -10,7 +10,7 @@ import {effect, untracked} from '@dnd-kit/state';
  * - Read: Getters read `dirty` (so Svelte subscribes) then return
  *   the current value from the instance
  */
-export function useDeepSignal<T extends object | null | undefined>(
+export function createDeepSignal<T extends object | null | undefined>(
   getTarget: () => T
 ): {readonly current: T} {
   const tracked = new Map<string | symbol, any>();
