@@ -32,10 +32,10 @@ const {isDragging} = useSortable({
     class="container"
     :data-shadow="isDragging ? 'true' : undefined"
   >
-    <div class="container-header">
+    <h2>
       {{ id }}
       <button ref="handle" class="handle" />
-    </div>
+    </h2>
     <ul>
       <SortableItem
         v-for="(itemId, itemIndex) in rows"

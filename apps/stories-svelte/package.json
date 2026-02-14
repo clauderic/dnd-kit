@@ -1,0 +1,32 @@
+{
+  "name": "@dnd-kit/stories-svelte",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "storybook dev -p 6010",
+    "build": "storybook build",
+    "clean": "rm -rf .turbo && rm -rf node_modules",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
+  },
+  "dependencies": {
+    "@dnd-kit/abstract": "*",
+    "@dnd-kit/dom": "*",
+    "@dnd-kit/svelte": "*",
+    "@dnd-kit/helpers": "*",
+    "@dnd-kit/stories-shared": "*",
+    "@dnd-kit/storybook-addon-codesandbox": "*",
+    "svelte": "^5.29.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@storybook/addon-links": "^9.0.15",
+    "@storybook/svelte-vite": "9.1.17",
+    "@sveltejs/vite-plugin-svelte": "^5.0.0",
+    "@vueless/storybook-dark-mode": "^9.0.6",
+    "storybook": "9.1.17",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.0"
+  }
+}

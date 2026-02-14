@@ -1,0 +1,56 @@
+---
+title: 'DragDropProvider'
+description: 'The DragDropProvider component creates and manages a DragDropManager instance for your Svelte application.'
+icon: 'sitemap'
+---
+
+## Overview
+
+The `DragDropProvider` component is the root component for drag and drop interactions. It creates a [DragDropManager](/concepts/drag-drop-manager) instance and makes it available to all descendant components via Svelte's context API.
+
+## Usage
+
+```svelte
+<script>
+  import {DragDropProvider} from '@dnd-kit/svelte';
+
+  function onDragEnd(event) {
+    // Handle drag end
+  }
+</script>
+
+<DragDropProvider {onDragEnd}>
+  <!-- Your draggable and droppable elements -->
+</DragDropProvider>
+```
+
+## Events
+
+The `DragDropProvider` accepts callback props for all drag and drop lifecycle stages:
+
+| Prop | Description |
+|------|-------------|
+| `onBeforeDragStart` | Fired before a drag operation begins. Can be used to prepare state. |
+| `onDragStart` | Fired when a drag operation starts. |
+| `onDragMove` | Fired when the dragged element moves. |
+| `onDragOver` | Fired when the dragged element moves over a droppable target. |
+| `onDragEnd` | Fired when a drag operation ends (dropped or canceled). |
+| `onCollision` | Fired when collisions are detected between draggable and droppable elements. |
+
+## Props
+
+<ParamField path="manager" type="DragDropManager" optional>
+  An optional externally created `DragDropManager` instance. If not provided, one will be created automatically.
+</ParamField>
+
+<ParamField path="plugins" type="Plugin[]" optional>
+  An array of plugins to use. Defaults to the default preset.
+</ParamField>
+
+<ParamField path="sensors" type="Sensor[]" optional>
+  An array of sensors to use. Defaults to `PointerSensor` and `KeyboardSensor`.
+</ParamField>
+
+<ParamField path="modifiers" type="Modifier[]" optional>
+  An array of modifiers to apply to drag operations.
+</ParamField>

@@ -57,6 +57,23 @@ jobs:
     outputs:
       storybookUrl: ${{ steps.solid.outputs.storybookUrl }}
 
+  chromatic-svelte:
+    name: Chromatic (Svelte)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install && bun run build
+      - uses: chromaui/action@v1
+        id: svelte
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          projectToken: ${{ secrets.CHROMATIC_SVELTE_TOKEN }}
+          buildScriptName: 'build'
+          workingDir: 'apps/stories-svelte'
+    outputs:
+      storybookUrl: ${{ steps.svelte.outputs.storybookUrl }}
+
   chromatic:
     name: Chromatic
     runs-on: ubuntu-latest
@@ -64,6 +81,7 @@ jobs:
       - chromatic-vanilla
       - chromatic-vue
       - chromatic-solid
+      - chromatic-svelte
     steps:
       - uses: actions/checkout@v1
       - uses: oven-sh/setup-bun@v1
@@ -78,3 +96,4 @@ jobs:
           VANILLA_STORYBOOK_URL: ${{ needs.chromatic-vanilla.outputs.storybookUrl }}
           VUE_STORYBOOK_URL: ${{ needs.chromatic-vue.outputs.storybookUrl }}
           SOLID_STORYBOOK_URL: ${{ needs.chromatic-solid.outputs.storybookUrl }}
+          SVELTE_STORYBOOK_URL: ${{ needs.chromatic-svelte.outputs.storybookUrl }}

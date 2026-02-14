@@ -1,0 +1,62 @@
+{
+  "name": "@dnd-kit/svelte",
+  "version": "0.2.3",
+  "type": "module",
+  "svelte": "./dist/core/index.js",
+  "types": "./dist/core/index.d.ts",
+  "sideEffects": false,
+  "license": "MIT",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/core/index.d.ts",
+      "svelte": "./dist/core/index.js",
+      "default": "./dist/core/index.js"
+    },
+    "./hooks": {
+      "types": "./dist/hooks/index.d.ts",
+      "svelte": "./dist/hooks/index.js",
+      "default": "./dist/hooks/index.js"
+    },
+    "./sortable": {
+      "types": "./dist/sortable/index.d.ts",
+      "svelte": "./dist/sortable/index.js",
+      "default": "./dist/sortable/index.js"
+    },
+    "./utilities": {
+      "types": "./dist/utilities/index.d.ts",
+      "svelte": "./dist/utilities/index.js",
+      "default": "./dist/utilities/index.js"
+    }
+  },
+  "scripts": {
+    "build": "svelte-package -i src -o dist",
+    "dev": "svelte-package -i src -o dist --watch",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "dependencies": {
+    "@dnd-kit/abstract": "^0.2.3",
+    "@dnd-kit/dom": "^0.2.3",
+    "@dnd-kit/state": "^0.2.3",
+    "tslib": "^2.6.2"
+  },
+  "peerDependencies": {
+    "svelte": "^5.29.0"
+  },
+  "devDependencies": {
+    "@sveltejs/package": "^2.5.7",
+    "svelte": "^5.29.0",
+    "typescript": "^5.5.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/clauderic/dnd-kit"
+  }
+}

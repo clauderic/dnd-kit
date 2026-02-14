@@ -1,0 +1,65 @@
+---
+title: 'createDroppable'
+description: 'Create droppable targets with the createDroppable primitive.'
+icon: 'expand'
+---
+
+import {Story} from '/snippets/story.mdx';
+
+<Story id="droppable-basic-setup--example" framework="svelte" height="400" hero />
+
+## Usage
+
+The `createDroppable` primitive requires a unique `id`. It returns an object with an `attach` function and reactive state.
+
+```svelte
+<script>
+  import {createDroppable} from '@dnd-kit/svelte';
+
+  const droppable = createDroppable({id: 'my-droppable'});
+</script>
+
+<div {@attach droppable.attach}>
+  Drop here
+</div>
+```
+
+## Input
+
+<ParamField path="id" type="UniqueIdentifier | (() => UniqueIdentifier)" required>
+  A unique identifier for this droppable instance.
+</ParamField>
+
+<ParamField path="accept" type="string | string[] | (() => string | string[])" optional>
+  The types of draggable elements this droppable accepts.
+</ParamField>
+
+<ParamField path="type" type="string | (() => string)" optional>
+  The type of this droppable element.
+</ParamField>
+
+<ParamField path="collisionDetector" type="CollisionDetector | (() => CollisionDetector)" optional>
+  A custom collision detection algorithm.
+</ParamField>
+
+<ParamField path="disabled" type="boolean | (() => boolean)" optional>
+  Whether the droppable is disabled.
+</ParamField>
+
+<ParamField path="data" type="Data | (() => Data)" optional>
+  Custom data to attach to this droppable instance.
+</ParamField>
+
+## Output
+
+<ResponseField name="isDropTarget" type="boolean">
+  Whether this element is currently a drop target (a draggable is hovering over it).
+</ResponseField>
+
+<ResponseField name="droppable" type="Droppable">
+  The underlying `Droppable` instance.
+</ResponseField>
+
+<ResponseField name="attach" type="(element: HTMLElement) => () => void">
+  Attachment function for the droppable element. Use with `{@attach}`.
+</ResponseField>

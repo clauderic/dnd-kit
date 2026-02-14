@@ -1,0 +1,129 @@
+---
+title: 'createDraggable'
+description: 'Make elements draggable with the createDraggable primitive.'
+icon: 'bullseye-pointer'
+---
+
+import {Story} from '/snippets/story.mdx';
+
+<Story id="draggable-basic-setup--example" framework="svelte" height="200" hero />
+
+## Usage
+
+The `createDraggable` primitive requires a unique `id`. It returns an object with `attach` and `attachHandle` functions for connecting elements, and reactive state properties.
+
+```svelte
+<script>
+  import {createDraggable} from '@dnd-kit/svelte';
+
+  const draggable = createDraggable({id: 'my-draggable'});
+</script>
+
+<button {@attach draggable.attach}>
+  Drag me
+</button>
+```
+
+## Input
+
+All input properties accept plain values or getter functions for reactivity.
+
+<ParamField path="id" type="UniqueIdentifier | (() => UniqueIdentifier)" required>
+  A unique identifier for this draggable instance.
+</ParamField>
+
+<ParamField path="disabled" type="boolean | (() => boolean)" optional>
+  Whether the draggable is disabled.
+</ParamField>
+
+<ParamField path="feedback" type="'default' | 'clone' | 'move' | 'none' | (() => string)" optional>
+  The type of visual feedback to show during drag. Defaults to `'default'`.
+</ParamField>
+
+<ParamField path="modifiers" type="Modifier[] | (() => Modifier[])" optional>
+  Modifiers to apply to this draggable instance.
+</ParamField>
+
+<ParamField path="sensors" type="Sensor[] | (() => Sensor[])" optional>
+  Sensors to use for this draggable instance.
+</ParamField>
+
+<ParamField path="data" type="Data | (() => Data)" optional>
+  Custom data to attach to this draggable instance.
+</ParamField>
+
+## Output
+
+The returned object provides reactive properties and attachment functions:
+
+<ResponseField name="isDragging" type="boolean">
+  Whether this element is currently being dragged (visually).
+</ResponseField>
+
+<ResponseField name="isDropping" type="boolean">
+  Whether this element is in the process of being dropped (animating to final position).
+</ResponseField>
+
+<ResponseField name="isDragSource" type="boolean">
+  Whether this element is the source of the current drag operation.
+</ResponseField>
+
+<ResponseField name="draggable" type="Draggable">
+  The underlying `Draggable` instance.
+</ResponseField>
+
+<ResponseField name="attach" type="(element: HTMLElement) => () => void">
+  Attachment function for the draggable element. Use with `{@attach}`.
+</ResponseField>
+
+<ResponseField name="attachHandle" type="(element: HTMLElement) => () => void">
+  Attachment function for a drag handle. Use with `{@attach}`.
+</ResponseField>
+
+## Guides
+
+### Using drag handles
+
+You can use `attachHandle` to designate a specific element as the drag handle:
+
+```svelte
+<script>
+  import {createDraggable} from '@dnd-kit/svelte';
+
+  const draggable = createDraggable({id: 'draggable'});
+</script>
+
+<div {@attach draggable.attach}>
+  Drag me by the handle
+  <button {@attach draggable.attachHandle} class="handle" />
+</div>
+```
+
+### Rendering a drag overlay
+
+You can render a completely different element while the draggable element is being dragged by using the [`<DragOverlay>`](/svelte/components/drag-overlay) component.
+
+<img src="/images/draggable/drag-overlay.png" />
+
+```svelte
+<script>
+  import {DragDropProvider, DragOverlay, createDraggable} from '@dnd-kit/svelte';
+
+  const draggable = createDraggable({id: 'draggable'});
+</script>
+
+<DragDropProvider>
+  <button {@attach draggable.attach}>Draggable</button>
+  <DragOverlay>
+    {#snippet children(source)}
+      <div>I will be rendered while dragging...</div>
+    {/snippet}
+  </DragOverlay>
+</DragDropProvider>
+```
+
+The `<DragOverlay>` component will only render its children when a drag operation is in progress. This can be useful for rendering a completely different element while the draggable element is being dragged.
+
+<Warning>
+  You should only render the `<DragOverlay>` component once per [DragDropProvider](/svelte/components/drag-drop-provider).
+</Warning>

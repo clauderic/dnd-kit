@@ -19,3 +19,6 @@ playwright-report/
 /packages/**/*.cjs.map
 /packages/**/*.d.ts
 /packages/**/*.d.cts
+/packages/**/*.d.ts.map
+/packages/**/*.d.cts.map
+.svelte-kit

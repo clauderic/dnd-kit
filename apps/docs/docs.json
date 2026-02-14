@@ -111,6 +111,31 @@
             ]
           },
           {
+            "anchor": "Svelte",
+            "icon": "svelte",
+            "groups": [
+              {
+                "group": "Get Started",
+                "pages": ["svelte/quickstart"]
+              },
+              {
+                "group": "Components",
+                "pages": [
+                  "svelte/components/drag-drop-provider",
+                  "svelte/components/drag-overlay"
+                ]
+              },
+              {
+                "group": "Primitives",
+                "pages": [
+                  "svelte/primitives/create-draggable",
+                  "svelte/primitives/create-droppable",
+                  "svelte/primitives/create-sortable"
+                ]
+              }
+            ]
+          },
+          {
             "anchor": "Solid",
             "icon": "solidjs",
             "groups": [

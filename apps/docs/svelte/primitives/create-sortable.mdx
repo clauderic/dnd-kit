@@ -1,0 +1,136 @@
+---
+title: 'createSortable'
+description: 'Create sortable elements with the createSortable primitive.'
+icon: 'layer-group'
+---
+
+import {Story} from '/snippets/story.mdx';
+
+<Story id="sortable-vertical-list--basic-setup" framework="svelte" height="320" hero />
+
+## Usage
+
+The `createSortable` primitive combines draggable and droppable behavior with sorting logic. Import it from `@dnd-kit/svelte/sortable`.
+
+```svelte
+<script>
+  import {DragDropProvider} from '@dnd-kit/svelte';
+  import {createSortable} from '@dnd-kit/svelte/sortable';
+  import {move} from '@dnd-kit/helpers';
+
+  let items = $state([1, 2, 3, 4]);
+
+  function onDragEnd(event) {
+    items = move(items, event);
+  }
+</script>
+
+<DragDropProvider {onDragEnd}>
+  <ul>
+    {#each items as id, index (id)}
+      {@const sortable = createSortable({id, index: () => index})}
+      <li {@attach sortable.attach}>
+        Item {id}
+      </li>
+    {/each}
+  </ul>
+</DragDropProvider>
+```
+
+<Note>
+  When using `createSortable` inside an `{#each}` block, pass reactive values like `index` as getter functions (e.g. `index: () => index`) to maintain reactivity as items are reordered.
+</Note>
+
+## Input
+
+All input properties accept plain values or getter functions for reactivity.
+
+<ParamField path="id" type="UniqueIdentifier | (() => UniqueIdentifier)" required>
+  A unique identifier for this sortable instance.
+</ParamField>
+
+<ParamField path="index" type="number | (() => number)" required>
+  The current index of this item in the sorted list.
+</ParamField>
+
+<ParamField path="group" type="string | (() => string)" optional>
+  The group this sortable belongs to. Used for sorting across multiple lists.
+</ParamField>
+
+<ParamField path="accept" type="string | string[] | (() => string | string[])" optional>
+  The types of draggable elements this sortable accepts.
+</ParamField>
+
+<ParamField path="type" type="string | (() => string)" optional>
+  The type of this sortable element.
+</ParamField>
+
+<ParamField path="feedback" type="'default' | 'clone' | 'move' | 'none' | (() => string)" optional>
+  The type of visual feedback. Defaults to `'default'`.
+</ParamField>
+
+<ParamField path="transition" type="SortableTransition | (() => SortableTransition)" optional>
+  Animation transition configuration for sort operations.
+</ParamField>
+
+<ParamField path="modifiers" type="Modifier[] | (() => Modifier[])" optional>
+  Modifiers to apply to this sortable instance.
+</ParamField>
+
+<ParamField path="sensors" type="Sensor[] | (() => Sensor[])" optional>
+  Sensors to use for this sortable instance.
+</ParamField>
+
+<ParamField path="collisionDetector" type="CollisionDetector | (() => CollisionDetector)" optional>
+  A custom collision detection algorithm.
+</ParamField>
+
+<ParamField path="collisionPriority" type="number | (() => number)" optional>
+  The collision priority of this sortable element. Higher values take precedence when multiple droppable elements overlap.
+</ParamField>
+
+<ParamField path="disabled" type="boolean | (() => boolean)" optional>
+  Whether the sortable is disabled.
+</ParamField>
+
+<ParamField path="data" type="Data | (() => Data)" optional>
+  Custom data to attach to this sortable instance.
+</ParamField>
+
+## Output
+
+<ResponseField name="isDragging" type="boolean">
+  Whether this element is currently being dragged.
+</ResponseField>
+
+<ResponseField name="isDropping" type="boolean">
+  Whether this element is in the process of being dropped.
+</ResponseField>
+
+<ResponseField name="isDragSource" type="boolean">
+  Whether this element is the source of the current drag operation.
+</ResponseField>
+
+<ResponseField name="isDropTarget" type="boolean">
+  Whether this element is currently a drop target.
+</ResponseField>
+
+<ResponseField name="sortable" type="Sortable">
+  The underlying `Sortable` instance.
+</ResponseField>
+
+<ResponseField name="attach" type="(element: HTMLElement) => () => void">
+  Attachment function for the sortable element. Use with `{@attach}`.
+</ResponseField>
+
+<ResponseField name="attachHandle" type="(element: HTMLElement) => () => void">
+  Attachment function for a drag handle. Use with `{@attach}`.
+</ResponseField>
+
+<ResponseField name="attachSource" type="(element: HTMLElement) => () => void">
+  Attachment function for the drag source element (when different from the sortable element).
+</ResponseField>
+
+<ResponseField name="attachTarget" type="(element: HTMLElement) => () => void">
+  Attachment function for the drop target element (when different from the sortable element).
+</ResponseField>

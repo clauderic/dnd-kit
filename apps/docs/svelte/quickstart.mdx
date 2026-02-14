@@ -1,0 +1,131 @@
+---
+title: 'Quickstart'
+description: 'Start building drag and drop interfaces with Svelte in minutes.'
+icon: 'rocket'
+---
+
+import {Story} from '/snippets/story.mdx';
+import Intro from '/snippets/quickstart/intro.mdx';
+
+<Intro />
+
+## Overview
+
+The `@dnd-kit/svelte` package provides a set of Svelte primitives and components that you can use to build drag and drop interfaces. It is a thin Svelte integration layer built on top of the [vanilla](/overview) library, so all of the same concepts are shared and can be used. You can refer to the vanilla documentation of these concepts, such as [plugins](/extend/plugins), [modifiers](/extend/modifiers), and [sensors](/extend/sensors).
+
+<Note>
+  `@dnd-kit/svelte` requires Svelte 5.29 or later.
+</Note>
+
+## Installation
+Before getting started, make sure you install `@dnd-kit/svelte` in your project:
+
+<CodeGroup>
+  ```bash npm
+  npm install @dnd-kit/svelte
+  ```
+
+  ```bash yarn
+  yarn add @dnd-kit/svelte
+  ```
+
+  ```bash pnpm
+  pnpm add @dnd-kit/svelte
+  ```
+
+  ```bash bun
+  bun add @dnd-kit/svelte
+  ```
+</CodeGroup>
+
+## Making elements draggable
+
+Let's get started by creating draggable elements that can be dropped over droppable targets. To do so, we'll be using the `createDraggable` primitive.
+
+The `createDraggable` primitive requires a unique `id`. It returns an object with an `attach` function that you can use with the `{@attach}` directive to connect an element to the drag system.
+
+```svelte
+<script>
+  import {createDraggable} from '@dnd-kit/svelte';
+
+  const draggable = createDraggable({id: 'draggable'});
+</script>
+
+<button {@attach draggable.attach}>
+  Draggable
+</button>
+```
+
+## Creating droppable elements
+
+In order for our draggable elements to have targets where they can be dropped, we need to create droppable elements. To do so, we'll be using the `createDroppable` primitive.
+
+Like `createDraggable`, the `createDroppable` primitive requires a unique `id`.
+
+```svelte
+<script>
+  import {createDroppable} from '@dnd-kit/svelte';
+
+  const droppable = createDroppable({id: 'droppable'});
+</script>
+
+<div {@attach droppable.attach} style="width: 300px; height: 300px;">
+  Droppable
+</div>
+```
+
+## Putting all the pieces together
+
+Now that we have both draggable and droppable elements, we can put them together to create a simple drag and drop interaction.
+
+We'll be using the `DragDropProvider` component to wrap our draggable and droppable elements. This component handles the drag and drop interactions and allows us to listen to drag and drop events.
+
+```svelte App.svelte
+<script>
+  import {DragDropProvider, createDraggable, createDroppable} from '@dnd-kit/svelte';
+
+  let parent = $state(undefined);
+
+  const draggable = createDraggable({id: 'draggable'});
+  const droppable = createDroppable({id: 'droppable'});
+
+  function onDragEnd(event) {
+    if (event.canceled) return;
+    parent = event.operation.target?.id;
+  }
+</script>
+
+<DragDropProvider {onDragEnd}>
+  {#if parent == null}
+    <button {@attach draggable.attach}>Draggable</button>
+  {/if}
+
+  <div {@attach droppable.attach} style="width: 300px; height: 300px;">
+    {#if parent === 'droppable'}
+      <button {@attach draggable.attach}>Draggable</button>
+    {/if}
+  </div>
+</DragDropProvider>
+```
+
+## Next steps
+
+Now that you have a basic understanding of how to make elements draggable and droppable, you can explore the concepts covered in this quickstart guide in more detail:
+
+<CardGroup>
+  <Card title="DragDropProvider" icon="sitemap" href="/svelte/components/drag-drop-provider">
+    Create drag and drop contexts for your draggable and droppable elements.
+  </Card>
+
+  <Card title="createDraggable" icon="bullseye-pointer" href="/svelte/primitives/create-draggable">
+    Learn how to make elements draggable with the `createDraggable` primitive.
+  </Card>
+
+  <Card title="createDroppable" icon="expand" href="/svelte/primitives/create-droppable">
+    Learn how to create droppable targets with the `createDroppable` primitive.
+  </Card>
+
+  <Card title="createSortable" icon="layer-group" href="/svelte/primitives/create-sortable">
+    Learn how to create sortable elements with the `createSortable` primitive.
+  </Card>
+</CardGroup>

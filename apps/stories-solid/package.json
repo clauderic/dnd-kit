@@ -26,7 +26,7 @@
     "storybook": "^9.0.15",
     "storybook-solidjs-vite": "^9.0.3",
     "typescript": "^5.7.3",
-    "vite": "^5.4.14",
+    "vite": "^6.0.0",
     "vite-plugin-solid": "^2.11.0"
   }
 }

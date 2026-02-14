@@ -17,6 +17,10 @@ export const Story = ({ id, framework = "react", width = "100%", height = "250",
       localPort: 6009,
       productionHost: '698944444eb9040f0d2a0217',
     },
+    svelte: {
+      localPort: 6010,
+      productionHost: '',
+    },
   };
   const config = STORYBOOKS[framework] ?? STORYBOOKS.react;
   const host = typeof window !== 'undefined' && window.location?.hostname === 'localhost' ? `//localhost:${config.localPort}` : `https://${BRANCH}--${config.productionHost}.chromatic.com`;

@@ -1,10 +1,10 @@
 import {Container, Item} from './components/index.ts';
-import {draggableStyles, droppableStyles, handleStyles, sortableStyles} from './styles/sandbox.ts';
+import {baseStyles, draggableStyles, droppableStyles, handleStyles, sortableStyles, multipleListsStyles} from './styles/sandbox.ts';
 
 // Inject shared styles globally for Storybook display
 if (typeof document !== 'undefined') {
   const style = document.createElement('style');
-  style.textContent = [draggableStyles, droppableStyles, handleStyles, sortableStyles].join('\n');
+  style.textContent = [baseStyles, draggableStyles, droppableStyles, handleStyles, sortableStyles, multipleListsStyles].join('\n');
   document.head.appendChild(style);
 }
 

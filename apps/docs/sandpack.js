@@ -75,6 +75,7 @@ class SandpackElement extends HTMLElement {
       react: {"@dnd-kit/react": "beta"},
       vue: {"@dnd-kit/vue": "beta"},
       solid: {"@dnd-kit/solid": "beta"},
+      svelte: {"@dnd-kit/svelte": "beta"},
     };
     const dependencies = {
       ...sharedDependencies,

@@ -12,7 +12,8 @@
       "@dnd-kit/react",
       "@dnd-kit/state",
       "@dnd-kit/vue",
-      "@dnd-kit/solid"
+      "@dnd-kit/solid",
+      "@dnd-kit/svelte"
     ]
   ],
   "access": "public",

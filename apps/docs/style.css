@@ -46,6 +46,10 @@ svg[style*="solidjs.svg"] {
   mask-image: url("/images/logo/solid.svg") !important;
 }
 
+svg[style*="svelte.svg"] {
+  mask-image: url("/images/logo/svelte.svg") !important;
+}
+
 .font-extrabold,
 .prose :where(h2):not(:where([class~=not-prose] *)) {
   font-weight: 600;
