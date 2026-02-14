@@ -16,14 +16,14 @@ export function sortableVerticalTests(stories: SortableVerticalStories) {
       const first = dnd.items.nth(0);
       const third = dnd.items.nth(2);
 
-      await expect(first).toHaveText('0');
+      await expect(first).toHaveText('1');
 
       await dnd.pointer.drag(first, third);
       await dnd.waitForDrop();
 
-      await expect(dnd.items.nth(0)).toHaveText('1');
-      await expect(dnd.items.nth(1)).toHaveText('2');
-      await expect(dnd.items.nth(2)).toHaveText('0');
+      await expect(dnd.items.nth(0)).toHaveText('2');
+      await expect(dnd.items.nth(1)).toHaveText('3');
+      await expect(dnd.items.nth(2)).toHaveText('1');
     });
 
     test('reorder items up with pointer', async ({dnd}) => {
@@ -33,9 +33,9 @@ export function sortableVerticalTests(stories: SortableVerticalStories) {
       await dnd.pointer.drag(third, first);
       await dnd.waitForDrop();
 
-      await expect(dnd.items.nth(0)).toHaveText('2');
-      await expect(dnd.items.nth(1)).toHaveText('0');
-      await expect(dnd.items.nth(2)).toHaveText('1');
+      await expect(dnd.items.nth(0)).toHaveText('3');
+      await expect(dnd.items.nth(1)).toHaveText('1');
+      await expect(dnd.items.nth(2)).toHaveText('2');
     });
 
     test('reorder items with keyboard', async ({dnd}) => {
@@ -46,9 +46,9 @@ export function sortableVerticalTests(stories: SortableVerticalStories) {
       await dnd.keyboard.drop();
       await dnd.waitForDrop();
 
-      await expect(dnd.items.nth(0)).toHaveText('1');
-      await expect(dnd.items.nth(1)).toHaveText('2');
-      await expect(dnd.items.nth(2)).toHaveText('0');
+      await expect(dnd.items.nth(0)).toHaveText('2');
+      await expect(dnd.items.nth(1)).toHaveText('3');
+      await expect(dnd.items.nth(2)).toHaveText('1');
     });
 
     test('cancel keyboard drag restores order', async ({dnd}) => {
@@ -59,10 +59,10 @@ export function sortableVerticalTests(stories: SortableVerticalStories) {
       await dnd.keyboard.cancel();
       await dnd.waitForDrop();
 
-      await expect(dnd.items.nth(0)).toHaveText('0');
-      await expect(dnd.items.nth(1)).toHaveText('1');
-      await expect(dnd.items.nth(2)).toHaveText('2');
-      await expect(dnd.items.nth(3)).toHaveText('3');
+      await expect(dnd.items.nth(0)).toHaveText('1');
+      await expect(dnd.items.nth(1)).toHaveText('2');
+      await expect(dnd.items.nth(2)).toHaveText('3');
+      await expect(dnd.items.nth(3)).toHaveText('4');
     });
 
     test('placeholder is visible during drag', async ({dnd}) => {
@@ -105,9 +105,9 @@ export function sortableVerticalTests(stories: SortableVerticalStories) {
       await dnd.keyboard.drop();
       await dnd.waitForDrop();
 
-      await expect(dnd.items.nth(0)).toHaveText('1');
-      await expect(dnd.items.nth(1)).toHaveText('2');
-      await expect(dnd.items.nth(2)).toHaveText('0');
+      await expect(dnd.items.nth(0)).toHaveText('2');
+      await expect(dnd.items.nth(1)).toHaveText('3');
+      await expect(dnd.items.nth(2)).toHaveText('1');
     });
   });
 }
