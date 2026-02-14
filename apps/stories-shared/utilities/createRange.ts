@@ -1,5 +1,5 @@
 import type {UniqueIdentifier} from '@dnd-kit/abstract';
 
 export function createRange(count: number): UniqueIdentifier[] {
-  return Array.from(Array(count).keys());
+  return Array.from({length: count}, (_, i) => i + 1);
 }

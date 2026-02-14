@@ -41,7 +41,7 @@ export function CodeHighlighter({children = '', language = 'jsx'}: Props) {
           {lineCount > 1
             ? createRange(lineCount).map((line) => (
                 <React.Fragment key={line}>
-                  {line + 1}
+                  {line}
                   <br />
                 </React.Fragment>
               ))
