@@ -51,6 +51,6 @@ function App() {
 | `onBeforeDragStart` | Called before a drag operation begins. |
 | `onDragStart` | Called when a drag operation starts. |
 | `onDragMove` | Called when the dragged element moves. |
-| `onDragOver` | Called when the dragged element moves over a droppable target. |
+| `onDragOver` | Called when the dragged element moves over a droppable target. Call `event.preventDefault()` to prevent the default behavior of plugins that respond to this event. |
 | `onDragEnd` | Called when a drag operation ends (dropped or canceled). |
 | `onCollision` | Called when collisions are detected. |

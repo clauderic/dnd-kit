@@ -3,4 +3,4 @@
 export {useSortable} from './useSortable.ts';
 export type {UseSortableInput} from './useSortable.ts';
 
-export {isSortable} from '@dnd-kit/dom/sortable';
+export {isSortable, isSortableOperation} from '@dnd-kit/dom/sortable';

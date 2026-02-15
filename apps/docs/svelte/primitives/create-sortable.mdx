@@ -41,6 +41,59 @@ The `createSortable` primitive combines draggable and droppable behavior with so
   When using `createSortable` inside an `{#each}` block, pass reactive values like `index` as getter functions (e.g. `index: () => index`) to maintain reactivity as items are reordered.
 </Note>
 
+## Without the move helper
+
+The example above uses the `move` helper from `@dnd-kit/helpers`, a convenience function that takes your items and a drag event and returns a new array with the item moved to its new position. It supports flat arrays and grouped records, handles canceled drags, and works with optimistic sorting out of the box.
+
+If you need more control over state updates, you can manage state manually using the `isSortable` type guard and the sortable properties (`initialIndex`, `index`).
+
+With [optimistic sorting](/concepts/sortable#optimistic-sorting) enabled (the default), you only need to handle the `dragend` event:
+
+```svelte
+<script>
+  import {DragDropProvider} from '@dnd-kit/svelte';
+  import {createSortable, isSortable} from '@dnd-kit/svelte/sortable';
+
+  let items = $state([1, 2, 3, 4]);
+
+  function onDragEnd(event) {
+    if (event.canceled) return;
+
+    const {source} = event.operation;
+
+    if (isSortable(source)) {
+      const {initialIndex, index} = source;
+
+      if (initialIndex !== index) {
+        const newItems = [...items];
+        const [removed] = newItems.splice(initialIndex, 1);
+        newItems.splice(index, 0, removed);
+        items = newItems;
+      }
+    }
+  }
+</script>
+
+<DragDropProvider {onDragEnd}>
+  <ul>
+    {#each items as id, index (id)}
+      {@const sortable = createSortable({id, index: () => index})}
+      <li {@attach sortable.attach}>
+        Item {id}
+      </li>
+    {/each}
+  </ul>
+</DragDropProvider>
+```
+
+<Tip>
+  You can call `event.preventDefault()` in an `onDragOver` handler to prevent the `OptimisticSortingPlugin` from optimistically updating for that specific event. This is useful when you want to conditionally block certain moves.
+</Tip>
+
+<Info>
+  Learn more about [optimistic sorting, type guards, and manual state management](/concepts/sortable#optimistic-sorting) in the Sortable concepts page.
+</Info>
+
 ## Input
 
 All input properties accept plain values or getter functions for reactivity.

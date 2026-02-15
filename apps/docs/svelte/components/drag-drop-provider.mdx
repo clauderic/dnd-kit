@@ -33,7 +33,7 @@ The `DragDropProvider` accepts callback props for all drag and drop lifecycle st
 | `onBeforeDragStart` | Fired before a drag operation begins. Can be used to prepare state. |
 | `onDragStart` | Fired when a drag operation starts. |
 | `onDragMove` | Fired when the dragged element moves. |
-| `onDragOver` | Fired when the dragged element moves over a droppable target. |
+| `onDragOver` | Fired when the dragged element moves over a droppable target. Call `event.preventDefault()` to prevent the default behavior of plugins that respond to this event. |
 | `onDragEnd` | Fired when a drag operation ends (dropped or canceled). |
 | `onCollision` | Fired when collisions are detected between draggable and droppable elements. |
 

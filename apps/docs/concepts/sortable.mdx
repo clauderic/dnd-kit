@@ -117,6 +117,169 @@ new Sortable({
 }, manager);
 ```
 
+## Optimistic Sorting
+
+By default, every `Sortable` instance registers the `OptimisticSortingPlugin`. This plugin optimistically reorders DOM elements during a drag operation so that the UI feels responsive — without requiring your framework to re-render on every `dragover` event.
+
+### How it works
+
+When you drag a sortable item over another sortable item, the plugin:
+
+1. Physically moves the DOM elements to reflect the new order.
+2. Updates the `index` (and `group`, for multi-list scenarios) on each affected `Sortable` instance.
+3. Sets the **drop target** to the drag source itself by calling `manager.actions.setDropTarget(source.id)`.
+
+Step 3 has an important consequence: **during a drag, `source` and `target` on the operation will refer to the same element.** This also means that `isDragSource` and `isDropTarget` will both be `true` on the dragged item.
+
+### Tracking position changes
+
+Since `source` and `target` are the same, you cannot compare their IDs to determine what moved. Instead, use the sortable-specific properties available on the source:
+
+| Property | Description |
+|----------|-------------|
+| `index` | The current position of the item (updated by the plugin as it moves) |
+| `initialIndex` | The position the item was in when the drag started |
+| `group` | The current group the item belongs to |
+| `initialGroup` | The group the item was in when the drag started |
+
+### Preventing optimistic sorting for a single event
+
+If you call `event.preventDefault()` in a `dragover` handler, the `OptimisticSortingPlugin` will skip the optimistic update for that particular event. This is useful when you want to handle certain moves yourself (for example, to prevent items from being dragged into a specific group) while still letting the plugin handle the rest:
+
+```js
+manager.monitor.addEventListener('dragover', (event) => {
+  const {source, target} = event.operation;
+
+  if (shouldPreventMove(source, target)) {
+    event.preventDefault(); // Optimistic sorting will not run for this event
+  }
+});
+```
+
+### Disabling optimistic sorting
+
+If you prefer to manage sorting entirely in your application state (for example, by handling every `dragover` event), you can disable optimistic sorting by omitting the `OptimisticSortingPlugin` from the `plugins` array:
+
+```js
+import {SortableKeyboardPlugin} from '@dnd-kit/dom/sortable';
+
+new Sortable({
+  id: 'item-1',
+  index: 0,
+  element,
+  plugins: [SortableKeyboardPlugin], // No OptimisticSortingPlugin
+}, manager);
+```
+
+Without optimistic sorting, `source` and `target` will be different elements during drag, and you can use their IDs directly. However, you will need to handle reordering in your `dragover` listener for smooth visual feedback.
+
+## Managing state without the move helper
+
+The `move` helper from `@dnd-kit/helpers` is a convenience function that takes your items and a drag event and returns a new array with the item moved to its new position. It supports flat arrays and grouped records, handles canceled drags, and works with optimistic sorting out of the box.
+
+If you need more control over state updates, you can manage state manually using the sortable properties and the `isSortable` type guard.
+
+### Single list
+
+With optimistic sorting enabled (the default), you only need to handle the `dragend` event. The `isSortable` type guard narrows the `source` to expose `initialIndex` and `index`:
+
+```js
+import {isSortable} from '@dnd-kit/dom/sortable';
+
+manager.monitor.addEventListener('dragend', (event) => {
+  if (event.canceled) return;
+
+  const {source} = event.operation;
+
+  if (isSortable(source)) {
+    const {initialIndex, index} = source;
+
+    if (initialIndex !== index) {
+      // Reorder your data: move the item from initialIndex to index
+      const newItems = [...items];
+      const [removed] = newItems.splice(initialIndex, 1);
+      newItems.splice(index, 0, removed);
+      items = newItems;
+    }
+  }
+});
+```
+
+### Multiple lists
+
+For multiple lists, use `initialGroup` and `group` to detect whether the item stayed in the same list or moved to a different one:
+
+```js
+manager.monitor.addEventListener('dragend', (event) => {
+  if (event.canceled) return;
+
+  const {source} = event.operation;
+
+  if (isSortable(source)) {
+    const {initialIndex, index, initialGroup, group} = source;
+
+    if (initialGroup === group) {
+      // Same group: reorder within the list
+      const groupItems = [...items[group]];
+      const [removed] = groupItems.splice(initialIndex, 1);
+      groupItems.splice(index, 0, removed);
+      items = {...items, [group]: groupItems};
+    } else {
+      // Cross-group transfer
+      const sourceItems = [...items[initialGroup]];
+      const [removed] = sourceItems.splice(initialIndex, 1);
+      const targetItems = [...items[group]];
+      targetItems.splice(index, 0, removed);
+      items = {...items, [initialGroup]: sourceItems, [group]: targetItems};
+    }
+  }
+});
+```
+
+## Type Guards
+
+`@dnd-kit/dom/sortable` exports two type guards to help you work with sortable drag operations.
+
+### `isSortable`
+
+Checks whether a `Draggable` or `Droppable` instance is a sortable element. If it returns `true`, the type is narrowed to expose sortable-specific properties like `index`, `initialIndex`, `group`, and `initialGroup`.
+
+```js
+import {isSortable} from '@dnd-kit/dom/sortable';
+
+const {source} = event.operation;
+
+if (isSortable(source)) {
+  console.log(source.index);        // number
+  console.log(source.initialIndex);  // number
+  console.log(source.group);         // string | number | undefined
+  console.log(source.initialGroup);  // string | number | undefined
+}
+```
+
+### `isSortableOperation`
+
+Checks whether **both** `source` and `target` of a drag operation are sortable elements. This is useful when you want to narrow the entire operation at once:
+
+```js
+import {isSortableOperation} from '@dnd-kit/dom/sortable';
+
+const {operation} = event;
+
+if (isSortableOperation(operation)) {
+  // Both source and target are narrowed to sortable types
+  console.log(operation.source.initialIndex);
+  console.log(operation.target.index);
+}
+```
+
+Both type guards are also available from framework-specific packages:
+
+- `@dnd-kit/react/sortable`
+- `@dnd-kit/vue/sortable`
+- `@dnd-kit/svelte/sortable`
+- `@dnd-kit/solid/sortable`
+
 ## API Reference
 
 ### Arguments

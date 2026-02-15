@@ -80,7 +80,8 @@
                 "group": "Guides",
                 "pages": [
                   "react/guides/migration",
-                  "react/guides/multiple-sortable-lists"
+                  "react/guides/multiple-sortable-lists",
+                  "react/guides/sortable-state-management"
                 ]
               }
             ]

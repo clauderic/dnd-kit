@@ -1,0 +1,218 @@
+---
+title: 'Managing sortable state'
+description: 'Learn how to manage sortable state with and without the move helper.'
+icon: 'sliders'
+---
+
+## Overview
+
+When building sortable interfaces, you need to keep your application state in sync with drag operations. There are two approaches:
+
+1. **Using the `move` helper** from `@dnd-kit/helpers` — a convenience function that takes your items and a drag event and returns a new array with the item moved to its new position. It supports flat arrays and grouped records, handles canceled drags, and works with optimistic sorting out of the box. This is covered in the [Multiple sortable lists](/react/guides/multiple-sortable-lists) guide.
+2. **Manual state management** — using the sortable properties and type guards for full control over state updates.
+
+This guide covers the second approach. Before reading this guide, make sure you're familiar with [optimistic sorting](/concepts/sortable#optimistic-sorting), which is enabled by default and affects how `source` and `target` behave during drag operations.
+
+## Understanding optimistic sorting
+
+The `OptimisticSortingPlugin` is enabled by default for all sortable items. It optimistically reorders DOM elements during a drag so the UI feels responsive without requiring React re-renders on every `dragover` event.
+
+A key consequence is that **`source` and `target` in the drag operation will refer to the same element** during a drag. This means you cannot compare `source.id` and `target.id` to determine what moved.
+
+Instead, use the sortable-specific properties on the source:
+
+| Property | Description |
+|----------|-------------|
+| `index` | The current position (updated as the item moves) |
+| `initialIndex` | The position when the drag started |
+| `group` | The current group |
+| `initialGroup` | The group when the drag started |
+
+<Note>
+  These properties are available on the `source` when it is a sortable element. Use the `isSortable` type guard to narrow the type.
+</Note>
+
+<Tip>
+  You can call `event.preventDefault()` in `onDragOver` to prevent the `OptimisticSortingPlugin` from optimistically updating for that specific event. This is useful when you want to conditionally block certain moves (for example, preventing items from being dragged into a specific group).
+</Tip>
+
+## Single list without the move helper
+
+With optimistic sorting, you only need to handle `onDragEnd`. The `OptimisticSortingPlugin` takes care of visual feedback during the drag.
+
+```tsx
+import {useState} from 'react';
+import {DragDropProvider} from '@dnd-kit/react';
+import {useSortable, isSortable} from '@dnd-kit/react/sortable';
+
+function SortableItem({id, index}) {
+  const {ref} = useSortable({id, index});
+
+  return <li ref={ref}>{id}</li>;
+}
+
+export default function App() {
+  const [items, setItems] = useState([1, 2, 3, 4, 5]);
+
+  return (
+    <DragDropProvider
+      onDragEnd={(event) => {
+        if (event.canceled) return;
+
+        const {source} = event.operation;
+
+        if (isSortable(source)) {
+          const {initialIndex, index} = source;
+
+          if (initialIndex !== index) {
+            setItems((items) => {
+              const newItems = [...items];
+              const [removed] = newItems.splice(initialIndex, 1);
+              newItems.splice(index, 0, removed);
+              return newItems;
+            });
+          }
+        }
+      }}
+    >
+      <ul>
+        {items.map((id, index) => (
+          <SortableItem key={id} id={id} index={index} />
+        ))}
+      </ul>
+    </DragDropProvider>
+  );
+}
+```
+
+## Multiple lists without the move helper
+
+For multiple lists, use `initialGroup` and `group` to detect whether the item stayed in the same list or moved to a different one:
+
+```tsx
+import {useState, useRef} from 'react';
+import {DragDropProvider} from '@dnd-kit/react';
+import {useSortable, isSortable} from '@dnd-kit/react/sortable';
+
+function SortableItem({id, index, column}) {
+  const {ref} = useSortable({
+    id,
+    index,
+    group: column,
+    type: 'item',
+    accept: 'item',
+  });
+
+  return <li ref={ref}>{id}</li>;
+}
+
+export default function App() {
+  const [items, setItems] = useState({
+    A: ['A1', 'A2', 'A3'],
+    B: ['B1', 'B2'],
+    C: [],
+  });
+  const snapshot = useRef(structuredClone(items));
+
+  return (
+    <DragDropProvider
+      onDragStart={() => {
+        snapshot.current = structuredClone(items);
+      }}
+      onDragEnd={(event) => {
+        if (event.canceled) {
+          setItems(snapshot.current);
+          return;
+        }
+
+        const {source} = event.operation;
+
+        if (isSortable(source)) {
+          const {initialIndex, index, initialGroup, group} = source;
+
+          if (initialGroup == null || group == null) return;
+
+          setItems((items) => {
+            if (initialGroup === group) {
+              // Same group: reorder within the list
+              const groupItems = [...items[group]];
+              const [removed] = groupItems.splice(initialIndex, 1);
+              groupItems.splice(index, 0, removed);
+              return {...items, [group]: groupItems};
+            }
+
+            // Cross-group transfer
+            const sourceItems = [...items[initialGroup]];
+            const [removed] = sourceItems.splice(initialIndex, 1);
+            const targetItems = [...items[group]];
+            targetItems.splice(index, 0, removed);
+            return {
+              ...items,
+              [initialGroup]: sourceItems,
+              [group]: targetItems,
+            };
+          });
+        }
+      }}
+    >
+      {Object.entries(items).map(([column, columnItems]) => (
+        <ul key={column}>
+          {columnItems.map((id, index) => (
+            <SortableItem key={id} id={id} index={index} column={column} />
+          ))}
+        </ul>
+      ))}
+    </DragDropProvider>
+  );
+}
+```
+
+<Note>
+  When updating state in `onDragOver` (rather than `onDragEnd`), save a snapshot in `onDragStart` so you can revert if the drag is canceled.
+</Note>
+
+## Comparison with the move helper
+
+| | `move` helper | Manual state management |
+|---|---|---|
+| **Setup** | One line: `setItems(items => move(items, event))` | More code, but full control |
+| **When to update** | Typically in `onDragOver` or `onDragEnd` | Typically in `onDragEnd` only |
+| **ID matching** | Matches items by `item === id` or `item.id === id` | You control the logic entirely |
+| **Optimistic sorting** | Works with and without | Best with optimistic sorting enabled |
+| **Custom data structures** | Limited to arrays and records of arrays | Any data structure |
+
+Use the `move` helper when your data structure matches its expectations (flat arrays or `Record<string, array>`). Use manual state management when you need more control, have custom data structures, or use computed IDs.
+
+## Type guards
+
+### `isSortable`
+
+Checks whether a `Draggable` or `Droppable` is a sortable instance, narrowing the type to expose `index`, `initialIndex`, `group`, and `initialGroup`:
+
+```tsx
+import {isSortable} from '@dnd-kit/react/sortable';
+
+const {source, target} = event.operation;
+
+if (isSortable(source)) {
+  source.index;        // number
+  source.initialIndex; // number
+  source.group;        // string | number | undefined
+  source.initialGroup; // string | number | undefined
+}
+```
+
+### `isSortableOperation`
+
+Narrows both `source` and `target` of a drag operation at once:
+
+```tsx
+import {isSortableOperation} from '@dnd-kit/react/sortable';
+
+const {operation} = event;
+
+if (isSortableOperation(operation)) {
+  operation.source.initialIndex; // typed
+  operation.target.index;        // typed
+}
+```

@@ -70,6 +70,7 @@
     "build:sortable": "tsup --entry.sortable src/sortable/index.ts",
     "build:utilities": "tsup --entry.utilities src/utilities/index.ts",
     "dev": "bun build:utilities --watch & bun build:core --watch & bun build:sortable --watch & bun build:modifiers --watch & bun build:plugins --watch",
+    "test": "bun test",
     "lint": "TIMING=1 eslint src/**/*.ts* --fix",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
@@ -82,6 +83,7 @@
   },
   "devDependencies": {
     "@dnd-kit/eslint-config": "*",
+    "bun-types": "^1.2.15",
     "eslint": "^8.38.0",
     "tsup": "8.3.0",
     "typescript": "^5.5.2"

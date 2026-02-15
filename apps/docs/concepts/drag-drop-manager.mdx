@@ -185,7 +185,7 @@ manager.monitor.addEventListener('dragend', (event) => {
 </ResponseField>
 
 <ResponseField name="dragover" type="Event">
-  Fires when over a droppable. Can be prevented.
+  Fires when over a droppable. Call `event.preventDefault()` to prevent the default behavior of plugins that respond to this event.
   <Expandable title="Properties">
     <ResponseField name="operation" type="object">
       The current drag operation

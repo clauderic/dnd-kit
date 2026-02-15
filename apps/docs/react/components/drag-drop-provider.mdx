@@ -143,7 +143,7 @@ function App() {
 </ParamField>
 
 <ParamField path="onDragOver" type="(event: DragOverEvent) => void">
-  Called when dragging over a droppable target.
+  Called when dragging over a droppable target. Call `event.preventDefault()` to prevent the default behavior of plugins that respond to this event.
 </ParamField>
 
 <ParamField path="onDragEnd" type="(event: DragEndEvent) => void">
