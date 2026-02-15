@@ -477,6 +477,18 @@ export class SortableDraggable<T extends Data> extends Draggable<T> {
   get index() {
     return this.sortable.index;
   }
+
+  get initialIndex() {
+    return this.sortable.initialIndex;
+  }
+
+  get group() {
+    return this.sortable.group;
+  }
+
+  get initialGroup() {
+    return this.sortable.initialGroup;
+  }
 }
 
 export class SortableDroppable<T extends Data> extends Droppable<T> {
@@ -486,5 +498,13 @@ export class SortableDroppable<T extends Data> extends Droppable<T> {
     public sortable: Sortable<T>
   ) {
     super(input, manager);
+  }
+
+  get index() {
+    return this.sortable.index;
+  }
+
+  get group() {
+    return this.sortable.group;
   }
 }
