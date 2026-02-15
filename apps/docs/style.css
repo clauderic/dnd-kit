@@ -30,24 +30,46 @@
     mask-position: center center;
     width: 18px;
     height: 18px;
-    background-color: #596dff;
   }
 }
 
 #navbar a[href="/react/quickstart"]::before {
   mask-image: url("https://mintlify.b-cdn.net/v6.4.0/brands/react.svg");
+  background-color: #61DAFB;
 }
 
 #navbar a[href="/javascript/quickstart"]::before {
   mask-image: url("https://mintlify.b-cdn.net/v6.4.0/brands/js.svg");
+  background-color: #F7DF1E;
+}
+
+/* Framework brand colors for sidebar icons */
+[data-component-part="card-content-container"] svg[style*="react.svg"] {
+  background-color: #61DAFB !important;
+}
+
+[data-component-part="card-content-container"] svg[style*="vuejs.svg"] {
+  background-color: #4FC08D !important;
+}
+
+svg[style*="svelte.svg"] {
+  mask-image: url("/images/logo/svelte.svg") !important;
+}
+
+[data-component-part="card-content-container"] svg[style*="svelte.svg"] {
+  background-color: #FF3E00 !important;
 }
 
 svg[style*="solidjs.svg"] {
   mask-image: url("/images/logo/solid.svg") !important;
 }
 
-svg[style*="svelte.svg"] {
-  mask-image: url("/images/logo/svelte.svg") !important;
+[data-component-part="card-content-container"] svg[style*="solidjs.svg"] {
+  background-color: #4B7BBE !important;
+}
+
+[data-component-part="card-content-container"] svg[style*="/js.svg"] {
+  background-color: #F7DF1E !important;
 }
 
 .font-extrabold,
