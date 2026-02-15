@@ -3,7 +3,7 @@ name: Playwright
 on:
   pull_request:
   push:
-    branches: [experimental]
+    branches: [main]
 
 jobs:
   e2e:

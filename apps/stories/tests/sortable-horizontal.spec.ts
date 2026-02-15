@@ -13,9 +13,9 @@ test.describe('Sortable horizontal list', () => {
     await dnd.pointer.drag(first, third);
     await dnd.waitForDrop();
 
-    await expect(dnd.items.nth(0)).toHaveText('1');
-    await expect(dnd.items.nth(1)).toHaveText('2');
-    await expect(dnd.items.nth(2)).toHaveText('0');
+    await expect(dnd.items.nth(0)).toHaveText('2');
+    await expect(dnd.items.nth(1)).toHaveText('3');
+    await expect(dnd.items.nth(2)).toHaveText('1');
   });
 
   test('reorder items with keyboard', async ({dnd}) => {
@@ -26,8 +26,8 @@ test.describe('Sortable horizontal list', () => {
     await dnd.keyboard.drop();
     await dnd.waitForDrop();
 
-    await expect(dnd.items.nth(0)).toHaveText('1');
-    await expect(dnd.items.nth(1)).toHaveText('2');
-    await expect(dnd.items.nth(2)).toHaveText('0');
+    await expect(dnd.items.nth(0)).toHaveText('2');
+    await expect(dnd.items.nth(1)).toHaveText('3');
+    await expect(dnd.items.nth(2)).toHaveText('1');
   });
 });
