@@ -10,7 +10,7 @@ jobs:
     name: Chromatic (Vanilla)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
       - run: bun install && bun run build
       - uses: chromaui/action@v1
@@ -27,7 +27,7 @@ jobs:
     name: Chromatic (Vue)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
       - run: bun install && bun run build
       - uses: chromaui/action@v1
@@ -44,7 +44,7 @@ jobs:
     name: Chromatic (Solid)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
       - run: bun install && bun run build
       - uses: chromaui/action@v1
@@ -61,7 +61,7 @@ jobs:
     name: Chromatic (Svelte)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
       - run: bun install && bun run build
       - uses: chromaui/action@v1
@@ -83,7 +83,7 @@ jobs:
       - chromatic-solid
       - chromatic-svelte
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
       - run: bun install && bun run build
       - uses: chromaui/action@v1
