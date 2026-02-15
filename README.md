@@ -3,8 +3,9 @@
     <img alt="@dnd-kit – the modern toolkit for building drag & drop interfaces" src=".github/assets/dnd-kit-hero-banner.svg">
   </a>
 </p>
-
-A modern, lightweight, performant, accessible and extensible drag and drop toolkit for the web.
+<p align="center">
+A modern, lightweight, performant, accessible and extensible drag and drop toolkit for the web
+</p>
 
 ## Features
 
@@ -98,16 +99,17 @@ Visit **[docs.dndkit.com](https://docs.dndkit.com)** for full documentation, API
 
 | Package | Version | Description |
 |---|---|---|
-| [`@dnd-kit/dom`](packages/dom) | [![npm](https://img.shields.io/npm/v/@dnd-kit/dom.svg)](https://npm.im/@dnd-kit/dom) | Framework-agnostic DOM layer |
-| [`@dnd-kit/react`](packages/react) | [![npm](https://img.shields.io/npm/v/@dnd-kit/react.svg)](https://npm.im/@dnd-kit/react) | React adapter |
-| [`@dnd-kit/vue`](packages/vue) | [![npm](https://img.shields.io/npm/v/@dnd-kit/vue.svg)](https://npm.im/@dnd-kit/vue) | Vue adapter |
-| [`@dnd-kit/svelte`](packages/svelte) | [![npm](https://img.shields.io/npm/v/@dnd-kit/svelte.svg)](https://npm.im/@dnd-kit/svelte) | Svelte adapter |
-| [`@dnd-kit/solid`](packages/solid) | [![npm](https://img.shields.io/npm/v/@dnd-kit/solid.svg)](https://npm.im/@dnd-kit/solid) | SolidJS adapter |
 | [`@dnd-kit/abstract`](packages/abstract) | [![npm](https://img.shields.io/npm/v/@dnd-kit/abstract.svg)](https://npm.im/@dnd-kit/abstract) | Abstract core |
-| [`@dnd-kit/helpers`](packages/helpers) | [![npm](https://img.shields.io/npm/v/@dnd-kit/helpers.svg)](https://npm.im/@dnd-kit/helpers) | Helper functions |
-| [`@dnd-kit/state`](packages/state) | [![npm](https://img.shields.io/npm/v/@dnd-kit/state.svg)](https://npm.im/@dnd-kit/state) | Reactive state management |
-| [`@dnd-kit/geometry`](packages/geometry) | [![npm](https://img.shields.io/npm/v/@dnd-kit/geometry.svg)](https://npm.im/@dnd-kit/geometry) | Geometry utilities |
 | [`@dnd-kit/collision`](packages/collision) | [![npm](https://img.shields.io/npm/v/@dnd-kit/collision.svg)](https://npm.im/@dnd-kit/collision) | Collision detection |
+| [`@dnd-kit/dom`](packages/dom) | [![npm](https://img.shields.io/npm/v/@dnd-kit/dom.svg)](https://npm.im/@dnd-kit/dom) | Framework-agnostic DOM layer |
+| [`@dnd-kit/geometry`](packages/geometry) | [![npm](https://img.shields.io/npm/v/@dnd-kit/geometry.svg)](https://npm.im/@dnd-kit/geometry) | Geometry utilities |
+| [`@dnd-kit/helpers`](packages/helpers) | [![npm](https://img.shields.io/npm/v/@dnd-kit/helpers.svg)](https://npm.im/@dnd-kit/helpers) | Helper functions |
+| [`@dnd-kit/react`](packages/react) | [![npm](https://img.shields.io/npm/v/@dnd-kit/react.svg)](https://npm.im/@dnd-kit/react) | React adapter |
+| [`@dnd-kit/solid`](packages/solid) | [![npm](https://img.shields.io/npm/v/@dnd-kit/solid.svg)](https://npm.im/@dnd-kit/solid) | SolidJS adapter |
+| [`@dnd-kit/state`](packages/state) | [![npm](https://img.shields.io/npm/v/@dnd-kit/state.svg)](https://npm.im/@dnd-kit/state) | Reactive state management |
+| [`@dnd-kit/svelte`](packages/svelte) | [![npm](https://img.shields.io/npm/v/@dnd-kit/svelte.svg)](https://npm.im/@dnd-kit/svelte) | Svelte adapter |
+| [`@dnd-kit/vue`](packages/vue) | [![npm](https://img.shields.io/npm/v/@dnd-kit/vue.svg)](https://npm.im/@dnd-kit/vue) | Vue adapter |
+
 
 ## Contributing
 
@@ -126,4 +128,4 @@ bun run dev
 
 ## License
 
-MIT
+[MIT](./LICENSE)
