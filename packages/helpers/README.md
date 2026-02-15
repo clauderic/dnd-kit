@@ -31,4 +31,4 @@ function onDragEnd(event) {
 
 ## Documentation
 
-Visit [next.dndkit.com](https://next.dndkit.com) for full documentation.
+Visit [docs.dndkit.com](https://docs.dndkit.com) for full documentation.

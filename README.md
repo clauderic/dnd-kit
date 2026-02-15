@@ -31,7 +31,7 @@ Choose your preferred framework to get started:
 <img src="https://cdn.simpleicons.org/javascript/F7DF1E" height="22" alt="JavaScript" />
 <br>
 
-<strong><a href="https://next.dndkit.com/quickstart">Vanilla</a></strong>
+<strong><a href="https://docs.dndkit.com/quickstart">Vanilla</a></strong>
 
 Build drag and drop interfaces using plain JavaScript
 <br>
@@ -42,7 +42,7 @@ Build drag and drop interfaces using plain JavaScript
 <img src="https://cdn.simpleicons.org/react/61DAFB" height="22" alt="React" />
 <br>
 
-<strong><a href="https://next.dndkit.com/react/quickstart">React</a></strong>
+<strong><a href="https://docs.dndkit.com/react/quickstart">React</a></strong>
 
 Build drag and drop interfaces using React components and hooks
 <br><br>
@@ -55,7 +55,7 @@ Build drag and drop interfaces using React components and hooks
 <img src="https://cdn.simpleicons.org/vue.js/4FC08D" height="22" alt="Vue" />
 <br>
 
-<strong><a href="https://next.dndkit.com/vue/quickstart">Vue</a></strong>
+<strong><a href="https://docs.dndkit.com/vue/quickstart">Vue</a></strong>
 
 Build drag and drop interfaces using Vue composables and components
 <br><br>
@@ -66,7 +66,7 @@ Build drag and drop interfaces using Vue composables and components
 <img src="https://cdn.simpleicons.org/svelte/FF3E00" height="22" alt="Svelte" />
 <br>
 
-<strong><a href="https://next.dndkit.com/svelte/quickstart">Svelte</a></strong>
+<strong><a href="https://docs.dndkit.com/svelte/quickstart">Svelte</a></strong>
 
 Build drag and drop interfaces using Svelte primitives and components
 <br><br>
@@ -79,7 +79,7 @@ Build drag and drop interfaces using Svelte primitives and components
 <img src="https://cdn.simpleicons.org/solid/2C4F7C" height="22" alt="SolidJS" />
 <br>
 
-<strong><a href="https://next.dndkit.com/solid/quickstart">Solid</a></strong>
+<strong><a href="https://docs.dndkit.com/solid/quickstart">Solid</a></strong>
 
 Build drag and drop interfaces using SolidJS hooks and components
 <br><br>
@@ -92,7 +92,7 @@ Build drag and drop interfaces using SolidJS hooks and components
 
 ## Documentation
 
-Visit **[next.dndkit.com](https://next.dndkit.com)** for full documentation, API reference, guides, and interactive examples.
+Visit **[docs.dndkit.com](https://docs.dndkit.com)** for full documentation, API reference, guides, and interactive examples.
 
 ## Packages
 
