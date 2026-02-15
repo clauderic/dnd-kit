@@ -45,11 +45,11 @@ function App() {
 
 ## Hooks
 
-| Hook | Import | Description |
-|---|---|---|
-| `useDraggable` | `@dnd-kit/solid` | Make an element draggable |
-| `useDroppable` | `@dnd-kit/solid` | Create a drop target |
-| `useSortable` | `@dnd-kit/solid/sortable` | Combine drag and drop with sorting |
+| Hook           | Import                    | Description                        |
+| -------------- | ------------------------- | ---------------------------------- |
+| `useDraggable` | `@dnd-kit/solid`          | Make an element draggable          |
+| `useDroppable` | `@dnd-kit/solid`          | Create a drop target               |
+| `useSortable`  | `@dnd-kit/solid/sortable` | Combine drag and drop with sorting |
 
 ## Components
 
@@ -58,4 +58,4 @@ function App() {
 
 ## Documentation
 
-Visit [docs.dndkit.com](https://docs.dndkit.com/solid) for full documentation, guides, and interactive examples.
+Visit [dndkit.com](https://dndkit.com/solid) for full documentation, guides, and interactive examples.

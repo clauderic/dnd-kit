@@ -12,12 +12,12 @@ npm install @dnd-kit/helpers
 
 ## API
 
-| Function | Description |
-|---|---|
-| `move(items, event)` | Move an item from one position to another within a flat or grouped collection |
-| `swap(items, event)` | Swap the positions of two items |
-| `arrayMove(array, from, to)` | Move an item in an array from one index to another |
-| `arraySwap(array, from, to)` | Swap two items in an array by index |
+| Function                     | Description                                                                   |
+| ---------------------------- | ----------------------------------------------------------------------------- |
+| `move(items, event)`         | Move an item from one position to another within a flat or grouped collection |
+| `swap(items, event)`         | Swap the positions of two items                                               |
+| `arrayMove(array, from, to)` | Move an item in an array from one index to another                            |
+| `arraySwap(array, from, to)` | Swap two items in an array by index                                           |
 
 ### Example
 
@@ -31,4 +31,4 @@ function onDragEnd(event) {
 
 ## Documentation
 
-Visit [docs.dndkit.com](https://docs.dndkit.com) for full documentation.
+Visit [dndkit.com](https://dndkit.com) for full documentation.

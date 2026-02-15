@@ -34,11 +34,11 @@ function App() {
 
 ## Hooks
 
-| Hook | Import | Description |
-|---|---|---|
-| `useDraggable` | `@dnd-kit/react` | Make an element draggable |
-| `useDroppable` | `@dnd-kit/react` | Create a drop target |
-| `useSortable` | `@dnd-kit/react/sortable` | Combine drag and drop with sorting |
+| Hook           | Import                    | Description                        |
+| -------------- | ------------------------- | ---------------------------------- |
+| `useDraggable` | `@dnd-kit/react`          | Make an element draggable          |
+| `useDroppable` | `@dnd-kit/react`          | Create a drop target               |
+| `useSortable`  | `@dnd-kit/react/sortable` | Combine drag and drop with sorting |
 
 ## Components
 
@@ -47,4 +47,4 @@ function App() {
 
 ## Documentation
 
-Visit [docs.dndkit.com](https://docs.dndkit.com/react) for full documentation, guides, and interactive examples.
+Visit [dndkit.com](https://dndkit.com/react) for full documentation, guides, and interactive examples.

@@ -16,12 +16,12 @@ Most consumers will use one of the framework-specific adapters rather than this 
 
 ### Entry points
 
-| Entry point | Description |
-|---|---|
-| `@dnd-kit/dom` | Core API — `DragDropManager`, `Draggable`, `Droppable`, sensors, plugins |
-| `@dnd-kit/dom/sortable` | Sortable primitives — `Sortable`, sorting utilities |
-| `@dnd-kit/dom/modifiers` | Built-in modifiers for constraining drag movement |
-| `@dnd-kit/dom/utilities` | DOM utility functions |
+| Entry point              | Description                                                              |
+| ------------------------ | ------------------------------------------------------------------------ |
+| `@dnd-kit/dom`           | Core API — `DragDropManager`, `Draggable`, `Droppable`, sensors, plugins |
+| `@dnd-kit/dom/sortable`  | Sortable primitives — `Sortable`, sorting utilities                      |
+| `@dnd-kit/dom/modifiers` | Built-in modifiers for constraining drag movement                        |
+| `@dnd-kit/dom/utilities` | DOM utility functions                                                    |
 
 ### Key concepts
 
@@ -34,4 +34,4 @@ Most consumers will use one of the framework-specific adapters rather than this 
 
 ## Documentation
 
-Visit [docs.dndkit.com](https://docs.dndkit.com) for full documentation, guides, and interactive examples.
+Visit [dndkit.com](https://dndkit.com) for full documentation, guides, and interactive examples.

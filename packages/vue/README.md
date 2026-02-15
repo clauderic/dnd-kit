@@ -39,11 +39,11 @@ function onDragEnd(event) {
 
 ## Composables
 
-| Composable | Import | Description |
-|---|---|---|
-| `useDraggable` | `@dnd-kit/vue` | Make an element draggable |
-| `useDroppable` | `@dnd-kit/vue` | Create a drop target |
-| `useSortable` | `@dnd-kit/vue/sortable` | Combine drag and drop with sorting |
+| Composable     | Import                  | Description                        |
+| -------------- | ----------------------- | ---------------------------------- |
+| `useDraggable` | `@dnd-kit/vue`          | Make an element draggable          |
+| `useDroppable` | `@dnd-kit/vue`          | Create a drop target               |
+| `useSortable`  | `@dnd-kit/vue/sortable` | Combine drag and drop with sorting |
 
 ## Components
 
@@ -52,4 +52,4 @@ function onDragEnd(event) {
 
 ## Documentation
 
-Visit [docs.dndkit.com](https://docs.dndkit.com/vue) for full documentation, guides, and interactive examples.
+Visit [dndkit.com](https://dndkit.com/vue) for full documentation, guides, and interactive examples.

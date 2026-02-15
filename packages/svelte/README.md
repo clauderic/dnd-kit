@@ -61,4 +61,4 @@ Each primitive returns an object with reactive state (e.g. `isDragging`, `isDrop
 
 ## Documentation
 
-Visit [docs.dndkit.com](https://docs.dndkit.com/svelte) for full documentation, guides, and interactive examples.
+Visit [dndkit.com](https://dndkit.com/svelte) for full documentation, guides, and interactive examples.
