@@ -11,9 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: oven-sh/setup-bun@v1
       - run: bun install && bun run build
-      - uses: chromaui/action@v1
+      - uses: chromaui/action@v15
         id: vanilla
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -28,9 +30,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: oven-sh/setup-bun@v1
       - run: bun install && bun run build
-      - uses: chromaui/action@v1
+      - uses: chromaui/action@v15
         id: vue
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -45,9 +49,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: oven-sh/setup-bun@v1
       - run: bun install && bun run build
-      - uses: chromaui/action@v1
+      - uses: chromaui/action@v15
         id: solid
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -62,9 +68,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: oven-sh/setup-bun@v1
       - run: bun install && bun run build
-      - uses: chromaui/action@v1
+      - uses: chromaui/action@v15
         id: svelte
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -84,9 +92,11 @@ jobs:
       - chromatic-svelte
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: oven-sh/setup-bun@v1
       - run: bun install && bun run build
-      - uses: chromaui/action@v1
+      - uses: chromaui/action@v15
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMATIC_TOKEN }}
