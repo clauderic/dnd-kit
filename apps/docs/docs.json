@@ -245,12 +245,7 @@
     ]
   },
   "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude"
-    ]
+    "options": ["copy", "view", "chatgpt", "claude"]
   },
   "redirects": [
     {
@@ -262,8 +257,24 @@
       "destination": "/legacy/introduction/installation"
     },
     {
+      "source": "/introduction/:slug*",
+      "destination": "/legacy/introduction/:slug*"
+    },
+    {
+      "source": "/api-documentation/context-provider",
+      "destination": "/legacy/api-documentation/context-provider/dnd-context"
+    },
+    {
       "source": "/api-documentation/context-provider/usedndcontext",
       "destination": "/legacy/api-documentation/context-provider/use-dnd-context"
+    },
+    {
+      "source": "/api-documentation/context-provider/usedndmonitor",
+      "destination": "/legacy/api-documentation/context-provider/use-dnd-monitor"
+    },
+    {
+      "source": "/api-documentation/context-provider/dndcontext",
+      "destination": "/legacy/api-documentation/context-provider/dnd-context"
     },
     {
       "source": "/api-documentation/draggable/usedraggable",
@@ -278,12 +289,20 @@
       "destination": "/legacy/api-documentation/:slug*"
     },
     {
+      "source": "/presets/sortable",
+      "destination": "/legacy/presets/sortable/overview"
+    },
+    {
       "source": "/presets/sortable/usesortable",
       "destination": "/legacy/presets/sortable/use-sortable"
     },
     {
       "source": "/presets/sortable/:slug*",
       "destination": "/legacy/presets/sortable/:slug*"
+    },
+    {
+      "source": "/guides/:slug*",
+      "destination": "/legacy/guides/:slug*"
     }
   ],
   "logo": "/images/logo/logo.svg",
