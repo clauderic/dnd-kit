@@ -40,6 +40,10 @@ export default {
       refs.solid = {title: 'Solid', url: process.env.SOLID_STORYBOOK_URL};
     }
 
+    if (process.env.SVELTE_STORYBOOK_URL) {
+      refs.svelte = {title: 'Svelte', url: process.env.SVELTE_STORYBOOK_URL};
+    }
+
     return refs;
   },
 
