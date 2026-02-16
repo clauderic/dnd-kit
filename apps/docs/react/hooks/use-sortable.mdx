@@ -43,6 +43,52 @@ export default function App() {
   'styles.css': {code: sortableStyles, hidden: true},
 }} height={455} previewHeight={180} />
 
+### Get state of reordered items
+
+To get the state of your array of sortable items after a reorder, first install the `@dnd-kit/helpers` package:
+
+<CodeGroup>
+  ```plain npm
+  npm install @dnd-kit/helpers
+  ```
+
+  ```plain yarn
+  yarn install @dnd-kit/helpers
+  ```
+
+  ```plain pnpm
+  pnpm install @dnd-kit/helpers
+  ```
+
+  ```plain bun
+  bun install @dnd-kit/helpers
+  ```
+</CodeGroup>
+
+Next, use the `move` helper function in either `onDragEnd` or `onDragOver` events to update the state of the array:
+
+```jsx
+import { move } from '@dnd-kit/helpers';
+
+function SortableDemo() {
+  const [items, setItems] = useState([1, 2, 3, 4]);
+
+  useEffect(() => {
+    console.log(items); // print out the reordered array 
+  }, [items]);
+
+  return (
+    <DragDropProvider onDragEnd={(event) => setItems(move(items, event))}>
+      <ul>
+        {items.map((id, index) => (
+          <Sortable key={id} id={id} index={index} />
+        ))}
+      </ul>
+    </DragDropProvider>
+  );
+}
+```
+
 ## API Reference
 
 <Note>
