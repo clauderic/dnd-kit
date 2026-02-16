@@ -15,15 +15,44 @@ jobs:
           fetch-depth: 0
       - uses: oven-sh/setup-bun@v1
       - run: bun install && bun run build
-      - uses: chromaui/action@v15
+
+      - name: Check for Chromatic token
+        id: check
+        run: |
+          if [ -n "$TOKEN" ]; then
+            echo "has-token=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has-token=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          TOKEN: ${{ secrets.CHROMATIC_VANILLA_TOKEN }}
+
+      - name: Publish to Chromatic
+        if: steps.check.outputs.has-token == 'true'
+        uses: chromaui/action@v15
         id: vanilla
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMATIC_VANILLA_TOKEN }}
           buildScriptName: 'build'
           workingDir: 'apps/stories-vanilla'
+
+      - name: Build Storybook (fork fallback)
+        if: steps.check.outputs.has-token == 'false'
+        working-directory: apps/stories-vanilla
+        run: bun run build
+
+      - name: Upload Storybook artifact
+        if: steps.check.outputs.has-token == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-vanilla
+          path: apps/stories-vanilla/storybook-static
+          retention-days: 30
+
     outputs:
       storybookUrl: ${{ steps.vanilla.outputs.storybookUrl }}
+      has-token: ${{ steps.check.outputs.has-token }}
 
   chromatic-vue:
     name: Chromatic (Vue)
@@ -34,15 +63,44 @@ jobs:
           fetch-depth: 0
       - uses: oven-sh/setup-bun@v1
       - run: bun install && bun run build
-      - uses: chromaui/action@v15
+
+      - name: Check for Chromatic token
+        id: check
+        run: |
+          if [ -n "$TOKEN" ]; then
+            echo "has-token=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has-token=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          TOKEN: ${{ secrets.CHROMATIC_VUE_TOKEN }}
+
+      - name: Publish to Chromatic
+        if: steps.check.outputs.has-token == 'true'
+        uses: chromaui/action@v15
         id: vue
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMATIC_VUE_TOKEN }}
           buildScriptName: 'build'
           workingDir: 'apps/stories-vue'
+
+      - name: Build Storybook (fork fallback)
+        if: steps.check.outputs.has-token == 'false'
+        working-directory: apps/stories-vue
+        run: bun run build
+
+      - name: Upload Storybook artifact
+        if: steps.check.outputs.has-token == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-vue
+          path: apps/stories-vue/storybook-static
+          retention-days: 30
+
     outputs:
       storybookUrl: ${{ steps.vue.outputs.storybookUrl }}
+      has-token: ${{ steps.check.outputs.has-token }}
 
   chromatic-solid:
     name: Chromatic (Solid)
@@ -53,15 +111,44 @@ jobs:
           fetch-depth: 0
       - uses: oven-sh/setup-bun@v1
       - run: bun install && bun run build
-      - uses: chromaui/action@v15
+
+      - name: Check for Chromatic token
+        id: check
+        run: |
+          if [ -n "$TOKEN" ]; then
+            echo "has-token=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has-token=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          TOKEN: ${{ secrets.CHROMATIC_SOLID_TOKEN }}
+
+      - name: Publish to Chromatic
+        if: steps.check.outputs.has-token == 'true'
+        uses: chromaui/action@v15
         id: solid
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMATIC_SOLID_TOKEN }}
           buildScriptName: 'build'
           workingDir: 'apps/stories-solid'
+
+      - name: Build Storybook (fork fallback)
+        if: steps.check.outputs.has-token == 'false'
+        working-directory: apps/stories-solid
+        run: bun run build
+
+      - name: Upload Storybook artifact
+        if: steps.check.outputs.has-token == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-solid
+          path: apps/stories-solid/storybook-static
+          retention-days: 30
+
     outputs:
       storybookUrl: ${{ steps.solid.outputs.storybookUrl }}
+      has-token: ${{ steps.check.outputs.has-token }}
 
   chromatic-svelte:
     name: Chromatic (Svelte)
@@ -72,15 +159,44 @@ jobs:
           fetch-depth: 0
       - uses: oven-sh/setup-bun@v1
       - run: bun install && bun run build
-      - uses: chromaui/action@v15
+
+      - name: Check for Chromatic token
+        id: check
+        run: |
+          if [ -n "$TOKEN" ]; then
+            echo "has-token=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has-token=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          TOKEN: ${{ secrets.CHROMATIC_SVELTE_TOKEN }}
+
+      - name: Publish to Chromatic
+        if: steps.check.outputs.has-token == 'true'
+        uses: chromaui/action@v15
         id: svelte
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMATIC_SVELTE_TOKEN }}
           buildScriptName: 'build'
           workingDir: 'apps/stories-svelte'
+
+      - name: Build Storybook (fork fallback)
+        if: steps.check.outputs.has-token == 'false'
+        working-directory: apps/stories-svelte
+        run: bun run build
+
+      - name: Upload Storybook artifact
+        if: steps.check.outputs.has-token == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-svelte
+          path: apps/stories-svelte/storybook-static
+          retention-days: 30
+
     outputs:
       storybookUrl: ${{ steps.svelte.outputs.storybookUrl }}
+      has-token: ${{ steps.check.outputs.has-token }}
 
   chromatic:
     name: Chromatic
@@ -96,7 +212,21 @@ jobs:
           fetch-depth: 0
       - uses: oven-sh/setup-bun@v1
       - run: bun install && bun run build
-      - uses: chromaui/action@v15
+
+      - name: Check for Chromatic token
+        id: check
+        run: |
+          if [ -n "$TOKEN" ]; then
+            echo "has-token=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has-token=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          TOKEN: ${{ secrets.CHROMATIC_TOKEN }}
+
+      - name: Publish to Chromatic
+        if: steps.check.outputs.has-token == 'true'
+        uses: chromaui/action@v15
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMATIC_TOKEN }}
@@ -107,3 +237,74 @@ jobs:
           VUE_STORYBOOK_URL: ${{ needs.chromatic-vue.outputs.storybookUrl }}
           SOLID_STORYBOOK_URL: ${{ needs.chromatic-solid.outputs.storybookUrl }}
           SVELTE_STORYBOOK_URL: ${{ needs.chromatic-svelte.outputs.storybookUrl }}
+
+      - name: Build Storybook (fork fallback)
+        if: steps.check.outputs.has-token == 'false'
+        working-directory: apps/stories
+        run: bun run build
+
+      - name: Upload Storybook artifact
+        if: steps.check.outputs.has-token == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-react
+          path: apps/stories/storybook-static
+          retention-days: 30
+
+      - name: Summary
+        if: steps.check.outputs.has-token == 'false' && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+            const body = [
+              `### Storybook Preview (Fork PR)`,
+              ``,
+              `Chromatic was skipped because the Chromatic project tokens are not available on fork PRs.`,
+              `Storybook builds have been uploaded as workflow artifacts instead:`,
+              ``,
+              `| Storybook | Artifact |`,
+              `| --- | --- |`,
+              `| React | \`storybook-react\` |`,
+              `| Vanilla | \`storybook-vanilla\` |`,
+              `| Vue | \`storybook-vue\` |`,
+              `| Solid | \`storybook-solid\` |`,
+              `| Svelte | \`storybook-svelte\` |`,
+              ``,
+              `Download artifacts from the [workflow run](${runUrl}) and open \`index.html\` to preview.`,
+            ].join('\n');
+
+            // Check for an existing comment to update
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const marker = '### Storybook Preview (Fork PR)';
+            const existing = comments.find(c => c.body?.startsWith(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+            core.summary.addHeading('Storybook Preview (Fork PR)', 2);
+            core.summary.addRaw(
+              'Chromatic was skipped because project tokens are not available on fork PRs. ' +
+              'Storybook builds have been uploaded as workflow artifacts. ' +
+              'Download them from the Artifacts section of this workflow run to preview changes locally.'
+            );
+            await core.summary.write();
