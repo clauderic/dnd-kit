@@ -5,7 +5,7 @@ import type {
   Modifiers,
   UniqueIdentifier,
 } from '@dnd-kit/abstract';
-import {FeedbackType, defaultPreset} from '@dnd-kit/dom';
+import {FeedbackType} from '@dnd-kit/dom';
 import {type SortableTransition} from '@dnd-kit/dom/sortable';
 import {DragDropProvider} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
@@ -47,7 +47,7 @@ export function SortableExample({
 
   return (
     <DragDropProvider
-      plugins={debug ? [Debug, ...defaultPreset.plugins] : undefined}
+      plugins={debug ? (defaults) => [Debug, ...defaults] : undefined}
       modifiers={modifiers}
       onDragOver={(event) => {
         if (optimistic) return;

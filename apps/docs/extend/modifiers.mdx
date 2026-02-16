@@ -78,23 +78,41 @@ Environment-specific modifiers for the DOM, available in `@dnd-kit/dom/modifiers
 
 ## Usage
 
-Modifiers can be applied globally or per draggable element:
+Modifiers can be applied globally or per draggable element. The `modifiers` option accepts either an array or a function that receives the default modifiers.
+
+### Extending defaults
+
+Use the function form to add modifiers without replacing the defaults:
 
 ```ts
 import {DragDropManager} from '@dnd-kit/dom';
-import {
-  RestrictToWindow,
-  RestrictToElement
-} from '@dnd-kit/dom/modifiers';
+import {RestrictToWindow} from '@dnd-kit/dom/modifiers';
 
-// Global modifiers
 const manager = new DragDropManager({
-  modifiers: [
-    RestrictToWindow,
-  ],
+  modifiers: (defaults) => [...defaults, RestrictToWindow],
 });
+```
 
-// Per-draggable modifiers
+### Replacing defaults
+
+Pass an array to fully replace the default modifiers:
+
+```ts
+import {DragDropManager} from '@dnd-kit/dom';
+import {RestrictToWindow} from '@dnd-kit/dom/modifiers';
+
+const manager = new DragDropManager({
+  modifiers: [RestrictToWindow],
+});
+```
+
+### Per-draggable modifiers
+
+Modifiers can also be configured on individual draggable elements:
+
+```ts
+import {RestrictToElement} from '@dnd-kit/dom/modifiers';
+
 const draggable = new Draggable({
   id: 'draggable-1',
   element,

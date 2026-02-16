@@ -1,5 +1,6 @@
 export {DragDropManager, defaultPreset} from './manager/index.ts';
-export type {DragDropManagerInput} from './manager/index.ts';
+export {resolveCustomizable} from '@dnd-kit/abstract';
+export type {DragDropManagerInput, Customizable} from './manager/index.ts';
 
 export type {
   CollisionEvent,

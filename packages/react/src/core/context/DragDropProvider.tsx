@@ -7,7 +7,7 @@ import {
   type PropsWithChildren,
 } from 'react';
 import type {Data, DragDropEvents} from '@dnd-kit/abstract';
-import {DragDropManager, defaultPreset} from '@dnd-kit/dom';
+import {DragDropManager, defaultPreset, resolveCustomizable} from '@dnd-kit/dom';
 import type {DragDropManagerInput, Draggable, Droppable} from '@dnd-kit/dom';
 import {useLatest, useOnValueChange} from '@dnd-kit/react/hooks';
 import {deepEqual} from '@dnd-kit/state';
@@ -56,7 +56,10 @@ export function DragDropProvider<
   ...input
 }: Props<T, U, V, W>) {
   const rendererRef = useRef<ReactRenderer | null>(null);
-  const {plugins, modifiers, sensors} = input;
+  const {plugins: pluginsInput, modifiers: modifiersInput, sensors: sensorsInput} = input;
+  const plugins = resolveCustomizable(pluginsInput, defaultPreset.plugins);
+  const sensors = resolveCustomizable(sensorsInput, defaultPreset.sensors);
+  const modifiers = resolveCustomizable(modifiersInput, defaultPreset.modifiers);
   const handleBeforeDragStart = useLatest(onBeforeDragStart);
   const handleDragStart = useLatest(onDragStart);
   const handleDragOver = useLatest(onDragOver);
@@ -117,17 +120,17 @@ export function DragDropProvider<
 
   useOnValueChange(
     plugins,
-    () => manager && (manager.plugins = plugins ?? defaultPreset.plugins),
+    () => manager && (manager.plugins = plugins),
     ...options
   );
   useOnValueChange(
     sensors,
-    () => manager && (manager.sensors = sensors ?? defaultPreset.sensors),
+    () => manager && (manager.sensors = sensors),
     ...options
   );
   useOnValueChange(
     modifiers,
-    () => manager && (manager.modifiers = modifiers ?? defaultPreset.modifiers),
+    () => manager && (manager.modifiers = modifiers),
     ...options
   );
 

@@ -82,30 +82,53 @@ function App() {
 
 ## Configuration
 
-Customize behavior with plugins, sensors, and modifiers:
+Customize behavior with plugins, sensors, and modifiers. Each accepts either an array (which replaces the defaults) or a function that receives the defaults.
+
+### Extending defaults
+
+Use the function form to add to or configure the defaults without replacing them:
 
 ```jsx
-import {
-  DragDropProvider,
-  PointerSensor,
-  KeyboardSensor,
-  RestrictToWindow,
-} from '@dnd-kit/react';
+import {DragDropProvider} from '@dnd-kit/react';
+import {Feedback} from '@dnd-kit/dom';
+import {RestrictToWindow} from '@dnd-kit/dom/modifiers';
 
 function App() {
   return (
     <DragDropProvider
-      // Custom input detection
+      // Add a plugin alongside defaults
+      plugins={(defaults) => [
+        ...defaults,
+        Feedback.configure({ dropAnimation: null }),
+      ]}
+      // Add a modifier
+      modifiers={(defaults) => [...defaults, RestrictToWindow]}
+    >
+      <YourDraggableContent />
+    </DragDropProvider>
+  );
+}
+```
+
+### Replacing defaults
+
+Pass an array to fully replace the defaults:
+
+```jsx
+import {DragDropProvider} from '@dnd-kit/react';
+import {PointerSensor, KeyboardSensor} from '@dnd-kit/dom';
+
+function App() {
+  return (
+    <DragDropProvider
       sensors={[
         PointerSensor,
         KeyboardSensor,
       ]}
-      // Extend functionality
       plugins={[
         AutoScroller,
         Accessibility,
       ]}
-      // Modify drag behavior
       modifiers={[
         RestrictToWindow,
       ]}
@@ -156,14 +179,14 @@ function App() {
 
 ### Configuration
 
-<ParamField path="sensors" type="Sensor[]">
-  Array of [sensors](/extend/sensors) for detecting user input.
+<ParamField path="sensors" type="Sensor[] | (defaults: Sensor[]) => Sensor[]">
+  [Sensors](/extend/sensors) for detecting user input. Pass an array to replace defaults, or a function to extend them.
 </ParamField>
 
-<ParamField path="plugins" type="Plugin[]">
-  Array of [plugins](/extend/plugins) to extend functionality.
+<ParamField path="plugins" type="Plugin[] | (defaults: Plugin[]) => Plugin[]">
+  [Plugins](/extend/plugins) to extend functionality. Pass an array to replace defaults, or a function to extend them.
 </ParamField>
 
-<ParamField path="modifiers" type="Modifier[]">
-  Array of [modifiers](/extend/modifiers) to customize drag behavior.
+<ParamField path="modifiers" type="Modifier[] | (defaults: Modifier[]) => Modifier[]">
+  [Modifiers](/extend/modifiers) to customize drag behavior. Pass an array to replace defaults, or a function to extend them.
 </ParamField>

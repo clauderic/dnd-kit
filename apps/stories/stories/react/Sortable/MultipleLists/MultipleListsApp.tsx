@@ -4,7 +4,7 @@ import {CollisionPriority} from '@dnd-kit/abstract';
 import {DragDropProvider} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
 import {move} from '@dnd-kit/helpers';
-import {defaultPreset, PointerSensor, KeyboardSensor} from '@dnd-kit/dom';
+import {PointerSensor, KeyboardSensor} from '@dnd-kit/dom';
 import {DragDropEventHandlers} from '@dnd-kit/react';
 
 function createRange(length: number) {
@@ -123,7 +123,6 @@ export default function App() {
 
   return (
     <DragDropProvider
-      plugins={defaultPreset.plugins}
       sensors={sensors}
       onDragStart={useCallback<DragDropEventHandlers['onDragStart']>(() => {
         snapshot.current = structuredClone(items);

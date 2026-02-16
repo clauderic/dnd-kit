@@ -13,10 +13,40 @@ import {DragOperation} from './operation.ts';
 import {DragDropMonitor} from './events.ts';
 import {defaultRenderer, type Renderer} from './renderer.ts';
 
+/**
+ * A value that can be provided as-is or as a function that receives defaults.
+ *
+ * @example
+ * // As a plain array (replaces defaults)
+ * plugins: [MyPlugin]
+ *
+ * // As a function (receives defaults)
+ * plugins: (defaults) => [...defaults, MyPlugin]
+ */
+export type Customizable<T> = T | ((defaults: T) => T);
+
+/**
+ * Resolves a customizable value by applying it to defaults.
+ *
+ * @param value - A value or function that receives defaults
+ * @param defaults - The default value to use when undefined, or to pass to a function
+ * @returns The resolved value
+ */
+export function resolveCustomizable<T>(
+  value: Customizable<T> | undefined,
+  defaults: T
+): T {
+  if (typeof value === 'function') {
+    return (value as (defaults: T) => T)(defaults);
+  }
+
+  return value ?? defaults;
+}
+
 export type DragDropManagerInput<T extends DragDropManager<any, any>> = {
-  plugins?: Plugins<T>;
-  sensors?: Sensors<T>;
-  modifiers?: Modifiers<T>;
+  plugins?: Customizable<Plugins<T>>;
+  sensors?: Customizable<Sensors<T>>;
+  modifiers?: Customizable<Modifiers<T>>;
   renderer?: Renderer;
 };
 
@@ -53,12 +83,11 @@ export class DragDropManager<T extends Draggable, U extends Droppable> {
   constructor(config?: DragDropManagerInput<any>) {
     type V = DragDropManager<T, U>;
 
-    const {
-      plugins = [],
-      sensors = [],
-      modifiers = [],
-      renderer = defaultRenderer,
-    } = config ?? {};
+    const raw = config ?? {};
+    const plugins = resolveCustomizable(raw.plugins, []);
+    const sensors = resolveCustomizable(raw.sensors, []);
+    const modifiers = resolveCustomizable(raw.modifiers, []);
+    const renderer = raw.renderer ?? defaultRenderer;
     const monitor = new DragDropMonitor<T, U, V>(this);
     const registry = new DragDropRegistry<T, U, V>(this);
 

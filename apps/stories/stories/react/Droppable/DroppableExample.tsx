@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import type {PropsWithChildren} from 'react';
 import type {UniqueIdentifier} from '@dnd-kit/abstract';
 import {DragDropProvider, useDraggable, useDroppable} from '@dnd-kit/react';
-import {defaultPreset} from '@dnd-kit/dom';
 import {Debug} from '@dnd-kit/dom/plugins/debug';
 
 import {createRange} from '@dnd-kit/stories-shared/utilities';
@@ -20,7 +19,7 @@ export function DroppableExample({droppableCount = 1, debug}: Props) {
 
   return (
     <DragDropProvider
-      plugins={debug ? [...defaultPreset.plugins, Debug] : undefined}
+      plugins={debug ? (defaults) => [...defaults, Debug] : undefined}
       onDragEnd={(event) => {
         const {target} = event.operation;
 

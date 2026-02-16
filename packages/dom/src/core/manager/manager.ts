@@ -1,6 +1,7 @@
 import {
   DragDropManager as AbstractDragDropManager,
   DragDropManagerInput,
+  resolveCustomizable,
   type Data,
   type Modifiers,
   type Plugins,
@@ -39,11 +40,9 @@ export class DragDropManager<
   V extends Droppable<T> = Droppable<T>,
 > extends AbstractDragDropManager<U, V> {
   constructor(input: Input = {}) {
-    const {
-      plugins = defaultPreset.plugins,
-      sensors = defaultPreset.sensors,
-      modifiers = [],
-    } = input;
+    const plugins = resolveCustomizable(input.plugins, defaultPreset.plugins);
+    const sensors = resolveCustomizable(input.sensors, defaultPreset.sensors);
+    const modifiers = resolveCustomizable(input.modifiers, defaultPreset.modifiers);
 
     super({
       ...input,

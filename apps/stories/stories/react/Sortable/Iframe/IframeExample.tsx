@@ -4,7 +4,6 @@ import {DragDropProvider} from '@dnd-kit/react';
 import {DragOverlay} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
 import {move} from '@dnd-kit/helpers';
-import {defaultPreset} from '@dnd-kit/dom';
 import {Debug} from '@dnd-kit/dom/plugins/debug';
 import AutoFrameComponent from '@measured/auto-frame-component';
 
@@ -52,7 +51,7 @@ export function IframeLists({
 
   return (
     <DragDropProvider
-      plugins={debug ? [...defaultPreset.plugins, Debug] : undefined}
+      plugins={debug ? (defaults) => [...defaults, Debug] : undefined}
       onDragStart={() => {
         snapshot.current = structuredClone(items);
       }}

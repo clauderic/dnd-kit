@@ -43,14 +43,22 @@ The `DragDropProvider` accepts callback props for all drag and drop lifecycle st
   An optional externally created `DragDropManager` instance. If not provided, one will be created automatically.
 </ParamField>
 
-<ParamField path="plugins" type="Plugin[]" optional>
-  An array of plugins to use. Defaults to the default preset.
+<ParamField path="plugins" type="Plugin[] | (defaults: Plugin[]) => Plugin[]" optional>
+  Plugins to use. Defaults to the default preset. Pass an array to replace defaults, or a function to extend them.
+
+  ```ts
+  // Add a plugin alongside defaults
+  plugins={(defaults) => [...defaults, MyPlugin]}
+
+  // Replace defaults entirely
+  plugins={[MyPlugin]}
+  ```
 </ParamField>
 
-<ParamField path="sensors" type="Sensor[]" optional>
-  An array of sensors to use. Defaults to `PointerSensor` and `KeyboardSensor`.
+<ParamField path="sensors" type="Sensor[] | (defaults: Sensor[]) => Sensor[]" optional>
+  Sensors to use. Defaults to `PointerSensor` and `KeyboardSensor`. Pass an array to replace defaults, or a function to extend them.
 </ParamField>
 
-<ParamField path="modifiers" type="Modifier[]" optional>
-  An array of modifiers to apply to drag operations.
+<ParamField path="modifiers" type="Modifier[] | (defaults: Modifier[]) => Modifier[]" optional>
+  Modifiers to apply to drag operations. Pass an array to replace defaults, or a function to extend them.
 </ParamField>

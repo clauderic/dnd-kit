@@ -5,7 +5,7 @@ import {CollisionPriority} from '@dnd-kit/abstract';
 import {DragDropProvider} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
 import {move} from '@dnd-kit/helpers';
-import {defaultPreset, PointerSensor, KeyboardSensor} from '@dnd-kit/dom';
+import {PointerSensor, KeyboardSensor} from '@dnd-kit/dom';
 import {Debug} from '@dnd-kit/dom/plugins/debug';
 import {supportsViewTransition} from '@dnd-kit/dom/utilities';
 import {DragDropEventHandlers} from '@dnd-kit/react';
@@ -75,7 +75,7 @@ export function MultipleLists({
 
   return (
     <DragDropProvider
-      plugins={debug ? [...defaultPreset.plugins, Debug] : undefined}
+      plugins={debug ? (defaults) => [...defaults, Debug] : undefined}
       sensors={sensors}
       onDragStart={useCallback<DragDropEventHandlers['onDragStart']>(() => {
         snapshot.current = structuredClone(items);

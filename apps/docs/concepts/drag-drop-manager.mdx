@@ -46,14 +46,43 @@ const manager = new DragDropManager();
 
 <ParamField path="options" type="object">
   Optional configuration for the manager:
-  - `sensors`: Array of [sensors](/extend/sensors) to detect drag interactions
-  - `plugins`: Array of [plugins](/extend/plugins) to extend functionality
-  - `modifiers`: Array of [modifiers](/extend/modifiers) to customize behavior
+  - `sensors`: [Sensors](/extend/sensors) to detect drag interactions — an array or a function that receives the defaults
+  - `plugins`: [Plugins](/extend/plugins) to extend functionality — an array or a function that receives the defaults
+  - `modifiers`: [Modifiers](/extend/modifiers) to customize behavior — an array or a function that receives the defaults
 </ParamField>
 
 ## Configuration
 
-The manager comes with sensible defaults, but you can customize its behavior:
+The manager comes with sensible defaults, but you can customize its behavior. The `plugins`, `sensors`, and `modifiers` options accept either an array (which replaces the defaults) or a function that receives the default values and returns a new array.
+
+### Extending defaults
+
+Use the function form to add to or configure the defaults without replacing them:
+
+```js
+import {DragDropManager} from '@dnd-kit/dom';
+import {RestrictToWindow} from '@dnd-kit/dom/modifiers';
+
+const manager = new DragDropManager({
+  // Add a plugin to the defaults
+  plugins: (defaults) => [...defaults, MyPlugin],
+
+  // Configure a default sensor
+  sensors: (defaults) => [
+    ...defaults,
+    PointerSensor.configure({
+      activationConstraints: { distance: 5 },
+    }),
+  ],
+
+  // Add a modifier
+  modifiers: (defaults) => [...defaults, RestrictToWindow],
+});
+```
+
+### Replacing defaults
+
+Pass an array to fully replace the defaults:
 
 ```js
 import {
@@ -63,21 +92,18 @@ import {
 } from '@dnd-kit/dom';
 
 const manager = new DragDropManager({
-  // Sensors detect drag interactions
   sensors: [
     PointerSensor,  // Handles mouse and touch
     KeyboardSensor, // Enables keyboard navigation
   ],
 
-  // Plugins extend functionality
   plugins: [
     AutoScroller,   // Automatic scrolling during drag
     Accessibility,  // ARIA attributes management
   ],
 
-  // Modifiers customize drag behavior
   modifiers: [
-    restrictToWindow, // Keeps dragged items within window bounds
+    RestrictToWindow, // Keeps dragged items within window bounds
   ],
 });
 ```

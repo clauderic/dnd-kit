@@ -2,7 +2,6 @@ import React, {useRef, useEffect, useState} from 'react';
 import type {UniqueIdentifier} from '@dnd-kit/abstract';
 import {DragDropProvider} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
-import {defaultPreset} from '@dnd-kit/dom';
 import {Debug} from '@dnd-kit/dom/plugins/debug';
 import {move} from '@dnd-kit/helpers';
 import {FixedSizeList as List} from 'react-window';
@@ -20,7 +19,7 @@ export function ReactWindowExample({debug}: Props) {
 
   return (
     <DragDropProvider
-      plugins={debug ? [Debug, ...defaultPreset.plugins] : undefined}
+      plugins={debug ? (defaults) => [Debug, ...defaults] : undefined}
       onDragStart={() => {
         snapshot.current = structuredClone(items);
       }}

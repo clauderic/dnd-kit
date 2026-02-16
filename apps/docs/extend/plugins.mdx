@@ -59,11 +59,36 @@ class MyPlugin extends Plugin {
 
 ## Using Plugins
 
-Plugins can be added when creating a DragDropManager:
+The `plugins` option accepts either an array or a function that receives the default plugins.
+
+### Extending defaults
+
+Use the function form to add plugins to the defaults or configure existing ones, without replacing them:
 
 ```ts
 import {DragDropManager} from '@dnd-kit/dom';
 
+const manager = new DragDropManager({
+  // Add a custom plugin alongside the defaults
+  plugins: (defaults) => [...defaults, MyPlugin],
+});
+```
+
+```ts
+// Configure an existing default plugin
+const manager = new DragDropManager({
+  plugins: (defaults) => [
+    ...defaults,
+    Feedback.configure({ dropAnimation: null }),
+  ],
+});
+```
+
+### Replacing defaults
+
+Pass an array to fully replace the default plugins:
+
+```ts
 const manager = new DragDropManager({
   plugins: [
     MyPlugin.configure({ delay: 500 }),

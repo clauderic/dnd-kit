@@ -31,7 +31,31 @@ The `@dnd-kit/dom` package provides a set of built-in sensors that can be used t
 
 ## Usage
 
-Sensors can be configured both globally and per draggable element:
+Sensors can be configured both globally and per draggable element. The `sensors` option accepts either an array or a function that receives the default sensors.
+
+### Extending defaults
+
+Use the function form to configure or add sensors without replacing the defaults:
+
+```ts
+import {DragDropManager} from '@dnd-kit/dom';
+import {PointerSensor, PointerActivationConstraints} from '@dnd-kit/dom';
+
+const manager = new DragDropManager({
+  sensors: (defaults) => [
+    ...defaults,
+    PointerSensor.configure({
+      activationConstraints: [
+        new PointerActivationConstraints.Distance({value: 5}),
+      ],
+    }),
+  ],
+});
+```
+
+### Replacing defaults
+
+Pass an array to fully replace the default sensors:
 
 ```ts
 import {DragDropManager} from '@dnd-kit/dom';
@@ -41,18 +65,13 @@ import {
   KeyboardSensor
 } from '@dnd-kit/dom';
 
-// Global sensors
 const manager = new DragDropManager({
   sensors: [
     PointerSensor.configure({
-      // Composable activation constraints
       activationConstraints: [
-        // Activate after moving 5px
         new PointerActivationConstraints.Distance({value: 5}),
-        // Or after holding for 200ms
         new PointerActivationConstraints.Delay({
           value: 200,
-          // With 10px tolerance on the x-axis and 5px on the y-axis
           tolerance: {x: 10, y: 5},
         }),
       ]
@@ -60,12 +79,16 @@ const manager = new DragDropManager({
     KeyboardSensor,
   ]
 });
+```
 
-// Per-draggable sensors
+### Per-draggable sensors
+
+Sensors can also be configured on individual draggable elements:
+
+```ts
 const draggable = new Draggable({
   id: 'draggable-1',
   element,
-  // Override global sensors
   sensors: [KeyboardSensor],
 }, manager);
 ```
