@@ -1,6 +1,7 @@
 import type {DragDropEvents} from '@dnd-kit/abstract';
 import {
   defaultPreset,
+  resolveCustomizable,
   type DragDropManagerInput,
   type Draggable,
   type Droppable,
@@ -118,9 +119,9 @@ export default /* #__PURE__ */ defineComponent<DragDropProviderProps>({
     );
 
     watchEffect(() => {
-      manager.value.plugins = props.plugins ?? defaultPreset.plugins;
-      manager.value.sensors = props.sensors ?? defaultPreset.sensors;
-      manager.value.modifiers = props.modifiers ?? defaultPreset.modifiers;
+      manager.value.plugins = resolveCustomizable(props.plugins, defaultPreset.plugins);
+      manager.value.sensors = resolveCustomizable(props.sensors, defaultPreset.sensors);
+      manager.value.modifiers = resolveCustomizable(props.modifiers, defaultPreset.modifiers);
     });
 
     provideDragDropContext(computed(() => manager.value));

@@ -5,6 +5,7 @@
   import {
     DragDropManager,
     defaultPreset,
+    resolveCustomizable,
     type DragDropManagerInput,
     type Draggable,
     type Droppable,
@@ -50,9 +51,9 @@
   setDragDropContext(manager);
 
   $effect(() => {
-    manager.plugins = plugins ?? defaultPreset.plugins;
-    manager.sensors = sensors ?? defaultPreset.sensors;
-    manager.modifiers = modifiers ?? defaultPreset.modifiers;
+    manager.plugins = resolveCustomizable(plugins, defaultPreset.plugins);
+    manager.sensors = resolveCustomizable(sensors, defaultPreset.sensors);
+    manager.modifiers = resolveCustomizable(modifiers, defaultPreset.modifiers);
   });
 
   $effect(() => {

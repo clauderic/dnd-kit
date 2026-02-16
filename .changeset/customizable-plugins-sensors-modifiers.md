@@ -2,6 +2,9 @@
 '@dnd-kit/abstract': minor
 '@dnd-kit/dom': minor
 '@dnd-kit/react': minor
+'@dnd-kit/vue': minor
+'@dnd-kit/svelte': minor
+'@dnd-kit/solid': minor
 ---
 
 Allow `plugins`, `sensors`, and `modifiers` to accept a function that receives the defaults, making it easy to extend or configure them without replacing the entire array.

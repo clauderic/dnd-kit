@@ -1,5 +1,5 @@
 import {createEffect, createMemo, onCleanup} from 'solid-js';
-import {DragDropManager, defaultPreset} from '@dnd-kit/dom';
+import {DragDropManager, defaultPreset, resolveCustomizable} from '@dnd-kit/dom';
 import {isSortable} from '@dnd-kit/dom/sortable';
 
 import {DragDropContext} from './context.ts';
@@ -41,9 +41,9 @@ export function DragDropProvider(props: DragDropProviderProps) {
     const _manager = manager();
 
     _manager.renderer = renderer;
-    _manager.plugins = props.plugins ?? defaultPreset.plugins;
-    _manager.sensors = props.sensors ?? defaultPreset.sensors;
-    _manager.modifiers = props.modifiers ?? defaultPreset.modifiers;
+    _manager.plugins = resolveCustomizable(props.plugins, defaultPreset.plugins);
+    _manager.sensors = resolveCustomizable(props.sensors, defaultPreset.sensors);
+    _manager.modifiers = resolveCustomizable(props.modifiers, defaultPreset.modifiers);
   });
 
   createEffect(() => {
