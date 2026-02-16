@@ -1,4 +1,4 @@
-# @dnd-kit/vue
+# @dnd-kit/svelte
 
 ## 0.3.0
 
@@ -31,9 +31,7 @@
 
   Re-exported from all framework packages (`@dnd-kit/react/sortable`, `@dnd-kit/vue/sortable`, `@dnd-kit/svelte/sortable`, `@dnd-kit/solid/sortable`).
 
-- [#1880](https://github.com/clauderic/dnd-kit/pull/1880) [`a53b4c7`](https://github.com/clauderic/dnd-kit/commit/a53b4c71f320c1a1447e55c147af4912c1a4fcf5) Thanks [@clauderic](https://github.com/clauderic)! - Add @dnd-kit/vue adapter package for Vue 3.5+
-
-- [`570c2a9`](https://github.com/clauderic/dnd-kit/commit/570c2a972e5cc48c54c72b276c53604c9a277b50) Thanks [@clauderic](https://github.com/clauderic)! - Add `DragOverlay` component to `@dnd-kit/vue`.
+- [`e630ec0`](https://github.com/clauderic/dnd-kit/commit/e630ec02f3819c1c5e3a4fcd05d0c65850ffaa0b) Thanks [@clauderic](https://github.com/clauderic)! - Initial release of @dnd-kit/svelte – a Svelte 5 adapter for dnd kit. Provides `DragDropProvider`, `DragOverlay`, `createDraggable`, `createDroppable`, and `createSortable` using Svelte 5 runes and attachments (`{@attach}`).
 
 ### Patch Changes
 
