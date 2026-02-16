@@ -115,8 +115,8 @@ export class PointerSensor extends Sensor<
   }
 
   protected activationConstraints(
-    event: PointerEvent, 
-    source: Draggable, 
+    event: PointerEvent,
+    source: Draggable,
     options = this.options
   ) {
     const {activationConstraints = defaults.activationConstraints} =

@@ -4,7 +4,7 @@ export function getElementFromPoint(
   root: Document | ShadowRoot,
   {x, y}: Coordinates
 ): Element | null {
-  const element = root.elementFromPoint(x, y); //supported by both document and shadowRoot. 
+  const element = root.elementFromPoint(x, y); //supported by both document and shadowRoot.
 
   if (isIFrameElement(element)) {
     const {contentDocument} = element;

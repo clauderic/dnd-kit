@@ -140,7 +140,8 @@ export function dragOffsetTests(stories: DragOffsetStories) {
         await dnd.page.waitForTimeout(50);
 
         const draggingBox = await dnd.dragging.boundingBox();
-        if (!draggingBox) throw new Error('Could not get dragging bounding box');
+        if (!draggingBox)
+          throw new Error('Could not get dragging bounding box');
 
         // The cursor should be at the center of the dragged element
         // (since we started the drag from the center)

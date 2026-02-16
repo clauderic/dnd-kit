@@ -52,9 +52,7 @@ type Items = UniqueIdentifier[] | {id: UniqueIdentifier}[];
  * The `move` helper lives in `@dnd-kit/helpers` which has no dependency on `@dnd-kit/dom`,
  * so we discover sortable properties at runtime.
  */
-function hasSortableIndices(
-  source: Draggable
-): source is Draggable & {
+function hasSortableIndices(source: Draggable): source is Draggable & {
   initialIndex: number;
   index: number;
   initialGroup: UniqueIdentifier | undefined;

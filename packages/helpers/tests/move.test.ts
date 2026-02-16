@@ -37,11 +37,7 @@ function mockSortableSource(opts: {
 }
 
 /** Build a preventable dragover-style event. */
-function dragOverEvent(
-  source: any,
-  target: any,
-  canceled = false
-) {
+function dragOverEvent(source: any, target: any, canceled = false) {
   let defaultPrevented = false;
   return {
     operation: {source, target, canceled},
@@ -56,11 +52,7 @@ function dragOverEvent(
 }
 
 /** Build a dragend-style event (no preventDefault). */
-function dragEndEvent(
-  source: any,
-  target: any,
-  canceled = false
-) {
+function dragEndEvent(source: any, target: any, canceled = false) {
   return {
     operation: {source, target, canceled},
     canceled,
