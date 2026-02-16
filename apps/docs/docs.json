@@ -304,6 +304,10 @@
     {
       "source": "/guides/:slug*",
       "destination": "/legacy/guides/:slug*"
+    },
+    {
+      "source": "/react/migration",
+      "destination": "/react/guides/migration"
     }
   ],
   "logo": "/images/logo/logo.svg",
