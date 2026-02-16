@@ -2,6 +2,7 @@ import type {Meta, StoryObj} from '@storybook/svelte-vite';
 
 import GridSortableApp from './GridSortableApp.svelte';
 import gridSortableSource from './GridSortableApp.svelte?raw';
+import gridSortableItemSource from './GridSortableItem.svelte?raw';
 import {
   baseStyles,
   sortableStyles,
@@ -21,6 +22,7 @@ export const BasicSetup: Story = {
     codesandbox: {
       files: {
         'src/App.svelte': gridSortableSource,
+        'src/GridSortableItem.svelte': gridSortableItemSource,
         'src/styles.css': [baseStyles, sortableStyles].join('\n\n'),
       },
     },

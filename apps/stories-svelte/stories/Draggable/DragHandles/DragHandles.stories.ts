@@ -2,6 +2,7 @@ import type {Meta, StoryObj} from '@storybook/svelte-vite';
 
 import DragHandlesApp from './DragHandlesApp.svelte';
 import dragHandlesSource from './DragHandlesApp.svelte?raw';
+import draggableWithHandleSource from './DraggableWithHandle.svelte?raw';
 import {
   baseStyles,
   draggableStyles,
@@ -21,6 +22,7 @@ export const Example: Story = {
     codesandbox: {
       files: {
         'src/App.svelte': dragHandlesSource,
+        'src/DraggableWithHandle.svelte': draggableWithHandleSource,
         'src/styles.css': [baseStyles, draggableStyles, handleStyles].join(
           '\n\n'
         ),

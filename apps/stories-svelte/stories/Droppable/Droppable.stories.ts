@@ -2,6 +2,8 @@ import type {Meta, StoryObj} from '@storybook/svelte-vite';
 
 import DroppableApp from './DroppableApp.svelte';
 import droppableSource from './DroppableApp.svelte?raw';
+import draggableItemSource from './DraggableItem.svelte?raw';
+import droppableZoneSource from './DroppableZone.svelte?raw';
 import {
   baseStyles,
   draggableStyles,
@@ -21,6 +23,8 @@ export const Example: Story = {
     codesandbox: {
       files: {
         'src/App.svelte': droppableSource,
+        'src/DraggableItem.svelte': draggableItemSource,
+        'src/DroppableZone.svelte': droppableZoneSource,
         'src/styles.css': [baseStyles, draggableStyles, droppableStyles].join(
           '\n\n'
         ),

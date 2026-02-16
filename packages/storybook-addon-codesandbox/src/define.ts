@@ -57,3 +57,47 @@ export function openSandbox(sandboxId: string, mainFile?: string): void {
 
   window.open(url, '_blank', 'noopener,noreferrer');
 }
+
+/**
+ * Opens a project in StackBlitz via a form POST.
+ *
+ * No API call or SDK needed — the files are encoded as hidden form
+ * fields and submitted directly to StackBlitz, which opens the
+ * project in a new tab.
+ */
+export function openStackBlitz(
+  files: Record<string, SandboxFile>,
+  options?: {title?: string; template?: string; openFile?: string}
+): void {
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = 'https://stackblitz.com/run';
+  form.target = '_blank';
+
+  function addField(name: string, value: string) {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = name;
+    input.value = value;
+    form.appendChild(input);
+  }
+
+  for (const [path, file] of Object.entries(files)) {
+    addField(`project[files][${path}]`, file.content);
+  }
+
+  addField('project[template]', options?.template ?? 'node');
+
+  if (options?.title) {
+    addField('project[title]', options.title);
+  }
+
+  if (options?.openFile) {
+    addField('project[settings][compile][trigger]', 'auto');
+    addField('project[settings][compile][clearConsole]', 'false');
+  }
+
+  document.body.appendChild(form);
+  form.submit();
+  document.body.removeChild(form);
+}

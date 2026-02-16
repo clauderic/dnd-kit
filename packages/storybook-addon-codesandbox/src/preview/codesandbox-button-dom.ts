@@ -1,5 +1,5 @@
 import {collectFiles} from '../collect-files.ts';
-import {createSandbox, openSandbox} from '../define.ts';
+import {createSandbox, openSandbox, openStackBlitz} from '../define.ts';
 import type {CodeSandboxParameters} from '../types.ts';
 
 const BUTTON_ID = '__csb-addon-open-btn';
@@ -193,8 +193,16 @@ export function createCodeSandboxButton(
         storySource: sourceContent,
       });
 
-      const sandboxId = await createSandbox(files, params.template);
-      openSandbox(sandboxId, params.mainFile);
+      if (params.provider === 'stackblitz') {
+        openStackBlitz(files, {
+          title: 'dnd-kit sandbox',
+          template: params.template ?? 'node',
+          openFile: params.mainFile,
+        });
+      } else {
+        const sandboxId = await createSandbox(files, params.template);
+        openSandbox(sandboxId, params.mainFile);
+      }
 
       updateState('success');
       setTimeout(() => updateState('idle'), 2000);

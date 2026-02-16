@@ -3,6 +3,8 @@ export interface SandboxFile {
   isBinary?: boolean;
 }
 
+export type SandboxProvider = 'codesandbox' | 'stackblitz';
+
 export interface CodeSandboxParameters {
   /**
    * Files to include in every sandbox created from this Storybook.
@@ -38,4 +40,13 @@ export interface CodeSandboxParameters {
    * will be generated that imports the main file.
    */
   entry?: string;
+
+  /**
+   * Which sandbox provider to use.
+   * - 'codesandbox': Uses the CodeSandbox define API (default).
+   * - 'stackblitz': Uses StackBlitz via form POST. Better for
+   *   frameworks that need a full Node.js runtime (e.g. Svelte 5).
+   * @default 'codesandbox'
+   */
+  provider?: SandboxProvider;
 }

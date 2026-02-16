@@ -2,6 +2,7 @@ import type {Meta, StoryObj} from '@storybook/svelte-vite';
 
 import DraggableApp from './DraggableApp.svelte';
 import draggableSource from './DraggableApp.svelte?raw';
+import draggableComponentSource from './Draggable.svelte?raw';
 import {
   baseStyles,
   draggableStyles,
@@ -20,6 +21,7 @@ export const Example: Story = {
     codesandbox: {
       files: {
         'src/App.svelte': draggableSource,
+        'src/Draggable.svelte': draggableComponentSource,
         'src/styles.css': [baseStyles, draggableStyles].join('\n\n'),
       },
     },

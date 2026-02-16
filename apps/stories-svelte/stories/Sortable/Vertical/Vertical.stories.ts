@@ -2,8 +2,10 @@ import type {Meta, StoryObj} from '@storybook/svelte-vite';
 
 import SortableApp from '../SortableApp.svelte';
 import sortableSource from '../SortableApp.svelte?raw';
+import sortableItemSource from '../SortableItem.svelte?raw';
 import SortableDragHandleApp from '../SortableDragHandleApp.svelte';
 import sortableDragHandleSource from '../SortableDragHandleApp.svelte?raw';
+import sortableItemWithHandleSource from '../SortableItemWithHandle.svelte?raw';
 import {
   baseStyles,
   handleStyles,
@@ -24,6 +26,7 @@ export const BasicSetup: Story = {
     codesandbox: {
       files: {
         'src/App.svelte': sortableSource,
+        'src/SortableItem.svelte': sortableItemSource,
         'src/styles.css': [baseStyles, sortableStyles].join('\n\n'),
       },
     },
@@ -37,6 +40,7 @@ export const WithDragHandle: Story = {
     codesandbox: {
       files: {
         'src/App.svelte': sortableDragHandleSource,
+        'src/SortableItemWithHandle.svelte': sortableItemWithHandleSource,
         'src/styles.css': [baseStyles, sortableStyles, handleStyles].join(
           '\n\n'
         ),

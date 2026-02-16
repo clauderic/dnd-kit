@@ -9,7 +9,7 @@ import {
 
 import {ADDON_ID, TOOL_ID} from './constants.ts';
 import {collectFiles} from './collect-files.ts';
-import {createSandbox, openSandbox} from './define.ts';
+import {createSandbox, openSandbox, openStackBlitz} from './define.ts';
 import type {CodeSandboxParameters} from './types.ts';
 
 function CodeSandboxIcon() {
@@ -86,9 +86,16 @@ function CodeSandboxTool() {
         storySource: sourceContent,
       });
 
-      const sandboxId = await createSandbox(files, storyParams.template);
-
-      openSandbox(sandboxId, storyParams.mainFile);
+      if (storyParams.provider === 'stackblitz') {
+        openStackBlitz(files, {
+          title: 'dnd-kit sandbox',
+          template: storyParams.template ?? 'node',
+          openFile: storyParams.mainFile,
+        });
+      } else {
+        const sandboxId = await createSandbox(files, storyParams.template);
+        openSandbox(sandboxId, storyParams.mainFile);
+      }
 
       setState('success');
       setTimeout(() => setState('idle'), 2000);

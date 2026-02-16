@@ -2,6 +2,7 @@ import type {Meta, StoryObj} from '@storybook/svelte-vite';
 
 import HorizontalSortableApp from './HorizontalSortableApp.svelte';
 import horizontalSortableSource from './HorizontalSortableApp.svelte?raw';
+import horizontalSortableItemSource from './HorizontalSortableItem.svelte?raw';
 import {
   baseStyles,
   sortableStyles,
@@ -21,6 +22,7 @@ export const BasicSetup: Story = {
     codesandbox: {
       files: {
         'src/App.svelte': horizontalSortableSource,
+        'src/HorizontalSortableItem.svelte': horizontalSortableItemSource,
         'src/styles.css': [baseStyles, sortableStyles].join('\n\n'),
       },
     },

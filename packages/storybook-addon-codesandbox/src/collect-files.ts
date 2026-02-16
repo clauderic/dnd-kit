@@ -36,11 +36,19 @@ function generatePackageJson(
 /**
  * Generates a default index file that imports the main app file.
  */
-function generateIndexFile(mainFile: string): string {
+function generateIndexFile(mainFile: string, entryFile: string): string {
+  // Compute the import path relative to the entry file's directory
+  const entryDir = entryFile.substring(0, entryFile.lastIndexOf('/') + 1);
+  let relativePath = mainFile;
+
+  if (entryDir && mainFile.startsWith(entryDir)) {
+    relativePath = mainFile.substring(entryDir.length);
+  }
+
   // Ensure the import path is relative
-  const importPath = mainFile.startsWith('./')
-    ? mainFile
-    : `./${mainFile}`;
+  const importPath = relativePath.startsWith('./')
+    ? relativePath
+    : `./${relativePath}`;
 
   // Strip extension for import
   const importPathNoExt = importPath.replace(/\.\w+$/, '');
@@ -101,7 +109,7 @@ export function collectFiles(options: CollectFilesOptions): Record<string, Sandb
     if (entry) {
       files[entryFile] = {content: entry};
     } else {
-      files[entryFile] = {content: generateIndexFile(mainFile)};
+      files[entryFile] = {content: generateIndexFile(mainFile, entryFile)};
     }
   }
 
