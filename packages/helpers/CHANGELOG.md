@@ -1,5 +1,18 @@
 # @dnd-kit/helpers
 
+## 0.3.0
+
+### Patch Changes
+
+- [`e8ae539`](https://github.com/clauderic/dnd-kit/commit/e8ae539abe05a1df41d45078b108167022ac9ef7) Thanks [@clauderic](https://github.com/clauderic)! - Fix the `move` and `swap` helpers to support computed sortable IDs and optimistic sorting reconciliation for grouped records.
+
+  When the ID-based lookup fails (e.g. when using computed IDs like `id={\`sortable-${item.id}\`}` that don't match data items), the helpers now fall back to sortable index properties (`initialIndex`, `index`, `group`, `initialGroup`) to determine the correct positions. Additionally, grouped records now support optimistic sorting reconciliation—when `source.id === target.id` after optimistic sorting, the helpers use the sortable indices to determine the intended move.
+
+  Added `initialIndex`, `group`, and `initialGroup` getters to `SortableDraggable`, and `index` and `group` getters to `SortableDroppable`, so these properties are accessible from the operation's `source` and `target` in drag events.
+
+- Updated dependencies [[`6a59647`](https://github.com/clauderic/dnd-kit/commit/6a59647ebba2114b2e423f282ab25bf2ea40318d)]:
+  - @dnd-kit/abstract@0.3.0
+
 ## 0.2.4
 
 ### Patch Changes
