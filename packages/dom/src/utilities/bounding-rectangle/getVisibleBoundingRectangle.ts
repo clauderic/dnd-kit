@@ -49,17 +49,26 @@ export function getVisibleBoundingRectangle(
     ancestor = ancestor.parentElement;
   }
 
-  // Clip the rect based on the viewport (window)
-  const viewportWidth = ownerWindow.innerWidth;
-  const viewportHeight = ownerWindow.innerHeight;
+  // Clip the rect based on the visual viewport (accounts for pinch-to-zoom)
+  const vv = ownerWindow.visualViewport;
+  const viewportTop = vv?.offsetTop ?? 0;
+  const viewportLeft = vv?.offsetLeft ?? 0;
+  const viewportWidth = vv?.width ?? ownerWindow.innerWidth;
+  const viewportHeight = vv?.height ?? ownerWindow.innerHeight;
   const viewportMarginY = margin * viewportHeight;
   const viewportMarginX = margin * viewportWidth;
 
   rect = {
-    top: Math.max(rect.top, 0 - viewportMarginY),
-    right: Math.min(rect.right, viewportWidth + viewportMarginX),
-    bottom: Math.min(rect.bottom, viewportHeight + viewportMarginY),
-    left: Math.max(rect.left, 0 - viewportMarginX),
+    top: Math.max(rect.top, viewportTop - viewportMarginY),
+    right: Math.min(
+      rect.right,
+      viewportLeft + viewportWidth + viewportMarginX
+    ),
+    bottom: Math.min(
+      rect.bottom,
+      viewportTop + viewportHeight + viewportMarginY
+    ),
+    left: Math.max(rect.left, viewportLeft - viewportMarginX),
     width: 0, // Will be calculated next
     height: 0, // Will be calculated next
   };

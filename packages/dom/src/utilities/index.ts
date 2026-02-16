@@ -12,6 +12,7 @@ export {canUseDOM} from './execution-context/canUseDOM.ts';
 export {getDocument} from './execution-context/getDocument.ts';
 export {getWindow} from './execution-context/getWindow.ts';
 export {getDocuments} from './execution-context/getDocuments.ts';
+export {getFixedPositionOffset} from './execution-context/getFixedPositionOffset.ts';
 export {isSafari} from './execution-context/isSafari.ts';
 export {getRoot} from './execution-context/getRoot.ts';
 export {prefersReducedMotion} from './execution-context/prefersReducedMotion.ts';

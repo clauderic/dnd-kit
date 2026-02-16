@@ -9,10 +9,11 @@ export function getScrollPosition(scrollableElement: Element) {
     ? getViewportBoundingRectangle(scrollableElement)
     : getBoundingRectangle(scrollableElement);
 
+  const vv = window.visualViewport;
   const dimensions = isDocumentScrollingElement(scrollableElement)
     ? {
-        height: window.innerHeight,
-        width: window.innerWidth,
+        height: vv?.height ?? window.innerHeight,
+        width: vv?.width ?? window.innerWidth,
       }
     : {
         height: scrollableElement.clientHeight,

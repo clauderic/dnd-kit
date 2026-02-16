@@ -2,6 +2,7 @@ import {
   supportsStyle,
   showPopover,
   DOMRectangle,
+  getFixedPositionOffset,
   type Styles,
 } from '@dnd-kit/dom/utilities';
 import type {Coordinates} from '@dnd-kit/geometry';
@@ -152,13 +153,14 @@ export function createResizeObserver(ctx: ResizeObserverContext): ResizeObserver
     const origin = ctx.transformOrigin ?? {x: 1, y: 1};
     const dX = (ctx.width - placeholderShape.width) * origin.x + ctx.delta.x;
     const dY = (ctx.height - placeholderShape.height) * origin.y + ctx.delta.y;
+    const fixedOffset = getFixedPositionOffset();
 
     ctx.styles.set(
       {
         width: placeholderShape.width - ctx.widthOffset,
         height: placeholderShape.height - ctx.heightOffset,
-        top: ctx.top + dY,
-        left: ctx.left + dX,
+        top: ctx.top + dY + fixedOffset.y,
+        left: ctx.left + dX + fixedOffset.x,
       },
       CSS_PREFIX
     );

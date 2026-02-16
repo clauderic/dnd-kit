@@ -2,7 +2,7 @@ import {effects} from '@dnd-kit/state';
 import {Plugin} from '@dnd-kit/abstract';
 import type {UniqueIdentifier} from '@dnd-kit/abstract';
 import type {DragDropManager} from '@dnd-kit/dom';
-import {showPopover, hidePopover} from '@dnd-kit/dom/utilities';
+import {showPopover, hidePopover, getFixedPositionOffset} from '@dnd-kit/dom/utilities';
 
 export class Debug extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager) {
@@ -40,8 +40,9 @@ export class Debug extends Plugin<DragDropManager> {
           document.body.appendChild(element);
         }
 
-        element.style.top = `${boundingRectangle.top}px`;
-        element.style.left = `${boundingRectangle.left}px`;
+        const draggableOffset = getFixedPositionOffset();
+        element.style.top = `${boundingRectangle.top + draggableOffset.y}px`;
+        element.style.left = `${boundingRectangle.left + draggableOffset.x}px`;
         element.style.width = `${boundingRectangle.width}px`;
         element.style.height = `${boundingRectangle.height}px`;
 
@@ -77,8 +78,9 @@ export class Debug extends Plugin<DragDropManager> {
               ? 'rgba(255, 193, 7, 0.5)'
               : 'rgba(0, 0, 0, 0.1)';
 
-          debugElement.style.top = `${boundingRectangle.top}px`;
-          debugElement.style.left = `${boundingRectangle.left}px`;
+          const droppableOffset = getFixedPositionOffset();
+          debugElement.style.top = `${boundingRectangle.top + droppableOffset.y}px`;
+          debugElement.style.left = `${boundingRectangle.left + droppableOffset.x}px`;
           debugElement.style.width = `${boundingRectangle.width}px`;
           debugElement.style.height = `${boundingRectangle.height}px`;
           debugElement.textContent = `${droppable.id}`;
@@ -110,8 +112,9 @@ export class Debug extends Plugin<DragDropManager> {
           document.body.appendChild(positionElement);
         }
 
-        positionElement.style.top = `${y}px`;
-        positionElement.style.left = `${x}px`;
+        const posOffset = getFixedPositionOffset();
+        positionElement.style.top = `${y + posOffset.y}px`;
+        positionElement.style.left = `${x + posOffset.x}px`;
 
         hidePopover(positionElement);
         // Only one element can be promoted to the top layer per call stack

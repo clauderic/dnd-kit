@@ -3,6 +3,7 @@ import {configurator, Plugin} from '@dnd-kit/abstract';
 import {
   DOMRectangle,
   getComputedStyles,
+  getFixedPositionOffset,
   getFrameTransform,
   getRoot,
   getWindow,
@@ -273,12 +274,14 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     const tX = transform.x * frameTransform.scaleX + initialTranslate.x;
     const tY = transform.y * frameTransform.scaleY + initialTranslate.y;
 
+    const fixedOffset = getFixedPositionOffset();
+
     styles.set(
       {
         width: width - widthOffset,
         height: height - heightOffset,
-        top: projected.top,
-        left: projected.left,
+        top: projected.top + fixedOffset.y,
+        left: projected.left + fixedOffset.x,
         translate: `${tX}px ${tY}px 0`,
         transition: transition ? `${transition}, translate 0ms linear` : '',
         scale: crossFrame ? `${scaleDelta.x} ${scaleDelta.y}` : '',
