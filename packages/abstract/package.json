@@ -40,6 +40,7 @@
     "build:core": "tsup src/core/index.ts",
     "build:modifiers": "tsup --entry.modifiers src/modifiers/index.ts",
     "dev": "bun build:core --watch & bun build:modifiers --watch",
+    "test": "bun test",
     "lint": "TIMING=1 eslint src/**/*.ts* --fix",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },

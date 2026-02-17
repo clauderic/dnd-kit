@@ -108,8 +108,10 @@ export class DragDropManager<T extends Draggable, U extends Droppable> {
       const currentModifiers = untracked(() => this.dragOperation.modifiers);
       const managerModifiers = this.modifiers;
 
-      if (currentModifiers !== managerModifiers) {
-        currentModifiers.forEach((modifier) => modifier.destroy());
+      for (const modifier of currentModifiers) {
+        if (!managerModifiers.includes(modifier)) {
+          modifier.destroy();
+        }
       }
 
       this.dragOperation.modifiers =
