@@ -1,5 +1,15 @@
 # @dnd-kit/abstract
 
+## 0.3.1
+
+### Patch Changes
+
+- [#1899](https://github.com/clauderic/dnd-kit/pull/1899) [`4341114`](https://github.com/clauderic/dnd-kit/commit/43411143063349caeded4f778923473624ce25cf) Thanks [@hanneskuettner](https://github.com/hanneskuettner)! - Fix modifiers passed to `DragDropProvider` being silently destroyed before they could take effect. An array reference comparison in the modifier lifecycle effect always evaluated to true, causing manager-level modifier instances to be destroyed and reassigned in a broken state on every drag start.
+
+- Updated dependencies []:
+  - @dnd-kit/geometry@0.3.1
+  - @dnd-kit/state@0.3.1
+
 ## 0.3.0
 
 ### Minor Changes
