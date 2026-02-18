@@ -1,6 +1,6 @@
 {
   "name": "@dnd-kit/svelte",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "svelte": "./dist/core/index.js",
   "types": "./dist/core/index.d.ts",
@@ -34,9 +34,9 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
-    "@dnd-kit/abstract": "^0.3.0",
-    "@dnd-kit/dom": "^0.3.0",
-    "@dnd-kit/state": "^0.3.0",
+    "@dnd-kit/abstract": "^0.3.1",
+    "@dnd-kit/dom": "^0.3.1",
+    "@dnd-kit/state": "^0.3.1",
     "tslib": "^2.6.2"
   },
   "peerDependencies": {
