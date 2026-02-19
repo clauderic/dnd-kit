@@ -1,6 +1,6 @@
 {
   "name": "@dnd-kit/vue",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "main": "./index.cjs",
   "module": "./index.js",
   "type": "module",
@@ -55,9 +55,9 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
-    "@dnd-kit/abstract": "^0.3.1",
-    "@dnd-kit/dom": "^0.3.1",
-    "@dnd-kit/state": "^0.3.1",
+    "@dnd-kit/abstract": "^0.3.2",
+    "@dnd-kit/dom": "^0.3.2",
+    "@dnd-kit/state": "^0.3.2",
     "tslib": "^2.6.2"
   },
   "peerDependencies": {
