@@ -2,6 +2,7 @@ import type {Meta, StoryObj} from '@storybook/react-vite';
 import {RestrictToVerticalAxis} from '@dnd-kit/abstract/modifiers';
 
 import {SortableExample} from '../SortableExample';
+import {AutoScrollExample} from './AutoScrollExample';
 
 const meta: Meta<typeof SortableExample> = {
   title: 'React/Sortable/Vertical list',
@@ -118,5 +119,25 @@ export const Debug: Story = {
   name: 'Debug',
   args: {
     debug: true,
+  },
+};
+
+type AutoScrollStory = StoryObj<typeof AutoScrollExample>;
+
+export const AutoScrollDisabled: AutoScrollStory = {
+  name: 'Auto-scroll disabled',
+  render: (args: React.ComponentProps<typeof AutoScrollExample>) => <AutoScrollExample {...args} />,
+  args: {
+    itemCount: 100,
+    threshold: 0,
+  },
+};
+
+export const AutoScrollCustomSpeed: AutoScrollStory = {
+  name: 'Auto-scroll custom speed',
+  render: (args: React.ComponentProps<typeof AutoScrollExample>) => <AutoScrollExample {...args} />,
+  args: {
+    itemCount: 100,
+    acceleration: 50,
   },
 };

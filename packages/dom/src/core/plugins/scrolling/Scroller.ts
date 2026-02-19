@@ -12,11 +12,16 @@ import {
   getFrameTransform,
   getRoot,
 } from '@dnd-kit/dom/utilities';
-import {Axes, type Coordinates} from '@dnd-kit/geometry';
+import {Axes, type Axis, type Coordinates} from '@dnd-kit/geometry';
 
 import type {DragDropManager} from '../../manager/index.ts';
 
 import {ScrollIntentTracker} from './ScrollIntent.ts';
+
+export interface ScrollOptions {
+  acceleration?: number;
+  threshold?: Record<Axis, number>;
+}
 
 export class Scroller extends CorePlugin<DragDropManager> {
   public getScrollableElements: () => Set<Element> | null;
@@ -126,7 +131,10 @@ export class Scroller extends CorePlugin<DragDropManager> {
     if (by.x) element.scrollLeft += by.x;
   };
 
-  public scroll = (options?: {by: Coordinates}): boolean => {
+  public scroll = (
+    options?: {by: Coordinates},
+    scrollOptions?: ScrollOptions
+  ): boolean => {
     if (this.disabled) {
       return false;
     }
@@ -164,7 +172,9 @@ export class Scroller extends CorePlugin<DragDropManager> {
           const {speed, direction} = detectScrollIntent(
             scrollableElement,
             currentPosition,
-            intent
+            intent,
+            scrollOptions?.acceleration,
+            scrollOptions?.threshold
           );
 
           if (scrollIntent) {
