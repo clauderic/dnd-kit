@@ -1,5 +1,25 @@
 # @dnd-kit/dom
 
+## 0.3.2
+
+### Patch Changes
+
+- [#1903](https://github.com/clauderic/dnd-kit/pull/1903) [`7260746`](https://github.com/clauderic/dnd-kit/commit/7260746b0930d51afb3098ef120bffd7d3aaea03) Thanks [@clauderic](https://github.com/clauderic)! - Fixed CSS cascade layer ordering so that the popover-reset styles injected by the Feedback plugin no longer override styles from CSS frameworks that use cascade layers (such as Tailwind CSS v4).
+
+  The `@layer` block is now named `dnd-kit` and injected via a `<style>` element prepended to `<head>` for document roots, ensuring it is declared first in the cascade with the lowest priority. Shadow DOM roots continue to use `adoptedStyleSheets`.
+
+  If needed, consumers can explicitly control the layer ordering:
+
+  ```css
+  @layer dnd-kit, base, components, utilities;
+  ```
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.3.2
+  - @dnd-kit/collision@0.3.2
+  - @dnd-kit/geometry@0.3.2
+  - @dnd-kit/state@0.3.2
+
 ## 0.3.1
 
 ### Patch Changes

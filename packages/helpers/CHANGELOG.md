@@ -1,5 +1,12 @@
 # @dnd-kit/helpers
 
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.3.2
+
 ## 0.3.1
 
 ### Patch Changes

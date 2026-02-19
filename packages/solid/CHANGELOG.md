@@ -1,5 +1,14 @@
 # @dnd-kit/solid
 
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies [[`7260746`](https://github.com/clauderic/dnd-kit/commit/7260746b0930d51afb3098ef120bffd7d3aaea03)]:
+  - @dnd-kit/dom@0.3.2
+  - @dnd-kit/abstract@0.3.2
+  - @dnd-kit/state@0.3.2
+
 ## 0.3.1
 
 ### Patch Changes
