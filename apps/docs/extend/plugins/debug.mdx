@@ -1,0 +1,100 @@
+---
+title: 'Debug'
+description: 'Visualize drag and drop operations for debugging.'
+icon: 'bug'
+---
+
+import {Story} from '/snippets/story.mdx';
+
+## Overview
+
+The `Debug` plugin renders visual overlays that help you understand what's happening during drag and drop operations. It displays the shapes of draggable and droppable elements, highlights collision targets, and shows the current pointer position.
+
+This plugin is **not** included by default — add it during development to help debug layout, collision, and positioning issues.
+
+## Usage
+
+<CodeGroup>
+```ts Vanilla
+import {DragDropManager} from '@dnd-kit/dom';
+import {Debug} from '@dnd-kit/dom/plugins/debug';
+
+const manager = new DragDropManager({
+  plugins: (defaults) => [...defaults, Debug],
+});
+```
+
+```tsx React
+import {DragDropProvider} from '@dnd-kit/react';
+import {Debug} from '@dnd-kit/dom/plugins/debug';
+
+function App() {
+  return (
+    <DragDropProvider
+      plugins={(defaults) => [Debug, ...defaults]}
+    >
+      {/* ... */}
+    </DragDropProvider>
+  );
+}
+```
+
+```vue Vue
+<script setup>
+import {DragDropProvider} from '@dnd-kit/vue';
+import {Debug} from '@dnd-kit/dom/plugins/debug';
+</script>
+
+<template>
+  <DragDropProvider
+    :plugins="(defaults) => [Debug, ...defaults]"
+  >
+    <!-- ... -->
+  </DragDropProvider>
+</template>
+```
+
+```svelte Svelte
+<script>
+  import {DragDropProvider} from '@dnd-kit/svelte';
+  import {Debug} from '@dnd-kit/dom/plugins/debug';
+</script>
+
+<DragDropProvider
+  plugins={(defaults) => [Debug, ...defaults]}
+>
+  <!-- ... -->
+</DragDropProvider>
+```
+
+```tsx Solid
+import {DragDropProvider} from '@dnd-kit/solid';
+import {Debug} from '@dnd-kit/dom/plugins/debug';
+
+function App() {
+  return (
+    <DragDropProvider
+      plugins={(defaults) => [Debug, ...defaults]}
+    >
+      {/* ... */}
+    </DragDropProvider>
+  );
+}
+```
+</CodeGroup>
+
+<Warning>
+  The `Debug` plugin is intended for development only. Remove it before shipping to production.
+</Warning>
+
+## Example
+
+<Story id="react-sortable-vertical-list--debug" height="320" />
+
+## What It Shows
+
+- **Draggable shape** (blue overlay): The computed bounding rectangle of the element being dragged.
+- **Droppable zones** (gray overlays): The bounding rectangles of all registered droppable elements.
+- **Drop target** (green overlay): The current drop target.
+- **Top collisions** (yellow overlays): The next closest collision candidates.
+- **Pointer crosshair**: The current pointer position tracked by the drag operation.

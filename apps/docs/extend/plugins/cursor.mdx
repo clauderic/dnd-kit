@@ -14,7 +14,8 @@ This plugin is included by default when creating a new `DragDropManager`.
 
 Use `Cursor.configure()` to customize the cursor style:
 
-```ts
+<CodeGroup>
+```ts Vanilla
 import {DragDropManager, Cursor} from '@dnd-kit/dom';
 
 const manager = new DragDropManager({
@@ -24,6 +25,71 @@ const manager = new DragDropManager({
   ],
 });
 ```
+
+```tsx React
+import {DragDropProvider} from '@dnd-kit/react';
+import {Cursor} from '@dnd-kit/dom';
+
+function App() {
+  return (
+    <DragDropProvider
+      plugins={(defaults) => [
+        ...defaults,
+        Cursor.configure({ cursor: 'move' }),
+      ]}
+    >
+      {/* ... */}
+    </DragDropProvider>
+  );
+}
+```
+
+```vue Vue
+<script setup>
+import {DragDropProvider} from '@dnd-kit/vue';
+import {Cursor} from '@dnd-kit/dom';
+</script>
+
+<template>
+  <DragDropProvider
+    :plugins="(defaults) => [...defaults, Cursor.configure({ cursor: 'move' })]"
+  >
+    <!-- ... -->
+  </DragDropProvider>
+</template>
+```
+
+```svelte Svelte
+<script>
+  import {DragDropProvider} from '@dnd-kit/svelte';
+  import {Cursor} from '@dnd-kit/dom';
+</script>
+
+<DragDropProvider
+  plugins={(defaults) => [...defaults, Cursor.configure({ cursor: 'move' })]}
+>
+  <!-- ... -->
+</DragDropProvider>
+```
+
+```tsx Solid
+import {DragDropProvider} from '@dnd-kit/solid';
+import {Cursor} from '@dnd-kit/dom';
+
+function App() {
+  return (
+    <DragDropProvider
+      plugins={(defaults) => [
+        ...defaults,
+        Cursor.configure({ cursor: 'move' }),
+      ]}
+    >
+      {/* ... */}
+    </DragDropProvider>
+  );
+}
+```
+</CodeGroup>
 
 ## Options
 

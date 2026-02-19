@@ -28,7 +28,8 @@ For `ShadowRoot` roots, CSS is injected via [`adoptedStyleSheets`](https://devel
 
 Use `StyleInjector.configure()` to set a CSP nonce that will be applied to all injected `<style>` elements:
 
-```ts
+<CodeGroup>
+```ts Vanilla
 import {DragDropManager, StyleInjector} from '@dnd-kit/dom';
 
 const manager = new DragDropManager({
@@ -38,6 +39,71 @@ const manager = new DragDropManager({
   ],
 });
 ```
+
+```tsx React
+import {DragDropProvider} from '@dnd-kit/react';
+import {StyleInjector} from '@dnd-kit/dom';
+
+function App() {
+  return (
+    <DragDropProvider
+      plugins={(defaults) => [
+        ...defaults,
+        StyleInjector.configure({ nonce: 'abc123' }),
+      ]}
+    >
+      {/* ... */}
+    </DragDropProvider>
+  );
+}
+```
+
+```vue Vue
+<script setup>
+import {DragDropProvider} from '@dnd-kit/vue';
+import {StyleInjector} from '@dnd-kit/dom';
+</script>
+
+<template>
+  <DragDropProvider
+    :plugins="(defaults) => [...defaults, StyleInjector.configure({ nonce: 'abc123' })]"
+  >
+    <!-- ... -->
+  </DragDropProvider>
+</template>
+```
+
+```svelte Svelte
+<script>
+  import {DragDropProvider} from '@dnd-kit/svelte';
+  import {StyleInjector} from '@dnd-kit/dom';
+</script>
+
+<DragDropProvider
+  plugins={(defaults) => [...defaults, StyleInjector.configure({ nonce: 'abc123' })]}
+>
+  <!-- ... -->
+</DragDropProvider>
+```
+
+```tsx Solid
+import {DragDropProvider} from '@dnd-kit/solid';
+import {StyleInjector} from '@dnd-kit/dom';
+
+function App() {
+  return (
+    <DragDropProvider
+      plugins={(defaults) => [
+        ...defaults,
+        StyleInjector.configure({ nonce: 'abc123' }),
+      ]}
+    >
+      {/* ... */}
+    </DragDropProvider>
+  );
+}
+```
+</CodeGroup>
 
 <Info>
   The `StyleInjector` is the single place to configure CSP nonces. All built-in plugins that inject styles (such as [Feedback](/extend/plugins/feedback), [Cursor](/extend/plugins/cursor), and [PreventSelection](/extend/plugins/prevent-selection)) route their style injection through the `StyleInjector`.

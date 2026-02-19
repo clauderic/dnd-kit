@@ -24,10 +24,165 @@ The scroll speed increases as the pointer gets closer to the edge of the contain
 
 To disable auto-scrolling, omit the `AutoScroller` from the plugins array:
 
-```ts
-import {DragDropManager, Accessibility, Cursor, Feedback, PreventSelection} from '@dnd-kit/dom';
+<CodeGroup>
+```ts Vanilla
+import {DragDropManager, AutoScroller} from '@dnd-kit/dom';
 
 const manager = new DragDropManager({
-  plugins: [Accessibility, Cursor, Feedback, PreventSelection],
+  plugins: (defaults) => defaults.filter((plugin) => plugin !== AutoScroller),
 });
 ```
+
+```tsx React
+import {DragDropProvider} from '@dnd-kit/react';
+import {AutoScroller} from '@dnd-kit/dom';
+
+function App() {
+  return (
+    <DragDropProvider
+      plugins={(defaults) => defaults.filter((plugin) => plugin !== AutoScroller)}
+    >
+      {/* ... */}
+    </DragDropProvider>
+  );
+}
+```
+
+```vue Vue
+<script setup>
+import {DragDropProvider} from '@dnd-kit/vue';
+import {AutoScroller} from '@dnd-kit/dom';
+</script>
+
+<template>
+  <DragDropProvider
+    :plugins="(defaults) => defaults.filter((plugin) => plugin !== AutoScroller)"
+  >
+    <!-- ... -->
+  </DragDropProvider>
+</template>
+```
+
+```svelte Svelte
+<script>
+  import {DragDropProvider} from '@dnd-kit/svelte';
+  import {AutoScroller} from '@dnd-kit/dom';
+</script>
+
+<DragDropProvider
+  plugins={(defaults) => defaults.filter((plugin) => plugin !== AutoScroller)}
+>
+  <!-- ... -->
+</DragDropProvider>
+```
+
+```tsx Solid
+import {DragDropProvider} from '@dnd-kit/solid';
+import {AutoScroller} from '@dnd-kit/dom';
+
+function App() {
+  return (
+    <DragDropProvider
+      plugins={(defaults) => defaults.filter((plugin) => plugin !== AutoScroller)}
+    >
+      {/* ... */}
+    </DragDropProvider>
+  );
+}
+```
+</CodeGroup>
+
+To dynamically disable auto-scrolling at runtime, access the plugin instance from the manager registry and call its `disable()` method:
+
+<CodeGroup>
+```ts Vanilla
+import {DragDropManager, AutoScroller} from '@dnd-kit/dom';
+
+const manager = new DragDropManager();
+const autoScroller = manager.registry.plugins.get(AutoScroller);
+
+// Disable auto-scrolling
+autoScroller.disable();
+
+// Re-enable auto-scrolling
+autoScroller.enable();
+```
+
+```tsx React
+import {useDragDropManager} from '@dnd-kit/react';
+import {AutoScroller} from '@dnd-kit/dom';
+
+function AutoScrollToggle() {
+  const manager = useDragDropManager();
+  const autoScroller = manager.registry.plugins.get(AutoScroller);
+
+  return (
+    <button onClick={() => {
+      autoScroller.disabled
+        ? autoScroller.enable()
+        : autoScroller.disable();
+    }}>
+      Toggle auto-scroll
+    </button>
+  );
+}
+```
+
+```vue Vue
+<script setup>
+import {useDragDropManager} from '@dnd-kit/vue';
+import {AutoScroller} from '@dnd-kit/dom';
+
+const manager = useDragDropManager();
+const autoScroller = manager.registry.plugins.get(AutoScroller);
+
+function toggle() {
+  autoScroller.disabled
+    ? autoScroller.enable()
+    : autoScroller.disable();
+}
+</script>
+
+<template>
+  <button @click="toggle">Toggle auto-scroll</button>
+</template>
+```
+
+```svelte Svelte
+<script>
+  import {getDragDropManager} from '@dnd-kit/svelte';
+  import {AutoScroller} from '@dnd-kit/dom';
+
+  const manager = getDragDropManager();
+  const autoScroller = manager.registry.plugins.get(AutoScroller);
+
+  function toggle() {
+    autoScroller.disabled
+      ? autoScroller.enable()
+      : autoScroller.disable();
+  }
+</script>
+
+<button onclick={toggle}>Toggle auto-scroll</button>
+```
+
+```tsx Solid
+import {useDragDropManager} from '@dnd-kit/solid';
+import {AutoScroller} from '@dnd-kit/dom';
+
+function AutoScrollToggle() {
+  const manager = useDragDropManager();
+  const autoScroller = manager.registry.plugins.get(AutoScroller);
+
+  return (
+    <button onClick={() => {
+      autoScroller.disabled
+        ? autoScroller.enable()
+        : autoScroller.disable();
+    }}>
+      Toggle auto-scroll
+    </button>
+  );
+}
+```
+</CodeGroup>
