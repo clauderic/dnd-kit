@@ -45,6 +45,7 @@
                       "extend/plugins/accessibility",
                       "extend/plugins/auto-scroller",
                       "extend/plugins/cursor",
+                      "extend/plugins/debug",
                       "extend/plugins/feedback",
                       "extend/plugins/style-injector"
                     ]
