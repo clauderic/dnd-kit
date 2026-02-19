@@ -1,0 +1,33 @@
+---
+title: 'AutoScroller'
+description: 'Automatically scrolls containers when dragging near edges.'
+icon: 'arrows-up-down'
+---
+
+## Overview
+
+The `AutoScroller` plugin automatically scrolls scrollable containers when the pointer approaches their edges during a drag operation. It works in conjunction with the internal `Scroller` plugin that detects scrollable ancestors and computes scroll intent.
+
+This plugin is included by default when creating a new `DragDropManager`.
+
+## Behavior
+
+When a drag operation is in progress and the pointer is near the edge of a scrollable container, the `AutoScroller` will:
+
+1. Detect the nearest scrollable ancestor of the element under the pointer.
+2. Compute the scroll direction and speed based on the pointer's proximity to the edge.
+3. Continuously scroll the container at the computed speed until the pointer moves away from the edge or the container can no longer scroll in that direction.
+
+The scroll speed increases as the pointer gets closer to the edge of the container.
+
+## Disabling
+
+To disable auto-scrolling, omit the `AutoScroller` from the plugins array:
+
+```ts
+import {DragDropManager, Accessibility, Cursor, Feedback, PreventSelection} from '@dnd-kit/dom';
+
+const manager = new DragDropManager({
+  plugins: [Accessibility, Cursor, Feedback, PreventSelection],
+});
+```

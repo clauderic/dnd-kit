@@ -1,0 +1,78 @@
+---
+title: 'StyleInjector'
+description: 'Centralized style injection for drag and drop operations.'
+icon: 'palette'
+---
+
+## Overview
+
+The `StyleInjector` plugin is the centralized style injection layer used by dnd-kit. It manages CSS rules that need to be present during drag operations, handling injection into both `Document` and `ShadowRoot` contexts.
+
+This plugin is always included automatically — you do not need to add it to your plugins array.
+
+## How It Works
+
+Other plugins (such as [Feedback](/extend/plugins/feedback)) register CSS rules with the `StyleInjector`. During a drag operation, the `StyleInjector` automatically injects those rules into the relevant document and shadow roots, and cleans them up when the operation ends.
+
+### Document Roots
+
+For `Document` roots, CSS is injected via a `<style>` element prepended to `<head>`. This ensures that any `@layer` declarations appear before layers from regular stylesheets, giving them the lowest cascade priority.
+
+A `MutationObserver` monitors the `<head>` to re-inject the `<style>` element if it is removed by other scripts during a drag operation.
+
+### Shadow DOM Roots
+
+For `ShadowRoot` roots, CSS is injected via [`adoptedStyleSheets`](https://developer.mozilla.org/en-US/docs/Web/API/Document/adoptedStyleSheets) to avoid DOM side effects like interfering with `:first-child` or `:nth-child` selectors inside the shadow tree.
+
+## Configuration
+
+Use `StyleInjector.configure()` to set a CSP nonce that will be applied to all injected `<style>` elements:
+
+```ts
+import {DragDropManager, StyleInjector} from '@dnd-kit/dom';
+
+const manager = new DragDropManager({
+  plugins: (defaults) => [
+    ...defaults,
+    StyleInjector.configure({ nonce: 'abc123' }),
+  ],
+});
+```
+
+<Info>
+  The `StyleInjector` is the single place to configure CSP nonces. All built-in plugins that inject styles (such as [Feedback](/extend/plugins/feedback), [Cursor](/extend/plugins/cursor), and [PreventSelection](/extend/plugins/prevent-selection)) route their style injection through the `StyleInjector`.
+</Info>
+
+## Options
+
+<ParamField path="nonce" type="string">
+  A nonce value applied to all `<style>` elements injected into `Document` roots. Required when your site uses a [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) that restricts inline styles.
+</ParamField>
+
+## API
+
+### `register(cssRules: string)`
+
+Registers CSS rules to be injected into the active drag operation's document and shadow roots. Returns a cleanup function that unregisters the rules.
+
+```ts
+const styleInjector = manager.registry.plugins.get(StyleInjector);
+
+const unregister = styleInjector.register(`
+  .my-drag-styles { opacity: 0.5; }
+`);
+
+// Later, when no longer needed:
+unregister();
+```
+
+### `addRoot(root: Document | ShadowRoot)`
+
+Adds an additional root to track for style injection. This is useful when a dragged element is rendered in a different document or shadow root than the drag source. Returns a cleanup function that removes the root.
+
+```ts
+const removeRoot = styleInjector.addRoot(shadowRoot);
+
+// Later:
+removeRoot();
+```

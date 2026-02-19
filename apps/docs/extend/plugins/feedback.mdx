@@ -1,0 +1,53 @@
+---
+title: 'Feedback'
+description: 'Manages visual feedback during drag operations, including top layer promotion and drop animations.'
+icon: 'eye'
+---
+
+## Overview
+
+The `Feedback` plugin manages the visual appearance of elements during drag operations. It promotes dragged elements to the browser's [top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer) using the [Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API), and injects CSS rules to handle positioning and to reset browser default popover styles.
+
+This plugin is included by default when creating a new `DragDropManager`.
+
+## Configuration
+
+Use `Feedback.configure()` to customize the drop animation or other options:
+
+```ts
+import {DragDropManager, Feedback} from '@dnd-kit/dom';
+
+const manager = new DragDropManager({
+  plugins: (defaults) => [
+    ...defaults,
+    Feedback.configure({ dropAnimation: null }),
+  ],
+});
+```
+
+## Options
+
+<ParamField path="dropAnimation" type="DropAnimation | null">
+  Customize or disable the drop animation that plays when a dragged element is released.
+
+  - `undefined` (default) — use the built-in drop animation
+  - `null` — disable the drop animation entirely
+  - `DropAnimationOptions` — customize the duration and easing of the built-in animation
+  - `DropAnimationFunction` — provide a fully custom animation function
+</ParamField>
+
+<ParamField path="rootElement" type="Element | ((source: Draggable) => Element)">
+  An element (or a function returning one) to use as the root container for the dragged element. When set, the dragged element is moved into this container during the drag operation.
+</ParamField>
+
+## CSS Cascade Layer
+
+The Feedback plugin uses a CSS cascade layer named `dnd-kit` to reset user-agent popover styles (such as `background`, `border`, `margin`, and `padding`) that browsers apply to elements promoted to the top layer.
+
+By default, this layer is injected at the beginning of the document's `<head>`, giving it the lowest cascade priority. This means your styles will take precedence without needing `!important`.
+
+If you use a CSS framework that defines its own cascade layers (such as Tailwind CSS v4), you can explicitly declare the `dnd-kit` layer first to ensure it has the lowest priority:
+
+```css
+@layer dnd-kit, base, components, utilities;
+```

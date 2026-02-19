@@ -1,0 +1,109 @@
+---
+title: 'Accessibility'
+description: 'Manages ARIA attributes and screen reader announcements for drag and drop operations.'
+icon: 'universal-access'
+---
+
+## Overview
+
+The `Accessibility` plugin provides screen reader support for drag and drop operations. It automatically manages ARIA attributes on draggable elements, provides screen reader instructions, and announces drag events via a live region.
+
+This plugin is included by default when creating a new `DragDropManager`.
+
+## Configuration
+
+Use `Accessibility.configure()` to customize announcements, screen reader instructions, and other options:
+
+```ts
+import {DragDropManager, Accessibility} from '@dnd-kit/dom';
+
+const manager = new DragDropManager({
+  plugins: (defaults) => [
+    ...defaults,
+    Accessibility.configure({
+      announcements: {
+        dragstart({operation: {source}}) {
+          if (!source) return;
+          return `Started dragging ${source.id}`;
+        },
+        dragover({operation: {source, target}}) {
+          if (!source || !target) return;
+          return `${source.id} is over ${target.id}`;
+        },
+        dragend({operation: {source, target}, canceled}) {
+          if (!source) return;
+          if (canceled) return `Dragging canceled`;
+          return `Dropped ${source.id} on ${target?.id ?? 'nothing'}`;
+        },
+      },
+    }),
+  ],
+});
+```
+
+## ARIA Attributes
+
+The plugin automatically sets the following attributes on draggable activator elements (the handle or, if no handle is set, the draggable element itself):
+
+- `role="button"` — unless the element is already a `<button>` or has an explicit `role`
+- `aria-roledescription="draggable"`
+- `aria-describedby` — points to a hidden element containing screen reader instructions
+- `aria-pressed` and `aria-grabbed` — reflect the current dragging state
+- `aria-disabled` — reflects the disabled state of the draggable
+- `tabindex="0"` — ensures the element is focusable (added when the element is not natively focusable)
+
+## Default Announcements
+
+The plugin ships with default announcements for the `dragstart`, `dragover`, and `dragend` events:
+
+- **dragstart**: `"Picked up draggable item {id}."`
+- **dragover** (over a target): `"Draggable item {id} was moved over droppable target {targetId}."`
+- **dragover** (no target): `"Draggable item {id} is no longer over a droppable target."`
+- **dragend** (dropped on target): `"Draggable item {id} was dropped over droppable target {targetId}"`
+- **dragend** (canceled): `"Dragging was cancelled. Draggable item {id} was dropped."`
+- **dragend** (no target): `"Draggable item {id} was dropped."`
+
+## Default Screen Reader Instructions
+
+The default instructions read:
+
+> To pick up a draggable item, press the space bar. While dragging, use the arrow keys to move the item in a given direction. Press space again to drop the item in its new position, or press escape to cancel.
+
+## Options
+
+<ParamField path="announcements" type="Announcements">
+  Custom announcement functions for drag events. Each function receives the event and the `DragDropManager` instance, and returns a string to announce (or `undefined` to skip the announcement).
+
+  ```ts
+  interface Announcements {
+    dragstart: (event, manager) => string | undefined;
+    dragmove?: (event, manager) => string | undefined;
+    dragover?: (event, manager) => string | undefined;
+    dragend: (event, manager) => string | undefined;
+  }
+  ```
+</ParamField>
+
+<ParamField path="screenReaderInstructions" type="ScreenReaderInstructions">
+  Custom screen reader instructions displayed in a visually hidden element that is referenced by `aria-describedby` on draggable activator elements.
+
+  ```ts
+  interface ScreenReaderInstructions {
+    draggable: string;
+  }
+  ```
+</ParamField>
+
+<ParamField path="debounce" type="number" default="500">
+  The number of milliseconds to debounce announcement updates. Only `dragover` and `dragmove` announcements are debounced; `dragstart` and `dragend` announcements are dispatched immediately.
+</ParamField>
+
+<ParamField path="id" type="string">
+  A stable identifier used to generate the `id` attributes for the hidden description and live region elements. When not provided, a unique id is generated automatically. Useful when you need to reference these elements from outside the plugin.
+</ParamField>
+
+<ParamField path="idPrefix" type="{description?: string; announcement?: string}">
+  Custom prefixes for the generated element ids.
+
+  Defaults to `{description: 'dnd-kit-description', announcement: 'dnd-kit-announcement'}`.
+</ParamField>

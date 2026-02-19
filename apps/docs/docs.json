@@ -37,7 +37,18 @@
               {
                 "group": "Extensibility",
                 "pages": [
-                  "extend/plugins",
+                  {
+                    "group": "Plugins",
+                    "icon": "cube",
+                    "pages": [
+                      "extend/plugins",
+                      "extend/plugins/accessibility",
+                      "extend/plugins/auto-scroller",
+                      "extend/plugins/cursor",
+                      "extend/plugins/feedback",
+                      "extend/plugins/style-injector"
+                    ]
+                  },
                   {
                     "group": "Sensors",
                     "icon": "monitor-waveform",
