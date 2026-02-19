@@ -64,6 +64,7 @@ export function detectScrollIntent(
   };
 
   if (
+    threshold.height > 0 &&
     (!isTop || (isYAxisInverted && !isBottom)) &&
     y <= scrollContainerRect.top + threshold.height &&
     intent?.y !== ScrollDirection.Forward &&
@@ -80,6 +81,7 @@ export function detectScrollIntent(
         (scrollContainerRect.top + threshold.height - y) / threshold.height
       );
   } else if (
+    threshold.height > 0 &&
     (!isBottom || (isYAxisInverted && !isTop)) &&
     y >= scrollContainerRect.bottom - threshold.height &&
     intent?.y !== ScrollDirection.Reverse &&
@@ -98,6 +100,7 @@ export function detectScrollIntent(
   }
 
   if (
+    threshold.width > 0 &&
     (!isRight || (isXAxisInverted && !isLeft)) &&
     x >= scrollContainerRect.right - threshold.width &&
     intent?.x !== ScrollDirection.Reverse &&
@@ -114,6 +117,7 @@ export function detectScrollIntent(
         (scrollContainerRect.right - threshold.width - x) / threshold.width
       );
   } else if (
+    threshold.width > 0 &&
     (!isLeft || (isXAxisInverted && !isRight)) &&
     x <= scrollContainerRect.left + threshold.width &&
     intent?.x !== ScrollDirection.Forward &&

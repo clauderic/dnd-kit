@@ -20,6 +20,108 @@ When a drag operation is in progress and the pointer is near the edge of a scrol
 
 The scroll speed increases as the pointer gets closer to the edge of the container.
 
+## Configuration
+
+Use `AutoScroller.configure()` to customize the scroll speed and activation zone:
+
+<CodeGroup>
+```ts Vanilla
+import {DragDropManager, AutoScroller} from '@dnd-kit/dom';
+
+const manager = new DragDropManager({
+  plugins: (defaults) => [
+    ...defaults,
+    AutoScroller.configure({
+      acceleration: 15,
+      threshold: { x: 0, y: 0.3 },
+    }),
+  ],
+});
+```
+
+```tsx React
+import {DragDropProvider} from '@dnd-kit/react';
+import {AutoScroller} from '@dnd-kit/dom';
+
+function App() {
+  return (
+    <DragDropProvider
+      plugins={(defaults) => [
+        ...defaults,
+        AutoScroller.configure({
+          acceleration: 15,
+          threshold: { x: 0, y: 0.3 },
+        }),
+      ]}
+    >
+      {/* ... */}
+    </DragDropProvider>
+  );
+}
+```
+
+```vue Vue
+<script setup>
+import {DragDropProvider} from '@dnd-kit/vue';
+import {AutoScroller} from '@dnd-kit/dom';
+</script>
+
+<template>
+  <DragDropProvider
+    :plugins="(defaults) => [...defaults, AutoScroller.configure({ acceleration: 15, threshold: { x: 0, y: 0.3 } })]"
+  >
+    <!-- ... -->
+  </DragDropProvider>
+</template>
+```
+
+```svelte Svelte
+<script>
+  import {DragDropProvider} from '@dnd-kit/svelte';
+  import {AutoScroller} from '@dnd-kit/dom';
+</script>
+
+<DragDropProvider
+  plugins={(defaults) => [...defaults, AutoScroller.configure({ acceleration: 15, threshold: { x: 0, y: 0.3 } })]}
+>
+  <!-- ... -->
+</DragDropProvider>
+```
+
+```tsx Solid
+import {DragDropProvider} from '@dnd-kit/solid';
+import {AutoScroller} from '@dnd-kit/dom';
+
+function App() {
+  return (
+    <DragDropProvider
+      plugins={(defaults) => [
+        ...defaults,
+        AutoScroller.configure({
+          acceleration: 15,
+          threshold: { x: 0, y: 0.3 },
+        }),
+      ]}
+    >
+      {/* ... */}
+    </DragDropProvider>
+  );
+}
+```
+</CodeGroup>
+
+## Options
+
+<ParamField path="acceleration" type="number" default="25">
+  Base scroll speed multiplier. The scroll speed scales linearly as the pointer approaches the edge of a scrollable container — higher values scroll faster.
+</ParamField>
+
+<ParamField path="threshold" type="number | { x: number; y: number }" default="{ x: 0.2, y: 0.2 }">
+  Percentage of container dimensions that defines the scroll activation zone. For example, `0.2` means scrolling activates when the pointer enters the outer 20% of a scrollable container.
+
+  A single number applies to both axes. Use `{ x, y }` for per-axis control. Setting an axis to `0` disables auto-scrolling on that axis.
+</ParamField>
+
 ## Disabling
 
 To disable auto-scrolling, omit the `AutoScroller` from the plugins array:
