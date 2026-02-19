@@ -14,4 +14,4 @@ export {AutoScroller, Scroller, ScrollListener} from './scrolling/index.ts';
 
 export {PreventSelection} from './selection/PreventSelection.ts';
 
-export {StyleSheetManager} from './stylesheet/StyleSheetManager.ts';
+export {StyleInjector} from './stylesheet/StyleInjector.ts';

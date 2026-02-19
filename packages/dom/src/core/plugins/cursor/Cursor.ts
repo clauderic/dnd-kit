@@ -1,8 +1,7 @@
 import {Plugin} from '@dnd-kit/abstract';
-import {computed, effect} from '@dnd-kit/state';
-import {getDocument} from '@dnd-kit/dom/utilities';
 
 import {DragDropManager} from '../../manager/index.ts';
+import {StyleInjector} from '../stylesheet/StyleInjector.ts';
 
 interface CursorPluginOptions {
   /**
@@ -10,10 +9,6 @@ interface CursorPluginOptions {
    * @default 'grabbing'
    */
   cursor?: string;
-  /**
-   * The nonce to be applied to the style element.
-   */
-  nonce?: string;
 }
 
 export class Cursor extends Plugin<DragDropManager> {
@@ -23,27 +18,21 @@ export class Cursor extends Plugin<DragDropManager> {
   ) {
     super(manager, options);
 
-    const doc = computed(() =>
-      getDocument(this.manager.dragOperation.source?.element)
+    const {cursor = 'grabbing'} = options ?? {};
+    const styleInjector = manager.registry.plugins.get(
+      StyleInjector as any
+    ) as StyleInjector | undefined;
+
+    const unregisterStyles = styleInjector?.register(
+      `* { cursor: ${cursor} !important; }`
     );
 
-    this.destroy = effect(() => {
-      const {dragOperation} = this.manager;
-      const {cursor = 'grabbing', nonce} = this.options ?? {};
-
-      if (dragOperation.status.initialized) {
-        const document = doc.value;
-        const style = document.createElement('style');
-
-        if (nonce) {
-          style.setAttribute('nonce', nonce);
-        }
-
-        style.textContent = `* { cursor: ${cursor} !important; }`;
-        document.head.appendChild(style);
-
-        return () => style.remove();
-      }
-    });
+    if (unregisterStyles) {
+      const originalDestroy = this.destroy.bind(this);
+      this.destroy = () => {
+        unregisterStyles();
+        originalDestroy();
+      };
+    }
   }
 }

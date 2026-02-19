@@ -2,33 +2,25 @@ import {Plugin} from '@dnd-kit/abstract';
 import {effect} from '@dnd-kit/state';
 
 import {DragDropManager} from '../../manager/index.ts';
+import {StyleInjector} from '../stylesheet/StyleInjector.ts';
 
-interface PreventSelectionPluginOptions {
-  /**
-   * The nonce to be applied to the style element.
-   */
-  nonce?: string;
-}
+const CSS_RULES =
+  '* { user-select: none !important; -webkit-user-select: none !important; }';
 
 export class PreventSelection extends Plugin<DragDropManager> {
-  constructor(
-    public manager: DragDropManager,
-    options?: PreventSelectionPluginOptions
-  ) {
-    super(manager, options);
+  constructor(public manager: DragDropManager) {
+    super(manager);
+
+    const styleInjector = manager.registry.plugins.get(
+      StyleInjector as any
+    ) as StyleInjector | undefined;
+
+    const unregisterStyles = styleInjector?.register(CSS_RULES);
 
     this.destroy = effect(() => {
       const {dragOperation} = this.manager;
-      const {nonce} = this.options ?? {};
 
       if (dragOperation.status.initialized) {
-        const style = document.createElement('style');
-        if (nonce) {
-          style.setAttribute('nonce', nonce);
-        }
-        style.textContent = `* { user-select: none !important; -webkit-user-select: none !important; }`;
-        document.head.appendChild(style);
-
         removeSelection();
         document.addEventListener('selectionchange', removeSelection, {
           capture: true,
@@ -38,10 +30,17 @@ export class PreventSelection extends Plugin<DragDropManager> {
           document.removeEventListener('selectionchange', removeSelection, {
             capture: true,
           });
-          style.remove();
         };
       }
     });
+
+    if (unregisterStyles) {
+      const originalDestroy = this.destroy.bind(this);
+      this.destroy = () => {
+        unregisterStyles();
+        originalDestroy();
+      };
+    }
   }
 }
 

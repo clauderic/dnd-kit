@@ -37,7 +37,7 @@ export {
   PreventSelection,
   Scroller,
   ScrollListener,
-  StyleSheetManager,
+  StyleInjector,
 } from './plugins/index.ts';
 export type {
   Transition,

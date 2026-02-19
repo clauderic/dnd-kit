@@ -19,7 +19,7 @@ import {Coordinates, Point, Rectangle} from '@dnd-kit/geometry';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import type {Draggable} from '../../entities/index.ts';
-import {StyleSheetManager} from '../stylesheet/StyleSheetManager.ts';
+import {StyleInjector} from '../stylesheet/StyleInjector.ts';
 
 import {ATTRIBUTE, CSS_PREFIX, CSS_RULES} from './constants.ts';
 import {
@@ -37,7 +37,6 @@ import {runDropAnimation, type DropAnimation} from './dropAnimation.ts';
 
 export interface FeedbackOptions {
   rootElement?: Element | ((source: Draggable) => Element);
-  nonce?: string;
   dropAnimation?: DropAnimation | null;
 }
 
@@ -76,11 +75,11 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
   constructor(manager: DragDropManager, options?: FeedbackOptions) {
     super(manager, options);
 
-    const styleSheetManager = manager.registry.plugins.get(
-      StyleSheetManager as any
-    ) as StyleSheetManager | undefined;
+    const styleInjector = manager.registry.plugins.get(
+      StyleInjector as any
+    ) as StyleInjector | undefined;
 
-    const unregisterStyles = styleSheetManager?.register(CSS_RULES);
+    const unregisterStyles = styleInjector?.register(CSS_RULES);
 
     if (unregisterStyles) {
       const originalDestroy = this.destroy.bind(this);
@@ -90,20 +89,20 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       };
     }
 
-    this.registerEffect(this.#trackOverlayRoot.bind(this, styleSheetManager));
+    this.registerEffect(this.#trackOverlayRoot.bind(this, styleInjector));
     this.registerEffect(this.#render);
   }
 
-  #trackOverlayRoot(styleSheetManager: StyleSheetManager | undefined) {
+  #trackOverlayRoot(styleInjector: StyleInjector | undefined) {
     const {overlay} = this;
 
-    if (!overlay || !styleSheetManager) return;
+    if (!overlay || !styleInjector) return;
 
     const root = getRoot(overlay);
 
     if (!root) return;
 
-    return styleSheetManager.addRoot(root);
+    return styleInjector.addRoot(root);
   }
 
   #render() {
