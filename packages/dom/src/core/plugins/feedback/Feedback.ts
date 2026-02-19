@@ -35,9 +35,15 @@ import {
 } from './observers.ts';
 import {runDropAnimation, type DropAnimation} from './dropAnimation.ts';
 
+export interface KeyboardTransition {
+  duration?: number;
+  easing?: string;
+}
+
 export interface FeedbackOptions {
   rootElement?: Element | ((source: Draggable) => Element);
   dropAnimation?: DropAnimation | null;
+  keyboardTransition?: KeyboardTransition | null;
 }
 
 interface State {
@@ -454,9 +460,12 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           const previousTranslate = state.current.translate;
           const modifiers = untracked(() => dragOperation.modifiers);
           const currentShape = untracked(() => dragOperation.shape?.current);
+          const keyboardTransition = options?.keyboardTransition;
           const translateTransition =
-            isKeyboardOperation && !reducedMotion
-              ? '250ms cubic-bezier(0.25, 1, 0.5, 1)'
+            isKeyboardOperation &&
+            !reducedMotion &&
+            keyboardTransition !== null
+              ? `${keyboardTransition?.duration ?? 250}ms ${keyboardTransition?.easing ?? 'cubic-bezier(0.25, 1, 0.5, 1)'}`
               : '0ms linear';
 
           styles.set(

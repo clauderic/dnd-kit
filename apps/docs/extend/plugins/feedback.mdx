@@ -102,6 +102,16 @@ function App() {
   - `DropAnimationFunction` — provide a fully custom animation function
 </ParamField>
 
+<ParamField path="keyboardTransition" type="KeyboardTransition | null">
+  Customize or disable the CSS transition applied when moving elements via keyboard.
+
+  By default, keyboard-driven moves animate with `250ms cubic-bezier(0.25, 1, 0.5, 1)`. This transition is automatically disabled when the user prefers reduced motion.
+
+  - `undefined` (default) — use the built-in keyboard transition
+  - `null` — disable the transition (moves are instant, like pointer operations)
+  - `{ duration, easing }` — customize the transition duration (in ms) and CSS easing function
+</ParamField>
+
 <ParamField path="rootElement" type="Element | ((source: Draggable) => Element)">
   An element (or a function returning one) to use as the root container for the dragged element. When set, the dragged element is moved into this container during the drag operation.
 </ParamField>

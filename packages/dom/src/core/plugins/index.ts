@@ -8,6 +8,7 @@ export type {
   DropAnimation,
   DropAnimationOptions,
   DropAnimationFunction,
+  KeyboardTransition,
 } from './feedback/index.ts';
 
 export {AutoScroller, Scroller, ScrollListener} from './scrolling/index.ts';
