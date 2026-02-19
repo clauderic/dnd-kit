@@ -53,7 +53,7 @@ export const CSS_RULES = `
     transform-origin: var(${CSS_PREFIX}transform-origin) !important;
   }
 
-  @layer {
+  @layer dnd-kit {
     :where([${ATTRIBUTE}][popover]) {
       overflow: visible;
       background: unset;

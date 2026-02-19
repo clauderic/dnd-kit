@@ -20,6 +20,37 @@ Several plugins are included by default:
 - `ScrollListener`: Tracks scroll events during drag operations
 - `Scroller`: Handles programmatic scrolling
 
+### Feedback
+
+The `Feedback` plugin manages the visual appearance of elements during drag operations. It promotes dragged elements to the browser's [top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer) using the [Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API), and injects CSS rules to handle positioning and to reset browser default popover styles.
+
+#### Configuration
+
+Use `Feedback.configure()` to customize the drop animation:
+
+```ts
+import {DragDropManager, Feedback} from '@dnd-kit/dom';
+
+const manager = new DragDropManager({
+  plugins: (defaults) => [
+    ...defaults,
+    Feedback.configure({ dropAnimation: null }),
+  ],
+});
+```
+
+#### CSS cascade layer
+
+The Feedback plugin uses a CSS cascade layer named `dnd-kit` to reset user-agent popover styles (such as `background`, `border`, `margin`, and `padding`) that browsers apply to elements promoted to the top layer.
+
+By default, this layer is injected at the beginning of the document's `<head>`, giving it the lowest cascade priority. This means your styles will take precedence without needing `!important`.
+
+If you use a CSS framework that defines its own cascade layers (such as Tailwind CSS v4), you can explicitly declare the `dnd-kit` layer first to ensure it has the lowest priority:
+
+```css
+@layer dnd-kit, base, components, utilities;
+```
+
 ## Creating a Plugin
 
 To create a custom plugin, extend the `Plugin` class:
