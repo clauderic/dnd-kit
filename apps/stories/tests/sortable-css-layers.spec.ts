@@ -5,12 +5,13 @@ const STORY_ID = 'react-sortable-css-layers--basic-setup';
 test.describe('Sortable with CSS @layer styles', () => {
   test.beforeEach(async ({dnd}) => {
     await dnd.goto(STORY_ID);
-    await expect(dnd.items.first()).toBeVisible();
+    await expect(dnd.page.locator('.test').first()).toBeVisible();
   });
 
   test('layered styles are preserved during drag', async ({dnd}) => {
-    const first = dnd.items.nth(0);
-    const third = dnd.items.nth(2);
+    const items = dnd.page.locator('.test');
+    const first = items.nth(0);
+    const third = items.nth(2);
 
     await expect(first).toHaveCSS('background-color', 'rgb(232, 240, 254)');
     await expect(first).toHaveCSS('border-color', 'rgb(76, 159, 254)');

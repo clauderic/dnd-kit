@@ -9,7 +9,7 @@ const LAYER_STYLES = `
 @layer base, components;
 
 @layer base {
-  .item.layer-item {
+  .test {
     appearance: none;
     padding: 12px 20px;
     border: 2px solid rgb(76, 159, 254);
@@ -24,7 +24,7 @@ const LAYER_STYLES = `
 }
 
 @layer components {
-  .item.layer-item[data-shadow="true"] {
+  .test[data-shadow="true"] {
     opacity: 0.6;
   }
 }
@@ -75,12 +75,12 @@ const LayerItem = memo(function LayerItem({
   const {isDragging} = useSortable({id, index, element});
 
   return (
-    <button
+    <div
       ref={setElement}
-      className="item layer-item"
+      className="test"
       data-shadow={isDragging || undefined}
     >
       Item {id}
-    </button>
+    </div>
   );
 });
