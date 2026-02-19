@@ -1,10 +1,14 @@
-import {CorePlugin} from '@dnd-kit/abstract';
+import {CorePlugin, configurator} from '@dnd-kit/abstract';
 import {derived, reactive, untracked} from '@dnd-kit/state';
 import {getRoot, isDocument, isShadowRoot} from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.ts';
 
 type CleanupFunction = () => void;
+
+export interface StyleInjectorOptions {
+  nonce?: string;
+}
 
 interface StyleRegistration {
   refCount: number;
@@ -16,21 +20,24 @@ const styleRegistry = new Map<
   Map<string, StyleRegistration>
 >();
 
-export class StyleSheetManager extends CorePlugin<DragDropManager> {
+export class StyleInjector extends CorePlugin<
+  DragDropManager,
+  StyleInjectorOptions
+> {
   #registeredRules = new Set<string>();
 
   @reactive
   private accessor additionalRoots = new Set<Document | ShadowRoot>();
 
-  constructor(manager: DragDropManager) {
-    super(manager);
+  constructor(manager: DragDropManager, options?: StyleInjectorOptions) {
+    super(manager, options);
 
     this.registerEffect(this.#syncStyles);
   }
 
   /**
    * Registers CSS rules to be injected into the active drag operation's
-   * document and shadow roots. The StyleSheetManager handles tracking
+   * document and shadow roots. The StyleInjector handles tracking
    * which roots need the styles and cleaning up when they're no longer needed.
    *
    * Returns a cleanup function that unregisters the rules.
@@ -156,6 +163,12 @@ export class StyleSheetManager extends CorePlugin<DragDropManager> {
     cssRules: string
   ): StyleRegistration | null {
     const style = root.createElement('style');
+    const {nonce} = this.options ?? {};
+
+    if (nonce) {
+      style.setAttribute('nonce', nonce);
+    }
+
     style.textContent = cssRules;
     root.head.prepend(style);
 
@@ -243,4 +256,6 @@ export class StyleSheetManager extends CorePlugin<DragDropManager> {
       },
     };
   }
+
+  static configure = configurator(StyleInjector);
 }

@@ -17,7 +17,7 @@ import {
   Scroller,
   ScrollListener,
   PreventSelection,
-  StyleSheetManager,
+  StyleInjector,
 } from '../plugins/index.ts';
 import {KeyboardSensor} from '../sensors/keyboard/KeyboardSensor.ts';
 import {PointerSensor} from '../sensors/pointer/PointerSensor.ts';
@@ -46,7 +46,7 @@ export class DragDropManager<
 
     super({
       ...input,
-      plugins: [ScrollListener, Scroller, StyleSheetManager, ...plugins],
+      plugins: [ScrollListener, Scroller, StyleInjector, ...plugins],
       sensors,
       modifiers,
     });
