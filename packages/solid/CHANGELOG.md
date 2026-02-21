@@ -1,5 +1,43 @@
 # @dnd-kit/solid
 
+## 0.4.0
+
+### Minor Changes
+
+- [#1915](https://github.com/clauderic/dnd-kit/pull/1915) [`9b24dff`](https://github.com/clauderic/dnd-kit/commit/9b24dffde9a4b58140e5dd8c10e2766dabe42c00) Thanks [@clauderic](https://github.com/clauderic)! - Redesign event type system to follow the DOM EventMap pattern. Introduces `DragDropEventMap` for event object types and `DragDropEventHandlers` for event handler signatures, replacing the ambiguously named `DragDropEvents`. Event type aliases (`CollisionEvent`, `DragStartEvent`, etc.) now derive directly from `DragDropEventMap` rather than using `Parameters<>` extraction.
+
+  ### Migration guide
+
+  - **`DragDropEvents`** has been split into two types:
+    - `DragDropEventMap` — maps event names to event object types (like `WindowEventMap`)
+    - `DragDropEventHandlers` — maps event names to `(event, manager) => void` handler signatures
+  - If you were importing `DragDropEvents` to type **event objects**, use `DragDropEventMap` instead:
+    ```ts
+    // Before
+    type MyEvent = Parameters<DragDropEvents<D, P, M>['dragend']>[0];
+    // After
+    type MyEvent = DragDropEventMap<D, P, M>['dragend'];
+    ```
+  - If you were importing `DragDropEvents` to type **event handlers**, use `DragDropEventHandlers` instead:
+    ```ts
+    // Before
+    const handler: DragDropEvents<D, P, M>['dragend'] = (event, manager) => {};
+    // After
+    const handler: DragDropEventHandlers<D, P, M>['dragend'] = (
+      event,
+      manager
+    ) => {};
+    ```
+  - The `DragDropEvents` re-export from `@dnd-kit/react` and `@dnd-kit/solid` has been removed. Import `DragDropEventMap` or `DragDropEventHandlers` from `@dnd-kit/abstract` directly if needed.
+  - Convenience aliases (`CollisionEvent`, `DragStartEvent`, `DragEndEvent`, etc.) are unchanged and continue to work as before.
+
+### Patch Changes
+
+- Updated dependencies [[`4bc7e71`](https://github.com/clauderic/dnd-kit/commit/4bc7e7108373b1eb7eef0de832b25ca93ce7bf40), [`87bf1e6`](https://github.com/clauderic/dnd-kit/commit/87bf1e66fb7432735bb8d7ba84758d128df5ab18), [`cde61e4`](https://github.com/clauderic/dnd-kit/commit/cde61e4b4551f9094f44d9281f65028f85df9813), [`1328af8`](https://github.com/clauderic/dnd-kit/commit/1328af851069e267838102cbf5481ee26ceeddf0), [`bfff7de`](https://github.com/clauderic/dnd-kit/commit/bfff7de1bf8020e7643adf45ca31c4c08f98501d), [`9b24dff`](https://github.com/clauderic/dnd-kit/commit/9b24dffde9a4b58140e5dd8c10e2766dabe42c00), [`11ff2eb`](https://github.com/clauderic/dnd-kit/commit/11ff2eb1bc408468b77a29510133b2581b3d3111), [`7489265`](https://github.com/clauderic/dnd-kit/commit/74892651b32bc84e2f527a779257d946d923400d)]:
+  - @dnd-kit/dom@0.4.0
+  - @dnd-kit/abstract@0.4.0
+  - @dnd-kit/state@0.4.0
+
 ## 0.3.2
 
 ### Patch Changes

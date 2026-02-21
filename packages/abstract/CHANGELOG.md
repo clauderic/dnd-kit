@@ -1,5 +1,51 @@
 # @dnd-kit/abstract
 
+## 0.4.0
+
+### Minor Changes
+
+- [#1923](https://github.com/clauderic/dnd-kit/pull/1923) [`cde61e4`](https://github.com/clauderic/dnd-kit/commit/cde61e4b4551f9094f44d9281f65028f85df9813) Thanks [@clauderic](https://github.com/clauderic)! - Batch entity identity changes to prevent collision oscillation during virtualized sorting.
+
+  When entities swap ids (e.g. as `react-window` recycles DOM nodes during a drag), multiple registry updates could fire in an interleaved order, causing the collision detector to momentarily see stale or duplicate entries and oscillate between targets.
+
+  Entity `id` changes are now deferred to a microtask and flushed atomically in a single `batch()`, ensuring:
+
+  - The collision notifier skips detection while id changes are pending
+  - The registry cleans up ghost registrations (stale keys left behind after an id swap)
+
+- [#1915](https://github.com/clauderic/dnd-kit/pull/1915) [`9b24dff`](https://github.com/clauderic/dnd-kit/commit/9b24dffde9a4b58140e5dd8c10e2766dabe42c00) Thanks [@clauderic](https://github.com/clauderic)! - Redesign event type system to follow the DOM EventMap pattern. Introduces `DragDropEventMap` for event object types and `DragDropEventHandlers` for event handler signatures, replacing the ambiguously named `DragDropEvents`. Event type aliases (`CollisionEvent`, `DragStartEvent`, etc.) now derive directly from `DragDropEventMap` rather than using `Parameters<>` extraction.
+
+  ### Migration guide
+
+  - **`DragDropEvents`** has been split into two types:
+    - `DragDropEventMap` — maps event names to event object types (like `WindowEventMap`)
+    - `DragDropEventHandlers` — maps event names to `(event, manager) => void` handler signatures
+  - If you were importing `DragDropEvents` to type **event objects**, use `DragDropEventMap` instead:
+    ```ts
+    // Before
+    type MyEvent = Parameters<DragDropEvents<D, P, M>['dragend']>[0];
+    // After
+    type MyEvent = DragDropEventMap<D, P, M>['dragend'];
+    ```
+  - If you were importing `DragDropEvents` to type **event handlers**, use `DragDropEventHandlers` instead:
+    ```ts
+    // Before
+    const handler: DragDropEvents<D, P, M>['dragend'] = (event, manager) => {};
+    // After
+    const handler: DragDropEventHandlers<D, P, M>['dragend'] = (
+      event,
+      manager
+    ) => {};
+    ```
+  - The `DragDropEvents` re-export from `@dnd-kit/react` and `@dnd-kit/solid` has been removed. Import `DragDropEventMap` or `DragDropEventHandlers` from `@dnd-kit/abstract` directly if needed.
+  - Convenience aliases (`CollisionEvent`, `DragStartEvent`, `DragEndEvent`, etc.) are unchanged and continue to work as before.
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @dnd-kit/geometry@0.4.0
+  - @dnd-kit/state@0.4.0
+
 ## 0.3.2
 
 ### Patch Changes
