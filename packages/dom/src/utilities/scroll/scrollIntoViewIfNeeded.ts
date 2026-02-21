@@ -2,28 +2,12 @@ import {getComputedStyles} from '../styles/getComputedStyles.ts';
 import {isHTMLElement} from '../type-guards/isHTMLElement.ts';
 import {getFirstScrollableAncestor} from './getScrollableAncestors.ts';
 
-function supportsScrollIntoViewIfNeeded(
-  element: Element
-): element is Element & {
-  scrollIntoViewIfNeeded: (centerIfNeeded?: boolean) => void;
-} {
-  return (
-    'scrollIntoViewIfNeeded' in element &&
-    typeof element.scrollIntoViewIfNeeded === 'function'
-  );
-}
-
 export function scrollIntoViewIfNeeded(el: Element, centerIfNeeded = false) {
-  if (supportsScrollIntoViewIfNeeded(el)) {
-    el.scrollIntoViewIfNeeded(centerIfNeeded);
+  if (!isHTMLElement(el)) {
     return;
   }
 
-  if (!isHTMLElement(el)) {
-    return el.scrollIntoView();
-  }
-
-  var parent = getFirstScrollableAncestor(el);
+  const parent = getFirstScrollableAncestor(el);
 
   if (!isHTMLElement(parent)) {
     return;
@@ -68,6 +52,24 @@ export function scrollIntoViewIfNeeded(el: Element, centerIfNeeded = false) {
   }
 
   if ((overTop || overBottom || overLeft || overRight) && !centerIfNeeded) {
-    el.scrollIntoView(alignWithTop);
+    if (alignWithTop) {
+      parent.scrollTop = el.offsetTop - parent.offsetTop;
+    } else if (overBottom) {
+      parent.scrollTop =
+        el.offsetTop -
+        parent.offsetTop +
+        el.clientHeight -
+        parent.clientHeight;
+    }
+
+    if (overLeft) {
+      parent.scrollLeft = el.offsetLeft - parent.offsetLeft;
+    } else if (overRight) {
+      parent.scrollLeft =
+        el.offsetLeft -
+        parent.offsetLeft +
+        el.clientWidth -
+        parent.clientWidth;
+    }
   }
 }

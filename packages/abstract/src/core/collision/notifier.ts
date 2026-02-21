@@ -1,4 +1,4 @@
-import {effect, effects, untracked} from '@dnd-kit/state';
+import {effects, untracked} from '@dnd-kit/state';
 
 import {DragDropManager} from '../manager/index.ts';
 import {CorePlugin} from '../plugins/index.ts';
