@@ -6,7 +6,7 @@ import {
   useInsertionEffect,
   type PropsWithChildren,
 } from 'react';
-import type {Data, DragDropEvents} from '@dnd-kit/abstract';
+import type {Data, DragDropEventHandlers} from '@dnd-kit/abstract';
 import {DragDropManager, defaultPreset, resolveCustomizable} from '@dnd-kit/dom';
 import type {DragDropManagerInput, Draggable, Droppable} from '@dnd-kit/dom';
 import {useLatest, useOnValueChange} from '@dnd-kit/react/hooks';
@@ -20,7 +20,7 @@ export type Events<
   U extends Draggable<T> = Draggable<T>,
   V extends Droppable<T> = Droppable<T>,
   W extends DragDropManager<T, U, V> = DragDropManager<T, U, V>,
-> = DragDropEvents<U, V, W>;
+> = DragDropEventHandlers<U, V, W>;
 
 export interface Props<
   T extends Data = Data,

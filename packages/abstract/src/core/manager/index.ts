@@ -2,7 +2,8 @@ export {DragDropManager, resolveCustomizable} from './manager.ts';
 export type {DragDropManagerInput, Customizable} from './manager.ts';
 export type {DragActions} from './actions.ts';
 export type {
-  DragDropEvents,
+  DragDropEventMap,
+  DragDropEventHandlers,
   CollisionEvent,
   BeforeDragStartEvent,
   DragStartEvent,

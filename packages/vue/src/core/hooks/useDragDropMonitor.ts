@@ -1,16 +1,16 @@
-import type {DragDropEvents, Data} from '@dnd-kit/abstract';
+import type {DragDropEventHandlers, Data} from '@dnd-kit/abstract';
 import type {Draggable, Droppable, DragDropManager} from '@dnd-kit/dom';
 import {onWatcherCleanup, watchEffect} from 'vue';
 import type {CleanupFunction} from '@dnd-kit/state';
 
 import {useDragDropManager} from './useDragDropManager.ts';
 
-type DragDropEventMap = {
+type EventNameOverrides = {
   beforedragstart: 'onBeforeDragStart';
 };
 
-type EventHandlerName<T extends string> = T extends keyof DragDropEventMap
-  ? DragDropEventMap[T]
+type EventHandlerName<T extends string> = T extends keyof EventNameOverrides
+  ? EventNameOverrides[T]
   : T extends `drag${infer Second}${infer Rest}`
     ? `onDrag${Uppercase<Second>}${Rest}`
     : `on${Capitalize<T>}`;
@@ -20,7 +20,7 @@ type Events<
   U extends Draggable<T>,
   V extends Droppable<T>,
   W extends DragDropManager<T, U, V>,
-> = DragDropEvents<U, V, W>;
+> = DragDropEventHandlers<U, V, W>;
 
 export type EventHandlers<
   T extends Data = Data,

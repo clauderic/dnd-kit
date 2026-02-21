@@ -3,7 +3,7 @@ import type {
   Draggable,
   Droppable,
   DragDropManager,
-  DragDropEvents,
+  DragDropEventMap,
 } from '@dnd-kit/abstract';
 
 /**
@@ -73,9 +73,7 @@ function mutate<
   W extends DragDropManager<U, V>,
 >(
   items: T,
-  event: Parameters<
-    DragDropEvents<U, V, W>['dragover'] | DragDropEvents<U, V, W>['dragend']
-  >[0],
+  event: DragDropEventMap<U, V, W>['dragover'] | DragDropEventMap<U, V, W>['dragend'],
   mutation: typeof arrayMove | typeof arraySwap
 ): T {
   const {source, target, canceled} = event.operation;
@@ -309,9 +307,7 @@ export function move<
   W extends DragDropManager<U, V>,
 >(
   items: T,
-  event: Parameters<
-    DragDropEvents<U, V, W>['dragover'] | DragDropEvents<U, V, W>['dragend']
-  >[0]
+  event: DragDropEventMap<U, V, W>['dragover'] | DragDropEventMap<U, V, W>['dragend']
 ) {
   return mutate(items, event, arrayMove);
 }
@@ -323,9 +319,7 @@ export function swap<
   W extends DragDropManager<U, V>,
 >(
   items: T,
-  event: Parameters<
-    DragDropEvents<U, V, W>['dragover'] | DragDropEvents<U, V, W>['dragend']
-  >[0]
+  event: DragDropEventMap<U, V, W>['dragover'] | DragDropEventMap<U, V, W>['dragend']
 ) {
   return mutate(items, event, arraySwap);
 }

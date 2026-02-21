@@ -1,4 +1,4 @@
-import type {DragDropEvents} from '@dnd-kit/abstract';
+import type {DragDropEventHandlers} from '@dnd-kit/abstract';
 import {
   defaultPreset,
   resolveCustomizable,
@@ -29,7 +29,7 @@ type ToVueEmits<T extends Record<string, (...args: any) => any>> = {
   [K in keyof T]: NamedTuple<T[K]>;
 };
 
-type Events = ToVueEmits<DragDropEvents<Draggable, Droppable, DragDropManager>>;
+type Events = ToVueEmits<DragDropEventHandlers<Draggable, Droppable, DragDropManager>>;
 
 export interface DragDropProviderProps extends DragDropManagerInput {
   manager?: DragDropManager;

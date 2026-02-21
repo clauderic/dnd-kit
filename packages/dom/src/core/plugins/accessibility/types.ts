@@ -1,13 +1,11 @@
-import type {DragDropEvents} from '@dnd-kit/abstract';
+import type {DragDropEventMap} from '@dnd-kit/abstract';
 import type {DragDropManager} from '../../manager/index.ts';
 import type {Draggable, Droppable} from '../../entities/index.ts';
 
 export type GetAnnouncementForEvent<
-  Key extends keyof DragDropEvents<any, any, any>,
+  Key extends keyof DragDropEventMap<any, any, any>,
 > = (
-  event: Parameters<
-    DragDropEvents<Draggable, Droppable, DragDropManager>[Key]
-  >[0],
+  event: DragDropEventMap<Draggable, Droppable, DragDropManager>[Key],
   manager: DragDropManager
 ) => string | undefined;
 

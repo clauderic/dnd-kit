@@ -1,8 +1,5 @@
 export {DragDropProvider} from './context/DragDropProvider.tsx';
-export type {
-  DragDropProviderProps,
-  Events as DragDropEvents,
-} from './context/DragDropProvider.tsx';
+export type {DragDropProviderProps} from './context/DragDropProvider.tsx';
 
 export {
   useDraggable,

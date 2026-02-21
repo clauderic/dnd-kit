@@ -1,7 +1,7 @@
 <script lang="ts">
   import type {Snippet} from 'svelte';
   import {onDestroy} from 'svelte';
-  import type {DragDropEvents} from '@dnd-kit/abstract';
+  import type {DragDropEventHandlers} from '@dnd-kit/abstract';
   import {
     DragDropManager,
     defaultPreset,
@@ -14,7 +14,7 @@
   import {createRenderer} from './renderer.svelte.js';
   import {setDragDropContext} from './context.js';
 
-  type Events = DragDropEvents<Draggable, Droppable, DragDropManager>;
+  type Events = DragDropEventHandlers<Draggable, Droppable, DragDropManager>;
 
   interface Props extends DragDropManagerInput {
     manager?: DragDropManager;
