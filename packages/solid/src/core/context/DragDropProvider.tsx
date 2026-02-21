@@ -6,11 +6,11 @@ import {DragDropContext} from './context.ts';
 import {useRenderer} from './renderer.ts';
 import {createSaveElementPosition} from '../../utilities/saveElementPosition.ts';
 
-import type {DragDropEvents} from '@dnd-kit/abstract';
+import type {DragDropEventHandlers} from '@dnd-kit/abstract';
 import type {DragDropManagerInput, Draggable, Droppable} from '@dnd-kit/dom';
 import type {ParentProps} from 'solid-js';
 
-export type Events = DragDropEvents<Draggable, Droppable, DragDropManager>;
+export type Events = DragDropEventHandlers<Draggable, Droppable, DragDropManager>;
 
 export interface DragDropProviderProps
   extends DragDropManagerInput,

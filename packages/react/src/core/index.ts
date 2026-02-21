@@ -1,9 +1,6 @@
 'use client';
 
-export {
-  DragDropProvider,
-  type Events as DragDropEvents,
-} from './context/DragDropProvider.tsx';
+export {DragDropProvider} from './context/DragDropProvider.tsx';
 
 export {
   useDraggable,

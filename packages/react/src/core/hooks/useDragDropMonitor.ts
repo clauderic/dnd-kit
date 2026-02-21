@@ -1,18 +1,16 @@
 import {useEffect} from 'react';
-import type {DragDropEvents, Data} from '@dnd-kit/abstract';
+import type {DragDropEventHandlers, Data} from '@dnd-kit/abstract';
 import type {Draggable, Droppable, DragDropManager} from '@dnd-kit/dom';
 
 import {useDragDropManager} from './useDragDropManager.js';
 import {CleanupFunction} from '@dnd-kit/state';
 
-// Manual mapping of event names to handler names
-type DragDropEventMap = {
+type EventNameOverrides = {
   beforedragstart: 'onBeforeDragStart';
 };
 
-// Automatically generate the event handler name from the event name
-type EventHandlerName<T extends string> = T extends keyof DragDropEventMap
-  ? DragDropEventMap[T]
+type EventHandlerName<T extends string> = T extends keyof EventNameOverrides
+  ? EventNameOverrides[T]
   : T extends `drag${infer Second}${infer Rest}`
     ? `onDrag${Uppercase<Second>}${Rest}`
     : `on${Capitalize<T>}`;
@@ -25,7 +23,7 @@ type Events<
   U extends Draggable<T>,
   V extends Droppable<T>,
   W extends DragDropManager<T, U, V>,
-> = DragDropEvents<U, V, W>;
+> = DragDropEventHandlers<U, V, W>;
 
 export type EventHandlers<
   T extends Data = Data,
@@ -69,7 +67,7 @@ export function useDragDropMonitor<
 
           const unsubscribe = manager.monitor.addEventListener(
             eventName,
-            handler
+            handler as any
           );
 
           acc.push(unsubscribe);

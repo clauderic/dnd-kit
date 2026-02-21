@@ -1,10 +1,10 @@
-import type {DragDropEvents} from '@dnd-kit/abstract';
+import type {DragDropEventMap} from '@dnd-kit/abstract';
 
 import type {Draggable} from '../entities/draggable/draggable.ts';
 import type {Droppable} from '../entities/droppable/droppable.ts';
 import type {DragDropManager} from './manager.ts';
 
-type Events = DragDropEvents<Draggable, Droppable, DragDropManager>;
+type Events = DragDropEventMap<Draggable, Droppable, DragDropManager>;
 
 export type CollisionEvent = Events['collision'];
 export type BeforeDragStartEvent = Events['beforedragstart'];

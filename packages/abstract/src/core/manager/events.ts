@@ -82,105 +82,108 @@ class Monitor<T extends Events> {
 }
 
 /**
- * Type definition for drag and drop events.
+ * Map of drag and drop event objects, keyed by event name.
+ * Follows the same pattern as the DOM's `WindowEventMap`.
  *
  * @template T - The type of draggable entities
  * @template U - The type of droppable entities
  * @template V - The type of drag and drop manager
  */
-export type DragDropEvents<
+export type DragDropEventMap<
   T extends Draggable,
   U extends Droppable,
   V extends DragDropManager<T, U>,
 > = {
   /** Event fired when collisions are detected */
-  collision(
-    event: Preventable<{
-      collisions: Collisions;
-    }>,
-    manager: V
-  ): void;
+  collision: Preventable<{
+    collisions: Collisions;
+  }>;
   /** Event fired before a drag operation starts */
-  beforedragstart(
-    event: Preventable<{
-      operation: DragOperationSnapshot<T, U>;
-      nativeEvent?: Event;
-    }>,
-    manager: V
-  ): void;
+  beforedragstart: Preventable<{
+    operation: DragOperationSnapshot<T, U>;
+    nativeEvent?: Event;
+  }>;
   /** Event fired when a drag operation starts */
-  dragstart(
-    event: {
-      cancelable: false;
-      operation: DragOperationSnapshot<T, U>;
-      nativeEvent?: Event;
-    },
-    manager: V
-  ): void;
+  dragstart: {
+    cancelable: false;
+    operation: DragOperationSnapshot<T, U>;
+    nativeEvent?: Event;
+  };
   /** Event fired when a drag operation moves */
-  dragmove(
-    event: Preventable<{
-      operation: DragOperationSnapshot<T, U>;
-      to?: Coordinates;
-      by?: Coordinates;
-      nativeEvent?: Event;
-    }>,
-    manager: V
-  ): void;
+  dragmove: Preventable<{
+    operation: DragOperationSnapshot<T, U>;
+    to?: Coordinates;
+    by?: Coordinates;
+    nativeEvent?: Event;
+  }>;
   /** Event fired when a drag operation hovers over a droppable */
-  dragover(
-    event: Preventable<{
-      operation: DragOperationSnapshot<T, U>;
-    }>,
-    manager: V
-  ): void;
+  dragover: Preventable<{
+    operation: DragOperationSnapshot<T, U>;
+  }>;
   /** Event fired when a drag operation ends */
-  dragend(
-    event: {
-      operation: DragOperationSnapshot<T, U>;
-      nativeEvent?: Event;
-      canceled: boolean;
-      suspend(): {resume(): void; abort(): void};
-    },
+  dragend: {
+    operation: DragOperationSnapshot<T, U>;
+    nativeEvent?: Event;
+    canceled: boolean;
+    suspend(): {resume(): void; abort(): void};
+  };
+};
+
+/**
+ * Map of drag and drop event handler signatures, keyed by event name.
+ * Each handler receives the event object and the manager instance.
+ * Derived from `DragDropEventMap`.
+ *
+ * @template T - The type of draggable entities
+ * @template U - The type of droppable entities
+ * @template V - The type of drag and drop manager
+ */
+export type DragDropEventHandlers<
+  T extends Draggable,
+  U extends Droppable,
+  V extends DragDropManager<T, U>,
+> = {
+  [K in keyof DragDropEventMap<T, U, V>]: (
+    event: DragDropEventMap<T, U, V>[K],
     manager: V
-  ): void;
+  ) => void;
 };
 
 export type CollisionEvent<
   T extends Draggable = Draggable,
   U extends Droppable = Droppable,
   V extends DragDropManager<T, U> = DragDropManager<T, U>,
-> = DragDropEvents<T, U, V>['collision'];
+> = DragDropEventMap<T, U, V>['collision'];
 
 export type BeforeDragStartEvent<
   T extends Draggable = Draggable,
   U extends Droppable = Droppable,
   V extends DragDropManager<T, U> = DragDropManager<T, U>,
-> = DragDropEvents<T, U, V>['beforedragstart'];
+> = DragDropEventMap<T, U, V>['beforedragstart'];
 
 export type DragStartEvent<
   T extends Draggable = Draggable,
   U extends Droppable = Droppable,
   V extends DragDropManager<T, U> = DragDropManager<T, U>,
-> = DragDropEvents<T, U, V>['dragstart'];
+> = DragDropEventMap<T, U, V>['dragstart'];
 
 export type DragMoveEvent<
   T extends Draggable = Draggable,
   U extends Droppable = Droppable,
   V extends DragDropManager<T, U> = DragDropManager<T, U>,
-> = DragDropEvents<T, U, V>['dragmove'];
+> = DragDropEventMap<T, U, V>['dragmove'];
 
 export type DragOverEvent<
   T extends Draggable = Draggable,
   U extends Droppable = Droppable,
   V extends DragDropManager<T, U> = DragDropManager<T, U>,
-> = DragDropEvents<T, U, V>['dragover'];
+> = DragDropEventMap<T, U, V>['dragover'];
 
 export type DragEndEvent<
   T extends Draggable = Draggable,
   U extends Droppable = Droppable,
   V extends DragDropManager<T, U> = DragDropManager<T, U>,
-> = DragDropEvents<T, U, V>['dragend'];
+> = DragDropEventMap<T, U, V>['dragend'];
 
 /**
  * Monitors and dispatches drag and drop events.
@@ -193,7 +196,7 @@ export class DragDropMonitor<
   T extends Draggable,
   U extends Droppable,
   V extends DragDropManager<T, U>,
-> extends Monitor<DragDropEvents<T, U, V>> {
+> extends Monitor<DragDropEventHandlers<T, U, V>> {
   /**
    * Creates a new drag and drop monitor.
    *
@@ -209,9 +212,9 @@ export class DragDropMonitor<
    * @param type - The type of event to dispatch
    * @param event - The event data to dispatch
    */
-  public dispatch<Key extends keyof DragDropEvents<T, U, V>>(
+  public dispatch<Key extends keyof DragDropEventMap<T, U, V>>(
     type: Key,
-    event: Parameters<DragDropEvents<T, U, V>[Key]>[0]
+    event: DragDropEventMap<T, U, V>[Key]
   ) {
     const args = [event, this.manager] as any;
 
