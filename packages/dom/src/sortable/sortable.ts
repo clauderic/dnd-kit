@@ -230,6 +230,21 @@ export class Sortable<T extends Data = Data> {
           return;
         }
 
+        // Cancel CSS transitions on transform-related properties before measuring.
+        // These transitions (e.g. `transition: transform` from user CSS) would cause
+        // getBoundingClientRect() to return the mid-transition position rather than
+        // the element's final resting position, resulting in an incorrect delta.
+        for (const animation of element.getAnimations()) {
+          if (
+            'transitionProperty' in animation &&
+            (animation.transitionProperty === 'transform' ||
+              animation.transitionProperty === 'translate' ||
+              animation.transitionProperty === 'scale')
+          ) {
+            animation.cancel();
+          }
+        }
+
         const updatedShape = this.refreshShape();
 
         if (!updatedShape) {

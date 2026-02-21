@@ -5,7 +5,7 @@ import {
   getFixedPositionOffset,
   type Styles,
 } from '@dnd-kit/dom/utilities';
-import type {Coordinates} from '@dnd-kit/geometry';
+import {Rectangle, type Coordinates} from '@dnd-kit/geometry';
 
 import {CSS_PREFIX, IGNORED_ATTRIBUTES, IGNORED_STYLES} from './constants.ts';
 import {isTableRow} from './utilities.ts';
@@ -139,6 +139,7 @@ export interface ResizeObserverContext {
   delta: Coordinates;
   styles: Styles;
   dragOperation: {shape: any};
+  getTranslate: () => Coordinates | undefined;
   getElementMutationObserver: () => MutationObserver | undefined;
   getSavedCellWidths: () => string[] | undefined;
   setSavedCellWidths: (widths: string[]) => void;
@@ -181,6 +182,22 @@ export function createResizeObserver(ctx: ResizeObserverContext): ResizeObserver
       }
     }
 
-    ctx.dragOperation.shape = new DOMRectangle(ctx.feedbackElement);
+    // Compute the shape from the CSS values we just set plus the logical
+    // translate, rather than measuring the feedbackElement with DOMRectangle.
+    // This avoids capturing in-flight CSS transition values when the
+    // ResizeObserver fires before the browser has created the transition.
+    const translate = ctx.getTranslate() ?? {x: 0, y: 0};
+    const shapeLeft = ctx.left + dX + fixedOffset.x + translate.x;
+    const shapeTop = ctx.top + dY + fixedOffset.y + translate.y;
+    const shapeWidth = placeholderShape.width - ctx.widthOffset;
+    const shapeHeight = placeholderShape.height - ctx.heightOffset;
+    const ft = ctx.frameTransform;
+
+    ctx.dragOperation.shape = new Rectangle(
+      shapeLeft * ft.scaleX + ft.x,
+      shapeTop * ft.scaleY + ft.y,
+      shapeWidth * ft.scaleX,
+      shapeHeight * ft.scaleY
+    );
   });
 }

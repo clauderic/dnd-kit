@@ -29,6 +29,7 @@ export const CSS_RULES = `
     max-width: var(${CSS_PREFIX}width, auto);
     height: var(${CSS_PREFIX}height, auto);
     max-height: var(${CSS_PREFIX}height, auto);
+    transform: var(${CSS_PREFIX}transform, none) !important;
     transition: var(${CSS_PREFIX}transition) !important;
   }
 
