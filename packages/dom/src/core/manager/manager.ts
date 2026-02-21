@@ -42,7 +42,10 @@ export class DragDropManager<
   constructor(input: Input = {}) {
     const plugins = resolveCustomizable(input.plugins, defaultPreset.plugins);
     const sensors = resolveCustomizable(input.sensors, defaultPreset.sensors);
-    const modifiers = resolveCustomizable(input.modifiers, defaultPreset.modifiers);
+    const modifiers = resolveCustomizable(
+      input.modifiers,
+      defaultPreset.modifiers
+    );
 
     super({
       ...input,
