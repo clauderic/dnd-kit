@@ -104,20 +104,32 @@ export class DOMRectangle extends Rectangle {
 }
 
 /*
- * Get the projected transform of an element based on its final keyframe
+ * Get the projected transform of an element based on the final keyframes
+ * of its running animations.
+ *
+ * Uses last-wins-per-property semantics: for each CSS property (transform,
+ * translate, scale), the value from the highest composite-order animation
+ * wins. `element.getAnimations()` returns animations sorted by composite
+ * order (oldest first), so iterating forward and overwriting gives us
+ * the effective final value for each property. This correctly handles
+ * overlapping animations with `composite: 'replace'` (the default).
  */
 function getProjectedTransform(
   element: Element,
   computedStyles: CSSStyleDeclaration
 ): Transform | null {
-  // Always get the latest animations on the element itself
   const animations = element.getAnimations();
-  let projectedTransform: Transform | null = null;
 
   if (!animations.length) return null;
 
+  let latestTransform: string | undefined;
+  let latestTranslate: string | undefined;
+  let latestScale: string | undefined;
+  let hasAnimatedProperty = false;
+
   for (const animation of animations) {
     if (animation.playState !== 'running') continue;
+
     const keyframes = isKeyframeEffect(animation.effect)
       ? animation.effect.getKeyframes()
       : [];
@@ -127,33 +139,27 @@ function getProjectedTransform(
 
     const {transform, translate, scale} = keyframe;
 
-    if (transform || translate || scale) {
-      const parsedTransform = parseTransform({
-        transform:
-          typeof transform === 'string' && transform
-            ? transform
-            : computedStyles.transform,
-        translate:
-          typeof translate === 'string' && translate
-            ? translate
-            : computedStyles.translate,
-        scale:
-          typeof scale === 'string' && scale ? scale : computedStyles.scale,
-      });
+    if (typeof transform === 'string' && transform) {
+      latestTransform = transform;
+      hasAnimatedProperty = true;
+    }
 
-      if (parsedTransform) {
-        projectedTransform = projectedTransform
-          ? {
-              x: projectedTransform.x + parsedTransform.x,
-              y: projectedTransform.y + parsedTransform.y,
-              z: projectedTransform.z ?? parsedTransform.z,
-              scaleX: projectedTransform.scaleX * parsedTransform.scaleX,
-              scaleY: projectedTransform.scaleY * parsedTransform.scaleY,
-            }
-          : parsedTransform;
-      }
+    if (typeof translate === 'string' && translate) {
+      latestTranslate = translate;
+      hasAnimatedProperty = true;
+    }
+
+    if (typeof scale === 'string' && scale) {
+      latestScale = scale;
+      hasAnimatedProperty = true;
     }
   }
 
-  return projectedTransform;
+  if (!hasAnimatedProperty) return null;
+
+  return parseTransform({
+    transform: latestTransform ?? computedStyles.transform,
+    translate: latestTranslate ?? computedStyles.translate,
+    scale: latestScale ?? computedStyles.scale,
+  });
 }

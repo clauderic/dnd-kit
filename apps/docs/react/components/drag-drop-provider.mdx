@@ -153,27 +153,27 @@ function App() {
 
 ### Events
 
-<ParamField path="onBeforeDragStart" type="(event: BeforeDragStartEvent) => void">
+<ParamField path="onBeforeDragStart" type="(event: BeforeDragStartEvent, manager: DragDropManager) => void">
   Called before dragging starts. Call `event.preventDefault()` to cancel.
 </ParamField>
 
-<ParamField path="onDragStart" type="(event: DragStartEvent) => void">
+<ParamField path="onDragStart" type="(event: DragStartEvent, manager: DragDropManager) => void">
   Called when dragging begins.
 </ParamField>
 
-<ParamField path="onDragMove" type="(event: DragMoveEvent) => void">
+<ParamField path="onDragMove" type="(event: DragMoveEvent, manager: DragDropManager) => void">
   Called when the dragged element moves.
 </ParamField>
 
-<ParamField path="onDragOver" type="(event: DragOverEvent) => void">
+<ParamField path="onDragOver" type="(event: DragOverEvent, manager: DragDropManager) => void">
   Called when dragging over a droppable target. Call `event.preventDefault()` to prevent the default behavior of plugins that respond to this event.
 </ParamField>
 
-<ParamField path="onDragEnd" type="(event: DragEndEvent) => void">
+<ParamField path="onDragEnd" type="(event: DragEndEvent, manager: DragDropManager) => void">
   Called when dragging ends, whether dropped on a target or not.
 </ParamField>
 
-<ParamField path="onCollision" type="(event: CollisionEvent) => void">
+<ParamField path="onCollision" type="(event: CollisionEvent, manager: DragDropManager) => void">
   Called when collisions are detected. Call `event.preventDefault()` to prevent automatic target selection.
 </ParamField>
 

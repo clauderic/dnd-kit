@@ -24,7 +24,7 @@ export default defineConfig({
   webServer: {
     command: 'npx http-server storybook-static --port 6006 --silent',
     port: 6006,
-    reuseExistingServer: !CI,
+    reuseExistingServer: true,
     timeout: 120_000,
   },
 });

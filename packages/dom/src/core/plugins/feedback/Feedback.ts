@@ -10,6 +10,7 @@ import {
   isHTMLElement,
   prefersReducedMotion,
   isKeyboardEvent,
+  parseTransform,
   parseTranslate,
   showPopover,
   Styles,
@@ -73,6 +74,8 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
    */
   public dropAnimation: DropAnimation | null | undefined;
 
+  #lastSource: Draggable | undefined;
+
   private state: State = {
     initial: {},
     current: {},
@@ -119,10 +122,15 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     if (status.idle) {
       state.current = {};
       state.initial = {};
+      this.#lastSource = undefined;
       return;
     }
 
     if (!source) return;
+
+    if (source !== this.#lastSource) {
+      this.#lastSource = source;
+    }
 
     const {element, feedback} = source;
 
@@ -159,6 +167,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     }
 
     const styles = new Styles(feedbackElement);
+    const elementStyles = getComputedStyles(element);
     const {
       transition,
       translate,
@@ -171,7 +180,20 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       borderInlineEndWidth,
       borderBlockStartWidth,
       borderBlockEndWidth,
-    } = getComputedStyles(element);
+    } = elementStyles;
+    // Filter out transform-related transitions that would interfere with
+    // Feedback-managed properties (--dnd-transform, --dnd-translate, --dnd-scale)
+    const feedbackTransition = transition
+      .split(',')
+      .filter((t) => !/^\s*(transform|translate|scale)\b/.test(t))
+      .join(',');
+    const parsedTransform = parseTransform(elementStyles);
+    // Eagerly capture the raw transform CSS value before the
+    // data-dnd-dragging attribute is set, since elementStyles is a live
+    // CSSStyleDeclaration and the CSS rule for [data-dnd-dragging] overrides
+    // transform via !important, which would cause the live object to return
+    // the overridden value instead of the original.
+    const initialTransformStyle = elementStyles.transform;
     const clone = feedback === 'clone';
     const contentBox = boxSizing === 'content-box';
     const widthOffset = contentBox
@@ -195,23 +217,38 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       isKeyboardEvent(manager.dragOperation.activatorEvent)
     );
 
-    if (translate !== 'none') {
-      const parsedTranslate = parseTranslate(translate);
+    if (!initial.translate) {
+      if (this.overlay && parsedTransform) {
+        // When using an overlay, capture the full translation from both
+        // the CSS `translate` and `transform` properties, since the overlay
+        // element does not inherit the source element's `transform` property.
+        // This is needed for libraries like react-window v2 that use CSS
+        // `transform: translateY()` for positioning.
+        initial.translate = {x: parsedTransform.x, y: parsedTransform.y};
+      } else if (translate !== 'none') {
+        const parsedTranslate = parseTranslate(translate);
 
-      if (parsedTranslate && !initial.translate) {
-        initial.translate = parsedTranslate;
+        if (parsedTranslate) {
+          initial.translate = parsedTranslate;
+        }
       }
     }
 
     if (!initial.transformOrigin) {
       const current = untracked(() => position.current);
 
+      // Use the visual position (including transforms) since the cursor
+      // position is in screen coordinates. The shape's top/left have transforms
+      // stripped (ignoreTransforms), so we add them back for this calculation.
+      const visualLeft = left + (parsedTransform?.x ?? 0);
+      const visualTop = top + (parsedTransform?.y ?? 0);
+
       initial.transformOrigin = {
         x:
-          (current.x - left * frameTransform.scaleX - frameTransform.x) /
+          (current.x - visualLeft * frameTransform.scaleX - frameTransform.x) /
           (width * frameTransform.scaleX),
         y:
-          (current.y - top * frameTransform.scaleY - frameTransform.y) /
+          (current.y - visualTop * frameTransform.scaleY - frameTransform.y) /
           (height * frameTransform.scaleY),
       };
     }
@@ -288,7 +325,10 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         top: projected.top + fixedOffset.y,
         left: projected.left + fixedOffset.x,
         translate: `${tX}px ${tY}px 0`,
-        transition: transition ? `${transition}, translate 0ms linear` : '',
+        transform: this.overlay ? 'none' : initialTransformStyle,
+        transition: feedbackTransition
+          ? `${feedbackTransition}, translate 0ms linear`
+          : 'translate 0ms linear',
         scale: crossFrame ? `${scaleDelta.x} ${scaleDelta.y}` : '',
         'transform-origin': `${transformOrigin.x * 100}% ${transformOrigin.y * 100}%`,
       },
@@ -341,6 +381,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       delta,
       styles,
       dragOperation,
+      getTranslate: () => state.current.translate,
       getElementMutationObserver: () => elementMutationObserver,
       getSavedCellWidths: () => savedCellWidths,
       setSavedCellWidths: (widths) => {
@@ -424,10 +465,11 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       source.status = 'idle';
 
       const moved = state.current.translate != null;
+      const isDragging = dragOperation.status.dragging;
 
       if (
         placeholder &&
-        (moved ||
+        ((!isDragging && moved) ||
           placeholder.parentElement !== feedbackElement.parentElement) &&
         feedbackElement.isConnected
       ) {
@@ -470,7 +512,9 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
           styles.set(
             {
-              transition: `${transition}, translate ${translateTransition}`,
+              transition: feedbackTransition
+                ? `${feedbackTransition}, translate ${translateTransition}`
+                : `translate ${translateTransition}`,
               translate: `${translate.x}px ${translate.y}px 0`,
             },
             CSS_PREFIX
@@ -484,15 +528,17 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             !modifiers.length
           ) {
             const delta = Point.delta(translate, previousTranslate);
-
-            dragOperation.shape = Rectangle.from(
+            const newShape = Rectangle.from(
               currentShape.boundingRectangle
             ).translate(
               delta.x * frameTransform.scaleX,
               delta.y * frameTransform.scaleY
             );
+
+            dragOperation.shape = newShape;
           } else {
-            dragOperation.shape = new DOMRectangle(feedbackElement);
+            const newShape = new DOMRectangle(feedbackElement);
+            dragOperation.shape = newShape;
           }
 
           state.current.translate = translate;

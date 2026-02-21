@@ -115,6 +115,15 @@ export const DisableTransition: Story = {
   },
 };
 
+export const OptimisticSortingDisabled: Story = {
+  name: 'Optimistic sorting disabled',
+  args: {
+    debug: false,
+    optimistic: false,
+    itemCount: 100,
+  },
+};
+
 export const Debug: Story = {
   name: 'Debug',
   args: {

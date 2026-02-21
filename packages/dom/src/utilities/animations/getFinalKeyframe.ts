@@ -5,19 +5,18 @@ export function getFinalKeyframe(
   match: (keyframe: Keyframe) => boolean
 ): [Keyframe, Animation] | null {
   const animations = element.getAnimations();
+  let result: [Keyframe, Animation] | null = null;
 
-  if (animations.length > 0) {
-    for (const animation of animations) {
-      if (animation.playState !== 'running') continue;
-      const {effect} = animation;
-      const keyframes = isKeyframeEffect(effect) ? effect.getKeyframes() : [];
-      const matchedKeyframes = keyframes.filter(match);
+  for (const animation of animations) {
+    if (animation.playState !== 'running') continue;
+    const {effect} = animation;
+    const keyframes = isKeyframeEffect(effect) ? effect.getKeyframes() : [];
+    const matchedKeyframes = keyframes.filter(match);
 
-      if (matchedKeyframes.length > 0) {
-        return [matchedKeyframes[matchedKeyframes.length - 1], animation];
-      }
+    if (matchedKeyframes.length > 0) {
+      result = [matchedKeyframes[matchedKeyframes.length - 1], animation];
     }
   }
 
-  return null;
+  return result;
 }
