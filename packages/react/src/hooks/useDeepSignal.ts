@@ -36,7 +36,14 @@ export function useDeepSignal<T extends object | null | undefined>(
       }
 
       if (stale) {
-        sync ? flushSync(forceUpdate) : forceUpdate();
+        if (sync) {
+          // Defer flushSync to a microtask to avoid calling it from within
+          // a React lifecycle method (e.g. useEffect batch), which happens when
+          // signal updates are triggered synchronously from a React effect
+          queueMicrotask(() => flushSync(forceUpdate));
+        } else {
+          forceUpdate();
+        }
       }
     });
   }, [target]);
