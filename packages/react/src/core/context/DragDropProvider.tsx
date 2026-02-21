@@ -7,7 +7,11 @@ import {
   type PropsWithChildren,
 } from 'react';
 import type {Data, DragDropEventHandlers} from '@dnd-kit/abstract';
-import {DragDropManager, defaultPreset, resolveCustomizable} from '@dnd-kit/dom';
+import {
+  DragDropManager,
+  defaultPreset,
+  resolveCustomizable,
+} from '@dnd-kit/dom';
 import type {DragDropManagerInput, Draggable, Droppable} from '@dnd-kit/dom';
 import {useLatest, useOnValueChange} from '@dnd-kit/react/hooks';
 import {deepEqual} from '@dnd-kit/state';
@@ -56,10 +60,17 @@ export function DragDropProvider<
   ...input
 }: Props<T, U, V, W>) {
   const rendererRef = useRef<ReactRenderer | null>(null);
-  const {plugins: pluginsInput, modifiers: modifiersInput, sensors: sensorsInput} = input;
+  const {
+    plugins: pluginsInput,
+    modifiers: modifiersInput,
+    sensors: sensorsInput,
+  } = input;
   const plugins = resolveCustomizable(pluginsInput, defaultPreset.plugins);
   const sensors = resolveCustomizable(sensorsInput, defaultPreset.sensors);
-  const modifiers = resolveCustomizable(modifiersInput, defaultPreset.modifiers);
+  const modifiers = resolveCustomizable(
+    modifiersInput,
+    defaultPreset.modifiers
+  );
   const handleBeforeDragStart = useLatest(onBeforeDragStart);
   const handleDragStart = useLatest(onDragStart);
   const handleDragOver = useLatest(onDragOver);

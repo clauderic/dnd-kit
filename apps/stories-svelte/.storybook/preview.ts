@@ -23,13 +23,13 @@ const preview = {
           "import './styles.css';",
           "import {mount} from 'svelte';",
           "import App from './App.svelte';",
-          "",
+          '',
           "mount(App, {target: document.getElementById('app')});",
         ].join('\n'),
         'vite.config.js': [
           "import {svelte} from '@sveltejs/vite-plugin-svelte';",
           "import {defineConfig} from 'vite';",
-          "",
+          '',
           'export default defineConfig({',
           '  plugins: [svelte()],',
           '});',
@@ -69,19 +69,10 @@ const preview = {
       storySort: {
         order: [
           'Draggable',
-          [
-            'Basic setup',
-            'Drag handles',
-            'Drag overlay',
-          ],
+          ['Basic setup', 'Drag handles', 'Drag overlay'],
           'Droppable',
           'Sortable',
-          [
-            'Vertical list',
-            'Horizontal list',
-            'Grid',
-            'Multiple lists',
-          ],
+          ['Vertical list', 'Horizontal list', 'Grid', 'Multiple lists'],
         ],
       },
     },
