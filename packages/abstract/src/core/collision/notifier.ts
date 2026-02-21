@@ -1,5 +1,6 @@
 import {effects, untracked} from '@dnd-kit/state';
 
+import {Entity} from '../entities/index.ts';
 import {DragDropManager} from '../manager/index.ts';
 import {CorePlugin} from '../plugins/index.ts';
 import {defaultPreventable} from '../manager/events.ts';
@@ -29,6 +30,10 @@ export class CollisionNotifier extends CorePlugin {
         const {collisions} = collisionObserver;
 
         if (collisionObserver.isDisabled()) {
+          return;
+        }
+
+        if (Entity.pendingIdChanges) {
           return;
         }
 

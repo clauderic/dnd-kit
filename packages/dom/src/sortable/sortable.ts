@@ -366,10 +366,8 @@ export class Sortable<T extends Data = Data> {
   }
 
   public set id(id: UniqueIdentifier) {
-    batch(() => {
-      this.droppable.id = id;
-      this.draggable.id = id;
-    });
+    this.droppable.id = id;
+    this.draggable.id = id;
   }
 
   public get id() {

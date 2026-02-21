@@ -122,7 +122,9 @@ export class DragOperation<T extends Draggable, U extends Droppable>
   /**
    * Gets the source draggable entity.
    *
-   * @returns The current draggable entity or the previous one if the current is not found
+   * @returns The current draggable entity, falling back to the previous
+   * instance to bridge the gap when React unmounts and remounts a sortable
+   * during reparenting (e.g. moving an item between columns).
    */
   @derived
   public get source(): T | null {

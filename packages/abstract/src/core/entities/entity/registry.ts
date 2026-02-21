@@ -56,12 +56,24 @@ export class EntityRegistry<T extends Entity> {
     if (currentValue === value) return unregister;
 
     if (currentValue) {
-      const cleanup = this.cleanupFunctions.get(currentValue);
-      cleanup?.();
-      this.cleanupFunctions.delete(currentValue);
+      if (currentValue.id === key) {
+        const cleanup = this.cleanupFunctions.get(currentValue);
+        cleanup?.();
+        this.cleanupFunctions.delete(currentValue);
+      }
     }
 
     const updatedMap = new Map(current);
+
+    // Remove ghost registrations: if this entity exists at a different key
+    // (stale entry from before its id changed), clean it up
+    for (const [existingKey, existingValue] of current) {
+      if (existingValue === value && existingKey !== key) {
+        updatedMap.delete(existingKey);
+        break;
+      }
+    }
+
     updatedMap.set(key, value);
 
     this.map.value = updatedMap;
