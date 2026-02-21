@@ -1,4 +1,11 @@
-import {CleanupFunction, reactive, type Effect} from '@dnd-kit/state';
+import {
+  batch,
+  CleanupFunction,
+  reactive,
+  signal,
+  type Signal,
+  type Effect,
+} from '@dnd-kit/state';
 
 import {DragDropManager} from '../../manager/index.ts';
 import type {Data, UniqueIdentifier} from './types.ts';
@@ -38,6 +45,21 @@ export class Entity<
   T extends Data = Data,
   U extends DragDropManager<any, any> = DragDropManager<any, any>,
 > {
+  static pendingIdChanges: Map<Entity, UniqueIdentifier> | null = null;
+
+  static #flushIdChanges() {
+    const changes = Entity.pendingIdChanges;
+    Entity.pendingIdChanges = null;
+
+    if (changes) {
+      batch(() => {
+        for (const [entity, id] of changes) {
+          entity.#idSignal.value = id;
+        }
+      });
+    }
+  }
+
   /**
    * Creates a new instance of the `Entity` class.
    *
@@ -49,19 +71,19 @@ export class Entity<
 
     let previousId = id;
 
+    this.#idSignal = signal(id);
     this.manager = manager;
-    this.id = id;
     this.data = data;
     this.disabled = disabled;
     this.effects = () => [
       () => {
-        // Re-run this effect whenever the `id` changes
         const {id, manager} = this;
 
         if (id === previousId) {
           return;
         }
 
+        previousId = id;
         manager?.registry.register(this);
 
         return () => manager?.registry.unregister(this);
@@ -86,9 +108,30 @@ export class Entity<
 
   /**
    * The unique identifier of the entity.
+   *
+   * Setting this property defers the signal update to a microtask,
+   * batching multiple id changes together atomically. This ensures
+   * that when entities swap ids (e.g. during sorting with virtualization),
+   * all registry updates happen in a single transaction.
    */
-  @reactive
-  public accessor id: UniqueIdentifier;
+  #idSignal: Signal<UniqueIdentifier>;
+
+  public get id(): UniqueIdentifier {
+    const signalValue = this.#idSignal.value;
+    return Entity.pendingIdChanges?.get(this) ?? signalValue;
+  }
+
+  public set id(value: UniqueIdentifier) {
+    const current = Entity.pendingIdChanges?.get(this) ?? this.#idSignal.peek();
+    if (value === current) return;
+
+    if (!Entity.pendingIdChanges) {
+      Entity.pendingIdChanges = new Map();
+      queueMicrotask(() => Entity.#flushIdChanges());
+    }
+
+    Entity.pendingIdChanges.set(this, value);
+  }
 
   /**
    * The data associated with the entity.
