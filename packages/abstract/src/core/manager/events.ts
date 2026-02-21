@@ -150,37 +150,37 @@ export type CollisionEvent<
   T extends Draggable = Draggable,
   U extends Droppable = Droppable,
   V extends DragDropManager<T, U> = DragDropManager<T, U>,
-> = DragDropEvents<T, U, V>['collision'];
+> = Parameters<DragDropEvents<T, U, V>['collision']>[0];
 
 export type BeforeDragStartEvent<
   T extends Draggable = Draggable,
   U extends Droppable = Droppable,
   V extends DragDropManager<T, U> = DragDropManager<T, U>,
-> = DragDropEvents<T, U, V>['beforedragstart'];
+> = Parameters<DragDropEvents<T, U, V>['beforedragstart']>[0];
 
 export type DragStartEvent<
   T extends Draggable = Draggable,
   U extends Droppable = Droppable,
   V extends DragDropManager<T, U> = DragDropManager<T, U>,
-> = DragDropEvents<T, U, V>['dragstart'];
+> = Parameters<DragDropEvents<T, U, V>['dragstart']>[0];
 
 export type DragMoveEvent<
   T extends Draggable = Draggable,
   U extends Droppable = Droppable,
   V extends DragDropManager<T, U> = DragDropManager<T, U>,
-> = DragDropEvents<T, U, V>['dragmove'];
+> = Parameters<DragDropEvents<T, U, V>['dragmove']>[0];
 
 export type DragOverEvent<
   T extends Draggable = Draggable,
   U extends Droppable = Droppable,
   V extends DragDropManager<T, U> = DragDropManager<T, U>,
-> = DragDropEvents<T, U, V>['dragover'];
+> = Parameters<DragDropEvents<T, U, V>['dragover']>[0];
 
 export type DragEndEvent<
   T extends Draggable = Draggable,
   U extends Droppable = Droppable,
   V extends DragDropManager<T, U> = DragDropManager<T, U>,
-> = DragDropEvents<T, U, V>['dragend'];
+> = Parameters<DragDropEvents<T, U, V>['dragend']>[0];
 
 /**
  * Monitors and dispatches drag and drop events.
