@@ -25,7 +25,7 @@
     "@storybook/svelte-vite": "9.1.17",
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
     "@vueless/storybook-dark-mode": "^9.0.6",
-    "storybook": "9.1.17",
+    "storybook": "9.1.19",
     "typescript": "^5.7.3",
     "vite": "^6.0.0"
   }
