@@ -53,13 +53,16 @@ export class PluginRegistry<
   public set values(entries: Plugins<T>) {
     const descriptors = entries
       .map(descriptor)
-      .reduceRight<PluginDescriptor<T>[]>((acc, descriptor) => {
-        if (acc.some(({plugin}) => plugin === descriptor.plugin)) {
-          // Filter out duplicate plugins
+      .reduce<PluginDescriptor<T>[]>((acc, descriptor) => {
+        const existing = acc.find(({plugin}) => plugin === descriptor.plugin);
+
+        if (existing) {
+          // Keep the first occurrence's position, apply latest options
+          existing.options = descriptor.options;
           return acc;
         }
 
-        return [descriptor, ...acc];
+        return [...acc, descriptor];
       }, []);
     const constructors = descriptors.map(({plugin}) => plugin);
 
