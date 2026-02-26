@@ -91,7 +91,7 @@ export function IframeLists({
 
           <style
             dangerouslySetInnerHTML={{
-              __html: 'body { background: transparent; margin: 0 !important; }',
+              __html: 'body { background: transparent; margin: 0 !important; padding: 0 !important; }',
             }}
           />
           <div className={bodyClassName}>
