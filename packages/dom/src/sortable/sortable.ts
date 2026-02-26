@@ -10,7 +10,7 @@ import {
   defaultCollisionDetection,
   type CollisionDetector,
 } from '@dnd-kit/collision';
-import type {Alignment} from '@dnd-kit/geometry';
+import type {Alignment, Shape} from '@dnd-kit/geometry';
 import {Draggable, Droppable} from '@dnd-kit/dom';
 import type {
   DraggableInput,
@@ -100,6 +100,8 @@ const store = new WeakStore<
   TemporaryState
 >();
 
+const shapeStore = new WeakStore<DragDropManager, UniqueIdentifier, Shape>();
+
 export class Sortable<T extends Data = Data> {
   public draggable: Draggable<T>;
   public droppable: Droppable<T>;
@@ -161,6 +163,17 @@ export class Sortable<T extends Data = Data> {
                   initialGroup: this.group,
                 }))
               );
+
+              const isSource = untracked(
+                () => this.id === this.manager?.dragOperation.source?.id
+              );
+
+              if (isSource && !shapeStore.get(this.manager, this.id)) {
+                const shape = untracked(() => this.droppable.shape);
+                if (shape) {
+                  shapeStore.set(this.manager, this.id, shape);
+                }
+              }
             }
           },
           () => {
@@ -173,7 +186,7 @@ export class Sortable<T extends Data = Data> {
               this.#previousIndex = index;
               this.#previousGroup = group;
 
-              this.animate();
+              this.animate(false);
             }
           },
           () => {
@@ -189,6 +202,15 @@ export class Sortable<T extends Data = Data> {
 
             for (const plugin of plugins) {
               manager?.registry.register(plugin);
+            }
+          },
+          () => {
+            const manager = untracked(() => this.manager);
+            const id = untracked(() => this.id);
+            const status = manager?.dragOperation.status;
+
+            if (status?.dragging && manager && shapeStore.get(manager, id)) {
+              queueMicrotask(() => this.animate(true));
             }
           },
           ...inputEffects(),
@@ -210,14 +232,17 @@ export class Sortable<T extends Data = Data> {
     this.transition = transition;
   }
 
-  protected animate() {
+  protected animate(idChanged = false) {
     untracked(() => {
       const {manager, transition} = this;
-      const {shape} = this.droppable;
 
       if (!manager) return;
 
       const {idle} = manager.dragOperation.status;
+
+      const shape = idChanged
+        ? shapeStore.get(manager, this.id)
+        : (this.droppable.shape ?? shapeStore.get(manager, this.id));
 
       if (!shape || !transition || (idle && !transition.idle)) {
         return;
@@ -250,6 +275,8 @@ export class Sortable<T extends Data = Data> {
         if (!updatedShape) {
           return;
         }
+
+        shapeStore.set(manager, this.id, updatedShape);
 
         const delta = {
           x: shape.boundingRectangle.left - updatedShape.boundingRectangle.left,
