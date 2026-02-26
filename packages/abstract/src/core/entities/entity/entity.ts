@@ -67,7 +67,7 @@ export class Entity<
    * @param manager - The manager that controls the drag and drop operations.
    */
   constructor(input: Input<T>, manager: U | undefined) {
-    const {effects, id, data = {}, disabled = false, register = true} = input;
+    const {effects, id, data = {} as T, disabled = false, register = true} = input;
 
     let previousId = id;
 
@@ -137,7 +137,7 @@ export class Entity<
    * The data associated with the entity.
    */
   @reactive
-  public accessor data: Data;
+  public accessor data: T;
 
   /**
    * A boolean indicating whether the entity is disabled.
