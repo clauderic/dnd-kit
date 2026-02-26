@@ -61,10 +61,27 @@ export class Draggable<
   U extends DragDropManager<any, any> = DragDropManager<any, any>,
 > extends Entity<T, U> {
   constructor(
-    {modifiers, type, sensors, plugins, ...input}: Input<T>,
+    {modifiers, type, sensors, plugins, effects, ...input}: Input<T>,
     manager: U | undefined
   ) {
-    super(input, manager);
+    super(
+      {
+        ...input,
+        effects: () => [
+          ...(effects?.() ?? []),
+          () => {
+            const {manager, plugins} = this;
+            if (!manager || !plugins) return;
+
+            for (const entry of plugins) {
+              const {plugin} = toDescriptor(entry);
+              manager.registry.plugins.register(plugin);
+            }
+          },
+        ],
+      },
+      manager
+    );
 
     this.type = type;
     this.sensors = sensors;

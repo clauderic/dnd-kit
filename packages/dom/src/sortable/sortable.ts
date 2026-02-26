@@ -1,10 +1,8 @@
 import {batch, reactive, untracked, WeakStore} from '@dnd-kit/state';
-import {descriptor as toDescriptor} from '@dnd-kit/abstract';
 import type {CollisionPriority, Modifiers, Plugins} from '@dnd-kit/abstract';
 import type {
   Data,
   PluginConstructor,
-  PluginDescriptor,
   Type,
   UniqueIdentifier,
 } from '@dnd-kit/abstract';
@@ -137,23 +135,16 @@ export class Sortable<T extends Data = Data> {
       sensors,
       type,
       transition = defaultSortableTransition,
-      plugins: inputPlugins = defaultPlugins,
+      plugins = defaultPlugins,
       ...input
     }: SortableInput<T>,
     manager: DragDropManager<any, any> | undefined
   ) {
-    const descriptors = inputPlugins.map(toDescriptor);
-    const globalPlugins = descriptors
-      .filter((d) => d.options === undefined)
-      .map((d) => d.plugin) as PluginConstructor[];
-    const entityPlugins: Plugins = descriptors.filter(
-      (d): d is PluginDescriptor => d.options !== undefined
-    );
     this.droppable = new SortableDroppable<T>(input, manager, this);
     this.draggable = new SortableDraggable<T>(
       {
         ...input,
-        plugins: entityPlugins.length ? entityPlugins : undefined,
+        plugins,
         effects: () => [
           () => {
             const status = this.manager?.dragOperation.status;
@@ -197,13 +188,6 @@ export class Sortable<T extends Data = Data> {
 
             if (feedback === 'move' && isDragSource) {
               this.droppable.disabled = !target;
-            }
-          },
-          () => {
-            const {manager} = this;
-
-            for (const plugin of globalPlugins) {
-              manager?.registry.register(plugin);
             }
           },
           ...inputEffects(),
@@ -359,16 +343,7 @@ export class Sortable<T extends Data = Data> {
   }
 
   public set plugins(value: Plugins | undefined) {
-    if (!value) {
-      this.draggable.plugins = undefined;
-      return;
-    }
-
-    const entityPlugins = value
-      .map(toDescriptor)
-      .filter((d): d is PluginDescriptor => d.options !== undefined);
-
-    this.draggable.plugins = entityPlugins.length ? entityPlugins : undefined;
+    this.draggable.plugins = value;
   }
 
   public set disabled(value: boolean) {
