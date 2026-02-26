@@ -6,6 +6,12 @@ import type {EntityInput, Data, Type} from '../entity/index.ts';
 import type {Modifiers} from '../../modifiers/index.ts';
 import type {DragDropManager} from '../../manager/index.ts';
 import type {Sensors} from '../../sensors/sensor.ts';
+import type {
+  Plugins,
+  PluginConstructor,
+  PluginDescriptor,
+} from '../../plugins/index.ts';
+import {descriptor as toDescriptor} from '../../plugins/index.ts';
 
 /**
  * Input configuration for creating a draggable entity.
@@ -24,6 +30,7 @@ export interface Input<T extends Data = Data> extends EntityInput<T> {
   sensors?: Sensors;
   modifiers?: Modifiers;
   alignment?: Alignment;
+  plugins?: Plugins;
 }
 
 /**
@@ -54,7 +61,7 @@ export class Draggable<
   U extends DragDropManager<any, any> = DragDropManager<any, any>,
 > extends Entity<T, U> {
   constructor(
-    {modifiers, type, sensors, ...input}: Input<T>,
+    {modifiers, type, sensors, plugins, ...input}: Input<T>,
     manager: U | undefined
   ) {
     super(input, manager);
@@ -63,6 +70,7 @@ export class Draggable<
     this.sensors = sensors;
     this.modifiers = modifiers;
     this.alignment = input.alignment;
+    this.plugins = plugins;
   }
 
   /** The type of the draggable entity */
@@ -78,6 +86,25 @@ export class Draggable<
 
   /** The alignment of the draggable entity */
   public alignment: Alignment | undefined;
+
+  /** Per-entity plugin configuration descriptors */
+  public plugins: Plugins | undefined;
+
+  /**
+   * Look up per-entity options for a given plugin constructor.
+   */
+  public pluginConfig<P extends PluginConstructor>(
+    plugin: P
+  ): PluginDescriptor<any, any, P>['options'] | undefined {
+    if (!this.plugins) return undefined;
+
+    for (const entry of this.plugins) {
+      const desc = toDescriptor(entry);
+      if (desc.plugin === plugin) return desc.options;
+    }
+
+    return undefined;
+  }
 
   /** The current status of the draggable entity */
   @reactive

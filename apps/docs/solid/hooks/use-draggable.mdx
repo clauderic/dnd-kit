@@ -44,8 +44,8 @@ function Draggable() {
   Whether the draggable is disabled.
 </ParamField>
 
-<ParamField path="feedback" type="'default' | 'clone' | 'move' | 'none'" optional>
-  The type of visual feedback to show during drag. Defaults to `'default'`.
+<ParamField path="plugins" type="PluginDescriptor[]" optional>
+  An array of plugin descriptors for per-entity plugin configuration. Use `Plugin.configure()` to create descriptors. For example, `Feedback.configure({ feedback: 'clone' })`.
 </ParamField>
 
 <ParamField path="modifiers" type="Modifier[]" optional>

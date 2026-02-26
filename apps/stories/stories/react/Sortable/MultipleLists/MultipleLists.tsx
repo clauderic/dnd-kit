@@ -5,7 +5,7 @@ import {CollisionPriority} from '@dnd-kit/abstract';
 import {DragDropProvider} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
 import {move} from '@dnd-kit/helpers';
-import {PointerSensor, KeyboardSensor} from '@dnd-kit/dom';
+import {Feedback, PointerSensor, KeyboardSensor} from '@dnd-kit/dom';
 import {Debug} from '@dnd-kit/dom/plugins/debug';
 import {supportsViewTransition} from '@dnd-kit/dom/utilities';
 import {DragDropEventHandlers} from '@dnd-kit/react';
@@ -158,7 +158,7 @@ const SortableItem = memo(function SortableItem({
     group,
     accept: 'item',
     type: 'item',
-    feedback: 'clone',
+    plugins: [Feedback.configure({feedback: 'clone'})],
     index,
     data: {group},
   });

@@ -21,7 +21,8 @@ export interface UseDraggableInput<T extends Data = Data>
 export function useDraggable<T extends Data = Data>(
   input: UseDraggableInput<T>
 ) {
-  const {disabled, data, element, handle, id, modifiers, sensors} = input;
+  const {disabled, data, element, handle, id, modifiers, sensors, plugins} =
+    input;
   const draggable = useInstance(
     (manager) =>
       new Draggable(
@@ -48,10 +49,7 @@ export function useDraggable<T extends Data = Data>(
     undefined,
     deepEqual
   );
-  useOnValueChange(
-    input.feedback,
-    () => (draggable.feedback = input.feedback ?? 'default')
-  );
+  useOnValueChange(plugins, () => (draggable.plugins = plugins), undefined, deepEqual);
   useOnValueChange(
     input.alignment,
     () => (draggable.alignment = input.alignment)

@@ -9,12 +9,9 @@ import {reactive} from '@dnd-kit/state';
 import type {DragDropManager} from '../../manager/index.ts';
 import type {Sensors} from '../../sensors/types.ts';
 
-export type FeedbackType = 'default' | 'move' | 'clone' | 'none';
-
 export interface Input<T extends Data = Data> extends DraggableInput<T> {
   handle?: Element;
   element?: Element;
-  feedback?: FeedbackType;
   sensors?: Sensors;
 }
 
@@ -27,7 +24,6 @@ export class Draggable<T extends Data = Data> extends AbstractDraggable<
       element,
       effects = () => [],
       handle,
-      feedback = 'default',
       ...input
     }: Input<T>,
     manager: DragDropManager | undefined
@@ -68,7 +64,6 @@ export class Draggable<T extends Data = Data> extends AbstractDraggable<
 
     this.element = element;
     this.handle = handle;
-    this.feedback = feedback;
   }
 
   @reactive
@@ -76,7 +71,4 @@ export class Draggable<T extends Data = Data> extends AbstractDraggable<
 
   @reactive
   public accessor element: Element | undefined;
-
-  @reactive
-  public accessor feedback: FeedbackType;
 }

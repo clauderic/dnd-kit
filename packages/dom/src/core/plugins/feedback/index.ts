@@ -1,5 +1,5 @@
 export {Feedback} from './Feedback.ts';
-export type {KeyboardTransition} from './Feedback.ts';
+export type {FeedbackType, FeedbackOptions, KeyboardTransition} from './Feedback.ts';
 export type {Transition} from './types.ts';
 export type {
   DropAnimation,

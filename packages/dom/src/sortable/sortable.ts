@@ -1,8 +1,10 @@
 import {batch, reactive, untracked, WeakStore} from '@dnd-kit/state';
-import type {CollisionPriority, Modifiers} from '@dnd-kit/abstract';
+import {descriptor as toDescriptor} from '@dnd-kit/abstract';
+import type {CollisionPriority, Modifiers, Plugins} from '@dnd-kit/abstract';
 import type {
   Data,
   PluginConstructor,
+  PluginDescriptor,
   Type,
   UniqueIdentifier,
 } from '@dnd-kit/abstract';
@@ -11,10 +13,9 @@ import {
   type CollisionDetector,
 } from '@dnd-kit/collision';
 import type {Alignment} from '@dnd-kit/geometry';
-import {Draggable, Droppable} from '@dnd-kit/dom';
+import {Draggable, Droppable, Feedback} from '@dnd-kit/dom';
 import type {
   DraggableInput,
-  FeedbackType,
   DroppableInput,
   Sensors,
   DragDropManager,
@@ -77,10 +78,14 @@ export interface SortableInput<T extends Data>
    */
   transition?: SortableTransition | null;
   /**
-   * Plugins to register when sortable item is instantiated.
+   * Plugins to register or configure per-entity.
+   *
+   * Bare constructors are registered globally (e.g. sortable-specific plugins).
+   * Descriptors from `Plugin.configure()` are applied as per-entity plugin config.
+   *
    * @default [SortableKeyboardPlugin, OptimisticSortingPlugin]
    */
-  plugins?: PluginConstructor[];
+  plugins?: Plugins;
 }
 
 export const defaultSortableTransition: SortableTransition = {
@@ -132,15 +137,23 @@ export class Sortable<T extends Data = Data> {
       sensors,
       type,
       transition = defaultSortableTransition,
-      plugins = defaultPlugins,
+      plugins: inputPlugins = defaultPlugins,
       ...input
     }: SortableInput<T>,
     manager: DragDropManager<any, any> | undefined
   ) {
+    const descriptors = inputPlugins.map(toDescriptor);
+    const globalPlugins = descriptors
+      .filter((d) => d.options === undefined)
+      .map((d) => d.plugin) as PluginConstructor[];
+    const entityPlugins: Plugins = descriptors.filter(
+      (d): d is PluginDescriptor => d.options !== undefined
+    );
     this.droppable = new SortableDroppable<T>(input, manager, this);
     this.draggable = new SortableDraggable<T>(
       {
         ...input,
+        plugins: entityPlugins.length ? entityPlugins : undefined,
         effects: () => [
           () => {
             const status = this.manager?.dragOperation.status;
@@ -178,16 +191,18 @@ export class Sortable<T extends Data = Data> {
           },
           () => {
             const {target} = this;
-            const {feedback, isDragSource} = this.draggable;
+            const {isDragSource} = this.draggable;
+            const feedback =
+              this.draggable.pluginConfig(Feedback)?.feedback ?? 'default';
 
-            if (feedback == 'move' && isDragSource) {
+            if (feedback === 'move' && isDragSource) {
               this.droppable.disabled = !target;
             }
           },
           () => {
             const {manager} = this;
 
-            for (const plugin of plugins) {
+            for (const plugin of globalPlugins) {
               manager?.registry.register(plugin);
             }
           },
@@ -343,8 +358,17 @@ export class Sortable<T extends Data = Data> {
     return this.draggable.disabled && this.droppable.disabled;
   }
 
-  public set feedback(value: FeedbackType) {
-    this.draggable.feedback = value;
+  public set plugins(value: Plugins | undefined) {
+    if (!value) {
+      this.draggable.plugins = undefined;
+      return;
+    }
+
+    const entityPlugins = value
+      .map(toDescriptor)
+      .filter((d): d is PluginDescriptor => d.options !== undefined);
+
+    this.draggable.plugins = entityPlugins.length ? entityPlugins : undefined;
   }
 
   public set disabled(value: boolean) {

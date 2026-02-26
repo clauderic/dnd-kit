@@ -37,8 +37,8 @@ export function useDraggable<T extends Data = Data>(
 
     draggable.value.id = toValue(input.id);
     draggable.value.disabled = toValue(input.disabled) ?? false;
-    draggable.value.feedback = toValue(input.feedback) ?? 'default';
     draggable.value.alignment = toValue(input.alignment);
+    draggable.value.plugins = toValue(input.plugins);
     draggable.value.modifiers = toValue(input.modifiers);
     draggable.value.sensors = toValue(input.sensors);
 

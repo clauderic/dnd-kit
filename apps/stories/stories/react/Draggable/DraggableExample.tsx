@@ -4,8 +4,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import type {Modifiers, Sensors} from '@dnd-kit/abstract';
-import type {FeedbackType} from '@dnd-kit/dom';
+import type {Modifiers, Plugins, Sensors} from '@dnd-kit/abstract';
 import {DragDropProvider, DragOverlay, useDraggable} from '@dnd-kit/react';
 
 import {Button, Handle} from '../components';
@@ -42,7 +41,7 @@ export function DraggableExample(props: Props) {
 interface DraggableProps {
   id: string;
   handle?: boolean;
-  feedback?: FeedbackType;
+  plugins?: Plugins;
   modifiers?: Modifiers;
   style?: CSSProperties;
   overlay?: boolean;
@@ -52,7 +51,7 @@ export function Draggable({
   id,
   modifiers,
   handle,
-  feedback,
+  plugins,
   style,
   overlay,
 }: DraggableProps) {
@@ -63,7 +62,7 @@ export function Draggable({
     id,
     modifiers,
     element,
-    feedback,
+    plugins,
     handle: handleRef,
   });
 
