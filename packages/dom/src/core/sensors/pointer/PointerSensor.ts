@@ -333,7 +333,12 @@ export class PointerSensor extends Sensor<
     const ownerDocument = getDocument(event.target);
     const pointerCaptureTarget = ownerDocument.body;
 
-    pointerCaptureTarget.setPointerCapture(event.pointerId);
+    try {
+      pointerCaptureTarget.setPointerCapture(event.pointerId);
+    } catch {
+      this.handleCancel(event);
+      return;
+    }
 
     const listenerTargets = isElement(event.target)
       ? [event.target, pointerCaptureTarget]
@@ -377,6 +382,13 @@ export class PointerSensor extends Sensor<
   }
 
   protected cleanup() {
+    const {controller} = this;
+    this.controller = undefined;
+
+    if (controller && !controller.signal.aborted) {
+      controller.abort();
+    }
+
     this.latest = {
       event: undefined,
       coordinates: undefined,
