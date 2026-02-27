@@ -13,7 +13,7 @@ Draggable entities now accept a `plugins` property for per-entity plugin configu
 
 The `feedback` property (`'default' | 'move' | 'clone' | 'none'`) has been moved from the Draggable entity to `FeedbackOptions`. Drop animation can also now be configured per-draggable.
 
-The `DropAnimationFunction` context now includes `source`, providing access to the draggable entity for conditional animation logic.
+Plugins listed in an entity's `plugins` array are auto-registered on the manager if not already present. The Sortable class now uses this generic mechanism instead of its own custom registration logic.
 
 ### Migration guide
 
@@ -50,16 +50,5 @@ Drop animation can now be configured per-draggable:
 useDraggable({
   id: 'item',
   plugins: [Feedback.configure({ feedback: 'clone', dropAnimation: null })],
-});
-```
-
-Custom drop animation functions now receive the `source` draggable in their context:
-
-```tsx
-Feedback.configure({
-  dropAnimation: async (context) => {
-    if (context.source.type === 'service-draggable') return;
-    // custom animation...
-  },
 });
 ```
