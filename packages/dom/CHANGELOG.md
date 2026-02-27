@@ -1,5 +1,171 @@
 # @dnd-kit/dom
 
+## 0.4.0
+
+### Minor Changes
+
+- [#1909](https://github.com/clauderic/dnd-kit/pull/1909) [`87bf1e6`](https://github.com/clauderic/dnd-kit/commit/87bf1e66fb7432735bb8d7ba84758d128df5ab18) Thanks [@clauderic](https://github.com/clauderic)! - Add `acceleration` and `threshold` options to the `AutoScroller` plugin.
+
+  - `acceleration` controls the base scroll speed multiplier (default: `25`).
+  - `threshold` controls the percentage of container dimensions that defines the scroll activation zone (default: `0.2`). Accepts a single number for both axes or `{ x, y }` for per-axis control. Setting an axis to `0` disables auto-scrolling on that axis.
+
+  ```ts
+  AutoScroller.configure({
+    acceleration: 15,
+    threshold: {x: 0, y: 0.3},
+  });
+  ```
+
+- [#1938](https://github.com/clauderic/dnd-kit/pull/1938) [`c001272`](https://github.com/clauderic/dnd-kit/commit/c00127288ca2ea7ecb8e8d9079f1b3a43db75362) Thanks [@clauderic](https://github.com/clauderic)! - The `DropAnimationFunction` context now includes `source`, providing access to the draggable entity for conditional animation logic.
+
+  ```tsx
+  Feedback.configure({
+    dropAnimation: async (context) => {
+      if (context.source.type === 'service-draggable') return;
+      // custom animation...
+    },
+  });
+  ```
+
+- [#1923](https://github.com/clauderic/dnd-kit/pull/1923) [`cde61e4`](https://github.com/clauderic/dnd-kit/commit/cde61e4b4551f9094f44d9281f65028f85df9813) Thanks [@clauderic](https://github.com/clauderic)! - Batch entity identity changes to prevent collision oscillation during virtualized sorting.
+
+  When entities swap ids (e.g. as `react-window` recycles DOM nodes during a drag), multiple registry updates could fire in an interleaved order, causing the collision detector to momentarily see stale or duplicate entries and oscillate between targets.
+
+  Entity `id` changes are now deferred to a microtask and flushed atomically in a single `batch()`, ensuring:
+
+  - The collision notifier skips detection while id changes are pending
+  - The registry cleans up ghost registrations (stale keys left behind after an id swap)
+
+- [#1908](https://github.com/clauderic/dnd-kit/pull/1908) [`1328af8`](https://github.com/clauderic/dnd-kit/commit/1328af851069e267838102cbf5481ee26ceeddf0) Thanks [@clauderic](https://github.com/clauderic)! - Add `keyboardTransition` option to the `Feedback` plugin for customizing or disabling the CSS transition applied when moving elements via keyboard.
+
+  By default, keyboard-driven moves animate with `250ms cubic-bezier(0.25, 1, 0.5, 1)`. You can now customize the `duration` and `easing`, or set the option to `null` to disable the transition entirely.
+
+  ```ts
+  Feedback.configure({
+    keyboardTransition: {duration: 150, easing: 'ease-out'},
+  });
+  ```
+
+- [#1919](https://github.com/clauderic/dnd-kit/pull/1919) [`bfff7de`](https://github.com/clauderic/dnd-kit/commit/bfff7de1bf8020e7643adf45ca31c4c08f98501d) Thanks [@clauderic](https://github.com/clauderic)! - The Feedback plugin now supports full CSS `transform` property for compatibility with libraries like react-window v2 that position elements via transforms. Transform-related CSS transitions are filtered out to prevent conflicts with Feedback-managed properties. The ResizeObserver computes shapes from CSS values rather than re-measuring the element, avoiding mid-transition measurement errors. Sortable's `animate()` cancels CSS transitions on transform-related properties before measuring to ensure correct FLIP deltas.
+
+- [#1915](https://github.com/clauderic/dnd-kit/pull/1915) [`9b24dff`](https://github.com/clauderic/dnd-kit/commit/9b24dffde9a4b58140e5dd8c10e2766dabe42c00) Thanks [@clauderic](https://github.com/clauderic)! - Redesign event type system to follow the DOM EventMap pattern. Introduces `DragDropEventMap` for event object types and `DragDropEventHandlers` for event handler signatures, replacing the ambiguously named `DragDropEvents`. Event type aliases (`CollisionEvent`, `DragStartEvent`, etc.) now derive directly from `DragDropEventMap` rather than using `Parameters<>` extraction.
+
+  ### Migration guide
+
+  - **`DragDropEvents`** has been split into two types:
+    - `DragDropEventMap` — maps event names to event object types (like `WindowEventMap`)
+    - `DragDropEventHandlers` — maps event names to `(event, manager) => void` handler signatures
+  - If you were importing `DragDropEvents` to type **event objects**, use `DragDropEventMap` instead:
+    ```ts
+    // Before
+    type MyEvent = Parameters<DragDropEvents<D, P, M>['dragend']>[0];
+    // After
+    type MyEvent = DragDropEventMap<D, P, M>['dragend'];
+    ```
+  - If you were importing `DragDropEvents` to type **event handlers**, use `DragDropEventHandlers` instead:
+    ```ts
+    // Before
+    const handler: DragDropEvents<D, P, M>['dragend'] = (event, manager) => {};
+    // After
+    const handler: DragDropEventHandlers<D, P, M>['dragend'] = (
+      event,
+      manager
+    ) => {};
+    ```
+  - The `DragDropEvents` re-export from `@dnd-kit/react` and `@dnd-kit/solid` has been removed. Import `DragDropEventMap` or `DragDropEventHandlers` from `@dnd-kit/abstract` directly if needed.
+  - Convenience aliases (`CollisionEvent`, `DragStartEvent`, `DragEndEvent`, etc.) are unchanged and continue to work as before.
+
+- [#1938](https://github.com/clauderic/dnd-kit/pull/1938) [`e69387d`](https://github.com/clauderic/dnd-kit/commit/e69387d2906872310e56ecea4d75f7fa18db4f56) Thanks [@clauderic](https://github.com/clauderic)! - Added per-entity plugin configuration and moved `feedback` from the Draggable entity to the Feedback plugin.
+
+  Draggable entities now accept a `plugins` property for per-entity plugin configuration, using the existing `Plugin.configure()` pattern. Plugins can read per-entity options via `source.pluginConfig(PluginClass)`.
+
+  The `feedback` property (`'default' | 'move' | 'clone' | 'none'`) has been moved from the Draggable entity to `FeedbackOptions`. Drop animation can also now be configured per-draggable.
+
+  Plugins listed in an entity's `plugins` array are auto-registered on the manager if not already present. The Sortable class now uses this generic mechanism instead of its own custom registration logic.
+
+  ### Migration guide
+
+  The `feedback` property has been moved from the draggable/sortable hook input to per-entity Feedback plugin configuration.
+
+  **Before:**
+
+  ```tsx
+  import {FeedbackType} from '@dnd-kit/dom';
+
+  useDraggable({id: 'item', feedback: 'clone'});
+  useSortable({id: 'item', index: 0, feedback: 'clone'});
+  ```
+
+  **After:**
+
+  ```tsx
+  import {Feedback} from '@dnd-kit/dom';
+
+  useDraggable({
+    id: 'item',
+    plugins: [Feedback.configure({feedback: 'clone'})],
+  });
+  useSortable({
+    id: 'item',
+    index: 0,
+    plugins: [Feedback.configure({feedback: 'clone'})],
+  });
+  ```
+
+  Drop animation can now be configured per-draggable:
+
+  ```tsx
+  useDraggable({
+    id: 'item',
+    plugins: [Feedback.configure({feedback: 'clone', dropAnimation: null})],
+  });
+  ```
+
+- [#1905](https://github.com/clauderic/dnd-kit/pull/1905) [`11ff2eb`](https://github.com/clauderic/dnd-kit/commit/11ff2eb1bc408468b77a29510133b2581b3d3111) Thanks [@clauderic](https://github.com/clauderic)! - Renamed `StyleSheetManager` to `StyleInjector` and centralized CSP `nonce` configuration.
+
+  The `StyleInjector` plugin now accepts a `nonce` option that is applied to all injected `<style>` elements. The `nonce` options have been removed from the `Cursor`, `PreventSelection`, and `Feedback` plugin options.
+
+  Before:
+
+  ```ts
+  const manager = new DragDropManager({
+    plugins: (defaults) => [
+      ...defaults,
+      Cursor.configure({nonce: 'abc123'}),
+      PreventSelection.configure({nonce: 'abc123'}),
+    ],
+  });
+  ```
+
+  After:
+
+  ```ts
+  const manager = new DragDropManager({
+    plugins: (defaults) => [
+      ...defaults,
+      StyleInjector.configure({nonce: 'abc123'}),
+    ],
+  });
+  ```
+
+  The `Cursor` and `PreventSelection` plugins now route their style injection through the `StyleInjector`, so all injected styles respect the centralized `nonce` configuration.
+
+### Patch Changes
+
+- [#1918](https://github.com/clauderic/dnd-kit/pull/1918) [`4bc7e71`](https://github.com/clauderic/dnd-kit/commit/4bc7e7108373b1eb7eef0de832b25ca93ce7bf40) Thanks [@clauderic](https://github.com/clauderic)! - Animation resolution now uses last-wins semantics matching CSS composite order. `getFinalKeyframe` returns the last matching keyframe across all running animations instead of short-circuiting on the first match. `getProjectedTransform` collects the latest value per CSS property (`transform`, `translate`, `scale`) rather than accumulating transforms additively.
+
+- [#1934](https://github.com/clauderic/dnd-kit/pull/1934) [`688e00f`](https://github.com/clauderic/dnd-kit/commit/688e00fffb7535b8027a9c5947d006a875f42d16) Thanks [@clauderic](https://github.com/clauderic)! - Fixed `setPointerCapture` error on touch devices caused by stale pointer activation.
+
+  When a touch was released during the activation delay and followed by a quick re-touch, the pending delay timer from the first touch could fire with a stale `pointerId`, causing `setPointerCapture` to throw. The `PointerSensor` now properly aborts the activation controller during cleanup to cancel pending delay timers, and defensively handles `setPointerCapture` failures.
+
+- [#1916](https://github.com/clauderic/dnd-kit/pull/1916) [`7489265`](https://github.com/clauderic/dnd-kit/commit/74892651b32bc84e2f527a779257d946d923400d) Thanks [@clauderic](https://github.com/clauderic)! - Rewrite `scrollIntoViewIfNeeded` with manual scroll calculations for more predictable behavior in nested scroll containers.
+
+- Updated dependencies [[`cde61e4`](https://github.com/clauderic/dnd-kit/commit/cde61e4b4551f9094f44d9281f65028f85df9813), [`9b24dff`](https://github.com/clauderic/dnd-kit/commit/9b24dffde9a4b58140e5dd8c10e2766dabe42c00), [`8115a57`](https://github.com/clauderic/dnd-kit/commit/8115a57f1191af78dd641933af34c9c37f8dcb3c), [`e69387d`](https://github.com/clauderic/dnd-kit/commit/e69387d2906872310e56ecea4d75f7fa18db4f56), [`4e35963`](https://github.com/clauderic/dnd-kit/commit/4e35963d427d835285a1f10df96899502d327d68)]:
+  - @dnd-kit/abstract@0.4.0
+  - @dnd-kit/collision@0.4.0
+  - @dnd-kit/geometry@0.4.0
+  - @dnd-kit/state@0.4.0
+
 ## 0.3.2
 
 ### Patch Changes
