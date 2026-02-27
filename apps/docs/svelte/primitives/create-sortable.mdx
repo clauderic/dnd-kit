@@ -118,8 +118,8 @@ All input properties accept plain values or getter functions for reactivity.
   The type of this sortable element.
 </ParamField>
 
-<ParamField path="feedback" type="'default' | 'clone' | 'move' | 'none' | (() => string)" optional>
-  The type of visual feedback. Defaults to `'default'`.
+<ParamField path="plugins" type="PluginDescriptor[] | (() => PluginDescriptor[])" optional>
+  An array of plugin descriptors for per-entity plugin configuration. Use `Plugin.configure()` to create descriptors. For example, `Feedback.configure({ feedback: 'clone' })`.
 </ParamField>
 
 <ParamField path="transition" type="SortableTransition | (() => SortableTransition)" optional>

@@ -71,13 +71,15 @@ const draggable = new Draggable({
 
 ## Feedback
 
-You can customize how the element behaves while being dragged using the `feedback` option:
+You can customize how the element behaves while being dragged using the [Feedback](/extend/plugins/feedback) plugin's per-entity configuration:
 
 ```js
+import {Draggable, DragDropManager, Feedback} from '@dnd-kit/dom';
+
 const draggable = new Draggable({
   id: 'draggable-1',
   element,
-  feedback: 'clone', // Create a clone while dragging
+  plugins: [Feedback.configure({ feedback: 'clone' })],
 }, manager);
 ```
 
@@ -109,8 +111,8 @@ The `Draggable` class accepts the following arguments:
   Optionally assign a type to restrict which droppable targets can accept this element. See [types](#types).
 </ParamField>
 
-<ParamField path="feedback" type="'default' | 'clone' | 'move' | 'none'">
-  Specify how the element should behave while being dragged. See [feedback](#feedback).
+<ParamField path="plugins" type="PluginDescriptor[]">
+  An array of plugin descriptors for per-entity plugin configuration. Use `Plugin.configure()` to create descriptors. See [feedback](#feedback).
 </ParamField>
 
 <ParamField path="disabled" type="boolean">

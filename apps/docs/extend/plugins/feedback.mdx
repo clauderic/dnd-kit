@@ -91,7 +91,62 @@ function App() {
 ```
 </CodeGroup>
 
-## Options
+## Per-entity configuration
+
+In addition to global configuration on the `DragDropManager`, you can configure the Feedback plugin on individual draggable or sortable entities using `Feedback.configure()` in the entity's `plugins` array. Per-entity options override the global configuration for that entity.
+
+<CodeGroup>
+```tsx React
+import {useDraggable} from '@dnd-kit/react';
+import {Feedback} from '@dnd-kit/dom';
+
+function Draggable({id}) {
+  const {ref} = useDraggable({
+    id,
+    plugins: [
+      Feedback.configure({
+        feedback: 'clone',
+        dropAnimation: null,
+      }),
+    ],
+  });
+
+  return <button ref={ref}>Draggable</button>;
+}
+```
+
+```ts Vanilla
+import {Draggable, Feedback} from '@dnd-kit/dom';
+
+const draggable = new Draggable({
+  id: 'draggable-1',
+  element,
+  plugins: [
+    Feedback.configure({
+      feedback: 'clone',
+      dropAnimation: null,
+    }),
+  ],
+}, manager);
+```
+</CodeGroup>
+
+### Per-entity options
+
+<ParamField path="feedback" type="FeedbackType">
+  The type of visual feedback to show during drag for this entity.
+
+  - `'default'` — the original element moves with the drag
+  - `'clone'` — a copy of the element stays in place while the original moves
+  - `'move'` — the element moves without a placeholder
+  - `'none'` — no visual feedback (useful for custom drag overlays)
+</ParamField>
+
+<ParamField path="dropAnimation" type="DropAnimation | null">
+  Customize or disable the drop animation for this entity. Overrides the global `dropAnimation` option.
+</ParamField>
+
+## Global options
 
 <ParamField path="dropAnimation" type="DropAnimation | null">
   Customize or disable the drop animation that plays when a dragged element is released.

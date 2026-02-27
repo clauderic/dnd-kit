@@ -1,5 +1,6 @@
 import type {Meta, StoryObj} from '@storybook/react-vite';
 import {pointerIntersection} from '@dnd-kit/collision';
+import {Feedback} from '@dnd-kit/dom';
 
 import {SortableExample} from '../SortableExample';
 import gridSortableSource from './GridSortableApp.tsx?raw';
@@ -79,7 +80,7 @@ export const Clone: Story = {
         };
       }
     },
-    feedback: 'clone',
+    plugins: [Feedback.configure({feedback: 'clone'})],
   },
 };
 

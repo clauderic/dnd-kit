@@ -60,8 +60,8 @@ export function useSortable<T extends Data = Data>(
 
     sortable.id = input.id;
     sortable.disabled = input.disabled ?? false;
-    sortable.feedback = input.feedback ?? 'default';
     sortable.alignment = input.alignment;
+    sortable.plugins = input.plugins;
     sortable.modifiers = input.modifiers;
     sortable.sensors = input.sensors;
     sortable.accept = input.accept;

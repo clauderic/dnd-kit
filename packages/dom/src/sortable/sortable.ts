@@ -1,5 +1,5 @@
 import {batch, reactive, untracked, WeakStore} from '@dnd-kit/state';
-import type {CollisionPriority, Modifiers} from '@dnd-kit/abstract';
+import type {CollisionPriority, Modifiers, Plugins} from '@dnd-kit/abstract';
 import type {
   Data,
   PluginConstructor,
@@ -11,10 +11,9 @@ import {
   type CollisionDetector,
 } from '@dnd-kit/collision';
 import type {Alignment} from '@dnd-kit/geometry';
-import {Draggable, Droppable} from '@dnd-kit/dom';
+import {Draggable, Droppable, Feedback} from '@dnd-kit/dom';
 import type {
   DraggableInput,
-  FeedbackType,
   DroppableInput,
   Sensors,
   DragDropManager,
@@ -77,10 +76,14 @@ export interface SortableInput<T extends Data>
    */
   transition?: SortableTransition | null;
   /**
-   * Plugins to register when sortable item is instantiated.
+   * Plugins to register or configure per-entity.
+   *
+   * Bare constructors are registered globally (e.g. sortable-specific plugins).
+   * Descriptors from `Plugin.configure()` are applied as per-entity plugin config.
+   *
    * @default [SortableKeyboardPlugin, OptimisticSortingPlugin]
    */
-  plugins?: PluginConstructor[];
+  plugins?: Plugins;
 }
 
 export const defaultSortableTransition: SortableTransition = {
@@ -141,6 +144,7 @@ export class Sortable<T extends Data = Data> {
     this.draggable = new SortableDraggable<T>(
       {
         ...input,
+        plugins,
         effects: () => [
           () => {
             const status = this.manager?.dragOperation.status;
@@ -178,17 +182,12 @@ export class Sortable<T extends Data = Data> {
           },
           () => {
             const {target} = this;
-            const {feedback, isDragSource} = this.draggable;
+            const {isDragSource} = this.draggable;
+            const feedback =
+              this.draggable.pluginConfig(Feedback)?.feedback ?? 'default';
 
-            if (feedback == 'move' && isDragSource) {
+            if (feedback === 'move' && isDragSource) {
               this.droppable.disabled = !target;
-            }
-          },
-          () => {
-            const {manager} = this;
-
-            for (const plugin of plugins) {
-              manager?.registry.register(plugin);
             }
           },
           ...inputEffects(),
@@ -343,8 +342,8 @@ export class Sortable<T extends Data = Data> {
     return this.draggable.disabled && this.droppable.disabled;
   }
 
-  public set feedback(value: FeedbackType) {
-    this.draggable.feedback = value;
+  public set plugins(value: Plugins | undefined) {
+    this.draggable.plugins = value;
   }
 
   public set disabled(value: boolean) {

@@ -61,8 +61,8 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
 
     sortable.value.id = toValue(input.id);
     sortable.value.disabled = toValue(input.disabled) ?? false;
-    sortable.value.feedback = toValue(input.feedback) ?? 'default';
     sortable.value.alignment = toValue(input.alignment);
+    sortable.value.plugins = toValue(input.plugins);
     sortable.value.modifiers = toValue(input.modifiers);
     sortable.value.sensors = toValue(input.sensors);
     sortable.value.accept = toValue(input.accept);

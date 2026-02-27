@@ -30,8 +30,8 @@ export function createDraggable<T extends Data = Data>(
   $effect(() => {
     draggable.id = input.id;
     draggable.disabled = input.disabled ?? false;
-    draggable.feedback = input.feedback ?? 'default';
     draggable.alignment = input.alignment;
+    draggable.plugins = input.plugins;
     draggable.modifiers = input.modifiers;
     draggable.sensors = input.sensors;
 

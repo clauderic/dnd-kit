@@ -1,5 +1,6 @@
 import type {Meta, StoryObj} from '@storybook/react-vite';
 import {RestrictToHorizontalAxis} from '@dnd-kit/abstract/modifiers';
+import {Feedback} from '@dnd-kit/dom';
 
 import {SortableExample} from '../SortableExample';
 import horizontalSortableSource from './HorizontalSortableApp.tsx?raw';
@@ -60,7 +61,7 @@ export const Clone: Story = {
   name: 'Clone feedback',
   args: {
     ...defaultArgs,
-    feedback: 'clone',
+    plugins: [Feedback.configure({feedback: 'clone'})],
   },
 };
 

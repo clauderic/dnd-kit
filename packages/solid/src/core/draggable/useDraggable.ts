@@ -43,8 +43,8 @@ export function useDraggable<T extends Data = Data>(
 
     draggable.id = input.id;
     draggable.disabled = input.disabled ?? false;
-    draggable.feedback = input.feedback ?? 'default';
     draggable.alignment = input.alignment;
+    draggable.plugins = input.plugins;
     draggable.modifiers = input.modifiers;
     draggable.sensors = input.sensors;
 

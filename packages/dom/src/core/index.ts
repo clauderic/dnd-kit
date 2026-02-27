@@ -14,7 +14,6 @@ export type {
 export {Draggable, Droppable} from './entities/index.ts';
 export type {
   DraggableInput,
-  FeedbackType,
   DroppableInput,
 } from './entities/index.ts';
 
@@ -40,6 +39,8 @@ export {
   StyleInjector,
 } from './plugins/index.ts';
 export type {
+  FeedbackType,
+  FeedbackOptions,
   Transition,
   DropAnimation,
   DropAnimationOptions,

@@ -3,6 +3,7 @@ import type {PropsWithChildren} from 'react';
 import type {UniqueIdentifier} from '@dnd-kit/abstract';
 import {DragDropProvider} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
+import {Feedback} from '@dnd-kit/dom';
 import {Debug} from '@dnd-kit/dom/plugins/debug';
 import {move} from '@dnd-kit/helpers';
 import {useWindowVirtualizer} from '@tanstack/react-virtual';
@@ -101,7 +102,7 @@ const Sortable = forwardRef<Element, PropsWithChildren<SortableProps>>(
       id,
       index,
       element,
-      feedback: 'clone',
+      plugins: [Feedback.configure({feedback: 'clone'})],
       handle: handleRef,
     });
 

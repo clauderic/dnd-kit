@@ -46,8 +46,8 @@ The `useDraggable` hook accepts the following arguments:
   Set to `true` to prevent the draggable element from being draggable.
 </ParamField>
 
-<ParamField path="feedback" type="'default' | 'clone' | 'move' | 'none'">
-  The type of feedback that should be displayed when the element is being dragged.
+<ParamField path="plugins" type="PluginDescriptor[]">
+  An array of plugin descriptors for per-entity plugin configuration. Use `Plugin.configure()` to create descriptors. For example, `Feedback.configure({ feedback: 'clone' })`.
 </ParamField>
 
 <ParamField path="modifiers" type="Modifier[]">

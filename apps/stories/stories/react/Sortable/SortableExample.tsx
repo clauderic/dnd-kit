@@ -3,9 +3,9 @@ import type {CSSProperties, PropsWithChildren} from 'react';
 import type {
   CollisionDetector,
   Modifiers,
+  Plugins,
   UniqueIdentifier,
 } from '@dnd-kit/abstract';
-import {FeedbackType} from '@dnd-kit/dom';
 import {type SortableTransition} from '@dnd-kit/dom/sortable';
 import {DragDropProvider} from '@dnd-kit/react';
 import {useSortable} from '@dnd-kit/react/sortable';
@@ -20,7 +20,7 @@ interface Props {
   debug?: boolean;
   dragHandle?: boolean;
   disabled?: UniqueIdentifier[];
-  feedback?: FeedbackType;
+  plugins?: Plugins;
   modifiers?: Modifiers;
   layout?: 'vertical' | 'horizontal' | 'grid';
   transition?: SortableTransition;
@@ -36,7 +36,7 @@ export function SortableExample({
   collisionDetector,
   disabled,
   dragHandle,
-  feedback,
+  plugins,
   layout = 'vertical',
   optimistic = true,
   modifiers,
@@ -67,7 +67,7 @@ export function SortableExample({
             collisionDetector={collisionDetector}
             disabled={disabled?.includes(id)}
             dragHandle={dragHandle}
-            feedback={feedback}
+            plugins={plugins}
             optimistic={optimistic}
             transition={transition}
             style={getItemStyle?.(id, index)}
@@ -84,7 +84,7 @@ interface SortableProps {
   collisionDetector?: CollisionDetector;
   disabled?: boolean;
   dragHandle?: boolean;
-  feedback?: FeedbackType;
+  plugins?: Plugins;
   optimistic?: boolean;
   transition?: SortableTransition;
   style?: React.CSSProperties;
@@ -96,7 +96,7 @@ const SortableItem = memo(function SortableItem({
   collisionDetector = directionBiased,
   disabled,
   dragHandle,
-  feedback,
+  plugins,
   transition,
   style,
 }: PropsWithChildren<SortableProps>) {
@@ -106,7 +106,7 @@ const SortableItem = memo(function SortableItem({
     id,
     index,
     element,
-    feedback,
+    plugins,
     transition,
     handle: handleRef,
     disabled,

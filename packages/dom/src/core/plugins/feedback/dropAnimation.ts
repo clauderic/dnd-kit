@@ -11,6 +11,7 @@ import {
 } from '@dnd-kit/dom/utilities';
 import {Rectangle, type Coordinates, type Alignment} from '@dnd-kit/geometry';
 
+import type {Draggable} from '../../entities/index.ts';
 import {CSS_PREFIX, DROPPING_ATTRIBUTE} from './constants.ts';
 import {isSameFrame} from './utilities.ts';
 
@@ -22,6 +23,7 @@ export interface DropAnimationOptions {
 }
 
 export type DropAnimationFunction = (context: {
+  source: Draggable;
   element: Element;
   feedbackElement: Element;
   placeholder: Element | null | undefined;
@@ -35,6 +37,7 @@ const DEFAULT_DURATION = 250;
 const DEFAULT_EASING = 'ease';
 
 export interface DropAnimationContext {
+  source: Draggable;
   element: Element;
   feedbackElement: Element;
   placeholder: Element | null | undefined;
@@ -54,6 +57,7 @@ export function runDropAnimation(ctx: DropAnimationContext): void {
 
   if (typeof animation === 'function') {
     const result = animation({
+      source: ctx.source,
       element: ctx.element,
       feedbackElement: ctx.feedbackElement,
       placeholder: ctx.placeholder,
