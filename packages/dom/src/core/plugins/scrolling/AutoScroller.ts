@@ -36,14 +36,6 @@ export class AutoScroller extends Plugin<DragDropManager, AutoScrollerOptions> {
       throw new Error('AutoScroller plugin depends on Scroller plugin');
     }
 
-    const scrollOptions = {
-      acceleration: options?.acceleration,
-      threshold:
-        typeof options?.threshold === 'number'
-          ? {x: options.threshold, y: options.threshold}
-          : options?.threshold,
-    };
-
     this.destroy = effect(() => {
       if (this.disabled) {
         return;
@@ -54,6 +46,14 @@ export class AutoScroller extends Plugin<DragDropManager, AutoScrollerOptions> {
       const {position: _, status} = manager.dragOperation;
 
       if (status.dragging) {
+        const scrollOptions = {
+          acceleration: this.options?.acceleration,
+          threshold:
+            typeof this.options?.threshold === 'number'
+              ? {x: this.options.threshold, y: this.options.threshold}
+              : this.options?.threshold,
+        };
+
         const canScroll = scroller.scroll(undefined, scrollOptions);
 
         if (canScroll) {
