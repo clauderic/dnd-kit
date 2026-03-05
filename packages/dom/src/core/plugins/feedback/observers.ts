@@ -114,6 +114,19 @@ export function createDocumentMutationObserver(
         }
       }
     }
+
+    // Handle the case where siblings were moved around a stationary
+    // source element (e.g., a VDOM framework reordered children).
+    // The addedNodes won't contain the element or placeholder, but
+    // they may no longer be adjacent.
+    if (
+      element.isConnected &&
+      placeholder.isConnected &&
+      element.nextElementSibling !== placeholder
+    ) {
+      element.insertAdjacentElement('afterend', placeholder);
+      showPopover(feedbackElement);
+    }
   });
 
   observer.observe(element.ownerDocument.body, {
