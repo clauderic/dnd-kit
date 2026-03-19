@@ -29,4 +29,12 @@ export {useDragOperation} from './hooks/useDragOperation.ts';
 export {useInstance} from './hooks/useInstance.ts';
 
 export {KeyboardSensor, PointerSensor} from '@dnd-kit/dom';
-export type {DragDropManager} from '@dnd-kit/dom';
+export type {
+  BeforeDragStartEvent,
+  CollisionEvent,
+  DragDropManager,
+  DragEndEvent,
+  DragMoveEvent,
+  DragOverEvent,
+  DragStartEvent,
+} from '@dnd-kit/dom';

@@ -4,6 +4,12 @@ import type {Droppable, Draggable} from '@dnd-kit/dom';
 import {SortableDroppable, SortableDraggable} from './sortable.ts';
 
 export function isSortable(
+  element: Draggable | null
+): element is SortableDraggable<any>;
+export function isSortable(
+  element: Droppable | null
+): element is SortableDroppable<any>;
+export function isSortable(
   element: Draggable | Droppable | null
 ): element is SortableDroppable<any> | SortableDraggable<any> {
   return (

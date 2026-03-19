@@ -34,15 +34,15 @@ If you need more control over state updates, you can manage state manually using
 With [optimistic sorting](/concepts/sortable#optimistic-sorting) enabled (the default), you only need to handle the `dragEnd` event:
 
 ```vue
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
-import { DragDropProvider } from '@dnd-kit/vue';
+import { DragDropProvider, type DragEndEvent } from '@dnd-kit/vue';
 import { isSortable } from '@dnd-kit/vue/sortable';
 import SortableItem from './SortableItem.vue';
 
 const items = ref([1, 2, 3, 4]);
 
-function onDragEnd(event) {
+function onDragEnd(event: DragEndEvent) {
   if (event.canceled) return;
 
   const { source } = event.operation;
