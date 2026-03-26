@@ -1,75 +1,135 @@
-import {getComputedStyles} from '../styles/getComputedStyles.ts';
 import {isHTMLElement} from '../type-guards/isHTMLElement.ts';
-import {getFirstScrollableAncestor} from './getScrollableAncestors.ts';
+import {getScrollableAncestors} from './getScrollableAncestors.ts';
 
-export function scrollIntoViewIfNeeded(el: Element, centerIfNeeded = false) {
+type ScrollPosition = 'center' | 'nearest' | 'none';
+
+interface ScrollIntoViewOptions {
+  block?: ScrollPosition;
+  inline?: ScrollPosition;
+}
+
+export function scrollIntoViewIfNeeded(
+  el: Element,
+  {block = 'nearest', inline = 'nearest'}: ScrollIntoViewOptions = {}
+) {
   if (!isHTMLElement(el)) {
     return;
   }
 
-  const parent = getFirstScrollableAncestor(el);
+  const scrollableAncestors = getScrollableAncestors(el);
+  const processedAncestors: HTMLElement[] = [];
 
-  if (!isHTMLElement(parent)) {
-    return;
-  }
-
-  const parentComputedStyle = getComputedStyles(parent, true),
-    parentBorderTopWidth = parseInt(
-      parentComputedStyle.getPropertyValue('border-top-width')
-    ),
-    parentBorderLeftWidth = parseInt(
-      parentComputedStyle.getPropertyValue('border-left-width')
-    ),
-    overTop = el.offsetTop - parent.offsetTop < parent.scrollTop,
-    overBottom =
-      el.offsetTop - parent.offsetTop + el.clientHeight - parentBorderTopWidth >
-      parent.scrollTop + parent.clientHeight,
-    overLeft = el.offsetLeft - parent.offsetLeft < parent.scrollLeft,
-    overRight =
-      el.offsetLeft -
-        parent.offsetLeft +
-        el.clientWidth -
-        parentBorderLeftWidth >
-      parent.scrollLeft + parent.clientWidth,
-    alignWithTop = overTop && !overBottom;
-
-  if ((overTop || overBottom) && centerIfNeeded) {
-    parent.scrollTop =
-      el.offsetTop -
-      parent.offsetTop -
-      parent.clientHeight / 2 -
-      parentBorderTopWidth +
-      el.clientHeight / 2;
-  }
-
-  if ((overLeft || overRight) && centerIfNeeded) {
-    parent.scrollLeft =
-      el.offsetLeft -
-      parent.offsetLeft -
-      parent.clientWidth / 2 -
-      parentBorderLeftWidth +
-      el.clientWidth / 2;
-  }
-
-  if ((overTop || overBottom || overLeft || overRight) && !centerIfNeeded) {
-    if (alignWithTop) {
-      parent.scrollTop = el.offsetTop - parent.offsetTop;
-    } else if (overBottom) {
-      parent.scrollTop =
-        el.offsetTop -
-        parent.offsetTop +
-        el.clientHeight -
-        parent.clientHeight;
+  for (const ancestor of scrollableAncestors) {
+    if (!isHTMLElement(ancestor)) {
+      continue;
     }
 
-    if (overLeft) {
-      parent.scrollLeft = el.offsetLeft - parent.offsetLeft;
-    } else if (overRight) {
-      parent.scrollLeft =
-        el.offsetLeft -
-        parent.offsetLeft +
-        el.clientWidth -
-        parent.clientWidth;
+    const {top, left} = getOffsetRelativeTo(el, ancestor);
+
+    // For outer scrollable containers, adjust for the scroll positions
+    // of intermediate (already-processed) scrollable containers so that
+    // we compute where the element *visually* appears rather than where
+    // it sits in the layout.
+    let adjustedTop = top;
+    let adjustedLeft = left;
+
+    for (const inner of processedAncestors) {
+      adjustedTop -= inner.scrollTop;
+      adjustedLeft -= inner.scrollLeft;
     }
+
+    if (block !== 'none') {
+      const overTop = adjustedTop < ancestor.scrollTop;
+      const overBottom =
+        adjustedTop + el.offsetHeight >
+        ancestor.scrollTop + ancestor.clientHeight;
+
+      if (overTop !== overBottom) {
+        if (block === 'center') {
+          ancestor.scrollTop =
+            adjustedTop - ancestor.clientHeight / 2 + el.offsetHeight / 2;
+        } else if (overTop) {
+          ancestor.scrollTop = adjustedTop;
+        } else {
+          ancestor.scrollTop =
+            adjustedTop + el.offsetHeight - ancestor.clientHeight;
+        }
+      }
+    }
+
+    if (inline !== 'none') {
+      const overLeft = adjustedLeft < ancestor.scrollLeft;
+      const overRight =
+        adjustedLeft + el.offsetWidth >
+        ancestor.scrollLeft + ancestor.clientWidth;
+
+      if (overLeft !== overRight) {
+        if (inline === 'center') {
+          ancestor.scrollLeft =
+            adjustedLeft - ancestor.clientWidth / 2 + el.offsetWidth / 2;
+        } else if (overLeft) {
+          ancestor.scrollLeft = adjustedLeft;
+        } else {
+          ancestor.scrollLeft =
+            adjustedLeft + el.offsetWidth - ancestor.clientWidth;
+        }
+      }
+    }
+
+    processedAncestors.push(ancestor);
   }
+}
+
+/**
+ * Computes the absolute layout offset of an element's border-box
+ * by walking the offsetParent chain. The result is independent of
+ * any scroll positions.
+ *
+ * Note: SVG elements are not currently supported. If an SVG element
+ * is encountered in the offsetParent chain, the walk stops early.
+ */
+function getDocumentOffset(element: HTMLElement): {top: number; left: number} {
+  let top = 0;
+  let left = 0;
+  let current: HTMLElement | null = element;
+
+  while (current) {
+    top += current.offsetTop;
+    left += current.offsetLeft;
+
+    const offsetParent: Element | null = current.offsetParent;
+
+    if (!isHTMLElement(offsetParent)) {
+      break;
+    }
+
+    // clientTop/clientLeft are the border widths of the offsetParent.
+    // Add them to bridge from the offsetParent's padding edge (where
+    // offsetTop is measured from) to its border-box edge so the next
+    // iteration's offsetTop accumulates correctly.
+    top += offsetParent.clientTop;
+    left += offsetParent.clientLeft;
+
+    current = offsetParent;
+  }
+
+  return {top, left};
+}
+
+/**
+ * Returns the element's border-box position relative to the ancestor's
+ * padding edge (content area), which is the coordinate space that
+ * scrollTop / scrollLeft operate in.
+ */
+function getOffsetRelativeTo(
+  element: HTMLElement,
+  ancestor: HTMLElement
+): {top: number; left: number} {
+  const elOffset = getDocumentOffset(element);
+  const ancestorOffset = getDocumentOffset(ancestor);
+
+  return {
+    top: elOffset.top - ancestorOffset.top - ancestor.clientTop,
+    left: elOffset.left - ancestorOffset.left - ancestor.clientLeft,
+  };
 }

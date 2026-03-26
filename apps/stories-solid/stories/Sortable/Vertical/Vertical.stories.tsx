@@ -50,3 +50,12 @@ export const WithDragHandle: Story = {
     },
   },
 };
+
+export const NestedScroll: Story = {
+  name: 'Nested scroll',
+  render: () => (
+    <div style={{height: '100vh', 'overflow-y': 'auto', 'margin-top': '50vh'}}>
+      <App />
+    </div>
+  ),
+};

@@ -6,6 +6,7 @@ import sortableItemSource from '../SortableItem.svelte?raw';
 import SortableDragHandleApp from '../SortableDragHandleApp.svelte';
 import sortableDragHandleSource from '../SortableDragHandleApp.svelte?raw';
 import sortableItemWithHandleSource from '../SortableItemWithHandle.svelte?raw';
+import NestedScrollSortableApp from '../NestedScrollSortableApp.svelte';
 import {
   baseStyles,
   handleStyles,
@@ -47,4 +48,9 @@ export const WithDragHandle: Story = {
       },
     },
   },
+};
+
+export const NestedScroll: Story = {
+  name: 'Nested scroll',
+  render: () => ({Component: NestedScrollSortableApp}),
 };

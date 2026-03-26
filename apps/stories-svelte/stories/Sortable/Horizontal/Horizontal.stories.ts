@@ -3,6 +3,7 @@ import type {Meta, StoryObj} from '@storybook/svelte-vite';
 import HorizontalSortableApp from './HorizontalSortableApp.svelte';
 import horizontalSortableSource from './HorizontalSortableApp.svelte?raw';
 import horizontalSortableItemSource from './HorizontalSortableItem.svelte?raw';
+import NestedScrollHorizontalSortableApp from './NestedScrollHorizontalSortableApp.svelte';
 import {
   baseStyles,
   sortableStyles,
@@ -27,4 +28,9 @@ export const BasicSetup: Story = {
       },
     },
   },
+};
+
+export const NestedScroll: Story = {
+  name: 'Nested scroll',
+  render: () => ({Component: NestedScrollHorizontalSortableApp}),
 };

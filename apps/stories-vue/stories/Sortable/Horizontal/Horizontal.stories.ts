@@ -23,3 +23,11 @@ export const BasicSetup: Story = {
     },
   },
 };
+
+export const NestedScroll: Story = {
+  name: 'Nested scroll',
+  render: () => ({
+    components: {HorizontalSortableApp},
+    template: '<div style="width: 100vw; overflow-x: auto; margin-left: 50vw"><HorizontalSortableApp /></div>',
+  }),
+};
