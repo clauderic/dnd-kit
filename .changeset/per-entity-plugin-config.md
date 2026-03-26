@@ -40,7 +40,7 @@ useDraggable({
 useSortable({
   id: 'item',
   index: 0,
-  plugins: [Feedback.configure({ feedback: 'clone' })],
+  plugins: (defaults) => [...defaults, Feedback.configure({ feedback: 'clone' })],
 });
 ```
 

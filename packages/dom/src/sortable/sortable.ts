@@ -1,11 +1,12 @@
 import {batch, reactive, untracked, WeakStore} from '@dnd-kit/state';
-import type {CollisionPriority, Modifiers, Plugins} from '@dnd-kit/abstract';
+import type {CollisionPriority, Customizable, Modifiers, Plugins} from '@dnd-kit/abstract';
 import type {
   Data,
   PluginConstructor,
   Type,
   UniqueIdentifier,
 } from '@dnd-kit/abstract';
+import {resolveCustomizable} from '@dnd-kit/abstract';
 import {
   defaultCollisionDetection,
   type CollisionDetector,
@@ -55,7 +56,7 @@ const defaultPlugins: PluginConstructor[] = [
 ];
 
 export interface SortableInput<T extends Data>
-  extends DraggableInput<T>,
+  extends Omit<DraggableInput<T>, 'plugins'>,
     DroppableInput<T> {
   /**
    * The index of the sortable item within its group.
@@ -81,9 +82,19 @@ export interface SortableInput<T extends Data>
    * Bare constructors are registered globally (e.g. sortable-specific plugins).
    * Descriptors from `Plugin.configure()` are applied as per-entity plugin config.
    *
+   * Can be provided as an array (replaces defaults) or a function that receives
+   * the default plugins and returns a new array (extends defaults).
+   *
    * @default [SortableKeyboardPlugin, OptimisticSortingPlugin]
+   *
+   * @example
+   * // Extend defaults
+   * plugins: (defaults) => [...defaults, Feedback.configure({feedback: 'clone'})]
+   *
+   * // Replace defaults
+   * plugins: [MyPlugin]
    */
-  plugins?: Plugins;
+  plugins?: Customizable<Plugins>;
 }
 
 export const defaultSortableTransition: SortableTransition = {
@@ -135,11 +146,13 @@ export class Sortable<T extends Data = Data> {
       sensors,
       type,
       transition = defaultSortableTransition,
-      plugins = defaultPlugins,
+      plugins: pluginsInput,
       ...input
     }: SortableInput<T>,
     manager: DragDropManager<any, any> | undefined
   ) {
+    const plugins = resolveCustomizable(pluginsInput, defaultPlugins);
+
     this.droppable = new SortableDroppable<T>(input, manager, this);
     this.draggable = new SortableDraggable<T>(
       {
@@ -342,8 +355,8 @@ export class Sortable<T extends Data = Data> {
     return this.draggable.disabled && this.droppable.disabled;
   }
 
-  public set plugins(value: Plugins | undefined) {
-    this.draggable.plugins = value;
+  public set plugins(value: Customizable<Plugins> | undefined) {
+    this.draggable.plugins = resolveCustomizable(value, defaultPlugins);
   }
 
   public set disabled(value: boolean) {
