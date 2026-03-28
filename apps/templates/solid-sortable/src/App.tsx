@@ -1,10 +1,11 @@
-import { createSignal, For } from 'solid-js';
-import { DragDropProvider } from '@dnd-kit/solid';
-import { useSortable } from '@dnd-kit/solid/sortable';
-import { move } from '@dnd-kit/helpers';
+import {createSignal, For} from 'solid-js';
+import {DragDropProvider} from '@dnd-kit/solid';
+import {useSortable} from '@dnd-kit/solid/sortable';
+import {move} from '@dnd-kit/helpers';
+import './styles.css';
 
-function SortableItem(props: { id: number; index: number }) {
-  const { ref } = useSortable({
+function SortableItem(props) {
+  const {ref} = useSortable({
     get id() { return props.id; },
     get index() { return props.index; },
   });
@@ -13,7 +14,7 @@ function SortableItem(props: { id: number; index: number }) {
 }
 
 export default function App() {
-  const [items, setItems] = createSignal([1, 2, 3, 4, 5]);
+  const [items, setItems] = createSignal([1, 2, 3, 4]);
 
   return (
     <DragDropProvider

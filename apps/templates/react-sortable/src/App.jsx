@@ -14,7 +14,7 @@ function SortableItem({ id, index }) {
 }
 
 export default function App() {
-  const [items, setItems] = useState([1, 2, 3, 4, 5]);
+  const [items, setItems] = useState([1, 2, 3, 4]);
 
   return (
     <DragDropProvider

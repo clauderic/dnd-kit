@@ -7,5 +7,5 @@ useDraggable({ id: 'draggable', element });
 </script>
 
 <template>
-  <button ref="element" class="draggable">Drag me</button>
+  <button ref="element" class="btn">draggable</button>
 </template>

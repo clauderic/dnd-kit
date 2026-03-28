@@ -15,13 +15,11 @@
 <DragDropProvider {onDragEnd}>
   <div class="container">
     {#if parent == null}
-      <button {@attach draggable.attach} class="draggable">Drag me</button>
+      <button {@attach draggable.attach} class="btn">draggable</button>
     {/if}
     <div {@attach droppable.attach} class="droppable" class:active={droppable.isDropTarget}>
       {#if parent === 'droppable'}
-        <button {@attach draggable.attach} class="draggable">Drag me</button>
-      {:else}
-        Drop here
+        <button {@attach draggable.attach} class="btn">draggable</button>
       {/if}
     </div>
   </div>

@@ -1,44 +1,26 @@
-import { createSignal, Show } from 'solid-js';
-import { DragDropProvider, useDraggable, useDroppable } from '@dnd-kit/solid';
+import {createSignal} from 'solid-js';
+import {DragDropProvider, useDraggable} from '@dnd-kit/solid';
+import {Droppable} from './Droppable';
+import './styles.css';
 
 function Draggable() {
-  const { ref } = useDraggable({ id: 'draggable' });
-
-  return (
-    <button ref={ref} class="draggable">
-      Drag me
-    </button>
-  );
-}
-
-function Droppable(props: { children?: any }) {
-  const { ref, isDropTarget } = useDroppable({ id: 'droppable' });
-
-  return (
-    <div ref={ref} class={`droppable ${isDropTarget() ? 'active' : ''}`}>
-      {props.children || 'Drop here'}
-    </div>
-  );
+  const {ref} = useDraggable({id: 'draggable'});
+  return <button ref={ref} class="btn">draggable</button>;
 }
 
 export default function App() {
-  const [parent, setParent] = createSignal<string | undefined>(undefined);
-
+  const [parent, setParent] = createSignal(undefined);
   return (
     <DragDropProvider
       onDragEnd={(event) => {
         if (event.canceled) return;
-        setParent(event.operation.target?.id as string | undefined);
+        setParent(event.operation.target?.id);
       }}
     >
       <div class="container">
-        <Show when={parent() == null}>
-          <Draggable />
-        </Show>
+        {parent() == null ? <Draggable /> : null}
         <Droppable>
-          <Show when={parent() === 'droppable'}>
-            <Draggable />
-          </Show>
+          {parent() === 'droppable' ? <Draggable /> : null}
         </Droppable>
       </div>
     </DragDropProvider>

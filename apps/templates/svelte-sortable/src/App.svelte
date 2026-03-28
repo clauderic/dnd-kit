@@ -3,7 +3,7 @@
   import {createSortable} from '@dnd-kit/svelte/sortable';
   import {move} from '@dnd-kit/helpers';
 
-  let items = $state([1, 2, 3, 4, 5]);
+  let items = $state([1, 2, 3, 4]);
 
   function onDragEnd(event) {
     items = move(items, event);

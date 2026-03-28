@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { DragDropProvider } from '@dnd-kit/vue';
 import Draggable from './Draggable.vue';
 import Droppable from './Droppable.vue';
+import './styles.css';
 
 const parent = ref(undefined);
 

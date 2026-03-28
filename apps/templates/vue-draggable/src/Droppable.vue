@@ -8,6 +8,6 @@ const { isDropTarget } = useDroppable({ id: 'droppable', element });
 
 <template>
   <div ref="element" :class="['droppable', { active: isDropTarget }]">
-    <slot>Drop here</slot>
+    <slot />
   </div>
 </template>
