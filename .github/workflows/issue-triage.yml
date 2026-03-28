@@ -1,0 +1,85 @@
+name: Issue Triage
+
+on:
+  issues:
+    types: [opened]
+  schedule:
+    # Run daily at 9:00 UTC
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+jobs:
+  triage-new-issue:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Triage new issue
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt_file: .github/prompts/issue-triage.md
+          prompt: |
+            Triage this newly opened issue: #${{ github.event.issue.number }}
+
+            Title: ${{ github.event.issue.title }}
+
+            Perform the following:
+            1. Read the full issue body and any linked context
+            2. Apply appropriate labels based on the triage prompt guidelines
+            3. If it's a bug report without a reproduction case, politely ask for one
+            4. If it appears to be a duplicate of an existing issue, comment with the link and close it
+            5. If it's a question that can be answered from the docs/codebase, provide a helpful response
+          allowed_tools: |
+            mcp__github__add_issue_comment
+            mcp__github__issue_write
+            mcp__github__issue_read
+            mcp__github__search_issues
+            mcp__github__list_issues
+            mcp__github__get_file_contents
+            Read
+            Glob
+            Grep
+
+  triage-daily:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Daily issue triage
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt_file: .github/prompts/issue-triage.md
+          prompt: |
+            Perform a daily triage of open issues in the clauderic/dnd-kit repository.
+
+            1. List all open issues that are unlabeled or were opened/updated in the last 24 hours
+            2. For each issue:
+               a. Read the full issue body
+               b. Apply appropriate labels based on the triage prompt guidelines
+               c. If it's a bug report without a reproduction, politely ask for one
+               d. If it's a clear duplicate, comment linking to the original and close it
+               e. If it's a question answerable from docs/code, provide a helpful response
+               f. If an issue has had no activity for 60+ days and is waiting on the reporter, add a "stale" label
+            3. Summarize what actions you took
+          allowed_tools: |
+            mcp__github__add_issue_comment
+            mcp__github__issue_write
+            mcp__github__issue_read
+            mcp__github__search_issues
+            mcp__github__list_issues
+            mcp__github__get_file_contents
+            Read
+            Glob
+            Grep
