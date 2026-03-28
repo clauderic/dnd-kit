@@ -22,3 +22,4 @@ playwright-report/
 /packages/**/*.d.ts.map
 /packages/**/*.d.cts.map
 .svelte-kit
+.claude
