@@ -142,3 +142,15 @@ export const AutoScrollCustomSpeed: AutoScrollStory = {
     acceleration: 50,
   },
 };
+
+export const NestedScroll: Story = {
+  name: 'Nested scroll',
+  args: {
+    itemCount: 50,
+  },
+  render: (args) => (
+    <div style={{height: '100vh', overflowY: 'auto', marginTop: '50vh'}}>
+      <SortableExample {...args} />
+    </div>
+  ),
+};

@@ -80,3 +80,16 @@ export const Debug: Story = {
     debug: true,
   },
 };
+
+export const NestedScroll: Story = {
+  name: 'Nested scroll',
+  args: {
+    ...defaultArgs,
+    itemCount: 50,
+  },
+  render: (args) => (
+    <div style={{width: '100vw', overflowX: 'auto', marginLeft: '50vw'}}>
+      <SortableExample {...args} />
+    </div>
+  ),
+};

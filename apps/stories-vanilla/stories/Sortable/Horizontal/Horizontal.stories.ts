@@ -23,3 +23,17 @@ export const BasicSetup: Story = {
     },
   },
 };
+
+export const NestedScroll: Story = {
+  name: 'Nested scroll',
+  render: () => {
+    const wrapper = document.createElement('div');
+    Object.assign(wrapper.style, {
+      width: '100vw',
+      overflowX: 'auto',
+      marginLeft: '50vw',
+    });
+    wrapper.appendChild(App());
+    return wrapper;
+  },
+};
