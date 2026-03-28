@@ -1,0 +1,19 @@
+{
+  "name": "dnd-kit-solid-sortable",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@dnd-kit/solid": "beta",
+    "@dnd-kit/helpers": "beta",
+    "solid-js": "^1.9.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0",
+    "vite-plugin-solid": "^2.10.0"
+  }
+}

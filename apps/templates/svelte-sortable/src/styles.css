@@ -1,0 +1,35 @@
+body {
+  font-family: system-ui, sans-serif;
+  padding: 2em;
+  -webkit-font-smoothing: antialiased;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  max-width: 400px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  background: #fff;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+  cursor: grab;
+  box-shadow: 0 0 0 1px rgba(63, 63, 68, 0.05),
+    0 1px 3px 0 rgba(34, 33, 81, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.item[aria-grabbed='true'] {
+  transform: scale(1.02);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
+  z-index: 1;
+}

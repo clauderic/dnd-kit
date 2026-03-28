@@ -1,0 +1,55 @@
+body {
+  font-family: system-ui, sans-serif;
+  padding: 2em;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: center;
+  max-width: 600px;
+}
+
+.draggable {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min-content;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: grab;
+  background: #1a1a1a;
+  color: #fff;
+  border-radius: 10px;
+  border: none;
+  white-space: nowrap;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.draggable[aria-grabbed='true'] {
+  transform: scale(1.04);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
+}
+
+.droppable {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  padding: 20px;
+  border-radius: 10px;
+  background: #f5f5f5;
+  border: 2px dashed #ccc;
+  color: #888;
+  font-size: 14px;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.droppable.active {
+  border-color: #1eb99d;
+  background: #f0faf8;
+  color: #1eb99d;
+}
