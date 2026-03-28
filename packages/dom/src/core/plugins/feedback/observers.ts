@@ -72,7 +72,7 @@ export function createElementMutationObserver(
     }
 
     if (hasChildrenMutations && clone) {
-      placeholder.innerHTML = element.innerHTML;
+      placeholder.replaceChildren(...element.cloneNode(true).childNodes);
     }
   });
 
