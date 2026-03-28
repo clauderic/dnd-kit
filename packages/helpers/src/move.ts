@@ -25,7 +25,7 @@ export function arrayMove<T extends any[]>(
 }
 
 /**
- * Move an array item to a different position. Returns a new array with the item moved to the new position.
+ * Swap two array items with each other. Returns a new array with the two items at `from` and `to` exchanged in place.
  */
 export function arraySwap<T extends any[]>(
   array: T,
