@@ -8,6 +8,7 @@
   "sideEffects": false,
   "license": "MIT",
   "files": [
+    "LICENSE",
     "dist/**"
   ],
   "exports": {
