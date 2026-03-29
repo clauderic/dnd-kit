@@ -123,9 +123,9 @@ class SandpackElement extends HTMLElement {
     }
 
     if (isSvelte) {
-      // vite-svelte template uses Vite 4 (Rollup 3, pure JS — no native binary issues).
+      // vite-svelte template uses Vite 4 (Rollup 3, pure JS - no native binary issues).
       // Override package.json to upgrade svelte to v5 and use latest vite-plugin-svelte.
-      // Override src/main.js to use Svelte 5's mount() API instead of `new App(...)`.
+      // Override src/main.js to use Svelte 5 mount() API instead of new App(...).
       const svelteInfraFiles = {
         '/package.json': {
           code: JSON.stringify({
