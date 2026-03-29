@@ -127,13 +127,12 @@ export const appCode = `
 <script>
   import {DragDropProvider, createDraggable} from '@dnd-kit/svelte';
   import './styles.css';
-
-  const draggable = createDraggable({id: 'draggable'});
 </script>
 
 <DragDropProvider>
+  {@const draggable = createDraggable({id: 'draggable'})}
   <button {@attach draggable.attach} class="btn">
-    Drag me
+    draggable
   </button>
 </DragDropProvider>
 `.trim();

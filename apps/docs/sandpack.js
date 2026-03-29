@@ -125,8 +125,8 @@ class SandpackElement extends HTMLElement {
     if (isSvelte) {
       // Use the plain "vite" Nodebox template (Vite 4.1.4, Rollup 3, pure JS, no Svelte pre-cached).
       // vite-svelte has Svelte 3 pre-cached in Nodebox which overrides our package.json.
-      // We provide all infra files and an inline svelte/compiler plugin instead of
-      // @sveltejs/vite-plugin-svelte whose major version tracks Vite's major.
+      // We use an inline svelte/compiler plugin. svelte is NOT excluded from optimizeDeps so
+      // esbuild pre-bundles it and resolves its internal #client/* subpath imports for Vite 4.
       const svelteInfraFiles = {
         '/package.json': {
           code: JSON.stringify({
@@ -143,15 +143,34 @@ class SandpackElement extends HTMLElement {
         },
         '/vite.config.js': {
           code: \`import { defineConfig } from 'vite';
-import { compile } from 'svelte/compiler';
+import { compile, compileModule } from 'svelte/compiler';
 
 export default defineConfig({
+  optimizeDeps: {
+    // Exclude packages that ship raw .svelte / .svelte.js files — esbuild can't parse them.
+    // svelte itself is intentionally NOT excluded so esbuild pre-bundles it and
+    // resolves its internal #client/* subpath imports correctly for Vite 4.
+    exclude: ['@dnd-kit/svelte', '@dnd-kit/svelte/sortable'],
+  },
   plugins: [{
     name: 'svelte',
+    enforce: 'pre',
     transform(code, id) {
-      if (!id.endsWith('.svelte')) return null;
-      const { js } = compile(code, { filename: id, generate: 'dom', css: 'injected' });
-      return { code: js.code, map: js.map };
+      const filename = id.split('?')[0];
+      const isSvelte = filename.endsWith('.svelte');
+      const isSvelteModule = /\\.svelte\\.[jt]s$/.test(filename);
+      if (!isSvelte && !isSvelteModule) return null;
+      try {
+        if (isSvelte) {
+          const { js } = compile(code, { filename, generate: 'dom', css: 'injected', dev: false });
+          return { code: js.code, map: js.map };
+        } else {
+          const { js } = compileModule(code, { filename, generate: 'client', dev: false });
+          return { code: js.code, map: js.map };
+        }
+      } catch (e) {
+        throw new Error('Svelte compile error in ' + filename + ': ' + e.message);
+      }
     },
   }],
 });\`,

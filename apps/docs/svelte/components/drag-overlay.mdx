@@ -22,7 +22,7 @@ Import and place the `DragOverlay` component inside a [`DragDropProvider`](/svel
 </script>
 
 <DragDropProvider>
-  <button {@attach draggable.attach}>Drag me</button>
+  <button {@attach draggable.attach}>draggable</button>
   <DragOverlay>
     {#snippet children(source)}
       <div>I will be rendered while dragging...</div>

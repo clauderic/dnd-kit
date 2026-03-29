@@ -16,6 +16,8 @@ The `createDroppable` primitive requires a unique `id`. It returns an object wit
 
 <CodeSandbox template="svelte" files={{
   '/src/App.svelte': {code: appCode, active: true},
+  '/src/Draggable.svelte': {code: draggableCode, hidden: true},
+  '/src/Droppable.svelte': {code: droppableCode, hidden: true},
   '/src/styles.css': {code: draggableStyles + '\n\n' + droppableStyles, hidden: true},
 }} height={300} previewHeight={400} />
 
@@ -59,15 +61,40 @@ The `createDroppable` primitive requires a unique `id`. It returns an object wit
   Attachment function for the droppable element. Use with `{@attach}`.
 </ResponseField>
 
-export const appCode = `
+export const draggableCode = `
 <script>
-  import {DragDropProvider, createDraggable, createDroppable} from '@dnd-kit/svelte';
-  import './styles.css';
+  import {createDraggable} from '@dnd-kit/svelte';
 
   const draggable = createDraggable({id: 'draggable'});
-  const droppable = createDroppable({id: 'droppable'});
+</script>
 
-  let parent = $state(null);
+<button {@attach draggable.attach} class="btn">draggable</button>
+`.trim();
+
+export const droppableCode = `
+<script>
+  import {createDroppable} from '@dnd-kit/svelte';
+
+  const droppable = createDroppable({id: 'droppable'});
+</script>
+
+<div
+  {@attach droppable.attach}
+  class="droppable"
+  class:active={droppable.isDropTarget}
+>
+  <slot />
+</div>
+`.trim();
+
+export const appCode = `
+<script>
+  import {DragDropProvider} from '@dnd-kit/svelte';
+  import Draggable from './Draggable.svelte';
+  import Droppable from './Droppable.svelte';
+  import './styles.css';
+
+  let parent = null;
 
   function onDragEnd(event) {
     if (event.canceled) return;
@@ -78,17 +105,13 @@ export const appCode = `
 <DragDropProvider {onDragEnd}>
   <div id="app">
     {#if parent == null}
-      <button {@attach draggable.attach} class="btn">Drag me</button>
+      <Draggable />
     {/if}
-    <div
-      {@attach droppable.attach}
-      class="droppable"
-      class:active={droppable.isDropTarget}
-    >
+    <Droppable>
       {#if parent === 'droppable'}
-        <button {@attach draggable.attach} class="btn">Drag me</button>
+        <Draggable />
       {/if}
-    </div>
+    </Droppable>
   </div>
 </DragDropProvider>
 `.trim();
