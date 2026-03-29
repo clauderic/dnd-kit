@@ -1,9 +1,9 @@
-import {type Data} from '@dnd-kit/abstract';
+import {type Data, type Plugins} from '@dnd-kit/abstract';
 import type {SortableInput} from '@dnd-kit/dom/sortable';
 import {
   defaultSortableTransition,
+  OptimisticSortingPlugin,
   Sortable,
-  SortableKeyboardPlugin,
 } from '@dnd-kit/dom/sortable';
 import {batch} from '@dnd-kit/state';
 
@@ -15,7 +15,11 @@ export type CreateSortableInput<T extends Data = Data> = Omit<
   'handle' | 'element' | 'source' | 'target' | 'register'
 >;
 
-const sveltePlugins = [SortableKeyboardPlugin];
+// OptimisticSortingPlugin reorders DOM nodes directly during drag, which breaks
+// Svelte 5's {#each} reconciler. Filter it from the defaults so visual sorting
+// is driven by onDragOver state updates instead.
+const withoutOptimisticSorting = (defaults: Plugins) =>
+  defaults.filter((p) => p !== OptimisticSortingPlugin);
 
 export function createSortable<T extends Data = Data>(
   input: CreateSortableInput<T>
@@ -25,7 +29,7 @@ export function createSortable<T extends Data = Data>(
       {
         ...input,
         register: false,
-        plugins: input.plugins ?? sveltePlugins,
+        plugins: input.plugins ?? withoutOptimisticSorting,
         transition: {
           ...defaultSortableTransition,
           ...input.transition,
@@ -42,7 +46,7 @@ export function createSortable<T extends Data = Data>(
     sortable.id = input.id;
     sortable.disabled = input.disabled ?? false;
     sortable.alignment = input.alignment;
-    sortable.plugins = input.plugins ?? sveltePlugins;
+    sortable.plugins = input.plugins ?? withoutOptimisticSorting;
     sortable.modifiers = input.modifiers;
     sortable.sensors = input.sensors;
     sortable.accept = input.accept;
