@@ -132,7 +132,7 @@ class SandpackElement extends HTMLElement {
           code: JSON.stringify({
             scripts: { dev: 'vite' },
             devDependencies: {
-              svelte: '^5.0.0',
+              svelte: '^5.29.0',
               '@dnd-kit/svelte': 'beta',
               '@dnd-kit/helpers': 'beta',
               vite: '4.1.4',
