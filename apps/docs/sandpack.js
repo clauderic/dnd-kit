@@ -123,20 +123,20 @@ class SandpackElement extends HTMLElement {
     }
 
     if (isSvelte) {
-      // vite-svelte template uses Vite 4 (Rollup 3, pure JS - no native binary issues).
-      // We override vite.config.js with an inline plugin that calls svelte/compiler directly,
-      // avoiding @sveltejs/vite-plugin-svelte whose versioning tracks Vite majors (v7 = Vite 8).
+      // Use the plain "vite" Nodebox template (Vite 4.1.4, Rollup 3, pure JS, no Svelte pre-cached).
+      // vite-svelte has Svelte 3 pre-cached in Nodebox which overrides our package.json.
+      // We provide all infra files and an inline svelte/compiler plugin instead of
+      // @sveltejs/vite-plugin-svelte whose major version tracks Vite's major.
       const svelteInfraFiles = {
         '/package.json': {
           code: JSON.stringify({
-            type: 'module',
             scripts: { dev: 'vite' },
             devDependencies: {
               svelte: '^5.0.0',
               '@dnd-kit/svelte': 'beta',
               '@dnd-kit/helpers': 'beta',
-              vite: '4.0.4',
-              'esbuild-wasm': '^0.17.12',
+              vite: '4.1.4',
+              'esbuild-wasm': '0.17.12',
             },
           }),
           hidden: true,
@@ -146,17 +146,29 @@ class SandpackElement extends HTMLElement {
 import { compile } from 'svelte/compiler';
 
 export default defineConfig({
-  plugins: [
-    {
-      name: 'svelte',
-      transform(code, id) {
-        if (!id.endsWith('.svelte')) return null;
-        const { js } = compile(code, { filename: id, generate: 'dom', css: 'injected' });
-        return { code: js.code, map: js.map };
-      },
+  plugins: [{
+    name: 'svelte',
+    transform(code, id) {
+      if (!id.endsWith('.svelte')) return null;
+      const { js } = compile(code, { filename: id, generate: 'dom', css: 'injected' });
+      return { code: js.code, map: js.map };
     },
-  ],
+  }],
 });\`,
+          hidden: true,
+        },
+        '/index.html': {
+          code: \`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Svelte Demo</title>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module" src="/src/main.js"><\\/script>
+</body>
+</html>\`,
           hidden: true,
         },
         '/src/main.js': {
@@ -172,7 +184,7 @@ mount(App, { target: document.getElementById('app') });\`,
 
     const sandpackComponent = React.createElement(Sandpack, {
       files,
-      template: isSolid ? "vanilla-ts" : isSvelte ? "vite-svelte" : template,
+      template: isSolid ? "vanilla-ts" : isSvelte ? "vite" : template,
       theme,
       options: {
         showTabs,
