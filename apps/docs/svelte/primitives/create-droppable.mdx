@@ -5,6 +5,8 @@ icon: 'expand'
 ---
 
 import {Story} from '/snippets/story.mdx';
+import {CodeSandbox} from '/snippets/sandbox.mdx';
+import {draggableStyles, droppableStyles} from '/snippets/code.mdx';
 
 <Story id="droppable-basic-setup--example" framework="svelte" height="400" hero />
 
@@ -12,17 +14,10 @@ import {Story} from '/snippets/story.mdx';
 
 The `createDroppable` primitive requires a unique `id`. It returns an object with an `attach` function and reactive state.
 
-```svelte
-<script>
-  import {createDroppable} from '@dnd-kit/svelte';
-
-  const droppable = createDroppable({id: 'my-droppable'});
-</script>
-
-<div {@attach droppable.attach}>
-  Drop here
-</div>
-```
+<CodeSandbox template="svelte" files={{
+  'src/App.svelte': {code: appCode, active: true},
+  'src/styles.css': {code: draggableStyles + '\n\n' + droppableStyles, hidden: true},
+}} height={300} previewHeight={400} />
 
 ## Input
 
@@ -63,3 +58,37 @@ The `createDroppable` primitive requires a unique `id`. It returns an object wit
 <ResponseField name="attach" type="(element: HTMLElement) => () => void">
   Attachment function for the droppable element. Use with `{@attach}`.
 </ResponseField>
+
+export const appCode = `
+<script>
+  import {DragDropProvider, createDraggable, createDroppable} from '@dnd-kit/svelte';
+  import './styles.css';
+
+  const draggable = createDraggable({id: 'draggable'});
+  const droppable = createDroppable({id: 'droppable'});
+
+  let parent = $state(null);
+
+  function onDragEnd(event) {
+    if (event.canceled) return;
+    parent = event.operation.target?.id ?? null;
+  }
+</script>
+
+<DragDropProvider {onDragEnd}>
+  <div id="app">
+    {#if parent == null}
+      <button {@attach draggable.attach} class="btn">Drag me</button>
+    {/if}
+    <div
+      {@attach droppable.attach}
+      class="droppable"
+      class:active={droppable.isDropTarget}
+    >
+      {#if parent === 'droppable'}
+        <button {@attach draggable.attach} class="btn">Drag me</button>
+      {/if}
+    </div>
+  </div>
+</DragDropProvider>
+`.trim();

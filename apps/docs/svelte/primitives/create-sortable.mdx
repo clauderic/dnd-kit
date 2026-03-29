@@ -5,6 +5,8 @@ icon: 'layer-group'
 ---
 
 import {Story} from '/snippets/story.mdx';
+import {CodeSandbox} from '/snippets/sandbox.mdx';
+import {sortableStyles} from '/snippets/code.mdx';
 
 <Story id="sortable-vertical-list--basic-setup" framework="svelte" height="320" hero />
 
@@ -12,39 +14,10 @@ import {Story} from '/snippets/story.mdx';
 
 The `createSortable` primitive combines draggable and droppable behavior with sorting logic. Import it from `@dnd-kit/svelte/sortable`.
 
-```svelte
-<script>
-  import {DragDropProvider} from '@dnd-kit/svelte';
-  import {createSortable} from '@dnd-kit/svelte/sortable';
-  import {move} from '@dnd-kit/helpers';
-
-  let items = $state([1, 2, 3, 4]);
-  let snapshot = [];
-
-  function onDragStart() {
-    snapshot = items.slice();
-  }
-
-  function onDragOver(event) {
-    items = move(items, event);
-  }
-
-  function onDragEnd(event) {
-    if (event.canceled) items = snapshot;
-  }
-</script>
-
-<DragDropProvider {onDragStart} {onDragOver} {onDragEnd}>
-  <ul>
-    {#each items as id, index (id)}
-      {@const sortable = createSortable({id, get index() { return index; }})}
-      <li {@attach sortable.attach}>
-        Item {id}
-      </li>
-    {/each}
-  </ul>
-</DragDropProvider>
-```
+<CodeSandbox template="svelte" files={{
+  'src/App.svelte': {code: appCode, active: true},
+  'src/styles.css': {code: sortableStyles, hidden: true},
+}} height={560} previewHeight={180} />
 
 <Note>
   When using `createSortable` inside an `{#each}` block, pass reactive values like `index` as getter properties (e.g. `get index() { return index; }`) to maintain reactivity as items are reordered. Visual sorting during drag is driven by calling `move()` in `onDragOver`. The `onDragEnd` handler only needs to restore the snapshot when the drag is canceled.
@@ -200,3 +173,38 @@ All input properties accept plain values or getter functions for reactivity.
 <ResponseField name="attachTarget" type="(element: HTMLElement) => () => void">
   Attachment function for the drop target element (when different from the sortable element).
 </ResponseField>
+
+export const appCode = `
+<script>
+  import {DragDropProvider} from '@dnd-kit/svelte';
+  import {createSortable} from '@dnd-kit/svelte/sortable';
+  import {move} from '@dnd-kit/helpers';
+  import './styles.css';
+
+  let items = $state([1, 2, 3, 4]);
+  let snapshot = [];
+
+  function onDragStart() {
+    snapshot = items.slice();
+  }
+
+  function onDragOver(event) {
+    items = move(items, event);
+  }
+
+  function onDragEnd(event) {
+    if (event.canceled) items = snapshot;
+  }
+</script>
+
+<DragDropProvider {onDragStart} {onDragOver} {onDragEnd}>
+  <ul class="list">
+    {#each items as id, index (id)}
+      {@const sortable = createSortable({id, get index() { return index; }})}
+      <li {@attach sortable.attach} class="item">
+        Item {id}
+      </li>
+    {/each}
+  </ul>
+</DragDropProvider>
+`.trim();
