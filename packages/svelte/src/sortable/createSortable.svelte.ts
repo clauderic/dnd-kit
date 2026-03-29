@@ -95,6 +95,13 @@ export function createSortable<T extends Data = Data>(
       sortable.element = node;
 
       return () => {
+        if (
+          sortable.element?.isConnected &&
+          !sortable.manager?.dragOperation.status.idle
+        ) {
+          return;
+        }
+
         sortable.element = undefined;
       };
     },
@@ -109,6 +116,13 @@ export function createSortable<T extends Data = Data>(
       sortable.source = node;
 
       return () => {
+        if (
+          sortable.source?.isConnected &&
+          !sortable.manager?.dragOperation.status.idle
+        ) {
+          return;
+        }
+
         sortable.source = undefined;
       };
     },
@@ -116,6 +130,13 @@ export function createSortable<T extends Data = Data>(
       sortable.target = node;
 
       return () => {
+        if (
+          sortable.target?.isConnected &&
+          !sortable.manager?.dragOperation.status.idle
+        ) {
+          return;
+        }
+
         sortable.target = undefined;
       };
     },
