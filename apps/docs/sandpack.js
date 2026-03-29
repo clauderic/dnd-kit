@@ -68,6 +68,7 @@ class SandpackElement extends HTMLElement {
     const showTabs = Boolean(this.getAttribute("showTabs"));
     const template = this.getAttribute("template") || "react";
     const isSolid = template === "solid";
+    const isSvelte = template === "svelte";
     const sharedDependencies = {
       "@dnd-kit/helpers": "beta",
     }
@@ -121,16 +122,71 @@ class SandpackElement extends HTMLElement {
       files = { ...solidInfraFiles, ...files };
     }
 
+    if (isSvelte) {
+      const svelteInfraFiles = {
+        '/package.json': {
+          code: JSON.stringify({
+            name: 'svelte-demo',
+            private: true,
+            version: '0.0.0',
+            type: 'module',
+            scripts: { start: 'vite', dev: 'vite' },
+            dependencies: {
+              'svelte': '^5.0.0',
+              '@dnd-kit/svelte': 'beta',
+              '@dnd-kit/helpers': 'beta',
+            },
+            devDependencies: {
+              '@sveltejs/vite-plugin-svelte': 'latest',
+              'vite': '^6.0.0',
+            },
+          }, null, 2),
+          hidden: true,
+        },
+        '/vite.config.js': {
+          code: \`import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  plugins: [svelte()],
+});\`,
+          hidden: true,
+        },
+        '/index.html': {
+          code: \`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Svelte Demo</title>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module" src="/main.js"><\\/script>
+</body>
+</html>\`,
+          hidden: true,
+        },
+        '/main.js': {
+          code: \`import { mount } from 'svelte';
+import App from './App.svelte';
+
+mount(App, { target: document.getElementById('app') });\`,
+          hidden: true,
+        },
+      };
+      files = { ...svelteInfraFiles, ...files };
+    }
+
     const sandpackComponent = React.createElement(Sandpack, {
       files,
-      template: isSolid ? "vanilla-ts" : template,
+      template: isSolid ? "vanilla-ts" : isSvelte ? "node" : template,
       theme,
       options: {
         showTabs,
         resizablePanels: false,
         editorHeight: height || undefined,
       },
-      customSetup: { dependencies },
+      customSetup: isSvelte ? {} : { dependencies },
     }, null);
     root.render(sandpackComponent);
   }
