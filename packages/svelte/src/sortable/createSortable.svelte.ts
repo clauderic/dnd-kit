@@ -41,6 +41,7 @@ export function createSortable<T extends Data = Data>(
     sortable.accept = input.accept;
     sortable.type = input.type;
     sortable.collisionPriority = input.collisionPriority;
+    sortable.collisionDetector = input.collisionDetector;
     sortable.transition = {
       ...defaultSortableTransition,
       ...input.transition,
