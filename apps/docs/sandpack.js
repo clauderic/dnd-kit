@@ -123,54 +123,26 @@ class SandpackElement extends HTMLElement {
     }
 
     if (isSvelte) {
+      // vite-svelte template uses Vite 4 (Rollup 3, pure JS — no native binary issues).
+      // Override package.json to upgrade svelte to v5 and use latest vite-plugin-svelte.
+      // Override src/main.js to use Svelte 5's mount() API instead of `new App(...)`.
       const svelteInfraFiles = {
         '/package.json': {
           code: JSON.stringify({
-            name: 'svelte-demo',
-            private: true,
-            version: '0.0.0',
             type: 'module',
-            scripts: { start: 'vite', dev: 'vite' },
-            overrides: {
-              rollup: 'npm:@rollup/wasm-node@latest',
-            },
-            dependencies: {
-              'svelte': '^5.0.0',
+            scripts: { dev: 'vite' },
+            devDependencies: {
+              svelte: '^5.0.0',
+              '@sveltejs/vite-plugin-svelte': 'latest',
               '@dnd-kit/svelte': 'beta',
               '@dnd-kit/helpers': 'beta',
+              vite: '4.0.4',
+              'esbuild-wasm': '^0.17.12',
             },
-            devDependencies: {
-              '@sveltejs/vite-plugin-svelte': 'latest',
-              'vite': '^5.0.0',
-              'esbuild-wasm': 'latest',
-            },
-          }, null, 2),
+          }),
           hidden: true,
         },
-        '/vite.config.js': {
-          code: \`import { svelte } from '@sveltejs/vite-plugin-svelte';
-import { defineConfig } from 'vite';
-
-export default defineConfig({
-  plugins: [svelte()],
-});\`,
-          hidden: true,
-        },
-        '/index.html': {
-          code: \`<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Svelte Demo</title>
-</head>
-<body>
-  <div id="app"></div>
-  <script type="module" src="/main.js"><\\/script>
-</body>
-</html>\`,
-          hidden: true,
-        },
-        '/main.js': {
+        '/src/main.js': {
           code: \`import { mount } from 'svelte';
 import App from './App.svelte';
 
@@ -183,7 +155,7 @@ mount(App, { target: document.getElementById('app') });\`,
 
     const sandpackComponent = React.createElement(Sandpack, {
       files,
-      template: isSolid ? "vanilla-ts" : isSvelte ? "node" : template,
+      template: isSolid ? "vanilla-ts" : isSvelte ? "vite-svelte" : template,
       theme,
       options: {
         showTabs,
