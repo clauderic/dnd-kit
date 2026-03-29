@@ -124,8 +124,8 @@ class SandpackElement extends HTMLElement {
 
     if (isSvelte) {
       // vite-svelte template uses Vite 4 (Rollup 3, pure JS - no native binary issues).
-      // Override package.json to upgrade svelte to v5 and use latest vite-plugin-svelte.
-      // Override src/main.js to use Svelte 5 mount() API instead of new App(...).
+      // We override vite.config.js with an inline plugin that calls svelte/compiler directly,
+      // avoiding @sveltejs/vite-plugin-svelte whose versioning tracks Vite majors (v7 = Vite 8).
       const svelteInfraFiles = {
         '/package.json': {
           code: JSON.stringify({
@@ -133,13 +133,30 @@ class SandpackElement extends HTMLElement {
             scripts: { dev: 'vite' },
             devDependencies: {
               svelte: '^5.0.0',
-              '@sveltejs/vite-plugin-svelte': 'latest',
               '@dnd-kit/svelte': 'beta',
               '@dnd-kit/helpers': 'beta',
               vite: '4.0.4',
               'esbuild-wasm': '^0.17.12',
             },
           }),
+          hidden: true,
+        },
+        '/vite.config.js': {
+          code: \`import { defineConfig } from 'vite';
+import { compile } from 'svelte/compiler';
+
+export default defineConfig({
+  plugins: [
+    {
+      name: 'svelte',
+      transform(code, id) {
+        if (!id.endsWith('.svelte')) return null;
+        const { js } = compile(code, { filename: id, generate: 'dom', css: 'injected' });
+        return { code: js.code, map: js.map };
+      },
+    },
+  ],
+});\`,
           hidden: true,
         },
         '/src/main.js': {
