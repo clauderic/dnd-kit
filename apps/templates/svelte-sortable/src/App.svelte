@@ -4,16 +4,25 @@
   import {move} from '@dnd-kit/helpers';
 
   let items = $state([1, 2, 3, 4]);
+  let snapshot = [];
+
+  function onDragStart() {
+    snapshot = items.slice();
+  }
+
+  function onDragOver(event) {
+    items = move(items, event);
+  }
 
   function onDragEnd(event) {
-    items = move(items, event);
+    if (event.canceled) items = snapshot;
   }
 </script>
 
-<DragDropProvider {onDragEnd}>
+<DragDropProvider {onDragStart} {onDragOver} {onDragEnd}>
   <ul class="list">
     {#each items as id, index (id)}
-      {@const sortable = createSortable({id, index: () => index})}
+      {@const sortable = createSortable({id, get index() { return index; }})}
       <li {@attach sortable.attach} class="item">
         Item {id}
       </li>

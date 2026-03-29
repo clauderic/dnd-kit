@@ -5,6 +5,8 @@ icon: 'bullseye-pointer'
 ---
 
 import {Story} from '/snippets/story.mdx';
+import {CodeSandbox} from '/snippets/sandbox.mdx';
+import {draggableStyles} from '/snippets/code.mdx';
 
 <Story id="draggable-basic-setup--example" framework="svelte" height="200" hero />
 
@@ -12,17 +14,10 @@ import {Story} from '/snippets/story.mdx';
 
 The `createDraggable` primitive requires a unique `id`. It returns an object with `attach` and `attachHandle` functions for connecting elements, and reactive state properties.
 
-```svelte
-<script>
-  import {createDraggable} from '@dnd-kit/svelte';
-
-  const draggable = createDraggable({id: 'my-draggable'});
-</script>
-
-<button {@attach draggable.attach}>
-  Drag me
-</button>
-```
+<CodeSandbox template="svelte" files={{
+  '/src/App.svelte': {code: appCode, active: true},
+  '/src/styles.css': {code: draggableStyles, hidden: true},
+}} height={220} previewHeight={200} />
 
 ## Input
 
@@ -127,3 +122,17 @@ The `<DragOverlay>` component will only render its children when a drag operatio
 <Warning>
   You should only render the `<DragOverlay>` component once per [DragDropProvider](/svelte/components/drag-drop-provider).
 </Warning>
+
+export const appCode = `
+<script>
+  import {DragDropProvider, createDraggable} from '@dnd-kit/svelte';
+  import './styles.css';
+</script>
+
+<DragDropProvider>
+  {@const draggable = createDraggable({id: 'draggable'})}
+  <button {@attach draggable.attach} class="btn">
+    draggable
+  </button>
+</DragDropProvider>
+`.trim();

@@ -68,6 +68,7 @@ class SandpackElement extends HTMLElement {
     const showTabs = Boolean(this.getAttribute("showTabs"));
     const template = this.getAttribute("template") || "react";
     const isSolid = template === "solid";
+    const isSvelte = template === "svelte";
     const sharedDependencies = {
       "@dnd-kit/helpers": "beta",
     }
@@ -121,16 +122,95 @@ class SandpackElement extends HTMLElement {
       files = { ...solidInfraFiles, ...files };
     }
 
+    if (isSvelte) {
+      // Use the plain "vite" Nodebox template (Vite 4.1.4, Rollup 3, pure JS, no Svelte pre-cached).
+      // vite-svelte has Svelte 3 pre-cached in Nodebox which overrides our package.json.
+      // We use an inline svelte/compiler plugin. svelte is NOT excluded from optimizeDeps so
+      // esbuild pre-bundles it and resolves its internal #client/* subpath imports for Vite 4.
+      const svelteInfraFiles = {
+        '/package.json': {
+          code: JSON.stringify({
+            scripts: { dev: 'vite' },
+            devDependencies: {
+              svelte: '^5.29.0',
+              '@dnd-kit/svelte': 'beta',
+              '@dnd-kit/helpers': 'beta',
+              vite: '4.1.4',
+              'esbuild-wasm': '0.17.12',
+            },
+          }),
+          hidden: true,
+        },
+        '/vite.config.js': {
+          code: \`import { defineConfig } from 'vite';
+import { compile, compileModule } from 'svelte/compiler';
+
+export default defineConfig({
+  optimizeDeps: {
+    // Exclude packages that ship raw .svelte / .svelte.js files — esbuild can't parse them.
+    // svelte itself is intentionally NOT excluded so esbuild pre-bundles it and
+    // resolves its internal #client/* subpath imports correctly for Vite 4.
+    exclude: ['@dnd-kit/svelte', '@dnd-kit/svelte/sortable'],
+  },
+  plugins: [{
+    name: 'svelte',
+    enforce: 'pre',
+    transform(code, id) {
+      const filename = id.split('?')[0];
+      const isSvelte = filename.endsWith('.svelte');
+      const isSvelteModule = /\\.svelte\\.[jt]s$/.test(filename);
+      if (!isSvelte && !isSvelteModule) return null;
+      try {
+        if (isSvelte) {
+          const { js } = compile(code, { filename, generate: 'dom', css: 'injected', dev: false });
+          return { code: js.code, map: js.map };
+        } else {
+          const { js } = compileModule(code, { filename, generate: 'client', dev: false });
+          return { code: js.code, map: js.map };
+        }
+      } catch (e) {
+        throw new Error('Svelte compile error in ' + filename + ': ' + e.message);
+      }
+    },
+  }],
+});\`,
+          hidden: true,
+        },
+        '/index.html': {
+          code: \`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Svelte Demo</title>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module" src="/src/main.js"><\\/script>
+</body>
+</html>\`,
+          hidden: true,
+        },
+        '/src/main.js': {
+          code: \`import { mount } from 'svelte';
+import App from './App.svelte';
+
+mount(App, { target: document.getElementById('app') });\`,
+          hidden: true,
+        },
+      };
+      files = { ...svelteInfraFiles, ...files };
+    }
+
     const sandpackComponent = React.createElement(Sandpack, {
       files,
-      template: isSolid ? "vanilla-ts" : template,
+      template: isSolid ? "vanilla-ts" : isSvelte ? "vite" : template,
       theme,
       options: {
         showTabs,
         resizablePanels: false,
         editorHeight: height || undefined,
       },
-      customSetup: { dependencies },
+      customSetup: isSvelte ? {} : { dependencies },
     }, null);
     root.render(sandpackComponent);
   }

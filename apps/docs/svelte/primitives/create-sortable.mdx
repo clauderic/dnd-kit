@@ -5,6 +5,8 @@ icon: 'layer-group'
 ---
 
 import {Story} from '/snippets/story.mdx';
+import {CodeSandbox} from '/snippets/sandbox.mdx';
+import {sortableStyles} from '/snippets/code.mdx';
 
 <Story id="sortable-vertical-list--basic-setup" framework="svelte" height="320" hero />
 
@@ -12,42 +14,22 @@ import {Story} from '/snippets/story.mdx';
 
 The `createSortable` primitive combines draggable and droppable behavior with sorting logic. Import it from `@dnd-kit/svelte/sortable`.
 
-```svelte
-<script>
-  import {DragDropProvider} from '@dnd-kit/svelte';
-  import {createSortable} from '@dnd-kit/svelte/sortable';
-  import {move} from '@dnd-kit/helpers';
-
-  let items = $state([1, 2, 3, 4]);
-
-  function onDragEnd(event) {
-    items = move(items, event);
-  }
-</script>
-
-<DragDropProvider {onDragEnd}>
-  <ul>
-    {#each items as id, index (id)}
-      {@const sortable = createSortable({id, index: () => index})}
-      <li {@attach sortable.attach}>
-        Item {id}
-      </li>
-    {/each}
-  </ul>
-</DragDropProvider>
-```
+<CodeSandbox template="svelte" files={{
+  '/src/App.svelte': {code: appCode, active: true},
+  '/src/styles.css': {code: sortableStyles, hidden: true},
+}} height={560} previewHeight={180} />
 
 <Note>
-  When using `createSortable` inside an `{#each}` block, pass reactive values like `index` as getter functions (e.g. `index: () => index`) to maintain reactivity as items are reordered.
+  When using `createSortable` inside an `{#each}` block, pass reactive values like `index` as getter properties (e.g. `get index() { return index; }`) to maintain reactivity as items are reordered. Visual sorting during drag is driven by calling `move()` in `onDragOver`. The `onDragEnd` handler only needs to restore the snapshot when the drag is canceled.
 </Note>
 
 ## Without the move helper
 
-The example above uses the `move` helper from `@dnd-kit/helpers`, a convenience function that takes your items and a drag event and returns a new array with the item moved to its new position. It supports flat arrays and grouped records, handles canceled drags, and works with optimistic sorting out of the box.
+The example above uses the `move` helper from `@dnd-kit/helpers`, a convenience function that takes your items and a drag event and returns a new array with the item moved to its new position. It supports flat arrays and grouped records, handles canceled drags, and works with multiple lists.
 
 If you need more control over state updates, you can manage state manually using the `isSortable` type guard and the sortable properties (`initialIndex`, `index`).
 
-With [optimistic sorting](/concepts/sortable#optimistic-sorting) enabled (the default), you only need to handle the `dragend` event:
+Call `move()` in `onDragOver` for live visual sorting, and restore the snapshot in `onDragEnd` only when the drag is canceled:
 
 ```svelte
 <script>
@@ -55,29 +37,37 @@ With [optimistic sorting](/concepts/sortable#optimistic-sorting) enabled (the de
   import {createSortable, isSortable} from '@dnd-kit/svelte/sortable';
 
   let items = $state([1, 2, 3, 4]);
+  let snapshot = [];
 
-  function onDragEnd(event) {
-    if (event.canceled) return;
+  function onDragStart() {
+    snapshot = items.slice();
+  }
 
-    const {source} = event.operation;
+  function onDragOver(event) {
+    const {source, target} = event.operation;
 
-    if (isSortable(source)) {
-      const {initialIndex, index} = source;
+    if (isSortable(source) && isSortable(target)) {
+      const fromIndex = source.index;
+      const toIndex = target.index;
 
-      if (initialIndex !== index) {
+      if (fromIndex !== toIndex) {
         const newItems = [...items];
-        const [removed] = newItems.splice(initialIndex, 1);
-        newItems.splice(index, 0, removed);
+        const [removed] = newItems.splice(fromIndex, 1);
+        newItems.splice(toIndex, 0, removed);
         items = newItems;
       }
     }
   }
+
+  function onDragEnd(event) {
+    if (event.canceled) items = snapshot;
+  }
 </script>
 
-<DragDropProvider {onDragEnd}>
+<DragDropProvider {onDragStart} {onDragOver} {onDragEnd}>
   <ul>
     {#each items as id, index (id)}
-      {@const sortable = createSortable({id, index: () => index})}
+      {@const sortable = createSortable({id, get index() { return index; }})}
       <li {@attach sortable.attach}>
         Item {id}
       </li>
@@ -86,12 +76,8 @@ With [optimistic sorting](/concepts/sortable#optimistic-sorting) enabled (the de
 </DragDropProvider>
 ```
 
-<Tip>
-  You can call `event.preventDefault()` in an `onDragOver` handler to prevent the `OptimisticSortingPlugin` from optimistically updating for that specific event. This is useful when you want to conditionally block certain moves.
-</Tip>
-
 <Info>
-  Learn more about [optimistic sorting, type guards, and manual state management](/concepts/sortable#optimistic-sorting) in the Sortable concepts page.
+  Learn more about [type guards and manual state management](/concepts/sortable#optimistic-sorting) in the Sortable concepts page.
 </Info>
 
 ## Input
@@ -187,3 +173,38 @@ All input properties accept plain values or getter functions for reactivity.
 <ResponseField name="attachTarget" type="(element: HTMLElement) => () => void">
   Attachment function for the drop target element (when different from the sortable element).
 </ResponseField>
+
+export const appCode = `
+<script>
+  import {DragDropProvider} from '@dnd-kit/svelte';
+  import {createSortable} from '@dnd-kit/svelte/sortable';
+  import {move} from '@dnd-kit/helpers';
+  import './styles.css';
+
+  let items = [1, 2, 3, 4];
+  let snapshot = [];
+
+  function onDragStart() {
+    snapshot = items.slice();
+  }
+
+  function onDragOver(event) {
+    items = move(items, event);
+  }
+
+  function onDragEnd(event) {
+    if (event.canceled) items = snapshot;
+  }
+</script>
+
+<DragDropProvider {onDragStart} {onDragOver} {onDragEnd}>
+  <ul class="list">
+    {#each items as id, index (id)}
+      {@const sortable = createSortable({id, get index() { return index; }})}
+      <li {@attach sortable.attach} class="item">
+        Item {id}
+      </li>
+    {/each}
+  </ul>
+</DragDropProvider>
+`.trim();
