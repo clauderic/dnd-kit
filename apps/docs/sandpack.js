@@ -138,7 +138,8 @@ class SandpackElement extends HTMLElement {
             },
             devDependencies: {
               '@sveltejs/vite-plugin-svelte': 'latest',
-              'vite': '^6.0.0',
+              'vite': '^5.0.0',
+              'esbuild-wasm': 'latest',
             },
           }, null, 2),
           hidden: true,
