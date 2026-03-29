@@ -131,6 +131,9 @@ class SandpackElement extends HTMLElement {
             version: '0.0.0',
             type: 'module',
             scripts: { start: 'vite', dev: 'vite' },
+            overrides: {
+              rollup: 'npm:@rollup/wasm-node@latest',
+            },
             dependencies: {
               'svelte': '^5.0.0',
               '@dnd-kit/svelte': 'beta',
@@ -140,7 +143,6 @@ class SandpackElement extends HTMLElement {
               '@sveltejs/vite-plugin-svelte': 'latest',
               'vite': '^5.0.0',
               'esbuild-wasm': 'latest',
-              '@rollup/wasm-node': 'latest',
             },
           }, null, 2),
           hidden: true,
