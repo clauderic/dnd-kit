@@ -29,9 +29,13 @@ export class Listeners {
       }
     }
 
+    const allEntries = this.entries;
+
     return function cleanup() {
-      for (const [target, {type, listener, options}] of entries) {
+      for (const entry of entries) {
+        const [target, {type, listener, options}] = entry;
         target.removeEventListener(type, listener, options);
+        allEntries.delete(entry);
       }
     };
   }
