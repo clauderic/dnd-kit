@@ -144,12 +144,14 @@ export class DragActions<
         const {status} = dragOperation;
         if (status.current !== StatusValue.Initializing) return;
 
-        dragOperation.status.set(StatusValue.Dragging);
+        batch(() => {
+          dragOperation.status.set(StatusValue.Dragging);
 
-        this.manager.monitor.dispatch('dragstart', {
-          nativeEvent,
-          operation: dragOperation.snapshot(),
-          cancelable: false,
+          this.manager.monitor.dispatch('dragstart', {
+            nativeEvent,
+            operation: dragOperation.snapshot(),
+            cancelable: false,
+          });
         });
       });
 
