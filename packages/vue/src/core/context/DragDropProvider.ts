@@ -29,7 +29,9 @@ type ToVueEmits<T extends Record<string, (...args: any) => any>> = {
   [K in keyof T]: NamedTuple<T[K]>;
 };
 
-type Events = ToVueEmits<DragDropEventHandlers<Draggable, Droppable, DragDropManager>>;
+type Events = ToVueEmits<
+  DragDropEventHandlers<Draggable, Droppable, DragDropManager>
+>;
 
 export interface DragDropProviderProps extends DragDropManagerInput {
   manager?: DragDropManager;
@@ -44,13 +46,8 @@ export type DragDropProviderEmits = {
   dragEnd: Events['dragend'];
 };
 
-export default /* #__PURE__ */ defineComponent<DragDropProviderProps>({
-  props: [
-    'manager',
-    'plugins',
-    'sensors',
-    'modifiers',
-  ] as unknown as undefined,
+export default /* #__PURE__ */ defineComponent({
+  props: ['manager', 'plugins', 'sensors', 'modifiers'] as unknown as undefined,
   emits: [
     'beforeDragStart',
     'collision',
@@ -58,7 +55,9 @@ export default /* #__PURE__ */ defineComponent<DragDropProviderProps>({
     'dragMove',
     'dragOver',
     'dragEnd',
-  ] as unknown as DragDropProviderEmits,
+  ] as unknown as undefined,
+  __typeProps: {} as DragDropProviderProps,
+  __typeEmits: {} as DragDropProviderEmits,
   setup(props, {emit, slots}) {
     const {renderer, trackRendering} = useRenderer();
     const manager = shallowRef(props.manager ?? new DragDropManager(props));
@@ -119,9 +118,18 @@ export default /* #__PURE__ */ defineComponent<DragDropProviderProps>({
     );
 
     watchEffect(() => {
-      manager.value.plugins = resolveCustomizable(props.plugins, defaultPreset.plugins);
-      manager.value.sensors = resolveCustomizable(props.sensors, defaultPreset.sensors);
-      manager.value.modifiers = resolveCustomizable(props.modifiers, defaultPreset.modifiers);
+      manager.value.plugins = resolveCustomizable(
+        props.plugins,
+        defaultPreset.plugins
+      );
+      manager.value.sensors = resolveCustomizable(
+        props.sensors,
+        defaultPreset.sensors
+      );
+      manager.value.modifiers = resolveCustomizable(
+        props.modifiers,
+        defaultPreset.modifiers
+      );
     });
 
     provideDragDropContext(computed(() => manager.value));
