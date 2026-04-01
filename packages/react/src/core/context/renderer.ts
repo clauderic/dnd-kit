@@ -18,8 +18,8 @@ export type ReactRenderer = {
 export const Renderer = memo(
   forwardRef<ReactRenderer, {children: React.ReactNode}>(({children}, ref) => {
     const [transitionCount, setTransitionCount] = useState(0);
-    const rendering = useRef<Promise<void>>(null);
-    const resolver = useRef<() => void>(null);
+    const rendering = useRef<Promise<void> | null>(null);
+    const resolver = useRef<(() => void) | null>(null);
     const renderer = useMemo<ReactRenderer>(
       () => ({
         renderer: {

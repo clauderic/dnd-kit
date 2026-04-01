@@ -29,7 +29,7 @@ export class DragSensor extends Sensor<DragDropManager, DragSensorOptions> {
     ]);
   }
 
-  public bind(source: Draggable, options: DragSensorOptions) {
+  public bind(source: Draggable, options: DragSensorOptions): CleanupFunction {
     const unbind = effect(() => {
       const target = source.handle ?? source.element;
       const listener: EventListener = (event: Event) => {

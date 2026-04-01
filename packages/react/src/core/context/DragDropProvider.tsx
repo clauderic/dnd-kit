@@ -154,7 +154,7 @@ export function DragDropProvider<
 }
 
 function useStableInstance<T extends {destroy(): void}>(create: () => T): T {
-  const ref = useRef<T>(null);
+  const ref = useRef<T | null>(null);
 
   if (!ref.current) {
     ref.current = create();
