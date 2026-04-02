@@ -7,10 +7,12 @@ import SiteFooter from '../components/SiteFooter';
 import { PageContextMenu } from '../components/PageContextMenu';
 import { components as mintlifyComponents } from '@mintlify/astro/components';
 import { Check } from '@mintlify/components';
+import { BrandCard } from '../components/BrandCard';
 
 const components = {
   ...mintlifyComponents,
   Success: Check,
+  Card: BrandCard,
 };
 import { resolvePageData, decorateNavigation, unwrapNav, containsPath, isNavPage, isNavGroup } from '@mintlify/astro/helpers';
 import type { NavEntry, NavPage, NavGroup, TabInfo } from '@mintlify/astro/helpers';

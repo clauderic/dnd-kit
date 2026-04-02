@@ -1,14 +1,12 @@
-import { cn, Icon } from '@mintlify/components';
+import { cn } from '@mintlify/components';
 import type { AnchorItem } from './types';
-import { frameworkIconMap } from '../../icons/FrameworkIcons';
+import { DocsIcon, isBrandIcon } from '../DocsIcon';
 
 export function Anchor({ name, href, icon, color, isActive }: AnchorItem) {
   const isExternal =
     href.startsWith('http://') ||
     href.startsWith('https://') ||
     href.startsWith('//');
-
-  const FrameworkIcon = icon ? frameworkIconMap[icon] : undefined;
 
   return (
     <a
@@ -35,27 +33,11 @@ export function Anchor({ name, href, icon, color, isActive }: AnchorItem) {
               : 'group-hover:[background:var(--anchor-color)]',
           )}
         >
-          {FrameworkIcon ? (
-            <FrameworkIcon
-              className={cn(
-                isActive
-                  ? 'text-white'
-                  : 'text-gray-600 group-hover:text-white',
-              )}
-              size={16}
-            />
-          ) : (
-            <Icon
-              icon={icon}
-              className={cn(
-                isActive
-                  ? 'bg-white'
-                  : 'bg-gray-600 group-hover:bg-white',
-              )}
-              overrideColor
-              size={16}
-            />
-          )}
+          <DocsIcon
+            icon={icon}
+            size={16}
+            color={isActive ? '#fff' : isBrandIcon(icon) ? '#6b7280' : '#6b7280'}
+          />
         </span>
       )}
       {name}
