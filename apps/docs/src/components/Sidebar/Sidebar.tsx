@@ -1,4 +1,4 @@
-import type { NavNode } from '@mintlify/astro/helpers';
+import type { NavNode, NavEntry } from '@mintlify/astro/helpers';
 import { unwrapNav } from '@mintlify/astro/helpers';
 import { type SidebarItemStyle, type AnchorItem } from './types';
 import { SidebarEntries } from './SidebarEntries';
@@ -10,6 +10,7 @@ interface SidebarProps {
   anchors?: AnchorItem[];
   sidebarItemStyle?: SidebarItemStyle;
   showDivider?: boolean;
+  entries?: NavEntry[];
 }
 
 export default function Sidebar({
@@ -18,8 +19,9 @@ export default function Sidebar({
   anchors = [],
   sidebarItemStyle = 'container',
   showDivider = false,
+  entries: precomputedEntries,
 }: SidebarProps) {
-  const entries = unwrapNav(navigation, currentPath);
+  const entries = precomputedEntries ?? unwrapNav(navigation, currentPath);
 
   return (
     <div className="hidden lg:flex flex-col sticky top-28 h-[calc(100vh-7rem)] w-[18rem] shrink-0 bg-white isolate">

@@ -4,14 +4,26 @@ import { SearchBar } from './SearchBar';
 import AssistantBar from './AssistantBar';
 import { MobileActionButtons, MobileNavToggle } from './MobileHeaderActions';
 
+type VersionInfo = { name: string; href: string; isActive: boolean };
+type NavbarLink = { label: string; href: string };
+type NavbarPrimary = { type: string; label: string; href: string };
+type NavbarConfig = {
+  links?: NavbarLink[];
+  primary?: NavbarPrimary;
+};
+
 interface Props {
   tabs: TabInfo[] | null;
   pageTitle?: string;
   groupName?: string;
+  versionTabs?: VersionInfo[];
+  navbarConfig?: NavbarConfig;
 }
 
-const { tabs, pageTitle, groupName } = Astro.props;
+const { tabs, pageTitle, groupName, versionTabs = [], navbarConfig } = Astro.props;
 const usingTabs = tabs && tabs.length > 0;
+const activeVersion = versionTabs.find((v) => v.isActive);
+const hasVersions = versionTabs.length > 1;
 ---
 
 <header class="sticky top-0 w-full px-8 z-50">
@@ -29,10 +41,41 @@ const usingTabs = tabs && tabs.length > 0;
               !usingTabs && 'lg:border-none',
             ]}
           >
-            <div class="flex items-center shrink-0 lg:flex-1">
+            <div class="flex items-center gap-3 shrink-0 lg:flex-1">
               <a href="/" class="flex items-center shrink-0">
                 <img src="/images/logo/logo.svg" alt="@dnd-kit" class="h-7" />
               </a>
+              {hasVersions && (
+                <div class="relative hidden lg:block" data-version-dropdown>
+                  <button
+                    class="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-800 px-2 py-1 rounded-md hover:bg-gray-100"
+                    data-version-toggle
+                  >
+                    {activeVersion?.name || 'Latest'}
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <div
+                    class="absolute top-full left-0 mt-1 w-36 bg-white border border-gray-200 rounded-lg shadow-lg py-1 hidden"
+                    data-version-menu
+                  >
+                    {versionTabs.map((v) => (
+                      <a
+                        href={v.href}
+                        class:list={[
+                          'block px-3 py-1.5 text-sm',
+                          v.isActive
+                            ? 'text-(--primary) font-medium bg-gray-50'
+                            : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50',
+                        ]}
+                      >
+                        {v.name}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
             <div
               class="flex-1 hidden lg:flex items-center justify-center gap-3 min-w-0"
@@ -45,7 +88,28 @@ const usingTabs = tabs && tabs.length > 0;
               </div>
             </div>
             <MobileActionButtons client:load />
-            <div class="flex-1 hidden lg:flex items-center justify-end"></div>
+            <div class="flex-1 hidden lg:flex items-center justify-end gap-4">
+              {navbarConfig?.links?.map((link) => (
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-sm font-medium text-gray-600 hover:text-gray-800"
+                >
+                  {link.label}
+                </a>
+              ))}
+              {navbarConfig?.primary && (
+                <a
+                  href={navbarConfig.primary.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-sm font-medium text-white bg-(--primary) hover:opacity-90 px-4 py-1.5 rounded-full transition-opacity"
+                >
+                  {navbarConfig.primary.label}
+                </a>
+              )}
+            </div>
           </div>
         </div>
         {
@@ -89,3 +153,23 @@ const usingTabs = tabs && tabs.length > 0;
     </div>
   </div>
 </header>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const dropdowns = document.querySelectorAll('[data-version-dropdown]');
+    dropdowns.forEach((dropdown) => {
+      const toggle = dropdown.querySelector('[data-version-toggle]');
+      const menu = dropdown.querySelector('[data-version-menu]');
+      if (!toggle || !menu) return;
+
+      toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        menu.classList.toggle('hidden');
+      });
+
+      document.addEventListener('click', () => {
+        menu.classList.add('hidden');
+      });
+    });
+  });
+</script>

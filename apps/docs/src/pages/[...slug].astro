@@ -12,7 +12,8 @@ const components = {
   ...mintlifyComponents,
   Success: Check,
 };
-import { resolvePageData } from '@mintlify/astro/helpers';
+import { resolvePageData, decorateNavigation, unwrapNav, containsPath, isNavPage, isNavGroup } from '@mintlify/astro/helpers';
+import type { NavEntry, NavPage, NavGroup, TabInfo } from '@mintlify/astro/helpers';
 import type { DocsConfig } from '@mintlify/astro';
 import docsConfig from '../../docs/docs.json';
 import Sidebar, { MobileSidebar } from '../components/Sidebar';
@@ -36,26 +37,124 @@ const { Content, headings } = await render(doc);
 const titleMap = Object.fromEntries(
   allDocs.map((doc) => [doc.id, doc.data.title || doc.id]),
 );
+
+// Build icon map from content collection frontmatter
+const iconMap = Object.fromEntries(
+  allDocs
+    .filter((d) => d.data.icon)
+    .map((d) => [`/${d.id}`, d.data.icon]),
+);
+
+// Merge icons from frontmatter into navigation entries
+function addIconsToEntries(entries: NavEntry[]): NavEntry[] {
+  return entries.map((entry) => {
+    if (isNavPage(entry)) {
+      const icon = iconMap[entry.href];
+      return icon ? { ...entry, icon } : entry;
+    }
+    if (isNavGroup(entry)) {
+      return { ...entry, pages: addIconsToEntries(entry.pages) };
+    }
+    return entry;
+  });
+}
+
 const currentPath = doc.id === 'index' ? '/' : `/${doc.id}`;
 const page = resolvePageData(docsConfig as DocsConfig, {
   currentPath,
   titleMap,
 });
+
+// Add icons from frontmatter to sidebar entries
+const sidebarEntries = addIconsToEntries(page.sidebarEntries);
+
+// Extract version and anchor info from the navigation structure
+// docs.json uses: navigation.versions[].anchors[].groups[]
+const nav = decorateNavigation((docsConfig as DocsConfig).navigation, titleMap);
+const versions = (nav as any).versions as any[] | undefined;
+
+// Resolve version tabs (Latest / Legacy dropdown)
+type VersionInfo = { name: string; href: string; isActive: boolean };
+let versionTabs: VersionInfo[] = [];
+let activeVersion: any = null;
+
+if (versions) {
+  versionTabs = versions.map((v: any) => {
+    const anchors = v.anchors || [];
+    // Find first page in this version
+    let firstHref = '/';
+    for (const anchor of anchors) {
+      const entries = unwrapNav(anchor, currentPath);
+      for (const entry of entries) {
+        if (isNavPage(entry)) { firstHref = entry.href; break; }
+        if (isNavGroup(entry) && entry.pages.length > 0) {
+          const first = entry.pages.find((p: NavEntry) => isNavPage(p)) as NavPage | undefined;
+          if (first) { firstHref = first.href; break; }
+        }
+      }
+      if (firstHref !== '/') break;
+    }
+    const isActive = anchors.some((a: any) => containsPath(unwrapNav(a, currentPath), currentPath));
+    if (isActive) activeVersion = v;
+    return { name: v.version, href: firstHref, isActive };
+  });
+}
+
+// Resolve anchor tabs (Vanilla / React / Vue / Svelte / Solid) from active version
+type AnchorTabInfo = { name: string; href: string; icon?: string; isActive: boolean };
+let anchorTabs: AnchorTabInfo[] = [];
+
+if (activeVersion?.anchors) {
+  anchorTabs = activeVersion.anchors.map((anchor: any) => {
+    const entries = unwrapNav(anchor, currentPath);
+    let firstHref = '/';
+    for (const entry of entries) {
+      if (isNavPage(entry)) { firstHref = entry.href; break; }
+      if (isNavGroup(entry) && entry.pages.length > 0) {
+        const first = entry.pages.find((p: NavEntry) => isNavPage(p)) as NavPage | undefined;
+        if (first) { firstHref = first.href; break; }
+      }
+    }
+    return {
+      name: anchor.anchor,
+      href: firstHref,
+      icon: anchor.icon,
+      isActive: containsPath(entries, currentPath),
+    };
+  });
+}
+
+// Convert anchor tabs to the format Header expects (TabInfo[])
+const tabs: TabInfo[] | null = anchorTabs.length > 0
+  ? anchorTabs.map((a) => ({ name: a.name, href: a.href, isActive: a.isActive }))
+  : null;
+
+// Build sidebar anchors from the active version's anchor list
+const anchors = anchorTabs.map((a) => ({
+  name: a.name,
+  href: a.href,
+  icon: a.icon,
+}));
+
+// Navbar config
+const navbarConfig = (docsConfig as any).navbar;
 ---
 
 <Layout title={doc.data.title || doc.id} description={doc.data.description}>
   <div>
     <Header
-      tabs={page.tabs}
+      tabs={tabs}
       pageTitle={doc.data.title || doc.id}
       groupName={page.groupName}
+      versionTabs={versionTabs}
+      navbarConfig={navbarConfig}
     />
 
     <MobileSidebar
       navigation={page.navigation}
       currentPath={currentPath}
-      tabs={page.tabs || []}
-      anchors={page.anchors}
+      tabs={tabs || []}
+      anchors={anchors}
       client:load
     />
 
@@ -68,7 +167,8 @@ const page = resolvePageData(docsConfig as DocsConfig, {
           <Sidebar
             navigation={page.navigation}
             currentPath={currentPath}
-            anchors={page.anchors}
+            anchors={anchors}
+            entries={sidebarEntries}
             client:load
           />
         </div>
@@ -95,7 +195,7 @@ const page = resolvePageData(docsConfig as DocsConfig, {
                   {
                     doc.data.description && (
                       <div class="text-lg prose prose-gray max-w-2xl">
-                        <p>{doc.data.description}</p>
+                        <p set:html={doc.data.description.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')} />
                       </div>
                     )
                   }
