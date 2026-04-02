@@ -308,14 +308,10 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
     /* ---- Apply initial feedback styles ---- */
 
-    feedbackElement.setAttribute(ATTRIBUTE, 'true');
-
-    const transform = untracked(() => dragOperation.transform);
     const initialTranslate = initial.translate ?? {x: 0, y: 0};
-    const tX = transform.x * frameTransform.scaleX + initialTranslate.x;
-    const tY = transform.y * frameTransform.scaleY + initialTranslate.y;
-
     const fixedOffset = getFixedPositionOffset();
+
+    feedbackElement.setAttribute(ATTRIBUTE, 'true');
 
     styles.set(
       {
@@ -323,7 +319,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         height: height - heightOffset,
         top: projected.top + fixedOffset.y,
         left: projected.left + fixedOffset.x,
-        translate: `${tX}px ${tY}px 0`,
+        translate: `${initialTranslate.x}px ${initialTranslate.y}px 0`,
         transform: this.overlay ? 'none' : initialTransformStyle,
         transition: feedbackTransition
           ? `${feedbackTransition}, translate 0ms linear`
@@ -390,6 +386,16 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
     const initialShape = new DOMRectangle(feedbackElement);
     untracked(() => (dragOperation.shape = initialShape));
+
+    // Compute the initial transform now that shape is set, so modifiers
+    // (e.g. snap-to-cursor) have access to shape.initial on the first frame.
+    // In v1, draggingNodeRect was always available in modifiers; this restores
+    // that behaviour. On the first frame position.delta is {x:0,y:0}, so for
+    // modifiers that don't need shape the second styles.set is a no-op.
+    const transform = untracked(() => dragOperation.transform);
+    const tX = transform.x * frameTransform.scaleX + initialTranslate.x;
+    const tY = transform.y * frameTransform.scaleY + initialTranslate.y;
+    styles.set({translate: `${tX}px ${tY}px 0`}, CSS_PREFIX);
 
     const feedbackWindow = getWindow(feedbackElement);
     const handleWindowResize = (event: Event) => {
