@@ -1,67 +1,16 @@
 /**
- * Custom Card component that uses DocsIcon for proper brand-colored icons.
- * Replaces @mintlify/components Card in the MDX components map.
+ * Wrapper around @mintlify/components Card that injects brand-colored icons.
+ *
+ * For brand icons (js, react, vuejs, svelte, solidjs), we pass the brand
+ * hex color via the `color` prop so @mintlify/components renders the icon
+ * with the correct color. For everything else, we pass through unchanged.
  */
-import { cn } from '@mintlify/components';
-import { DocsIcon } from './DocsIcon';
+import { Card } from '@mintlify/components';
+import { getBrandColor } from './DocsIcon';
 
-interface CardProps {
-  title?: string;
-  icon?: string;
-  iconType?: string;
-  iconLibrary?: string;
-  color?: string;
-  href?: string;
-  horizontal?: boolean;
-  children?: React.ReactNode;
-  img?: string;
-  className?: string;
-  disabled?: boolean;
-  cta?: string;
-  arrow?: boolean;
-}
+export function BrandCard(props: React.ComponentProps<typeof Card>) {
+  const { icon, color, ...rest } = props;
+  const brandColor = icon && !color ? getBrandColor(icon) : undefined;
 
-export function BrandCard({
-  title,
-  icon,
-  color,
-  href,
-  children,
-  className,
-}: CardProps) {
-  const content = (
-    <>
-      {icon && (
-        <div className="mb-2">
-          <DocsIcon icon={icon} size={24} color={color} />
-        </div>
-      )}
-      {title && (
-        <div
-          data-component-part="card-title"
-          className="font-semibold text-gray-900 text-sm"
-        >
-          {title}
-        </div>
-      )}
-      {children && (
-        <div className="text-sm text-gray-500 mt-1">{children}</div>
-      )}
-    </>
-  );
-
-  const cardClasses = cn(
-    'card block rounded-xl border border-gray-200 p-4 no-underline transition-colors hover:border-(--primary)',
-    className,
-  );
-
-  if (href) {
-    return (
-      <a href={href} className={cardClasses}>
-        {content}
-      </a>
-    );
-  }
-
-  return <div className={cardClasses}>{content}</div>;
+  return <Card icon={icon} color={brandColor || color} {...rest} />;
 }

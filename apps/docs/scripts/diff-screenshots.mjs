@@ -34,9 +34,14 @@ const args = process.argv.slice(2);
 let pagePath = '/overview';
 let threshold = 0.5;
 
+let skipTopPx = 0;
+
 for (let i = 0; i < args.length; i++) {
   if (args[i] === '--threshold' && args[i + 1]) {
     threshold = parseFloat(args[i + 1]);
+    i++;
+  } else if (args[i] === '--skip-top' && args[i + 1]) {
+    skipTopPx = parseInt(args[i + 1], 10);
     i++;
   } else if (!args[i].startsWith('--')) {
     pagePath = args[i].startsWith('/') ? args[i] : `/${args[i]}`;
@@ -48,7 +53,18 @@ async function takeScreenshot(browser, url, name) {
   await page.setViewport(VIEWPORT);
   await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
   await page.evaluate(() => document.fonts.ready);
-  await new Promise((r) => setTimeout(r, 2000));
+  // Disable all CSS animations/transitions to get stable screenshots
+  await page.addStyleTag({
+    content: `
+      *, *::before, *::after {
+        animation-duration: 0s !important;
+        animation-delay: 0s !important;
+        transition-duration: 0s !important;
+        transition-delay: 0s !important;
+      }
+    `,
+  });
+  await new Promise((r) => setTimeout(r, 1000));
 
   const path = join(OUTPUT_DIR, `${name}.png`);
   await page.screenshot({ path, fullPage: true, type: 'png' });
@@ -99,7 +115,9 @@ async function main() {
   console.log(`\n📸 Screenshot Diff: ${pagePath}`);
   console.log(`   Production: ${PROD_BASE}${pagePath}`);
   console.log(`   Local:      ${LOCAL_BASE}${pagePath}`);
-  console.log(`   Threshold:  ${threshold}%\n`);
+  console.log(`   Threshold:  ${threshold}%`);
+  if (skipTopPx) console.log(`   Skip top:   ${skipTopPx}px`);
+  console.log();
 
   const browser = await puppeteer.launch({
     headless: true,
@@ -122,8 +140,32 @@ async function main() {
 
     // Resize to match
     [prodImg, localImg] = resizeToMatch(prodImg, localImg);
+
+    // Optionally crop top N pixels (e.g. to exclude animated hero images)
+    function cropTop(img, topPx) {
+      if (topPx <= 0 || topPx >= img.height) return img;
+      const newH = img.height - topPx;
+      const cropped = new PNG({ width: img.width, height: newH });
+      for (let y = 0; y < newH; y++) {
+        for (let x = 0; x < img.width; x++) {
+          const srcIdx = ((y + topPx) * img.width + x) * 4;
+          const dstIdx = (y * img.width + x) * 4;
+          cropped.data[dstIdx] = img.data[srcIdx];
+          cropped.data[dstIdx + 1] = img.data[srcIdx + 1];
+          cropped.data[dstIdx + 2] = img.data[srcIdx + 2];
+          cropped.data[dstIdx + 3] = img.data[srcIdx + 3];
+        }
+      }
+      return cropped;
+    }
+
+    if (skipTopPx > 0) {
+      prodImg = cropTop(prodImg, skipTopPx);
+      localImg = cropTop(localImg, skipTopPx);
+    }
+
     const { width, height } = prodImg;
-    console.log(`  Compared:   ${width}x${height}`);
+    console.log(`  Compared:   ${width}x${height}${skipTopPx ? ` (after skipping top ${skipTopPx}px)` : ''}`);
 
     // Run pixelmatch
     const diff = new PNG({ width, height });

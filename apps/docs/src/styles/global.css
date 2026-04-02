@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import './fonts.css';
 @source "../../node_modules/@mintlify/components"; /* TODO: Remove once @mintlify/components ships its own source hints. */
 @import './color-scheme.css';
 @import '@mintlify/components/styles.css' layer(components);
@@ -10,6 +11,17 @@
 :root {
   --primary: #596dff;
   --color-primary: #596dff;
+}
+
+/* Fix for inline styles from MDX that output numeric values without 'px' units.
+   The compiled MDX from @mintlify/astro writes style="width:130;height:80" instead
+   of "width:130px;height:80px", causing images to render at 0x0. This CSS override
+   forces sponsor images to display at reasonable sizes. */
+.sponsors [data-component-part="frame"] img {
+  width: auto !important;
+  height: 80px !important;
+  max-width: 180px;
+  pointer-events: none;
 }
 
 @theme {

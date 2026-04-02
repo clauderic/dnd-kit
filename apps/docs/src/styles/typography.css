@@ -1,7 +1,7 @@
 :root {
   --content-scroll-mt: 8rem;
-  --font-family-headings-custom: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-family-body-custom: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-family-headings-custom: 'Inter', 'Inter Fallback', -apple-system, system-ui, 'Segoe UI', sans-serif;
+  --font-family-body-custom: 'Inter', 'Inter Fallback', -apple-system, system-ui, 'Segoe UI', sans-serif;
   --font-family-mono-custom:
     'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     'Liberation Mono', 'Courier New', monospace;
