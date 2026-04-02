@@ -388,10 +388,9 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     untracked(() => (dragOperation.shape = initialShape));
 
     // Compute the initial transform now that shape is set, so modifiers
-    // (e.g. snap-to-cursor) have access to shape.initial on the first frame.
-    // In v1, draggingNodeRect was always available in modifiers; this restores
-    // that behaviour. On the first frame position.delta is {x:0,y:0}, so for
-    // modifiers that don't need shape the second styles.set is a no-op.
+    // have access to shape.initial on the first frame. On the first frame
+    // position.delta is {x:0,y:0}, so for modifiers that don't read shape
+    // the second styles.set below is a no-op.
     const transform = untracked(() => dragOperation.transform);
     const tX = transform.x * frameTransform.scaleX + initialTranslate.x;
     const tY = transform.y * frameTransform.scaleY + initialTranslate.y;
