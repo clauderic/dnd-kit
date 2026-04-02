@@ -1,0 +1,91 @@
+---
+import type { TabInfo } from '@mintlify/astro/helpers';
+import { SearchBar } from './SearchBar';
+import AssistantBar from './AssistantBar';
+import { MobileActionButtons, MobileNavToggle } from './MobileHeaderActions';
+
+interface Props {
+  tabs: TabInfo[] | null;
+  pageTitle?: string;
+  groupName?: string;
+}
+
+const { tabs, pageTitle, groupName } = Astro.props;
+const usingTabs = tabs && tabs.length > 0;
+---
+
+<header class="sticky top-0 w-full px-8 z-50">
+  <div
+    class="absolute left-1/2 -translate-x-1/2 w-screen h-full backdrop-blur flex-none transition-colors duration-500 border-b border-gray-500/5 bg-white/95 supports-backdrop-blur:bg-white/60"
+  >
+  </div>
+  <div class="relative">
+    <div>
+      <div class="relative">
+        <div class:list={['flex items-center h-16 min-w-0']}>
+          <div
+            class:list={[
+              'h-full relative flex-1 flex items-center justify-between gap-x-4 min-w-0 border-b border-gray-500/5',
+              !usingTabs && 'lg:border-none',
+            ]}
+          >
+            <div class="flex items-center shrink-0 lg:flex-1">
+              <a href="/" class="flex items-center shrink-0">
+                <img src="/images/logo/logo.svg" alt="@dnd-kit" class="h-7" />
+              </a>
+            </div>
+            <div
+              class="flex-1 hidden lg:flex items-center justify-center gap-3 min-w-0"
+            >
+              <div class="w-full max-w-sm">
+                <SearchBar client:load />
+              </div>
+              <div class="shrink-0" transition:persist="assistant-bar">
+                <AssistantBar client:load />
+              </div>
+            </div>
+            <MobileActionButtons client:load />
+            <div class="flex-1 hidden lg:flex items-center justify-end"></div>
+          </div>
+        </div>
+        {
+          pageTitle && (
+            <MobileNavToggle
+              pageTitle={pageTitle}
+              groupName={groupName}
+              client:load
+            />
+          )
+        }
+      </div>
+      {
+        usingTabs && (
+          <div class="hidden lg:flex h-12">
+            <div class="h-full flex text-sm gap-x-6">
+              {tabs.map((tab) => (
+                <a
+                  href={tab.href}
+                  class:list={[
+                    'group relative h-full gap-2 flex items-center font-medium text-gray-600 hover:text-gray-800',
+                    tab.isActive &&
+                      'text-gray-800 [text-shadow:-0.2px_0_0_currentColor,0.2px_0_0_currentColor]',
+                  ]}
+                >
+                  {tab.name}
+                  <div
+                    class:list={[
+                      'absolute bottom-0 h-[1.5px] w-full left-0',
+                      tab.isActive
+                        ? 'bg-(--primary)'
+                        : 'group-hover:bg-gray-200',
+                    ]}
+                  />
+                </a>
+              ))}
+            </div>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</header>

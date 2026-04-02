@@ -25,5 +25,8 @@
     "packages/*",
     "apps/*"
   ],
-  "name": "dnd-kit-experimental"
+  "name": "dnd-kit-experimental",
+  "overrides": {
+    "ajv": "8.17.1"
+  }
 }

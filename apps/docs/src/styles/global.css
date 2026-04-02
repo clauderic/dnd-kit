@@ -1,0 +1,28 @@
+@import 'tailwindcss';
+@source "../../node_modules/@mintlify/components"; /* TODO: Remove once @mintlify/components ships its own source hints. */
+@import './color-scheme.css';
+@import '@mintlify/components/styles.css' layer(components);
+@import './typography.css';
+@import './prose.css';
+@import './prose-components.css';
+@import './kbd.css';
+
+:root {
+  --primary: #596dff;
+  --color-primary: #596dff;
+}
+
+@theme {
+  --animate-dot-bounce: dot-bounce 1.4s ease-in-out infinite;
+
+  @keyframes dot-bounce {
+    0%,
+    20%,
+    100% {
+      transform: translateY(0);
+    }
+    10% {
+      transform: translateY(2px);
+    }
+  }
+}
