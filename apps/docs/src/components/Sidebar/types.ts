@@ -3,6 +3,7 @@ export type AnchorItem = {
   href: string;
   icon?: string;
   color?: string;
+  isActive?: boolean;
 };
 
 export type SidebarItemStyle =

@@ -15,6 +15,7 @@ export function Anchors({ anchors }: AnchorsProps) {
             name={anchor.name}
             icon={anchor.icon}
             color={anchor.color}
+            isActive={anchor.isActive}
           />
         </li>
       ))}

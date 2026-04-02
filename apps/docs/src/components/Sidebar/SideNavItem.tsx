@@ -78,21 +78,15 @@ export function SideNavItem({
           />
         )}
         {page.icon && (
-          <span
+          <Icon
+            icon={page.icon}
             className={cn(
-              'w-5 h-5 p-0.5 inline-flex items-center justify-center rounded',
-              isActive ? 'bg-(--primary)' : 'bg-gray-400',
+              'shrink-0',
+              isActive ? 'text-(--primary)' : 'text-gray-400',
             )}
-          >
-            <Icon
-              icon={page.icon}
-              className={cn(
-                isActive ? 'bg-white' : 'bg-gray-600 group-hover:bg-white',
-              )}
-              overrideColor
-              size={12}
-            />
-          </span>
+            size={16}
+            color="currentColor"
+          />
         )}
         <span className="flex-1 truncate min-w-0">{title}</span>
         {page.deprecated && (

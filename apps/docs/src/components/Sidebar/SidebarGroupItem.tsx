@@ -34,19 +34,15 @@ export function SidebarGroupItem({
           )}
         >
           {group.icon && (
-            <span
+            <Icon
+              icon={group.icon}
               className={cn(
-                'w-5 h-5 p-0.5 inline-flex items-center justify-center rounded',
-                hasActiveChild ? 'bg-(--primary)' : 'bg-gray-400',
+                'shrink-0',
+                hasActiveChild ? 'text-(--primary)' : 'text-gray-400',
               )}
-            >
-              <Icon
-                icon={group.icon}
-                className={hasActiveChild ? 'bg-white' : 'bg-gray-600'}
-                overrideColor
-                size={12}
-              />
-            </span>
+              size={16}
+              color="currentColor"
+            />
           )}
           <span className="flex-1 truncate">{group.group}</span>
           <Icon
