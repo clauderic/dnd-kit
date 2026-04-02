@@ -1,5 +1,4 @@
 ---
-import type { TabInfo } from '@mintlify/astro/helpers';
 import { SearchBar } from './SearchBar';
 import AssistantBar from './AssistantBar';
 import { MobileActionButtons, MobileNavToggle } from './MobileHeaderActions';
@@ -13,15 +12,13 @@ type NavbarConfig = {
 };
 
 interface Props {
-  tabs: TabInfo[] | null;
   pageTitle?: string;
   groupName?: string;
   versionTabs?: VersionInfo[];
   navbarConfig?: NavbarConfig;
 }
 
-const { tabs, pageTitle, groupName, versionTabs = [], navbarConfig } = Astro.props;
-const usingTabs = tabs && tabs.length > 0;
+const { pageTitle, groupName, versionTabs = [], navbarConfig } = Astro.props;
 const activeVersion = versionTabs.find((v) => v.isActive);
 const hasVersions = versionTabs.length > 1;
 ---
@@ -36,10 +33,7 @@ const hasVersions = versionTabs.length > 1;
       <div class="relative">
         <div class:list={['flex items-center h-16 min-w-0']}>
           <div
-            class:list={[
-              'h-full relative flex-1 flex items-center justify-between gap-x-4 min-w-0 border-b border-gray-500/5',
-              !usingTabs && 'lg:border-none',
-            ]}
+            class="h-full relative flex-1 flex items-center justify-between gap-x-4 min-w-0 lg:border-none"
           >
             <div class="flex items-center gap-3 shrink-0 lg:flex-1">
               <a href="/" class="flex items-center shrink-0">
@@ -57,7 +51,7 @@ const hasVersions = versionTabs.length > 1;
                     </svg>
                   </button>
                   <div
-                    class="absolute top-full left-0 mt-1 w-36 bg-white border border-gray-200 rounded-lg shadow-lg py-1 hidden"
+                    class="absolute top-full left-0 mt-1 w-36 bg-white border border-gray-200 rounded-lg shadow-lg py-1 hidden z-[100]"
                     data-version-menu
                   >
                     {versionTabs.map((v) => (
@@ -122,34 +116,6 @@ const hasVersions = versionTabs.length > 1;
           )
         }
       </div>
-      {
-        usingTabs && (
-          <div class="hidden lg:flex h-12">
-            <div class="h-full flex text-sm gap-x-6">
-              {tabs.map((tab) => (
-                <a
-                  href={tab.href}
-                  class:list={[
-                    'group relative h-full gap-2 flex items-center font-medium text-gray-600 hover:text-gray-800',
-                    tab.isActive &&
-                      'text-gray-800 [text-shadow:-0.2px_0_0_currentColor,0.2px_0_0_currentColor]',
-                  ]}
-                >
-                  {tab.name}
-                  <div
-                    class:list={[
-                      'absolute bottom-0 h-[1.5px] w-full left-0',
-                      tab.isActive
-                        ? 'bg-(--primary)'
-                        : 'group-hover:bg-gray-200',
-                    ]}
-                  />
-                </a>
-              ))}
-            </div>
-          </div>
-        )
-      }
     </div>
   </div>
 </header>

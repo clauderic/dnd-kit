@@ -42,7 +42,6 @@ export function SidebarGroupItem({
             >
               <Icon
                 icon={group.icon}
-                iconLibrary="lucide"
                 className={hasActiveChild ? 'bg-white' : 'bg-gray-600'}
                 overrideColor
                 size={12}
@@ -100,7 +99,6 @@ export function SidebarGroupItem({
         {group.icon && (
           <Icon
             icon={group.icon}
-            iconLibrary="lucide"
             className="h-3.5 w-3.5 bg-current"
             overrideColor={true}
             size={14}

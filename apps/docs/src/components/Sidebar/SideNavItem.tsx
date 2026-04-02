@@ -86,7 +86,6 @@ export function SideNavItem({
           >
             <Icon
               icon={page.icon}
-              iconLibrary="lucide"
               className={cn(
                 isActive ? 'bg-white' : 'bg-gray-600 group-hover:bg-white',
               )}
