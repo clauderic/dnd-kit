@@ -24,6 +24,7 @@
     "@tailwindcss/vite": "^4.1.18",
     "ai": "^6.0.68",
     "astro": "^5.16.12",
+    "vite": "^6.4.1",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-markdown": "^10.1.0",

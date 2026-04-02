@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "dnd-kit-experimental",
@@ -29,6 +30,7 @@
         "react-markdown": "^10.1.0",
         "tailwindcss": "^4.1.18",
         "use-debounce": "^10.1.0",
+        "vite": "^6.4.1",
         "zustand": "^5.0.11",
       },
       "devDependencies": {
