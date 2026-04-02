@@ -37,7 +37,7 @@ const hasVersions = versionTabs.length > 1;
           >
             <div class="flex items-center gap-3 shrink-0 lg:flex-1">
               <a href="/" class="flex items-center shrink-0">
-                <img src="/images/logo/logo.svg" alt="@dnd-kit" class="h-7" />
+                <img src="/images/logo/logo.svg" alt="@dnd-kit" class="h-10" />
               </a>
               {hasVersions && (
                 <div class="relative hidden lg:block" data-version-dropdown>
@@ -98,10 +98,10 @@ const hasVersions = versionTabs.length > 1;
                   href={navbarConfig.primary.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-sm font-medium text-white bg-(--primary) hover:opacity-90 px-4 py-1.5 rounded-full transition-opacity"
+                  class="inline-flex items-center gap-0.5 text-sm font-medium text-white bg-(--primary) hover:opacity-90 px-4 py-1.5 rounded-full transition-opacity whitespace-nowrap"
                 >
                   {navbarConfig.primary.label}
-                  <svg class="w-3 h-3 ml-0.5" viewBox="0 0 20 20" fill="currentColor">
+                  <svg class="w-3 h-3 shrink-0" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
                   </svg>
                 </a>
