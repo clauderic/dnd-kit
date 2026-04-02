@@ -53,7 +53,7 @@ async function takeScreenshot(browser, url, name) {
   await page.setViewport(VIEWPORT);
   await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
   await page.evaluate(() => document.fonts.ready);
-  // Disable all CSS animations/transitions to get stable screenshots
+  // Disable all CSS animations/transitions for stable screenshots
   await page.addStyleTag({
     content: `
       *, *::before, *::after {
@@ -63,6 +63,18 @@ async function takeScreenshot(browser, url, name) {
         transition-delay: 0s !important;
       }
     `,
+  });
+  // Also kill animations inside inline SVGs and <img> SVGs
+  await page.evaluate(() => {
+    // Pause all SVG animations
+    document.querySelectorAll('svg').forEach(svg => {
+      try { svg.pauseAnimations?.(); } catch {}
+    });
+    // For <img> tags with SVGs, we can't reach inside, but we can
+    // force a repaint after animations are killed
+    document.querySelectorAll('img[src$=".svg"]').forEach(img => {
+      img.style.animationPlayState = 'paused';
+    });
   });
   await new Promise((r) => setTimeout(r, 1000));
 
