@@ -30,7 +30,7 @@ export function Anchor({ name, href, icon, color, isActive }: AnchorItem) {
             'ring-1 ring-gray-950/[0.07]',
             isActive
               ? '[background:var(--anchor-color)] text-white'
-              : 'text-gray-600 group-hover:[background:var(--anchor-color)] group-hover:text-white',
+              : 'text-gray-400 group-hover:[background:var(--anchor-color)] group-hover:text-white',
           )}
         >
           <DocsIcon
