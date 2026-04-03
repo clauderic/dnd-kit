@@ -40,6 +40,22 @@ const { title = '@dnd-kit', description } = Astro.props;
   </body>
 </html>
 
+<script>
+  // Fix unitless inline style values from compiled MDX.
+  // @mintlify/astro outputs style="width:130;height:80" instead of "width:130px;height:80px"
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll('img[style]').forEach((img) => {
+      const style = img.getAttribute('style') || '';
+      if (/(?:width|height):\s*\d+(?:;|$)/.test(style)) {
+        img.setAttribute(
+          'style',
+          style.replace(/(\b(?:width|height|top|left|right|bottom):\s*)(\d+)(;|$)/g, '$1$2px$3')
+        );
+      }
+    });
+  });
+</script>
+
 <style>
   html,
   body {

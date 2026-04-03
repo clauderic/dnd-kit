@@ -11,17 +11,14 @@
 :root {
   --primary: #596dff;
   --color-primary: #596dff;
+  --primary-light: 89 109 255;
 }
 
-/* Fix for inline styles from MDX that output numeric values without 'px' units.
-   The compiled MDX from @mintlify/astro writes style="width:130;height:80" instead
-   of "width:130px;height:80px", causing images to render at 0x0. This CSS override
-   forces sponsor images to display at reasonable sizes. */
-.sponsors [data-component-part="frame"] img {
-  width: auto !important;
-  height: 80px !important;
-  max-width: 180px;
-  pointer-events: none;
+/* Sponsor frame: center logos vertically and horizontally */
+.sponsors [data-component-part="frame"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @theme {
