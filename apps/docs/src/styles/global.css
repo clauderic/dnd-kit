@@ -25,10 +25,6 @@
   background: none !important;
 }
 
-/* Prevent card icons from being clipped */
-.card [data-component-part="icon-svg"] {
-  overflow: visible !important;
-}
 
 @theme {
   --animate-dot-bounce: dot-bounce 1.4s ease-in-out infinite;
