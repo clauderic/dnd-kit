@@ -1,6 +1,6 @@
 import { cn } from '@mintlify/components';
 import type { AnchorItem } from './types';
-import { DocsIcon, isBrandIcon } from '../DocsIcon';
+import { DocsIcon } from '../DocsIcon';
 
 export function Anchor({ name, href, icon, color, isActive }: AnchorItem) {
   const isExternal =
@@ -29,14 +29,14 @@ export function Anchor({ name, href, icon, color, isActive }: AnchorItem) {
             'mr-4 rounded-md inline-flex items-center justify-center w-6 h-6 p-1',
             'ring-1 ring-gray-950/[0.07]',
             isActive
-              ? '[background:var(--anchor-color)]'
-              : 'group-hover:[background:var(--anchor-color)]',
+              ? '[background:var(--anchor-color)] text-white'
+              : 'text-gray-600 group-hover:[background:var(--anchor-color)] group-hover:text-white',
           )}
         >
           <DocsIcon
             icon={icon}
             size={16}
-            color={isActive ? '#fff' : isBrandIcon(icon) ? '#6b7280' : '#6b7280'}
+            color="currentColor"
           />
         </span>
       )}
