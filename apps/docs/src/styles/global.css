@@ -14,11 +14,15 @@
   --primary-light: 89 109 255;
 }
 
-/* Sponsor frame: center logos vertically and horizontally */
+/* Sponsor frame: center logos and remove default white background */
 .sponsors [data-component-part="frame"] {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.sponsors [data-component-part="frame-content"] {
+  background: none !important;
 }
 
 @theme {
