@@ -49,10 +49,10 @@ export function AssistantTextArea({
         className={cn(
           'w-full py-3 pr-10 pl-3 rounded-xl resize-none outline-none',
           isMobile ? 'text-base' : 'text-sm',
-          'border border-gray-200',
-          'bg-white',
-          'text-gray-900',
-          'placeholder:text-gray-400',
+          'border border-gray-200 dark:border-white/10',
+          'bg-white dark:bg-background-dark',
+          'text-gray-900 dark:text-gray-200',
+          'placeholder:text-gray-400 dark:placeholder:text-gray-500',
           'focus:ring-2 min-h-[48px] transition-shadow',
         )}
         style={

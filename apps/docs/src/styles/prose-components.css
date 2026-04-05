@@ -30,6 +30,6 @@
   column-gap: 1rem;
 }
 
-.mdx-content.prose .card:hover {
+.mdx-content.prose a.card:hover {
   border-color: var(--mdx-card-primary);
 }

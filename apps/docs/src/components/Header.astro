@@ -2,6 +2,7 @@
 import { SearchBar } from './SearchBar';
 import AssistantBar from './AssistantBar';
 import { MobileActionButtons, MobileNavToggle } from './MobileHeaderActions';
+import { ThemeToggle } from './ThemeToggle';
 
 type VersionInfo = { name: string; href: string; isActive: boolean };
 type NavbarLink = { label: string; href: string };
@@ -25,7 +26,7 @@ const hasVersions = versionTabs.length > 1;
 
 <header class="sticky top-0 w-full px-8 z-50">
   <div
-    class="absolute left-1/2 -translate-x-1/2 w-screen h-full backdrop-blur flex-none transition-colors duration-500 border-b border-gray-500/5 bg-white/95 supports-backdrop-blur:bg-white/60"
+    class="absolute left-1/2 -translate-x-1/2 w-screen h-full backdrop-blur flex-none transition-colors duration-500 border-b border-gray-500/5 bg-white/95 supports-backdrop-blur:bg-white/60 dark:bg-background-dark/95 dark:supports-backdrop-blur:bg-background-dark/60 dark:border-white/5"
   >
   </div>
   <div class="relative">
@@ -37,12 +38,12 @@ const hasVersions = versionTabs.length > 1;
           >
             <div class="flex items-center gap-3 shrink-0 lg:flex-1">
               <a href="/" class="flex items-center shrink-0">
-                <img src="/images/logo/logo.svg" alt="@dnd-kit" class="h-10" />
+                <img src="/images/logo/logo.svg" alt="@dnd-kit" class="h-[45px] w-auto" />
               </a>
               {hasVersions && (
                 <div class="relative hidden lg:block" data-version-dropdown>
                   <button
-                    class="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-800 px-2 py-1 rounded-md hover:bg-gray-100"
+                    class="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 px-2 py-1 rounded-md hover:bg-gray-100 dark:hover:bg-white/5 cursor-pointer"
                     data-version-toggle
                   >
                     {activeVersion?.name || 'Latest'}
@@ -51,7 +52,7 @@ const hasVersions = versionTabs.length > 1;
                     </svg>
                   </button>
                   <div
-                    class="absolute top-full left-0 mt-1 w-36 bg-white border border-gray-200 rounded-lg shadow-lg py-1 hidden z-[100]"
+                    class="absolute top-full left-0 mt-1 w-36 bg-white dark:bg-gray-950 border border-gray-200 dark:border-white/10 rounded-lg shadow-lg py-1 hidden z-[100]"
                     data-version-menu
                   >
                     {versionTabs.map((v) => (
@@ -60,8 +61,8 @@ const hasVersions = versionTabs.length > 1;
                         class:list={[
                           'block px-3 py-1.5 text-sm',
                           v.isActive
-                            ? 'text-(--primary) font-medium bg-gray-50'
-                            : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50',
+                            ? 'text-(--primary) font-medium bg-gray-50 dark:bg-white/5'
+                            : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-white/5',
                         ]}
                       >
                         {v.name}
@@ -88,11 +89,12 @@ const hasVersions = versionTabs.length > 1;
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-sm font-medium text-gray-600 hover:text-gray-800"
+                  class="text-sm font-medium text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
                 >
                   {link.label}
                 </a>
               ))}
+              <ThemeToggle client:load />
               {navbarConfig?.primary && (
                 <a
                   href={navbarConfig.primary.href}

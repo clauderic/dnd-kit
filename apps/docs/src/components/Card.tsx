@@ -1,11 +1,11 @@
 /**
  * Custom Card component that replaces @mintlify/components Card.
- * Uses DocsIcon for proper brand-colored icons rendered as inline SVGs,
- * avoiding the mask-image clipping issues in @mintlify/components.
+ * Uses our Icon component for proper inline SVG rendering, avoiding
+ * the mask-image clipping issues in @mintlify/components.
  *
  * Matches production styling: rounded-2xl, 1px border, px-6 py-5 padding.
  */
-import { DocsIcon } from './DocsIcon';
+import { Icon } from './Icon';
 
 interface CardProps {
   title?: string;
@@ -24,7 +24,7 @@ interface CardProps {
   as?: React.ElementType;
 }
 
-export function BrandCard({
+export function Card({
   title,
   icon,
   color,
@@ -35,33 +35,33 @@ export function BrandCard({
     <div className="px-6 py-5 relative">
       {icon && (
         <div className="mb-3">
-          <DocsIcon icon={icon} size={16} color={color} />
+          <Icon icon={icon} size={16} color={color} />
         </div>
       )}
       {title && (
         <div
           data-component-part="card-title"
-          className="font-semibold text-gray-900 text-sm leading-tight"
+          className="font-semibold text-gray-900 dark:text-gray-200 text-sm leading-tight"
         >
           {title}
         </div>
       )}
       {children && (
-        <div className="text-sm text-gray-500 mt-1.5 leading-relaxed">{children}</div>
+        <div className="text-sm text-gray-500 dark:text-gray-400 mt-1.5 leading-relaxed">{children}</div>
       )}
     </div>
   );
 
-  const cardClasses =
-    'card group block my-2 w-full rounded-2xl border border-black/10 bg-white cursor-pointer transition-colors hover:border-[color:var(--primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--primary)] no-underline';
+  const baseClasses =
+    'card group block my-2 w-full rounded-2xl border border-black/10 dark:border-white/10 bg-white dark:bg-transparent transition-colors no-underline';
 
   if (href) {
     return (
-      <a href={href} className={cardClasses}>
+      <a href={href} className={`${baseClasses} cursor-pointer hover:border-[color:var(--primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--primary)]`}>
         {content}
       </a>
     );
   }
 
-  return <div className={cardClasses}>{content}</div>;
+  return <div className={baseClasses}>{content}</div>;
 }

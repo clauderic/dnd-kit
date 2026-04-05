@@ -31,7 +31,7 @@ const isLocalUrl = (url: string | undefined): boolean => {
 };
 
 const CopyButtonClassName =
-  'rounded-lg p-1.5 hover:bg-gray-100 cursor-pointer text-gray-500';
+  'rounded-lg p-1.5 hover:bg-gray-100 dark:hover:bg-white/5 cursor-pointer text-gray-500 dark:text-gray-400';
 
 const CopyButton = ({ content }: { content: string }) => {
   const [copied, setCopied] = useState(false);
@@ -100,7 +100,7 @@ const SearchingContainer = ({
     <>
       <button
         className={cn(
-          'group flex items-center text-left gap-2.5 text-gray-500 shrink-0 hover:text-gray-600 transition-colors',
+          'group flex items-center text-left gap-2.5 text-gray-500 dark:text-gray-400 shrink-0 hover:text-gray-600 dark:hover:text-gray-300 transition-colors',
           hasResults ? 'cursor-pointer' : 'cursor-default',
         )}
         onClick={() => {
@@ -189,30 +189,30 @@ const MarkdownContent = ({ text }: { text: string }) => {
         remarkPlugins={[remarkGfm]}
         components={{
           h1: ({ children }) => (
-            <h1 className="text-lg font-semibold text-gray-950">{children}</h1>
+            <h1 className="text-lg font-semibold text-gray-950 dark:text-gray-50">{children}</h1>
           ),
           h2: ({ children }) => (
-            <h2 className="text-base font-semibold text-gray-950">
+            <h2 className="text-base font-semibold text-gray-950 dark:text-gray-50">
               {children}
             </h2>
           ),
           h3: ({ children }) => (
-            <h3 className="text-base font-semibold text-gray-950">
+            <h3 className="text-base font-semibold text-gray-950 dark:text-gray-50">
               {children}
             </h3>
           ),
           h4: ({ children }) => (
-            <h4 className="text-base font-semibold text-gray-950">
+            <h4 className="text-base font-semibold text-gray-950 dark:text-gray-50">
               {children}
             </h4>
           ),
           h5: ({ children }) => (
-            <h5 className="text-base font-semibold text-gray-950">
+            <h5 className="text-base font-semibold text-gray-950 dark:text-gray-50">
               {children}
             </h5>
           ),
           h6: ({ children }) => (
-            <h6 className="text-base font-semibold text-gray-950">
+            <h6 className="text-base font-semibold text-gray-950 dark:text-gray-50">
               {children}
             </h6>
           ),
@@ -251,7 +251,7 @@ const MarkdownContent = ({ text }: { text: string }) => {
               <pre
                 {...props}
                 className={cn(
-                  'p-3 text-sm rounded-xl text-gray-950 bg-white border border-gray-200/70 overflow-x-auto',
+                  'p-3 text-sm rounded-xl text-gray-950 dark:text-gray-50 bg-white dark:bg-gray-950 border border-gray-200/70 dark:border-white/10 overflow-x-auto',
                   props.className,
                 )}
               >
@@ -270,7 +270,7 @@ const MarkdownContent = ({ text }: { text: string }) => {
 
             return inline ? (
               <code
-                className="px-1 py-0.5 rounded bg-gray-100 text-sm"
+                className="px-1 py-0.5 rounded bg-gray-100 dark:bg-white/10 text-sm"
                 {...props}
               >
                 {children}

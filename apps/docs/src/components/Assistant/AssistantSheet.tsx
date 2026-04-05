@@ -131,7 +131,7 @@ function AssistantSheetClient() {
     if (isMobile) {
       return 'fixed inset-0 z-[100]';
     }
-    return cn('sticky top-0 h-screen shrink-0 z-[50]', 'bg-white');
+    return cn('sticky top-0 h-screen shrink-0 z-[50]', 'bg-white dark:bg-background-dark');
   };
 
   const sheetContent = (
@@ -163,8 +163,8 @@ function AssistantSheetClient() {
         className={cn(
           'flex flex-col overflow-hidden shrink-0',
           isMobile
-            ? 'overscroll-contain bg-white z-10'
-            : 'h-full bg-white border-l border-gray-200',
+            ? 'overscroll-contain bg-white dark:bg-background-dark z-10'
+            : 'h-full bg-white dark:bg-background-dark border-l border-gray-200 dark:border-white/5',
           isMobile &&
             !isDragging &&
             'transition-transform duration-200 ease-out',
@@ -189,7 +189,7 @@ function AssistantSheetClient() {
       >
         {isMobile && (
           <div className="flex justify-center pt-3 touch-none">
-            <div className="w-10 h-1 rounded-full bg-gray-300" />
+            <div className="w-10 h-1 rounded-full bg-gray-300 dark:bg-gray-700" />
           </div>
         )}
         <div
@@ -206,17 +206,17 @@ function AssistantSheetClient() {
                 color="var(--primary)"
                 size={20}
               />
-              <span className="font-medium text-gray-900">Assistant</span>
+              <span className="font-medium text-gray-900 dark:text-gray-200">Assistant</span>
             </div>
 
             <div className="flex items-center gap-1">
               {!isMobile && (
                 <button
                   onClick={toggleMaximize}
-                  className="group size-8 flex items-center justify-center hover:bg-gray-100 rounded-lg transition-colors"
+                  className="group size-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors"
                   aria-label={isMaximized ? 'Minimize' : 'Maximize'}
                 >
-                  <span className="flex items-center justify-center text-gray-500 group-hover:text-gray-700 transition-colors">
+                  <span className="flex items-center justify-center text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300 transition-colors">
                     {isMaximized ? (
                       <Icon
                         icon="minimize-2"
@@ -238,10 +238,10 @@ function AssistantSheetClient() {
               {messages.length > 0 && (
                 <button
                   onClick={onClear}
-                  className="group size-8 flex items-center justify-center hover:bg-gray-100 rounded-lg transition-colors"
+                  className="group size-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors"
                   aria-label="Clear chat"
                 >
-                  <span className="flex items-center justify-center text-gray-500 group-hover:text-gray-700 transition-colors">
+                  <span className="flex items-center justify-center text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300 transition-colors">
                     <Icon
                       icon="trash"
                       iconLibrary="lucide"
@@ -253,10 +253,10 @@ function AssistantSheetClient() {
               )}
               <button
                 onClick={handleClose}
-                className="group size-8 flex items-center justify-center hover:bg-gray-100 rounded-lg transition-colors"
+                className="group size-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors"
                 aria-label="Close"
               >
-                <span className="flex items-center justify-center text-gray-500 group-hover:text-gray-700 transition-colors">
+                <span className="flex items-center justify-center text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300 transition-colors">
                   <Icon
                     icon="x"
                     iconLibrary="lucide"
@@ -286,7 +286,7 @@ function AssistantSheetClient() {
             <div ref={topBoundaryRef} className="h-px w-full shrink-0" />
           </div>
 
-          <div className="px-4 pb-4 shrink-0 border-t border-gray-100 pt-4">
+          <div className="px-4 pb-4 shrink-0 border-t border-gray-100 dark:border-white/5 pt-4">
             <AssistantTextArea
               value={input}
               onChange={setInput}

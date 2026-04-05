@@ -7,12 +7,12 @@ import SiteFooter from '../components/SiteFooter';
 import { PageContextMenu } from '../components/PageContextMenu';
 import { components as mintlifyComponents } from '@mintlify/astro/components';
 import { Check } from '@mintlify/components';
-import { BrandCard } from '../components/BrandCard';
+import { Card } from '../components/Card';
 
 const components = {
   ...mintlifyComponents,
   Success: Check,
-  Card: BrandCard,
+  Card,
 };
 import { resolvePageData, decorateNavigation, unwrapNav, containsPath, isNavPage, isNavGroup } from '@mintlify/astro/helpers';
 import type { NavEntry, NavPage, NavGroup, TabInfo } from '@mintlify/astro/helpers';
@@ -37,7 +37,7 @@ const { doc, allDocs } = Astro.props;
 const { Content, headings } = await render(doc);
 
 const titleMap = Object.fromEntries(
-  allDocs.map((doc) => [doc.id, doc.data.title || doc.id]),
+  allDocs.map((doc) => [doc.id, doc.data.sidebarTitle || doc.data.title || doc.id]),
 );
 
 // Build icon map from content collection frontmatter
@@ -143,7 +143,7 @@ const anchors = anchorTabs.map((a) => ({
 const navbarConfig = (docsConfig as any).navbar;
 ---
 
-<Layout title={doc.data.title || doc.id} description={doc.data.description}>
+<Layout title={doc.data.metaTitle || `${doc.data.title || doc.id} - @dnd-kit`} description={doc.data.description}>
   <div>
     <Header
       pageTitle={doc.data.title || doc.id}
@@ -190,7 +190,7 @@ const navbarConfig = (docsConfig as any).navbar;
               >
                 <div class="flex flex-col gap-2.5">
                   <h1
-                    class="text-2xl sm:text-3xl text-gray-900 tracking-tight font-bold wrap-anywhere"
+                    class="text-2xl sm:text-3xl text-gray-900 dark:text-gray-200 tracking-tight font-bold wrap-anywhere"
                   >
                     {doc.data.title || doc.id}
                   </h1>

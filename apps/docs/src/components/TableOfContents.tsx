@@ -61,11 +61,11 @@ export default function TableOfContents({
           }
         }
       `}</style>
-      <div className="toc-wrapper flex-col sticky top-38 h-[calc(100vh-9.5rem)] w-80 shrink-0 pl-10">
+      <div className="toc-wrapper flex-col sticky top-[6.5rem] h-[calc(100vh-8rem)] w-80 shrink-0 pl-10">
         <nav className="overflow-y-auto text-sm leading-6 pt-2 pb-8">
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: 'instant' })}
-            className="font-medium text-gray-900 mb-3 flex items-center gap-2 cursor-pointer hover:text-gray-600 transition-colors"
+            className="font-medium text-gray-900 dark:text-gray-200 mb-3 flex items-center gap-2 cursor-pointer hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
           >
             <LinesIcon />
             <span>On this page</span>
@@ -83,7 +83,7 @@ export default function TableOfContents({
                       heading.depth > 2 ? 'pl-4' : 'pl-0',
                       isActive
                         ? 'font-medium text-(--primary)'
-                        : 'text-gray-500 hover:text-gray-900',
+                        : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200',
                     )}
                   >
                     {heading.text}

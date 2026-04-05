@@ -18,14 +18,14 @@ export const ChatMessage = React.forwardRef<HTMLDivElement, ChatMessageProps>(
         <div
           ref={ref}
           className={cn(
-            'flex px-3 py-2 items-start gap-4 w-fit rounded-2xl bg-gray-100',
+            'flex px-3 py-2 items-start gap-4 w-fit rounded-2xl bg-gray-100 dark:bg-white/10',
             className,
           )}
           {...props}
         >
           <div className="flex items-start gap-4 w-full">
             <div className="flex flex-col gap-1 w-full">
-              <div className="wrap-break-word hyphens-auto text-base lg:text-sm text-gray-800">
+              <div className="wrap-break-word hyphens-auto text-base lg:text-sm text-gray-800 dark:text-gray-200">
                 {content}
               </div>
             </div>

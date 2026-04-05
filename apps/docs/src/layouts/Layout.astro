@@ -25,20 +25,33 @@ const { title = '@dnd-kit', description } = Astro.props;
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="stylesheet" href="/style.css" />
     <meta name="generator" content={Astro.generator} />
+    <script is:inline>
+      (function () {
+        var t = localStorage.getItem('theme');
+        if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
     <ClientRouter />
   </head>
-  <body>
+  <body class="bg-white dark:bg-background-dark text-gray-900 dark:text-gray-200">
     <AssistantProvider client:only="react" />
     <div class="flex antialiased">
-      <div class="flex-1 min-w-0 max-w-[1400px] mx-auto w-full">
+      <div class="flex-1 min-w-0 max-w-[1472px] mx-auto w-full">
         <slot />
       </div>
       <AssistantSheet client:only="react" transition:persist />
     </div>
   </body>
 </html>
+
+<script>
+  // Register the <code-sandbox> custom element for Sandpack examples.
+  import '../components/CodeSandboxElement';
+</script>
 
 <script>
   // Fix unitless inline style values from compiled MDX.

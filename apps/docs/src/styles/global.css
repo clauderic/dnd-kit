@@ -14,6 +14,54 @@
   --primary-light: 89 109 255;
 }
 
+/* Dark mode prose overrides */
+.dark .prose {
+  --tw-prose-body: rgb(208 209 213);
+  --tw-prose-headings: rgb(225 225 230);
+  --tw-prose-links: var(--primary);
+  --tw-prose-bold: rgb(225 225 230);
+  --tw-prose-counters: rgb(161 161 166);
+  --tw-prose-bullets: rgb(114 115 119);
+  --tw-prose-hr: rgb(40 40 45);
+  --tw-prose-quotes: rgb(208 209 213);
+  --tw-prose-quote-borders: rgb(65 65 70);
+  --tw-prose-captions: rgb(161 161 166);
+  --tw-prose-kbd: rgb(225 225 230);
+  --tw-prose-kbd-shadows: rgb(40 40 45);
+  --tw-prose-code: rgb(225 225 230);
+  --tw-prose-pre-code: rgb(225 225 230);
+  --tw-prose-pre-bg: rgb(25 26 30);
+  --tw-prose-th-borders: rgb(65 65 70);
+  --tw-prose-td-borders: rgb(40 40 45);
+}
+
+/* Dark mode overrides for @mintlify/components search dialog */
+:where(.dark) [data-headlessui-state] {
+  --tw-shadow-color: rgba(0, 0, 0, 0.5);
+}
+
+:where(.dark) [data-headlessui-state="open"][id^="headlessui-dialog-panel"] {
+  background-color: rgb(25 26 30);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:where(.dark) [id^="headlessui-combobox-input"] {
+  background-color: rgb(25 26 30);
+  color: white;
+}
+
+:where(.dark) [id^="headlessui-combobox-input"]::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+:where(.dark) [id^="headlessui-combobox-input"]:focus {
+  --tw-ring-color: rgba(255, 255, 255, 0.9);
+}
+
+:where(.dark) [id^="headlessui-combobox-options"] {
+  background-color: rgb(25 26 30);
+}
+
 /* Sponsor frame: center logos and remove default white background */
 .sponsors [data-component-part="frame"] {
   display: flex;
@@ -26,7 +74,162 @@
 }
 
 
+/* Dark mode overrides for @mintlify/components accordion */
+:where(.dark) details.accordion {
+  background-color: rgb(25 26 30);
+}
+
+:where(.dark) details.accordion > summary:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Keep ParamHead name, type, and required badge on one line */
+.param-head .flex-col {
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 0.5rem;
+}
+
+.param-head [data-component-part="field-meta"] {
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Strip decorative styling from kbd in the search button */
+header kbd {
+  background: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  font-size: 0.8125rem !important;
+  padding: 0 !important;
+  opacity: 0.5;
+}
+
+/* Prose link styling */
+.mdx-content.prose a:not(.card):not([class]) {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--primary) 40%, transparent);
+  text-underline-offset: 2px;
+  font-weight: 500;
+}
+
+.mdx-content.prose a:not(.card):not([class]):hover {
+  text-decoration-color: var(--primary);
+}
+
+/* Sandpack editor styles */
+.sp-layout {
+  border-radius: 1rem !important;
+  border: none !important;
+  --tw-ring-color: rgba(0, 0, 0, 0.05);
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+  gap: 0;
+}
+
+html:not(.dark) .hero .sp-layout {
+  box-shadow: none;
+}
+
+.dark .sp-layout {
+  --tw-ring-color: rgba(255, 255, 255, 0.05);
+}
+
+.sp-tabs-scrollable-container {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.sp-tab-button {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid transparent;
+}
+
+.sp-tab-button[data-active="true"] {
+  border-color: var(--primary);
+}
+
+.sp-editor {
+  flex-basis: 100% !important;
+  order: 1;
+}
+
+.sp-preview {
+  flex-basis: 100% !important;
+}
+
+.sp-preview {
+  background-color: transparent !important;
+}
+
+.sp-preview-iframe {
+  min-height: 100px;
+}
+
+[style*="--preview-height"] .sp-preview {
+  height: var(--preview-height) !important;
+}
+
+.sp-preview-container,
+.sp-overlay {
+  background-color: #fafafa !important;
+}
+
+.dark .sp-preview-container,
+.dark .sp-overlay {
+  background-color: #11131b !important;
+}
+
+.sp-preview-container iframe {
+  background: transparent;
+  color-scheme: normal;
+}
+
+.hero .sp-preview-container,
+.hero .sp-overlay {
+  --gradient: linear-gradient(65deg, #56fff420, #001AFF20, #5F6AF220, #F25FD020, #56FFF520, #F25FD020, #001AFF20, #56fff420);
+  background-image: var(--gradient);
+  animation: sp-background 16s linear infinite alternate;
+  background-size: 600% 100%;
+}
+
+.dark .hero .sp-preview-container,
+.dark .hero .sp-overlay {
+  --gradient: linear-gradient(65deg, #56fff480, #001AFF80, #5F6AF280, #F25FD080, #56FFF580, #F25FD080, #001AFF80, #56fff480);
+  animation: sp-gradient 16s linear infinite;
+}
+
+@keyframes sp-gradient {
+  0% { background-color: #ff0000; }
+  25% { background-color: #7f00ff; }
+  50% { background-color: #00affa; }
+  75% { background-color: #00f594; }
+  100% { background-color: #ff0000; }
+}
+
+@keyframes sp-background {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
 @theme {
+  /* Custom blue-tinted gray scale matching production */
+  --color-gray-50: #f5f6fa;
+  --color-gray-100: #f0f1f5;
+  --color-gray-200: #e1e1e6;
+  --color-gray-300: #d0d1d5;
+  --color-gray-400: #a1a1a6;
+  --color-gray-500: #727377;
+  --color-gray-600: #525357;
+  --color-gray-700: #414146;
+  --color-gray-800: #28282d;
+  --color-gray-900: #191a1e;
+  --color-gray-950: #0c0d11;
+
+  /* Dark background token */
+  --color-background-dark: #0b0b10;
+
   --animate-dot-bounce: dot-bounce 1.4s ease-in-out infinite;
 
   @keyframes dot-bounce {

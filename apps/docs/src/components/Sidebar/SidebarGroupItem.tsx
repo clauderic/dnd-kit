@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Icon, cn } from '@mintlify/components';
+import { cn } from '@mintlify/components';
+import { Icon } from '../Icon';
 import type { NavGroup } from '@mintlify/astro/helpers';
 import { isNavPage, isNavGroup, containsPath } from '@mintlify/astro/helpers';
 import type { SidebarItemStyle } from './types';
@@ -29,8 +30,8 @@ export function SidebarGroupItem({
           onClick={() => setIsOpen(!isOpen)}
           className={cn(
             'flex items-center gap-2 w-full pl-4 pr-3 py-1.5 text-left text-sm rounded-xl cursor-pointer',
-            'text-gray-700 hover:text-gray-900 hover:bg-gray-600/5',
-            hasActiveChild && 'font-medium text-gray-900',
+            'text-gray-700 hover:text-gray-900 hover:bg-gray-600/5 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-white/5',
+            hasActiveChild && 'font-medium text-gray-900 dark:text-gray-200',
           )}
         >
           {group.icon && (
@@ -38,7 +39,7 @@ export function SidebarGroupItem({
               icon={group.icon}
               className={cn(
                 'shrink-0',
-                hasActiveChild ? 'text-(--primary)' : 'text-gray-400',
+                hasActiveChild ? 'text-(--primary)' : 'text-gray-400 dark:text-gray-500',
               )}
               size={16}
               color="currentColor"
@@ -47,11 +48,10 @@ export function SidebarGroupItem({
           <span className="flex-1 truncate">{group.group}</span>
           <Icon
             icon="chevron-right"
-            iconLibrary="lucide"
             size={14}
             color="currentColor"
             className={cn(
-              'text-gray-400 transition-transform duration-150',
+              'text-gray-400 dark:text-gray-500 transition-transform duration-150',
               isOpen && 'rotate-90',
             )}
           />
@@ -91,7 +91,7 @@ export function SidebarGroupItem({
   // Top-level groups render as section headers
   return (
     <>
-      <div className="flex items-center gap-2.5 pl-4 mb-3.5 lg:mb-2.5 font-semibold text-gray-900">
+      <div className="flex items-center gap-2.5 pl-4 mb-3.5 lg:mb-2.5 font-semibold text-gray-900 dark:text-gray-200">
         {group.icon && (
           <Icon
             icon={group.icon}

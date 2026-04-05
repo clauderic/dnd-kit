@@ -1,13 +1,14 @@
 import { Icon } from '@mintlify/components';
 import { openSearch } from './SearchBar';
 import { toggleAssistant } from './Assistant/events';
+import { ThemeToggle } from './ThemeToggle';
 
 export function MobileActionButtons() {
   return (
     <div className="flex lg:hidden items-center gap-2">
       <button
         type="button"
-        className="text-gray-500 w-8 h-8 flex items-center justify-center hover:text-gray-600"
+        className="text-gray-500 dark:text-gray-400 w-8 h-8 flex items-center justify-center hover:text-gray-600 dark:hover:text-gray-200"
         onClick={openSearch}
         aria-label="Search"
       >
@@ -15,12 +16,13 @@ export function MobileActionButtons() {
       </button>
       <button
         type="button"
-        className="text-gray-500 w-8 h-8 flex items-center justify-center hover:text-gray-600"
+        className="text-gray-500 dark:text-gray-400 w-8 h-8 flex items-center justify-center hover:text-gray-600 dark:hover:text-gray-200"
         onClick={toggleAssistant}
         aria-label="AI Assistant"
       >
         <Icon icon="sparkles" iconLibrary="lucide" size={16} color="dimgray" />
       </button>
+      <ThemeToggle />
     </div>
   );
 }
@@ -42,7 +44,7 @@ export function MobileNavToggle({
       className="flex items-center h-14 py-4 lg:px-[5vw] lg:hidden focus:outline-0 w-full text-left"
       onClick={handleToggle}
     >
-      <div className="flex items-center text-gray-500 hover:text-gray-600">
+      <div className="flex items-center text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200">
         <span className="sr-only">Navigation</span>
         <Icon icon="menu" iconLibrary="lucide" size={18} />
       </div>
@@ -54,11 +56,11 @@ export function MobileNavToggle({
               icon="chevron-right"
               iconLibrary="lucide"
               size={16}
-              className="text-gray-400"
+              className="text-gray-400 dark:text-gray-500"
             />
           </div>
         )}
-        <div className="font-semibold text-gray-900 truncate min-w-0 flex-1">
+        <div className="font-semibold text-gray-900 dark:text-gray-200 truncate min-w-0 flex-1">
           {pageTitle}
         </div>
       </div>

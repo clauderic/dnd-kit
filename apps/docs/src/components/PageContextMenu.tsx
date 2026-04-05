@@ -62,9 +62,9 @@ export function PageContextMenu({
         {firstOption && (
           <button
             className={cn(
-              'rounded-l-xl px-3 text-stone-700 border border-stone-200 bg-white hover:bg-stone-50 transition-colors h-full',
+              'rounded-l-xl px-3 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-white/10 bg-white dark:bg-gray-950 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors h-full',
               options.length === 1 ? 'rounded-xl' : 'border-r-0',
-              copyState !== 'idle' && 'text-stone-600',
+              copyState !== 'idle' && 'text-stone-600 dark:text-stone-400',
             )}
             onClick={() => void handleAction(firstOption)}
             disabled={copyState === 'copying'}
@@ -72,7 +72,7 @@ export function PageContextMenu({
           >
             <div className="flex items-center gap-2 text-sm font-medium whitespace-nowrap">
               {firstOption.icon && (
-                <firstOption.icon className="w-4 h-4 text-stone-600" />
+                <firstOption.icon className="w-4 h-4 text-stone-600 dark:text-stone-400" />
               )}
               <span>
                 {firstOption.id === 'copy' ? copyText : firstOption.title}
@@ -82,7 +82,7 @@ export function PageContextMenu({
         )}
         {options.length > 1 && (
           <button
-            className="rounded-r-xl border border-stone-200 bg-white hover:bg-stone-50 aspect-square h-full flex items-center justify-center transition-colors"
+            className="rounded-r-xl border border-stone-200 dark:border-white/10 bg-white dark:bg-gray-950 hover:bg-stone-50 dark:hover:bg-white/5 aspect-square h-full flex items-center justify-center transition-colors"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="More actions"
           >
@@ -92,7 +92,7 @@ export function PageContextMenu({
               size={16}
               color="currentColor"
               className={cn(
-                'transition-transform text-stone-400',
+                'transition-transform text-stone-400 dark:text-stone-500',
                 isOpen && 'rotate-180',
               )}
             />
@@ -105,20 +105,20 @@ export function PageContextMenu({
             className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
-          <div className="rounded-2xl absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-auto min-w-[280px] sm:w-64 bg-white border border-stone-200 shadow-lg z-20 overflow-hidden">
+          <div className="rounded-2xl absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-auto min-w-[280px] sm:w-64 bg-white dark:bg-gray-950 border border-stone-200 dark:border-white/10 shadow-lg z-20 overflow-hidden">
             {options.map((option) => (
               <button
                 key={option.id}
                 onClick={() => void handleAction(option)}
-                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-stone-50 text-left"
+                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-stone-50 dark:hover:bg-white/5 text-left"
               >
-                <div className="border border-stone-200 rounded-md p-1.5">
+                <div className="border border-stone-200 dark:border-white/10 rounded-md p-1.5">
                   {option.icon && (
-                    <option.icon className="w-4 h-4 text-stone-500" />
+                    <option.icon className="w-4 h-4 text-stone-500 dark:text-stone-400" />
                   )}
                 </div>
                 <div className="flex flex-col min-w-0 flex-1">
-                  <div className="text-sm font-medium text-stone-800 flex items-center gap-1">
+                  <div className="text-sm font-medium text-stone-800 dark:text-stone-200 flex items-center gap-1">
                     {option.title}
                     {option.externalLink && (
                       <Icon
@@ -126,11 +126,11 @@ export function PageContextMenu({
                         iconLibrary="lucide"
                         size={12}
                         color="currentColor"
-                        className="text-stone-500"
+                        className="text-stone-500 dark:text-stone-400"
                       />
                     )}
                   </div>
-                  <div className="text-xs text-stone-600 mt-0.5">
+                  <div className="text-xs text-stone-600 dark:text-stone-400 mt-0.5">
                     {option.description}
                   </div>
                 </div>

@@ -16,9 +16,9 @@ export function TabsDropdown({ tabs }: TabsDropdownProps) {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between px-4 py-2.5 h-10 rounded-[0.85rem] border border-gray-200/70 hover:bg-gray-600/5 gap-1.5"
+        className="flex w-full items-center justify-between px-4 py-2.5 h-10 rounded-[0.85rem] border border-gray-200/70 dark:border-white/10 hover:bg-gray-600/5 dark:hover:bg-white/5 gap-1.5"
       >
-        <span className="text-base font-normal text-gray-800">
+        <span className="text-base font-normal text-gray-800 dark:text-gray-200">
           {activeTab?.name || tabs[0]?.name}
         </span>
         <Icon
@@ -35,14 +35,14 @@ export function TabsDropdown({ tabs }: TabsDropdownProps) {
             className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200/70 rounded-lg shadow-lg p-1.5 z-20">
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-950 border border-gray-200/70 dark:border-white/10 rounded-lg shadow-lg p-1.5 z-20">
             {tabs.map((tab) => (
               <a
                 key={tab.name}
                 href={tab.href}
                 className={cn(
-                  'flex items-center justify-between px-2.5 py-2 text-sm font-medium rounded-md hover:bg-gray-100',
-                  tab.isActive ? 'text-primary' : 'text-gray-800',
+                  'flex items-center justify-between px-2.5 py-2 text-sm font-medium rounded-md hover:bg-gray-100 dark:hover:bg-white/5',
+                  tab.isActive ? 'text-primary' : 'text-gray-800 dark:text-gray-200',
                 )}
                 onClick={() => setIsOpen(false)}
               >
