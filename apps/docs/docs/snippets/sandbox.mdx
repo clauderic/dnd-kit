@@ -1,14 +1,13 @@
 export const CodeSandbox = ({ files, height, hero, previewHeight, showTabs, template }) => {
-  const Element = 'code-sandbox';
-
   return (
-    <Element
-      class={`not-prose${hero ? ' hero' : ''}`}
-      files={JSON.stringify(files)}
-      height={height}
-      style={previewHeight ? {'--preview-height': `${previewHeight}px`} : undefined}
-      showTabs={showTabs}
-      template={template}
-    />
+    <div suppressHydrationWarning={true} className={`not-prose${hero ? ' hero' : ''}`} style={previewHeight ? {'--preview-height': `${previewHeight}px`} : undefined}>
+      <code-sandbox
+        suppressHydrationWarning={true}
+        files={JSON.stringify(files)}
+        height={height}
+        showTabs={showTabs}
+        template={template}
+      />
+    </div>
   );
 };
