@@ -8,6 +8,7 @@ const docs = defineCollection({
     description: z.string().optional(),
     icon: z.string().optional(),
     sidebarTitle: z.string().optional(),
+    metaTitle: z.string().optional(),
     deprecated: z.boolean().optional(),
     lastUpdatedDate: z.string().optional(),
     createdDate: z.string().optional(),
