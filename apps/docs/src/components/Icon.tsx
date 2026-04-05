@@ -1,9 +1,12 @@
 /**
- * Generic icon component that renders brand icons from simple-icons with
- * their official brand colors, and falls back to @mintlify/components Icon
- * (Font Awesome) for everything else.
+ * Universal icon component for the docs site.
+ *
+ * Resolution order:
+ * 1. Brand icons (js, react, vuejs, svelte, solidjs) — rendered as inline
+ *    SVGs from `simple-icons` with official brand colors.
+ * 2. Font Awesome fallback — rendered via `@mintlify/components` Icon.
  */
-import { Icon } from '@mintlify/components';
+import { Icon as MintlifyIcon } from '@mintlify/components';
 import {
   siJavascript,
   siReact,
@@ -11,6 +14,8 @@ import {
   siSvelte,
   siSolid,
 } from 'simple-icons';
+
+// --- Brand icons (simple-icons) ---
 
 type SimpleIcon = { path: string; title: string; hex: string };
 
@@ -25,16 +30,19 @@ const brandIcons: Record<string, SimpleIcon> = {
   solid: siSolid,
 };
 
-interface DocsIconProps {
+// --- Component ---
+
+interface IconProps {
   icon: string;
   size?: number;
   color?: string;
   className?: string;
+  iconLibrary?: string;
 }
 
-export function DocsIcon({ icon, size = 24, color, className }: DocsIconProps) {
+export function Icon({ icon, size = 24, color, className }: IconProps) {
+  // 1. Brand icons
   const brandIcon = brandIcons[icon];
-
   if (brandIcon) {
     const fillColor = color || `#${brandIcon.hex}`;
     return (
@@ -52,9 +60,9 @@ export function DocsIcon({ icon, size = 24, color, className }: DocsIconProps) {
     );
   }
 
-  // Fall back to @mintlify/components Icon (Font Awesome)
+  // 2. Font Awesome via @mintlify/components
   return (
-    <Icon
+    <MintlifyIcon
       icon={icon}
       size={size}
       color={color || 'var(--primary)'}

@@ -30,7 +30,7 @@
     "react-dom": "^19.2.3",
     "react-markdown": "^10.1.0",
     "tailwindcss": "^4.1.18",
-    "lucide-react": "^0.511.0",
+    "@codesandbox/sandpack-react": "^2.20.0",
     "simple-icons": "^14.0.0",
     "use-debounce": "^10.1.0",
     "zustand": "^5.0.11"
