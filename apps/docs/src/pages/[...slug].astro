@@ -143,7 +143,7 @@ const anchors = anchorTabs.map((a) => ({
 const navbarConfig = (docsConfig as any).navbar;
 ---
 
-<Layout title={doc.data.metaTitle || `${doc.data.title || doc.id} - @dnd-kit`} description={doc.data.description}>
+<Layout title={doc.data.metaTitle || doc.data.seo?.title || `${doc.data.title || doc.id} - @dnd-kit`} description={doc.data.seo?.description || doc.data.description}>
   <div>
     <Header
       pageTitle={doc.data.title || doc.id}
@@ -202,11 +202,13 @@ const navbarConfig = (docsConfig as any).navbar;
                     )
                   }
                 </div>
-                <PageContextMenu
-                  pathname={currentPath}
-                  className="sm:mt-0"
-                  client:load
-                />
+                {!doc.data.hideContextMenu && (
+                  <PageContextMenu
+                    pathname={currentPath}
+                    className="sm:mt-0"
+                    client:load
+                  />
+                )}
               </div>
             </header>
             <div class="mdx-content prose max-w-none">

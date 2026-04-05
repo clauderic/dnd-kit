@@ -9,6 +9,11 @@ const docs = defineCollection({
     icon: z.string().optional(),
     sidebarTitle: z.string().optional(),
     metaTitle: z.string().optional(),
+    hideContextMenu: z.boolean().optional(),
+    seo: z.object({
+      title: z.string().optional(),
+      description: z.string().optional(),
+    }).optional(),
     deprecated: z.boolean().optional(),
     lastUpdatedDate: z.string().optional(),
     createdDate: z.string().optional(),
