@@ -14,10 +14,13 @@ import {
 } from '@mintlify/astro-internal-components';
 
 // Import custom overrides
-import { BrandCard } from '../components/BrandCard';
+import { Card } from '../components/Card';
+import { ParamField } from '../components/ParamField';
 
 const overrides = {
-  Card: BrandCard,
+  Card,
+  ParamField,
+  Param: ParamField,
 };
 
 export const components = {
