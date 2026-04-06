@@ -49,6 +49,10 @@ const { title = '@dnd-kit', description } = Astro.props;
 </html>
 
 <script>
+  import '../components/LogoContextMenu';
+</script>
+
+<script>
   // Fix unitless inline style values from compiled MDX.
   // @mintlify/astro outputs style="width:130;height:80" instead of "width:130px;height:80px"
   document.addEventListener('astro:page-load', () => {
