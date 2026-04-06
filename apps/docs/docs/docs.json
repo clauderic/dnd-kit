@@ -16,6 +16,7 @@
           {
             "anchor": "Vanilla",
             "icon": "js",
+            "pages": ["changelog"],
             "groups": [
               {
                 "group": " ",
