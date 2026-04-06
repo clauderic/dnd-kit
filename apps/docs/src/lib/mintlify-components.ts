@@ -19,6 +19,13 @@ import { CodeBlock } from '../components/CodeBlock';
 import { CodeGroup } from '../components/CodeGroup';
 import { ParamField } from '../components/ParamField';
 import { PreElement } from '../components/PreElement';
+import { Update as MintlifyUpdate } from '@mintlify/components';
+
+// Wrap Update to always pass isVisible and auto-generate id
+function Update(props: any) {
+  const id = props.id || props.label?.toLowerCase().replace(/\s+/g, '-') || 'update';
+  return <MintlifyUpdate {...props} id={id} isVisible={true} />;
+}
 
 const overrides = {
   Card,
@@ -27,6 +34,7 @@ const overrides = {
   ParamField,
   Param: ParamField,
   pre: PreElement,
+  Update,
 };
 
 export const components = {
