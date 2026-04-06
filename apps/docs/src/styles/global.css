@@ -136,6 +136,12 @@ nav [data-title="Changelog"] {
   margin-top: 1.25rem;
 }
 
+/* Fix mask-image icons clipping */
+[data-component-part="icon-svg"][style*="mask-image"] {
+  mask-size: contain;
+  -webkit-mask-size: contain;
+}
+
 /* Search result match highlighting */
 .search-highlight mark {
   background-color: color-mix(in srgb, var(--primary) 15%, transparent);
