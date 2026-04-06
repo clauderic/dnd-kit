@@ -95,6 +95,19 @@
   align-items: center !important;
 }
 
+/* Spacing for Storybook iframe frames after code blocks */
+.not-prose + astro-island > div:has(.frame) {
+  margin-top: 1.25rem;
+}
+
+/* Search result match highlighting */
+.search-highlight mark {
+  background-color: color-mix(in srgb, var(--primary) 15%, transparent);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
 /* Strip decorative styling from kbd in the search button */
 header kbd {
   background: none !important;

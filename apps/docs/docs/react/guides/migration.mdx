@@ -9,13 +9,13 @@ mode: 'wide'
   <Step title="Update dependencies">
     Update your `package.json` and install the new packages:
 
-    ```diff
+    ```json
       "dependencies": {
-    -   "@dnd-kit/core": "^x.x.x"
-    -   "@dnd-kit/sortable": "^x.x.x"
-    -   "@dnd-kit/utilities": "^x.x.x"
-    +   "@dnd-kit/react": "^x.x.x"
-    +   "@dnd-kit/helpers": "^x.x.x"
+        "@dnd-kit/core": "^x.x.x",      // [!code --]
+        "@dnd-kit/sortable": "^x.x.x",  // [!code --]
+        "@dnd-kit/utilities": "^x.x.x", // [!code --]
+        "@dnd-kit/react": "^x.x.x",     // [!code ++]
+        "@dnd-kit/helpers": "^x.x.x",   // [!code ++]
       }
     ```
 

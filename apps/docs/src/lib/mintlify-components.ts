@@ -15,12 +15,18 @@ import {
 
 // Import custom overrides
 import { Card } from '../components/Card';
+import { CodeBlock } from '../components/CodeBlock';
+import { CodeGroup } from '../components/CodeGroup';
 import { ParamField } from '../components/ParamField';
+import { PreElement } from '../components/PreElement';
 
 const overrides = {
   Card,
+  CodeBlock,
+  CodeGroup,
   ParamField,
   Param: ParamField,
+  pre: PreElement,
 };
 
 export const components = {
