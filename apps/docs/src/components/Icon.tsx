@@ -9,6 +9,7 @@
 import { Icon as MintlifyIcon } from '@mintlify/components';
 import {
   siJavascript,
+  siTypescript,
   siReact,
   siVuedotjs,
   siSvelte,
@@ -22,6 +23,8 @@ type SimpleIcon = { path: string; title: string; hex: string };
 const brandIcons: Record<string, SimpleIcon> = {
   js: siJavascript,
   javascript: siJavascript,
+  ts: siTypescript,
+  typescript: siTypescript,
   react: siReact,
   vuejs: siVuedotjs,
   vue: siVuedotjs,

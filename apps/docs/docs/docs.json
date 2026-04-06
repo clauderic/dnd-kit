@@ -14,8 +14,8 @@
         "version": "Latest",
         "anchors": [
           {
-            "anchor": "Vanilla",
-            "icon": "js",
+            "anchor": "TypeScript",
+            "icon": "ts",
             "groups": [
               {
                 "group": " ",
