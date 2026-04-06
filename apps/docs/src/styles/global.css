@@ -306,10 +306,16 @@ html:not(.dark) .hero .sp-layout {
   color: rgba(0, 0, 0, 0.7);
 }
 
-/* Loading overlay — hide completely, the preview handles its own loading state */
+/* Loading overlay and status text — position absolutely to prevent layout shift */
 .sp-overlay,
-.sp-loading {
-  display: none !important;
+.sp-loading,
+.sp-loading + div {
+  position: absolute !important;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  z-index: 1;
+  font-size: 12px;
+  opacity: 0.5;
 }
 
 .sp-resize-handler {
