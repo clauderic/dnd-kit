@@ -106,22 +106,32 @@ if (versions) {
 type AnchorTabInfo = { name: string; href: string; icon?: string; isActive: boolean };
 let anchorTabs: AnchorTabInfo[] = [];
 
+// Pages shared across all anchors — excluded from anchor link and active detection
+const sharedPages = new Set(['overview', 'changelog']);
+
+function isSharedPage(entry: NavEntry): boolean {
+  return isNavPage(entry) && sharedPages.has(entry.href.replace(/^\//, ''));
+}
+
 if (activeVersion?.anchors) {
   anchorTabs = activeVersion.anchors.map((anchor: any) => {
     const entries = unwrapNav(anchor, currentPath);
+    // Find first non-shared page as the anchor link
     let firstHref = '/';
     for (const entry of entries) {
-      if (isNavPage(entry)) { firstHref = entry.href; break; }
+      if (isNavPage(entry) && !isSharedPage(entry)) { firstHref = entry.href; break; }
       if (isNavGroup(entry) && entry.pages.length > 0) {
-        const first = entry.pages.find((p: NavEntry) => isNavPage(p)) as NavPage | undefined;
+        const first = entry.pages.find((p: NavEntry) => isNavPage(p) && !isSharedPage(p)) as NavPage | undefined;
         if (first) { firstHref = first.href; break; }
       }
     }
+    // Only count non-shared pages for active state
+    const ownEntries = entries.filter((e: NavEntry) => !isSharedPage(e));
     return {
       name: anchor.anchor,
       href: firstHref,
       icon: anchor.icon,
-      isActive: containsPath(entries, currentPath),
+      isActive: containsPath(ownEntries, currentPath),
     };
   });
 }
