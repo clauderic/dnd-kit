@@ -330,15 +330,15 @@
         "href": "https://examples.dndkit.com"
       },
       {
+        "label": "Changelog",
+        "href": "/changelog"
+      },
+      {
         "label": "Community",
         "href": "https://dnd-kit.slack.com/"
       }
     ],
-    "primary": {
-      "type": "button",
-      "label": "Github",
-      "href": "https://github.com/clauderic/dnd-kit"
-    }
+    "github": "https://github.com/clauderic/dnd-kit"
   },
   "footer": {
     "socials": {

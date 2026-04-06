@@ -185,30 +185,28 @@ const navbarConfig = (docsConfig as any).navbar;
                   </p>
                 )
               }
-              <div
-                class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4 mt-2.5"
-              >
-                <div class="flex flex-col gap-2.5">
+              <div class="mt-2.5">
+                <div class="flex items-start justify-between gap-4">
                   <h1
                     class="text-2xl sm:text-3xl text-gray-900 dark:text-gray-200 tracking-tight font-bold wrap-anywhere"
                   >
                     {doc.data.title || doc.id}
                   </h1>
-                  {
-                    doc.data.description && (
-                      <div class="text-lg prose prose-gray max-w-2xl">
-                        <p set:html={doc.data.description.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')} />
-                      </div>
-                    )
-                  }
+                  {!doc.data.hideContextMenu && (
+                    <PageContextMenu
+                      pathname={currentPath}
+                      className="shrink-0"
+                      client:load
+                    />
+                  )}
                 </div>
-                {!doc.data.hideContextMenu && (
-                  <PageContextMenu
-                    pathname={currentPath}
-                    className="sm:mt-0"
-                    client:load
-                  />
-                )}
+                {
+                  doc.data.description && (
+                    <div class="text-lg prose prose-gray max-w-none mt-2.5">
+                      <p set:html={doc.data.description.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')} />
+                    </div>
+                  )
+                }
               </div>
             </header>
             <div class="mdx-content prose max-w-none">

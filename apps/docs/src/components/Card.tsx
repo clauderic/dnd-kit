@@ -41,13 +41,13 @@ export function Card({
       {title && (
         <div
           data-component-part="card-title"
-          className="font-semibold text-gray-900 dark:text-gray-200 text-sm leading-tight"
+          className="font-semibold text-gray-800 dark:text-gray-200 text-base leading-6"
         >
           {title}
         </div>
       )}
       {children && (
-        <div className="text-sm text-gray-500 dark:text-gray-400 mt-1.5 leading-relaxed">{children}</div>
+        <div className="text-base text-gray-600 dark:text-gray-400 mt-1.5 leading-6">{children}</div>
       )}
     </div>
   );

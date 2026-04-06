@@ -58,11 +58,11 @@ export function PageContextMenu({
 
   return (
     <div className={cn('relative flex items-center shrink-0', className)}>
-      <div className="flex items-stretch h-9 relative z-20">
+      <div className="group/copy flex items-stretch h-9 relative z-20">
         {firstOption && (
           <button
             className={cn(
-              'rounded-l-xl px-3 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-white/10 bg-white dark:bg-gray-950 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors h-full',
+              'rounded-l-xl px-2 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-white/10 bg-white dark:bg-gray-950 hover:bg-stone-50 dark:hover:bg-white/5 transition-all duration-200 h-full cursor-pointer',
               options.length === 1 ? 'rounded-xl' : 'border-r-0',
               copyState !== 'idle' && 'text-stone-600 dark:text-stone-400',
             )}
@@ -70,19 +70,28 @@ export function PageContextMenu({
             disabled={copyState === 'copying'}
             aria-label={firstOption.title}
           >
-            <div className="flex items-center gap-2 text-sm font-medium whitespace-nowrap">
+            <div className="flex items-center text-sm font-medium whitespace-nowrap">
               {firstOption.icon && (
-                <firstOption.icon className="w-4 h-4 text-stone-600 dark:text-stone-400" />
+                <firstOption.icon className="w-4 h-4 text-stone-600 dark:text-stone-400 shrink-0" />
               )}
-              <span>
-                {firstOption.id === 'copy' ? copyText : firstOption.title}
+              <span
+                className={cn(
+                  'grid transition-all duration-200 ease-in-out',
+                  copyState !== 'idle' || isOpen
+                    ? 'grid-cols-[1fr] opacity-100 ml-2'
+                    : 'grid-cols-[0fr] opacity-0 ml-0 group-hover/copy:grid-cols-[1fr] group-hover/copy:opacity-100 group-hover/copy:ml-2',
+                )}
+              >
+                <span className="overflow-hidden">
+                  {firstOption.id === 'copy' ? copyText : firstOption.title}
+                </span>
               </span>
             </div>
           </button>
         )}
         {options.length > 1 && (
           <button
-            className="rounded-r-xl border border-stone-200 dark:border-white/10 bg-white dark:bg-gray-950 hover:bg-stone-50 dark:hover:bg-white/5 aspect-square h-full flex items-center justify-center transition-colors"
+            className="rounded-r-xl border border-stone-200 dark:border-white/10 bg-white dark:bg-gray-950 hover:bg-stone-50 dark:hover:bg-white/5 aspect-square h-full flex items-center justify-center transition-colors cursor-pointer"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="More actions"
           >
