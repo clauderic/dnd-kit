@@ -2,6 +2,7 @@
 import { SearchBar } from './SearchBar';
 import { MobileActionButtons, MobileNavToggle } from './MobileHeaderActions';
 import { ThemeToggle } from './ThemeToggle';
+import { LogoContextMenu } from './LogoContextMenu';
 
 type VersionInfo = { name: string; href: string; isActive: boolean };
 type NavbarLink = { label: string; href: string };
@@ -38,9 +39,11 @@ const hasVersions = versionTabs.length > 1;
           >
             {/* Left: logo + version */}
             <div class="flex items-center gap-3 shrink-0">
-              <a href="/" class="flex items-center shrink-0">
-                <img src="/images/logo/logo.svg" alt="@dnd-kit" class="h-[45px] w-auto" />
-              </a>
+              <LogoContextMenu logoSrc="/images/logo/logo.svg" faviconSrc="/favicon.png" href="/" client:load>
+                <a href="/" class="flex items-center shrink-0">
+                  <img src="/images/logo/logo.svg" alt="@dnd-kit" class="h-[45px] w-auto" />
+                </a>
+              </LogoContextMenu>
               {hasVersions && (
                 <div class="relative hidden lg:block" data-version-dropdown>
                   <button
