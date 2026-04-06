@@ -183,8 +183,8 @@ export function CodeSandbox({
       <div className="sp-layout">
         <div className="sp-preview sp-stack">
           <SandpackPreview
-            showOpenInCodeSandbox={false}
-            showRefreshButton={false}
+            showOpenInCodeSandbox
+            showRefreshButton
           />
         </div>
         <div className="sp-editor sp-stack">

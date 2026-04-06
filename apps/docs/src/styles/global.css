@@ -277,15 +277,15 @@ html:not(.dark) .hero .sp-layout {
   position: relative !important;
 }
 
+/* Preview action buttons (built-in from SandpackPreview) */
 .sp-preview-actions {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  z-index: 2;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  z-index: 2;
+  gap: 0.25rem;
 }
 
 .sp-preview-actions .sp-button {
@@ -309,10 +309,9 @@ html:not(.dark) .hero .sp-layout {
 /* Loading overlay */
 .sp-overlay {
   position: absolute !important;
-  bottom: 0;
-  left: 0;
+  bottom: 0.5rem;
+  left: 0.5rem;
   z-index: 1;
-  padding: 0.5rem 0.75rem;
   font-size: 12px;
   color: rgba(0, 0, 0, 0.4);
 }
