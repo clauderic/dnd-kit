@@ -17,7 +17,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
     resolve: {
       alias: {
-        '@mintlify/astro/components': resolve('./src/lib/mintlify-components.ts'),
+        '@mintlify/astro/components': resolve('./src/lib/mintlify-components.tsx'),
         '@mintlify/astro-internal-components': resolve(
           '../../node_modules/@mintlify/astro/dist/utils/mintlify-components.js'
         ),
