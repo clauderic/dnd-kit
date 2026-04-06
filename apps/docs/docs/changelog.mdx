@@ -5,115 +5,98 @@ icon: 'clock'
 hideContextMenu: true
 ---
 
-## 0.3.2
+<Update label="March 2025" description="v0.3.2" tags={["Bug fix"]}>
+  Fixed CSS cascade layer ordering so the Feedback plugin no longer overrides styles from CSS frameworks that use cascade layers (such as Tailwind CSS v4). The `@layer` block is now named `dnd-kit` and injected with the lowest priority.
+</Update>
 
-<div className="text-sm text-gray-500 dark:text-gray-400 mb-4">Released March 2025</div>
+<Update label="February 2025" description="v0.3.1" tags={["Bug fix"]}>
+  Fixed `onDragOver` firing before `onDragStart` when a drag operation began over a droppable target.
+</Update>
 
-**Bug fix**: Fixed CSS cascade layer ordering so the Feedback plugin no longer overrides styles from CSS frameworks that use cascade layers (such as Tailwind CSS v4). The `@layer` block is now named `dnd-kit` and injected with the lowest priority.
+<Update label="February 2025" description="v0.3.0" tags={["Feature", "Bug fix"]}>
+  ### Functional configuration
 
----
+  Allow `plugins`, `sensors`, and `modifiers` to accept a function that receives the defaults, making it easy to extend or configure them without replacing the entire array.
 
-## 0.3.1
+  ```ts
+  const manager = new DragDropManager({
+    plugins: (defaults) => [...defaults, MyPlugin],
+  });
+  ```
 
-<div className="text-sm text-gray-500 dark:text-gray-400 mb-4">Released February 2025</div>
+  ### Sortable type guard
 
-**Bug fix**: Fixed `onDragOver` firing before `onDragStart` when a drag operation began over a droppable target.
+  Added `isSortableOperation` type guard and exported `SortableDraggable`/`SortableDroppable` types for typed access to sortable-specific properties.
 
----
+  ### Configurable drop animation
 
-## 0.3.0
+  The `DragOverlay` component now accepts a `dropAnimation` prop to disable or customize the drop animation.
 
-<div className="text-sm text-gray-500 dark:text-gray-400 mb-4">Released February 2025</div>
+  ### Bug fixes
 
-<Tip>This is a minor release with new features and improvements.</Tip>
+  - Fixed auto-scroll trigger zones and drag overlay positioning during pinch-to-zoom in Safari
+  - Fixed `move` and `swap` helpers for computed sortable IDs and optimistic sorting reconciliation
+  - Fixed `PointerSensor` crash on Android caused by unhandled `pointercancel` events
+</Update>
 
-**Functional configuration for plugins, sensors, and modifiers.** Allow `plugins`, `sensors`, and `modifiers` to accept a function that receives the defaults, making it easy to extend or configure them without replacing the entire array.
+<Update label="January 2025" description="v0.2.4" tags={["Feature", "Bug fix", "Accessibility"]}>
+  ### Event type aliases
 
-```ts
-const manager = new DragDropManager({
-  plugins: (defaults) => [...defaults, MyPlugin],
-});
-```
+  Exposed ergonomic type aliases for drag and drop event handlers: `CollisionEvent`, `BeforeDragStartEvent`, `DragStartEvent`, `DragMoveEvent`, `DragOverEvent`, and `DragEndEvent`.
 
-**Type guard for sortable operations.** Added `isSortableOperation` type guard and exported `SortableDraggable`/`SortableDroppable` types for typed access to sortable-specific properties.
+  ### Accessibility
 
-**Configurable drop animation.** The `DragOverlay` component now accepts a `dropAnimation` prop to disable or customize the drop animation.
+  Respect `prefers-reduced-motion` media query across all animations including keyboard drag, drop animation, and sortable swap transitions.
 
-**Pinch-to-zoom fixes.** Fixed auto-scroll trigger zones, drag overlay positioning, and debug overlay positioning during pinch-to-zoom in Safari.
+  ### Configurable drop animation API
 
-**Improved sortable helpers.** Fixed `move` and `swap` helpers to support computed sortable IDs and optimistic sorting reconciliation for grouped records.
+  The Feedback plugin now accepts a `dropAnimation` option: pass `{duration, easing}`, a custom function, or `null` to disable.
 
-**Android crash fix.** Fixed `PointerSensor` crash on Android caused by unhandled `pointercancel` events.
+  ### Bug fixes
 
----
+  - Fixed Feedback plugin style injection in Shadow DOM environments
+  - Fixed table cell width handling during drag operations using sub-pixel precision
+</Update>
 
-## 0.2.4
+<Update label="December 2024" description="v0.2.3" tags={["Bug fix"]}>
+  Fixed a bug where custom `PointerSensor` options passed to `bind()` were not being respected by `activationConstraints()`.
+</Update>
 
-<div className="text-sm text-gray-500 dark:text-gray-400 mb-4">Released January 2025</div>
+<Update label="December 2024" description="v0.2.2" tags={["Bug fix"]}>
+  Fixed inverted `preventActivation` default option on `KeyboardSensor`.
+</Update>
 
-**Event type aliases.** Exposed ergonomic type aliases for drag and drop event handlers: `CollisionEvent`, `BeforeDragStartEvent`, `DragStartEvent`, `DragMoveEvent`, `DragOverEvent`, and `DragEndEvent`.
+<Update label="November 2024" description="v0.2.1" tags={["Bug fix"]}>
+  Fixed `PointerSensor.defaults.preventActivation` not being applied when other sensor options were provided.
+</Update>
 
-**Shadow DOM support.** Fixed Feedback plugin style injection in Shadow DOM environments.
+<Update label="November 2024" description="v0.2.0" tags={["Feature"]}>
+  ### Refactored PointerSensor
 
-**Table cell handling.** Fixed table cell width handling during drag operations using sub-pixel precision.
+  New composable activation constraints API with `PointerActivationConstraints.Delay` and `PointerActivationConstraints.Distance`. Improved defaults for different input types (mouse, touch, text inputs).
 
-**Accessibility.** Respect `prefers-reduced-motion` media query across all animations including keyboard drag, drop animation, and sortable swap transitions.
+  ### Conditional sensor activation
 
-**Configurable drop animation API.** The Feedback plugin now accepts `dropAnimation` option: pass `{duration, easing}`, a custom function, or `null` to disable.
+  Added `preventActivation` option to `PointerSensor` and `KeyboardSensor` to conditionally prevent sensor activation on interactive elements.
 
----
+  ### Cross-iframe support
 
-## 0.2.3
+  `PointerSensor` now binds listeners across same-origin documents for drag operations that span iframes.
 
-<div className="text-sm text-gray-500 dark:text-gray-400 mb-4">Released December 2024</div>
+  ### Bug fixes
 
-**Bug fix**: Fixed a bug where custom `PointerSensor` options passed to `bind()` were not being respected by `activationConstraints()`.
+  - Fixed `useDragDropManager` returning `null` on first mount
+</Update>
 
----
+<Update label="August – November 2024" description="v0.1.x" tags={["Initial release"]}>
+  Initial beta releases establishing the core API:
 
-## 0.2.2
-
-<div className="text-sm text-gray-500 dark:text-gray-400 mb-4">Released December 2024</div>
-
-**Bug fix**: Fixed inverted `preventActivation` default option on `KeyboardSensor`.
-
----
-
-## 0.2.1
-
-<div className="text-sm text-gray-500 dark:text-gray-400 mb-4">Released November 2024</div>
-
-**Bug fix**: Fixed `PointerSensor.defaults.preventActivation` not being applied when other sensor options were provided.
-
----
-
-## 0.2.0
-
-<div className="text-sm text-gray-500 dark:text-gray-400 mb-4">Released November 2024</div>
-
-<Tip>This is a minor release with new features.</Tip>
-
-**Refactored PointerSensor activation.** New composable activation constraints API with `PointerActivationConstraints.Delay` and `PointerActivationConstraints.Distance`. Improved defaults for different input types (mouse, touch, text inputs).
-
-**Conditional sensor activation.** Added `preventActivation` option to `PointerSensor` and `KeyboardSensor` to conditionally prevent sensor activation on interactive elements.
-
-**Cross-iframe support.** `PointerSensor` now binds listeners across same-origin documents for drag operations that span iframes.
-
-**Manager fix.** Fixed a bug where `useDragDropManager` returned `null` on first mount.
-
----
-
-## 0.1.x
-
-<div className="text-sm text-gray-500 dark:text-gray-400 mb-4">August – November 2024</div>
-
-Initial beta releases establishing the core API:
-
-- Drag and drop manager with plugin architecture
-- Draggable, droppable, and sortable primitives
-- Framework integrations for React, Vue, Svelte, and Solid
-- Pointer and keyboard sensors
-- Collision detection algorithms
-- Modifiers and accessibility plugins
-- Feedback plugin with drag overlays
-- Auto-scroll support
+  - Drag and drop manager with plugin architecture
+  - Draggable, droppable, and sortable primitives
+  - Framework integrations for React, Vue, Svelte, and Solid
+  - Pointer and keyboard sensors
+  - Collision detection algorithms
+  - Modifiers and accessibility plugins
+  - Feedback plugin with drag overlays
+  - Auto-scroll support
+</Update>
