@@ -306,9 +306,13 @@ html:not(.dark) .hero .sp-layout {
   color: rgba(0, 0, 0, 0.7);
 }
 
-/* Loading overlay and status text — position absolutely to prevent layout shift */
+/* Hide the loading overlay (contains duplicate Open Sandbox) */
 .sp-overlay,
-.sp-loading,
+.sp-loading {
+  display: none !important;
+}
+
+/* Loading status text — position absolutely to prevent layout shift */
 .sp-loading + div {
   position: absolute !important;
   bottom: 0.5rem;
