@@ -16,11 +16,10 @@
           {
             "anchor": "Vanilla",
             "icon": "js",
-            "pages": ["changelog"],
             "groups": [
               {
                 "group": " ",
-                "pages": ["overview"]
+                "pages": ["overview", "changelog"]
               },
               {
                 "group": "Get Started",

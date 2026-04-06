@@ -95,6 +95,42 @@
   align-items: center !important;
 }
 
+/* Hide changelog from sidebar navigation */
+nav [data-title="Changelog"] {
+  display: none;
+}
+
+/* Update component: hide duplicate h2 headings (used only for TOC) */
+.mdx-content .update-container {
+  scroll-margin-top: var(--scroll-mt, 6rem);
+}
+
+.mdx-content h2:has(+ .update-container),
+.mdx-content h2:has(+ astro-island > .update-container) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Update component: force two-column layout on large screens */
+@media (min-width: 1024px) {
+  .update-container {
+    flex-direction: row !important;
+    gap: 1.5rem !important;
+  }
+
+  .update-container > div:first-child {
+    width: 160px !important;
+    flex-shrink: 0;
+    position: sticky;
+    top: var(--scroll-mt, 6rem);
+  }
+}
+
 /* Spacing for Storybook iframe frames after code blocks */
 .not-prose + astro-island > div:has(.frame) {
   margin-top: 1.25rem;
