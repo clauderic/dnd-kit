@@ -272,12 +272,16 @@ html:not(.dark) .hero .sp-layout {
   position: relative;
 }
 
+/* Preview container needs relative positioning for absolute children */
+.sp-preview {
+  position: relative !important;
+}
+
 .sp-preview-actions {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
   gap: 0.5rem;
-  padding: 0.25rem 0.5rem;
+  padding: 0.5rem 0.75rem;
   position: absolute;
   bottom: 0;
   right: 0;
@@ -288,17 +292,29 @@ html:not(.dark) .hero .sp-layout {
   appearance: none;
   border: none;
   background: transparent;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(0, 0, 0, 0.4);
   cursor: pointer;
   padding: 0.25rem;
   font-size: 12px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.25rem;
+  white-space: nowrap;
 }
 
 .sp-preview-actions .sp-button:hover {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(0, 0, 0, 0.7);
+}
+
+/* Loading overlay */
+.sp-overlay {
+  position: absolute !important;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  padding: 0.5rem 0.75rem;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.4);
 }
 
 .sp-resize-handler {
