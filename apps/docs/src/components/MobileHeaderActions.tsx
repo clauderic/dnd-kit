@@ -1,6 +1,5 @@
 import { Icon } from '@mintlify/components';
 import { openSearch } from './SearchBar';
-import { toggleAssistant } from './Assistant/events';
 import { ThemeToggle } from './ThemeToggle';
 
 export function MobileActionButtons() {
@@ -13,14 +12,6 @@ export function MobileActionButtons() {
         aria-label="Search"
       >
         <Icon icon="search" iconLibrary="lucide" size={16} color="dimgray" />
-      </button>
-      <button
-        type="button"
-        className="text-gray-500 dark:text-gray-400 w-8 h-8 flex items-center justify-center hover:text-gray-600 dark:hover:text-gray-200"
-        onClick={toggleAssistant}
-        aria-label="AI Assistant"
-      >
-        <Icon icon="sparkles" iconLibrary="lucide" size={16} color="dimgray" />
       </button>
       <ThemeToggle />
     </div>

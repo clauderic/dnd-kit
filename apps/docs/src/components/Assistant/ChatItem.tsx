@@ -7,16 +7,17 @@ interface ChatItemProps extends React.HTMLAttributes<HTMLDivElement> {
   message: UIMessage;
   isLast?: boolean;
   hasError?: boolean;
+  onRegenerate?: () => void;
 }
 
-export function ChatItem({ message, isLast, hasError }: ChatItemProps) {
+export function ChatItem({ message, isLast, hasError, onRegenerate }: ChatItemProps) {
   if (message.role === 'user') {
     return <ChatMessage message={message} />;
   }
 
   if (message.role === 'assistant') {
     return (
-      <ChatResponse message={message} isLast={isLast} hasError={hasError} />
+      <ChatResponse message={message} isLast={isLast} hasError={hasError} onRegenerate={onRegenerate} />
     );
   }
 

@@ -90,6 +90,25 @@ export const useAssistant = () => {
     setInput('');
   }, [input, status, sendMessage]);
 
+  const regenerate = useCallback(() => {
+    // Find the last user message, remove the last assistant response, and resend
+    const lastUserMsg = [...messages].reverse().find((m) => m.role === 'user');
+    if (!lastUserMsg) return;
+
+    const userText = lastUserMsg.parts
+      .filter((p) => p.type === 'text')
+      .map((p) => ('text' in p ? p.text : ''))
+      .join('');
+
+    // Remove last assistant message
+    const newMessages = messages.filter((m, i) => i < messages.length - 1);
+    setMessages(newMessages);
+
+    // Resend
+    isClearedRef.current = false;
+    sendMessage({ text: userText });
+  }, [messages, setMessages, sendMessage]);
+
   return {
     input,
     status,
@@ -101,5 +120,6 @@ export const useAssistant = () => {
     onClear,
     stop,
     threadId,
+    regenerate,
   };
 };

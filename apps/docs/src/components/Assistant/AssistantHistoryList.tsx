@@ -5,6 +5,7 @@ import { ChatItem } from './ChatItem';
 interface AssistantHistoryListProps {
   messages: UIMessage[];
   status: 'ready' | 'streaming' | 'submitted' | 'error';
+  onRegenerate?: () => void;
 }
 
 const hasVisibleParts = (parts: UIMessage['parts'] | undefined) =>
@@ -24,6 +25,7 @@ function LoadingIndicator() {
 export function AssistantHistoryList({
   messages,
   status,
+  onRegenerate,
 }: AssistantHistoryListProps) {
   const isLoading = useMemo(() => {
     if (status === 'submitted') return true;
@@ -50,6 +52,7 @@ export function AssistantHistoryList({
           key={msg.id}
           message={msg}
           isLast={index === visibleMessages.length - 1}
+          onRegenerate={index === visibleMessages.length - 1 ? onRegenerate : undefined}
         />
       ))}
       {isLoading && <LoadingIndicator />}

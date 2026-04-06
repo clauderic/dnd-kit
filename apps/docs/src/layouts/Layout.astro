@@ -43,8 +43,8 @@ const { title = '@dnd-kit', description } = Astro.props;
       <div class="flex-1 min-w-0 max-w-[1472px] mx-auto w-full">
         <slot />
       </div>
-      <AssistantSheet client:only="react" transition:persist />
     </div>
+    <AssistantSheet client:only="react" transition:persist />
   </body>
 </html>
 
@@ -66,6 +66,7 @@ const { title = '@dnd-kit', description } = Astro.props;
         );
       }
     });
+
   });
 </script>
 
