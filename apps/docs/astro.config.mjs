@@ -14,6 +14,9 @@ export default defineConfig({
     },
   },
   vite: {
+    define: {
+      'process.env': '{}',
+    },
     plugins: [tailwindcss()],
     resolve: {
       alias: {
@@ -21,6 +24,7 @@ export default defineConfig({
         '@mintlify/astro-internal-components': resolve(
           '../../node_modules/@mintlify/astro/dist/utils/mintlify-components.js'
         ),
+        '@components/CodeSandbox': resolve('./src/components/CodeSandbox.tsx'),
       },
     },
   },

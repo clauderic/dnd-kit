@@ -1,42 +1,16 @@
 /**
  * Sandpack-powered interactive code editor.
  *
- * Ported from docs/sandpack.js — replaces the CDN-loaded custom element
- * approach with a bundled React component.
+ * Uses unstyled SandpackProvider + SandpackPreview for the bundler/preview,
+ * and a standalone CodeMirror editor (SandpackCodeEditor) for the code.
+ * No stitches CSS-in-JS — all styling is in global.css and CM theme.
  */
-import { Sandpack, type SandpackFiles } from '@codesandbox/sandpack-react';
-
-const theme = {
-  colors: {
-    surface1: '#0a0a0c',
-    surface2: 'transparent',
-    surface3: '#f7f7f710',
-    clickable: '#969696',
-    base: '#808080',
-    disabled: '#4D4D4D',
-    hover: '#596dff',
-    accent: '#596dff',
-    error: '#ffcdca',
-    errorSurface: '#811e18',
-  },
-  syntax: {
-    plain: '#f8f8f2',
-    comment: { color: '#75715e' },
-    keyword: { color: '#f92672' },
-    tag: '#f92672',
-    punctuation: '#f8f8f2',
-    definition: '#a6e22e',
-    property: { color: '#66d9ef' },
-    static: '#ae81ff',
-    string: '#e6db74',
-  },
-  font: {
-    body: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
-    mono: '"Fira Mono", "DejaVu Sans Mono", Menlo, Consolas, "Liberation Mono", Monaco, "Lucida Console", monospace',
-    size: '14px',
-    lineHeight: '20px',
-  },
-};
+import {
+  SandpackProvider,
+  SandpackPreview,
+  type SandpackFiles,
+} from '@codesandbox/sandpack-react/unstyled';
+import { SandpackCodeEditor } from './SandpackCodeEditor';
 
 const SHARED_DEPS = {
   '@dnd-kit/helpers': 'beta',
@@ -201,16 +175,22 @@ export function CodeSandbox({
       : (template as any);
 
   return (
-    <Sandpack
+    <SandpackProvider
       files={files}
       template={sandpackTemplate}
-      theme={theme}
-      options={{
-        showTabs,
-        resizablePanels: false,
-        editorHeight: height || undefined,
-      }}
       customSetup={isSvelte ? {} : { dependencies }}
-    />
+    >
+      <div className="sp-layout">
+        <div className="sp-preview sp-stack">
+          <SandpackPreview
+            showOpenInCodeSandbox
+            showRefreshButton
+          />
+        </div>
+        <div className="sp-editor sp-stack">
+          <SandpackCodeEditor height={height} />
+        </div>
+      </div>
+    </SandpackProvider>
   );
 }

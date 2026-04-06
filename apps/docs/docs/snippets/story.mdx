@@ -23,12 +23,12 @@ export const Story = ({ id, framework = "react", width = "100%", height = "250",
     },
   };
   const config = STORYBOOKS[framework] ?? STORYBOOKS.react;
-  const host = typeof window !== 'undefined' && window.location?.hostname === 'localhost' ? `//localhost:${config.localPort}` : `https://${BRANCH}--${config.productionHost}.chromatic.com`;
-  const dark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+  const isDev = import.meta.env.DEV;
+  const host = isDev ? `//localhost:${config.localPort}` : `https://${BRANCH}--${config.productionHost}.chromatic.com`;
 
   return (
     <Frame>
-      <iframe src={`${host}/iframe.html?args=&id=${id}&viewMode=story&dark=${dark}&hero=${hero}`} width={width} height={height} />
+      <iframe src={`${host}/iframe.html?args=&id=${id}&viewMode=story&hero=${hero}`} width={width} height={height} />
     </Frame>
   );
 };
