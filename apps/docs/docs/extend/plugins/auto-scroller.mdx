@@ -25,7 +25,7 @@ The scroll speed increases as the pointer gets closer to the edge of the contain
 Use `AutoScroller.configure()` to customize the scroll speed and activation zone:
 
 <CodeGroup>
-```ts Vanilla
+```ts TypeScript
 import {DragDropManager, AutoScroller} from '@dnd-kit/dom';
 
 const manager = new DragDropManager({
@@ -127,7 +127,7 @@ function App() {
 To disable auto-scrolling, omit the `AutoScroller` from the plugins array:
 
 <CodeGroup>
-```ts Vanilla
+```ts TypeScript
 import {DragDropManager, AutoScroller} from '@dnd-kit/dom';
 
 const manager = new DragDropManager({
@@ -197,7 +197,7 @@ function App() {
 To dynamically disable auto-scrolling at runtime, access the plugin instance from the manager registry and call its `disable()` method:
 
 <CodeGroup>
-```ts Vanilla
+```ts TypeScript
 import {DragDropManager, AutoScroller} from '@dnd-kit/dom';
 
 const manager = new DragDropManager();

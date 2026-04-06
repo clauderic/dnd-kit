@@ -69,6 +69,10 @@
             "icon": "react",
             "groups": [
               {
+                "group": " ",
+                "pages": ["overview"]
+              },
+              {
                 "group": "Get Started",
                 "pages": ["react/quickstart"]
               },
@@ -103,6 +107,10 @@
             "icon": "vuejs",
             "groups": [
               {
+                "group": " ",
+                "pages": ["overview"]
+              },
+              {
                 "group": "Get Started",
                 "pages": ["vue/quickstart"]
               },
@@ -128,6 +136,10 @@
             "icon": "svelte",
             "groups": [
               {
+                "group": " ",
+                "pages": ["overview"]
+              },
+              {
                 "group": "Get Started",
                 "pages": ["svelte/quickstart"]
               },
@@ -152,6 +164,10 @@
             "anchor": "Solid",
             "icon": "solidjs",
             "groups": [
+              {
+                "group": " ",
+                "pages": ["overview"]
+              },
               {
                 "group": "Get Started",
                 "pages": ["solid/quickstart"]
