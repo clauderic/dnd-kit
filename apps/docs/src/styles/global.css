@@ -142,6 +142,11 @@ nav [data-title="Changelog"] {
   -webkit-mask-size: contain;
 }
 
+/* arrows-from-line icon overflows — scale down in card context */
+.card [style*="arrows-from-line"] {
+  transform: scale(0.7);
+}
+
 /* Search result match highlighting */
 .search-highlight mark {
   background-color: color-mix(in srgb, var(--primary) 15%, transparent);
