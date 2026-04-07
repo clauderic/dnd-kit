@@ -107,10 +107,10 @@ type AnchorTabInfo = { name: string; href: string; icon?: string; isActive: bool
 let anchorTabs: AnchorTabInfo[] = [];
 
 // Pages shared across all anchors — excluded from anchor link and active detection
-const sharedPages = new Set(['overview', 'changelog']);
+const sharedPaths = new Set(['/', '/changelog']);
 
 function isSharedPage(entry: NavEntry): boolean {
-  return isNavPage(entry) && sharedPages.has(entry.href.replace(/^\//, ''));
+  return isNavPage(entry) && sharedPaths.has(entry.href);
 }
 
 if (activeVersion?.anchors) {
@@ -126,7 +126,7 @@ if (activeVersion?.anchors) {
       }
     }
     // Shared pages don't belong to any anchor
-    const isOnSharedPage = sharedPages.has(currentPath.replace(/^\//, ''));
+    const isOnSharedPage = sharedPaths.has(currentPath);
     return {
       name: anchor.anchor,
       href: firstHref,

@@ -19,7 +19,7 @@
             "groups": [
               {
                 "group": " ",
-                "pages": ["overview", "changelog"]
+                "pages": ["index", "changelog"]
               },
               {
                 "group": "Get Started",
@@ -70,7 +70,7 @@
             "groups": [
               {
                 "group": " ",
-                "pages": ["overview"]
+                "pages": ["index"]
               },
               {
                 "group": "Get Started",
@@ -108,7 +108,7 @@
             "groups": [
               {
                 "group": " ",
-                "pages": ["overview"]
+                "pages": ["index"]
               },
               {
                 "group": "Get Started",
@@ -137,7 +137,7 @@
             "groups": [
               {
                 "group": " ",
-                "pages": ["overview"]
+                "pages": ["index"]
               },
               {
                 "group": "Get Started",
@@ -166,7 +166,7 @@
             "groups": [
               {
                 "group": " ",
-                "pages": ["overview"]
+                "pages": ["index"]
               },
               {
                 "group": "Get Started",
@@ -336,6 +336,10 @@
     {
       "source": "/react/migration",
       "destination": "/react/guides/migration"
+    },
+    {
+      "source": "/overview",
+      "destination": "/"
     }
   ],
   "logo": "/images/logo/logo.svg",
