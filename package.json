@@ -27,6 +27,7 @@
   ],
   "name": "dnd-kit-experimental",
   "overrides": {
+    "acorn": "8.14.0",
     "ajv": "8.17.1"
   }
 }
