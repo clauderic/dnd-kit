@@ -46,6 +46,12 @@
   background-color: transparent !important;
 }
 
+/* Preserve Shiki syntax highlighting inline colors in dark mode —
+   without this, Tailwind prose overrides all code spans to a single color */
+.mdx-content pre code {
+  color: unset !important;
+}
+
 /* Diff and highlight lines — extend to full container width */
 .shiki code {
   display: block;
