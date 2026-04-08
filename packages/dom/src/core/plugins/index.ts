@@ -6,6 +6,7 @@ export {Feedback} from './feedback/index.ts';
 export type {Transition} from './feedback/types.ts';
 export type {
   FeedbackType,
+  FeedbackInput,
   FeedbackOptions,
   DropAnimation,
   DropAnimationOptions,

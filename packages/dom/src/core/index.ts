@@ -40,6 +40,7 @@ export {
 } from './plugins/index.ts';
 export type {
   FeedbackType,
+  FeedbackInput,
   FeedbackOptions,
   Transition,
   DropAnimation,
