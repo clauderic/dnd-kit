@@ -5,7 +5,7 @@
   "private": true,
   "description": "Documentation site for @dnd-kit, powered by Astro and Mintlify.",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "astro dev --port 3000",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
