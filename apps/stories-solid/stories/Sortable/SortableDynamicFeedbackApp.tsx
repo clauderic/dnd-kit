@@ -1,15 +1,19 @@
 import {createSignal, For} from 'solid-js';
 import {Feedback} from '@dnd-kit/dom';
+import type {Plugins} from '@dnd-kit/abstract';
 import {DragDropProvider} from '@dnd-kit/solid';
 import {useSortable} from '@dnd-kit/solid/sortable';
 import {move} from '@dnd-kit/helpers';
 
-const dynamicFeedbackPlugin = Feedback.configure({
-  feedback: (_source, manager) =>
-    manager.dragOperation.activatorEvent instanceof KeyboardEvent
-      ? 'clone'
-      : 'default',
-});
+const dynamicFeedbackPlugins = (defaults: Plugins) => [
+  ...defaults,
+  Feedback.configure({
+    feedback: (_source, manager) =>
+      manager.dragOperation.activatorEvent instanceof KeyboardEvent
+        ? 'clone'
+        : 'default',
+  }),
+];
 
 function Sortable(props: {id: number; index: number}) {
   const {isDragging, ref} = useSortable({
@@ -19,7 +23,7 @@ function Sortable(props: {id: number; index: number}) {
     get index() {
       return props.index;
     },
-    plugins: [dynamicFeedbackPlugin],
+    plugins: dynamicFeedbackPlugins,
   });
 
   return (

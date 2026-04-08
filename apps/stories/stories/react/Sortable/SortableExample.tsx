@@ -2,6 +2,7 @@ import React, {useRef, useState, memo} from 'react';
 import type {CSSProperties, PropsWithChildren} from 'react';
 import type {
   CollisionDetector,
+  Customizable,
   Modifiers,
   Plugins,
   UniqueIdentifier,
@@ -20,7 +21,7 @@ interface Props {
   debug?: boolean;
   dragHandle?: boolean;
   disabled?: UniqueIdentifier[];
-  plugins?: Plugins;
+  plugins?: Customizable<Plugins>;
   modifiers?: Modifiers;
   layout?: 'vertical' | 'horizontal' | 'grid';
   transition?: SortableTransition;
@@ -84,7 +85,7 @@ interface SortableProps {
   collisionDetector?: CollisionDetector;
   disabled?: boolean;
   dragHandle?: boolean;
-  plugins?: Plugins;
+  plugins?: Customizable<Plugins>;
   optimistic?: boolean;
   transition?: SortableTransition;
   style?: React.CSSProperties;

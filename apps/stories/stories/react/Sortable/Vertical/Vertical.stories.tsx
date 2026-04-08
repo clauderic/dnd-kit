@@ -83,7 +83,8 @@ export const DynamicFeedback: Story = {
   name: 'Dynamic feedback',
   args: {
     debug: false,
-    plugins: [
+    plugins: (defaults) => [
+      ...defaults,
       Feedback.configure({
         feedback: (_source, manager) =>
           manager.dragOperation.activatorEvent instanceof KeyboardEvent

@@ -1,18 +1,22 @@
 <script setup lang="ts">
 import {ref, computed} from 'vue';
 import {Feedback} from '@dnd-kit/dom';
+import type {Plugins} from '@dnd-kit/abstract';
 import {DragDropProvider} from '@dnd-kit/vue';
 import {useSortable} from '@dnd-kit/vue/sortable';
 import {move} from '@dnd-kit/helpers';
 
 const items = ref(Array.from({length: 100}, (_, i) => i + 1));
 
-const dynamicFeedbackPlugin = Feedback.configure({
-  feedback: (_source, manager) =>
-    manager.dragOperation.activatorEvent instanceof KeyboardEvent
-      ? 'clone'
-      : 'default',
-});
+const plugins = (defaults: Plugins) => [
+  ...defaults,
+  Feedback.configure({
+    feedback: (_source, manager) =>
+      manager.dragOperation.activatorEvent instanceof KeyboardEvent
+        ? 'clone'
+        : 'default',
+  }),
+];
 
 function onDragEnd(event: any) {
   items.value = move(items.value, event);
@@ -26,7 +30,7 @@ const SortableItem = defineComponent({
   props: {
     id: {type: Number, required: true},
     index: {type: Number, required: true},
-    plugins: {type: Array, default: undefined},
+    plugins: {type: [Array, Function], default: undefined},
   },
   setup(props) {
     const element = ref<HTMLElement | null>(null);
@@ -56,7 +60,7 @@ export default defineComponent({components: {SortableItem}});
         :key="id"
         :id="id"
         :index="index"
-        :plugins="[dynamicFeedbackPlugin]"
+        :plugins="plugins"
       />
     </ul>
   </DragDropProvider>

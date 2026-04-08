@@ -1,12 +1,16 @@
 import {DragDropManager, Feedback} from '@dnd-kit/dom';
+import type {Plugins} from '@dnd-kit/abstract';
 import {Sortable} from '@dnd-kit/dom/sortable';
 
-const dynamicFeedbackPlugin = Feedback.configure({
-  feedback: (_source, manager) =>
-    manager.dragOperation.activatorEvent instanceof KeyboardEvent
-      ? 'clone'
-      : 'default',
-});
+const dynamicFeedbackPlugins = (defaults: Plugins) => [
+  ...defaults,
+  Feedback.configure({
+    feedback: (_source, manager) =>
+      manager.dragOperation.activatorEvent instanceof KeyboardEvent
+        ? 'clone'
+        : 'default',
+  }),
+];
 
 export default function App() {
   const list = document.createElement('ul');
@@ -27,7 +31,7 @@ export default function App() {
         id,
         element: li,
         index: id - 1,
-        plugins: [dynamicFeedbackPlugin],
+        plugins: dynamicFeedbackPlugins,
         effects: () => [
           () => {
             if (sortable.isDragging) {
