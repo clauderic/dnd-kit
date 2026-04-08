@@ -13,8 +13,8 @@ export interface CodeContext {
   language?: string;
 }
 
-export function openAssistant(codeContext?: CodeContext) {
-  window.dispatchEvent(new CustomEvent(ASSISTANT_EVENTS.OPEN, { detail: { codeContext } }));
+export function openAssistant(codeContext?: CodeContext, query?: string) {
+  window.dispatchEvent(new CustomEvent(ASSISTANT_EVENTS.OPEN, { detail: { codeContext, query } }));
 }
 
 export function closeAssistant() {

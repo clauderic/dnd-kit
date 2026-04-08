@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { navigate } from 'astro:transitions/client';
 import { useDebouncedCallback } from 'use-debounce';
 import { type DecoratedNavigationPage } from '@mintlify/models';
+import { openAssistant } from './Assistant/events';
 
 const SEARCH_OPEN_EVENT = 'open-search';
 
@@ -178,17 +179,30 @@ export function SearchBar() {
   };
 
   const displayItems = query.trim() ? results : recentSearches;
+  const hasQuery = query.trim().length > 0;
+  // Total navigable items: results + "Ask AI" button when there's a query
+  const totalItems = displayItems.length + (hasQuery ? 1 : 0);
+  const askAiIndex = hasQuery ? displayItems.length : -1;
+
+  const askAi = useCallback(() => {
+    setIsOpen(false);
+    openAssistant(undefined, query.trim());
+  }, [query]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setActiveIndex((i) => Math.min(i + 1, displayItems.length - 1));
+      setActiveIndex((i) => Math.min(i + 1, totalItems - 1));
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       setActiveIndex((i) => Math.max(i - 1, 0));
-    } else if (e.key === 'Enter' && displayItems[activeIndex]) {
+    } else if (e.key === 'Enter') {
       e.preventDefault();
-      selectResult(displayItems[activeIndex]);
+      if (activeIndex === askAiIndex) {
+        askAi();
+      } else if (displayItems[activeIndex]) {
+        selectResult(displayItems[activeIndex]);
+      }
     } else if (e.key === 'Escape') {
       e.preventDefault();
       setIsOpen(false);
@@ -210,8 +224,8 @@ export function SearchBar() {
   }
 
   const hasResults = displayItems.length > 0;
-  const showEmpty = query.trim() && !isLoading && results.length === 0;
-  const showDropdown = isOpen && (hasResults || showEmpty);
+  const showEmpty = !hasQuery || isLoading || results.length > 0 ? false : true;
+  const showDropdown = isOpen && (hasResults || showEmpty || hasQuery);
 
   return (
     <div className="relative">
@@ -300,6 +314,27 @@ export function SearchBar() {
           {showEmpty && (
             <div className="px-4 py-6 text-center text-sm text-stone-500 dark:text-stone-400">
               No results found
+            </div>
+          )}
+
+          {hasQuery && (
+            <div className="border-t border-stone-200 dark:border-white/10 p-1.5">
+              <button
+                type="button"
+                className={`flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                  activeIndex === askAiIndex
+                    ? 'bg-stone-100 dark:bg-white/5'
+                    : 'hover:bg-stone-50 dark:hover:bg-white/[0.02]'
+                }`}
+                onClick={askAi}
+                onMouseEnter={() => setActiveIndex(askAiIndex)}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="shrink-0 text-[var(--primary)]">
+                  <path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z" fill="currentColor" />
+                </svg>
+                <span className="text-stone-600 dark:text-stone-300">Ask AI about</span>
+                <span className="font-medium text-stone-900 dark:text-white truncate">&ldquo;{query.trim()}&rdquo;</span>
+              </button>
             </div>
           )}
         </div>

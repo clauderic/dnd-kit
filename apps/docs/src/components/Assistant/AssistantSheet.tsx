@@ -51,11 +51,16 @@ function AssistantSheetClient() {
     };
 
     const handleOpen = (e: Event) => {
-      const codeContext = (e as CustomEvent).detail?.codeContext as CodeContext | undefined;
+      const detail = (e as CustomEvent).detail;
+      const codeContext = detail?.codeContext as CodeContext | undefined;
+      const query = detail?.query as string | undefined;
       if (codeContext) {
         setCodeContexts((prev) =>
           prev.some((c) => c.code === codeContext.code) ? prev : [...prev, codeContext]
         );
+      }
+      if (query) {
+        setInput(query);
       }
       inputRef.current?.focus();
     };
