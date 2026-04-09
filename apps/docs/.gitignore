@@ -26,5 +26,8 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
+# generated OG images
+public/og/
+
 # screenshot diff output
 scripts/diff-output/

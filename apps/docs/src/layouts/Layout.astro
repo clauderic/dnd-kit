@@ -10,9 +10,10 @@ interface Props {
 }
 
 const SITE_URL = 'https://dndkit.com';
-const { title = '@dnd-kit', description, path = '/' } = Astro.props;
+const { title = 'dnd kit', description, path = '/' } = Astro.props;
 const canonicalUrl = `${SITE_URL}${path}`;
-const ogImage = `${SITE_URL}/images/og-image.png`;
+const ogSlug = path === '/' ? 'index' : path.replace(/^\//, '');
+const ogImage = `${SITE_URL}/og/${ogSlug}.png`;
 ---
 
 <!doctype html>
@@ -45,7 +46,7 @@ const ogImage = `${SITE_URL}/images/og-image.png`;
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="@dnd-kit" />
+    <meta property="og:site_name" content="dnd kit" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     {description && <meta name="twitter:description" content={description} />}
