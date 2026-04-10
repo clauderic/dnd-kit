@@ -1,0 +1,16 @@
+import { move } from "@dnd-kit/helpers";
+import Draggable from "./Draggable.marko";
+
+<let/items=["A", "B", "C", "D"]>
+
+<drag-drop-provider onDragEnd(event) {
+  if (!event.canceled) {
+    items = move(items, event);
+  }
+}>
+  <ul class="list">
+    <for|item| of=items by=(item) => item>
+      <Draggable id=item label=item/>
+    </for>
+  </ul>
+</drag-drop-provider>

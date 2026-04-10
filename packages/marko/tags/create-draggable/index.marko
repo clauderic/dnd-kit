@@ -1,0 +1,108 @@
+/*
+ * <create-draggable> — Creates a draggable entity.
+ *
+ * Finds the DragDropManager from the nearest ancestor <drag-drop-provider>
+ * via the branch-chain context mechanism. The manager is delivered to this
+ * component as `_dndManager` input by the translator's effect statement.
+ *
+ * Usage:
+ *   <create-draggable|draggable| id="item-1" data={type: "card"}>
+ *     <div/$el>
+ *       <lifecycle
+ *         onMount() { draggable.setElement($el()); }
+ *         onDestroy() { draggable.setElement(undefined); }
+ *       />
+ *       ${item.text}
+ *     </div>
+ *   </create-draggable>
+ *
+ * The tag variable exposes:
+ *   draggable.isDragging   — boolean, reactive
+ *   draggable.isDropping   — boolean, reactive
+ *   draggable.isDragSource — boolean, reactive
+ *   draggable.setElement(el) — attaches/detaches the DOM element
+ */
+
+import {Draggable} from '@dnd-kit/dom';
+import type {DraggableInput, DragDropManager} from '@dnd-kit/dom';
+import type {Data} from '@dnd-kit/abstract';
+
+export interface Input<T extends Data = Data> {
+  id: string | number;
+  data?: T;
+  disabled?: boolean;
+  sensors?: DraggableInput<T>['sensors'];
+  modifiers?: DraggableInput<T>['modifiers'];
+  plugins?: DraggableInput<T>['plugins'];
+  /**
+   * @internal — Set by the translator's effect. Do not pass manually.
+   */
+  _dndManager?: DragDropManager;
+}
+
+// Entity starts undefined. Created in lifecycle when manager arrives.
+<let/entity/>
+
+<lifecycle
+  onMount() {
+    // Manager may already be set if our translator's effect fired first.
+    // Both onMount and onUpdate handle initialization to cover both orderings.
+    if (input._dndManager && !this.initialized) {
+      this._initEntity();
+    }
+  }
+  onUpdate() {
+    // Fires when input._dndManager changes (sent by translator's effect).
+    if (input._dndManager && !this.initialized) {
+      this._initEntity();
+    }
+    // Sync reactive properties when inputs change.
+    if (entity) {
+      entity.id = input.id;
+      entity.disabled = input.disabled ?? false;
+      if (input.data) entity.data = input.data;
+    }
+  }
+  _initEntity() {
+    const e = new Draggable(
+      {
+        id: input.id,
+        data: input.data,
+        disabled: input.disabled ?? false,
+        sensors: input.sensors,
+        modifiers: input.modifiers,
+        plugins: input.plugins,
+        register: false,
+      },
+      input._dndManager
+    );
+    this.cleanup = e.register();
+    this.initialized = true;
+    // Assigning entity triggers $entity signal → <create-deep-signal> and
+    // <return> update reactively, delivering the proxy to the tag variable.
+    entity = e;
+  }
+  onDestroy() {
+    if (typeof this.cleanup === 'function') this.cleanup();
+    entity?.destroy();
+  }
+/>
+
+<create-deep-signal/tracked target=entity/>
+
+<return=({
+  get isDragging() { return (tracked as any)?.isDragging ?? false; },
+  get isDropping() { return (tracked as any)?.isDropping ?? false; },
+  get isDragSource() { return (tracked as any)?.isDragSource ?? false; },
+  setElement(el: HTMLElement | undefined) {
+    if (!el && entity?.element?.isConnected && !entity?.manager?.dragOperation.status.idle) {
+      return; // Guard: don't clear element during active drag
+    }
+    if (entity) entity.element = el;
+  },
+  setHandle(el: HTMLElement | undefined) {
+    if (entity) entity.handle = el;
+  },
+})/>
+
+<${input.renderBody}()/>

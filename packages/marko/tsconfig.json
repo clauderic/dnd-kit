@@ -1,0 +1,16 @@
+{
+  "extends": "../../config/typescript/marko.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./dist"
+  },
+  "include": [
+    "src/**/*.ts",
+    "tags/**/*.ts",
+    "tags/**/*.d.ts"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
+}

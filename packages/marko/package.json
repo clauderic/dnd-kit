@@ -1,0 +1,63 @@
+{
+  "name": "@dnd-kit/marko",
+  "version": "0.0.1",
+  "type": "module",
+  "license": "MIT",
+  "sideEffects": false,
+  "files": [
+    "LICENSE",
+    "README.md",
+    "marko.json",
+    "tags",
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./runtime/context": {
+      "types": "./dist/runtime/context.d.ts",
+      "import": "./dist/runtime/context.js"
+    },
+    "./runtime/renderer": {
+      "types": "./dist/runtime/renderer.d.ts",
+      "import": "./dist/runtime/renderer.js"
+    },
+    "./runtime/defaults": {
+      "types": "./dist/runtime/defaults.d.ts",
+      "import": "./dist/runtime/defaults.js"
+    }
+  },
+  "scripts": {
+    "build": "bun run build:runtime && bun run build:translators",
+    "build:runtime": "tsup",
+    "build:translators": "tsup --config tsup.translators.config.ts",
+    "dev": "bun run build:runtime --watch & bun run build:translators --watch",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist && rm -f tags/*/translator.js tags/*/translator.d.ts"
+  },
+  "dependencies": {
+    "@dnd-kit/abstract": "^0.3.2",
+    "@dnd-kit/dom": "^0.3.2",
+    "@dnd-kit/state": "^0.3.2",
+    "tslib": "^2.6.2"
+  },
+  "peerDependencies": {
+    "@marko/runtime-tags": "6.0.155",
+    "marko": "^6.0.0"
+  },
+  "devDependencies": {
+    "@marko/compiler": "^5.0.0",
+    "@marko/runtime-tags": "6.0.155",
+    "marko": "^6.0.0",
+    "tsup": "8.3.0",
+    "typescript": "^5.5.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/clauderic/dnd-kit"
+  }
+}

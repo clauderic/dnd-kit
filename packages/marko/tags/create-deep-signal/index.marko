@@ -1,0 +1,80 @@
+/*
+ * <create-deep-signal> — Preact signals → Marko reactivity bridge.
+ *
+ * dnd-kit entities (Draggable, Droppable, Sortable) expose state as Preact
+ * signals (@preact/signals-core). Marko's reactivity is a compile-time graph
+ * driven by <let> variables. This tag bridges the two systems.
+ *
+ * Strategy (same as all other adapters):
+ *   Pull: A Proxy wraps the entity. Template reads go through the proxy getter,
+ *         which records each accessed property name in `tracked`.
+ *   Push: A single Preact effect() reads every tracked property (inside the
+ *         effect → Preact subscribes). When any tracked property changes, the
+ *         effect increments `dirty`.
+ *   React: `dirty` is a <let> variable — Marko's reactive graph re-evaluates
+ *         expressions that depend on it, re-running the <return> expression
+ *         which re-wraps the entity in a fresh Proxy.
+ *
+ * Why `dirty++` inside <lifecycle onMount> works:
+ *   The compiler sees `dirty++` inside a nested arrow function defined in the
+ *   lifecycle body and rewrites it to `$dirty($scope, $scope.dirty + 1)`,
+ *   capturing $scope via closure. Verified from assign-in-wrapped-function
+ *   test fixture in @marko/runtime-tags source.
+ */
+
+import {effect, untracked} from '@dnd-kit/state';
+
+export interface Input<T extends object | null | undefined> {
+  target: T;
+}
+
+<let/dirty=0/>
+
+<lifecycle
+  onMount() {
+    const tracked = new Map<string | symbol, unknown>();
+
+    const tick = () => {
+      dirty++;
+    };
+
+    const dispose = effect(() => {
+      let stale = false;
+
+      for (const [key, oldVal] of tracked) {
+        const newVal = untracked(() => (input.target as any)?.[key]);
+        if (newVal !== oldVal) {
+          stale = true;
+          tracked.set(key, newVal);
+        }
+      }
+
+      if (stale) tick();
+    });
+
+    this.tracked = tracked;
+    this.dispose = dispose;
+  }
+  onDestroy() {
+    this.dispose?.();
+  }
+/>
+
+<return=(
+  (() => {
+    // Reading dirty subscribes Marko's reactive graph to changes.
+    void dirty;
+
+    const target = input.target;
+
+    return target
+      ? (new Proxy(target as object, {
+          get(obj, key) {
+            const value = (obj as any)[key];
+            (this as any).tracked?.set(key, value);
+            return value;
+          },
+        }) as typeof target)
+      : target;
+  })()
+)/>

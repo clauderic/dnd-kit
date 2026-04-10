@@ -1,0 +1,11 @@
+export interface Input { id: string; label: string; }
+
+<create-droppable|droppable| id=input.id>
+  <div/$el class=('zone' + (droppable.isDropTarget ? ' over' : ''))>
+    <lifecycle
+      onMount() { droppable.setElement($el()); }
+      onDestroy() { droppable.setElement(undefined); }
+    />
+    ${input.label}
+  </div>
+</create-droppable>

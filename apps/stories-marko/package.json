@@ -1,0 +1,30 @@
+{
+  "name": "@dnd-kit/stories-marko",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "storybook dev -p 6011",
+    "build": "storybook build",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf storybook-static"
+  },
+  "dependencies": {
+    "@dnd-kit/abstract": "*",
+    "@dnd-kit/dom": "*",
+    "@dnd-kit/marko": "*",
+    "@dnd-kit/helpers": "*",
+    "@dnd-kit/stories-shared": "*",
+    "marko": "^6.0.0"
+  },
+  "devDependencies": {
+    "@marko/runtime-tags": "6.0.155",
+    "@marko/vite": "^4.0.0",
+    "@storybook/addon-links": "^10.1.0",
+    "@storybook/marko": "^10.1.0",
+    "@storybook/marko-vite": "^4.1.0",
+    "@vueless/storybook-dark-mode": "^9.0.6",
+    "storybook": "^10.3.5",
+    "typescript": "^5.5.2",
+    "vite": "^5.0.0"
+  }
+}

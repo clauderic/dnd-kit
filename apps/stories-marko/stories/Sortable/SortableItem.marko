@@ -1,0 +1,14 @@
+export interface Input {
+  id: number;
+  index: number;
+}
+
+<create-sortable|sortable| id=input.id index=input.index>
+  <li/$el class=('item' + (sortable.isDragging ? ' dragging' : ''))>
+    <lifecycle
+      onMount() { sortable.setElement($el()); }
+      onDestroy() { sortable.setElement(undefined); }
+    />
+    ${input.id}
+  </li>
+</create-sortable>

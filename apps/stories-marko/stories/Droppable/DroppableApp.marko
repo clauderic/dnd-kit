@@ -1,0 +1,16 @@
+import DraggableItem from "./DraggableItem.marko";
+import DroppableZone from "./DroppableZone.marko";
+
+<let/dropped="">
+
+<drag-drop-provider onDragEnd(event) {
+  if (!event.canceled && event.operation.target) {
+    dropped = String(event.operation.source?.id ?? "");
+  }
+}>
+  <div class="container">
+    <DraggableItem id="item-1" label="Drag me"/>
+    <DroppableZone id="zone-1" label="Drop here"/>
+  </div>
+  <p>Last dropped: ${dropped || "nothing yet"}</p>
+</drag-drop-provider>

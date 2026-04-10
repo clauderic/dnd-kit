@@ -1,0 +1,180 @@
+/*
+* <create-sortable> — Creates a sortable entity (draggable + droppable).
+*
+* OptimisticSortingPlugin is disabled by default — it mutates DOM nodes
+* directly during drag, conflicting with Marko's <for> reconciler.
+* Visual sorting is driven by onDragOver state updates instead.
+*
+* group and index are updated atomically via batch() to prevent dnd-kit's
+* internal effects from firing between the two assignments.
+*
+* Usage:
+*   <for|item, index| of=items by="id">
+*     <create-sortable|sortable| id=item.id index=index group="list">
+*       <li/$el
+*         class=(sortable.isDragging ? 'dragging' : '')
+*       >
+*         <lifecycle
+*           onMount() { sortable.setElement($el()); }
+*           onDestroy() { sortable.setElement(undefined); }
+*         />
+*         ${item.text}
+*       </li>
+*     </create-sortable>
+*   </for>
+*/
+
+import {
+  Sortable,
+  defaultSortableTransition,
+  OptimisticSortingPlugin,
+} from "@dnd-kit/dom/sortable";
+import type { SortableInput } from "@dnd-kit/dom/sortable";
+import type { DragDropManager } from "@dnd-kit/dom";
+import type { Data, Plugins } from "@dnd-kit/abstract";
+import { batch } from "@dnd-kit/state";
+
+export interface Input<T extends Data = Data> {
+  id: string | number;
+  index: number;
+  group?: string;
+  data?: T;
+  disabled?: boolean;
+  sensors?: SortableInput<T>["sensors"];
+  modifiers?: SortableInput<T>["modifiers"];
+  plugins?: SortableInput<T>["plugins"];
+  accept?: SortableInput<T>["accept"];
+  type?: SortableInput<T>["type"];
+  collisionDetector?: SortableInput<T>["collisionDetector"];
+  collisionPriority?: SortableInput<T>["collisionPriority"];
+  transition?: SortableInput<T>["transition"];
+  /** @internal — Set by translator. Do not pass manually. */
+  _dndManager?: DragDropManager;
+}
+
+// Filter OptimisticSortingPlugin — direct DOM mutation conflicts with <for>.
+static const withoutOptimistic = (defaults: Plugins) =>
+  defaults.filter((p) => p !== OptimisticSortingPlugin);
+
+<let/entity>
+
+<lifecycle
+  onMount() {
+    if (input._dndManager && !this.initialized) {
+      this._initEntity();
+    }
+  }
+  onUpdate() {
+    if (input._dndManager && !this.initialized) {
+      this._initEntity();
+    }
+    if (entity) {
+      entity.id = input.id;
+      entity.disabled = input.disabled ?? false;
+      if (input.data) entity.data = input.data;
+
+      // group and index must update atomically to prevent dnd-kit internal
+      // effects from observing a partial (group updated, index not yet) state.
+      batch(() => {
+        entity!.group = input.group;
+        entity!.index = input.index;
+      });
+
+      entity.transition = {
+        ...defaultSortableTransition,
+        ...input.transition,
+      };
+
+      // Refresh shape when index changes while idle (for layout shifts).
+      if (
+        entity.manager?.dragOperation.status.idle &&
+        entity.transition?.idle
+      ) {
+        entity.refreshShape();
+      }
+    }
+  }
+  _initEntity() {
+    const e = new Sortable(
+      {
+        id: input.id,
+        index: input.index,
+        group: input.group,
+        data: input.data,
+        disabled: input.disabled ?? false,
+        sensors: input.sensors,
+        modifiers: input.modifiers,
+        plugins: input.plugins ?? withoutOptimistic,
+        accept: input.accept,
+        type: input.type,
+        collisionDetector: input.collisionDetector,
+        collisionPriority: input.collisionPriority,
+        transition: {
+          ...defaultSortableTransition,
+          ...input.transition,
+        },
+        register: false,
+      },
+      input._dndManager,
+    );
+    this.cleanup = e.register();
+    this.initialized = true;
+    entity = e;
+  }
+  onDestroy() {
+    if (typeof this.cleanup === "function") this.cleanup();
+    entity?.destroy();
+  }
+>
+
+<create-deep-signal/tracked target=entity/>
+
+<return={
+  get isDragging() {
+    return (tracked as any)?.isDragging ?? false;
+  },
+  get isDropping() {
+    return (tracked as any)?.isDropping ?? false;
+  },
+  get isDragSource() {
+    return (tracked as any)?.isDragSource ?? false;
+  },
+  get isDropTarget() {
+    return (tracked as any)?.isDropTarget ?? false;
+  },
+  setElement(el: HTMLElement | undefined) {
+    if (
+      !el &&
+      entity?.element?.isConnected &&
+      !entity?.manager?.dragOperation.status.idle
+    ) {
+      return;
+    }
+    if (entity) entity.element = el;
+  },
+  setHandle(el: HTMLElement | undefined) {
+    if (entity) entity.handle = el;
+  },
+  setSource(el: HTMLElement | undefined) {
+    if (
+      !el &&
+      entity?.source?.isConnected &&
+      !entity?.manager?.dragOperation.status.idle
+    ) {
+      return;
+    }
+    if (entity) entity.source = el;
+  },
+  setTarget(el: HTMLElement | undefined) {
+    if (
+      !el &&
+      entity?.target?.isConnected &&
+      !entity?.manager?.dragOperation.status.idle
+    ) {
+      return;
+    }
+    if (entity) entity.target = el;
+  },
+}>
+
+<${input.renderBody}/>
