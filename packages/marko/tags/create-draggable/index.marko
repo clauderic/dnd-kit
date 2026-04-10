@@ -31,10 +31,10 @@ static const _makeBox = () => ({
 
 <lifecycle
   onMount() {
-    if (manager && !(this as any).initialized) this._initEntity();
+    if (manager && !(this as any).initialized) (this as any)._initEntity();
   }
   onUpdate() {
-    if (manager && !(this as any).initialized) this._initEntity();
+    if (manager && !(this as any).initialized) (this as any)._initEntity();
     if (entity) {
       const e = entity;
       e.id = input.id;

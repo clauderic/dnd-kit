@@ -2,22 +2,23 @@ export interface Input<T extends keyof Marko.Global> {
   from: T;
 }
 
-// PropertyKey (string | number | symbol) covers all possible keyof Marko.Global types.
-client const subsMap = new Map<PropertyKey, Set<(next: unknown) => void>>();
+// No TypeScript generics in client const — angle brackets conflict with Marko's
+// tag parser in this context. Runtime type is Map<PropertyKey, Set<fn>>.
+client const subsMap = new Map();
 
 <let/value=($global ?? {})[input.from]>
 
 <script>
-  const _key: PropertyKey = input.from;
+  const _key = input.from as PropertyKey;
   if (!subsMap.has(_key)) subsMap.set(_key, new Set());
-  const _keySubs = subsMap.get(_key)!;
+  const _keySubs: Set<(v: unknown) => void> = subsMap.get(_key);
   const fn = (next: unknown) => { value = next as typeof value; };
   $signal.onabort = () => _keySubs.delete(fn);
   _keySubs.add(fn);
 </script>
 
 <return=value valueChange(next: unknown) {
-  ($global ?? {} as Marko.Global)[input.from] = next as any;
-  const _keySubs = subsMap.get(input.from);
+  ($global as any)[input.from] = next;
+  const _keySubs: Set<(v: unknown) => void> | undefined = subsMap.get(input.from);
   if (_keySubs) for (const sub of _keySubs) sub(next);
 }/>

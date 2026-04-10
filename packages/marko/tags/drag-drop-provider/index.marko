@@ -4,22 +4,17 @@ import {
   resolveCustomizable,
 } from "@dnd-kit/dom";
 import type { DragDropManagerInput } from "@dnd-kit/dom";
-import type {
-  DragDropEventHandlers,
-  Draggable,
-  Droppable,
-} from "@dnd-kit/abstract";
 import { createRenderer } from "../../src/runtime/renderer.js";
 
 export interface Input extends DragDropManagerInput {
   manager?: DragDropManager<any, any, any>;
   content?: Marko.Body;
-  onBeforeDragStart?: DragDropEventHandlers<Draggable, Droppable, DragDropManager>["beforedragstart"];
-  onDragStart?: DragDropEventHandlers<Draggable, Droppable, DragDropManager>["dragstart"];
-  onDragMove?: DragDropEventHandlers<Draggable, Droppable, DragDropManager>["dragmove"];
-  onDragOver?: DragDropEventHandlers<Draggable, Droppable, DragDropManager>["dragover"];
-  onDragEnd?: DragDropEventHandlers<Draggable, Droppable, DragDropManager>["dragend"];
-  onCollision?: DragDropEventHandlers<Draggable, Droppable, DragDropManager>["collision"];
+  onBeforeDragStart?: (event: any, manager: any) => void;
+  onDragStart?: (event: any, manager: any) => void;
+  onDragMove?: (event: any, manager: any) => void;
+  onDragOver?: (event: any, manager: any) => void;
+  onDragEnd?: (event: any, manager: any) => void;
+  onCollision?: (event: any, manager: any) => void;
 }
 
 <let/manager=(input.manager as DragDropManager<any, any, any>) ??
@@ -31,7 +26,7 @@ new DragDropManager({
 
 <let-global/dndManager from="__dndKit_manager"/>
 
-<const/_=(() => { ($global ?? {} as Marko.Global).__dndKit_manager = manager; })()/>
+<const/_=(() => { ($global as any).__dndKit_manager = manager; })()/>
 
 <lifecycle
   onMount() {
