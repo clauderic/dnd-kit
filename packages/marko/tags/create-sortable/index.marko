@@ -1,13 +1,3 @@
-/*
- * <create-sortable> — Creates a sortable entity (draggable + droppable).
- *
- * OptimisticSortingPlugin is excluded — direct DOM mutation conflicts with
- * Marko's <for> reconciler. group and index update atomically via batch().
- *
- * Local variable pattern: property assignments on <let> variables must go
- * through a local const to prevent invalid optional-chain assignment codegen.
- */
-
 import {
   Sortable,
   defaultSortableTransition,
@@ -17,6 +7,17 @@ import type { SortableInput } from "@dnd-kit/dom/sortable";
 import type { DragDropManager } from "@dnd-kit/dom";
 import type { Data, Plugins } from "@dnd-kit/abstract";
 import { batch } from "@dnd-kit/state";
+
+export interface SortableMethods {
+  isDragging: boolean;
+  isDropping: boolean;
+  isDragSource: boolean;
+  isDropTarget: boolean;
+  setElement(el: HTMLElement | undefined): void;
+  setHandle(el: HTMLElement | undefined): void;
+  setSource(el: HTMLElement | undefined): void;
+  setTarget(el: HTMLElement | undefined): void;
+}
 
 export interface Input<T extends Data = Data> {
   id: string | number;
@@ -32,13 +33,15 @@ export interface Input<T extends Data = Data> {
   collisionDetector?: SortableInput<T>["collisionDetector"];
   collisionPriority?: SortableInput<T>["collisionPriority"];
   transition?: SortableInput<T>["transition"];
+  // Declaring body content type tells Marko's static analysis that
+  // this tag passes one body parameter of type SortableMethods.
+  content?: Marko.Body<[SortableMethods]>;
 }
 
 static const withoutOptimistic = (defaults: Plugins) =>
   defaults.filter((p) => p !== OptimisticSortingPlugin);
 
 <let-global/manager from="__dndKit_manager"/>
-
 <let/entity=(undefined as Sortable | undefined)/>
 
 static const _makeBox = () => ({
@@ -60,17 +63,11 @@ static const _makeBox = () => ({
       e.id = input.id;
       e.disabled = input.disabled ?? false;
       if (input.data !== undefined) e.data = input.data;
-
       batch(() => {
         e.group = input.group;
         e.index = input.index;
       });
-
-      e.transition = {
-        ...defaultSortableTransition,
-        ...input.transition,
-      };
-
+      e.transition = { ...defaultSortableTransition, ...input.transition };
       if (e.manager?.dragOperation.status.idle && e.transition?.idle) {
         e.refreshShape();
       }
@@ -78,6 +75,7 @@ static const _makeBox = () => ({
   }
   _initEntity() {
     if (!manager) return;
+    const mgr = manager as DragDropManager;
     const e = new Sortable(
       {
         id: input.id,
@@ -92,13 +90,10 @@ static const _makeBox = () => ({
         type: input.type,
         collisionDetector: input.collisionDetector,
         collisionPriority: input.collisionPriority,
-        transition: {
-          ...defaultSortableTransition,
-          ...input.transition,
-        },
+        transition: { ...defaultSortableTransition, ...input.transition },
         register: false,
       },
-      manager as DragDropManager,
+      mgr,
     );
     this.cleanup = e.register();
     this.initialized = true;
@@ -116,46 +111,52 @@ static const _makeBox = () => ({
 
 <create-deep-signal/tracked target=entity/>
 
-<return={
-  get isDragging() { return (tracked as any)?.isDragging ?? false; },
-  get isDropping() { return (tracked as any)?.isDropping ?? false; },
-  get isDragSource() { return (tracked as any)?.isDragSource ?? false; },
-  get isDropTarget() { return (tracked as any)?.isDropTarget ?? false; },
-  setElement(el: HTMLElement | undefined) {
-    if (entity) {
-      const e = entity;
-      if (!el && e.element?.isConnected && !e.manager?.dragOperation.status.idle) return;
-      e.element = el;
-    } else if (el) {
-      _pending.el = el;
-    }
-  },
-  setHandle(el: HTMLElement | undefined) {
-    if (entity) {
-      const e = entity;
-      e.handle = el;
-    } else if (el) {
-      _pending.handle = el;
-    }
-  },
-  setSource(el: HTMLElement | undefined) {
-    if (entity) {
-      const e = entity;
-      if (!el && e.source?.isConnected && !e.manager?.dragOperation.status.idle) return;
-      e.source = el;
-    } else if (el) {
-      _pending.source = el;
-    }
-  },
-  setTarget(el: HTMLElement | undefined) {
-    if (entity) {
-      const e = entity;
-      if (!el && e.target?.isConnected && !e.manager?.dragOperation.status.idle) return;
-      e.target = el;
-    } else if (el) {
-      _pending.target = el;
-    }
-  },
-}>
+// Eagerly read reactive booleans so Marko tracks them as dependencies.
+// When tracked changes, these update and _s is rebuilt, re-rendering the body.
+<const/_isDragging=(tracked as any)?.isDragging ?? false/>
+<const/_isDropping=(tracked as any)?.isDropping ?? false/>
+<const/_isDragSource=(tracked as any)?.isDragSource ?? false/>
+<const/_isDropTarget=(tracked as any)?.isDropTarget ?? false/>
 
-<${input.renderBody}/>
+// Arrow functions for setters — stable closures over $scope so they always
+// see the current entity / _pending without needing to be recreated.
+<const/_setElement=(el: HTMLElement | undefined) => {
+  if (entity) {
+    const e = entity;
+    if (!el && e.element?.isConnected && !e.manager?.dragOperation.status.idle) return;
+    e.element = el;
+  } else if (el) { _pending.el = el; }
+}/>
+<const/_setHandle=(el: HTMLElement | undefined) => {
+  if (entity) { const e = entity; e.handle = el; } else if (el) { _pending.handle = el; }
+}/>
+<const/_setSource=(el: HTMLElement | undefined) => {
+  if (entity) {
+    const e = entity;
+    if (!el && e.source?.isConnected && !e.manager?.dragOperation.status.idle) return;
+    e.source = el;
+  } else if (el) { _pending.source = el; }
+}/>
+<const/_setTarget=(el: HTMLElement | undefined) => {
+  if (entity) {
+    const e = entity;
+    if (!el && e.target?.isConnected && !e.manager?.dragOperation.status.idle) return;
+    e.target = el;
+  } else if (el) { _pending.target = el; }
+}/>
+
+// Build the body param object from stable + reactive parts.
+// Named <const/_s> so <${input.content}(_s)/> is a simple one-arg call
+// that Marko's static analysis can unambiguously detect.
+<const/_s=({
+  isDragging: _isDragging,
+  isDropping: _isDropping,
+  isDragSource: _isDragSource,
+  isDropTarget: _isDropTarget,
+  setElement: _setElement,
+  setHandle: _setHandle,
+  setSource: _setSource,
+  setTarget: _setTarget,
+} as SortableMethods)/>
+
+<${input.content}(_s)/>

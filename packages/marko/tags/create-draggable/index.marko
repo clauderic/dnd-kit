@@ -1,18 +1,14 @@
-/*
- * <create-draggable> — Creates a draggable entity.
- *
- * Manager arrives reactively via <let-global>. Entity is created in
- * _initEntity when manager first becomes available. Pending element/handle
- * calls that arrive before entity exists are buffered and applied on init.
- *
- * Local variable pattern: property assignments on <let> variables must go
- * through a local const (e.g. `const e = entity`) to prevent the Marko
- * compiler from emitting invalid `$scope.entity?.prop = value`.
- */
-
 import { Draggable } from "@dnd-kit/dom";
 import type { DraggableInput, DragDropManager } from "@dnd-kit/dom";
 import type { Data } from "@dnd-kit/abstract";
+
+export interface DraggableMethods {
+  isDragging: boolean;
+  isDropping: boolean;
+  isDragSource: boolean;
+  setElement(el: HTMLElement | undefined): void;
+  setHandle(el: HTMLElement | undefined): void;
+}
 
 export interface Input<T extends Data = Data> {
   id: string | number;
@@ -21,10 +17,10 @@ export interface Input<T extends Data = Data> {
   sensors?: DraggableInput<T>["sensors"];
   modifiers?: DraggableInput<T>["modifiers"];
   plugins?: DraggableInput<T>["plugins"];
+  content?: Marko.Body<[DraggableMethods]>;
 }
 
 <let-global/manager from="__dndKit_manager"/>
-
 <let/entity=(undefined as Draggable | undefined)/>
 
 static const _makeBox = () => ({
@@ -40,7 +36,6 @@ static const _makeBox = () => ({
   onUpdate() {
     if (manager && !this.initialized) this._initEntity();
     if (entity) {
-      // Extract to local: avoids $scope.entity?.prop = value (invalid JS).
       const e = entity;
       e.id = input.id;
       e.disabled = input.disabled ?? false;
@@ -49,6 +44,7 @@ static const _makeBox = () => ({
   }
   _initEntity() {
     if (!manager) return;
+    const mgr = manager as DragDropManager;
     const e = new Draggable(
       {
         id: input.id,
@@ -59,7 +55,7 @@ static const _makeBox = () => ({
         plugins: input.plugins,
         register: false,
       },
-      manager as DragDropManager,
+      mgr,
     );
     this.cleanup = e.register();
     this.initialized = true;
@@ -75,27 +71,27 @@ static const _makeBox = () => ({
 
 <create-deep-signal/tracked target=entity/>
 
-<return=({
-  get isDragging() { return (tracked as any)?.isDragging ?? false; },
-  get isDropping() { return (tracked as any)?.isDropping ?? false; },
-  get isDragSource() { return (tracked as any)?.isDragSource ?? false; },
-  setElement(el: HTMLElement | undefined) {
-    if (entity) {
-      const e = entity;
-      if (!el && e.element?.isConnected && !e.manager?.dragOperation.status.idle) return;
-      e.element = el;
-    } else if (el) {
-      _pending.el = el;
-    }
-  },
-  setHandle(el: HTMLElement | undefined) {
-    if (entity) {
-      const e = entity;
-      e.handle = el;
-    } else if (el) {
-      _pending.handle = el;
-    }
-  },
-})/>
+<const/_isDragging=(tracked as any)?.isDragging ?? false/>
+<const/_isDropping=(tracked as any)?.isDropping ?? false/>
+<const/_isDragSource=(tracked as any)?.isDragSource ?? false/>
 
-<${input.renderBody}()/>
+<const/_setElement=(el: HTMLElement | undefined) => {
+  if (entity) {
+    const e = entity;
+    if (!el && e.element?.isConnected && !e.manager?.dragOperation.status.idle) return;
+    e.element = el;
+  } else if (el) { _pending.el = el; }
+}/>
+<const/_setHandle=(el: HTMLElement | undefined) => {
+  if (entity) { const e = entity; e.handle = el; } else if (el) { _pending.handle = el; }
+}/>
+
+<const/_d=({
+  isDragging: _isDragging,
+  isDropping: _isDropping,
+  isDragSource: _isDragSource,
+  setElement: _setElement,
+  setHandle: _setHandle,
+} as DraggableMethods)/>
+
+<${input.content}(_d)/>

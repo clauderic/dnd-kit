@@ -1,9 +1,8 @@
 /*
  * <drag-drop-provider> — Root context provider for @dnd-kit/marko.
  *
- * Creates (or accepts) a DragDropManager and makes it available to all
- * descendant <create-draggable>, <create-droppable>, and <create-sortable>
- * tags via <let-global> reactive $global subscriptions.
+ * Publishes the DragDropManager via <let-global> reactive $global bridge.
+ * Consumers subscribe reactively via their own <let-global> instances.
  */
 
 import {
@@ -43,8 +42,6 @@ new DragDropManager({
     this.prev = dndManager;
     dndManager = manager;
 
-    // Extract to local to avoid Marko compiling `manager.renderer = x`
-    // into invalid `$scope.manager?.renderer = x`.
     const m = manager;
     const { renderer, trackRendering } = createRenderer();
     m.renderer = renderer;
@@ -81,4 +78,4 @@ new DragDropManager({
   }
 />
 
-<${input.renderBody}/>
+<${input.content}/>

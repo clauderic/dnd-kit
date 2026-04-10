@@ -2,8 +2,7 @@
 // Tags are auto-discovered via marko.json — no imports needed for them.
 export type { DragDropManager } from "@dnd-kit/dom";
 
-// Augment Marko's shared $global type to include the dnd-kit manager key.
-// This enables TypeScript type-checking in <let-global from="__dndKit_manager"/>.
+// Augment Marko's $global type so <let-global from="__dndKit_manager"/> is typed.
 declare global {
   namespace Marko {
     interface Global {
