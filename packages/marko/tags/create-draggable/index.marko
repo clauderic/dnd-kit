@@ -75,23 +75,20 @@ static const _makeBox = () => ({
 <const/_isDropping=(tracked as any)?.isDropping ?? false/>
 <const/_isDragSource=(tracked as any)?.isDragSource ?? false/>
 
-<const/_setElement=(el: HTMLElement | undefined) => {
-  if (entity) {
-    const e = entity;
-    if (!el && e.element?.isConnected && !e.manager?.dragOperation.status.idle) return;
-    e.element = el;
-  } else if (el) { _pending.el = el; }
-}/>
-<const/_setHandle=(el: HTMLElement | undefined) => {
-  if (entity) { const e = entity; e.handle = el; } else if (el) { _pending.handle = el; }
-}/>
-
-<const/_d=({
+<const/_d=(manager, ({
   isDragging: _isDragging,
   isDropping: _isDropping,
   isDragSource: _isDragSource,
-  setElement: _setElement,
-  setHandle: _setHandle,
-} as DraggableMethods)/>
+  setElement: (el: HTMLElement | undefined) => {
+    if (entity) {
+      const e = entity;
+      if (!el && e.element?.isConnected && !e.manager?.dragOperation.status.idle) return;
+      e.element = el;
+    } else if (el) { _pending.el = el; }
+  },
+  setHandle: (el: HTMLElement | undefined) => {
+    if (entity) { const e = entity; e.handle = el; } else if (el) { _pending.handle = el; }
+  },
+} as DraggableMethods))/>
 
 <${input.content}(_d)/>

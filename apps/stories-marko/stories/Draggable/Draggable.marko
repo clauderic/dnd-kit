@@ -1,14 +1,32 @@
+// export interface Input {
+//   id: string;
+//   label: string;
+// }
+
+// <create-draggable|draggable| id=input.id>
+//   <button/$el class="btn">
+//     <lifecycle
+//       onMount() { draggable.setElement($el()); }
+//       onDestroy() { draggable.setElement(undefined); }
+//     />
+//     ${input.label}
+//   </button>
+// </create-draggable>
 export interface Input {
   id: string;
   label: string;
 }
 
 <create-draggable|draggable| id=input.id>
-  <button/$el class="btn">
+  <button/$el class="btn" + (draggable.isDragging ? " dragging" : "")>
     <lifecycle
-      onMount() { draggable.setElement($el()); }
-      onDestroy() { draggable.setElement(undefined); }
-    />
+      onMount() {
+        draggable.setElement($el());
+      }
+      onDestroy() {
+        draggable.setElement(undefined);
+      }
+    >
     ${input.label}
   </button>
 </create-draggable>

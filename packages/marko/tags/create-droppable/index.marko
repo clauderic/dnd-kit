@@ -70,13 +70,11 @@ static const _makeBox = () => ({ el: undefined as HTMLElement | undefined });
 
 <const/_isDropTarget=(tracked as any)?.isDropTarget ?? false/>
 
-<const/_setElement=(el: HTMLElement | undefined) => {
-  if (entity) { const e = entity; e.element = el; } else if (el) { _pending.el = el; }
-}/>
-
-<const/_d=({
+<const/_d=(manager, ({
   isDropTarget: _isDropTarget,
-  setElement: _setElement,
-} as DroppableMethods)/>
+  setElement: (el: HTMLElement | undefined) => {
+    if (entity) { const e = entity; e.element = el; } else if (el) { _pending.el = el; }
+  },
+} as DroppableMethods))/>
 
 <${input.content}(_d)/>

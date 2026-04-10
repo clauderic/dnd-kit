@@ -1,8 +1,13 @@
 /*
  * <drag-drop-provider> — Root context provider for @dnd-kit/marko.
  *
- * Publishes the DragDropManager via <let-global> reactive $global bridge.
- * Consumers subscribe reactively via their own <let-global> instances.
+ * TIMING FIX: children mount before parents (bottom-up in Marko).
+ * We must set $global.__dndKit_manager DURING RENDER (before children render)
+ * so that children's let-global reads the correct initial value and their
+ * onMount can call _initEntity() immediately.
+ *
+ * We cannot assign a tag variable (dndManager) outside a script/function,
+ * so we mutate $global directly via an IIFE in <const>.
  */
 
 import {
@@ -37,9 +42,16 @@ new DragDropManager({
 
 <let-global/dndManager from="__dndKit_manager"/>
 
+// Push manager into $global NOW, before children render.
+// Tag variable assignment (dndManager = manager) is forbidden outside
+// script/function, so we mutate $global directly. IIFE reads `manager`
+// reactively so this re-runs if manager changes.
+<const/_=(() => { ($global ?? {}).__dndKit_manager = manager; })()/>
+
 <lifecycle
   onMount() {
-    this.prev = dndManager;
+    // Also update via let-global's valueChange to notify any subscribers
+    // (let-global <script> subscriptions are set up by this point).
     dndManager = manager;
 
     const m = manager;
@@ -71,7 +83,7 @@ new DragDropManager({
   }
   onDestroy() {
     this.cleanups?.forEach((fn: () => void) => fn());
-    dndManager = this.prev;
+    dndManager = undefined as any;
     if (!input.manager) {
       manager.destroy();
     }

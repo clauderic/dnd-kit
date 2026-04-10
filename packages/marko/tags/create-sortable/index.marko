@@ -33,8 +33,6 @@ export interface Input<T extends Data = Data> {
   collisionDetector?: SortableInput<T>["collisionDetector"];
   collisionPriority?: SortableInput<T>["collisionPriority"];
   transition?: SortableInput<T>["transition"];
-  // Declaring body content type tells Marko's static analysis that
-  // this tag passes one body parameter of type SortableMethods.
   content?: Marko.Body<[SortableMethods]>;
 }
 
@@ -54,6 +52,8 @@ static const _makeBox = () => ({
 
 <lifecycle
   onMount() {
+    // manager is typically undefined here (drag-drop-provider mounts after us).
+    // _initEntity() will be called from onUpdate when manager arrives.
     if (manager && !this.initialized) this._initEntity();
   }
   onUpdate() {
@@ -111,52 +111,49 @@ static const _makeBox = () => ({
 
 <create-deep-signal/tracked target=entity/>
 
-// Eagerly read reactive booleans so Marko tracks them as dependencies.
-// When tracked changes, these update and _s is rebuilt, re-rendering the body.
+// Eagerly read reactive booleans so Marko tracks `tracked` as a dependency.
 <const/_isDragging=(tracked as any)?.isDragging ?? false/>
 <const/_isDropping=(tracked as any)?.isDropping ?? false/>
 <const/_isDragSource=(tracked as any)?.isDragSource ?? false/>
 <const/_isDropTarget=(tracked as any)?.isDropTarget ?? false/>
 
-// Arrow functions for setters — stable closures over $scope so they always
-// see the current entity / _pending without needing to be recreated.
-<const/_setElement=(el: HTMLElement | undefined) => {
-  if (entity) {
-    const e = entity;
-    if (!el && e.element?.isConnected && !e.manager?.dragOperation.status.idle) return;
-    e.element = el;
-  } else if (el) { _pending.el = el; }
-}/>
-<const/_setHandle=(el: HTMLElement | undefined) => {
-  if (entity) { const e = entity; e.handle = el; } else if (el) { _pending.handle = el; }
-}/>
-<const/_setSource=(el: HTMLElement | undefined) => {
-  if (entity) {
-    const e = entity;
-    if (!el && e.source?.isConnected && !e.manager?.dragOperation.status.idle) return;
-    e.source = el;
-  } else if (el) { _pending.source = el; }
-}/>
-<const/_setTarget=(el: HTMLElement | undefined) => {
-  if (entity) {
-    const e = entity;
-    if (!el && e.target?.isConnected && !e.manager?.dragOperation.status.idle) return;
-    e.target = el;
-  } else if (el) { _pending.target = el; }
-}/>
-
-// Build the body param object from stable + reactive parts.
-// Named <const/_s> so <${input.content}(_s)/> is a simple one-arg call
-// that Marko's static analysis can unambiguously detect.
-<const/_s=({
+// CRITICAL: read `manager` eagerly here so Marko tracks it as a render-time
+// dependency. Without this, when drag-drop-provider sets the manager after
+// mounting (children mount before parents in Marko), create-sortable never
+// re-renders → onUpdate never fires → _initEntity() never called → no drag.
+//
+// The comma expression (manager, expr) reads manager (registering the dep)
+// and evaluates to expr. Using `void manager` with a bitwise-OR cast avoids
+// TypeScript complaints while still forcing the reactive read.
+<const/_s=(manager, ({
   isDragging: _isDragging,
   isDropping: _isDropping,
   isDragSource: _isDragSource,
   isDropTarget: _isDropTarget,
-  setElement: _setElement,
-  setHandle: _setHandle,
-  setSource: _setSource,
-  setTarget: _setTarget,
-} as SortableMethods)/>
+  setElement: (el: HTMLElement | undefined) => {
+    if (entity) {
+      const e = entity;
+      if (!el && e.element?.isConnected && !e.manager?.dragOperation.status.idle) return;
+      e.element = el;
+    } else if (el) { _pending.el = el; }
+  },
+  setHandle: (el: HTMLElement | undefined) => {
+    if (entity) { const e = entity; e.handle = el; } else if (el) { _pending.handle = el; }
+  },
+  setSource: (el: HTMLElement | undefined) => {
+    if (entity) {
+      const e = entity;
+      if (!el && e.source?.isConnected && !e.manager?.dragOperation.status.idle) return;
+      e.source = el;
+    } else if (el) { _pending.source = el; }
+  },
+  setTarget: (el: HTMLElement | undefined) => {
+    if (entity) {
+      const e = entity;
+      if (!el && e.target?.isConnected && !e.manager?.dragOperation.status.idle) return;
+      e.target = el;
+    } else if (el) { _pending.target = el; }
+  },
+} as SortableMethods))/>
 
 <${input.content}(_s)/>
