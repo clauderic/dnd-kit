@@ -29,7 +29,23 @@ static const _makeBox = () => ({ el: undefined as HTMLElement | undefined });
     if (manager && !(this as any).initialized) (this as any)._initEntity();
   }
   onUpdate() {
-    if (manager && !(this as any).initialized) (this as any)._initEntity();
+    if (manager && !(this as any).initialized) {
+      (this as any)._initEntity();
+      return;
+    }
+    if (
+      manager &&
+      (this as any).initialized &&
+      entity &&
+      (entity as any).manager !== manager
+    ) {
+      (this as any).cleanup?.();
+      entity.destroy();
+      entity = undefined;
+      (this as any).initialized = false;
+      (this as any)._initEntity();
+      return;
+    }
     if (entity) {
       const e = entity;
       e.id = input.id;
@@ -68,7 +84,7 @@ static const _makeBox = () => ({ el: undefined as HTMLElement | undefined });
 
 <create-deep-signal/tracked target=entity/>
 
-<const/_isDropTarget=(tracked as any)?.isDropTarget ?? false/>
+<const/_isDropTarget=(manager != null && ((tracked as any)?.isDropTarget ?? false))/>
 
 <const/_d=({
   isDropTarget: _isDropTarget,

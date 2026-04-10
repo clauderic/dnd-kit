@@ -26,17 +26,30 @@ new DragDropManager({
 
 <let-global/dndManager from="__dndKit_manager"/>
 
-<const/_=(() => { ($global as any).__dndKit_manager = manager; })()/>
+<const/_=(() => { if ($global) ($global as any).__dndKit_manager = manager; })()/>
 
 <lifecycle
   onMount() {
+    (this as any).prevManager = manager;
     dndManager = manager;
-
+    (this as any)._setupListeners();
+  }
+  onUpdate() {
+    if ((this as any).prevManager !== manager) {
+      (this as any).prevManager = manager;
+      ((this as any).cleanups as Array<() => void> | undefined)?.forEach((fn) => fn());
+      dndManager = manager;
+      (this as any)._setupListeners();
+    }
+  }
+  _setupListeners() {
+    // Reads `manager` directly from outer scope — no typed parameter needed,
+    // avoiding TypeScript angle-bracket annotations in lifecycle method signatures.
     const m = manager;
     const { renderer, trackRendering } = createRenderer();
     m.renderer = renderer;
 
-    const cleanups = [
+    (this as any).cleanups = [
       m.monitor.addEventListener("beforedragstart", (event, mgr) =>
         trackRendering(() => input.onBeforeDragStart?.(event, mgr)),
       ),
@@ -56,12 +69,9 @@ new DragDropManager({
         input.onCollision?.(event, mgr),
       ),
     ];
-
-    // Store cleanups on this as any — lifecycle-local state, not reactive.
-    (this as any).cleanups = cleanups;
   }
   onDestroy() {
-    ((this as any).cleanups as Array<() => void>)?.forEach((fn) => fn());
+    ((this as any).cleanups as Array<() => void> | undefined)?.forEach((fn) => fn());
     dndManager = undefined as any;
     if (!input.manager) {
       manager.destroy();

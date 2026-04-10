@@ -34,7 +34,23 @@ static const _makeBox = () => ({
     if (manager && !(this as any).initialized) (this as any)._initEntity();
   }
   onUpdate() {
-    if (manager && !(this as any).initialized) (this as any)._initEntity();
+    if (manager && !(this as any).initialized) {
+      (this as any)._initEntity();
+      return;
+    }
+    if (
+      manager &&
+      (this as any).initialized &&
+      entity &&
+      (entity as any).manager !== manager
+    ) {
+      (this as any).cleanup?.();
+      entity.destroy();
+      entity = undefined;
+      (this as any).initialized = false;
+      (this as any)._initEntity();
+      return;
+    }
     if (entity) {
       const e = entity;
       e.id = input.id;
@@ -71,9 +87,9 @@ static const _makeBox = () => ({
 
 <create-deep-signal/tracked target=entity/>
 
-<const/_isDragging=(tracked as any)?.isDragging ?? false/>
-<const/_isDropping=(tracked as any)?.isDropping ?? false/>
-<const/_isDragSource=(tracked as any)?.isDragSource ?? false/>
+<const/_isDragging=(manager != null && ((tracked as any)?.isDragging ?? false))/>
+<const/_isDropping=(manager != null && ((tracked as any)?.isDropping ?? false))/>
+<const/_isDragSource=(manager != null && ((tracked as any)?.isDragSource ?? false))/>
 
 <const/_d=({
   isDragging: _isDragging,
