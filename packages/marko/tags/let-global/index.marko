@@ -1,39 +1,23 @@
-/*
- * <let-global> — Reactive bridge to Marko's $global shared object.
- *
- * Pattern from the Marko team. Subscriptions are keyed per `from` value
- * so different keys never cross-notify each other.
- *
- * Cleanup is automatic: $signal aborts when the component is destroyed,
- * removing this instance's fn from the keySubs Set.
- *
- * Note: subsMap uses a plain new Map() with no TypeScript generic angle
- * brackets in the expression — angle brackets in client const expressions
- * can conflict with Marko's tag parser.
- */
-
 export interface Input<T extends keyof Marko.Global> {
   from: T;
 }
 
-// One Set of subscribers per $global key — module-level, client-side only.
-// No TypeScript generics in the expression to avoid Marko parser conflicts.
-client const subsMap = new Map();
+// PropertyKey (string | number | symbol) covers all possible keyof Marko.Global types.
+client const subsMap = new Map<PropertyKey, Set<(next: unknown) => void>>();
 
-// Guard: $global may be an empty object in client-only (linked:false) mode.
 <let/value=($global ?? {})[input.from]>
 
 <script>
-  const _key = input.from;
+  const _key: PropertyKey = input.from;
   if (!subsMap.has(_key)) subsMap.set(_key, new Set());
-  const _keySubs = subsMap.get(_key);
-  const fn = (next) => { value = next; };
+  const _keySubs = subsMap.get(_key)!;
+  const fn = (next: unknown) => { value = next as typeof value; };
   $signal.onabort = () => _keySubs.delete(fn);
   _keySubs.add(fn);
 </script>
 
-<return=value valueChange(next) {
-  ($global ?? {})[input.from] = next;
+<return=value valueChange(next: unknown) {
+  ($global ?? {} as Marko.Global)[input.from] = next as any;
   const _keySubs = subsMap.get(input.from);
   if (_keySubs) for (const sub of _keySubs) sub(next);
 }/>

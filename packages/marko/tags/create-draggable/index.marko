@@ -31,10 +31,10 @@ static const _makeBox = () => ({
 
 <lifecycle
   onMount() {
-    if (manager && !this.initialized) this._initEntity();
+    if (manager && !(this as any).initialized) this._initEntity();
   }
   onUpdate() {
-    if (manager && !this.initialized) this._initEntity();
+    if (manager && !(this as any).initialized) this._initEntity();
     if (entity) {
       const e = entity;
       e.id = input.id;
@@ -57,14 +57,14 @@ static const _makeBox = () => ({
       },
       mgr,
     );
-    this.cleanup = e.register();
-    this.initialized = true;
+    (this as any).cleanup = e.register();
+    (this as any).initialized = true;
     if (_pending.el !== undefined) { e.element = _pending.el; _pending.el = undefined; }
     if (_pending.handle !== undefined) { e.handle = _pending.handle; _pending.handle = undefined; }
     entity = e;
   }
   onDestroy() {
-    if (typeof this.cleanup === "function") this.cleanup();
+    (this as any).cleanup?.();
     entity?.destroy();
   }
 />
@@ -75,7 +75,7 @@ static const _makeBox = () => ({
 <const/_isDropping=(tracked as any)?.isDropping ?? false/>
 <const/_isDragSource=(tracked as any)?.isDragSource ?? false/>
 
-<const/_d=(manager, ({
+<const/_d=({
   isDragging: _isDragging,
   isDropping: _isDropping,
   isDragSource: _isDragSource,
@@ -89,6 +89,6 @@ static const _makeBox = () => ({
   setHandle: (el: HTMLElement | undefined) => {
     if (entity) { const e = entity; e.handle = el; } else if (el) { _pending.handle = el; }
   },
-} as DraggableMethods))/>
+} as DraggableMethods)/>
 
 <${input.content}(_d)/>

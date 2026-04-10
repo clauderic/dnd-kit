@@ -1,15 +1,3 @@
-/*
- * <drag-drop-provider> — Root context provider for @dnd-kit/marko.
- *
- * TIMING FIX: children mount before parents (bottom-up in Marko).
- * We must set $global.__dndKit_manager DURING RENDER (before children render)
- * so that children's let-global reads the correct initial value and their
- * onMount can call _initEntity() immediately.
- *
- * We cannot assign a tag variable (dndManager) outside a script/function,
- * so we mutate $global directly via an IIFE in <const>.
- */
-
 import {
   DragDropManager,
   defaultPreset,
@@ -24,7 +12,8 @@ import type {
 import { createRenderer } from "../../src/runtime/renderer.js";
 
 export interface Input extends DragDropManagerInput {
-  manager?: DragDropManager;
+  manager?: DragDropManager<any, any, any>;
+  content?: Marko.Body;
   onBeforeDragStart?: DragDropEventHandlers<Draggable, Droppable, DragDropManager>["beforedragstart"];
   onDragStart?: DragDropEventHandlers<Draggable, Droppable, DragDropManager>["dragstart"];
   onDragMove?: DragDropEventHandlers<Draggable, Droppable, DragDropManager>["dragmove"];
@@ -33,7 +22,7 @@ export interface Input extends DragDropManagerInput {
   onCollision?: DragDropEventHandlers<Draggable, Droppable, DragDropManager>["collision"];
 }
 
-<let/manager=input.manager ??
+<let/manager=(input.manager as DragDropManager<any, any, any>) ??
 new DragDropManager({
   plugins: resolveCustomizable(input.plugins, defaultPreset.plugins),
   sensors: resolveCustomizable(input.sensors, defaultPreset.sensors),
@@ -42,16 +31,10 @@ new DragDropManager({
 
 <let-global/dndManager from="__dndKit_manager"/>
 
-// Push manager into $global NOW, before children render.
-// Tag variable assignment (dndManager = manager) is forbidden outside
-// script/function, so we mutate $global directly. IIFE reads `manager`
-// reactively so this re-runs if manager changes.
-<const/_=(() => { ($global ?? {}).__dndKit_manager = manager; })()/>
+<const/_=(() => { ($global ?? {} as Marko.Global).__dndKit_manager = manager; })()/>
 
 <lifecycle
   onMount() {
-    // Also update via let-global's valueChange to notify any subscribers
-    // (let-global <script> subscriptions are set up by this point).
     dndManager = manager;
 
     const m = manager;
@@ -79,10 +62,11 @@ new DragDropManager({
       ),
     ];
 
-    this.cleanups = cleanups;
+    // Store cleanups on this as any — lifecycle-local state, not reactive.
+    (this as any).cleanups = cleanups;
   }
   onDestroy() {
-    this.cleanups?.forEach((fn: () => void) => fn());
+    ((this as any).cleanups as Array<() => void>)?.forEach((fn) => fn());
     dndManager = undefined as any;
     if (!input.manager) {
       manager.destroy();

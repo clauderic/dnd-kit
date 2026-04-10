@@ -52,12 +52,10 @@ static const _makeBox = () => ({
 
 <lifecycle
   onMount() {
-    // manager is typically undefined here (drag-drop-provider mounts after us).
-    // _initEntity() will be called from onUpdate when manager arrives.
-    if (manager && !this.initialized) this._initEntity();
+    if (manager && !(this as any).initialized) this._initEntity();
   }
   onUpdate() {
-    if (manager && !this.initialized) this._initEntity();
+    if (manager && !(this as any).initialized) this._initEntity();
     if (entity) {
       const e = entity;
       e.id = input.id;
@@ -95,8 +93,8 @@ static const _makeBox = () => ({
       },
       mgr,
     );
-    this.cleanup = e.register();
-    this.initialized = true;
+    (this as any).cleanup = e.register();
+    (this as any).initialized = true;
     if (_pending.el !== undefined) { e.element = _pending.el; _pending.el = undefined; }
     if (_pending.handle !== undefined) { e.handle = _pending.handle; _pending.handle = undefined; }
     if (_pending.source !== undefined) { e.source = _pending.source; _pending.source = undefined; }
@@ -104,28 +102,19 @@ static const _makeBox = () => ({
     entity = e;
   }
   onDestroy() {
-    if (typeof this.cleanup === "function") this.cleanup();
+    (this as any).cleanup?.();
     entity?.destroy();
   }
 />
 
 <create-deep-signal/tracked target=entity/>
 
-// Eagerly read reactive booleans so Marko tracks `tracked` as a dependency.
 <const/_isDragging=(tracked as any)?.isDragging ?? false/>
 <const/_isDropping=(tracked as any)?.isDropping ?? false/>
 <const/_isDragSource=(tracked as any)?.isDragSource ?? false/>
 <const/_isDropTarget=(tracked as any)?.isDropTarget ?? false/>
 
-// CRITICAL: read `manager` eagerly here so Marko tracks it as a render-time
-// dependency. Without this, when drag-drop-provider sets the manager after
-// mounting (children mount before parents in Marko), create-sortable never
-// re-renders → onUpdate never fires → _initEntity() never called → no drag.
-//
-// The comma expression (manager, expr) reads manager (registering the dep)
-// and evaluates to expr. Using `void manager` with a bitwise-OR cast avoids
-// TypeScript complaints while still forcing the reactive read.
-<const/_s=(manager, ({
+<const/_s=({
   isDragging: _isDragging,
   isDropping: _isDropping,
   isDragSource: _isDragSource,
@@ -154,6 +143,6 @@ static const _makeBox = () => ({
       e.target = el;
     } else if (el) { _pending.target = el; }
   },
-} as SortableMethods))/>
+} as SortableMethods)/>
 
 <${input.content}(_s)/>

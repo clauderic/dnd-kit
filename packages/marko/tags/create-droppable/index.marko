@@ -26,10 +26,10 @@ static const _makeBox = () => ({ el: undefined as HTMLElement | undefined });
 
 <lifecycle
   onMount() {
-    if (manager && !this.initialized) this._initEntity();
+    if (manager && !(this as any).initialized) this._initEntity();
   }
   onUpdate() {
-    if (manager && !this.initialized) this._initEntity();
+    if (manager && !(this as any).initialized) this._initEntity();
     if (entity) {
       const e = entity;
       e.id = input.id;
@@ -55,13 +55,13 @@ static const _makeBox = () => ({ el: undefined as HTMLElement | undefined });
       },
       mgr,
     );
-    this.cleanup = e.register();
-    this.initialized = true;
+    (this as any).cleanup = e.register();
+    (this as any).initialized = true;
     if (_pending.el !== undefined) { e.element = _pending.el; _pending.el = undefined; }
     entity = e;
   }
   onDestroy() {
-    if (typeof this.cleanup === "function") this.cleanup();
+    (this as any).cleanup?.();
     entity?.destroy();
   }
 />
@@ -70,11 +70,11 @@ static const _makeBox = () => ({ el: undefined as HTMLElement | undefined });
 
 <const/_isDropTarget=(tracked as any)?.isDropTarget ?? false/>
 
-<const/_d=(manager, ({
+<const/_d=({
   isDropTarget: _isDropTarget,
   setElement: (el: HTMLElement | undefined) => {
     if (entity) { const e = entity; e.element = el; } else if (el) { _pending.el = el; }
   },
-} as DroppableMethods))/>
+} as DroppableMethods)/>
 
 <${input.content}(_d)/>

@@ -1,3 +1,4 @@
 {
+    "script-lang": "ts",
     "tags-dir": "../../packages/marko/tags"
 }
