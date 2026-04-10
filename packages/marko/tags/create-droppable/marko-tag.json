@@ -1,26 +1,11 @@
 {
-  "translate": "./translator.cjs",
   "attributes": {
-    "id": {
-      "type": "expression"
-    },
-    "data": {
-      "type": "expression"
-    },
-    "disabled": {
-      "type": "expression"
-    },
-    "accept": {
-      "type": "expression"
-    },
-    "type": {
-      "type": "expression"
-    },
-    "collisionDetector": {
-      "type": "expression"
-    },
-    "collisionPriority": {
-      "type": "expression"
-    }
+    "id": { "type": "expression" },
+    "data": { "type": "expression" },
+    "disabled": { "type": "expression" },
+    "accept": { "type": "expression" },
+    "type": { "type": "expression" },
+    "collisionDetector": { "type": "expression" },
+    "collisionPriority": { "type": "expression" }
   }
 }

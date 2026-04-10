@@ -1,55 +1,50 @@
 /*
  * <create-droppable> — Creates a droppable drop target.
  *
- * Usage:
- *   <create-droppable|droppable| id="zone-1">
- *     <div/$el>
- *       <lifecycle
- *         onMount() { droppable.setElement($el()); }
- *         onDestroy() { droppable.setElement(undefined); }
- *       />
- *       <span class=(droppable.isDropTarget ? 'over' : '')>Drop here</span>
- *     </div>
- *   </create-droppable>
+ * Local variable pattern: property assignments on <let> variables must go
+ * through a local const to prevent invalid optional-chain assignment codegen.
  */
 
-import {Droppable} from '@dnd-kit/dom';
-import type {DroppableInput, DragDropManager} from '@dnd-kit/dom';
-import type {Data} from '@dnd-kit/abstract';
+import { Droppable } from "@dnd-kit/dom";
+import type { DroppableInput, DragDropManager } from "@dnd-kit/dom";
+import type { Data } from "@dnd-kit/abstract";
 
 export interface Input<T extends Data = Data> {
   id: string | number;
   data?: T;
   disabled?: boolean;
-  accept?: DroppableInput<T>['accept'];
-  type?: DroppableInput<T>['type'];
-  collisionDetector?: DroppableInput<T>['collisionDetector'];
-  collisionPriority?: DroppableInput<T>['collisionPriority'];
-  /** @internal — Set by translator. Do not pass manually. */
-  _dndManager?: DragDropManager;
+  accept?: DroppableInput<T>["accept"];
+  type?: DroppableInput<T>["type"];
+  collisionDetector?: DroppableInput<T>["collisionDetector"];
+  collisionPriority?: DroppableInput<T>["collisionPriority"];
 }
 
-<let/entity/>
+<let-global/manager from="__dndKit_manager"/>
+
+<let/entity=(undefined as Droppable | undefined)/>
+
+static const _makeBox = () => ({
+  el: undefined as HTMLElement | undefined,
+});
+<let/_pending=_makeBox()/>
 
 <lifecycle
   onMount() {
-    if (input._dndManager && !this.initialized) {
-      this._initEntity();
-    }
+    if (manager && !this.initialized) this._initEntity();
   }
   onUpdate() {
-    if (input._dndManager && !this.initialized) {
-      this._initEntity();
-    }
+    if (manager && !this.initialized) this._initEntity();
     if (entity) {
-      entity.id = input.id;
-      entity.disabled = input.disabled ?? false;
-      if (input.data) entity.data = input.data;
-      if (input.accept !== undefined) entity.accept = input.accept;
-      if (input.type !== undefined) entity.type = input.type;
+      const e = entity;
+      e.id = input.id;
+      e.disabled = input.disabled ?? false;
+      if (input.data !== undefined) e.data = input.data;
+      if (input.accept !== undefined) e.accept = input.accept;
+      if (input.type !== undefined) e.type = input.type;
     }
   }
   _initEntity() {
+    if (!manager) return;
     const e = new Droppable(
       {
         id: input.id,
@@ -61,14 +56,15 @@ export interface Input<T extends Data = Data> {
         collisionPriority: input.collisionPriority,
         register: false,
       },
-      input._dndManager
+      manager as DragDropManager,
     );
     this.cleanup = e.register();
     this.initialized = true;
+    if (_pending.el !== undefined) { e.element = _pending.el; _pending.el = undefined; }
     entity = e;
   }
   onDestroy() {
-    if (typeof this.cleanup === 'function') this.cleanup();
+    if (typeof this.cleanup === "function") this.cleanup();
     entity?.destroy();
   }
 />
@@ -78,7 +74,12 @@ export interface Input<T extends Data = Data> {
 <return=({
   get isDropTarget() { return (tracked as any)?.isDropTarget ?? false; },
   setElement(el: HTMLElement | undefined) {
-    if (entity) entity.element = el;
+    if (entity) {
+      const e = entity;
+      e.element = el;
+    } else if (el) {
+      _pending.el = el;
+    }
   },
 })/>
 

@@ -1,14 +1,15 @@
-import type {Meta, StoryObj} from '@storybook/marko';
-import SortableApp from './SortableApp.marko';
+import type { Meta, StoryObj } from "@storybook/marko";
+import SortableApp from "./SortableApp.marko";
 
-const meta: Meta = {
-  title: 'Sortable/Vertical list',
+const meta = {
+  title: "Sortable/Vertical list",
   component: SortableApp,
-};
+} satisfies Meta<any>;
 
 export default meta;
-type Story = StoryObj;
+type Story = StoryObj<typeof SortableApp>;
 
 export const BasicSetup: Story = {
-  name: 'Basic setup',
+  name: "Basic setup",
+  args: {},
 };

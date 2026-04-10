@@ -6,8 +6,7 @@
   },
   "include": [
     "src/**/*.ts",
-    "tags/**/*.ts",
-    "tags/**/*.d.ts"
+    "tags/**/*.ts"
   ],
   "exclude": [
     "dist",

@@ -7,36 +7,36 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const sharedPreviewHead = readFileSync(
-  join(__dirname, '..', '..', 'stories-shared', 'preview-head.html'),
-  'utf-8'
+    join(__dirname, '..', '..', 'stories-shared', 'preview-head.html'),
+    'utf-8'
 );
 
 const config: StorybookConfig = {
-  previewHead: (head: string) => `${sharedPreviewHead}\n${head}`,
+    previewHead: (head: string | undefined) => `${sharedPreviewHead}\n${head}`,
 
-  stories: ['../stories/**/*.stories.ts'],
+    stories: ['../stories/**/*.stories.ts'],
 
-  addons: [
-    '@storybook/addon-links',
-    '@vueless/storybook-dark-mode',
-  ],
+    addons: [
+        '@storybook/addon-links',
+        '@vueless/storybook-dark-mode',
+    ],
 
-  framework: {
-    name: '@storybook/marko-vite',
-    options: {},
-  },
+    framework: {
+        name: '@storybook/marko-vite',
+        options: {},
+    },
 
-  async viteFinal(config: any) {
-    config.define = {
-      ...config.define,
-      'process.env': {},
-    };
-    config.optimizeDeps = {
-      ...config.optimizeDeps,
-      exclude: [...(config.optimizeDeps?.exclude || []), '@dnd-kit/*'],
-    };
-    return config;
-  },
+    async viteFinal(config: any) {
+        config.define = {
+            ...config.define,
+            'process.env': {},
+        };
+        config.optimizeDeps = {
+            ...config.optimizeDeps,
+            exclude: [...(config.optimizeDeps?.exclude || []), '@dnd-kit/*'],
+        };
+        return config;
+    },
 };
 
 export default config;

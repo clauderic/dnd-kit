@@ -1,0 +1,50 @@
+/*
+ * <let-global> — Reactive bridge to Marko's $global shared object.
+ *
+ * Pattern from the Marko team. Allows any number of tag instances to
+ * subscribe to a single key in $global and receive reactive updates
+ * when any instance writes a new value via valueChange.
+ *
+ * Usage:
+ *   <let-global/myVar from="someGlobalKey"/>
+ *   <!-- myVar = current value; writing myVar = x notifies all subscribers -->
+ *
+ * Subscriptions are keyed per `from` value so different keys never
+ * cross-notify each other. The subs Map is module-level (client-only)
+ * so it is shared across all instances of this tag.
+ *
+ * Cleanup is automatic: $signal aborts when the component is destroyed,
+ * removing this instance's fn from the keySubs Set.
+ */
+
+export interface Input<T extends keyof Marko.Global> {
+  from: T;
+}
+
+// One Set of subscribers per $global key — module-level, client-side only.
+client const subsMap = new Map<string, Set<(v: unknown) => void>>();
+
+<let/value=$global[input.from]>
+
+<script>
+  // Ensure there is a Set for this key.
+  const _key = input.from as string;
+  if (!subsMap.has(_key)) subsMap.set(_key, new Set());
+  const _keySubs = subsMap.get(_key)!;
+
+  // fn updates this instance's reactive <let> variable when called.
+  const fn = (next: unknown) => { value = next as typeof value; };
+
+  // Remove from keySubs when this component is destroyed.
+  $signal.onabort = () => _keySubs.delete(fn);
+
+  _keySubs.add(fn);
+</script>
+
+<return=value valueChange(next) {
+  // Persist the new value in $global so late-mounting consumers can read it.
+  $global[input.from] = next;
+  // Notify all subscribers for this key.
+  const _keySubs = subsMap.get(input.from as string);
+  if (_keySubs) for (const sub of _keySubs) sub(next);
+}>

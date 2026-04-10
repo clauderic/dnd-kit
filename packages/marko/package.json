@@ -16,10 +16,6 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./runtime/context": {
-      "types": "./dist/runtime/context.d.ts",
-      "import": "./dist/runtime/context.js"
-    },
     "./runtime/renderer": {
       "types": "./dist/runtime/renderer.d.ts",
       "import": "./dist/runtime/renderer.js"
@@ -30,11 +26,10 @@
     }
   },
   "scripts": {
-    "build": "bun run build:runtime && bun run build:translators",
+    "build": "bun run build:runtime",
     "build:runtime": "tsup",
-    "build:translators": "tsup --config tsup.translators.config.ts",
-    "dev": "bun run build:runtime --watch & bun run build:translators --watch",
-    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist && rm -f tags/*/translator.js tags/*/translator.d.ts"
+    "dev": "bun run build:runtime --watch",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
     "@dnd-kit/abstract": "^0.3.2",
@@ -47,7 +42,6 @@
     "marko": "^6.0.0"
   },
   "devDependencies": {
-    "@marko/compiler": "^5.0.0",
     "@marko/runtime-tags": "6.0.155",
     "marko": "^6.0.0",
     "tsup": "8.3.0",

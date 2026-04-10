@@ -1,44 +1,17 @@
 {
-  "translate": "./translator.cjs",
   "attributes": {
-    "id": {
-      "type": "expression"
-    },
-    "index": {
-      "type": "expression"
-    },
-    "group": {
-      "type": "expression"
-    },
-    "data": {
-      "type": "expression"
-    },
-    "disabled": {
-      "type": "expression"
-    },
-    "sensors": {
-      "type": "expression"
-    },
-    "modifiers": {
-      "type": "expression"
-    },
-    "plugins": {
-      "type": "expression"
-    },
-    "accept": {
-      "type": "expression"
-    },
-    "type": {
-      "type": "expression"
-    },
-    "collisionDetector": {
-      "type": "expression"
-    },
-    "collisionPriority": {
-      "type": "expression"
-    },
-    "transition": {
-      "type": "expression"
-    }
+    "id": { "type": "expression" },
+    "index": { "type": "expression" },
+    "group": { "type": "expression" },
+    "data": { "type": "expression" },
+    "disabled": { "type": "expression" },
+    "sensors": { "type": "expression" },
+    "modifiers": { "type": "expression" },
+    "plugins": { "type": "expression" },
+    "accept": { "type": "expression" },
+    "type": { "type": "expression" },
+    "collisionDetector": { "type": "expression" },
+    "collisionPriority": { "type": "expression" },
+    "transition": { "type": "expression" }
   }
 }

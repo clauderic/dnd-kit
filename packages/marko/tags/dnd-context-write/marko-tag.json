@@ -1,9 +1,0 @@
-{
-  "translate": "./translator.cjs",
-  "open-tag-only": true,
-  "attributes": {
-    "manager": {
-      "type": "expression"
-    }
-  }
-}

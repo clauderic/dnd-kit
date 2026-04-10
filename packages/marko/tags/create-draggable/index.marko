@@ -1,69 +1,54 @@
 /*
  * <create-draggable> — Creates a draggable entity.
  *
- * Finds the DragDropManager from the nearest ancestor <drag-drop-provider>
- * via the branch-chain context mechanism. The manager is delivered to this
- * component as `_dndManager` input by the translator's effect statement.
+ * Manager arrives reactively via <let-global>. Entity is created in
+ * _initEntity when manager first becomes available. Pending element/handle
+ * calls that arrive before entity exists are buffered and applied on init.
  *
- * Usage:
- *   <create-draggable|draggable| id="item-1" data={type: "card"}>
- *     <div/$el>
- *       <lifecycle
- *         onMount() { draggable.setElement($el()); }
- *         onDestroy() { draggable.setElement(undefined); }
- *       />
- *       ${item.text}
- *     </div>
- *   </create-draggable>
- *
- * The tag variable exposes:
- *   draggable.isDragging   — boolean, reactive
- *   draggable.isDropping   — boolean, reactive
- *   draggable.isDragSource — boolean, reactive
- *   draggable.setElement(el) — attaches/detaches the DOM element
+ * Local variable pattern: property assignments on <let> variables must go
+ * through a local const (e.g. `const e = entity`) to prevent the Marko
+ * compiler from emitting invalid `$scope.entity?.prop = value`.
  */
 
-import {Draggable} from '@dnd-kit/dom';
-import type {DraggableInput, DragDropManager} from '@dnd-kit/dom';
-import type {Data} from '@dnd-kit/abstract';
+import { Draggable } from "@dnd-kit/dom";
+import type { DraggableInput, DragDropManager } from "@dnd-kit/dom";
+import type { Data } from "@dnd-kit/abstract";
 
 export interface Input<T extends Data = Data> {
   id: string | number;
   data?: T;
   disabled?: boolean;
-  sensors?: DraggableInput<T>['sensors'];
-  modifiers?: DraggableInput<T>['modifiers'];
-  plugins?: DraggableInput<T>['plugins'];
-  /**
-   * @internal — Set by the translator's effect. Do not pass manually.
-   */
-  _dndManager?: DragDropManager;
+  sensors?: DraggableInput<T>["sensors"];
+  modifiers?: DraggableInput<T>["modifiers"];
+  plugins?: DraggableInput<T>["plugins"];
 }
 
-// Entity starts undefined. Created in lifecycle when manager arrives.
-<let/entity/>
+<let-global/manager from="__dndKit_manager"/>
+
+<let/entity=(undefined as Draggable | undefined)/>
+
+static const _makeBox = () => ({
+  el: undefined as HTMLElement | undefined,
+  handle: undefined as HTMLElement | undefined,
+});
+<let/_pending=_makeBox()/>
 
 <lifecycle
   onMount() {
-    // Manager may already be set if our translator's effect fired first.
-    // Both onMount and onUpdate handle initialization to cover both orderings.
-    if (input._dndManager && !this.initialized) {
-      this._initEntity();
-    }
+    if (manager && !this.initialized) this._initEntity();
   }
   onUpdate() {
-    // Fires when input._dndManager changes (sent by translator's effect).
-    if (input._dndManager && !this.initialized) {
-      this._initEntity();
-    }
-    // Sync reactive properties when inputs change.
+    if (manager && !this.initialized) this._initEntity();
     if (entity) {
-      entity.id = input.id;
-      entity.disabled = input.disabled ?? false;
-      if (input.data) entity.data = input.data;
+      // Extract to local: avoids $scope.entity?.prop = value (invalid JS).
+      const e = entity;
+      e.id = input.id;
+      e.disabled = input.disabled ?? false;
+      if (input.data !== undefined) e.data = input.data;
     }
   }
   _initEntity() {
+    if (!manager) return;
     const e = new Draggable(
       {
         id: input.id,
@@ -74,16 +59,16 @@ export interface Input<T extends Data = Data> {
         plugins: input.plugins,
         register: false,
       },
-      input._dndManager
+      manager as DragDropManager,
     );
     this.cleanup = e.register();
     this.initialized = true;
-    // Assigning entity triggers $entity signal → <create-deep-signal> and
-    // <return> update reactively, delivering the proxy to the tag variable.
+    if (_pending.el !== undefined) { e.element = _pending.el; _pending.el = undefined; }
+    if (_pending.handle !== undefined) { e.handle = _pending.handle; _pending.handle = undefined; }
     entity = e;
   }
   onDestroy() {
-    if (typeof this.cleanup === 'function') this.cleanup();
+    if (typeof this.cleanup === "function") this.cleanup();
     entity?.destroy();
   }
 />
@@ -95,13 +80,21 @@ export interface Input<T extends Data = Data> {
   get isDropping() { return (tracked as any)?.isDropping ?? false; },
   get isDragSource() { return (tracked as any)?.isDragSource ?? false; },
   setElement(el: HTMLElement | undefined) {
-    if (!el && entity?.element?.isConnected && !entity?.manager?.dragOperation.status.idle) {
-      return; // Guard: don't clear element during active drag
+    if (entity) {
+      const e = entity;
+      if (!el && e.element?.isConnected && !e.manager?.dragOperation.status.idle) return;
+      e.element = el;
+    } else if (el) {
+      _pending.el = el;
     }
-    if (entity) entity.element = el;
   },
   setHandle(el: HTMLElement | undefined) {
-    if (entity) entity.handle = el;
+    if (entity) {
+      const e = entity;
+      e.handle = el;
+    } else if (el) {
+      _pending.handle = el;
+    }
   },
 })/>
 

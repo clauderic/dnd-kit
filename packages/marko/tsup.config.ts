@@ -3,7 +3,6 @@ import { defineConfig } from 'tsup';
 export default defineConfig({
   entry: {
     'index': 'src/index.ts',
-    'runtime/context': 'src/runtime/context.ts',
     'runtime/renderer': 'src/runtime/renderer.ts',
     'runtime/defaults': 'src/runtime/defaults.ts',
   },

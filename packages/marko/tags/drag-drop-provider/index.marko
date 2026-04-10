@@ -1,20 +1,11 @@
 /*
-* <drag-drop-provider> — Root context provider for @dnd-kit/marko.
-*
-* Creates (or accepts) a DragDropManager and makes it available to all
-* descendant <create-draggable>, <create-droppable>, and <create-sortable>
-* tags via the branch-chain context mechanism.
-*
-* Context mechanism:
-*   <dnd-context-write> (internal tag with translator) writes the manager
-*   onto this component's branch scope during the render/input phase.
-*   Consumer tags walk the branch chain at effect time to find it.
-*
-* Usage:
-*   <drag-drop-provider onDragEnd(e) { items = move(items, e) }>
-*     <my-sortable-list {items}/>
-*   </drag-drop-provider>
-*/
+ * <drag-drop-provider> — Root context provider for @dnd-kit/marko.
+ *
+ * Creates (or accepts) a DragDropManager and makes it available to all
+ * descendant <create-draggable>, <create-droppable>, and <create-sortable>
+ * tags via <let-global> reactive $global subscriptions.
+ */
+
 import {
   DragDropManager,
   defaultPreset,
@@ -30,36 +21,12 @@ import { createRenderer } from "../../src/runtime/renderer.js";
 
 export interface Input extends DragDropManagerInput {
   manager?: DragDropManager;
-  onBeforeDragStart?: DragDropEventHandlers<
-    Draggable,
-    Droppable,
-    DragDropManager
-  >["beforedragstart"];
-  onDragStart?: DragDropEventHandlers<
-    Draggable,
-    Droppable,
-    DragDropManager
-  >["dragstart"];
-  onDragMove?: DragDropEventHandlers<
-    Draggable,
-    Droppable,
-    DragDropManager
-  >["dragmove"];
-  onDragOver?: DragDropEventHandlers<
-    Draggable,
-    Droppable,
-    DragDropManager
-  >["dragover"];
-  onDragEnd?: DragDropEventHandlers<
-    Draggable,
-    Droppable,
-    DragDropManager
-  >["dragend"];
-  onCollision?: DragDropEventHandlers<
-    Draggable,
-    Droppable,
-    DragDropManager
-  >["collision"];
+  onBeforeDragStart?: DragDropEventHandlers<Draggable, Droppable, DragDropManager>["beforedragstart"];
+  onDragStart?: DragDropEventHandlers<Draggable, Droppable, DragDropManager>["dragstart"];
+  onDragMove?: DragDropEventHandlers<Draggable, Droppable, DragDropManager>["dragmove"];
+  onDragOver?: DragDropEventHandlers<Draggable, Droppable, DragDropManager>["dragover"];
+  onDragEnd?: DragDropEventHandlers<Draggable, Droppable, DragDropManager>["dragend"];
+  onCollision?: DragDropEventHandlers<Draggable, Droppable, DragDropManager>["collision"];
 }
 
 <let/manager=input.manager ??
@@ -69,30 +36,36 @@ new DragDropManager({
   modifiers: resolveCustomizable(input.modifiers, defaultPreset.modifiers),
 })>
 
-<dnd-context-write manager=manager/>
+<let-global/dndManager from="__dndKit_manager"/>
 
 <lifecycle
   onMount() {
+    this.prev = dndManager;
+    dndManager = manager;
+
+    // Extract to local to avoid Marko compiling `manager.renderer = x`
+    // into invalid `$scope.manager?.renderer = x`.
+    const m = manager;
     const { renderer, trackRendering } = createRenderer();
-    manager.renderer = renderer;
+    m.renderer = renderer;
 
     const cleanups = [
-      manager.monitor.addEventListener("beforedragstart", (event, mgr) =>
+      m.monitor.addEventListener("beforedragstart", (event, mgr) =>
         trackRendering(() => input.onBeforeDragStart?.(event, mgr)),
       ),
-      manager.monitor.addEventListener("dragstart", (event, mgr) =>
+      m.monitor.addEventListener("dragstart", (event, mgr) =>
         input.onDragStart?.(event, mgr),
       ),
-      manager.monitor.addEventListener("dragover", (event, mgr) =>
+      m.monitor.addEventListener("dragover", (event, mgr) =>
         trackRendering(() => input.onDragOver?.(event, mgr)),
       ),
-      manager.monitor.addEventListener("dragmove", (event, mgr) =>
+      m.monitor.addEventListener("dragmove", (event, mgr) =>
         trackRendering(() => input.onDragMove?.(event, mgr)),
       ),
-      manager.monitor.addEventListener("dragend", (event, mgr) =>
+      m.monitor.addEventListener("dragend", (event, mgr) =>
         trackRendering(() => input.onDragEnd?.(event, mgr)),
       ),
-      manager.monitor.addEventListener("collision", (event, mgr) =>
+      m.monitor.addEventListener("collision", (event, mgr) =>
         input.onCollision?.(event, mgr),
       ),
     ];
@@ -101,10 +74,11 @@ new DragDropManager({
   }
   onDestroy() {
     this.cleanups?.forEach((fn: () => void) => fn());
+    dndManager = this.prev;
     if (!input.manager) {
       manager.destroy();
     }
   }
->
+/>
 
 <${input.renderBody}/>

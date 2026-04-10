@@ -1,28 +1,12 @@
 /*
-* <create-sortable> — Creates a sortable entity (draggable + droppable).
-*
-* OptimisticSortingPlugin is disabled by default — it mutates DOM nodes
-* directly during drag, conflicting with Marko's <for> reconciler.
-* Visual sorting is driven by onDragOver state updates instead.
-*
-* group and index are updated atomically via batch() to prevent dnd-kit's
-* internal effects from firing between the two assignments.
-*
-* Usage:
-*   <for|item, index| of=items by="id">
-*     <create-sortable|sortable| id=item.id index=index group="list">
-*       <li/$el
-*         class=(sortable.isDragging ? 'dragging' : '')
-*       >
-*         <lifecycle
-*           onMount() { sortable.setElement($el()); }
-*           onDestroy() { sortable.setElement(undefined); }
-*         />
-*         ${item.text}
-*       </li>
-*     </create-sortable>
-*   </for>
-*/
+ * <create-sortable> — Creates a sortable entity (draggable + droppable).
+ *
+ * OptimisticSortingPlugin is excluded — direct DOM mutation conflicts with
+ * Marko's <for> reconciler. group and index update atomically via batch().
+ *
+ * Local variable pattern: property assignments on <let> variables must go
+ * through a local const to prevent invalid optional-chain assignment codegen.
+ */
 
 import {
   Sortable,
@@ -48,53 +32,52 @@ export interface Input<T extends Data = Data> {
   collisionDetector?: SortableInput<T>["collisionDetector"];
   collisionPriority?: SortableInput<T>["collisionPriority"];
   transition?: SortableInput<T>["transition"];
-  /** @internal — Set by translator. Do not pass manually. */
-  _dndManager?: DragDropManager;
 }
 
-// Filter OptimisticSortingPlugin — direct DOM mutation conflicts with <for>.
 static const withoutOptimistic = (defaults: Plugins) =>
   defaults.filter((p) => p !== OptimisticSortingPlugin);
 
-<let/entity>
+<let-global/manager from="__dndKit_manager"/>
+
+<let/entity=(undefined as Sortable | undefined)/>
+
+static const _makeBox = () => ({
+  el: undefined as HTMLElement | undefined,
+  handle: undefined as HTMLElement | undefined,
+  source: undefined as HTMLElement | undefined,
+  target: undefined as HTMLElement | undefined,
+});
+<let/_pending=_makeBox()/>
 
 <lifecycle
   onMount() {
-    if (input._dndManager && !this.initialized) {
-      this._initEntity();
-    }
+    if (manager && !this.initialized) this._initEntity();
   }
   onUpdate() {
-    if (input._dndManager && !this.initialized) {
-      this._initEntity();
-    }
+    if (manager && !this.initialized) this._initEntity();
     if (entity) {
-      entity.id = input.id;
-      entity.disabled = input.disabled ?? false;
-      if (input.data) entity.data = input.data;
+      const e = entity;
+      e.id = input.id;
+      e.disabled = input.disabled ?? false;
+      if (input.data !== undefined) e.data = input.data;
 
-      // group and index must update atomically to prevent dnd-kit internal
-      // effects from observing a partial (group updated, index not yet) state.
       batch(() => {
-        entity!.group = input.group;
-        entity!.index = input.index;
+        e.group = input.group;
+        e.index = input.index;
       });
 
-      entity.transition = {
+      e.transition = {
         ...defaultSortableTransition,
         ...input.transition,
       };
 
-      // Refresh shape when index changes while idle (for layout shifts).
-      if (
-        entity.manager?.dragOperation.status.idle &&
-        entity.transition?.idle
-      ) {
-        entity.refreshShape();
+      if (e.manager?.dragOperation.status.idle && e.transition?.idle) {
+        e.refreshShape();
       }
     }
   }
   _initEntity() {
+    if (!manager) return;
     const e = new Sortable(
       {
         id: input.id,
@@ -115,65 +98,63 @@ static const withoutOptimistic = (defaults: Plugins) =>
         },
         register: false,
       },
-      input._dndManager,
+      manager as DragDropManager,
     );
     this.cleanup = e.register();
     this.initialized = true;
+    if (_pending.el !== undefined) { e.element = _pending.el; _pending.el = undefined; }
+    if (_pending.handle !== undefined) { e.handle = _pending.handle; _pending.handle = undefined; }
+    if (_pending.source !== undefined) { e.source = _pending.source; _pending.source = undefined; }
+    if (_pending.target !== undefined) { e.target = _pending.target; _pending.target = undefined; }
     entity = e;
   }
   onDestroy() {
     if (typeof this.cleanup === "function") this.cleanup();
     entity?.destroy();
   }
->
+/>
 
 <create-deep-signal/tracked target=entity/>
 
 <return={
-  get isDragging() {
-    return (tracked as any)?.isDragging ?? false;
-  },
-  get isDropping() {
-    return (tracked as any)?.isDropping ?? false;
-  },
-  get isDragSource() {
-    return (tracked as any)?.isDragSource ?? false;
-  },
-  get isDropTarget() {
-    return (tracked as any)?.isDropTarget ?? false;
-  },
+  get isDragging() { return (tracked as any)?.isDragging ?? false; },
+  get isDropping() { return (tracked as any)?.isDropping ?? false; },
+  get isDragSource() { return (tracked as any)?.isDragSource ?? false; },
+  get isDropTarget() { return (tracked as any)?.isDropTarget ?? false; },
   setElement(el: HTMLElement | undefined) {
-    if (
-      !el &&
-      entity?.element?.isConnected &&
-      !entity?.manager?.dragOperation.status.idle
-    ) {
-      return;
+    if (entity) {
+      const e = entity;
+      if (!el && e.element?.isConnected && !e.manager?.dragOperation.status.idle) return;
+      e.element = el;
+    } else if (el) {
+      _pending.el = el;
     }
-    if (entity) entity.element = el;
   },
   setHandle(el: HTMLElement | undefined) {
-    if (entity) entity.handle = el;
+    if (entity) {
+      const e = entity;
+      e.handle = el;
+    } else if (el) {
+      _pending.handle = el;
+    }
   },
   setSource(el: HTMLElement | undefined) {
-    if (
-      !el &&
-      entity?.source?.isConnected &&
-      !entity?.manager?.dragOperation.status.idle
-    ) {
-      return;
+    if (entity) {
+      const e = entity;
+      if (!el && e.source?.isConnected && !e.manager?.dragOperation.status.idle) return;
+      e.source = el;
+    } else if (el) {
+      _pending.source = el;
     }
-    if (entity) entity.source = el;
   },
   setTarget(el: HTMLElement | undefined) {
-    if (
-      !el &&
-      entity?.target?.isConnected &&
-      !entity?.manager?.dragOperation.status.idle
-    ) {
-      return;
+    if (entity) {
+      const e = entity;
+      if (!el && e.target?.isConnected && !e.manager?.dragOperation.status.idle) return;
+      e.target = el;
+    } else if (el) {
+      _pending.target = el;
     }
-    if (entity) entity.target = el;
   },
 }>
 

@@ -1,23 +1,10 @@
 {
-  "translate": "./translator.cjs",
   "attributes": {
-    "id": {
-      "type": "expression"
-    },
-    "data": {
-      "type": "expression"
-    },
-    "disabled": {
-      "type": "expression"
-    },
-    "sensors": {
-      "type": "expression"
-    },
-    "modifiers": {
-      "type": "expression"
-    },
-    "plugins": {
-      "type": "expression"
-    }
+    "id": { "type": "expression" },
+    "data": { "type": "expression" },
+    "disabled": { "type": "expression" },
+    "sensors": { "type": "expression" },
+    "modifiers": { "type": "expression" },
+    "plugins": { "type": "expression" }
   }
 }
