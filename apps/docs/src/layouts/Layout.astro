@@ -14,6 +14,7 @@ const { title = 'dnd kit', description, path = '/' } = Astro.props;
 const canonicalUrl = `${SITE_URL}${path}`;
 const ogSlug = path === '/' ? 'index' : path.replace(/^\//, '');
 const ogImage = `${SITE_URL}/og/${ogSlug}.png`;
+const isHome = path === '/';
 ---
 
 <!doctype html>
@@ -26,8 +27,12 @@ const ogImage = `${SITE_URL}/og/${ogSlug}.png`;
     <link
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet" /></noscript>
     <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+    {isHome && <link rel="preload" href="/images/hero.svg" as="image" type="image/svg+xml" />}
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="stylesheet" href="/style.css" />
     <meta name="generator" content={Astro.generator} />

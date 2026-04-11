@@ -78,8 +78,10 @@ export function MobileSidebar({
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between px-4 pt-6 pb-4">
             <img
-              src="/logo/light.svg"
-              alt="Mint Starter Kit"
+              src="/images/logo/logo.svg"
+              alt="dnd kit"
+              width="84"
+              height="28"
               className="h-7 w-auto"
             />
           </div>
