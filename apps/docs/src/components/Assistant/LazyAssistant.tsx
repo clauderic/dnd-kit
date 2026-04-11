@@ -7,7 +7,7 @@
  * The placeholder stays visible during loading to prevent flash — it's
  * hidden only after the real component mounts.
  */
-import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import { ASSISTANT_EVENTS } from './events';
 
 const AssistantSheet = lazy(() =>
@@ -28,17 +28,25 @@ function OnMount({ callback }: { callback: () => void }) {
 export function LazyAssistant() {
   const [loading, setLoading] = useState(false);
   const [ready, setReady] = useState(false);
+  // Queue events that arrive before the real component mounts
+  const pendingEvents = useRef<CustomEvent[]>([]);
 
-  const activate = useCallback(() => {
-    if (!loading && !ready) {
-      setLoading(true);
+  const activate = useCallback((event?: Event) => {
+    if (event instanceof CustomEvent) {
+      pendingEvents.current.push(event);
     }
-  }, [loading, ready]);
+    setLoading(true);
+  }, []);
 
   const handleReady = useCallback(() => {
     setReady(true);
-    // Focus the real input after mount
+    // Re-dispatch any queued events so the real AssistantSheet receives them
     requestAnimationFrame(() => {
+      for (const event of pendingEvents.current) {
+        window.dispatchEvent(new CustomEvent(event.type, { detail: event.detail }));
+      }
+      pendingEvents.current = [];
+
       const input = document.querySelector<HTMLTextAreaElement>(
         '[data-assistant-input]'
       );
@@ -48,13 +56,15 @@ export function LazyAssistant() {
 
   // Listen for ⌘I shortcut and assistant:open events
   useEffect(() => {
+    if (ready) return; // Real component handles events after mount
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'i') {
         e.preventDefault();
         activate();
       }
     };
-    const handleOpen = () => activate();
+    const handleOpen = (e: Event) => activate(e);
 
     document.addEventListener('keydown', handleKeyDown);
     window.addEventListener(ASSISTANT_EVENTS.OPEN, handleOpen);
@@ -65,12 +75,12 @@ export function LazyAssistant() {
       window.removeEventListener(ASSISTANT_EVENTS.OPEN, handleOpen);
       window.removeEventListener(ASSISTANT_EVENTS.TOGGLE, handleOpen);
     };
-  }, [activate]);
+  }, [activate, ready]);
 
   return (
     <>
       {/* Placeholder — visible until real component is ready */}
-      {!ready && <Placeholder onActivate={activate} loading={loading} />}
+      {!ready && <Placeholder onActivate={() => activate()} loading={loading} />}
 
       {/* Real assistant — loaded on demand, hidden until mounted */}
       {loading && (
