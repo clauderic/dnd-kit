@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
+import HeroSvg from '../components/HeroSvg.astro';
 import Footer from '../components/Footer';
 import SiteFooter from '../components/SiteFooter';
 import { PageContextMenu } from '../components/PageContextMenu';
@@ -53,7 +54,8 @@ function addIconsToEntries(entries: NavEntry[]): NavEntry[] {
   });
 }
 
-const currentPath = doc.id === 'index' ? '/' : `/${doc.id}`;
+const isHomePage = doc.id === 'index';
+const currentPath = isHomePage ? '/' : `/${doc.id}`;
 const page = resolvePageData(docsConfig as DocsConfig, {
   currentPath,
   titleMap,
@@ -212,6 +214,7 @@ const navbarConfig = (docsConfig as any).navbar;
               </div>
             </header>
             <div class="mdx-content prose max-w-none">
+              {isHomePage && <HeroSvg />}
               <Content components={components} />
               <Footer
                 prev={page.footerPages.prev}

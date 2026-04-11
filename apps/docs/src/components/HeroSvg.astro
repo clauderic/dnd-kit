@@ -1,0 +1,15 @@
+---
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
+
+const svgPath = resolve('./docs/images/hero.svg');
+const svgContent = readFileSync(svgPath, 'utf-8');
+
+// Add width/height attributes and the class for styling
+const inlineSvg = svgContent.replace(
+  '<svg ',
+  '<svg class="block hero-image w-full h-auto" role="img" aria-label="A modular toolkit for building drag and drop interfaces" '
+);
+---
+
+<Fragment set:html={inlineSvg} />
