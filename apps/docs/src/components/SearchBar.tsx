@@ -218,7 +218,18 @@ export function SearchBar() {
   if (!mounted) {
     return (
       <div className="relative">
-        <div className="w-full h-9 rounded-xl bg-transparent pl-9 pr-14 text-sm border border-stone-200 dark:border-white/10" />
+        <div className="relative">
+          <div className="w-full h-9 rounded-xl bg-transparent pl-9 pr-14 text-sm border border-stone-200 dark:border-white/10 flex items-center">
+            <span className="text-stone-400 dark:text-white/50">Search...</span>
+          </div>
+          <svg
+            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+            className="absolute top-1/2 left-3 -translate-y-1/2 text-stone-400 dark:text-white/40 pointer-events-none"
+          >
+            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+          </svg>
+          <kbd className="absolute top-1/2 right-3 -translate-y-1/2 hidden sm:inline-flex text-xs text-stone-400 dark:text-white/30 pointer-events-none">⌘K</kbd>
+        </div>
       </div>
     );
   }
