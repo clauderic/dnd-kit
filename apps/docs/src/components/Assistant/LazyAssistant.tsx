@@ -105,7 +105,7 @@ function Placeholder({ onActivate, loading }: { onActivate: () => void; loading:
             readOnly
             onFocus={onActivate}
             onClick={onActivate}
-            className="w-full bg-transparent py-1.5 pl-9 pr-10 text-sm text-gray-900 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none cursor-text min-h-[32px]"
+            className="w-full bg-transparent py-3 pl-9 pr-10 text-sm text-gray-900 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none cursor-text"
           />
           <span className="absolute right-11 text-[11px] text-gray-500 dark:text-gray-500 pointer-events-none">⌘I</span>
           <button
