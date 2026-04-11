@@ -15,8 +15,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const docsDir = join(__dirname, '..', 'docs');
 const outputDir = join(__dirname, '..', 'public', 'og');
 
-// Load Inter font (TTF required by Satori)
-const interFont = readFileSync(join(__dirname, '..', 'public', 'fonts', 'inter-latin.ttf'));
+// Load fonts (TTF required by Satori)
+const poppinsLight = readFileSync(join(__dirname, '..', 'public', 'fonts', 'poppins-light.ttf'));
+const poppinsRegular = readFileSync(join(__dirname, '..', 'public', 'fonts', 'poppins-regular.ttf'));
 
 // Convert the real logo SVG to a base64 PNG for embedding in Satori
 function createLogoPng() {
@@ -68,14 +69,40 @@ function parseFrontmatter(content) {
 
   const fm = match[1];
   const get = (key) => {
-    const m = fm.match(new RegExp(`^${key}:\\s*['"]?(.*?)['"]?\\s*$`, 'm'));
-    return m ? m[1] : undefined;
+    // Handle single-line values: key: 'value' or key: value
+    const singleLine = fm.match(new RegExp(`^${key}:\\s*['"](.*)['"]\\s*$`, 'm'));
+    if (singleLine) return singleLine[1].replace(/\\n/g, '\n');
+
+    const unquoted = fm.match(new RegExp(`^${key}:\\s*(.+)$`, 'm'));
+    if (unquoted) {
+      const val = unquoted[1].trim();
+      // Handle YAML multiline indicators (>-, |-, >, |)
+      if (/^[>|]-?\s*$/.test(val)) {
+        const keyIndex = fm.indexOf(unquoted[0]);
+        const afterKey = fm.slice(keyIndex + unquoted[0].length);
+        const lines = afterKey.split('\n');
+        const continued = [];
+        for (const line of lines) {
+          if (line.match(/^\s+\S/)) {
+            continued.push(line.trim());
+          } else if (continued.length > 0) {
+            break;
+          }
+        }
+        return continued.join(' ').replace(/\\n/g, '\n');
+      }
+      return val.replace(/\\n/g, '\n');
+    }
+    return undefined;
   };
 
   return {
     title: get('title'),
     description: get('description'),
     metaTitle: get('metaTitle'),
+    ogTitle: get('ogTitle'),
+    ogDescription: get('ogDescription'),
+    icon: get('icon'),
   };
 }
 
@@ -98,7 +125,7 @@ function findMdxFiles(dir, files = []) {
 /**
  * Build the OG image element tree for Satori.
  */
-function buildImage(title, description) {
+function buildImage(title, description, icon) {
   const children = [];
 
   // Logo
@@ -129,19 +156,29 @@ function buildImage(title, description) {
     });
   }
 
-  // Title
+  // Title (supports \n line breaks)
+  const titleLines = title.split('\n');
+  const titleFontSize = title.replace(/\n/g, '').length > 40 ? '52px' : '60px';
+
   children.push({
     type: 'div',
     props: {
       style: {
-        fontSize: title.length > 40 ? '40px' : '48px',
-        fontWeight: 700,
-        color: '#1a1a2e',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        fontSize: titleFontSize,
+        fontWeight: 300,
+        color: '#4a4670',
         textAlign: 'center',
-        lineHeight: 1.2,
-        maxWidth: '900px',
+        lineHeight: 1.3,
+        maxWidth: '950px',
+        letterSpacing: '-0.5px',
       },
-      children: title,
+      children: titleLines.map((line) => ({
+        type: 'div',
+        props: { children: line },
+      })),
     },
   });
 
@@ -151,12 +188,13 @@ function buildImage(title, description) {
       type: 'div',
       props: {
         style: {
-          fontSize: '22px',
-          color: '#666680',
+          fontSize: '32px',
+          fontWeight: 300,
+          color: '#8580a8',
           textAlign: 'center',
           lineHeight: 1.5,
-          maxWidth: '800px',
-          marginTop: '20px',
+          maxWidth: '65%',
+          marginTop: '16px',
         },
         children:
           description.length > 120
@@ -165,6 +203,85 @@ function buildImage(title, description) {
       },
     });
   }
+
+  // Background: light center, color around edges
+  const orbs = [
+    // Center lightening — bright white wash behind text
+    {
+      type: 'div',
+      props: {
+        style: {
+          position: 'absolute',
+          top: '80px',
+          left: '200px',
+          width: '800px',
+          height: '470px',
+          borderRadius: '50%',
+          background: 'radial-gradient(ellipse, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 70%)',
+        },
+      },
+    },
+    // Purple — top-left corner
+    {
+      type: 'div',
+      props: {
+        style: {
+          position: 'absolute',
+          top: '-200px',
+          left: '-150px',
+          width: '650px',
+          height: '650px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(95,106,242,0.18) 0%, transparent 65%)',
+        },
+      },
+    },
+    // Cyan — top-right corner
+    {
+      type: 'div',
+      props: {
+        style: {
+          position: 'absolute',
+          top: '-180px',
+          right: '-120px',
+          width: '580px',
+          height: '580px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(86,255,245,0.12) 0%, transparent 65%)',
+        },
+      },
+    },
+    // Pink — bottom-right corner
+    {
+      type: 'div',
+      props: {
+        style: {
+          position: 'absolute',
+          bottom: '-200px',
+          right: '-80px',
+          width: '620px',
+          height: '620px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(242,95,208,0.12) 0%, transparent 65%)',
+        },
+      },
+    },
+    // Blue — bottom-left corner
+    {
+      type: 'div',
+      props: {
+        style: {
+          position: 'absolute',
+          bottom: '-180px',
+          left: '-100px',
+          width: '550px',
+          height: '550px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(0,26,255,0.10) 0%, transparent 65%)',
+        },
+      },
+    },
+  ];
 
   return {
     type: 'div',
@@ -176,33 +293,34 @@ function buildImage(title, description) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        background:
-          'linear-gradient(135deg, #f0eef8 0%, #e8e4f4 25%, #ddd8f0 50%, #e8e4f4 75%, #f0eef8 100%)',
-        fontFamily: 'Inter',
+        background: 'linear-gradient(145deg, #e4dff4 0%, #ddd6f0 25%, #e2dcf2 50%, #dbd4ee 75%, #e0d9f0 100%)',
+        fontFamily: 'Poppins',
         padding: '60px 80px',
+        position: 'relative',
+        overflow: 'hidden',
       },
-      children,
+      children: [...orbs, ...children],
     },
   };
 }
 
-async function generateImage(slug, title, description) {
-  const element = buildImage(title, description);
+async function generateImage(slug, title, description, icon) {
+  const element = buildImage(title, description, icon);
 
   const svg = await satori(element, {
     width: WIDTH,
     height: HEIGHT,
     fonts: [
       {
-        name: 'Inter',
-        data: interFont,
-        weight: 400,
+        name: 'Poppins',
+        data: poppinsLight,
+        weight: 300,
         style: 'normal',
       },
       {
-        name: 'Inter',
-        data: interFont,
-        weight: 700,
+        name: 'Poppins',
+        data: poppinsRegular,
+        weight: 400,
         style: 'normal',
       },
     ],
@@ -223,25 +341,41 @@ async function main() {
   console.log('Generating OG images...');
 
   const mdxFiles = findMdxFiles(docsDir);
+
   let count = 0;
 
   for (const file of mdxFiles) {
     const content = readFileSync(file, 'utf-8');
-    const { title, description, metaTitle } = parseFrontmatter(content);
+    const { title, description, metaTitle, ogTitle, ogDescription, icon } = parseFrontmatter(content);
 
     let slug = relative(docsDir, file).replace(/\.mdx$/, '');
     if (slug === 'index') slug = 'index';
 
-    const displayTitle = (metaTitle?.replace(/\s*[-|]\s*dnd kit$/, '') || title || slug)
+    // ogTitle overrides everything. Otherwise use the simple page title,
+    // prefixed with the framework name for framework-specific pages.
+    let displayTitle = ogTitle;
+    if (!displayTitle) {
+      const cleanTitle = title || slug.split('/').pop() || slug;
+      const framework = slug.match(/^(react|vue|svelte|solid)\//)?.[1];
+      if (framework && !cleanTitle.toLowerCase().includes(framework)) {
+        const frameworkName = framework.charAt(0).toUpperCase() + framework.slice(1);
+        displayTitle = `${cleanTitle} — ${frameworkName}`;
+      } else {
+        displayTitle = cleanTitle;
+      }
+    }
+    displayTitle = displayTitle
       .replace(/\*\*(.*?)\*\*/g, '$1')
       .replace(/<[^>]+>/g, '');
 
-    const cleanDescription = description
-      ?.replace(/\*\*(.*?)\*\*/g, '$1')
-      ?.replace(/<[^>]+>/g, '')
-      ?.replace(/`([^`]+)`/g, '$1');
+    const cleanDescription = ogDescription !== undefined
+      ? (ogDescription || undefined)
+      : description
+          ?.replace(/\*\*(.*?)\*\*/g, '$1')
+          ?.replace(/<[^>]+>/g, '')
+          ?.replace(/`([^`]+)`/g, '$1');
 
-    await generateImage(slug, displayTitle, cleanDescription);
+    await generateImage(slug, displayTitle, cleanDescription, icon);
     count++;
   }
 
