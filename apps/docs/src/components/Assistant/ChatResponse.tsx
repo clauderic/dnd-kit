@@ -2,7 +2,8 @@ import * as React from 'react';
 import { useState, useMemo, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { cn, Icon } from '@mintlify/components';
+import { cn } from '../../lib/cn';
+import { Icon } from '../Icon';
 import type { UIMessage } from '@ai-sdk/react';
 
 const SUBDOMAIN = import.meta.env.PUBLIC_MINTLIFY_SUBDOMAIN;

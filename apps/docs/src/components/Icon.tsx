@@ -4,9 +4,9 @@
  * Resolution order:
  * 1. Brand icons (js, react, vuejs, svelte, solidjs) — rendered as inline
  *    SVGs from `simple-icons` with official brand colors.
- * 2. Font Awesome fallback — rendered via `@mintlify/components` Icon.
+ * 2. Font Awesome icons — rendered via CSS mask-image from the Mintlify CDN.
+ *    This avoids importing @mintlify/components (which pulls in Shiki/mermaid).
  */
-import { Icon as MintlifyIcon } from '@mintlify/components';
 import {
   siJavascript,
   siTypescript,
@@ -15,6 +15,8 @@ import {
   siSvelte,
   siSolid,
 } from 'simple-icons';
+
+const ICONS_CDN = 'https://d3gk2c5xim1je2.cloudfront.net/v7.1.0/regular';
 
 // --- Brand icons (simple-icons) ---
 
@@ -63,13 +65,29 @@ export function Icon({ icon, size = 24, color, className }: IconProps) {
     );
   }
 
-  // 2. Font Awesome via @mintlify/components
+  // 2. Font Awesome via CSS mask-image (no @mintlify/components dependency)
+  const iconUrl = `${ICONS_CDN}/${icon}.svg`;
+  const iconColor = color || 'var(--primary)';
+
   return (
-    <MintlifyIcon
-      icon={icon}
-      size={size}
-      color={color || 'var(--primary)'}
+    <span
       className={className}
+      style={{
+        display: 'inline-block',
+        width: size,
+        height: size,
+        backgroundColor: iconColor,
+        maskImage: `url(${iconUrl})`,
+        WebkitMaskImage: `url(${iconUrl})`,
+        maskSize: 'contain',
+        WebkitMaskSize: 'contain',
+        maskRepeat: 'no-repeat',
+        WebkitMaskRepeat: 'no-repeat',
+        maskPosition: 'center',
+        WebkitMaskPosition: 'center',
+      }}
+      role="img"
+      aria-label={icon}
     />
   );
 }

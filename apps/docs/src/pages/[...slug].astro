@@ -5,15 +5,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer';
 import SiteFooter from '../components/SiteFooter';
 import { PageContextMenu } from '../components/PageContextMenu';
-import { components as mintlifyComponents } from '@mintlify/astro/components';
-import { Check } from '@mintlify/components';
-import { Card } from '../components/Card';
-
-const components = {
-  ...mintlifyComponents,
-  Success: Check,
-  Card,
-};
+import { components } from '@mintlify/astro/components';
 import { resolvePageData, decorateNavigation, unwrapNav, containsPath, isNavPage, isNavGroup } from '@mintlify/astro/helpers';
 import type { NavEntry, NavPage, NavGroup, TabInfo } from '@mintlify/astro/helpers';
 import type { DocsConfig } from '@mintlify/astro';

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { cn, Icon } from '@mintlify/components';
+import { cn } from '../../lib/cn';
+import { Icon } from '../Icon';
 import type { NavNode, TabInfo } from '@mintlify/astro/helpers';
 import { unwrapNav } from '@mintlify/astro/helpers';
 import { type SidebarItemStyle, type AnchorItem } from './types';

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { cn } from '@mintlify/components';
+import { cn } from '../lib/cn';
 
 export interface TocHeading {
   depth: number;

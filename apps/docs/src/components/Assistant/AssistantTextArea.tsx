@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useRef } from 'react';
-import { cn } from '@mintlify/components';
+import { cn } from '../../lib/cn';
 
 interface AssistantTextAreaProps {
   value: string;

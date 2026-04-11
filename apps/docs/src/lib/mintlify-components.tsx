@@ -1,25 +1,37 @@
 /**
- * Wrapper around @mintlify/astro's component exports.
- * Overrides specific components (like Card) with custom implementations.
+ * MDX component overrides for the docs site.
  *
  * This module is aliased via Vite to replace '@mintlify/astro/components'
- * so that all MDX content uses our custom components.
+ * so that all MDX content uses our custom components instead of the
+ * @mintlify/components barrel export (which pulls in Shiki + mermaid).
+ *
+ * Components are either custom implementations or lightweight wrappers.
+ * Only the Mintlify components that truly need their full implementation
+ * are imported from @mintlify/components (SSR-only, not hydrated).
  */
 
-// Import originals — use the internal path to avoid the Vite alias loop.
-// @ts-ignore - internal module path
+// Import Mintlify components that we can't easily replace (complex, interactive)
+// These only run at SSR time since they're used as MDX component overrides.
 import {
-  components as originalComponents,
-  useMDXComponents as originalUseMDXComponents,
-} from '@mintlify/astro-internal-components';
+  Accordion,
+  Check,
+  Expandable,
+  Frame,
+  Info,
+  Note,
+  Steps,
+  Tabs,
+  Tip,
+  Update as MintlifyUpdate,
+  Warning,
+} from '@mintlify/components';
 
-// Import custom overrides
+// Import custom overrides (these DO NOT import from @mintlify/components)
 import { Card } from '../components/Card';
 import { CodeBlock } from '../components/CodeBlock';
 import { CodeGroup } from '../components/CodeGroup';
 import { ParamField } from '../components/ParamField';
 import { PreElement } from '../components/PreElement';
-import { Update as MintlifyUpdate } from '@mintlify/components';
 
 // Wrap Update to always pass isVisible and auto-generate id
 function Update(props: any) {
@@ -27,24 +39,60 @@ function Update(props: any) {
   return <MintlifyUpdate {...props} id={id} isVisible={true} />;
 }
 
-const overrides = {
+// Lightweight CardGroup — just a CSS grid
+function CardGroup({ children, cols = 2, className }: any) {
+  const n = Number(cols) || 2;
+  return (
+    <div
+      className={`grid max-w-none gap-4 sm:grid-cols-[repeat(var(--cols),minmax(0,1fr))] ${className || ''}`}
+      style={{ '--cols': n } as any}
+    >
+      {children}
+    </div>
+  );
+}
+
+// Noop wrapper for components used in code examples but not rendered
+function Noop({ children }: any) {
+  return <div>{children}</div>;
+}
+
+export const components = {
+  // Interactive Mintlify components (SSR-rendered, no client JS)
+  Accordion,
+  AccordionGroup: Accordion.Group,
+  Check,
+  Expandable,
+  Frame,
+  Info,
+  Note,
+  Step: Steps.Item,
+  Steps,
+  Tab: Tabs.Item,
+  Tabs,
+  Tip,
+  Update,
+  Warning,
+
+  // Custom implementations (no @mintlify/components dependency)
   Card,
+  CardGroup,
+  Columns: CardGroup,
   CodeBlock,
   CodeGroup,
   ParamField,
   Param: ParamField,
+  Property: ParamField,
+  ResponseField: ParamField,
   pre: PreElement,
-  Update,
-};
+  Success: Check,
 
-export const components = {
-  ...originalComponents,
-  ...overrides,
+  // Noops for components referenced in examples but not rendered
+  Column: Noop,
+  Snippet: Noop,
+  SnippetGroup: Noop,
 };
 
 export function useMDXComponents() {
-  return {
-    ...originalUseMDXComponents(),
-    ...overrides,
-  };
+  return components;
 }

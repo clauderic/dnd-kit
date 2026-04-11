@@ -1,4 +1,4 @@
-import { Icon } from '@mintlify/components';
+import { Icon } from '../Icon';
 import { toggleAssistant } from './events';
 
 export function AssistantButton() {

@@ -1,4 +1,4 @@
-import { cn } from '@mintlify/components';
+import { cn } from '../../lib/cn';
 import { Icon } from '../Icon';
 import type { NavPage } from '@mintlify/astro/helpers';
 import type { SidebarItemStyle } from './types';

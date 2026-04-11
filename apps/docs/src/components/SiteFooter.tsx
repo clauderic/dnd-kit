@@ -1,4 +1,4 @@
-import { Icon } from '@mintlify/components';
+import { Icon } from './Icon';
 import { MintlifyLogo } from '../icons/MintlifyLogo';
 
 const socials = [

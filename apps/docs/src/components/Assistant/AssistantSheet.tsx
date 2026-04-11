@@ -3,7 +3,7 @@
  * expands into a message panel when the user asks a question.
  */
 import { useRef, useEffect, useState, useCallback } from 'react';
-import { cn } from '@mintlify/components';
+import { cn } from '../../lib/cn';
 import { useAssistant } from '../../hooks/useAssistant';
 import { AssistantHistoryList } from './AssistantHistoryList';
 import { AssistantTextArea } from './AssistantTextArea';

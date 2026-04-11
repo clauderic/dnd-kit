@@ -1,4 +1,4 @@
-import { cn } from '@mintlify/components';
+import { cn } from '../../lib/cn';
 import type { AnchorItem } from './types';
 import { Icon } from '../Icon';
 

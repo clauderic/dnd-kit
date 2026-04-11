@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { UIMessage } from '@ai-sdk/react';
-import { cn } from '@mintlify/components';
+import { cn } from '../../lib/cn';
 
 interface ChatMessageProps extends React.HTMLAttributes<HTMLDivElement> {
   message: UIMessage;

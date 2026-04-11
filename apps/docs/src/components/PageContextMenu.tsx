@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Icon, cn } from '@mintlify/components';
+import { cn } from '../lib/cn';
+import { Icon } from './Icon';
 import {
   useContextualOptions,
   type ContextualOptionItem,

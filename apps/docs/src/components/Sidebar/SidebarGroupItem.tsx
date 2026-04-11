@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { cn } from '@mintlify/components';
+import { cn } from '../../lib/cn';
 import { Icon } from '../Icon';
 import type { NavGroup } from '@mintlify/astro/helpers';
 import { isNavPage, isNavGroup, containsPath } from '@mintlify/astro/helpers';

@@ -1,4 +1,4 @@
-import { Icon } from '@mintlify/components';
+import { Icon } from './Icon';
 import { openSearch } from './SearchBar';
 import { ThemeToggle } from './ThemeToggle';
 
