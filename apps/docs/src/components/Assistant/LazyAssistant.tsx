@@ -3,8 +3,11 @@
  * Renders a lightweight placeholder that looks identical to the collapsed
  * assistant. Loads the real AssistantSheet + AssistantProvider only when
  * the user focuses the input or presses ⌘I.
+ *
+ * The placeholder stays visible during loading to prevent flash — it's
+ * hidden only after the real component mounts.
  */
-import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { ASSISTANT_EVENTS } from './events';
 
 const AssistantSheet = lazy(() =>
@@ -14,24 +17,34 @@ const AssistantProvider = lazy(() =>
   import('./AssistantProvider').then((m) => ({ default: m.AssistantProvider }))
 );
 
+/**
+ * Tiny component that signals when the real assistant has mounted.
+ */
+function OnMount({ callback }: { callback: () => void }) {
+  useEffect(() => { callback(); }, []);
+  return null;
+}
+
 export function LazyAssistant() {
-  const [loaded, setLoaded] = useState(false);
-  const placeholderRef = useRef<HTMLDivElement>(null);
+  const [loading, setLoading] = useState(false);
+  const [ready, setReady] = useState(false);
 
   const activate = useCallback(() => {
-    if (!loaded) {
-      setLoaded(true);
-      // After loading, focus the real input
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          const input = document.querySelector<HTMLTextAreaElement>(
-            '[data-assistant-input]'
-          );
-          input?.focus();
-        });
-      });
+    if (!loading && !ready) {
+      setLoading(true);
     }
-  }, [loaded]);
+  }, [loading, ready]);
+
+  const handleReady = useCallback(() => {
+    setReady(true);
+    // Focus the real input after mount
+    requestAnimationFrame(() => {
+      const input = document.querySelector<HTMLTextAreaElement>(
+        '[data-assistant-input]'
+      );
+      input?.focus();
+    });
+  }, []);
 
   // Listen for ⌘I shortcut and assistant:open events
   useEffect(() => {
@@ -54,23 +67,24 @@ export function LazyAssistant() {
     };
   }, [activate]);
 
-  if (loaded) {
-    return (
-      <Suspense fallback={<Placeholder />}>
-        <AssistantProvider />
-        <AssistantSheet />
-      </Suspense>
-    );
-  }
-
   return (
-    <div ref={placeholderRef}>
-      <Placeholder onActivate={activate} />
-    </div>
+    <>
+      {/* Placeholder — visible until real component is ready */}
+      {!ready && <Placeholder onActivate={activate} loading={loading} />}
+
+      {/* Real assistant — loaded on demand, hidden until mounted */}
+      {loading && (
+        <Suspense fallback={null}>
+          <AssistantProvider />
+          <AssistantSheet />
+          <OnMount callback={handleReady} />
+        </Suspense>
+      )}
+    </>
   );
 }
 
-function Placeholder({ onActivate }: { onActivate?: () => void }) {
+function Placeholder({ onActivate, loading }: { onActivate: () => void; loading: boolean }) {
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] max-w-lg print:hidden">
       <div
@@ -86,7 +100,7 @@ function Placeholder({ onActivate }: { onActivate?: () => void }) {
           </svg>
           <input
             type="text"
-            placeholder="Ask a question..."
+            placeholder={loading ? 'Loading...' : 'Ask a question...'}
             readOnly
             onFocus={onActivate}
             onClick={onActivate}
