@@ -1,6 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
-import { AssistantSheet, AssistantProvider } from '../components/Assistant';
+import { LazyAssistant } from '../components/Assistant/LazyAssistant';
 import '../styles/global.css';
 
 interface Props {
@@ -60,13 +60,12 @@ const isHome = path === '/';
     <ClientRouter />
   </head>
   <body class="bg-white dark:bg-background-dark text-gray-900 dark:text-gray-200">
-    <AssistantProvider client:only="react" />
     <div class="flex antialiased">
       <div class="flex-1 min-w-0 max-w-[1472px] mx-auto w-full">
         <slot />
       </div>
     </div>
-    <AssistantSheet client:only="react" transition:persist />
+    <LazyAssistant client:only="react" transition:persist />
   </body>
 </html>
 

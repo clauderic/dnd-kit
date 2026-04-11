@@ -45,6 +45,7 @@ export const AssistantTextArea = forwardRef<HTMLTextAreaElement, AssistantTextAr
       <div className="relative flex items-center">
         <textarea
           ref={textareaRef}
+          data-assistant-input
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
