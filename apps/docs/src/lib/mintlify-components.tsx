@@ -2,42 +2,28 @@
  * MDX component overrides for the docs site.
  *
  * This module is aliased via Vite to replace '@mintlify/astro/components'
- * so that all MDX content uses our custom components instead of the
+ * so that all MDX content uses our lightweight components instead of the
  * @mintlify/components barrel export (which pulls in Shiki + mermaid).
  *
- * Components are either custom implementations or lightweight wrappers.
- * Only the Mintlify components that truly need their full implementation
- * are imported from @mintlify/components (SSR-only, not hydrated).
+ * All components are custom implementations using native HTML + Tailwind.
+ * Zero dependency on @mintlify/components at runtime.
  */
 
-// Import Mintlify components that we can't easily replace (complex, interactive)
-// These only run at SSR time since they're used as MDX component overrides.
-import {
-  Accordion,
-  Check,
-  Expandable,
-  Frame,
-  Info,
-  Note,
-  Steps,
-  Tabs,
-  Tip,
-  Update as MintlifyUpdate,
-  Warning,
-} from '@mintlify/components';
+// Lightweight replacements — no @mintlify/components dependency
+import { Accordion } from '../components/mintlify/Accordion';
+import { Expandable } from '../components/mintlify/Expandable';
+import { Steps } from '../components/mintlify/Steps';
+import { Tabs } from '../components/mintlify/Tabs';
+import { Info, Note, Tip, Warning, Check, Danger } from '../components/mintlify/Callout';
+import { Frame } from '../components/mintlify/Frame';
+import { Update } from '../components/mintlify/Update';
 
-// Import custom overrides (these DO NOT import from @mintlify/components)
+// Custom component overrides
 import { Card } from '../components/Card';
 import { CodeBlock } from '../components/CodeBlock';
 import { CodeGroup } from '../components/CodeGroup';
 import { ParamField } from '../components/ParamField';
 import { PreElement } from '../components/PreElement';
-
-// Wrap Update to always pass isVisible and auto-generate id
-function Update(props: any) {
-  const id = props.id || props.label?.toLowerCase().replace(/\s+/g, '-') || 'update';
-  return <MintlifyUpdate {...props} id={id} isVisible={true} />;
-}
 
 // Lightweight CardGroup — just a CSS grid
 function CardGroup({ children, cols = 2, className }: any) {
@@ -52,42 +38,47 @@ function CardGroup({ children, cols = 2, className }: any) {
   );
 }
 
-// Noop wrapper for components used in code examples but not rendered
+// Noop wrapper for components referenced but not rendered
 function Noop({ children }: any) {
   return <div>{children}</div>;
 }
 
 export const components = {
-  // Interactive Mintlify components (SSR-rendered, no client JS)
+  // Layout & interactive
   Accordion,
   AccordionGroup: Accordion.Group,
-  Check,
-  Expandable,
-  Frame,
-  Info,
-  Note,
-  Step: Steps.Item,
-  Steps,
-  Tab: Tabs.Item,
-  Tabs,
-  Tip,
-  Update,
-  Warning,
-
-  // Custom implementations (no @mintlify/components dependency)
   Card,
   CardGroup,
   Columns: CardGroup,
   CodeBlock,
   CodeGroup,
+  Expandable,
+  Frame,
+  Steps,
+  Step: Steps.Item,
+  Tabs,
+  Tab: Tabs.Item,
+
+  // Callouts
+  Check,
+  Danger,
+  Info,
+  Note,
+  Success: Check,
+  Tip,
+  Warning,
+
+  // API reference
   ParamField,
   Param: ParamField,
   Property: ParamField,
   ResponseField: ParamField,
-  pre: PreElement,
-  Success: Check,
 
-  // Noops for components referenced in examples but not rendered
+  // Content
+  Update,
+  pre: PreElement,
+
+  // Noops
   Column: Noop,
   Snippet: Noop,
   SnippetGroup: Noop,
