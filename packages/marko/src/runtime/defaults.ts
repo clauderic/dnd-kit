@@ -1,5 +1,5 @@
-import type { Plugins } from '@dnd-kit/abstract';
-import { OptimisticSortingPlugin } from '@dnd-kit/dom/sortable';
+import type {Plugins} from '@dnd-kit/abstract';
+import {OptimisticSortingPlugin} from '@dnd-kit/dom/sortable';
 
 /**
  * Filter OptimisticSortingPlugin from the default plugin list.

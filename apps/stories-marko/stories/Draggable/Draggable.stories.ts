@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from "@storybook/marko";
-import DraggableApp from "./DraggableApp.marko";
+import type {Meta, StoryObj} from '@storybook/marko';
+import DraggableApp from './DraggableApp.marko';
 
 const meta = {
-  title: "Draggable/Basic setup",
+  title: 'Draggable/Basic setup',
   component: DraggableApp,
 } satisfies Meta<any>;
 

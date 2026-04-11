@@ -1,8 +1,8 @@
-import { defineConfig } from 'tsup';
+import {defineConfig} from 'tsup';
 
 export default defineConfig({
   entry: {
-    'index': 'src/index.ts',
+    index: 'src/index.ts',
     'runtime/renderer': 'src/runtime/renderer.ts',
     'runtime/defaults': 'src/runtime/defaults.ts',
   },
