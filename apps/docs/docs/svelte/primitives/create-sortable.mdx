@@ -1,0 +1,211 @@
+---
+title: 'createSortable'
+metaTitle: 'createSortable - Svelte | dnd kit'
+description: 'Create sortable elements with the createSortable primitive.'
+icon: 'layer-group'
+---
+
+import {Story} from '/snippets/story.mdx';
+import {CodeSandbox} from '/snippets/sandbox.mdx';
+import {sortableStyles} from '/snippets/code.mdx';
+
+<Story id="sortable-vertical-list--basic-setup" framework="svelte" height="320" hero />
+
+## Usage
+
+The `createSortable` primitive combines draggable and droppable behavior with sorting logic. Import it from `@dnd-kit/svelte/sortable`.
+
+<CodeSandbox template="svelte" files={{
+  '/src/App.svelte': {code: appCode, active: true},
+  '/src/styles.css': {code: sortableStyles, hidden: true},
+}} height={560} previewHeight={180} />
+
+<Note>
+  When using `createSortable` inside an `{#each}` block, pass reactive values like `index` as getter properties (e.g. `get index() { return index; }`) to maintain reactivity as items are reordered. Visual sorting during drag is driven by calling `move()` in `onDragOver`. The `onDragEnd` handler only needs to restore the snapshot when the drag is canceled.
+</Note>
+
+## Without the move helper
+
+The example above uses the `move` helper from `@dnd-kit/helpers`, a convenience function that takes your items and a drag event and returns a new array with the item moved to its new position. It supports flat arrays and grouped records, handles canceled drags, and works with multiple lists.
+
+If you need more control over state updates, you can manage state manually using the `isSortable` type guard and the sortable properties (`initialIndex`, `index`).
+
+Call `move()` in `onDragOver` for live visual sorting, and restore the snapshot in `onDragEnd` only when the drag is canceled:
+
+```svelte
+<script>
+  import {DragDropProvider} from '@dnd-kit/svelte';
+  import {createSortable, isSortable} from '@dnd-kit/svelte/sortable';
+
+  let items = $state([1, 2, 3, 4]);
+  let snapshot = [];
+
+  function onDragStart() {
+    snapshot = items.slice();
+  }
+
+  function onDragOver(event) {
+    const {source, target} = event.operation;
+
+    if (isSortable(source) && isSortable(target)) {
+      const fromIndex = source.index;
+      const toIndex = target.index;
+
+      if (fromIndex !== toIndex) {
+        const newItems = [...items];
+        const [removed] = newItems.splice(fromIndex, 1);
+        newItems.splice(toIndex, 0, removed);
+        items = newItems;
+      }
+    }
+  }
+
+  function onDragEnd(event) {
+    if (event.canceled) items = snapshot;
+  }
+</script>
+
+<DragDropProvider {onDragStart} {onDragOver} {onDragEnd}>
+  <ul>
+    {#each items as id, index (id)}
+      {@const sortable = createSortable({id, get index() { return index; }})}
+      <li {@attach sortable.attach}>
+        Item {id}
+      </li>
+    {/each}
+  </ul>
+</DragDropProvider>
+```
+
+<Info>
+  Learn more about [type guards and manual state management](/concepts/sortable#optimistic-sorting) in the Sortable concepts page.
+</Info>
+
+## Input
+
+All input properties accept plain values or getter functions for reactivity.
+
+<ParamField path="id" type="UniqueIdentifier | (() => UniqueIdentifier)" required>
+  A unique identifier for this sortable instance.
+</ParamField>
+
+<ParamField path="index" type="number | (() => number)" required>
+  The current index of this item in the sorted list.
+</ParamField>
+
+<ParamField path="group" type="string | (() => string)" optional>
+  The group this sortable belongs to. Used for sorting across multiple lists.
+</ParamField>
+
+<ParamField path="accept" type="string | string[] | (() => string | string[])" optional>
+  The types of draggable elements this sortable accepts.
+</ParamField>
+
+<ParamField path="type" type="string | (() => string)" optional>
+  The type of this sortable element.
+</ParamField>
+
+<ParamField path="plugins" type="PluginDescriptor[] | (() => PluginDescriptor[])" optional>
+  An array of plugin descriptors for per-entity plugin configuration. Use `Plugin.configure()` to create descriptors. For example, `Feedback.configure({ feedback: 'clone' })`.
+</ParamField>
+
+<ParamField path="transition" type="SortableTransition | (() => SortableTransition)" optional>
+  Animation transition configuration for sort operations.
+</ParamField>
+
+<ParamField path="modifiers" type="Modifier[] | (() => Modifier[])" optional>
+  Modifiers to apply to this sortable instance.
+</ParamField>
+
+<ParamField path="sensors" type="Sensor[] | (() => Sensor[])" optional>
+  Sensors to use for this sortable instance.
+</ParamField>
+
+<ParamField path="collisionDetector" type="CollisionDetector | (() => CollisionDetector)" optional>
+  A custom collision detection algorithm.
+</ParamField>
+
+<ParamField path="collisionPriority" type="number | (() => number)" optional>
+  The collision priority of this sortable element. Higher values take precedence when multiple droppable elements overlap.
+</ParamField>
+
+<ParamField path="disabled" type="boolean | (() => boolean)" optional>
+  Whether the sortable is disabled.
+</ParamField>
+
+<ParamField path="data" type="Data | (() => Data)" optional>
+  Custom data to attach to this sortable instance.
+</ParamField>
+
+## Output
+
+<ResponseField name="isDragging" type="boolean">
+  Whether this element is currently being dragged.
+</ResponseField>
+
+<ResponseField name="isDropping" type="boolean">
+  Whether this element is in the process of being dropped.
+</ResponseField>
+
+<ResponseField name="isDragSource" type="boolean">
+  Whether this element is the source of the current drag operation.
+</ResponseField>
+
+<ResponseField name="isDropTarget" type="boolean">
+  Whether this element is currently a drop target.
+</ResponseField>
+
+<ResponseField name="sortable" type="Sortable">
+  The underlying `Sortable` instance.
+</ResponseField>
+
+<ResponseField name="attach" type="(element: HTMLElement) => () => void">
+  Attachment function for the sortable element. Use with `{@attach}`.
+</ResponseField>
+
+<ResponseField name="attachHandle" type="(element: HTMLElement) => () => void">
+  Attachment function for a drag handle. Use with `{@attach}`.
+</ResponseField>
+
+<ResponseField name="attachSource" type="(element: HTMLElement) => () => void">
+  Attachment function for the drag source element (when different from the sortable element).
+</ResponseField>
+
+<ResponseField name="attachTarget" type="(element: HTMLElement) => () => void">
+  Attachment function for the drop target element (when different from the sortable element).
+</ResponseField>
+
+export const appCode = `
+<script>
+  import {DragDropProvider} from '@dnd-kit/svelte';
+  import {createSortable} from '@dnd-kit/svelte/sortable';
+  import {move} from '@dnd-kit/helpers';
+  import './styles.css';
+
+  let items = [1, 2, 3, 4];
+  let snapshot = [];
+
+  function onDragStart() {
+    snapshot = items.slice();
+  }
+
+  function onDragOver(event) {
+    items = move(items, event);
+  }
+
+  function onDragEnd(event) {
+    if (event.canceled) items = snapshot;
+  }
+</script>
+
+<DragDropProvider {onDragStart} {onDragOver} {onDragEnd}>
+  <ul class="list">
+    {#each items as id, index (id)}
+      {@const sortable = createSortable({id, get index() { return index; }})}
+      <li {@attach sortable.attach} class="item">
+        Item {id}
+      </li>
+    {/each}
+  </ul>
+</DragDropProvider>
+`.trim();

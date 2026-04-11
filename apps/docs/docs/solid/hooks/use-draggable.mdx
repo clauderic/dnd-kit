@@ -1,0 +1,158 @@
+---
+title: 'useDraggable'
+metaTitle: 'useDraggable Hook - Solid | dnd kit'
+description: 'Make elements draggable with the useDraggable hook.'
+icon: 'bullseye-pointer'
+---
+
+import {CodeSandbox} from '/snippets/sandbox.mdx';
+import {draggableStyles} from '/snippets/code.mdx';
+
+<CodeSandbox template="solid" files={{
+  'App.tsx': {code: app, active: true},
+  'styles.css': {code: draggableStyles, hidden: true},
+}} height={220} previewHeight={200} hero />
+
+## Usage
+
+The `useDraggable` hook requires a unique `id` and returns a `ref` callback and reactive getters for drag state.
+
+```tsx
+import {useDraggable} from '@dnd-kit/solid';
+
+function Draggable() {
+  const {ref, isDragging} = useDraggable({id: 'my-draggable'});
+
+  return (
+    <button ref={ref} data-dragging={isDragging()}>
+      Drag me
+    </button>
+  );
+}
+```
+
+## Input
+
+<ParamField path="id" type="UniqueIdentifier" required>
+  A unique identifier for this draggable instance. Use getter syntax (`get id() { return props.id }`) for reactive values.
+</ParamField>
+
+<ParamField path="handle" type="Element" optional>
+  A handle element. When set, only this element activates dragging. Use the `handleRef` callback to set it.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" optional>
+  Whether the draggable is disabled.
+</ParamField>
+
+<ParamField path="plugins" type="PluginDescriptor[]" optional>
+  An array of plugin descriptors for per-entity plugin configuration. Use `Plugin.configure()` to create descriptors. For example, `Feedback.configure({ feedback: 'clone' })`.
+</ParamField>
+
+<ParamField path="modifiers" type="Modifier[]" optional>
+  Modifiers to apply to this draggable instance.
+</ParamField>
+
+<ParamField path="sensors" type="Sensor[]" optional>
+  Sensors to use for this draggable instance.
+</ParamField>
+
+<ParamField path="data" type="Data" optional>
+  Custom data to attach to this draggable instance.
+</ParamField>
+
+## Output
+
+<ResponseField name="ref" type="(element: Element) => void">
+  A callback ref to attach to the draggable element.
+</ResponseField>
+
+<ResponseField name="handleRef" type="(element: Element) => void">
+  A callback ref to attach to a drag handle element.
+</ResponseField>
+
+<ResponseField name="isDragging" type="() => boolean" note="accessor">
+  Whether this element is currently being dragged. Call as `isDragging()` in JSX.
+</ResponseField>
+
+<ResponseField name="isDropping" type="() => boolean" note="accessor">
+  Whether this element is in the process of being dropped. Call as `isDropping()` in JSX.
+</ResponseField>
+
+<ResponseField name="isDragSource" type="() => boolean" note="accessor">
+  Whether this element is the source of the current drag operation. Call as `isDragSource()` in JSX.
+</ResponseField>
+
+<ResponseField name="draggable" type="Draggable">
+  The underlying `Draggable` instance.
+</ResponseField>
+
+## Guides
+
+### Rendering a drag overlay
+
+You can render a completely different element while the draggable element is being dragged by using the [`<DragOverlay>`](/solid/components/drag-overlay) component.
+
+<img src="/images/draggable/drag-overlay.png" />
+
+```tsx
+import {DragDropProvider, DragOverlay, useDraggable} from '@dnd-kit/solid';
+
+function Draggable() {
+  const {ref} = useDraggable({id: 'draggable'});
+
+  return (
+    <>
+      <button ref={ref}>Draggable</button>
+      <DragOverlay>
+        <div>I will be rendered while dragging...</div>
+      </DragOverlay>
+    </>
+  );
+}
+```
+
+The `<DragOverlay>` component will only render its children when a drag operation is in progress. This can be useful for rendering a completely different element while the draggable element is being dragged.
+
+<Warning>
+  You should only render the `<DragOverlay>` component once per [DragDropProvider](/solid/components/drag-drop-provider) component.
+</Warning>
+
+To render different content depending on which element is being dragged, pass a function as a child that receives the drag `source`:
+
+```tsx
+import {DragDropProvider, DragOverlay} from '@dnd-kit/solid';
+
+function App() {
+  return (
+    <DragDropProvider>
+      <Draggable id="foo" />
+      <Draggable id="bar" />
+      <DragOverlay>
+        {source => (
+          <div>Dragging {source.id}</div>
+        )}
+      </DragOverlay>
+    </DragDropProvider>
+  );
+}
+```
+
+export const app = `
+import {DragDropProvider, useDraggable} from '@dnd-kit/solid';
+import './styles.css';
+
+function Draggable() {
+  const {ref} = useDraggable({id: 'draggable'});
+
+  return <button ref={ref} class="btn">draggable</button>;
+}
+
+export default function App() {
+  return (
+    <DragDropProvider>
+      <Draggable />
+    </DragDropProvider>
+  );
+}
+`.trim();

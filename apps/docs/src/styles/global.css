@@ -1,0 +1,418 @@
+@import 'tailwindcss';
+@import './fonts.css';
+@source "../../node_modules/@mintlify/components"; /* TODO: Remove once @mintlify/components ships its own source hints. */
+@import './color-scheme.css';
+@import '@mintlify/components/styles.css' layer(components);
+@import './typography.css';
+@import './prose.css';
+@import './prose-components.css';
+@import './kbd.css';
+
+:root {
+  --primary: #596dff;
+  --color-primary: #596dff;
+  --primary-light: 89 109 255;
+}
+
+/* Dark mode prose overrides */
+.dark .prose {
+  --tw-prose-body: rgb(208 209 213);
+  --tw-prose-headings: rgb(225 225 230);
+  --tw-prose-links: var(--primary);
+  --tw-prose-bold: rgb(225 225 230);
+  --tw-prose-counters: rgb(161 161 166);
+  --tw-prose-bullets: rgb(114 115 119);
+  --tw-prose-hr: rgb(40 40 45);
+  --tw-prose-quotes: rgb(208 209 213);
+  --tw-prose-quote-borders: rgb(65 65 70);
+  --tw-prose-captions: rgb(161 161 166);
+  --tw-prose-kbd: rgb(225 225 230);
+  --tw-prose-kbd-shadows: rgb(40 40 45);
+  --tw-prose-code: rgb(225 225 230);
+  --tw-prose-pre-code: rgb(225 225 230);
+  --tw-prose-pre-bg: rgb(25 26 30);
+  --tw-prose-th-borders: rgb(65 65 70);
+  --tw-prose-td-borders: rgb(40 40 45);
+}
+
+/* Dark mode overrides for @mintlify/components search dialog */
+:where(.dark) [data-headlessui-state] {
+  --tw-shadow-color: rgba(0, 0, 0, 0.5);
+}
+
+:where(.dark) [data-headlessui-state="open"][id^="headlessui-dialog-panel"] {
+  background-color: rgb(25 26 30);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:where(.dark) [id^="headlessui-combobox-input"] {
+  background-color: rgb(25 26 30);
+  color: white;
+}
+
+:where(.dark) [id^="headlessui-combobox-input"]::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+:where(.dark) [id^="headlessui-combobox-input"]:focus {
+  --tw-ring-color: rgba(255, 255, 255, 0.9);
+}
+
+:where(.dark) [id^="headlessui-combobox-options"] {
+  background-color: rgb(25 26 30);
+}
+
+/* Sponsor frame: center logos and remove default white background */
+.sponsors [data-component-part="frame"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sponsors [data-component-part="frame-content"] {
+  background: none !important;
+}
+
+
+/* Dark mode overrides for @mintlify/components accordion */
+:where(.dark) details.accordion {
+  background-color: rgb(25 26 30);
+}
+
+:where(.dark) details.accordion > summary:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Keep ParamHead name, type, and required badge on one line */
+.param-head .flex-col {
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 0.5rem;
+}
+
+.param-head [data-component-part="field-meta"] {
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Hide changelog from sidebar navigation */
+nav [data-title="Changelog"] {
+  display: none;
+}
+
+/* Update component: hide duplicate h2 headings (used only for TOC) */
+.mdx-content .update-container {
+  scroll-margin-top: var(--scroll-mt, 6rem);
+}
+
+.mdx-content h2:has(+ .update-container),
+.mdx-content h2:has(+ astro-island > .update-container) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Update component: force two-column layout on large screens */
+@media (min-width: 1024px) {
+  .update-container {
+    flex-direction: row !important;
+    gap: 1.5rem !important;
+  }
+
+  .update-container > div:first-child {
+    width: 160px !important;
+    flex-shrink: 0;
+    position: sticky;
+    top: var(--scroll-mt, 6rem);
+  }
+}
+
+/* Spacing for Storybook iframe frames after code blocks */
+.not-prose + astro-island > div:has(.frame) {
+  margin-top: 1.25rem;
+}
+
+/* Fix mask-image icons clipping */
+[data-component-part="icon-svg"][style*="mask-image"] {
+  mask-size: contain;
+  -webkit-mask-size: contain;
+}
+
+
+/* Search result match highlighting */
+.search-highlight mark {
+  background-color: color-mix(in srgb, var(--primary) 15%, transparent);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+/* Strip decorative styling from kbd in the search button */
+header kbd {
+  background: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  font-size: 0.8125rem !important;
+  padding: 0 !important;
+  opacity: 0.5;
+}
+
+/* Prose link styling */
+.mdx-content.prose a:not(.card):not([class]) {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--primary) 40%, transparent);
+  text-underline-offset: 2px;
+  font-weight: 500;
+}
+
+.mdx-content.prose a:not(.card):not([class]):hover {
+  text-decoration-color: var(--primary);
+}
+
+/* Sandpack unstyled base styles */
+.sp-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
+
+.sp-stack {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.sp-layout {
+  display: flex;
+  flex-direction: column;
+  border-radius: 1rem !important;
+  border: none !important;
+  overflow: hidden;
+  background-color: #1e1e1e;
+  --tw-ring-color: rgba(0, 0, 0, 0.05);
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+  gap: 0;
+}
+
+html:not(.dark) .hero .sp-layout {
+  box-shadow: none;
+}
+
+.dark .sp-layout {
+  --tw-ring-color: rgba(255, 255, 255, 0.05);
+}
+
+.sp-tabs-scrollable-container {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.sp-tab-button {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid transparent;
+}
+
+.sp-tab-button[data-active="true"] {
+  border-color: var(--primary);
+}
+
+.sp-code-editor {
+  overflow: auto;
+  background-color: #1e1e1e;
+  color: #f8f8f2;
+}
+
+.sp-cm {
+  padding: 0;
+  margin: 0;
+  outline: none;
+}
+
+.sp-cm .cm-editor {
+  outline: none !important;
+  background: transparent;
+}
+
+.sp-cm .cm-scroller {
+  overflow: auto;
+  padding: 0.75rem 1rem;
+  font-family: "Fira Mono", "DejaVu Sans Mono", Menlo, Consolas, "Liberation Mono", Monaco, "Lucida Console", monospace;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.sp-cm .cm-gutters {
+  display: none;
+}
+
+.sp-pre-placeholder {
+  padding: 0.75rem 1rem;
+  margin: 0;
+  font-family: "Fira Mono", "DejaVu Sans Mono", Menlo, Consolas, monospace;
+  font-size: 14px;
+  line-height: 20px;
+  white-space: pre;
+  overflow: auto;
+}
+
+.sp-editor {
+  order: 1;
+  width: 100% !important;
+  flex-basis: auto !important;
+  background-color: #1e1e1e;
+}
+
+.sp-preview {
+  order: 0;
+  width: 100% !important;
+  flex-basis: auto !important;
+  position: relative;
+}
+
+/* Preview container needs relative positioning for absolute children */
+.sp-preview {
+  position: relative !important;
+}
+
+/* Preview action buttons (built-in from SandpackPreview) */
+.sp-preview-actions {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.sp-preview-actions .sp-button {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+.sp-preview-actions .sp-button:hover {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+/* Hide the loading overlay (contains duplicate Open Sandbox) */
+.sp-overlay,
+.sp-loading {
+  display: none !important;
+}
+
+/* Loading status text — position absolutely to prevent layout shift */
+.sp-loading + div {
+  position: absolute !important;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  z-index: 1;
+  font-size: 12px;
+  opacity: 0.5;
+}
+
+.sp-resize-handler {
+  display: none;
+}
+
+.sp-preview-container {
+  position: relative;
+  width: 100%;
+}
+
+.sp-preview-iframe {
+  width: 100%;
+  min-height: 100px;
+  border: none;
+}
+
+[style*="--preview-height"] .sp-preview-iframe {
+  height: var(--preview-height) !important;
+}
+
+.sp-preview-container {
+  background-color: #fafafa;
+}
+
+.dark .sp-preview-container {
+  background-color: #11131b;
+}
+
+.sp-preview-container iframe {
+  background: transparent;
+  color-scheme: normal;
+}
+
+.hero .sp-preview-container {
+  --gradient: linear-gradient(65deg, #56fff420, #001AFF20, #5F6AF220, #F25FD020, #56FFF520, #F25FD020, #001AFF20, #56fff420);
+  background-image: var(--gradient);
+  animation: sp-background 16s linear infinite alternate;
+  background-size: 600% 100%;
+}
+
+.dark .hero .sp-preview-container {
+  --gradient: linear-gradient(65deg, #56fff480, #001AFF80, #5F6AF280, #F25FD080, #56FFF580, #F25FD080, #001AFF80, #56fff480);
+  animation: sp-gradient 16s linear infinite;
+}
+
+@keyframes sp-gradient {
+  0% { background-color: #ff0000; }
+  25% { background-color: #7f00ff; }
+  50% { background-color: #00affa; }
+  75% { background-color: #00f594; }
+  100% { background-color: #ff0000; }
+}
+
+@keyframes sp-background {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+@theme {
+  /* Custom blue-tinted gray scale matching production */
+  --color-gray-50: #f5f6fa;
+  --color-gray-100: #f0f1f5;
+  --color-gray-200: #e1e1e6;
+  --color-gray-300: #d0d1d5;
+  --color-gray-400: #a1a1a6;
+  --color-gray-500: #727377;
+  --color-gray-600: #525357;
+  --color-gray-700: #414146;
+  --color-gray-800: #28282d;
+  --color-gray-900: #191a1e;
+  --color-gray-950: #0c0d11;
+
+  /* Dark background token */
+  --color-background-dark: #0b0b10;
+
+  --animate-dot-bounce: dot-bounce 1.4s ease-in-out infinite;
+
+  @keyframes dot-bounce {
+    0%,
+    20%,
+    100% {
+      transform: translateY(0);
+    }
+    10% {
+      transform: translateY(2px);
+    }
+  }
+}

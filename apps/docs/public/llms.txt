@@ -1,0 +1,47 @@
+# @dnd-kit
+
+> A lightweight, performant, accessible and extensible drag and drop toolkit for building drag and drop interfaces.
+
+## About
+
+@dnd-kit is a modular toolkit for building drag and drop interfaces. It provides first-class support for React, Vue, Svelte, Solid, and vanilla TypeScript.
+
+## Key Features
+
+- Framework agnostic with adapters for React, Vue, Svelte, Solid
+- Draggable, droppable, and sortable primitives
+- Plugin architecture for extensibility
+- Pointer and keyboard sensors
+- Collision detection algorithms
+- Accessibility built-in
+- Auto-scroll support
+- Drag overlays with animations
+
+## Documentation
+
+- Overview: https://dndkit.com/overview
+- Quickstart: https://dndkit.com/quickstart
+- React: https://dndkit.com/react/quickstart
+- Vue: https://dndkit.com/vue/quickstart
+- Svelte: https://dndkit.com/svelte/quickstart
+- Solid: https://dndkit.com/solid/quickstart
+
+## Core Concepts
+
+- DragDropManager: https://dndkit.com/concepts/drag-drop-manager
+- Draggable: https://dndkit.com/concepts/draggable
+- Droppable: https://dndkit.com/concepts/droppable
+- Sortable: https://dndkit.com/concepts/sortable
+
+## Extensibility
+
+- Plugins: https://dndkit.com/extend/plugins
+- Sensors: https://dndkit.com/extend/sensors
+- Modifiers: https://dndkit.com/extend/modifiers
+
+## Links
+
+- GitHub: https://github.com/clauderic/dnd-kit
+- npm: https://www.npmjs.com/package/@dnd-kit/dom
+- Examples: https://examples.dndkit.com
+- Changelog: https://dndkit.com/changelog

@@ -1,0 +1,107 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import { LazyAssistant } from '../components/Assistant/LazyAssistant';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  path?: string;
+}
+
+const SITE_URL = 'https://dndkit.com';
+const { title = 'dnd kit', description, path = '/' } = Astro.props;
+const canonicalUrl = `${SITE_URL}${path}`;
+const ogSlug = path === '/' ? 'index' : path.replace(/^\//, '');
+const ogImage = `${SITE_URL}/og/${ogSlug}.png`;
+const isHome = path === '/';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet" /></noscript>
+    <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+    {/* Hero SVG is inlined on the homepage — no preload needed */}
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="stylesheet" href="/style.css" />
+    <meta name="generator" content={Astro.generator} />
+    <script is:inline>
+      (function () {
+        var t = localStorage.getItem('theme');
+        if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="dnd kit" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    {description && <meta name="twitter:description" content={description} />}
+    <meta name="twitter:image" content={ogImage} />
+    <ClientRouter />
+  </head>
+  <body class="bg-white dark:bg-background-dark text-gray-900 dark:text-gray-200">
+    <div class="flex antialiased">
+      <div class="flex-1 min-w-0 max-w-[1472px] mx-auto w-full">
+        <slot />
+      </div>
+    </div>
+    <LazyAssistant client:only="react" transition:persist />
+  </body>
+</html>
+
+<script>
+  import '../components/LogoContextMenu';
+</script>
+
+<script>
+  // Fix unitless inline style values from compiled MDX.
+  // @mintlify/astro outputs style="width:130;height:80" instead of "width:130px;height:80px"
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll('img[style]').forEach((img) => {
+      const style = img.getAttribute('style') || '';
+      if (/(?:width|height):\s*\d+(?:;|$)/.test(style)) {
+        img.setAttribute(
+          'style',
+          style.replace(/(\b(?:width|height|top|left|right|bottom):\s*)(\d+)(;|$)/g, '$1$2px$3')
+        );
+      }
+    });
+
+  });
+</script>
+
+<style>
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overscroll-behavior-y: none;
+  }
+
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+  }
+</style>

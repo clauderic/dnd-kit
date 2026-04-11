@@ -1,0 +1,19 @@
+import {useState, useEffect} from 'react';
+
+export const CodeSandbox = ({ files, height, hero, previewHeight, showTabs, template }) => {
+  const [Editor, setEditor] = useState(null);
+
+  useEffect(() => {
+    import('@components/CodeSandbox').then((mod) => {
+      setEditor(() => mod.CodeSandbox);
+    });
+  }, []);
+
+  if (!Editor) return null;
+
+  return (
+    <div className={`not-prose${hero ? ' hero' : ''}`} style={previewHeight ? {'--preview-height': `${previewHeight}px`} : undefined}>
+      <Editor files={files} height={height} showTabs={showTabs} template={template} />
+    </div>
+  );
+};

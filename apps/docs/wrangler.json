@@ -1,0 +1,7 @@
+{
+  "name": "dnd-kit-docs",
+  "compatibility_date": "2026-04-07",
+  "assets": {
+    "directory": "./dist"
+  }
+}
