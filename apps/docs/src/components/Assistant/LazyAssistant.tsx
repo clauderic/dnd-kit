@@ -90,34 +90,36 @@ function Placeholder({ onActivate, loading }: { onActivate: () => void; loading:
       <div
         className="rounded-2xl overflow-hidden bg-white/80 dark:bg-[#0b0b10]/80 backdrop-blur-xl backdrop-saturate-[180%] border border-gray-300/60 dark:border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
       >
-        <div className="relative flex items-center">
-          <svg
-            width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-            className="absolute left-3 shrink-0 text-gray-400 dark:text-gray-500 pointer-events-none"
-          >
-            <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
-            <path d="M20 3v4" /><path d="M22 5h-4" />
-          </svg>
-          <input
-            type="text"
-            placeholder={loading ? 'Loading...' : 'Ask a question...'}
-            readOnly
-            onFocus={onActivate}
-            onClick={onActivate}
-            className="w-full bg-transparent py-3 pl-9 pr-10 text-sm text-gray-900 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none cursor-text"
-          />
-          <span className="absolute right-11 text-[11px] text-gray-500 dark:text-gray-500 pointer-events-none">⌘I</span>
-          <button
-            type="button"
-            onClick={onActivate}
-            className="absolute right-2 w-7 h-7 rounded-lg flex items-center justify-center cursor-not-allowed opacity-40"
-            aria-label="Submit"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 dark:text-gray-500">
-              <path d="m5 12 7-7 7 7" /><path d="M12 19V5" />
+        <div className="px-3 py-2">
+          <div className="relative flex items-center">
+            <svg
+              width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+              className="absolute left-3 shrink-0 text-gray-400 dark:text-gray-500 pointer-events-none"
+            >
+              <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+              <path d="M20 3v4" /><path d="M22 5h-4" />
             </svg>
-          </button>
+            <input
+              type="text"
+              placeholder={loading ? 'Loading...' : 'Ask a question...'}
+              readOnly
+              onFocus={onActivate}
+              onClick={onActivate}
+              className="w-full bg-transparent py-1.5 pl-9 pr-10 text-sm text-gray-900 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none cursor-text min-h-[32px]"
+            />
+            <span className="absolute right-11 text-[11px] text-gray-500 dark:text-gray-500 pointer-events-none">⌘I</span>
+            <button
+              type="button"
+              onClick={onActivate}
+              className="absolute right-2 w-7 h-7 rounded-lg flex items-center justify-center cursor-not-allowed opacity-40"
+              aria-label="Submit"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 dark:text-gray-500">
+                <path d="m5 12 7-7 7 7" /><path d="M12 19V5" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
