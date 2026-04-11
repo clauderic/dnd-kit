@@ -1,5 +1,5 @@
 import { defineConfig } from 'astro/config';
-import react from '@astrojs/react';
+import preact from '@astrojs/preact';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { mintlify } from '@mintlify/astro';
@@ -9,7 +9,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   site: 'https://dndkit.com',
-  integrations: [mintlify({ docsDir: './docs' }), react(), mdx(), sitemap()],
+  integrations: [mintlify({ docsDir: './docs' }), preact({ compat: true }), mdx(), sitemap()],
   markdown: {
     shikiConfig: {
       theme: 'monokai',
