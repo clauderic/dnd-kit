@@ -17,7 +17,7 @@
   "dependencies": {
     "@ai-sdk/react": "^3.0.70",
     "@astrojs/mdx": "^4.3.1",
-    "@astrojs/preact": "4",
+    "@astrojs/react": "^5.0.3",
     "@astrojs/sitemap": "^3.7.2",
     "@codesandbox/sandpack-react": "^2.20.0",
     "@mintlify/astro": "^0.1.9",
@@ -28,7 +28,6 @@
     "@tailwindcss/vite": "^4.1.18",
     "ai": "^6.0.68",
     "astro": "^5.16.12",
-    "preact": "^10.29.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",
