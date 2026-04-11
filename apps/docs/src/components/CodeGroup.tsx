@@ -1,8 +1,8 @@
 /**
  * Custom CodeGroup component — tabbed code blocks.
  *
- * Wraps multiple CodeBlock children as tabs, using the filename
- * prop of each child as the tab label.
+ * All CodeBlock children are pre-rendered at build time (SSR).
+ * Tab switching just toggles visibility — no client-side highlighting needed.
  */
 import { useState, Children, isValidElement, type ReactElement } from 'react';
 import { CodeBlock } from './CodeBlock';
@@ -22,8 +22,6 @@ export function CodeGroup({ children }: CodeGroupProps) {
     return { label: filename, index: i };
   });
 
-  const activeBlock = blocks[selected];
-
   return (
     <div className="not-prose code-group my-5 rounded-2xl overflow-hidden border border-white/5">
       <div className="flex items-center gap-0 bg-[#1e1e1e] border-b border-white/5 overflow-x-auto">
@@ -42,13 +40,16 @@ export function CodeGroup({ children }: CodeGroupProps) {
           </button>
         ))}
       </div>
-      {activeBlock && (
-        <CodeBlock
-          {...activeBlock.props}
-          filename={undefined}
-          isGrouped
-        />
-      )}
+      {/* Render ALL blocks at build time, toggle visibility on the client */}
+      {blocks.map((block, i) => (
+        <div key={i} className={i === selected ? '' : 'hidden'}>
+          <CodeBlock
+            {...block.props}
+            filename={undefined}
+            isGrouped
+          />
+        </div>
+      ))}
     </div>
   );
 }
