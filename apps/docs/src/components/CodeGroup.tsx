@@ -2,11 +2,12 @@
  * Custom CodeGroup component — tabbed code blocks.
  *
  * All CodeBlock children are rendered at build time (SSR) with Shiki
- * highlighting. On the client, tab switching uses DOM manipulation to
- * toggle visibility — React never re-renders the code content, so the
- * SSR HTML is preserved.
+ * highlighting. Tab switching is pure CSS — zero JavaScript.
+ *
+ * DOM order: radios → tab labels → panels
+ * CSS uses :has() on .code-group to match checked radio → style tabs + panels.
  */
-import { useState, useRef, useEffect, Children, isValidElement, type ReactElement } from 'react';
+import { useId, Children, isValidElement, type ReactElement } from 'react';
 import { CodeBlock } from './CodeBlock';
 
 interface CodeGroupProps {
@@ -14,61 +15,49 @@ interface CodeGroupProps {
 }
 
 export function CodeGroup({ children }: CodeGroupProps) {
+  const id = useId();
   const blocks = Children.toArray(children).filter(isValidElement) as ReactElement[];
-  const [selected, setSelected] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const tabs = blocks.map((block, i) => ({
-    label: block.props?.filename || `Tab ${i + 1}`,
-    index: i,
-  }));
-
-  // Toggle visibility via DOM instead of React re-render
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const panels = container.querySelectorAll<HTMLElement>('[data-code-panel]');
-    panels.forEach((panel, i) => {
-      panel.style.display = i === selected ? '' : 'none';
-    });
-  }, [selected]);
 
   if (blocks.length === 0) return null;
 
   return (
     <div className="not-prose code-group my-5 rounded-2xl overflow-hidden border border-white/5">
-      <div className="flex items-center gap-0 bg-[#1e1e1e] border-b border-white/5 overflow-x-auto">
-        {tabs.map((tab) => (
-          <button
-            key={tab.index}
-            type="button"
-            onClick={() => setSelected(tab.index)}
-            className={`px-4 py-2.5 text-xs font-medium whitespace-nowrap transition-colors cursor-pointer border-b-2 ${
-              tab.index === selected
-                ? 'text-white/90 border-primary'
-                : 'text-white/40 border-transparent hover:text-white/60'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-      <div ref={containerRef}>
+      {/* Hidden radios at the top — CSS uses .code-group:has(#id:checked) */}
+      {blocks.map((_, i) => (
+        <input
+          key={`r${i}`}
+          type="radio"
+          name={id}
+          id={`${id}-${i}`}
+          defaultChecked={i === 0}
+          className="sr-only"
+          data-tab-index={i}
+        />
+      ))}
+
+      {/* Tab bar */}
+      <div className="code-tabs flex items-center gap-0 bg-[#1e1e1e] border-b border-white/5 overflow-x-auto">
         {blocks.map((block, i) => (
-          <div
+          <label
             key={i}
-            data-code-panel
-            style={{ display: i === selected ? undefined : 'none' }}
+            htmlFor={`${id}-${i}`}
+            className="code-tab px-4 py-2.5 text-xs font-medium whitespace-nowrap transition-colors cursor-pointer border-b-2 text-white/40 border-transparent hover:text-white/60"
           >
-            <CodeBlock
-              {...block.props}
-              filename={undefined}
-              isGrouped
-            />
-          </div>
+            {block.props?.filename || `Tab ${i + 1}`}
+          </label>
         ))}
       </div>
+
+      {/* Panels — all hidden by default, shown via CSS :has(:checked) */}
+      {blocks.map((block, i) => (
+        <div key={i} className="code-panel" data-panel-index={i}>
+          <CodeBlock
+            {...block.props}
+            filename={undefined}
+            isGrouped
+          />
+        </div>
+      ))}
     </div>
   );
 }
