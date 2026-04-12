@@ -238,44 +238,47 @@ export function SearchBar() {
   const showEmpty = !hasQuery || isLoading || results.length > 0 ? false : true;
   const showDropdown = isOpen && (hasResults || showEmpty || hasQuery);
 
+  // On mobile, render as a fixed overlay; on desktop, render inline
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+  const isMobileOverlay = isOpen && isMobile;
+
   return (
-    <div className="relative">
-      {/* Search input — always visible */}
+    <>
+      {/* Desktop: inline search input */}
       <div className="relative">
-        <input
-          ref={inputRef}
-          type="search"
-          placeholder="Search..."
-          value={query}
-          onChange={(e) => handleInputChange(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onFocus={() => setIsOpen(true)}
-          className="w-full h-9 rounded-xl bg-transparent pl-9 pr-14 text-sm text-stone-950 dark:text-white outline-none border border-stone-200 dark:border-white/10 hover:border-stone-300 dark:hover:border-white/20 focus:border-stone-300 dark:focus:border-white/20 focus:shadow-[0_1px_3px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.04)] dark:focus:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_0_0_1px_rgba(255,255,255,0.06)] transition placeholder:text-stone-400 dark:placeholder:text-white/50 [&::-webkit-search-cancel-button]:appearance-none"
-          autoComplete="off"
-        />
-        <svg
-          width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-          className="absolute top-1/2 left-3 -translate-y-1/2 text-stone-400 dark:text-white/40 pointer-events-none peer-focus:text-[var(--primary)] transition-colors"
-        >
-          <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
-        </svg>
-        <kbd className="absolute top-1/2 right-3 -translate-y-1/2 hidden sm:inline-flex text-xs text-stone-400 dark:text-white/30 pointer-events-none">⌘K</kbd>
-        {isLoading && (
+        <div className="relative">
+          <input
+            ref={isMobileOverlay ? undefined : inputRef}
+            type="search"
+            placeholder="Search..."
+            value={query}
+            onChange={(e) => handleInputChange(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onFocus={() => setIsOpen(true)}
+            className="w-full h-9 rounded-xl bg-transparent pl-9 pr-14 text-sm text-stone-950 dark:text-white outline-none border border-stone-200 dark:border-white/10 hover:border-stone-300 dark:hover:border-white/20 focus:border-stone-300 dark:focus:border-white/20 focus:shadow-[0_1px_3px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.04)] dark:focus:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_0_0_1px_rgba(255,255,255,0.06)] transition placeholder:text-stone-400 dark:placeholder:text-white/50 [&::-webkit-search-cancel-button]:appearance-none"
+            autoComplete="off"
+          />
           <svg
-            width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-            className="absolute top-1/2 right-3 -translate-y-1/2 text-stone-400 animate-spin"
+            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+            className="absolute top-1/2 left-3 -translate-y-1/2 text-stone-400 dark:text-white/40 pointer-events-none peer-focus:text-[var(--primary)] transition-colors"
           >
-            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
           </svg>
-        )}
-      </div>
+          <kbd className="absolute top-1/2 right-3 -translate-y-1/2 hidden sm:inline-flex text-xs text-stone-400 dark:text-white/30 pointer-events-none">⌘K</kbd>
+          {isLoading && (
+            <svg
+              width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-stone-400 animate-spin"
+            >
+              <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+            </svg>
+          )}
+        </div>
 
-      {/* Click-away overlay */}
-      {isOpen && <div className="fixed inset-0 z-[199]" onClick={() => setIsOpen(false)} />}
-
-      {/* Dropdown results */}
-      {showDropdown && (
-        <div className="absolute top-full left-0 right-0 mt-2 z-[200] rounded-xl border border-stone-200 dark:border-white/10 bg-white dark:bg-gray-900 shadow-xl overflow-hidden">
+        {/* Desktop: click-away + dropdown */}
+        {isOpen && !isMobileOverlay && <div className="fixed inset-0 z-[199]" onClick={() => setIsOpen(false)} />}
+        {showDropdown && !isMobileOverlay && (
+          <div className="absolute top-full left-0 right-0 mt-2 z-[200] rounded-xl border border-stone-200 dark:border-white/10 bg-white dark:bg-gray-900 shadow-xl overflow-hidden">
           {hasResults && (
             <div ref={listRef} className="max-h-[min(400px,60vh)] overflow-y-auto p-1.5">
               {!query.trim() && recentSearches.length > 0 && (
@@ -351,6 +354,78 @@ export function SearchBar() {
         </div>
       )}
     </div>
+
+    {/* Mobile: fixed overlay with search input + results */}
+    {isMobileOverlay && (
+      <>
+        <div className="fixed inset-0 z-[199] bg-black/20 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
+        <div className="fixed top-0 left-0 right-0 z-[200] p-4 bg-white dark:bg-gray-900 border-b border-stone-200 dark:border-white/10 shadow-lg">
+          <div className="relative">
+            <input
+              ref={inputRef}
+              type="search"
+              placeholder="Search..."
+              value={query}
+              onChange={(e) => handleInputChange(e.target.value)}
+              onKeyDown={handleKeyDown}
+              autoFocus
+              className="w-full h-10 rounded-xl bg-stone-50 dark:bg-white/5 pl-9 pr-10 text-sm text-stone-950 dark:text-white outline-none border border-stone-200 dark:border-white/10 focus:border-stone-300 dark:focus:border-white/20 placeholder:text-stone-400 dark:placeholder:text-white/50 [&::-webkit-search-cancel-button]:appearance-none"
+              autoComplete="off"
+            />
+            <svg
+              width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+              className="absolute top-1/2 left-3 -translate-y-1/2 text-stone-400 dark:text-white/40 pointer-events-none"
+            >
+              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+            </svg>
+            <button type="button" onClick={() => setIsOpen(false)} className="absolute top-1/2 right-3 -translate-y-1/2 text-stone-400 hover:text-stone-600 dark:hover:text-white/70">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+              </svg>
+            </button>
+          </div>
+          {(hasResults || showEmpty) && (
+            <div className="mt-2 max-h-[60vh] overflow-y-auto">
+              {hasResults && (
+                <div ref={listRef} className="p-1.5">
+                  {!query.trim() && recentSearches.length > 0 && (
+                    <div className="px-3 py-1.5 text-xs font-medium text-stone-400 dark:text-stone-500">Recent</div>
+                  )}
+                  {displayItems.map((item, i) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className={`flex w-full cursor-pointer items-start gap-3 rounded-lg px-3 py-2 text-left transition-colors ${
+                        i === activeIndex
+                          ? 'bg-stone-100 dark:bg-white/5'
+                          : 'hover:bg-stone-50 dark:hover:bg-white/[0.02]'
+                      }`}
+                      onClick={() => selectResult(item)}
+                    >
+                      <div className="flex flex-1 flex-col gap-0.5 min-w-0">
+                        <div className="truncate text-sm font-medium text-stone-900 dark:text-white">{item.title}</div>
+                        {item.content && (
+                          <div
+                            className="line-clamp-1 text-xs text-stone-500 dark:text-stone-400 search-highlight"
+                            dangerouslySetInnerHTML={{ __html: item.content }}
+                          />
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {showEmpty && (
+                <div className="px-4 py-6 text-center text-sm text-stone-500 dark:text-stone-400">
+                  No results found
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </>
+    )}
+    </>
   );
 }
 
