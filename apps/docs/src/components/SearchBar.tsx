@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { navigate } from 'astro:transitions/client';
 import { useDebouncedCallback } from 'use-debounce';
 import { type DecoratedNavigationPage } from '@mintlify/models';
@@ -238,13 +239,9 @@ export function SearchBar() {
   const showEmpty = !hasQuery || isLoading || results.length > 0 ? false : true;
   const showDropdown = isOpen && (hasResults || showEmpty || hasQuery);
 
-  // On mobile, render as a fixed overlay; on desktop, render inline
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
-  const isMobileOverlay = isOpen && isMobile;
-
   return (
     <>
-      {/* Desktop: inline search input */}
+      {/* Inline search input (visible on desktop via parent CSS) */}
       <div className="relative">
         <div className="relative">
           <input
@@ -275,9 +272,9 @@ export function SearchBar() {
           )}
         </div>
 
-        {/* Desktop: click-away + dropdown */}
-        {isOpen && !isMobileOverlay && <div className="fixed inset-0 z-[199]" onClick={() => setIsOpen(false)} />}
-        {showDropdown && !isMobileOverlay && (
+        {/* Desktop: inline click-away + dropdown (hidden on mobile since parent is hidden) */}
+        {isOpen && <div className="fixed inset-0 z-[199]" onClick={() => setIsOpen(false)} />}
+        {showDropdown && (
           <div className="absolute top-full left-0 right-0 mt-2 z-[200] rounded-xl border border-stone-200 dark:border-white/10 bg-white dark:bg-gray-900 shadow-xl overflow-hidden">
           {hasResults && (
             <div ref={listRef} className="max-h-[min(400px,60vh)] overflow-y-auto p-1.5">
@@ -355,11 +352,11 @@ export function SearchBar() {
       )}
     </div>
 
-    {/* Mobile: fixed overlay with search input + results */}
-    {isMobileOverlay && (
+    {/* Search overlay — portaled to body for mobile (escapes hidden parent) and ⌘K trigger */}
+    {isOpen && createPortal(
       <>
-        <div className="fixed inset-0 z-[199] bg-black/20 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
-        <div className="fixed top-0 left-0 right-0 z-[200] p-4 bg-white dark:bg-gray-900 border-b border-stone-200 dark:border-white/10 shadow-lg">
+        <div className="lg:hidden fixed inset-0 z-[199] bg-black/20 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
+        <div className="lg:hidden fixed top-0 left-0 right-0 z-[200] p-4 bg-white dark:bg-gray-900 border-b border-stone-200 dark:border-white/10 shadow-lg">
           <div className="relative">
             <input
               ref={inputRef}
@@ -423,7 +420,8 @@ export function SearchBar() {
             </div>
           )}
         </div>
-      </>
+      </>,
+      document.body
     )}
     </>
   );
