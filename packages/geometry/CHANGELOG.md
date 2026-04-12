@@ -1,5 +1,14 @@
 # @dnd-kit/geometry
 
+## 0.4.0
+
+### Patch Changes
+
+- [#1971](https://github.com/clauderic/dnd-kit/pull/1971) [`8fc1962`](https://github.com/clauderic/dnd-kit/commit/8fc19626031c6e2b6592b99ff217323a9489defa) Thanks [@clauderic](https://github.com/clauderic)! - Added LICENSE file to all published packages.
+
+- Updated dependencies [[`8fc1962`](https://github.com/clauderic/dnd-kit/commit/8fc19626031c6e2b6592b99ff217323a9489defa)]:
+  - @dnd-kit/state@0.4.0
+
 ## 0.3.2
 
 ### Patch Changes
