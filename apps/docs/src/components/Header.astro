@@ -24,7 +24,7 @@ const activeVersion = versionTabs.find((v) => v.isActive);
 const hasVersions = versionTabs.length > 1;
 ---
 
-<header class="sticky top-0 w-full px-8 z-50">
+<header class="sticky top-0 w-full px-4 lg:px-8 z-50">
   <div
     class="absolute left-1/2 -translate-x-1/2 w-screen h-full backdrop-blur flex-none transition-colors duration-500 border-b border-gray-500/5 bg-white/95 supports-backdrop-blur:bg-white/60 dark:bg-background-dark/95 dark:supports-backdrop-blur:bg-background-dark/60 dark:border-white/5"
   >
@@ -36,8 +36,18 @@ const hasVersions = versionTabs.length > 1;
           <div
             class="h-full relative flex-1 flex items-center justify-between gap-x-4 min-w-0 lg:border-none"
           >
-            {/* Left: logo + version */}
+            {/* Left: hamburger (mobile) + logo + version */}
             <div class="flex items-center gap-3 shrink-0">
+              <button
+                type="button"
+                class="lg:hidden flex items-center justify-center w-8 h-8 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                aria-label="Open navigation"
+                data-mobile-nav-toggle
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" />
+                </svg>
+              </button>
               <a href="/" class="flex items-center shrink-0" data-logo-link>
                 <svg width="135" height="45" viewBox="0 0 474 158" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-[45px] w-auto" role="img" aria-label="dnd kit">
                   <rect x="4.5" y="4.5" width="465" height="149" rx="14.5" fill="black" stroke="url(#logo-grad)" stroke-width="9"/>
@@ -84,8 +94,8 @@ const hasVersions = versionTabs.length > 1;
               )}
             </div>
 
-            {/* Center: search */}
-            <div class="flex-1 hidden lg:flex items-center justify-center min-w-0">
+            {/* Center: search (desktop) */}
+            <div class="hidden lg:flex flex-1 items-center justify-center min-w-0">
               <div class="w-full max-w-sm">
                 <SearchBar client:load />
               </div>
@@ -125,15 +135,6 @@ const hasVersions = versionTabs.length > 1;
             </div>
           </div>
         </div>
-        {
-          pageTitle && (
-            <MobileNavToggle
-              pageTitle={pageTitle}
-              groupName={groupName}
-              client:load
-            />
-          )
-        }
       </div>
     </div>
   </div>
@@ -141,6 +142,13 @@ const hasVersions = versionTabs.length > 1;
 
 <script>
   document.addEventListener('astro:page-load', () => {
+    // Wire hamburger button to mobile sidebar
+    document.querySelectorAll('[data-mobile-nav-toggle]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        window.dispatchEvent(new CustomEvent('toggle-mobile-sidebar'));
+      });
+    });
+
     const dropdowns = document.querySelectorAll('[data-version-dropdown]');
     dropdowns.forEach((dropdown) => {
       const toggle = dropdown.querySelector('[data-version-toggle]');

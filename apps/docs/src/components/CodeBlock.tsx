@@ -1,11 +1,10 @@
 /**
  * Custom CodeBlock component.
  *
- * Highlighting is done at build time (SSR only) via Shiki. The client
- * only hydrates the interactive copy/Ask AI buttons — zero highlighter
- * JS is shipped to the browser.
+ * Highlighting runs at build time (SSR) via Shiki. The client only
+ * hydrates the copy/Ask AI buttons — no highlighter JS shipped.
  */
-import { useState, type ReactNode } from 'react';
+import { useState, useMemo, type ReactNode } from 'react';
 import { openAssistant } from './Assistant/events';
 
 const SUPPORTED_LANGS = new Set([
@@ -35,81 +34,74 @@ function extractLanguage(className?: string): string {
 }
 
 /**
- * SSR-only: highlight code with Shiki. This function is only called
- * during build (typeof window === 'undefined'). Vite will include the
- * Shiki imports in the SSR bundle but tree-shake them from the client.
+ * SSR-only Shiki highlighter. Initialized once at build time via
+ * top-level await. On the client, highlightCode is undefined.
  */
 let highlightCode: ((code: string, lang: string, highlight?: string) => string) | undefined;
 
 if (typeof window === 'undefined') {
-  // Server-side only — these imports end up in the SSR bundle, not the client
-  const initHighlighter = async () => {
-    const { createHighlighterCoreSync } = await import('shiki/core');
-    const { createJavaScriptRegexEngine } = await import('shiki/engine/javascript');
-    const { transformerNotationDiff, transformerNotationHighlight } = await import('@shikijs/transformers');
-    const monokai = (await import('shiki/themes/monokai.mjs')).default;
+  const { createHighlighterCoreSync } = await import('shiki/core');
+  const { createJavaScriptRegexEngine } = await import('shiki/engine/javascript');
+  const { transformerNotationDiff, transformerNotationHighlight } = await import('@shikijs/transformers');
+  const monokai = (await import('shiki/themes/monokai.mjs')).default;
 
-    const langs = await Promise.all([
-      import('shiki/langs/tsx.mjs'),
-      import('shiki/langs/typescript.mjs'),
-      import('shiki/langs/javascript.mjs'),
-      import('shiki/langs/json.mjs'),
-      import('shiki/langs/jsonc.mjs'),
-      import('shiki/langs/bash.mjs'),
-      import('shiki/langs/css.mjs'),
-      import('shiki/langs/html.mjs'),
-      import('shiki/langs/vue.mjs'),
-      import('shiki/langs/svelte.mjs'),
-    ]);
+  const langs = await Promise.all([
+    import('shiki/langs/tsx.mjs'),
+    import('shiki/langs/typescript.mjs'),
+    import('shiki/langs/javascript.mjs'),
+    import('shiki/langs/json.mjs'),
+    import('shiki/langs/jsonc.mjs'),
+    import('shiki/langs/bash.mjs'),
+    import('shiki/langs/css.mjs'),
+    import('shiki/langs/html.mjs'),
+    import('shiki/langs/vue.mjs'),
+    import('shiki/langs/svelte.mjs'),
+  ]);
 
-    const highlighter = createHighlighterCoreSync({
-      themes: [monokai],
-      langs: langs.map(l => l.default),
-      engine: createJavaScriptRegexEngine(),
+  const highlighter = createHighlighterCoreSync({
+    themes: [monokai],
+    langs: langs.map(l => l.default),
+    engine: createJavaScriptRegexEngine(),
+  });
+
+  highlightCode = (code: string, lang: string, highlight?: string) => {
+    const transformers: any[] = [
+      transformerNotationDiff({
+        classLineAdd: 'line-diff line-add',
+        classLineRemove: 'line-diff line-remove',
+      }),
+      transformerNotationHighlight({
+        classActiveLine: 'line-highlight',
+      }),
+    ];
+
+    if (highlight) {
+      try {
+        const lines = JSON.parse(highlight) as number[];
+        if (lines.length) {
+          transformers.push({
+            name: 'line-highlight-prop',
+            line(node: any, line: number) {
+              if (lines.includes(line)) {
+                (this as any).addClassToHast(node, 'line-highlight');
+              }
+            },
+          });
+        }
+      } catch {}
+    }
+
+    let effectiveLang = lang === 'text' ? 'javascript' : lang;
+    if (effectiveLang === 'json' && code.includes('[!code')) {
+      effectiveLang = 'jsonc';
+    }
+
+    return highlighter.codeToHtml(code, {
+      lang: effectiveLang,
+      theme: 'monokai',
+      transformers,
     });
-
-    return (code: string, lang: string, highlight?: string) => {
-      const transformers: any[] = [
-        transformerNotationDiff({
-          classLineAdd: 'line-diff line-add',
-          classLineRemove: 'line-diff line-remove',
-        }),
-        transformerNotationHighlight({
-          classActiveLine: 'line-highlight',
-        }),
-      ];
-
-      if (highlight) {
-        try {
-          const lines = JSON.parse(highlight) as number[];
-          if (lines.length) {
-            transformers.push({
-              name: 'line-highlight-prop',
-              line(node: any, line: number) {
-                if (lines.includes(line)) {
-                  (this as any).addClassToHast(node, 'line-highlight');
-                }
-              },
-            });
-          }
-        } catch {}
-      }
-
-      let effectiveLang = lang === 'text' ? 'javascript' : lang;
-      if (effectiveLang === 'json' && code.includes('[!code')) {
-        effectiveLang = 'jsonc';
-      }
-
-      return highlighter.codeToHtml(code, {
-        lang: effectiveLang,
-        theme: 'monokai',
-        transformers,
-      });
-    };
   };
-
-  // Top-level await in SSR module
-  highlightCode = await initHighlighter();
 }
 
 interface CodeBlockProps {
@@ -130,7 +122,7 @@ export function CodeBlock({
   const code = extractCode(children).replace(/\n$/, '');
   const lang = extractLanguage(className);
 
-  // SSR: highlight with Shiki. Client: HTML is already in the DOM.
+  // SSR: highlight with Shiki. Client: empty (HTML preserved by CodeGroup).
   const html = highlightCode ? highlightCode(code, lang, highlight) : '';
 
   const [copied, setCopied] = useState(false);

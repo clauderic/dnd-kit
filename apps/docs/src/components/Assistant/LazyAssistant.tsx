@@ -96,7 +96,7 @@ export function LazyAssistant() {
 
 function Placeholder({ onActivate, loading }: { onActivate: () => void; loading: boolean }) {
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] max-w-lg print:hidden">
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-lg print:hidden">
       <div
         className="rounded-2xl overflow-hidden bg-white/80 dark:bg-[#0b0b10]/80 backdrop-blur-xl backdrop-saturate-[180%] border border-gray-300/60 dark:border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
       >
