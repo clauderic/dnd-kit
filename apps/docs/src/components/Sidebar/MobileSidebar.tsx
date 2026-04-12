@@ -59,17 +59,6 @@ export function MobileSidebar({
         />
       )}
 
-      {isOpen && (
-        <button
-          type="button"
-          onClick={() => setIsOpen(false)}
-          className="fixed bg-white dark:bg-gray-900 rounded-full top-4 right-4 w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 shadow-md z-80 lg:hidden"
-          aria-label="Close navigation"
-        >
-          <Icon icon="x" iconLibrary="lucide" size={18} />
-        </button>
-      )}
-
       <div
         className={cn(
           'fixed top-0 left-0 bottom-0 w-[20rem] bg-white dark:bg-background-dark z-70 transition-transform duration-300 ease-in-out lg:hidden',
@@ -77,14 +66,26 @@ export function MobileSidebar({
         )}
       >
         <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between px-4 pt-6 pb-4">
-            <img
-              src="/images/logo/logo.svg"
-              alt="dnd kit"
-              width="84"
-              height="28"
-              className="h-7 w-auto"
-            />
+          <div className="flex items-center justify-between px-4 pt-5 pb-4">
+            <a href="/">
+              <img
+                src="/images/logo/logo.svg"
+                alt="dnd kit"
+                width="135"
+                height="45"
+                className="h-[38px] w-auto"
+              />
+            </a>
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-white/5"
+              aria-label="Close navigation"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+              </svg>
+            </button>
           </div>
 
           <nav className="flex-1 overflow-y-auto pt-4 pb-8">
