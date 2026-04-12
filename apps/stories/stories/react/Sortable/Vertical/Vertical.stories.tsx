@@ -79,6 +79,22 @@ export const Clone: Story = {
   },
 };
 
+export const DynamicFeedback: Story = {
+  name: 'Dynamic feedback',
+  args: {
+    debug: false,
+    plugins: (defaults) => [
+      ...defaults,
+      Feedback.configure({
+        feedback: (_source, manager) =>
+          manager.dragOperation.activatorEvent instanceof KeyboardEvent
+            ? 'clone'
+            : 'default',
+      }),
+    ],
+  },
+};
+
 export const RestrictAxis: Story = {
   name: 'Restrict axis',
   args: {

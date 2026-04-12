@@ -2,6 +2,8 @@ import type {Meta, StoryObj} from '@storybook/html-vite';
 
 import App from './SortableApp.ts';
 import sortableSource from './SortableApp.ts?raw';
+import DynamicFeedbackApp from './SortableDynamicFeedbackApp.ts';
+import sortableDynamicFeedbackSource from './SortableDynamicFeedbackApp.ts?raw';
 import {baseStyles, sortableStyles} from '@dnd-kit/stories-shared/styles/sandbox';
 
 const meta: Meta = {
@@ -18,6 +20,19 @@ export const BasicSetup: Story = {
     codesandbox: {
       files: {
         'src/App.ts': sortableSource,
+        'src/styles.css': [baseStyles, sortableStyles].join('\n\n'),
+      },
+    },
+  },
+};
+
+export const DynamicFeedback: Story = {
+  name: 'Dynamic feedback',
+  render: () => DynamicFeedbackApp(),
+  parameters: {
+    codesandbox: {
+      files: {
+        'src/App.ts': sortableDynamicFeedbackSource,
         'src/styles.css': [baseStyles, sortableStyles].join('\n\n'),
       },
     },

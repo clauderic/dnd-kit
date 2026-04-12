@@ -38,13 +38,17 @@ import {runDropAnimation, type DropAnimation} from './dropAnimation.ts';
 
 export type FeedbackType = 'default' | 'move' | 'clone' | 'none';
 
+export type FeedbackInput =
+  | FeedbackType
+  | ((source: Draggable, manager: DragDropManager) => FeedbackType);
+
 export interface KeyboardTransition {
   duration?: number;
   easing?: string;
 }
 
 export interface FeedbackOptions {
-  feedback?: FeedbackType;
+  feedback?: FeedbackInput;
   rootElement?: Element | ((source: Draggable) => Element);
   dropAnimation?: DropAnimation | null;
   keyboardTransition?: KeyboardTransition | null;
@@ -130,8 +134,12 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
     const {element} = source;
     const entityOptions = source.pluginConfig(Feedback);
-    const feedback =
+    const feedbackOption =
       entityOptions?.feedback ?? options?.feedback ?? 'default';
+    const feedback =
+      typeof feedbackOption === 'function'
+        ? feedbackOption(source, manager)
+        : feedbackOption;
 
     if (
       !element ||

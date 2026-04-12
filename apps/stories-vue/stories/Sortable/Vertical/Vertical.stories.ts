@@ -4,6 +4,8 @@ import SortableApp from '../SortableApp.vue';
 import sortableSource from '../SortableApp.vue?raw';
 import SortableDragHandleApp from '../SortableDragHandleApp.vue';
 import sortableDragHandleSource from '../SortableDragHandleApp.vue?raw';
+import SortableDynamicFeedbackApp from '../SortableDynamicFeedbackApp.vue';
+import sortableDynamicFeedbackSource from '../SortableDynamicFeedbackApp.vue?raw';
 import {
   baseStyles,
   handleStyles,
@@ -38,6 +40,19 @@ export const WithDragHandle: Story = {
       files: {
         'src/App.vue': sortableDragHandleSource,
         'src/styles.css': [baseStyles, sortableStyles, handleStyles].join('\n\n'),
+      },
+    },
+  },
+};
+
+export const DynamicFeedback: Story = {
+  name: 'Dynamic feedback',
+  render: () => ({components: {SortableDynamicFeedbackApp}, template: '<SortableDynamicFeedbackApp />'}),
+  parameters: {
+    codesandbox: {
+      files: {
+        'src/App.vue': sortableDynamicFeedbackSource,
+        'src/styles.css': [baseStyles, sortableStyles].join('\n\n'),
       },
     },
   },
