@@ -142,12 +142,17 @@ export function CodeBlock({
     });
   };
 
+  // On the server, render highlighted HTML. On the client, the HTML is
+  // already in the DOM from SSR — pass dangerouslySetInnerHTML only during
+  // SSR so React doesn't overwrite the existing content during hydration.
+  const isServer = typeof window === 'undefined';
+
   const codeContent = (
     <div className="relative group">
       <div
         className={`overflow-auto text-sm leading-6 bg-[#1e1e1e] ${isGrouped ? '' : 'rounded-2xl'}`}
         style={{ fontVariantLigatures: 'none' }}
-        dangerouslySetInnerHTML={{ __html: html }}
+        {...(isServer ? { dangerouslySetInnerHTML: { __html: html } } : {})}
         suppressHydrationWarning
       />
       <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
