@@ -51,6 +51,7 @@ export function SearchBar() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [recentSearches, setRecentSearches] = useState<SearchItem[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const mobileInputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -80,10 +81,12 @@ export function SearchBar() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Focus input when opened
+  // Focus input when opened — try mobile input first, then desktop
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 50);
+      setTimeout(() => {
+        mobileInputRef.current?.focus() || inputRef.current?.focus();
+      }, 50);
     } else {
       setQuery('');
       setResults([]);
@@ -245,7 +248,7 @@ export function SearchBar() {
       <div className="relative">
         <div className="relative">
           <input
-            ref={isMobileOverlay ? undefined : inputRef}
+            ref={inputRef}
             type="search"
             placeholder="Search..."
             value={query}
@@ -359,7 +362,7 @@ export function SearchBar() {
         <div className="lg:hidden fixed top-0 left-0 right-0 z-[200] p-4 bg-white dark:bg-gray-900 border-b border-stone-200 dark:border-white/10 shadow-lg">
           <div className="relative">
             <input
-              ref={inputRef}
+              ref={mobileInputRef}
               type="search"
               placeholder="Search..."
               value={query}
