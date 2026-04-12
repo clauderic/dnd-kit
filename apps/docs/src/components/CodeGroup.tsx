@@ -1,10 +1,12 @@
 /**
  * Custom CodeGroup component — tabbed code blocks.
  *
- * All CodeBlock children are pre-rendered at build time (SSR).
- * Tab switching just toggles visibility — no client-side highlighting needed.
+ * All CodeBlock children are rendered at build time (SSR) with Shiki
+ * highlighting. On the client, tab switching uses DOM manipulation to
+ * toggle visibility — React never re-renders the code content, so the
+ * SSR HTML is preserved.
  */
-import { useState, Children, isValidElement, type ReactElement } from 'react';
+import { useState, useRef, useEffect, Children, isValidElement, type ReactElement } from 'react';
 import { CodeBlock } from './CodeBlock';
 
 interface CodeGroupProps {
@@ -14,13 +16,25 @@ interface CodeGroupProps {
 export function CodeGroup({ children }: CodeGroupProps) {
   const blocks = Children.toArray(children).filter(isValidElement) as ReactElement[];
   const [selected, setSelected] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const tabs = blocks.map((block, i) => ({
+    label: block.props?.filename || `Tab ${i + 1}`,
+    index: i,
+  }));
+
+  // Toggle visibility via DOM instead of React re-render
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const panels = container.querySelectorAll<HTMLElement>('[data-code-panel]');
+    panels.forEach((panel, i) => {
+      panel.style.display = i === selected ? '' : 'none';
+    });
+  }, [selected]);
 
   if (blocks.length === 0) return null;
-
-  const tabs = blocks.map((block, i) => {
-    const filename = block.props?.filename || `Tab ${i + 1}`;
-    return { label: filename, index: i };
-  });
 
   return (
     <div className="not-prose code-group my-5 rounded-2xl overflow-hidden border border-white/5">
@@ -40,16 +54,21 @@ export function CodeGroup({ children }: CodeGroupProps) {
           </button>
         ))}
       </div>
-      {/* Render ALL blocks at build time, toggle visibility on the client */}
-      {blocks.map((block, i) => (
-        <div key={i} className={i === selected ? '' : 'hidden'}>
-          <CodeBlock
-            {...block.props}
-            filename={undefined}
-            isGrouped
-          />
-        </div>
-      ))}
+      <div ref={containerRef}>
+        {blocks.map((block, i) => (
+          <div
+            key={i}
+            data-code-panel
+            style={{ display: i === selected ? undefined : 'none' }}
+          >
+            <CodeBlock
+              {...block.props}
+              filename={undefined}
+              isGrouped
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
