@@ -61,6 +61,7 @@
       "devDependencies": {
         "@marko/runtime-tags": "6.0.155",
         "@marko/vite": "^4.0.0",
+        "@playwright/test": "^1.58.2",
         "@storybook/addon-links": "^10.1.0",
         "@storybook/marko": "^10.1.0",
         "@storybook/marko-vite": "^4.1.0",

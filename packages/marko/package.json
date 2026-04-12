@@ -1,12 +1,22 @@
 {
   "name": "@dnd-kit/marko",
   "version": "0.0.1",
+  "description": "Marko v6 adapter for @dnd-kit/dom",
+  "keywords": [
+    "dnd-kit",
+    "drag-and-drop",
+    "marko",
+    "marko-tags",
+    "marko-v6"
+  ],
+  "author": "Claudéric Demers",
   "type": "module",
   "license": "MIT",
   "sideEffects": false,
   "files": [
     "LICENSE",
     "README.md",
+    "CHANGELOG.md",
     "marko.json",
     "tags",
     "dist"

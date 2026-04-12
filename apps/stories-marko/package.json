@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "storybook dev -p 6011",
     "build": "storybook build",
-    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf storybook-static"
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf storybook-static",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@dnd-kit/abstract": "*",
@@ -19,6 +21,7 @@
   "devDependencies": {
     "@marko/runtime-tags": "6.0.155",
     "@marko/vite": "^4.0.0",
+    "@playwright/test": "^1.58.2",
     "@storybook/addon-links": "^10.1.0",
     "@storybook/marko": "^10.1.0",
     "@storybook/marko-vite": "^4.1.0",

@@ -40,7 +40,7 @@ static const withoutOptimistic = (defaults: Plugins) =>
   defaults.filter((p) => p !== OptimisticSortingPlugin);
 
 <let-global/manager from="__dndKit_manager"/>
-<let/entity=(undefined as Sortable | undefined)/>
+<let/entity=undefined as Sortable | undefined>
 
 static const _makeBox = () => ({
   el: undefined as HTMLElement | undefined,
@@ -48,7 +48,7 @@ static const _makeBox = () => ({
   source: undefined as HTMLElement | undefined,
   target: undefined as HTMLElement | undefined,
 });
-<let/_pending=_makeBox()/>
+<let/_pending=_makeBox()>
 
 <lifecycle
   onMount() {
@@ -79,7 +79,30 @@ static const _makeBox = () => ({
     if (entity) {
       const e = entity;
       e.id = input.id;
-      e.disabled = input.disabled ?? false;
+      // Set draggable.disabled from input, but compute droppable.disabled
+      // separately: while this entity is the active drag source, its droppable
+      // must be disabled so it cannot win collision detection over real targets.
+      //
+      // Why: the Feedback plugin applies position:fixed + CSS translate to the
+      // source element, making it visually follow the pointer. The DOM Droppable's
+      // PositionObserver continuously refreshes droppable.shape from
+      // getBoundingClientRect(), so item1.droppable.shape always equals the
+      // pointer position. When the pointer reaches item3's center, item1 and
+      // item3 have identical shapes (same position, same collision score = Inf).
+      // item1 wins the tie because it is registered first in the droppables
+      // registry. item3 is never selected as the target.
+      //
+      // Disabling the source's droppable (via the Sortable.disabled setter) was
+      // tried in drag-drop-provider, but Marko's onUpdate overrides it on every
+      // re-render because Sortable.disabled is a single setter for both
+      // draggable and droppable. By computing it here in onUpdate itself, the
+      // value is always correct after each Marko flush.
+      e.draggable.disabled = input.disabled ?? false;
+      e.droppable.disabled =
+        (input.disabled ?? false) ||
+        (manager != null &&
+          !manager.dragOperation.status.idle &&
+          manager.dragOperation.source?.id === e.id);
       if (input.data !== undefined) e.data = input.data;
       batch(() => {
         e.group = input.group;
@@ -115,30 +138,46 @@ static const _makeBox = () => ({
     );
     (this as any).cleanup = e.register();
     (this as any).initialized = true;
-    if (_pending.el !== undefined) { e.element = _pending.el; _pending.el = undefined; }
-    if (_pending.handle !== undefined) { e.handle = _pending.handle; _pending.handle = undefined; }
-    if (_pending.source !== undefined) { e.source = _pending.source; _pending.source = undefined; }
-    if (_pending.target !== undefined) { e.target = _pending.target; _pending.target = undefined; }
+    if (_pending.el !== undefined) {
+      e.element = _pending.el;
+      _pending.el = undefined;
+    }
+    if (_pending.handle !== undefined) {
+      e.handle = _pending.handle;
+      _pending.handle = undefined;
+    }
+    if (_pending.source !== undefined) {
+      e.source = _pending.source;
+      _pending.source = undefined;
+    }
+    if (_pending.target !== undefined) {
+      e.target = _pending.target;
+      _pending.target = undefined;
+    }
     entity = e;
   }
   onDestroy() {
     (this as any).cleanup?.();
     entity?.destroy();
   }
-/>
+>
 
 <create-deep-signal/tracked target=entity/>
 
-// Reading `manager != null` here creates a reactive dependency on `manager`.
+// Reading  here creates a reactive dependency on .
 // This is semantically correct (state is false with no manager) AND ensures
 // create-sortable re-renders when manager changes, triggering onUpdate so
 // entities can be (re-)initialized. This replaces the removed comma expression.
-<const/_isDragging=(manager != null && ((tracked as any)?.isDragging ?? false))/>
-<const/_isDropping=(manager != null && ((tracked as any)?.isDropping ?? false))/>
-<const/_isDragSource=(manager != null && ((tracked as any)?.isDragSource ?? false))/>
-<const/_isDropTarget=(manager != null && ((tracked as any)?.isDropTarget ?? false))/>
+<const/_isDragging=manager != null && ((tracked as any)?.isDragging ?? false)>
+<const/_isDropping=manager != null && ((tracked as any)?.isDropping ?? false)>
+<const/_isDragSource=(
+  manager != null && ((tracked as any)?.isDragSource ?? false)
+)>
+<const/_isDropTarget=(
+  manager != null && ((tracked as any)?.isDropTarget ?? false)
+)>
 
-<const/_s=({
+<const/_s={
   isDragging: _isDragging,
   isDropping: _isDropping,
   isDragSource: _isDragSource,
@@ -146,27 +185,45 @@ static const _makeBox = () => ({
   setElement: (el: HTMLElement | undefined) => {
     if (entity) {
       const e = entity;
-      if (!el && e.element?.isConnected && !e.manager?.dragOperation.status.idle) return;
+      if (
+        !el &&
+        e.element?.isConnected &&
+        !e.manager?.dragOperation.status.idle
+      )
+        return;
       e.element = el;
-    } else if (el) { _pending.el = el; }
+    } else if (el) {
+      _pending.el = el;
+    }
   },
   setHandle: (el: HTMLElement | undefined) => {
-    if (entity) { const e = entity; e.handle = el; } else if (el) { _pending.handle = el; }
+    if (entity) {
+      const e = entity;
+      e.handle = el;
+    } else if (el) {
+      _pending.handle = el;
+    }
   },
   setSource: (el: HTMLElement | undefined) => {
     if (entity) {
       const e = entity;
-      if (!el && e.source?.isConnected && !e.manager?.dragOperation.status.idle) return;
+      if (!el && e.source?.isConnected && !e.manager?.dragOperation.status.idle)
+        return;
       e.source = el;
-    } else if (el) { _pending.source = el; }
+    } else if (el) {
+      _pending.source = el;
+    }
   },
   setTarget: (el: HTMLElement | undefined) => {
     if (entity) {
       const e = entity;
-      if (!el && e.target?.isConnected && !e.manager?.dragOperation.status.idle) return;
+      if (!el && e.target?.isConnected && !e.manager?.dragOperation.status.idle)
+        return;
       e.target = el;
-    } else if (el) { _pending.target = el; }
+    } else if (el) {
+      _pending.target = el;
+    }
   },
-} as SortableMethods)/>
+} as SortableMethods>
 
 <${input.content}(_s)/>

@@ -1,11 +1,16 @@
-export interface Input { id: string; label: string; }
+export interface Input {
+  id: string;
+  content?: Marko.Body;
+}
 
 <create-droppable|droppable| id=input.id>
-  <div/$el class=('zone' + (droppable.isDropTarget ? ' over' : ''))>
+  <div/$el class=('droppable' + (droppable.isDropTarget ? ' active' : ''))>
     <lifecycle
       onMount() { droppable.setElement($el()); }
       onDestroy() { droppable.setElement(undefined); }
     />
-    ${input.label}
+    <if=input.content>
+      <${input.content}/>
+    </if>
   </div>
 </create-droppable>

@@ -26,7 +26,9 @@ new DragDropManager({
 
 <let-global/dndManager from="__dndKit_manager"/>
 
-<const/_=(() => { if ($global) ($global as any).__dndKit_manager = manager; })()/>
+<const/_=(() => {
+  if ($global) ($global as any).__dndKit_manager = manager;
+})()>
 
 <lifecycle
   onMount() {
@@ -37,14 +39,14 @@ new DragDropManager({
   onUpdate() {
     if ((this as any).prevManager !== manager) {
       (this as any).prevManager = manager;
-      ((this as any).cleanups as Array<() => void> | undefined)?.forEach((fn) => fn());
+      ((this as any).cleanups as Array<() => void> | undefined)?.forEach((fn) =>
+        fn(),
+      );
       dndManager = manager;
       (this as any)._setupListeners();
     }
   }
   _setupListeners() {
-    // Reads `manager` directly from outer scope — no typed parameter needed,
-    // avoiding TypeScript angle-bracket annotations in lifecycle method signatures.
     const m = manager;
     const { renderer, trackRendering } = createRenderer();
     m.renderer = renderer;
@@ -71,12 +73,14 @@ new DragDropManager({
     ];
   }
   onDestroy() {
-    ((this as any).cleanups as Array<() => void> | undefined)?.forEach((fn) => fn());
+    ((this as any).cleanups as Array<() => void> | undefined)?.forEach((fn) =>
+      fn(),
+    );
     dndManager = undefined as any;
     if (!input.manager) {
       manager.destroy();
     }
   }
-/>
+>
 
 <${input.content}/>

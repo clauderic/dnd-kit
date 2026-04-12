@@ -12,8 +12,7 @@
  * Marko schedules renders via: schedule() → queueMicrotask(flushAndWaitFrame)
  * flushAndWaitFrame calls run() SYNCHRONOUSLY (all renders + effects complete).
  *
- * Double queueMicrotask ensures we resolve after Marko's flush even under
- * re-entrance (trackRendering called multiple times before flush completes):
+ * Double queueMicrotask ensures we resolve after Marko's flush:
  *   callback() → Marko queueMicrotask[A: flushAndWaitFrame]
  *   queueMicrotask[B: () => queueMicrotask(resolve)]
  *   [A] fires → run() → all renders + effects complete

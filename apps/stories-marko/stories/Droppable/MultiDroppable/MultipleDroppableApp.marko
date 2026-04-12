@@ -1,0 +1,28 @@
+import DroppableZone from "../DroppableZone.marko";
+import DraggableItem from "../DraggableItem.marko";
+
+static const droppables = ["A", "B", "C"];
+
+<let/parent=undefined as string | undefined>
+
+<drag-drop-provider onDragEnd(event) {
+    if (!event.canceled && event.operation.target) {
+        parent = String(event.operation.target.id);
+    }
+}>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 500px; margin: 0 auto;">
+        <div style="display: flex; align-items: center; justify-content: center;">
+            <if=parent == null>
+                <DraggableItem id="item-1" label="Drag me"/>
+            </if>
+        </div>
+        <for|id| of=droppables>
+            <DroppableZone id=id>
+                <if=parent === id>
+                    <DraggableItem id="item-1" label="Drag me"/>
+                </if>
+                <else>Drop here</else>
+            </DroppableZone>
+        </for>
+    </div>
+</drag-drop-provider>
