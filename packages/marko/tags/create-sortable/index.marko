@@ -112,6 +112,26 @@ static const _makeBox = () => ({
       if (e.manager?.dragOperation.status.idle && e.transition?.idle) {
         e.refreshShape();
       }
+      // Sync all remaining props that can change at runtime. Not synced at
+      // init because the constructor applies them. Any update after mount
+      // must propagate to the live entity so it reflects current configuration.
+      // sensors/modifiers: applied to the draggable; affects which input
+      //   devices can initiate a drag and how coordinates are transformed.
+      // plugins: applied to the draggable's plugin registry; controls
+      //   per-entity plugins (e.g. custom feedback, keyboard handling).
+      // accept/type: applied to the droppable; controls which draggables
+      //   are accepted and how this sortable is categorised for sorting.
+      // collisionDetector/collisionPriority: applied to the droppable;
+      //   controls collision detection algorithm and tie-breaking priority.
+      e.sensors = input.sensors;
+      e.modifiers = input.modifiers;
+      e.plugins = input.plugins ?? withoutOptimistic;
+      if (input.accept !== undefined) e.accept = input.accept;
+      if (input.type !== undefined) e.type = input.type;
+      if (input.collisionDetector !== undefined)
+        e.collisionDetector = input.collisionDetector;
+      if (input.collisionPriority !== undefined)
+        e.collisionPriority = input.collisionPriority;
     }
   }
   _initEntity() {
