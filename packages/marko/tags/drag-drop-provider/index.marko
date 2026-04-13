@@ -17,12 +17,21 @@ export interface Input extends DragDropManagerInput {
   onCollision?: (event: any, manager: any) => void;
 }
 
+// SSR safety: DragDropManager is browser-only. During SSR (no window), we
+// defer creation to onMount via a null placeholder. All child tags guard
+// against a null manager via `manager != null` checks in their own onUpdate.
+// The content slot renders normally on the server — it just has no drag
+// behaviour until the client hydrates and onMount fires.
+static const isBrowser = typeof window !== "undefined";
+
 <let/manager=(input.manager as DragDropManager<any, any, any>) ??
-new DragDropManager({
-  plugins: resolveCustomizable(input.plugins, defaultPreset.plugins),
-  sensors: resolveCustomizable(input.sensors, defaultPreset.sensors),
-  modifiers: resolveCustomizable(input.modifiers, defaultPreset.modifiers),
-})>
+(isBrowser
+  ? new DragDropManager({
+      plugins: resolveCustomizable(input.plugins, defaultPreset.plugins),
+      sensors: resolveCustomizable(input.sensors, defaultPreset.sensors),
+      modifiers: resolveCustomizable(input.modifiers, defaultPreset.modifiers),
+    })
+  : (undefined as any))>
 
 <let-global/dndManager from="__dndKit_manager"/>
 
@@ -32,6 +41,19 @@ new DragDropManager({
 
 <lifecycle
   onMount() {
+    // If manager was not created during SSR (isBrowser was false at render
+    // time), create it now on the client before setting up listeners.
+    if (!manager && !input.manager) {
+      manager = new DragDropManager({
+        plugins: resolveCustomizable(input.plugins, defaultPreset.plugins),
+        sensors: resolveCustomizable(input.sensors, defaultPreset.sensors),
+        modifiers: resolveCustomizable(
+          input.modifiers,
+          defaultPreset.modifiers,
+        ),
+      });
+      if ($global) ($global as any).__dndKit_manager = manager;
+    }
     (this as any).prevManager = manager;
     dndManager = manager;
     (this as any)._setupListeners();
@@ -48,6 +70,7 @@ new DragDropManager({
   }
   _setupListeners() {
     const m = manager;
+    if (!m) return; // SSR guard: no manager yet on server
     const { renderer, trackRendering } = createRenderer();
     m.renderer = renderer;
 
@@ -77,7 +100,7 @@ new DragDropManager({
       fn(),
     );
     dndManager = undefined as any;
-    if (!input.manager) {
+    if (!input.manager && manager) {
       manager.destroy();
     }
   }

@@ -8,7 +8,8 @@
     "build": "storybook build",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf storybook-static",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "test:ssr": "bun run tests/ssr.spec.ts"
   },
   "dependencies": {
     "@dnd-kit/abstract": "*",

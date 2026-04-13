@@ -4,6 +4,7 @@ const CI = !!process.env.CI;
 
 export default defineConfig({
   testDir: './tests',
+  testIgnore: ['**/ssr.spec.ts'],
   timeout: 15_000,
   expect: {
     timeout: 5_000,
@@ -14,7 +15,7 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:6011',
     actionTimeout: 5_000,
-    // trace: 'on',
+    trace: 'on',
   },
   projects: [
     {
