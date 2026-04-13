@@ -1,5 +1,45 @@
 # @dnd-kit/helpers
 
+## 0.4.0
+
+### Minor Changes
+
+- [#1915](https://github.com/clauderic/dnd-kit/pull/1915) [`9b24dff`](https://github.com/clauderic/dnd-kit/commit/9b24dffde9a4b58140e5dd8c10e2766dabe42c00) Thanks [@clauderic](https://github.com/clauderic)! - Redesign event type system to follow the DOM EventMap pattern. Introduces `DragDropEventMap` for event object types and `DragDropEventHandlers` for event handler signatures, replacing the ambiguously named `DragDropEvents`. Event type aliases (`CollisionEvent`, `DragStartEvent`, etc.) now derive directly from `DragDropEventMap` rather than using `Parameters<>` extraction.
+
+  ### Migration guide
+
+  - **`DragDropEvents`** has been split into two types:
+    - `DragDropEventMap` — maps event names to event object types (like `WindowEventMap`)
+    - `DragDropEventHandlers` — maps event names to `(event, manager) => void` handler signatures
+  - If you were importing `DragDropEvents` to type **event objects**, use `DragDropEventMap` instead:
+    ```ts
+    // Before
+    type MyEvent = Parameters<DragDropEvents<D, P, M>['dragend']>[0];
+    // After
+    type MyEvent = DragDropEventMap<D, P, M>['dragend'];
+    ```
+  - If you were importing `DragDropEvents` to type **event handlers**, use `DragDropEventHandlers` instead:
+    ```ts
+    // Before
+    const handler: DragDropEvents<D, P, M>['dragend'] = (event, manager) => {};
+    // After
+    const handler: DragDropEventHandlers<D, P, M>['dragend'] = (
+      event,
+      manager
+    ) => {};
+    ```
+  - The `DragDropEvents` re-export from `@dnd-kit/react` and `@dnd-kit/solid` has been removed. Import `DragDropEventMap` or `DragDropEventHandlers` from `@dnd-kit/abstract` directly if needed.
+  - Convenience aliases (`CollisionEvent`, `DragStartEvent`, `DragEndEvent`, etc.) are unchanged and continue to work as before.
+
+### Patch Changes
+
+- [#1954](https://github.com/clauderic/dnd-kit/pull/1954) [`e5b153e`](https://github.com/clauderic/dnd-kit/commit/e5b153e80068e6b768cee8cf61d6b9e299805719) Thanks [@thexeromin](https://github.com/thexeromin)! - fix: correct JSDoc comment for arraySwap
+
+- [#1971](https://github.com/clauderic/dnd-kit/pull/1971) [`8fc1962`](https://github.com/clauderic/dnd-kit/commit/8fc19626031c6e2b6592b99ff217323a9489defa) Thanks [@clauderic](https://github.com/clauderic)! - Added LICENSE file to all published packages.
+
+- Updated dependencies [[`cde61e4`](https://github.com/clauderic/dnd-kit/commit/cde61e4b4551f9094f44d9281f65028f85df9813), [`a5935e0`](https://github.com/clauderic/dnd-kit/commit/a5935e0ede16e05bddb2102c8850aa9c8754d1cc), [`462e435`](https://github.com/clauderic/dnd-kit/commit/462e43511966506367142146e23feb124d9c03eb), [`9b24dff`](https://github.com/clauderic/dnd-kit/commit/9b24dffde9a4b58140e5dd8c10e2766dabe42c00), [`8fc1962`](https://github.com/clauderic/dnd-kit/commit/8fc19626031c6e2b6592b99ff217323a9489defa), [`8115a57`](https://github.com/clauderic/dnd-kit/commit/8115a57f1191af78dd641933af34c9c37f8dcb3c), [`e69387d`](https://github.com/clauderic/dnd-kit/commit/e69387d2906872310e56ecea4d75f7fa18db4f56), [`4e35963`](https://github.com/clauderic/dnd-kit/commit/4e35963d427d835285a1f10df96899502d327d68)]:
+  - @dnd-kit/abstract@0.4.0
+
 ## 0.3.2
 
 ### Patch Changes
