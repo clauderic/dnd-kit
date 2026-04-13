@@ -74,6 +74,10 @@ const isHome = path === '/';
 </script>
 
 <script>
+  import '../scripts/mintlify-analytics';
+</script>
+
+<script>
   // Fix unitless inline style values from compiled MDX.
   // @mintlify/astro outputs style="width:130;height:80" instead of "width:130px;height:80px"
   document.addEventListener('astro:page-load', () => {
