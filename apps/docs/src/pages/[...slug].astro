@@ -156,9 +156,35 @@ const navbarConfig = {
         : link
     ),
 };
+
+// Canonical URL mapping: legacy pages point to their latest equivalents
+const legacyCanonicalMap: Record<string, string> = {
+  '/legacy/introduction/installation': '/quickstart',
+  '/legacy/introduction/getting-started': '/quickstart',
+  '/legacy/api-documentation/draggable': '/concepts/draggable',
+  '/legacy/api-documentation/draggable/use-draggable': '/react/hooks/use-draggable',
+  '/legacy/api-documentation/draggable/drag-overlay': '/react/components/drag-overlay',
+  '/legacy/api-documentation/droppable': '/concepts/droppable',
+  '/legacy/api-documentation/droppable/use-droppable': '/react/hooks/use-droppable',
+  '/legacy/api-documentation/context-provider/dnd-context': '/react/components/drag-drop-provider',
+  '/legacy/api-documentation/context-provider/use-dnd-context': '/concepts/drag-drop-manager',
+  '/legacy/api-documentation/context-provider/use-dnd-monitor': '/react/hooks/use-drag-drop-monitor',
+  '/legacy/api-documentation/context-provider/collision-detection-algorithms': '/concepts/droppable',
+  '/legacy/api-documentation/sensors': '/extend/sensors',
+  '/legacy/api-documentation/sensors/pointer': '/extend/sensors/pointer-sensor',
+  '/legacy/api-documentation/sensors/keyboard': '/extend/sensors/keyboard-sensor',
+  '/legacy/api-documentation/sensors/mouse': '/extend/sensors/pointer-sensor',
+  '/legacy/api-documentation/sensors/touch': '/extend/sensors/pointer-sensor',
+  '/legacy/api-documentation/modifiers': '/extend/modifiers',
+  '/legacy/presets/sortable/overview': '/concepts/sortable',
+  '/legacy/presets/sortable/sortable-context': '/concepts/sortable',
+  '/legacy/presets/sortable/use-sortable': '/react/hooks/use-sortable',
+  '/legacy/guides/accessibility': '/extend/plugins/accessibility',
+};
+const canonicalPath = (isLegacy && legacyCanonicalMap[currentPath]) || currentPath;
 ---
 
-<Layout title={doc.data.metaTitle || doc.data.seo?.title || `${doc.data.title || doc.id} - dnd kit`} description={doc.data.seo?.description || doc.data.description} path={currentPath}>
+<Layout title={doc.data.metaTitle || doc.data.seo?.title || `${doc.data.title || doc.id} - dnd kit`} description={doc.data.seo?.description || doc.data.description} path={canonicalPath}>
   <div>
     <Header
       pageTitle={doc.data.title || doc.id}
