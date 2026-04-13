@@ -57,10 +57,6 @@ const sessionId = getOrCreate(sessionStorage, SESSION_ID_KEY, 'session');
 // Event builder
 // ---------------------------------------------------------------------------
 
-function uuid(): string {
-  return crypto.randomUUID();
-}
-
 interface AnalyticsEvent {
   event_id: string;
   subdomain: string;
@@ -111,7 +107,7 @@ function buildEvent(
   }
 
   return {
-    event_id: uuid(),
+    event_id: crypto.randomUUID(),
     subdomain: SUBDOMAIN,
     anon_id: anonId,
     session_id: sessionId,
@@ -188,16 +184,34 @@ document.addEventListener('visibilitychange', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Public API — track page views on Astro navigation
+// Public API
+// ---------------------------------------------------------------------------
+
+/**
+ * Track a named event with optional extra properties.
+ *
+ * Event names follow the Mintlify convention: `docs.<noun>.<action>`
+ * (e.g. `docs.search.query`, `docs.code_block.copy`).
+ */
+export function trackEvent(
+  eventName: string,
+  extra: Record<string, string> = {},
+): void {
+  enqueue(buildEvent(eventName, extra));
+}
+
+// Expose on window so React component islands can call it.
+(window as any).__mintlifyTrackEvent = trackEvent;
+
+// ---------------------------------------------------------------------------
+// Auto-track page views on Astro navigation
 // ---------------------------------------------------------------------------
 
 function trackPageView(): void {
-  enqueue(
-    buildEvent('docs.content.view', {
-      subdomain: SUBDOMAIN,
-      title: document.title,
-    }),
-  );
+  trackEvent('docs.content.view', {
+    subdomain: SUBDOMAIN,
+    title: document.title,
+  });
 }
 
 // `astro:page-load` fires on initial load and after every client-side

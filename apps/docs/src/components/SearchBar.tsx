@@ -4,6 +4,7 @@ import { navigate } from 'astro:transitions/client';
 import { useDebouncedCallback } from 'use-debounce';
 import { type DecoratedNavigationPage } from '@mintlify/models';
 import { openAssistant } from './Assistant/events';
+import { trackEvent } from '../lib/analytics';
 
 const SEARCH_OPEN_EVENT = 'open-search';
 
@@ -95,6 +96,7 @@ export function SearchBar() {
   }, [isOpen]);
 
   const performSearch = useCallback(async (searchQuery: string) => {
+    trackEvent('docs.search.query', { query: searchQuery });
     setIsLoading(true);
     try {
       const response = await fetch(
@@ -173,6 +175,7 @@ export function SearchBar() {
   };
 
   const selectResult = (item: SearchItem) => {
+    trackEvent('docs.search.result_click', { title: item.title, link: item.link });
     setIsOpen(false);
     navigate(item.link);
     try {
@@ -209,6 +212,7 @@ export function SearchBar() {
       }
     } else if (e.key === 'Escape') {
       e.preventDefault();
+      trackEvent('docs.search.close');
       setIsOpen(false);
     }
   };
