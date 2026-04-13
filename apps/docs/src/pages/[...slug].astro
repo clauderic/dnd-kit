@@ -148,11 +148,13 @@ const baseNavbarConfig = (docsConfig as any).navbar;
 const isLegacy = activeVersion?.version === 'Legacy';
 const navbarConfig = {
   ...baseNavbarConfig,
-  links: baseNavbarConfig?.links?.map((link: any) =>
-    link.label === 'Examples' && isLegacy
-      ? { ...link, href: 'https://master--5fc05e08a4a65d0021ae0bf2.chromatic.com' }
-      : link
-  ),
+  links: baseNavbarConfig?.links
+    ?.filter((link: any) => !(link.label === 'Changelog' && isLegacy))
+    .map((link: any) =>
+      link.label === 'Examples' && isLegacy
+        ? { ...link, href: 'https://master--5fc05e08a4a65d0021ae0bf2.chromatic.com' }
+        : link
+    ),
 };
 ---
 
