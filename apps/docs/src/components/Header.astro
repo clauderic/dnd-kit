@@ -1,6 +1,6 @@
 ---
 import { SearchBar } from './SearchBar';
-import { MobileActionButtons, MobileNavToggle } from './MobileHeaderActions';
+import { MobileActionButtons, MobileNavToggle, TabletSearchButton } from './MobileHeaderActions';
 import { ThemeToggle } from './ThemeToggle';
 
 type VersionInfo = { name: string; href: string; isActive: boolean };
@@ -103,8 +103,8 @@ const hasVersions = versionTabs.length > 1;
 
             <MobileActionButtons client:load />
 
-            {/* Right: links + icons */}
-            <div class="hidden lg:flex items-center gap-4 shrink-0">
+            {/* Right: navbar links (tablet+) + icons */}
+            <div class="hidden md:flex items-center gap-4 shrink-0">
               {navbarConfig?.links?.map((link) => {
                 const isExternal = link.href.startsWith('http');
                 return (
@@ -118,6 +118,9 @@ const hasVersions = versionTabs.length > 1;
                   </a>
                 );
               })}
+              <div class="lg:hidden">
+                <TabletSearchButton client:load />
+              </div>
               {navbarConfig?.github && (
                 <a
                   href={navbarConfig.github}

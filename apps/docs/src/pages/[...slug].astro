@@ -143,8 +143,17 @@ const anchors = anchorTabs.map((a) => ({
   isActive: a.isActive,
 }));
 
-// Navbar config
-const navbarConfig = (docsConfig as any).navbar;
+// Navbar config — override Examples link for Legacy version
+const baseNavbarConfig = (docsConfig as any).navbar;
+const isLegacy = activeVersion?.version === 'Legacy';
+const navbarConfig = {
+  ...baseNavbarConfig,
+  links: baseNavbarConfig?.links?.map((link: any) =>
+    link.label === 'Examples' && isLegacy
+      ? { ...link, href: 'https://master--5fc05e08a4a65d0021ae0bf2.chromatic.com' }
+      : link
+  ),
+};
 ---
 
 <Layout title={doc.data.metaTitle || doc.data.seo?.title || `${doc.data.title || doc.id} - dnd kit`} description={doc.data.seo?.description || doc.data.description} path={currentPath}>
@@ -159,8 +168,9 @@ const navbarConfig = (docsConfig as any).navbar;
     <MobileSidebar
       navigation={page.navigation}
       currentPath={currentPath}
-      tabs={tabs || []}
+      tabs={versionTabs}
       anchors={anchors}
+      navbarLinks={navbarConfig?.links || []}
       client:load
     />
 
