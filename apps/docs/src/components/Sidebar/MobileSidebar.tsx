@@ -8,11 +8,14 @@ import { SidebarEntries } from './SidebarEntries';
 import { Anchors } from './Anchors';
 import { TabsDropdown } from './TabsDropdown';
 
+type NavbarLink = { label: string; href: string };
+
 interface MobileSidebarProps {
   navigation: NavNode;
   currentPath: string;
   tabs?: TabInfo[];
   anchors?: AnchorItem[];
+  navbarLinks?: NavbarLink[];
   sidebarItemStyle?: SidebarItemStyle;
   showDivider?: boolean;
 }
@@ -22,6 +25,7 @@ export function MobileSidebar({
   currentPath,
   tabs = [],
   anchors = [],
+  navbarLinks = [],
   sidebarItemStyle = 'container',
   showDivider = false,
 }: MobileSidebarProps) {
@@ -89,7 +93,7 @@ export function MobileSidebar({
           </div>
 
           <nav className="flex-1 overflow-y-auto pt-4 pb-8">
-            {tabs.length > 0 && (
+            {tabs.length > 1 && (
               <div className="px-4 mb-4">
                 <TabsDropdown tabs={tabs} />
               </div>
@@ -109,6 +113,30 @@ export function MobileSidebar({
                 showDivider={showDivider}
               />
             </div>
+
+            {navbarLinks.length > 0 && (
+              <div className="mt-6 border-t border-gray-200 dark:border-white/10 px-4 pt-4 flex flex-col gap-2">
+                {navbarLinks.map((link) => {
+                  const isExternal = link.href.startsWith('http');
+                  return (
+                    <a
+                      key={link.label}
+                      href={link.href}
+                      target={isExternal ? '_blank' : undefined}
+                      rel={isExternal ? 'noopener noreferrer' : undefined}
+                      className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 py-1.5"
+                    >
+                      {link.label}
+                      {isExternal && (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 dark:text-gray-500">
+                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                      )}
+                    </a>
+                  );
+                })}
+              </div>
+            )}
           </nav>
         </div>
       </div>

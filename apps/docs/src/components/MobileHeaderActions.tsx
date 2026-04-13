@@ -4,7 +4,7 @@ import { ThemeToggle } from './ThemeToggle';
 
 export function MobileActionButtons() {
   return (
-    <div className="flex lg:hidden items-center gap-2">
+    <div className="flex md:hidden items-center gap-2">
       <button
         type="button"
         className="text-gray-500 dark:text-gray-400 w-8 h-8 flex items-center justify-center hover:text-gray-600 dark:hover:text-gray-200"
@@ -24,6 +24,21 @@ export function MobileActionButtons() {
       </a>
       <ThemeToggle />
     </div>
+  );
+}
+
+export function TabletSearchButton() {
+  return (
+    <button
+      type="button"
+      className="p-1.5 rounded-md text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+      onClick={openSearch}
+      aria-label="Search"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+      </svg>
+    </button>
   );
 }
 

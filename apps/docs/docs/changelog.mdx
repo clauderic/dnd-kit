@@ -6,6 +6,31 @@ icon: 'clock'
 hideContextMenu: true
 ---
 
+## v0.4.0
+
+<Update label="v0.4.0" description="April 2025" tags={["Minor"]}>
+  **Event type system redesign** — Replaced `DragDropEvents` with `DragDropEventMap` and `DragDropEventHandlers`, following the DOM `EventMap` pattern for improved type safety.
+
+  **Per-entity plugin configuration** — [Draggable](/concepts/draggable) entities now accept a `plugins` property for entity-specific plugin configuration. The `feedback` property has moved from the Draggable entity to the [Feedback plugin](/extend/plugins/feedback) configuration. [Sortable](/concepts/sortable) uses the same generic mechanism instead of custom registration.
+
+  **Virtualization improvements** — Entity identity changes are now batched and deferred to a microtask to prevent collision oscillation during virtualized sorting.
+
+  **[Feedback plugin](/extend/plugins/feedback) enhancements** — Added `keyboardTransition` option to customize or disable CSS transitions on keyboard moves. The `feedback` option now supports a callback form for dynamically choosing the feedback type. `DropAnimationFunction` context now includes `source`.
+
+  **[AutoScroller](/extend/plugins/auto-scroller) updates** — Added `acceleration` (default: `25`) and `threshold` (default: `0.2`) options to control scroll speed and activation zone, with per-axis configuration via `{x, y}`.
+
+  **[Sortable](/concepts/sortable) plugin improvements** — `plugins` now accepts `Customizable<Plugins>`, a function form that extends defaults without losing built-in Sortable plugins.
+
+  **Bug fixes:**
+  - Fixed `onDragStart` firing before `onDragOver` for elements that are both [draggable](/concepts/draggable) and [droppable](/concepts/droppable)
+  - Resolved DTS build errors with TypeScript 5.9 on Node 20
+  - Fixed [plugin](/extend/plugins) registration order when deduplicating configured plugins
+  - Fixed `useDeepSignal` calling `flushSync` from a React lifecycle method
+  - Svelte: Removed `OptimisticSortingPlugin` from defaults to prevent conflicts with Svelte 5 reconciliation
+  - Vue: Fixed [sortable](/concepts/sortable) type narrowing and re-exported drag event type aliases
+  - Added LICENSE file to all published packages
+</Update>
+
 ## v0.3.2
 
 <Update label="v0.3.2" description="March 2025" tags={["Patch"]}>
