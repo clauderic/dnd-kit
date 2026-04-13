@@ -9,7 +9,21 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   site: 'https://dndkit.com',
-  integrations: [mintlify({ docsDir: './docs' }), react(), mdx(), sitemap()],
+  integrations: [
+    mintlify({ docsDir: './docs' }),
+    react(),
+    mdx(),
+    sitemap({
+      serialize(item) {
+        if (item.url.includes('/legacy/')) {
+          item.priority = 0.3;
+        } else {
+          item.priority = 0.7;
+        }
+        return item;
+      },
+    }),
+  ],
   markdown: {
     shikiConfig: {
       theme: 'monokai',
