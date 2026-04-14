@@ -74,6 +74,25 @@ const isHome = path === '/';
 </script>
 
 <script>
+  import '../scripts/mintlify-analytics';
+</script>
+
+<script>
+  // Track accordion/expandable toggle events via native <details> element.
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll('details.accordion, details:has(> .expandable-content)').forEach((el) => {
+      el.addEventListener('toggle', () => {
+        const isAccordion = el.classList.contains('accordion');
+        const event = (el as HTMLDetailsElement).open
+          ? isAccordion ? 'docs.accordion.open' : 'docs.expandable.open'
+          : isAccordion ? 'docs.accordion.close' : 'docs.expandable.close';
+        (window as any).__mintlifyTrackEvent?.(event);
+      });
+    });
+  });
+</script>
+
+<script>
   // Fix unitless inline style values from compiled MDX.
   // @mintlify/astro outputs style="width:130;height:80" instead of "width:130px;height:80px"
   document.addEventListener('astro:page-load', () => {

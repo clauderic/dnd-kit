@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { cn } from '../../lib/cn';
 import { Icon } from '../Icon';
+import { trackEvent } from '../../lib/analytics';
 import type { UIMessage } from '@ai-sdk/react';
 
 const SUBDOMAIN = import.meta.env.PUBLIC_MINTLIFY_SUBDOMAIN;
@@ -44,6 +45,7 @@ const FeedbackBar = ({ content, messageId, isLast, onRegenerate }: { content: st
   const [feedback, setFeedback] = useState<FeedbackState>('none');
 
   const handleCopy = useCallback(async () => {
+    trackEvent('docs.assistant.copy_response');
     try {
       await navigator.clipboard.writeText(content);
       setCopied(true);
@@ -53,6 +55,7 @@ const FeedbackBar = ({ content, messageId, isLast, onRegenerate }: { content: st
 
   const handleFeedback = useCallback(async (type: 'positive' | 'negative') => {
     setFeedback(type);
+    trackEvent(type === 'positive' ? 'docs.assistant.thumbs_up' : 'docs.assistant.thumbs_down');
     try {
       await fetch(
         `https://leaves.mintlify.com/api/assistant/${SUBDOMAIN}/message/${messageId}/thumbs-feedback?feedback=${type}`,

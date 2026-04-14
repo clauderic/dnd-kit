@@ -6,6 +6,7 @@
  */
 import { useState, useMemo, type ReactNode } from 'react';
 import { openAssistant } from './Assistant/events';
+import { trackEvent } from '../lib/analytics';
 
 const SUPPORTED_LANGS = new Set([
   'tsx', 'typescript', 'ts', 'javascript', 'js',
@@ -128,6 +129,7 @@ export function CodeBlock({
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
+    trackEvent('docs.code_block.copy');
     navigator.clipboard.writeText(code).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -157,7 +159,7 @@ export function CodeBlock({
         </button>
         <button
           type="button"
-          onClick={() => openAssistant({ code, language: lang })}
+          onClick={() => { trackEvent('docs.code_block.ask_ai'); openAssistant({ code, language: lang }); }}
           className="p-1.5 rounded-md text-white/40 hover:text-white/70 cursor-pointer"
           aria-label="Ask AI"
         >

@@ -5,6 +5,7 @@ import {
   useContextualOptions,
   type ContextualOptionItem,
 } from '../hooks/useContextualOptions';
+import { trackEvent } from '../lib/analytics';
 
 type CopyState = 'idle' | 'copying' | 'copied' | 'error';
 
@@ -32,6 +33,11 @@ export function PageContextMenu({
 
   const handleAction = async (option: ContextualOptionItem) => {
     setIsOpen(false);
+    const eventName =
+      option.id === 'copy' ? 'docs.context_menu.copy_page'
+      : ['chatgpt', 'claude', 'perplexity'].includes(option.id) ? 'docs.context_menu.ai_provider_click'
+      : undefined;
+    if (eventName) trackEvent(eventName, { option: option.id });
     if (option.id === 'copy') {
       setCopyState('copying');
       try {

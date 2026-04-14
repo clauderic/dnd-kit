@@ -5,6 +5,7 @@
  */
 import { useState, useRef, type ReactNode } from 'react';
 import { openAssistant } from './Assistant/events';
+import { trackEvent } from '../lib/analytics';
 
 interface PreElementProps {
   children?: ReactNode;
@@ -23,6 +24,7 @@ export function PreElement({ children, ...props }: PreElementProps) {
   };
 
   const handleCopy = () => {
+    trackEvent('docs.code_block.copy');
     navigator.clipboard.writeText(getCode()).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -47,7 +49,7 @@ export function PreElement({ children, ...props }: PreElementProps) {
         </button>
         <button
           type="button"
-          onClick={() => openAssistant({ code: getCode(), language: getLang() })}
+          onClick={() => { trackEvent('docs.code_block.ask_ai'); openAssistant({ code: getCode(), language: getLang() }); }}
           className="p-1.5 rounded-md text-white/40 hover:text-white/70 cursor-pointer"
           aria-label="Ask AI"
         >

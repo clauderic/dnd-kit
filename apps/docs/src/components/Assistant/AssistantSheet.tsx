@@ -8,6 +8,7 @@ import { useAssistant } from '../../hooks/useAssistant';
 import { AssistantHistoryList } from './AssistantHistoryList';
 import { AssistantTextArea } from './AssistantTextArea';
 import { ASSISTANT_EVENTS, type CodeContext } from './events';
+import { trackEvent } from '../../lib/analytics';
 
 export function AssistantSheet() {
   const [isClient, setIsClient] = useState(false);
@@ -101,6 +102,7 @@ function AssistantSheetClient() {
       setIsExpanded(true);
       setIsMinimized(false);
     }
+    trackEvent('docs.assistant.enter');
   }, [input, codeContexts, handleSubmit, setInput]);
 
   const handleClear = () => {
@@ -110,11 +112,13 @@ function AssistantSheetClient() {
   };
 
   const handleMinimize = () => {
+    trackEvent('docs.assistant.minimize_click');
     setIsMinimized(true);
   };
 
   const handleExpand = () => {
     if (hasMessages) {
+      trackEvent('docs.assistant.maximize_click');
       setIsMinimized(false);
       setIsExpanded(true);
     }
