@@ -2,12 +2,14 @@ import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import useMessagesStore from './useMessagesStore';
+import { trackEvent } from '../lib/analytics';
 
 const SUBDOMAIN = import.meta.env.PUBLIC_MINTLIFY_SUBDOMAIN;
 const API_KEY = import.meta.env.PUBLIC_MINTLIFY_ASSISTANT_KEY;
 
 export const useAssistant = () => {
   const isClearedRef = useRef(false);
+  const lastQueryRef = useRef('');
   const [input, setInput] = useState('');
 
   const { threadId, setThreadId, threadKey, setThreadKey } = useMessagesStore();
@@ -21,6 +23,21 @@ export const useAssistant = () => {
 
   const { messages, sendMessage, status, setMessages, stop } = useChat({
     id: `assistant-${SUBDOMAIN}`,
+    onFinish: (message) => {
+      if (isClearedRef.current) return;
+
+      const content = message.parts
+        ?.filter((p) => p.type === 'text')
+        .map((p) => ('text' in p ? p.text : ''))
+        .join('') ?? '';
+
+      trackEvent('docs.assistant.completed', {
+        query: lastQueryRef.current,
+        content: content.slice(0, 500),
+        sessionId: message.id,
+        subdomain: SUBDOMAIN,
+      });
+    },
     transport: new DefaultChatTransport({
       api: `https://api.mintlify.com/discovery/v2/assistant/${SUBDOMAIN}/message`,
       headers: {
@@ -86,6 +103,7 @@ export const useAssistant = () => {
   const handleSubmit = useCallback(() => {
     if (!input.trim() || status !== 'ready') return;
     isClearedRef.current = false;
+    lastQueryRef.current = input.trim();
     sendMessage({ text: input });
     setInput('');
   }, [input, status, sendMessage]);
