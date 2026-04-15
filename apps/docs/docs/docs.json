@@ -97,7 +97,9 @@
                 "pages": [
                   "react/guides/migration",
                   "react/guides/multiple-sortable-lists",
-                  "react/guides/sortable-state-management"
+                  "react/guides/sortable-state-management",
+                  "react/guides/modifiers",
+                  "react/guides/feedback"
                 ]
               }
             ]

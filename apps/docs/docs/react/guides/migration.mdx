@@ -6,6 +6,29 @@ icon: 'swap-arrows'
 mode: 'wide'
 ---
 
+## API mapping reference
+
+Use this table as a quick reference when migrating from `@dnd-kit/core` and `@dnd-kit/sortable` to the new `@dnd-kit/react` API.
+
+| Legacy | New equivalent |
+|---|---|
+| `DndContext` | [`DragDropProvider`](/react/components/drag-drop-provider) |
+| `SortableContext` | No longer needed |
+| `useSensor` / `useSensors` | Built-in by default. Customize via the `sensors` prop on [`DragDropProvider`](/react/components/drag-drop-provider) |
+| `arrayMove` | [`move`](/react/guides/sortable-state-management) from `@dnd-kit/helpers` |
+| `active` / `over` | `event.operation.source` / `event.operation.target` |
+| `active.id` | `event.operation.source.id` |
+| `onDragCancel` | Check `event.canceled` in `onDragEnd` |
+| `collisionDetection` prop | `collisionDetector` per-droppable via [`useDroppable`](/react/hooks/use-droppable) |
+| `pointerWithin` | `pointerIntersection` from `@dnd-kit/collision` |
+| `closestCenter` | `closestCenter` from `@dnd-kit/collision` |
+| `restrictToParentElement` | [`RestrictToElement`](/react/guides/modifiers) modifier from `@dnd-kit/dom/modifiers` |
+| `restrictToVerticalAxis` | `RestrictToVerticalAxis` modifier from `@dnd-kit/abstract/modifiers` |
+| `verticalListSortingStrategy` | No longer needed — handled automatically |
+| `horizontalListSortingStrategy` | No longer needed — handled automatically |
+
+## Step-by-step migration
+
 <Steps>
   <Step title="Update dependencies">
     Update your `package.json` and install the new packages:
@@ -298,24 +321,24 @@ mode: 'wide'
     Build beautiful drag and drop interfaces in minutes with the new dnd kit
   </Card>
   <Card
-    title="Draggable elements"
-    icon="bullseye-pointer"
-    href="/concepts/draggable"
+    title="Managing sortable state"
+    icon="sliders"
+    href="/react/guides/sortable-state-management"
   >
-    Learn how to make elements draggable with the new API
+    Use the `move` helper from `@dnd-kit/helpers` or manage state manually
   </Card>
   <Card
-    title="Droppable targets"
-    icon="expand"
-    href="/concepts/droppable"
+    title="Modifiers"
+    icon="arrows-to-dot"
+    href="/react/guides/modifiers"
   >
-    Create drop zones and handle collision detection
+    Restrict movement to an element, axis, or snap to a grid in React
   </Card>
   <Card
-    title="Sortable lists"
-    icon="layer-group"
-    href="/concepts/sortable"
+    title="Feedback"
+    icon="clone"
+    href="/react/guides/feedback"
   >
-    Build sortable interfaces with array manipulation helpers
+    Configure drag feedback, clone overlays, and drop animations in React
   </Card>
 </CardGroup>

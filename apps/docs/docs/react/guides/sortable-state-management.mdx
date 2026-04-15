@@ -1,7 +1,7 @@
 ---
 title: 'Managing sortable state'
 metaTitle: 'Managing Sortable State - React | dnd kit'
-description: 'Learn how to manage sortable state with and without the move helper.'
+description: 'Learn how to manage sortable state using the move helper or manual state management, including integration with external state libraries like React Query, Zustand, or Redux.'
 icon: 'sliders'
 ---
 
@@ -217,3 +217,52 @@ if (isSortableOperation(operation)) {
   operation.target.index;        // typed
 }
 ```
+
+## Integration with external state
+
+When using sortable lists alongside data fetching libraries like React Query, TanStack Query, or SWR, you may encounter duplicate items after a refetch. This happens when optimistic sorting has moved DOM elements during the drag, and then a refetch replaces the data while the drag state is still active.
+
+To avoid this, only sync your local items state with fetched data when no drag is in progress:
+
+```tsx
+import {useState, useEffect, useRef} from 'react';
+import {DragDropProvider} from '@dnd-kit/react';
+
+function SortableList() {
+  const {data: fetchedItems} = useQuery({queryKey: ['items'], queryFn: fetchItems});
+  const [items, setItems] = useState(fetchedItems ?? []);
+  const isDragging = useRef(false);
+
+  useEffect(() => {
+    if (fetchedItems && !isDragging.current) {
+      setItems(fetchedItems);
+    }
+  }, [fetchedItems]);
+
+  return (
+    <DragDropProvider
+      onDragStart={() => { isDragging.current = true; }}
+      onDragEnd={(event) => {
+        isDragging.current = false;
+
+        if (event.canceled) {
+          // Reset to server state on cancel
+          setItems(fetchedItems ?? []);
+          return;
+        }
+
+        // Update local state, then sync with server
+        setItems((items) => move(items, event));
+      }}
+    >
+      {items.map((item, index) => (
+        <SortableItem key={item.id} id={item.id} index={index} />
+      ))}
+    </DragDropProvider>
+  );
+}
+```
+
+<Tip>
+  The key principle is maintaining a single source of truth: render from your local `items` state (not directly from the query data), and only update it from the query when no drag is active.
+</Tip>
