@@ -1,0 +1,171 @@
+---
+import { SearchBar } from './SearchBar';
+import { MobileActionButtons, MobileNavToggle, TabletSearchButton } from './MobileHeaderActions';
+import { ThemeToggle } from './ThemeToggle';
+
+type VersionInfo = { name: string; href: string; isActive: boolean };
+type NavbarLink = { label: string; href: string };
+type NavbarPrimary = { type: string; label: string; href: string };
+type NavbarConfig = {
+  links?: NavbarLink[];
+  primary?: NavbarPrimary;
+  github?: string;
+};
+
+interface Props {
+  pageTitle?: string;
+  groupName?: string;
+  versionTabs?: VersionInfo[];
+  navbarConfig?: NavbarConfig;
+}
+
+const { pageTitle, groupName, versionTabs = [], navbarConfig } = Astro.props;
+const activeVersion = versionTabs.find((v) => v.isActive);
+const hasVersions = versionTabs.length > 1;
+---
+
+<header class="sticky top-0 w-full px-4 lg:px-8 z-50">
+  <div
+    class="absolute left-1/2 -translate-x-1/2 w-screen h-full backdrop-blur flex-none transition-colors duration-500 border-b border-gray-500/5 bg-white/95 supports-backdrop-blur:bg-white/60 dark:bg-background-dark/95 dark:supports-backdrop-blur:bg-background-dark/60 dark:border-white/5"
+  >
+  </div>
+  <div class="relative">
+    <div>
+      <div class="relative">
+        <div class:list={['flex items-center h-16 min-w-0']}>
+          <div
+            class="h-full relative flex-1 flex items-center justify-between gap-x-4 min-w-0 lg:border-none"
+          >
+            {/* Left: hamburger (mobile) + logo + version */}
+            <div class="flex items-center gap-3 shrink-0">
+              <button
+                type="button"
+                class="lg:hidden flex items-center justify-center w-8 h-8 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                aria-label="Open navigation"
+                data-mobile-nav-toggle
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" />
+                </svg>
+              </button>
+              <a href="/" class="flex items-center shrink-0" data-logo-link>
+                <svg width="135" height="45" viewBox="0 0 474 158" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-[45px] w-auto" role="img" aria-label="dnd kit">
+                  <rect x="4.5" y="4.5" width="465" height="149" rx="14.5" fill="black" stroke="url(#logo-grad)" stroke-width="9"/>
+                  <path d="M137.362 37V60.797H130.472V48.606L108.793 70L103.922 65.193L125.601 43.799H113.247V37H137.362ZM77.116 37V43.799H64.762L86.441 65.193L81.57 70L59.89 48.606V60.797H53V37H77.116ZM108.793 87.25L130.472 108.643V96.453H137.362V120.25H113.247V113.451H125.601L103.922 92.057L108.793 87.25ZM104.18 64.75L109.242 69.469L64.857 113.376H77.311V120.25H53V96.192H59.946V108.516L104.18 64.75Z" fill="white"/>
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M180.2 81.918C180.2 78.138 180.964 74.785 182.492 71.86C184.019 68.935 186.106 66.685 188.75 65.11C191.395 63.535 194.336 62.748 197.574 62.748C200.037 62.748 202.385 63.276 204.62 64.334C206.854 65.391 208.632 66.798 209.955 68.553V50.8H219.668V100.75H209.955V95.215C208.769 97.06 207.105 98.545 204.962 99.67C202.818 100.795 200.333 101.358 197.506 101.358C194.314 101.358 191.395 100.548 188.75 98.928C186.106 97.308 184.019 95.024 182.492 92.076C180.964 89.129 180.2 85.743 180.2 81.918ZM210.023 82.053C210.023 79.758 209.567 77.789 208.655 76.146C207.743 74.504 206.512 73.244 204.962 72.366C203.411 71.489 201.747 71.05 199.968 71.05C198.19 71.05 196.548 71.478 195.043 72.333C193.538 73.188 192.319 74.436 191.384 76.079C190.449 77.721 189.982 79.668 189.982 81.918C189.982 84.168 190.449 86.136 191.384 87.824C192.319 89.511 193.55 90.805 195.078 91.705C196.605 92.605 198.235 93.055 199.968 93.055C201.747 93.055 203.411 92.616 204.962 91.739C206.512 90.861 207.743 89.601 208.655 87.959C209.567 86.316 210.023 84.348 210.023 82.053ZM250.881 62.815C255.395 62.815 259.043 64.221 261.825 67.034C264.607 69.846 265.997 73.773 265.997 78.813V100.75H256.421V80.095C256.421 77.125 255.669 74.841 254.164 73.244C252.659 71.646 250.607 70.848 248.008 70.848C245.363 70.848 243.277 71.646 241.749 73.244C240.221 74.841 239.458 77.125 239.458 80.095V100.75H229.881V63.355H239.458V68.013C240.734 66.393 242.365 65.121 244.348 64.199C246.332 63.276 248.509 62.815 250.881 62.815ZM273.475 81.918C273.475 78.138 274.239 74.785 275.766 71.86C277.294 68.935 279.38 66.685 282.025 65.11C284.67 63.535 287.611 62.748 290.849 62.748C293.311 62.748 295.66 63.276 297.894 64.334C300.129 65.391 301.907 66.798 303.23 68.553V50.8H312.943V100.75H303.23V95.215C302.044 97.06 300.38 98.545 298.236 99.67C296.093 100.795 293.608 101.358 290.781 101.358C287.588 101.358 284.67 100.548 282.025 98.928C279.38 97.308 277.294 95.024 275.766 92.076C274.239 89.129 273.475 85.743 273.475 81.918ZM303.298 82.053C303.298 79.758 302.842 77.789 301.93 76.146C301.018 74.504 299.787 73.244 298.236 72.366C296.686 71.489 295.021 71.05 293.243 71.05C291.465 71.05 289.823 71.478 288.318 72.333C286.813 73.188 285.593 74.436 284.659 76.079C283.724 77.721 283.256 79.668 283.256 81.918C283.256 84.168 283.724 86.136 284.659 87.824C285.593 89.511 286.825 90.805 288.352 91.705C289.88 92.605 291.51 93.055 293.243 93.055C295.021 93.055 296.686 92.616 298.236 91.739C299.787 90.861 301.018 89.601 301.93 87.959C302.842 86.316 303.298 84.348 303.298 82.053ZM362.714 100.75L349.855 84.82V100.75H340.278V50.8H349.855V79.218L362.577 63.355H375.026L358.336 82.12L375.163 100.75H362.714ZM385.924 58.9C384.237 58.9 382.834 58.371 381.717 57.314C380.6 56.256 380.041 54.94 380.041 53.365C380.041 51.79 380.6 50.474 381.717 49.416C382.834 48.359 384.237 47.83 385.924 47.83C387.611 47.83 389.013 48.359 390.131 49.416C391.248 50.474 391.806 51.79 391.806 53.365C391.806 54.94 391.248 56.256 390.131 57.314C389.013 58.371 387.611 58.9 385.924 58.9ZM390.644 63.355V100.75H381.067V63.355H390.644ZM412.075 71.118V89.208C412.075 90.468 412.383 91.379 412.998 91.941C413.614 92.504 414.652 92.785 416.111 92.785H420.557V100.75H414.538C406.466 100.75 402.43 96.88 402.43 89.14V71.118H397.916V63.355H402.43V54.108H412.075V63.355H420.557V71.118H412.075Z" fill="white"/>
+                  <defs>
+                    <linearGradient id="logo-grad" x1="9" y1="149" x2="472" y2="9" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stop-color="#5F6AF2"><animate attributeName="stop-color" values="#5F6AF2;#A65FF2;#F25FD0;#F25F61;#5F6AF2" dur="6s" repeatCount="indefinite"/></stop>
+                      <stop offset="100%" stop-color="#A65FF2"><animate attributeName="stop-color" values="#A65FF2;#F25FD0;#5F6AF2;#F25F61;#A65FF2" dur="6s" repeatCount="indefinite"/></stop>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </a>
+              {hasVersions && (
+                <div class="relative hidden lg:block" data-version-dropdown>
+                  <button
+                    class="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 px-2 py-1 rounded-md hover:bg-gray-100 dark:hover:bg-white/5 cursor-pointer"
+                    data-version-toggle
+                  >
+                    {activeVersion?.name || 'Latest'}
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <div
+                    class="absolute top-full left-0 mt-1 w-36 bg-white dark:bg-gray-950 border border-gray-200 dark:border-white/10 rounded-lg shadow-lg py-1 hidden z-[100]"
+                    data-version-menu
+                  >
+                    {versionTabs.map((v) => (
+                      <a
+                        href={v.href}
+                        class:list={[
+                          'block px-3 py-1.5 text-sm',
+                          v.isActive
+                            ? 'text-(--primary) font-medium bg-gray-50 dark:bg-white/5'
+                            : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-white/5',
+                        ]}
+                      >
+                        {v.name}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Center: search (desktop) */}
+            <div class="hidden lg:flex flex-1 items-center justify-center min-w-0">
+              <div class="w-full max-w-sm">
+                <SearchBar client:load />
+              </div>
+            </div>
+
+            <MobileActionButtons client:load />
+
+            {/* Right: navbar links (tablet+) + icons */}
+            <div class="hidden md:flex items-center gap-4 shrink-0">
+              {navbarConfig?.links?.map((link) => {
+                const isExternal = link.href.startsWith('http');
+                return (
+                  <a
+                    href={link.href}
+                    target={isExternal ? '_blank' : undefined}
+                    rel={isExternal ? 'noopener noreferrer' : undefined}
+                    class="text-sm font-medium text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+                  >
+                    {link.label}
+                  </a>
+                );
+              })}
+              <div class="lg:hidden">
+                <TabletSearchButton client:load />
+              </div>
+              {navbarConfig?.github && (
+                <a
+                  href={navbarConfig.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="p-1.5 rounded-md text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+                  aria-label="GitHub"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                  </svg>
+                </a>
+              )}
+              <ThemeToggle client:load />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    // Wire hamburger button to mobile sidebar
+    document.querySelectorAll('[data-mobile-nav-toggle]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        window.dispatchEvent(new CustomEvent('toggle-mobile-sidebar'));
+      });
+    });
+
+    const dropdowns = document.querySelectorAll('[data-version-dropdown]');
+    dropdowns.forEach((dropdown) => {
+      const toggle = dropdown.querySelector('[data-version-toggle]');
+      const menu = dropdown.querySelector('[data-version-menu]');
+      if (!toggle || !menu) return;
+
+      toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        menu.classList.toggle('hidden');
+      });
+
+      document.addEventListener('click', () => {
+        menu.classList.add('hidden');
+      });
+    });
+  });
+</script>

@@ -1,0 +1,17 @@
+# Legacy redirects from the previous dndkit.com documentation
+/overview /
+/introduction/getting-started /legacy/introduction/getting-started
+/introduction/installation /legacy/introduction/installation
+/introduction/* /legacy/introduction/:splat
+/api-documentation/context-provider/usedndcontext /legacy/api-documentation/context-provider/use-dnd-context
+/api-documentation/context-provider/usedndmonitor /legacy/api-documentation/context-provider/use-dnd-monitor
+/api-documentation/context-provider/dndcontext /legacy/api-documentation/context-provider/dnd-context
+/api-documentation/context-provider /legacy/api-documentation/context-provider/dnd-context
+/api-documentation/draggable/usedraggable /legacy/api-documentation/draggable/use-draggable
+/api-documentation/droppable/usedroppable /legacy/api-documentation/droppable/use-droppable
+/api-documentation/* /legacy/api-documentation/:splat
+/presets/sortable/usesortable /legacy/presets/sortable/use-sortable
+/presets/sortable /legacy/presets/sortable/overview
+/presets/sortable/* /legacy/presets/sortable/:splat
+/guides/* /legacy/guides/:splat
+/react/migration /react/guides/migration

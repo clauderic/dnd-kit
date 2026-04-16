@@ -1,0 +1,143 @@
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import useMessagesStore from './useMessagesStore';
+import { trackEvent } from '../lib/analytics';
+
+const SUBDOMAIN = import.meta.env.PUBLIC_MINTLIFY_SUBDOMAIN;
+const API_KEY = import.meta.env.PUBLIC_MINTLIFY_ASSISTANT_KEY;
+
+export const useAssistant = () => {
+  const isClearedRef = useRef(false);
+  const lastQueryRef = useRef('');
+  const [input, setInput] = useState('');
+
+  const { threadId, setThreadId, threadKey, setThreadKey } = useMessagesStore();
+
+  useEffect(() => {
+    sessionStorage.removeItem('assistant-threadKey');
+    sessionStorage.removeItem('assistant-threadId');
+    setThreadId(undefined);
+    setThreadKey(undefined);
+  }, []);
+
+  const { messages, sendMessage, status, setMessages, stop } = useChat({
+    id: `assistant-${SUBDOMAIN}`,
+    onFinish: (message) => {
+      if (isClearedRef.current) return;
+
+      const content = message.parts
+        ?.filter((p) => p.type === 'text')
+        .map((p) => ('text' in p ? p.text : ''))
+        .join('') ?? '';
+
+      trackEvent('docs.assistant.completed', {
+        query: lastQueryRef.current,
+        content: content.slice(0, 500),
+        sessionId: message.id,
+        subdomain: SUBDOMAIN,
+      });
+    },
+    transport: new DefaultChatTransport({
+      api: `https://api.mintlify.com/discovery/v2/assistant/${SUBDOMAIN}/message`,
+      headers: {
+        ...(API_KEY && { Authorization: `Bearer ${API_KEY}` }),
+      },
+      prepareSendMessagesRequest: ({ messages }) => {
+        const storedKey = sessionStorage.getItem('assistant-threadKey');
+        const storedId = sessionStorage.getItem('assistant-threadId');
+
+        return {
+          body: {
+            messages,
+            fp: 'anonymous',
+            retrievalPageSize: 5,
+            context: [],
+            ...(storedId && { threadId: storedId }),
+            ...(storedKey && { threadKey: storedKey }),
+          },
+        };
+      },
+      fetch: async (url, options) => {
+        const response = await fetch(url, options);
+
+        const tempThreadId = response.headers.get('x-thread-id');
+        const tempThreadKey = response.headers.get('x-thread-key');
+
+        if (tempThreadId && !isClearedRef.current) {
+          setThreadId(tempThreadId);
+          sessionStorage.setItem('assistant-threadId', tempThreadId);
+        }
+        if (tempThreadKey && !isClearedRef.current) {
+          setThreadKey(tempThreadKey);
+          sessionStorage.setItem('assistant-threadKey', tempThreadKey);
+        }
+
+        return response;
+      },
+    }),
+  });
+
+  useEffect(() => {
+    useMessagesStore.setState({ messages });
+  }, [messages]);
+
+  useEffect(() => {
+    useMessagesStore.setState({ status });
+  }, [status]);
+
+  const isLoading = status === 'streaming' || status === 'submitted';
+
+  const onClear = useCallback(() => {
+    isClearedRef.current = true;
+    stop();
+    setMessages([]);
+    setInput('');
+    setThreadId(undefined);
+    setThreadKey(undefined);
+    sessionStorage.removeItem('assistant-threadKey');
+    sessionStorage.removeItem('assistant-threadId');
+    useMessagesStore.setState({ messages: [] });
+  }, [stop, setMessages, setThreadId, setThreadKey]);
+
+  const handleSubmit = useCallback(() => {
+    if (!input.trim() || status !== 'ready') return;
+    isClearedRef.current = false;
+    lastQueryRef.current = input.trim();
+    sendMessage({ text: input });
+    setInput('');
+  }, [input, status, sendMessage]);
+
+  const regenerate = useCallback(() => {
+    // Find the last user message, remove the last assistant response, and resend
+    const lastUserMsg = [...messages].reverse().find((m) => m.role === 'user');
+    if (!lastUserMsg) return;
+
+    const userText = lastUserMsg.parts
+      .filter((p) => p.type === 'text')
+      .map((p) => ('text' in p ? p.text : ''))
+      .join('');
+
+    // Remove last assistant message
+    const newMessages = messages.filter((m, i) => i < messages.length - 1);
+    setMessages(newMessages);
+
+    // Resend
+    isClearedRef.current = false;
+    sendMessage({ text: userText });
+  }, [messages, setMessages, sendMessage]);
+
+  return {
+    input,
+    status,
+    handleSubmit,
+    setInput,
+    messages,
+    setMessages,
+    isLoading,
+    onClear,
+    stop,
+    threadId,
+    regenerate,
+  };
+};

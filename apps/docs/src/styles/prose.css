@@ -1,0 +1,110 @@
+.mdx-content.prose :is(h2, h3) {
+  letter-spacing: -0.025em;
+}
+
+.mdx-content.prose h2 {
+  margin-bottom: 0.6666667em;
+  font-weight: 600;
+}
+
+.mdx-content.prose h3 {
+  margin-top: 2.4em;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.mdx-content.prose h4 {
+  margin-top: 2em;
+  font-size: 1.125em;
+  font-weight: 600;
+}
+
+.mdx-content.prose > p {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+}
+
+.mdx-content.prose > :is(h2, h3, h4) + p,
+.mdx-content.prose > p:first-child {
+  margin-top: 0;
+}
+
+.mdx-content.prose :is(code, kbd, pre, samp) {
+  font-family: var(--font-family-mono-custom, var(--font-mono));
+}
+
+/* Always-dark Astro-rendered code blocks (Monokai theme) */
+.mdx-content pre {
+  background-color: #1e1e1e !important;
+  border-radius: 1rem;
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+}
+
+.mdx-content pre span {
+  background-color: transparent !important;
+}
+
+/* Preserve Shiki syntax highlighting inline colors in dark mode —
+   without this, Tailwind prose overrides all code spans to a single color */
+.mdx-content pre code {
+  color: unset !important;
+}
+
+/* Diff and highlight lines — extend to full container width */
+.shiki code {
+  display: block;
+}
+
+.line.line-highlight,
+.line.line-diff {
+  display: inline-block;
+  width: calc(100% + 2rem);
+  margin-left: -1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.line.line-highlight {
+  background-color: rgba(89, 109, 255, 0.08);
+  border-left: 2px solid rgba(89, 109, 255, 0.5);
+  padding-left: calc(1rem - 2px);
+}
+
+.line.line-diff.line-add {
+  background-color: rgba(46, 160, 67, 0.15) !important;
+  border-left: 2px solid rgba(46, 160, 67, 0.5);
+  padding-left: calc(1rem - 2px);
+}
+
+/* CodeGroup: pure CSS tab switching via radio inputs + :has() */
+.code-group .code-panel { display: none; }
+
+/* Show the panel whose index matches the checked radio */
+.code-group:has([data-tab-index="0"]:checked) [data-panel-index="0"],
+.code-group:has([data-tab-index="1"]:checked) [data-panel-index="1"],
+.code-group:has([data-tab-index="2"]:checked) [data-panel-index="2"],
+.code-group:has([data-tab-index="3"]:checked) [data-panel-index="3"],
+.code-group:has([data-tab-index="4"]:checked) [data-panel-index="4"],
+.code-group:has([data-tab-index="5"]:checked) [data-panel-index="5"] {
+  display: block;
+}
+
+/* Highlight the active tab label */
+.code-group:has([data-tab-index="0"]:checked) .code-tab:nth-child(1),
+.code-group:has([data-tab-index="1"]:checked) .code-tab:nth-child(2),
+.code-group:has([data-tab-index="2"]:checked) .code-tab:nth-child(3),
+.code-group:has([data-tab-index="3"]:checked) .code-tab:nth-child(4),
+.code-group:has([data-tab-index="4"]:checked) .code-tab:nth-child(5),
+.code-group:has([data-tab-index="5"]:checked) .code-tab:nth-child(6) {
+  color: rgba(255, 255, 255, 0.9);
+  border-color: var(--primary);
+}
+
+.line.line-diff.line-remove {
+  background-color: rgba(248, 81, 73, 0.15) !important;
+  border-left: 2px solid rgba(248, 81, 73, 0.5);
+  padding-left: calc(1rem - 2px);
+}
+

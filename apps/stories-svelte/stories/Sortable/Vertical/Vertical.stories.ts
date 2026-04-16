@@ -6,6 +6,9 @@ import sortableItemSource from '../SortableItem.svelte?raw';
 import SortableDragHandleApp from '../SortableDragHandleApp.svelte';
 import sortableDragHandleSource from '../SortableDragHandleApp.svelte?raw';
 import sortableItemWithHandleSource from '../SortableItemWithHandle.svelte?raw';
+import SortableDynamicFeedbackApp from '../SortableDynamicFeedbackApp.svelte';
+import sortableDynamicFeedbackSource from '../SortableDynamicFeedbackApp.svelte?raw';
+import sortableDynamicFeedbackItemSource from '../SortableDynamicFeedbackItem.svelte?raw';
 import NestedScrollSortableApp from '../NestedScrollSortableApp.svelte';
 import {
   baseStyles,
@@ -45,6 +48,20 @@ export const WithDragHandle: Story = {
         'src/styles.css': [baseStyles, sortableStyles, handleStyles].join(
           '\n\n'
         ),
+      },
+    },
+  },
+};
+
+export const DynamicFeedback: Story = {
+  name: 'Dynamic feedback',
+  render: () => ({Component: SortableDynamicFeedbackApp}),
+  parameters: {
+    codesandbox: {
+      files: {
+        'src/App.svelte': sortableDynamicFeedbackSource,
+        'src/SortableDynamicFeedbackItem.svelte': sortableDynamicFeedbackItemSource,
+        'src/styles.css': [baseStyles, sortableStyles].join('\n\n'),
       },
     },
   },

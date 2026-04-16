@@ -1,0 +1,125 @@
+---
+title: Changelog
+metaTitle: 'Changelog - dnd kit'
+description: Release notes and updates for dnd kit
+icon: 'clock'
+hideContextMenu: true
+---
+
+## v0.4.0
+
+<Update label="v0.4.0" description="April 2025" tags={["Minor"]}>
+  **Event type system redesign** — Replaced `DragDropEvents` with `DragDropEventMap` and `DragDropEventHandlers`, following the DOM `EventMap` pattern for improved type safety.
+
+  **Per-entity plugin configuration** — [Draggable](/concepts/draggable) entities now accept a `plugins` property for entity-specific plugin configuration. The `feedback` property has moved from the Draggable entity to the [Feedback plugin](/extend/plugins/feedback) configuration. [Sortable](/concepts/sortable) uses the same generic mechanism instead of custom registration.
+
+  **Virtualization improvements** — Entity identity changes are now batched and deferred to a microtask to prevent collision oscillation during virtualized sorting.
+
+  **[Feedback plugin](/extend/plugins/feedback) enhancements** — Added `keyboardTransition` option to customize or disable CSS transitions on keyboard moves. The `feedback` option now supports a callback form for dynamically choosing the feedback type. `DropAnimationFunction` context now includes `source`.
+
+  **[AutoScroller](/extend/plugins/auto-scroller) updates** — Added `acceleration` (default: `25`) and `threshold` (default: `0.2`) options to control scroll speed and activation zone, with per-axis configuration via `{x, y}`.
+
+  **[Sortable](/concepts/sortable) plugin improvements** — `plugins` now accepts `Customizable<Plugins>`, a function form that extends defaults without losing built-in Sortable plugins.
+
+  **Bug fixes:**
+  - Fixed `onDragStart` firing before `onDragOver` for elements that are both [draggable](/concepts/draggable) and [droppable](/concepts/droppable)
+  - Resolved DTS build errors with TypeScript 5.9 on Node 20
+  - Fixed [plugin](/extend/plugins) registration order when deduplicating configured plugins
+  - Fixed `useDeepSignal` calling `flushSync` from a React lifecycle method
+  - Svelte: Removed `OptimisticSortingPlugin` from defaults to prevent conflicts with Svelte 5 reconciliation
+  - Vue: Fixed [sortable](/concepts/sortable) type narrowing and re-exported drag event type aliases
+  - Added LICENSE file to all published packages
+</Update>
+
+## v0.3.2
+
+<Update label="v0.3.2" description="March 2025" tags={["Patch"]}>
+  Fixed CSS cascade layer ordering so the [Feedback plugin](/extend/plugins/feedback) no longer overrides styles from CSS frameworks that use cascade layers (such as Tailwind CSS v4). The `@layer` block is now named `dnd-kit` and injected with the lowest priority.
+</Update>
+
+## v0.3.1
+
+<Update label="v0.3.1" description="February 2025" tags={["Patch"]}>
+  Fixed `onDragOver` firing before `onDragStart` when a drag operation began over a [droppable](/concepts/droppable) target.
+</Update>
+
+## v0.3.0
+
+<Update label="v0.3.0" description="February 2025" tags={["Minor"]}>
+  **Functional configuration** — Allow [plugins](/extend/plugins), [sensors](/extend/sensors), and modifiers to accept a function that receives the defaults, making it easy to extend or configure them without replacing the entire array.
+
+  ```ts
+  const manager = new DragDropManager({
+    plugins: (defaults) => [...defaults, MyPlugin],
+  });
+  ```
+
+  **Sortable type guard** — Added `isSortableOperation` type guard and exported `SortableDraggable`/`SortableDroppable` types for typed access to [sortable](/concepts/sortable)-specific properties.
+
+  **Configurable drop animation** — The [DragOverlay](/react/components/drag-overlay) component now accepts a `dropAnimation` prop to disable or customize the drop animation.
+
+  **Bug fixes:**
+  - Fixed [auto-scroll](/extend/plugins/auto-scroller) trigger zones and drag overlay positioning during pinch-to-zoom in Safari
+  - Fixed `move` and `swap` helpers for computed sortable IDs and optimistic sorting reconciliation
+  - Fixed [PointerSensor](/extend/sensors/pointer-sensor) crash on Android caused by unhandled `pointercancel` events
+</Update>
+
+## v0.2.4
+
+<Update label="v0.2.4" description="January 2025" tags={["Minor"]}>
+  **Event type aliases** — Exposed ergonomic type aliases for drag and drop event handlers: `CollisionEvent`, `BeforeDragStartEvent`, `DragStartEvent`, `DragMoveEvent`, `DragOverEvent`, and `DragEndEvent`.
+
+  **[Accessibility](/extend/plugins/accessibility)** — Respect `prefers-reduced-motion` media query across all animations including keyboard drag, drop animation, and [sortable](/concepts/sortable) swap transitions.
+
+  **Configurable drop animation API** — The [Feedback plugin](/extend/plugins/feedback) now accepts a `dropAnimation` option: pass `{duration, easing}`, a custom function, or `null` to disable.
+
+  **Bug fixes:**
+  - Fixed [Feedback plugin](/extend/plugins/feedback) style injection in Shadow DOM environments
+  - Fixed table cell width handling during drag operations using sub-pixel precision
+</Update>
+
+## v0.2.3
+
+<Update label="v0.2.3" description="December 2024" tags={["Patch"]}>
+  Fixed a bug where custom [PointerSensor](/extend/sensors/pointer-sensor) options passed to `bind()` were not being respected by `activationConstraints()`.
+</Update>
+
+## v0.2.2
+
+<Update label="v0.2.2" description="December 2024" tags={["Patch"]}>
+  Fixed inverted `preventActivation` default option on [KeyboardSensor](/extend/sensors/keyboard-sensor).
+</Update>
+
+## v0.2.1
+
+<Update label="v0.2.1" description="November 2024" tags={["Patch"]}>
+  Fixed [PointerSensor](/extend/sensors/pointer-sensor) `defaults.preventActivation` not being applied when other sensor options were provided.
+</Update>
+
+## v0.2.0
+
+<Update label="v0.2.0" description="November 2024" tags={["Minor"]}>
+  **Refactored [PointerSensor](/extend/sensors/pointer-sensor)** — New composable activation constraints API with `PointerActivationConstraints.Delay` and `PointerActivationConstraints.Distance`. Improved defaults for different input types (mouse, touch, text inputs).
+
+  **Conditional sensor activation** — Added `preventActivation` option to [PointerSensor](/extend/sensors/pointer-sensor) and [KeyboardSensor](/extend/sensors/keyboard-sensor) to conditionally prevent sensor activation on interactive elements.
+
+  **Cross-iframe support** — [PointerSensor](/extend/sensors/pointer-sensor) now binds listeners across same-origin documents for drag operations that span iframes.
+
+  **Bug fixes:**
+  - Fixed [useDragDropManager](/react/hooks/use-drag-drop-monitor) returning `null` on first mount
+</Update>
+
+## v0.1.x
+
+<Update label="v0.1.x" description="August – November 2024" tags={["Minor"]}>
+  Initial beta releases establishing the core API:
+
+  - [DragDropManager](/concepts/drag-drop-manager) with plugin architecture
+  - [Draggable](/concepts/draggable), [droppable](/concepts/droppable), and [sortable](/concepts/sortable) primitives
+  - Framework integrations for React, Vue, Svelte, and Solid
+  - [Pointer](/extend/sensors/pointer-sensor) and [keyboard](/extend/sensors/keyboard-sensor) sensors
+  - Collision detection algorithms
+  - Modifiers and [accessibility](/extend/plugins/accessibility) plugins
+  - [Feedback plugin](/extend/plugins/feedback) with [drag overlays](/react/components/drag-overlay)
+  - [Auto-scroll](/extend/plugins/auto-scroller) support
+</Update>

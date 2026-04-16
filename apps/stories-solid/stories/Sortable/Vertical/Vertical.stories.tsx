@@ -4,6 +4,8 @@ import App from '../SortableApp';
 import sortableSource from '../SortableApp.tsx?raw';
 import DragHandleApp from '../SortableDragHandleApp';
 import sortableDragHandleSource from '../SortableDragHandleApp.tsx?raw';
+import DynamicFeedbackApp from '../SortableDynamicFeedbackApp';
+import sortableDynamicFeedbackSource from '../SortableDynamicFeedbackApp.tsx?raw';
 import {
   baseStyles,
   handleStyles,
@@ -46,6 +48,19 @@ export const WithDragHandle: Story = {
       files: {
         'src/App.tsx': sortableDragHandleSource,
         'src/styles.css': [baseStyles, sortableStyles, handleStyles].join('\n\n'),
+      },
+    },
+  },
+};
+
+export const DynamicFeedback: Story = {
+  name: 'Dynamic feedback',
+  render: () => <DynamicFeedbackApp />,
+  parameters: {
+    codesandbox: {
+      files: {
+        'src/App.tsx': sortableDynamicFeedbackSource,
+        'src/styles.css': [baseStyles, sortableStyles].join('\n\n'),
       },
     },
   },

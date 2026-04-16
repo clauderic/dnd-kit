@@ -1,0 +1,270 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import HeroSvg from '../components/HeroSvg.astro';
+import Footer from '../components/Footer';
+import SiteFooter from '../components/SiteFooter';
+import { PageContextMenu } from '../components/PageContextMenu';
+import { components } from '@mintlify/astro/components';
+import { resolvePageData, decorateNavigation, unwrapNav, containsPath, isNavPage, isNavGroup } from '@mintlify/astro/helpers';
+import type { NavEntry, NavPage, NavGroup, TabInfo } from '@mintlify/astro/helpers';
+import type { DocsConfig } from '@mintlify/astro';
+import docsConfig from '../../docs/docs.json';
+import Sidebar, { MobileSidebar } from '../components/Sidebar';
+import TableOfContents from '../components/TableOfContents';
+
+export async function getStaticPaths() {
+  const docs = await getCollection('docs');
+
+  return docs.map((doc) => {
+    const slug = doc.id === 'index' ? undefined : doc.id;
+    return {
+      params: { slug },
+      props: { doc, allDocs: docs },
+    };
+  });
+}
+
+const { doc, allDocs } = Astro.props;
+const { Content, headings } = await render(doc);
+
+const titleMap = Object.fromEntries(
+  allDocs.map((doc) => [doc.id, doc.data.sidebarTitle || doc.data.title || doc.id]),
+);
+
+// Build icon map from content collection frontmatter
+const iconMap = Object.fromEntries(
+  allDocs
+    .filter((d) => d.data.icon)
+    .map((d) => [`/${d.id}`, d.data.icon]),
+);
+
+// Merge icons from frontmatter into navigation entries
+function addIconsToEntries(entries: NavEntry[]): NavEntry[] {
+  return entries.map((entry) => {
+    if (isNavPage(entry)) {
+      const icon = iconMap[entry.href];
+      return icon ? { ...entry, icon } : entry;
+    }
+    if (isNavGroup(entry)) {
+      return { ...entry, pages: addIconsToEntries(entry.pages) };
+    }
+    return entry;
+  });
+}
+
+const isHomePage = doc.id === 'index';
+const currentPath = isHomePage ? '/' : `/${doc.id}`;
+const page = resolvePageData(docsConfig as DocsConfig, {
+  currentPath,
+  titleMap,
+});
+
+// Add icons from frontmatter to sidebar entries
+const sidebarEntries = addIconsToEntries(page.sidebarEntries);
+
+// Extract version and anchor info from the navigation structure
+// docs.json uses: navigation.versions[].anchors[].groups[]
+const nav = decorateNavigation((docsConfig as DocsConfig).navigation, titleMap);
+const versions = (nav as any).versions as any[] | undefined;
+
+// Resolve version tabs (Latest / Legacy dropdown)
+type VersionInfo = { name: string; href: string; isActive: boolean };
+let versionTabs: VersionInfo[] = [];
+let activeVersion: any = null;
+
+if (versions) {
+  versionTabs = versions.map((v: any) => {
+    const anchors = v.anchors || [];
+    // Find first page in this version
+    let firstHref = '/';
+    for (const anchor of anchors) {
+      const entries = unwrapNav(anchor, currentPath);
+      for (const entry of entries) {
+        if (isNavPage(entry)) { firstHref = entry.href; break; }
+        if (isNavGroup(entry) && entry.pages.length > 0) {
+          const first = entry.pages.find((p: NavEntry) => isNavPage(p)) as NavPage | undefined;
+          if (first) { firstHref = first.href; break; }
+        }
+      }
+      if (firstHref !== '/') break;
+    }
+    const isActive = anchors.some((a: any) => containsPath(unwrapNav(a, currentPath), currentPath));
+    if (isActive) activeVersion = v;
+    return { name: v.version, href: firstHref, isActive };
+  });
+}
+
+// Resolve anchor tabs (Vanilla / React / Vue / Svelte / Solid) from active version
+type AnchorTabInfo = { name: string; href: string; icon?: string; isActive: boolean };
+let anchorTabs: AnchorTabInfo[] = [];
+
+// Pages shared across all anchors — excluded from anchor link and active detection
+const sharedPaths = new Set(['/', '/changelog']);
+
+function isSharedPage(entry: NavEntry): boolean {
+  return isNavPage(entry) && sharedPaths.has(entry.href);
+}
+
+if (activeVersion?.anchors) {
+  anchorTabs = activeVersion.anchors.map((anchor: any) => {
+    const entries = unwrapNav(anchor, currentPath);
+    // Find first non-shared page as the anchor link
+    let firstHref = '/';
+    for (const entry of entries) {
+      if (isNavPage(entry) && !isSharedPage(entry)) { firstHref = entry.href; break; }
+      if (isNavGroup(entry) && entry.pages.length > 0) {
+        const first = entry.pages.find((p: NavEntry) => isNavPage(p) && !isSharedPage(p)) as NavPage | undefined;
+        if (first) { firstHref = first.href; break; }
+      }
+    }
+    // Shared pages don't belong to any anchor
+    const isOnSharedPage = sharedPaths.has(currentPath);
+    return {
+      name: anchor.anchor,
+      href: firstHref,
+      icon: anchor.icon,
+      isActive: isOnSharedPage ? false : containsPath(entries, currentPath),
+    };
+  });
+}
+
+// Convert anchor tabs to the format Header expects (TabInfo[])
+const tabs: TabInfo[] | null = anchorTabs.length > 0
+  ? anchorTabs.map((a) => ({ name: a.name, href: a.href, isActive: a.isActive }))
+  : null;
+
+// Build sidebar anchors from the active version's anchor list
+const anchors = anchorTabs.map((a) => ({
+  name: a.name,
+  href: a.href,
+  icon: a.icon,
+  isActive: a.isActive,
+}));
+
+// Navbar config — override Examples link for Legacy version
+const baseNavbarConfig = (docsConfig as any).navbar;
+const isLegacy = activeVersion?.version === 'Legacy';
+const navbarConfig = {
+  ...baseNavbarConfig,
+  links: baseNavbarConfig?.links
+    ?.filter((link: any) => !(link.label === 'Changelog' && isLegacy))
+    .map((link: any) =>
+      link.label === 'Examples' && isLegacy
+        ? { ...link, href: 'https://master--5fc05e08a4a65d0021ae0bf2.chromatic.com' }
+        : link
+    ),
+};
+
+// Canonical URL mapping: legacy pages point to their latest equivalents
+const legacyCanonicalMap: Record<string, string> = {
+  '/legacy/introduction/installation': '/quickstart',
+  '/legacy/introduction/getting-started': '/quickstart',
+  '/legacy/api-documentation/draggable': '/concepts/draggable',
+  '/legacy/api-documentation/draggable/use-draggable': '/react/hooks/use-draggable',
+  '/legacy/api-documentation/draggable/drag-overlay': '/react/components/drag-overlay',
+  '/legacy/api-documentation/droppable': '/concepts/droppable',
+  '/legacy/api-documentation/droppable/use-droppable': '/react/hooks/use-droppable',
+  '/legacy/api-documentation/context-provider/dnd-context': '/react/components/drag-drop-provider',
+  '/legacy/api-documentation/context-provider/use-dnd-context': '/concepts/drag-drop-manager',
+  '/legacy/api-documentation/context-provider/use-dnd-monitor': '/react/hooks/use-drag-drop-monitor',
+  '/legacy/api-documentation/context-provider/collision-detection-algorithms': '/concepts/droppable',
+  '/legacy/api-documentation/sensors': '/extend/sensors',
+  '/legacy/api-documentation/sensors/pointer': '/extend/sensors/pointer-sensor',
+  '/legacy/api-documentation/sensors/keyboard': '/extend/sensors/keyboard-sensor',
+  '/legacy/api-documentation/sensors/mouse': '/extend/sensors/pointer-sensor',
+  '/legacy/api-documentation/sensors/touch': '/extend/sensors/pointer-sensor',
+  '/legacy/api-documentation/modifiers': '/extend/modifiers',
+  '/legacy/presets/sortable/overview': '/concepts/sortable',
+  '/legacy/presets/sortable/sortable-context': '/concepts/sortable',
+  '/legacy/presets/sortable/use-sortable': '/react/hooks/use-sortable',
+  '/legacy/guides/accessibility': '/extend/plugins/accessibility',
+};
+const canonicalPath = (isLegacy && legacyCanonicalMap[currentPath]) || currentPath;
+---
+
+<Layout title={doc.data.metaTitle || doc.data.seo?.title || `${doc.data.title || doc.id} - dnd kit`} description={doc.data.seo?.description || doc.data.description} path={canonicalPath}>
+  <div>
+    <Header
+      pageTitle={doc.data.title || doc.id}
+      groupName={page.groupName}
+      versionTabs={versionTabs}
+      navbarConfig={navbarConfig}
+    />
+
+    <MobileSidebar
+      navigation={page.navigation}
+      currentPath={currentPath}
+      tabs={versionTabs}
+      anchors={anchors}
+      navbarLinks={navbarConfig?.links || []}
+      client:load
+    />
+
+    <div class="w-full px-4 pt-3 lg:pt-0">
+      <div
+        class="flex lg:gap-10 min-h-[calc(100vh-4rem)]"
+        style="container-type: inline-size;"
+      >
+        <div transition:animate="none">
+          <Sidebar
+            navigation={page.navigation}
+            currentPath={currentPath}
+            anchors={anchors}
+            entries={sidebarEntries}
+            client:load
+          />
+        </div>
+
+        <main class="flex-1 min-w-0 py-10" id="main-content">
+          <article class="w-full">
+            <header class="leading-none pb-8">
+              {
+                page.groupName && (
+                  <p class="text-sm font-semibold text-(--primary) mt-0.5">
+                    {page.groupName}
+                  </p>
+                )
+              }
+              <div class="mt-2.5">
+                <div class="flex items-start justify-between gap-4">
+                  <h1
+                    class="text-2xl sm:text-3xl text-gray-900 dark:text-gray-200 tracking-tight font-bold wrap-anywhere"
+                  >
+                    {doc.data.title || doc.id}
+                  </h1>
+                  {!doc.data.hideContextMenu && (
+                    <PageContextMenu
+                      pathname={currentPath}
+                      className="shrink-0"
+                      client:load
+                    />
+                  )}
+                </div>
+                {
+                  doc.data.description && (
+                    <div class="text-lg prose prose-gray max-w-none mt-2.5">
+                      <p set:html={doc.data.description.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')} />
+                    </div>
+                  )
+                }
+              </div>
+            </header>
+            <div class="mdx-content prose max-w-none">
+              {isHomePage && <HeroSvg />}
+              <Content components={components} />
+              <Footer
+                prev={page.footerPages.prev}
+                next={page.footerPages.next}
+              />
+            </div>
+          </article>
+          <SiteFooter />
+        </main>
+
+        <TableOfContents headings={headings} client:load />
+      </div>
+    </div>
+  </div>
+</Layout>
