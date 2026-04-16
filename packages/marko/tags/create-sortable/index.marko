@@ -123,9 +123,9 @@ static const _makeBox = () => ({
       //   are accepted and how this sortable is categorised for sorting.
       // collisionDetector/collisionPriority: applied to the droppable;
       //   controls collision detection algorithm and tie-breaking priority.
-      e.sensors = input.sensors;
-      e.modifiers = input.modifiers;
-      e.plugins = input.plugins ?? withoutOptimistic;
+      if (input.sensors !== undefined) e.sensors = input.sensors;
+      if (input.modifiers !== undefined) e.modifiers = input.modifiers;
+      if (input.plugins !== undefined) e.plugins = input.plugins;
       if (input.accept !== undefined) e.accept = input.accept;
       if (input.type !== undefined) e.type = input.type;
       if (input.collisionDetector !== undefined)
