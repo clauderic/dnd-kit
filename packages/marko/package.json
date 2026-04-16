@@ -39,6 +39,7 @@
     "build": "bun run build:runtime",
     "build:runtime": "tsup",
     "dev": "bun run build:runtime --watch",
+    "test": "bun test",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
@@ -52,7 +53,9 @@
     "marko": "^6.0.0"
   },
   "devDependencies": {
+    "@marko/compiler": "^5.39.60",
     "@marko/runtime-tags": "6.0.155",
+    "@types/bun": "^1.0.0",
     "marko": "^6.0.0",
     "tsup": "8.3.0",
     "typescript": "^5.5.2"
