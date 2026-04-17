@@ -1,0 +1,136 @@
+---
+title: 'create-draggable'
+metaTitle: 'create-draggable - Marko | dnd kit'
+description: 'Make elements draggable with the create-draggable tag.'
+icon: 'bullseye-pointer'
+---
+
+import {Story} from '/snippets/story.mdx';
+
+<Story id="draggable-basic-setup--example" framework="marko" height="200" hero />
+
+## Usage
+
+The `<create-draggable>` tag requires a unique `id`. It provides a body parameter with reactive state and setter functions for connecting elements.
+
+```marko
+<drag-drop-provider>
+  <create-draggable|draggable| id="draggable">
+    <button/$el>
+      <lifecycle
+        onMount() { draggable.setElement($el()); }
+        onDestroy() { draggable.setElement(undefined); }
+      />
+      Draggable
+    </button>
+  </create-draggable>
+</drag-drop-provider>
+```
+
+<Note>
+  You must call `setElement` in `onMount` to connect the DOM element to the drag system. Without this, the element cannot be dragged. Call `setElement(undefined)` in `onDestroy` to clean up.
+</Note>
+
+## Input
+
+<ParamField path="id" type="UniqueIdentifier" required>
+  A unique identifier for this draggable instance.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" optional>
+  Whether the draggable is disabled.
+</ParamField>
+
+<ParamField path="plugins" type="PluginDescriptor[]" optional>
+  An array of plugin descriptors for per-entity plugin configuration. Use `Plugin.configure()` to create descriptors. For example, `Feedback.configure({ feedback: 'clone' })`.
+</ParamField>
+
+<ParamField path="modifiers" type="Modifier[]" optional>
+  Modifiers to apply to this draggable instance.
+</ParamField>
+
+<ParamField path="sensors" type="Sensor[]" optional>
+  Sensors to use for this draggable instance.
+</ParamField>
+
+<ParamField path="data" type="Data" optional>
+  Custom data to attach to this draggable instance.
+</ParamField>
+
+## Output (body parameter)
+
+The body parameter provides reactive properties and setter functions:
+
+<ResponseField name="isDragging" type="boolean">
+  Whether this element is currently being dragged (visually).
+</ResponseField>
+
+<ResponseField name="isDropping" type="boolean">
+  Whether this element is in the process of being dropped (animating to final position).
+</ResponseField>
+
+<ResponseField name="isDragSource" type="boolean">
+  Whether this element is the source of the current drag operation.
+</ResponseField>
+
+<ResponseField name="setElement" type="(el: Element | undefined) => void">
+  Connect a DOM element to this draggable. Call in `onMount` with `$el()`, and in `onDestroy` with `undefined`.
+</ResponseField>
+
+<ResponseField name="setHandle" type="(el: Element | undefined) => void">
+  Set a drag handle element. Call in `onMount` with `$el()` on the handle element.
+</ResponseField>
+
+## Guides
+
+### Using drag handles
+
+You can use `setHandle` to designate a specific element as the drag handle:
+
+```marko
+<create-draggable|draggable| id="draggable">
+  <div/$el>
+    <lifecycle
+      onMount() { draggable.setElement($el()); }
+      onDestroy() { draggable.setElement(undefined); }
+    />
+    Drag me by the handle
+    <button/$handle>
+      <lifecycle
+        onMount() { draggable.setHandle($handle()); }
+        onDestroy() { draggable.setHandle(undefined); }
+      />
+      ⠿
+    </button>
+  </div>
+</create-draggable>
+```
+
+### Rendering a drag overlay
+
+You can render a completely different element while the draggable element is being dragged by using the [`<drag-overlay>`](/marko/components/drag-overlay) tag.
+
+<img src="/images/draggable/drag-overlay.png" />
+
+```marko
+<drag-drop-provider>
+  <create-draggable|draggable| id="draggable">
+    <button/$el>
+      <lifecycle
+        onMount() { draggable.setElement($el()); }
+        onDestroy() { draggable.setElement(undefined); }
+      />
+      Draggable
+    </button>
+  </create-draggable>
+  <drag-overlay|source|>
+    <div>I will be rendered while dragging...</div>
+  </drag-overlay>
+</drag-drop-provider>
+```
+
+The `<drag-overlay>` tag will only render its children when a drag operation is in progress. This can be useful for rendering a completely different element while the draggable element is being dragged.
+
+<Warning>
+  You should only render the `<drag-overlay>` tag once per [DragDropProvider](/marko/components/drag-drop-provider).
+</Warning>

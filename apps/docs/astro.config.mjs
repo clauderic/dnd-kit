@@ -41,6 +41,7 @@ export default defineConfig({
           '../../node_modules/@mintlify/astro/dist/utils/mintlify-components.js'
         ),
         '@components/CodeSandbox': resolve('./src/components/CodeSandbox.tsx'),
+        '@mintlify/components-original': resolve('./node_modules/@mintlify/components')
       },
     },
   },

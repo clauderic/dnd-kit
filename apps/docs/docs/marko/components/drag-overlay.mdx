@@ -1,0 +1,85 @@
+---
+title: 'DragOverlay'
+metaTitle: 'DragOverlay - Marko | dnd kit'
+description: 'Render a custom element as visual feedback during drag operations.'
+icon: 'clone'
+---
+
+## Overview
+
+The `<drag-overlay>` tag renders a custom overlay element while a drag operation is in progress. This allows you to display a completely different element than the one being dragged, which is useful for rendering a styled clone, a preview, or a simplified representation of the dragged element.
+
+<img src="/images/draggable/drag-overlay.png" />
+
+## Usage
+
+Place the `<drag-overlay>` tag inside a [`<drag-drop-provider>`](/marko/components/drag-drop-provider). Its body content will only be rendered when a drag operation is active. The drag source is provided as a body parameter.
+
+```marko
+<drag-drop-provider>
+  <create-draggable|draggable| id="my-item">
+    <button/$el>
+      <lifecycle
+        onMount() { draggable.setElement($el()); }
+        onDestroy() { draggable.setElement(undefined); }
+      />
+      draggable
+    </button>
+  </create-draggable>
+  <drag-overlay|source|>
+    <div>I will be rendered while dragging...</div>
+  </drag-overlay>
+</drag-drop-provider>
+```
+
+<Warning>
+  You should only render the `<drag-overlay>` tag once per [DragDropProvider](/marko/components/drag-drop-provider).
+</Warning>
+
+<Warning>
+  Do not render `<create-draggable>`, `<create-droppable>`, or `<create-sortable>` inside `<drag-overlay>`. The overlay content should be plain HTML markup only. This limitation exists because Marko v6 does not yet support scoped context, which is needed to prevent accidental entity registration inside the overlay.
+</Warning>
+
+### Rendering based on the drag source
+
+You can use the body parameter to access the current drag `source` and render different content depending on which element is being dragged:
+
+```marko
+<drag-drop-provider>
+  <!-- draggable elements -->
+  <drag-overlay|source|>
+    <div>Dragging ${source.id}</div>
+  </drag-overlay>
+</drag-drop-provider>
+```
+
+### Customizing the drop animation
+
+By default, when a drag operation ends, the overlay animates back to the position of the source element. You can customize or disable this animation using the `dropAnimation` prop.
+
+```marko
+<!-- Disable the drop animation -->
+<drag-overlay|source| dropAnimation=null>
+  <div>No animation on drop</div>
+</drag-overlay>
+```
+
+## Props
+
+<ParamField path="disabled" type="boolean" default="false">
+  Whether the drag overlay is disabled. When `true`, the overlay will not render its children during drag operations.
+</ParamField>
+
+<ParamField path="dropAnimation" type="DropAnimation | null" optional>
+  Customize or disable the drop animation that plays when a drag operation ends.
+
+  - `undefined` – use the default animation (`250ms` ease)
+  - `null` – disable the drop animation entirely
+  - `{duration, easing}` – customize the animation timing
+</ParamField>
+
+## Body parameter
+
+<ResponseField name="source" type="Draggable">
+  The [Draggable](/concepts/draggable) instance that is the source of the current drag operation.
+</ResponseField>
