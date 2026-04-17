@@ -42,14 +42,24 @@ export function useDraggable<T extends Data = Data>(
   useOnElementChange(element, (element) => (draggable.element = element));
   useOnValueChange(data, () => data && (draggable.data = data));
   useOnValueChange(disabled, () => (draggable.disabled = disabled === true));
-  useOnValueChange(sensors, () => (draggable.sensors = sensors));
+  useOnValueChange(
+    sensors,
+    () => (draggable.sensors = sensors),
+    undefined,
+    deepEqual
+  );
   useOnValueChange(
     modifiers,
     () => (draggable.modifiers = modifiers),
     undefined,
     deepEqual
   );
-  useOnValueChange(plugins, () => (draggable.plugins = plugins), undefined, deepEqual);
+  useOnValueChange(
+    plugins,
+    () => (draggable.plugins = plugins),
+    undefined,
+    deepEqual
+  );
   useOnValueChange(
     input.alignment,
     () => (draggable.alignment = input.alignment)
