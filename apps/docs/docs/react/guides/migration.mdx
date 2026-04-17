@@ -6,29 +6,6 @@ icon: 'swap-arrows'
 mode: 'wide'
 ---
 
-## API mapping reference
-
-Use this table as a quick reference when migrating from `@dnd-kit/core` and `@dnd-kit/sortable` to the new `@dnd-kit/react` API.
-
-| Legacy | New equivalent |
-|---|---|
-| `DndContext` | [`DragDropProvider`](/react/components/drag-drop-provider) |
-| `SortableContext` | No longer needed |
-| `useSensor` / `useSensors` | Built-in by default. Customize via the `sensors` prop on [`DragDropProvider`](/react/components/drag-drop-provider) |
-| `arrayMove` | [`move`](/react/guides/sortable-state-management) from `@dnd-kit/helpers` |
-| `active` / `over` | `event.operation.source` / `event.operation.target` |
-| `active.id` | `event.operation.source.id` |
-| `onDragCancel` | Check `event.canceled` in `onDragEnd` |
-| `collisionDetection` prop | `collisionDetector` per-droppable via [`useDroppable`](/react/hooks/use-droppable) |
-| `pointerWithin` | `pointerIntersection` from `@dnd-kit/collision` |
-| `closestCenter` | `closestCenter` from `@dnd-kit/collision` |
-| `restrictToParentElement` | [`RestrictToElement`](/react/guides/modifiers) modifier from `@dnd-kit/dom/modifiers` |
-| `restrictToVerticalAxis` | `RestrictToVerticalAxis` modifier from `@dnd-kit/abstract/modifiers` |
-| `verticalListSortingStrategy` | No longer needed — handled automatically |
-| `horizontalListSortingStrategy` | No longer needed — handled automatically |
-
-## Step-by-step migration
-
 <Steps>
   <Step title="Update dependencies">
     Update your `package.json` and install the new packages:
@@ -309,6 +286,68 @@ Use this table as a quick reference when migrating from `@dnd-kit/core` and `@dn
     Use the array manipulation helpers from `@dnd-kit/helpers` to handle reordering.
   </Step>
 </Steps>
+
+## API reference
+
+A quick lookup for common legacy APIs and their new equivalents. Organized by category so you can jump to what you need.
+
+<AccordionGroup>
+  <Accordion title="Context & Provider" icon="square-dashed">
+    | Legacy (`@dnd-kit/core`) | New (`@dnd-kit/react`) |
+    | --- | --- |
+    | `DndContext` | [`DragDropProvider`](/react/components/drag-drop-provider) |
+    | `SortableContext` | No longer needed |
+  </Accordion>
+
+  <Accordion title="Events" icon="bolt">
+    | Legacy | New |
+    | --- | --- |
+    | `active` | `event.operation.source` |
+    | `over` | `event.operation.target` |
+    | `active.id` | `event.operation.source.id` |
+    | `onDragCancel` | Check `event.canceled` inside `onDragEnd` |
+  </Accordion>
+
+  <Accordion title="Sensors" icon="monitor-waveform">
+    | Legacy | New |
+    | --- | --- |
+    | `useSensor` / `useSensors` | Built-in by default. Customize via the `sensors` prop on [`DragDropProvider`](/react/components/drag-drop-provider) |
+    | `PointerSensor` | [`PointerSensor`](/extend/sensors/pointer-sensor) from `@dnd-kit/dom/sensors` |
+    | `KeyboardSensor` | [`KeyboardSensor`](/extend/sensors/keyboard-sensor) from `@dnd-kit/dom/sensors` |
+  </Accordion>
+
+  <Accordion title="Collision detection" icon="arrows-to-circle">
+    | Legacy | New |
+    | --- | --- |
+    | `collisionDetection` prop on `DndContext` | `collisionDetector` option on [`useDroppable`](/react/hooks/use-droppable) / [`useSortable`](/react/hooks/use-sortable) |
+    | `pointerWithin` | `pointerIntersection` from `@dnd-kit/collision` |
+    | `closestCenter` | `closestCenter` from `@dnd-kit/collision` |
+    | `closestCorners` | `closestCorners` from `@dnd-kit/collision` |
+  </Accordion>
+
+  <Accordion title="Modifiers" icon="arrows-to-dot">
+    See the [React modifiers guide](/react/guides/modifiers) for usage examples.
+
+    | Legacy | New |
+    | --- | --- |
+    | `restrictToParentElement` | `RestrictToElement` from `@dnd-kit/dom/modifiers` |
+    | `restrictToWindowEdges` | `RestrictToWindow` from `@dnd-kit/dom/modifiers` |
+    | `restrictToVerticalAxis` | `RestrictToVerticalAxis` from `@dnd-kit/abstract/modifiers` |
+    | `restrictToHorizontalAxis` | `RestrictToHorizontalAxis` from `@dnd-kit/abstract/modifiers` |
+    | `createSnapModifier` | `SnapModifier` from `@dnd-kit/abstract/modifiers` |
+  </Accordion>
+
+  <Accordion title="Sortable" icon="arrows-up-down">
+    See the [sortable state management guide](/react/guides/sortable-state-management) for usage examples.
+
+    | Legacy | New |
+    | --- | --- |
+    | `arrayMove` | `move` from `@dnd-kit/helpers` |
+    | `verticalListSortingStrategy` | Not needed — handled automatically |
+    | `horizontalListSortingStrategy` | Not needed — handled automatically |
+    | `rectSortingStrategy` | Not needed — handled automatically |
+  </Accordion>
+</AccordionGroup>
 
 ## Next steps
 
