@@ -296,7 +296,6 @@ A quick lookup for common legacy APIs and their new equivalents, organized by ca
 | Legacy (`@dnd-kit/core`) | New (`@dnd-kit/react`) |
 | --- | --- |
 | `DndContext` | [`DragDropProvider`](/react/components/drag-drop-provider) |
-| `SortableContext` | No longer needed |
 
 ### Events
 
@@ -338,10 +337,15 @@ See the [React modifiers guide](/react/guides/modifiers) for usage examples.
 
 ### Sortable
 
+<Note>
+  `SortableContext` is no longer needed. Sortable items register and coordinate with the [`DragDropProvider`](/react/components/drag-drop-provider) automatically when you use [`useSortable`](/react/hooks/use-sortable) — there's no wrapping context to configure. Use the `type` and `accept` options on `useSortable` to control which items can be sorted together.
+</Note>
+
 See the [sortable state management guide](/react/guides/sortable-state-management) for usage examples.
 
 | Legacy | New |
 | --- | --- |
+| `SortableContext` | No longer needed — see note above |
 | `arrayMove` | `move` from `@dnd-kit/helpers` |
 | `verticalListSortingStrategy` | Not needed — handled automatically |
 | `horizontalListSortingStrategy` | Not needed — handled automatically |
