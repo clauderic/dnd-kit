@@ -98,6 +98,7 @@
                   "react/guides/migration",
                   "react/guides/multiple-sortable-lists",
                   "react/guides/sortable-state-management",
+                  "react/guides/collision-detection",
                   "react/guides/modifiers",
                   "react/guides/feedback"
                 ]
