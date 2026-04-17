@@ -1,0 +1,14 @@
+<drag-drop-provider>
+  <create-draggable|draggable| id="drag-1">
+    <button/$el class=("btn" + (draggable.isDragging ? " dragging" : ""))>
+      <lifecycle
+        onMount() { draggable.setElement($el()); }
+        onDestroy() { draggable.setElement(undefined); }
+      />
+      Drag me
+    </button>
+  </create-draggable>
+  <drag-overlay|source|>
+    <button class="btn ghost">Overlay content</button>
+  </drag-overlay>
+</drag-drop-provider>

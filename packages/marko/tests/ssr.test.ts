@@ -8,7 +8,8 @@
  * 2. DragDropManager is NOT constructed during SSR (isBrowser guard)
  * 3. Body content renders with correct default state (isDragging=false, etc.)
  * 4. No "undefined" values leak into the HTML output
- * 5. All three consumer tags (create-sortable, create-draggable, create-droppable) work
+ * 5. All consumer tags (create-sortable, create-draggable, create-droppable) work
+ * 6. drag-overlay renders empty wrapper during SSR (no drag in progress)
  */
 import { describe, expect, test, beforeAll } from 'bun:test';
 import path from 'path';
@@ -39,6 +40,20 @@ describe('SSR — compile', () => {
 
     test('droppable template compiles to HTML mode', async () => {
         const templatePath = path.join(fixturesDir, 'ssr-droppable-template.marko');
+        compiler.taglib.clearCaches();
+
+        const result = compiler.compileFileSync(templatePath, {
+            output: 'html',
+            translator,
+            cache: new Map(),
+        });
+
+        expect(result.code).toBeDefined();
+        expect(result.code.length).toBeGreaterThan(0);
+    });
+
+    test('overlay template compiles to HTML mode', async () => {
+        const templatePath = path.join(fixturesDir, 'ssr-overlay-template.marko');
         compiler.taglib.clearCaches();
 
         const result = compiler.compileFileSync(templatePath, {
@@ -115,6 +130,30 @@ describe('SSR — render', () => {
         // No undefined/null values leaked into visible output
         expect(visible).not.toContain('undefined');
         expect(visible).not.toContain('null');
+    });
+
+    test('overlay template renders empty overlay wrapper during SSR', () => {
+        const mod = require('./fixtures/ssr-overlay-template.marko');
+        const template = mod.default ?? mod;
+        const result = template.render({});
+        const html: string = result.toString();
+
+        // Strip Marko's hydration <script>
+        const visible = html.replace(/<script[\s\S]*?<\/script>/g, '');
+
+        // The overlay wrapper div exists in the DOM (for hydration)
+        expect(visible).toContain('data-dnd-overlay');
+
+        // Overlay content is NOT rendered during SSR (no drag in progress,
+        // _source is null → <if> branch is false → no body content)
+        expect(visible).not.toContain('Overlay content');
+
+        // The draggable outside the overlay renders normally
+        expect(visible).toContain('Drag me');
+        expect(visible).toContain('class=btn');
+
+        // No leaks
+        expect(visible).not.toContain('undefined');
     });
 
     test('DragDropManager is not instantiated during SSR', () => {
