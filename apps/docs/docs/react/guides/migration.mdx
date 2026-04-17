@@ -308,11 +308,42 @@ A quick lookup for common legacy APIs and their new equivalents, organized by ca
 
 ### Sensors
 
-| Legacy | New |
+<Note>
+  The legacy `MouseSensor` and `TouchSensor` have been merged into a single [`PointerSensor`](/extend/sensors/pointer-sensor) that handles mouse, touch, and pen input via the native Pointer Events API. You can still apply different behavior per input type by passing a function to `activationConstraints` and branching on `event.pointerType` (`'mouse'`, `'touch'`, or `'pen'`):
+
+  ```tsx
+  import {DragDropProvider} from '@dnd-kit/react';
+  import {PointerSensor, PointerActivationConstraints} from '@dnd-kit/dom';
+
+  <DragDropProvider
+    sensors={(defaults) => [
+      ...defaults.filter((sensor) => sensor !== PointerSensor),
+      PointerSensor.configure({
+        activationConstraints(event, source) {
+          if (event.pointerType === 'touch') {
+            return [
+              new PointerActivationConstraints.Delay({value: 500, tolerance: {x: 5, y: 5}}),
+            ];
+          }
+          return [new PointerActivationConstraints.Distance({value: 8})];
+        },
+      }),
+    ]}
+  >
+    {/* ... */}
+  </DragDropProvider>
+  ```
+
+  If you don't configure it, the default already differentiates pointer types — see the [PointerSensor docs](/extend/sensors/pointer-sensor) for the full default behavior.
+</Note>
+
+| Legacy (`@dnd-kit/core`) | New (`@dnd-kit/dom`) |
 | --- | --- |
 | `useSensor` / `useSensors` | Built-in by default. Customize via the `sensors` prop on [`DragDropProvider`](/react/components/drag-drop-provider) |
-| `PointerSensor` | [`PointerSensor`](/extend/sensors/pointer-sensor) from `@dnd-kit/dom/sensors` |
-| `KeyboardSensor` | [`KeyboardSensor`](/extend/sensors/keyboard-sensor) from `@dnd-kit/dom/sensors` |
+| `MouseSensor` | [`PointerSensor`](/extend/sensors/pointer-sensor) from `@dnd-kit/dom` |
+| `TouchSensor` | [`PointerSensor`](/extend/sensors/pointer-sensor) from `@dnd-kit/dom` |
+| `PointerSensor` | [`PointerSensor`](/extend/sensors/pointer-sensor) from `@dnd-kit/dom` |
+| `KeyboardSensor` | [`KeyboardSensor`](/extend/sensors/keyboard-sensor) from `@dnd-kit/dom` |
 
 ### Collision detection
 
