@@ -1,0 +1,129 @@
+---
+title: 'Feedback'
+metaTitle: 'Feedback Plugin - React | dnd kit'
+description: 'Configure drag feedback, clone overlays, drop animations, and troubleshoot common issues like duplicate items in React.'
+icon: 'clone'
+---
+
+## Overview
+
+The [Feedback](/extend/plugins/feedback) plugin manages visual feedback during drag operations. It is included by default and handles element promotion to the browser's top layer and drop animations.
+
+This guide covers common React patterns and troubleshooting.
+
+## Configuring feedback globally
+
+To configure feedback for all draggable elements, pass a `plugins` function to [`DragDropProvider`](/react/components/drag-drop-provider):
+
+```tsx
+import {DragDropProvider} from '@dnd-kit/react';
+import {Feedback} from '@dnd-kit/dom';
+
+function App() {
+  return (
+    <DragDropProvider
+      plugins={(defaults) => [
+        ...defaults,
+        Feedback.configure({dropAnimation: null}),
+      ]}
+    >
+      {/* All draggable elements will have no drop animation */}
+    </DragDropProvider>
+  );
+}
+```
+
+<Warning>
+  Use the function form `(defaults) => [...]` to extend the default plugins rather than replacing them. Passing a plain array replaces all default plugins, which may disable expected behavior like auto-scrolling and accessibility.
+</Warning>
+
+## Per-draggable feedback
+
+Configure feedback on individual elements via the `plugins` option in [`useDraggable`](/react/hooks/use-draggable) or [`useSortable`](/react/hooks/use-sortable):
+
+```tsx
+import {useDraggable} from '@dnd-kit/react';
+import {Feedback} from '@dnd-kit/dom';
+
+function CloneDraggable({id}: {id: string}) {
+  const {ref} = useDraggable({
+    id,
+    plugins: [
+      Feedback.configure({
+        feedback: 'clone',
+      }),
+    ],
+  });
+
+  return <div ref={ref}>Drag me (clone stays behind)</div>;
+}
+```
+
+## Feedback modes
+
+The `feedback` option controls how the element behaves during drag:
+
+| Mode | Behavior |
+|------|----------|
+| `'default'` | The element is promoted to the top layer and moves with the pointer |
+| `'clone'` | A clone of the element stays in its original position while the original moves |
+| `'move'` | The element moves without top layer promotion or a placeholder |
+| `'none'` | No visual feedback from the Feedback plugin. Use this when rendering a custom [`DragOverlay`](/react/components/drag-overlay) |
+
+## Drop animations
+
+### Disabling the drop animation
+
+```tsx
+Feedback.configure({dropAnimation: null})
+```
+
+### Customizing the drop animation
+
+```tsx
+Feedback.configure({
+  dropAnimation: {
+    duration: 300,   // milliseconds (default: 250)
+    easing: 'ease',  // CSS easing (default: 'ease')
+  },
+})
+```
+
+### Custom animation function
+
+For full control, provide a function that returns a `Promise`:
+
+```tsx
+Feedback.configure({
+  dropAnimation: async ({element, translate}) => {
+    await element.animate(
+      [{transform: `translate3d(${translate.x}px, ${translate.y}px, 0)`}, {transform: 'translate3d(0, 0, 0)'}],
+      {duration: 200, easing: 'ease-out'}
+    ).finished;
+  },
+})
+```
+
+## Troubleshooting
+
+### Duplicate items after data refetch
+
+When using sortable lists with React Query or other data fetching libraries, you may see duplicate items after a refetch. This happens because the [OptimisticSortingPlugin](/concepts/sortable#optimistic-sorting) has moved DOM elements during the drag, and the refetched data renders new elements in the updated positions.
+
+See [Integration with external state](/react/guides/sortable-state-management#integration-with-external-state) for how to solve this by deferring state sync until the drag is complete.
+
+### Double animation or snap on drop
+
+If items snap into position twice after dropping, your state update is likely conflicting with the drop animation. The Feedback plugin animates the element back, then your state update triggers a re-render that moves it again.
+
+To fix this, disable the drop animation:
+
+```tsx
+Feedback.configure({dropAnimation: null})
+```
+
+Or ensure your state update matches the final position by using the [`move`](/react/guides/sortable-state-management) helper from `@dnd-kit/helpers` in `onDragEnd`, which correctly reconciles the optimistic position with your state.
+
+<Info>
+  For the complete API reference including `rootElement` and `keyboardTransition` options, see the [core Feedback plugin documentation](/extend/plugins/feedback).
+</Info>

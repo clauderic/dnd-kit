@@ -201,6 +201,29 @@ The Pointer sensor handles these events:
 
 The sensor automatically binds listeners across all same-origin documents, enabling drag operations across same-origin iframes.
 
+## Touch and mobile
+
+The Pointer sensor handles touch input on mobile devices by default — no additional setup is required.
+
+On touch devices, dragging activates after a **250ms delay** with **5px movement tolerance**. This prevents accidental drags when scrolling. You can customize these constraints for your use case:
+
+```ts
+PointerSensor.configure({
+  activationConstraints(event) {
+    if (event.pointerType === 'touch') {
+      return [
+        new PointerActivationConstraints.Delay({
+          value: 150,    // Shorter delay for faster touch response
+          tolerance: 10, // More tolerance for finger movement
+        }),
+      ];
+    }
+
+    return undefined; // Use defaults for mouse/pen
+  },
+});
+```
+
 ### Best Practices
 
 1. Use appropriate constraints for different input types:

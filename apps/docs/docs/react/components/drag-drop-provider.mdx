@@ -178,6 +178,40 @@ function App() {
   Called when collisions are detected. Call `event.preventDefault()` to prevent automatic target selection.
 </ParamField>
 
+#### Event object structure
+
+All event handlers receive an event object and the `manager` instance. The most commonly used event, `onDragEnd`, has this shape:
+
+```ts
+onDragEnd={(event, manager) => {
+  event.operation.source   // The dragged element (Draggable), or null
+  event.operation.target   // The drop target (Droppable), or null
+  event.operation.source.id     // Unique identifier of the dragged element
+  event.operation.target?.id    // Unique identifier of the drop target
+  event.operation.position      // { current: {x, y}, initial: {x, y} }
+  event.operation.status        // Status of the drag operation
+  event.canceled                // true if the drag was cancelled (e.g. Escape key)
+  event.nativeEvent             // The underlying browser event, if available
+}}
+```
+
+For sortable elements, use the [`isSortable`](/react/guides/sortable-state-management#type-guards) type guard to access sortable-specific properties:
+
+```tsx
+import {isSortable} from '@dnd-kit/react/sortable';
+
+onDragEnd={(event) => {
+  const {source} = event.operation;
+
+  if (isSortable(source)) {
+    source.index         // Current position
+    source.initialIndex  // Position when the drag started
+    source.group         // Current group (for multi-list)
+    source.initialGroup  // Group when the drag started
+  }
+}}
+```
+
 ### Configuration
 
 <ParamField path="sensors" type="Sensor[] | (defaults: Sensor[]) => Sensor[]">

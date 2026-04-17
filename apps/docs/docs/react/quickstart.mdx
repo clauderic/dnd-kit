@@ -35,6 +35,15 @@ Before getting started, make sure you install `@dnd-kit/react` in your project:
   ```
 </CodeGroup>
 
+<Note>
+  `@dnd-kit/react` is the only required package. For sortable lists, you'll also want `@dnd-kit/helpers`
+  for the [`move`](/react/guides/sortable-state-management) utility. Packages like `@dnd-kit/dom` and `@dnd-kit/abstract` are installed
+  automatically as dependencies.
+
+  If you're migrating from the legacy `@dnd-kit/core`, `@dnd-kit/sortable`, or `@dnd-kit/utilities`
+  packages, see the [Migration guide](/react/guides/migration).
+</Note>
+
 ## Making elements draggable
 
 Let's get started by creating draggable elements that can be dropped over droppable targets. To do so, we'll be using the `useDraggable` hook.
