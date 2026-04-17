@@ -85,7 +85,12 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
   useOnElementChange(element, (element) => (sortable.element = element));
   useOnElementChange(target, (target) => (sortable.target = target));
   useOnValueChange(disabled, () => (sortable.disabled = disabled === true));
-  useOnValueChange(sensors, () => (sortable.sensors = sensors));
+  useOnValueChange(
+    sensors,
+    () => (sortable.sensors = sensors),
+    undefined,
+    deepEqual
+  );
   useOnValueChange(
     collisionDetector,
     () => (sortable.collisionDetector = collisionDetector)
@@ -94,7 +99,12 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     collisionPriority,
     () => (sortable.collisionPriority = collisionPriority)
   );
-  useOnValueChange(plugins, () => (sortable.plugins = plugins), undefined, deepEqual);
+  useOnValueChange(
+    plugins,
+    () => (sortable.plugins = plugins),
+    undefined,
+    deepEqual
+  );
   useOnValueChange(
     transition,
     () => (sortable.transition = transition),
