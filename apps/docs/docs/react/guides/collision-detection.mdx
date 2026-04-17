@@ -29,13 +29,25 @@ High precision — a collision is only detected when the pointer is **inside** t
 
 Returns the droppable with the **greatest overlap area** with the dragged element's shape. Good for large containers where any visual overlap should count as a collision. Ties are broken by distance to the pointer.
 
+<Frame>
+  <img src="/images/droppable/shape-intersection.svg" alt="Shape intersection: the dragged element overlaps droppable rectangles and the one with the greatest overlap area is selected" />
+</Frame>
+
 ### `closestCenter`
 
 Picks the droppable whose **center point** is closest to the dragged element's center. Ideal for card stacking or grids where items snap to the nearest slot.
 
+<Frame>
+  <img src="/images/droppable/closest-center.svg" alt="Closest center: a line from the dragged element's center to the closest droppable's center" />
+</Frame>
+
 ### `closestCorners`
 
 Picks the droppable with the smallest **average corner-to-corner distance**. More forgiving than `closestCenter` at the edges of a list — useful for vertical sortable lists where you want items to pick up a neighbor as soon as the corners approach.
+
+<Frame>
+  <img src="/images/legacy/closest-corners.png" alt="Closest corners: lines drawn between the four corners of the dragged element and the corresponding corners of each droppable" />
+</Frame>
 
 ### `pointerDistance`
 
@@ -133,13 +145,4 @@ useDroppable({id, collisionDetector: myDetector});
 
 For reference implementations, read the source of the built-in detectors in [`@dnd-kit/collision`](https://github.com/clauderic/dnd-kit/tree/main/packages/collision/src/algorithms).
 
-## Migrating from legacy `collisionDetection`
-
-In `@dnd-kit/core`, `collisionDetection` was a single prop on `DndContext` that applied globally. The new API flips this: each droppable declares its own detector, which is more flexible and composable.
-
-| Legacy | New |
-| --- | --- |
-| `<DndContext collisionDetection={closestCenter}>` | `useDroppable({id, collisionDetector: closestCenter})` |
-| `pointerWithin` | `pointerIntersection` |
-
-See the [Migration guide](/react/guides/migration#collision-detection) for the full mapping table.
+If you're coming from `@dnd-kit/core`, see the [Migration guide](/react/guides/migration#collision-detection) for legacy API mappings.
