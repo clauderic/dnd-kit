@@ -289,65 +289,63 @@ mode: 'wide'
 
 ## API reference
 
-A quick lookup for common legacy APIs and their new equivalents. Organized by category so you can jump to what you need.
+A quick lookup for common legacy APIs and their new equivalents, organized by category.
 
-<AccordionGroup>
-  <Accordion title="Context & Provider" icon="square-dashed">
-    | Legacy (`@dnd-kit/core`) | New (`@dnd-kit/react`) |
-    | --- | --- |
-    | `DndContext` | [`DragDropProvider`](/react/components/drag-drop-provider) |
-    | `SortableContext` | No longer needed |
-  </Accordion>
+### Context & Provider
 
-  <Accordion title="Events" icon="bolt">
-    | Legacy | New |
-    | --- | --- |
-    | `active` | `event.operation.source` |
-    | `over` | `event.operation.target` |
-    | `active.id` | `event.operation.source.id` |
-    | `onDragCancel` | Check `event.canceled` inside `onDragEnd` |
-  </Accordion>
+| Legacy (`@dnd-kit/core`) | New (`@dnd-kit/react`) |
+| --- | --- |
+| `DndContext` | [`DragDropProvider`](/react/components/drag-drop-provider) |
+| `SortableContext` | No longer needed |
 
-  <Accordion title="Sensors" icon="monitor-waveform">
-    | Legacy | New |
-    | --- | --- |
-    | `useSensor` / `useSensors` | Built-in by default. Customize via the `sensors` prop on [`DragDropProvider`](/react/components/drag-drop-provider) |
-    | `PointerSensor` | [`PointerSensor`](/extend/sensors/pointer-sensor) from `@dnd-kit/dom/sensors` |
-    | `KeyboardSensor` | [`KeyboardSensor`](/extend/sensors/keyboard-sensor) from `@dnd-kit/dom/sensors` |
-  </Accordion>
+### Events
 
-  <Accordion title="Collision detection" icon="arrows-to-circle">
-    | Legacy | New |
-    | --- | --- |
-    | `collisionDetection` prop on `DndContext` | `collisionDetector` option on [`useDroppable`](/react/hooks/use-droppable) / [`useSortable`](/react/hooks/use-sortable) |
-    | `pointerWithin` | `pointerIntersection` from `@dnd-kit/collision` |
-    | `closestCenter` | `closestCenter` from `@dnd-kit/collision` |
-    | `closestCorners` | `closestCorners` from `@dnd-kit/collision` |
-  </Accordion>
+| Legacy | New |
+| --- | --- |
+| `active` | `event.operation.source` |
+| `over` | `event.operation.target` |
+| `active.id` | `event.operation.source.id` |
+| `onDragCancel` | Check `event.canceled` inside `onDragEnd` |
 
-  <Accordion title="Modifiers" icon="arrows-to-dot">
-    See the [React modifiers guide](/react/guides/modifiers) for usage examples.
+### Sensors
 
-    | Legacy | New |
-    | --- | --- |
-    | `restrictToParentElement` | `RestrictToElement` from `@dnd-kit/dom/modifiers` |
-    | `restrictToWindowEdges` | `RestrictToWindow` from `@dnd-kit/dom/modifiers` |
-    | `restrictToVerticalAxis` | `RestrictToVerticalAxis` from `@dnd-kit/abstract/modifiers` |
-    | `restrictToHorizontalAxis` | `RestrictToHorizontalAxis` from `@dnd-kit/abstract/modifiers` |
-    | `createSnapModifier` | `SnapModifier` from `@dnd-kit/abstract/modifiers` |
-  </Accordion>
+| Legacy | New |
+| --- | --- |
+| `useSensor` / `useSensors` | Built-in by default. Customize via the `sensors` prop on [`DragDropProvider`](/react/components/drag-drop-provider) |
+| `PointerSensor` | [`PointerSensor`](/extend/sensors/pointer-sensor) from `@dnd-kit/dom/sensors` |
+| `KeyboardSensor` | [`KeyboardSensor`](/extend/sensors/keyboard-sensor) from `@dnd-kit/dom/sensors` |
 
-  <Accordion title="Sortable" icon="arrows-up-down">
-    See the [sortable state management guide](/react/guides/sortable-state-management) for usage examples.
+### Collision detection
 
-    | Legacy | New |
-    | --- | --- |
-    | `arrayMove` | `move` from `@dnd-kit/helpers` |
-    | `verticalListSortingStrategy` | Not needed — handled automatically |
-    | `horizontalListSortingStrategy` | Not needed — handled automatically |
-    | `rectSortingStrategy` | Not needed — handled automatically |
-  </Accordion>
-</AccordionGroup>
+| Legacy | New |
+| --- | --- |
+| `collisionDetection` prop on `DndContext` | `collisionDetector` option on [`useDroppable`](/react/hooks/use-droppable) / [`useSortable`](/react/hooks/use-sortable) |
+| `pointerWithin` | `pointerIntersection` from `@dnd-kit/collision` |
+| `closestCenter` | `closestCenter` from `@dnd-kit/collision` |
+| `closestCorners` | `closestCorners` from `@dnd-kit/collision` |
+
+### Modifiers
+
+See the [React modifiers guide](/react/guides/modifiers) for usage examples.
+
+| Legacy | New |
+| --- | --- |
+| `restrictToParentElement` | `RestrictToElement` from `@dnd-kit/dom/modifiers` |
+| `restrictToWindowEdges` | `RestrictToWindow` from `@dnd-kit/dom/modifiers` |
+| `restrictToVerticalAxis` | `RestrictToVerticalAxis` from `@dnd-kit/abstract/modifiers` |
+| `restrictToHorizontalAxis` | `RestrictToHorizontalAxis` from `@dnd-kit/abstract/modifiers` |
+| `createSnapModifier` | `SnapModifier` from `@dnd-kit/abstract/modifiers` |
+
+### Sortable
+
+See the [sortable state management guide](/react/guides/sortable-state-management) for usage examples.
+
+| Legacy | New |
+| --- | --- |
+| `arrayMove` | `move` from `@dnd-kit/helpers` |
+| `verticalListSortingStrategy` | Not needed — handled automatically |
+| `horizontalListSortingStrategy` | Not needed — handled automatically |
+| `rectSortingStrategy` | Not needed — handled automatically |
 
 ## Next steps
 
