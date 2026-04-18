@@ -1,6 +1,7 @@
 import { Draggable } from "@dnd-kit/dom";
 import type { DraggableInput, DragDropManager } from "@dnd-kit/dom";
 import type { Data } from "@dnd-kit/abstract";
+import { deepEqual } from "@dnd-kit/state";
 
 export interface DraggableMethods {
   isDragging: boolean;
@@ -53,15 +54,28 @@ static const _makeBox = () => ({
     }
     if (entity) {
       const e = entity;
+      const self = this as any;
       e.id = input.id;
       e.disabled = input.disabled ?? false;
       if (input.data !== undefined) e.data = input.data;
-      // Sync all props that can change at runtime. Not synced at init because
-      // the Draggable constructor applies them. Any update after mount must
-      // be propagated to the live entity so callers see up-to-date behavior.
-      e.sensors = input.sensors;
-      e.modifiers = input.modifiers;
-      if (input.plugins !== undefined) e.plugins = input.plugins;
+      // sensors, modifiers, plugins — DEEP-COMPARED. Marko's onUpdate runs
+      // on every re-render, so without this guard these would be reassigned
+      // every render when written inline (e.g. `plugins={[MyPlugin]}`). Each
+      // reassignment triggers Preact reactive cascades through the entity's
+      // signal graph — Feedback in particular can mis-time during drag.
+      // Matches React's `useOnValueChange(..., undefined, deepEqual)`.
+      if (!deepEqual(input.sensors, self._prevSensors)) {
+        e.sensors = input.sensors;
+        self._prevSensors = input.sensors;
+      }
+      if (!deepEqual(input.modifiers, self._prevModifiers)) {
+        e.modifiers = input.modifiers;
+        self._prevModifiers = input.modifiers;
+      }
+      if (!deepEqual(input.plugins, self._prevPlugins)) {
+        e.plugins = input.plugins;
+        self._prevPlugins = input.plugins;
+      }
     }
   }
   _initEntity() {
@@ -89,6 +103,16 @@ static const _makeBox = () => ({
       e.handle = _pending.handle;
       _pending.handle = undefined;
     }
+    // Seed previous values for the deep-equality-tracked props in onUpdate.
+    // Without seeding, the first onUpdate after init would see _prevX ===
+    // undefined and sync the initial value a second time — the constructor
+    // already applied these. Matches React's `useOnValueChange`, which
+    // initializes its `tracked.current` to the initial value so the first
+    // effect run sees no change.
+    const self = this as any;
+    self._prevSensors = input.sensors;
+    self._prevModifiers = input.modifiers;
+    self._prevPlugins = input.plugins;
     entity = e;
   }
   onDestroy() {

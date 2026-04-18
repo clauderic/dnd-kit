@@ -6,7 +6,7 @@ import {
 import type { SortableInput } from "@dnd-kit/dom/sortable";
 import type { DragDropManager } from "@dnd-kit/dom";
 import type { Data, Plugins } from "@dnd-kit/abstract";
-import { batch } from "@dnd-kit/state";
+import { batch, deepEqual } from "@dnd-kit/state";
 
 export interface SortableMethods {
   isDragging: boolean;
@@ -78,6 +78,7 @@ static const _makeBox = () => ({
     // Case 3: normal prop updates — sync to existing entity.
     if (entity) {
       const e = entity;
+      const self = this as any;
       e.id = input.id;
       // Set draggable.disabled from input, but compute droppable.disabled
       // separately: while this entity is the active drag source, its droppable
@@ -108,25 +109,57 @@ static const _makeBox = () => ({
         e.group = input.group;
         e.index = input.index;
       });
-      e.transition = { ...defaultSortableTransition, ...input.transition };
+      // transition: deep-compared. Marko's onUpdate runs on every re-render,
+      // so without this guard the merged `{...defaults, ...input.transition}`
+      // would be reassigned every render — each assignment triggers Preact
+      // reactive effects on the entity (Feedback plugin in particular reads
+      // transition). Deep-equality matches the React adapter's
+      // `useOnValueChange(transition, ..., undefined, deepEqual)`. The prev
+      // value is the raw `input.transition` (not the merged object) since
+      // that is the user-facing input whose change we want to detect.
+      if (!deepEqual(input.transition, self._prevTransition)) {
+        e.transition = { ...defaultSortableTransition, ...input.transition };
+        self._prevTransition = input.transition;
+      }
+      // refreshShape is preserved at every onUpdate-in-idle (existing
+      // behavior). The React adapter triggers it from a separate
+      // useOnValueChange(index, ...) with immediateEffect; aligning that
+      // is out of scope for this change.
       if (e.manager?.dragOperation.status.idle && e.transition?.idle) {
         e.refreshShape();
       }
-      // Sync all remaining props that can change at runtime. Not synced at
-      // init because the constructor applies them. Any update after mount
-      // must propagate to the live entity so it reflects current configuration.
-      // sensors/modifiers: applied to the draggable; affects which input
-      //   devices can initiate a drag and how coordinates are transformed.
-      // plugins: applied to the draggable's plugin registry; controls
-      //   per-entity plugins (e.g. custom feedback, keyboard handling).
-      // accept/type: applied to the droppable; controls which draggables
-      //   are accepted and how this sortable is categorised for sorting.
-      // collisionDetector/collisionPriority: applied to the droppable;
-      //   controls collision detection algorithm and tie-breaking priority.
-      if (input.sensors !== undefined) e.sensors = input.sensors;
-      if (input.modifiers !== undefined) e.modifiers = input.modifiers;
-      if (input.plugins !== undefined) e.plugins = input.plugins;
-      if (input.accept !== undefined) e.accept = input.accept;
+      // Remaining props.
+      //
+      // sensors, modifiers, plugins, accept — DEEP-COMPARED.
+      //   These are typically arrays (or in accept's case, array | function)
+      //   whose reference changes every render when written inline in a
+      //   template (e.g. `plugins={[MyPlugin]}`). Without deep-equality,
+      //   they'd be reassigned every re-render, triggering Preact reactive
+      //   cascades through the entity's signal graph — notably Feedback,
+      //   which can then mis-time its render during drag. Matches the React
+      //   adapter's `useOnValueChange(..., undefined, deepEqual)` pattern.
+      //
+      // type, collisionDetector, collisionPriority — identity-compared via
+      //   the `!== undefined` guard. React compares these with Object.is;
+      //   they're scalars or stable function references, and the Preact
+      //   @reactive accessor's built-in equal-value short-circuit covers
+      //   the repeated-write case.
+      if (!deepEqual(input.sensors, self._prevSensors)) {
+        e.sensors = input.sensors;
+        self._prevSensors = input.sensors;
+      }
+      if (!deepEqual(input.modifiers, self._prevModifiers)) {
+        e.modifiers = input.modifiers;
+        self._prevModifiers = input.modifiers;
+      }
+      if (!deepEqual(input.plugins, self._prevPlugins)) {
+        e.plugins = input.plugins;
+        self._prevPlugins = input.plugins;
+      }
+      if (!deepEqual(input.accept, self._prevAccept)) {
+        e.accept = input.accept;
+        self._prevAccept = input.accept;
+      }
       if (input.type !== undefined) e.type = input.type;
       if (input.collisionDetector !== undefined)
         e.collisionDetector = input.collisionDetector;
@@ -174,6 +207,19 @@ static const _makeBox = () => ({
       e.target = _pending.target;
       _pending.target = undefined;
     }
+    // Seed previous values for the deep-equality-tracked props in onUpdate
+    // Case 3. Without seeding, the first onUpdate after init would see
+    // _prevX === undefined and sync the initial value a second time — the
+    // constructor already applied these, so a resync triggers a redundant
+    // reactive cascade. Matches React's `useOnValueChange`, which
+    // initializes its `tracked.current` to the initial value so the first
+    // effect run sees no change.
+    const self = this as any;
+    self._prevSensors = input.sensors;
+    self._prevModifiers = input.modifiers;
+    self._prevPlugins = input.plugins;
+    self._prevAccept = input.accept;
+    self._prevTransition = input.transition;
     entity = e;
   }
   onDestroy() {

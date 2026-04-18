@@ -1,6 +1,7 @@
 import { Droppable } from "@dnd-kit/dom";
 import type { DroppableInput, DragDropManager } from "@dnd-kit/dom";
 import type { Data } from "@dnd-kit/abstract";
+import { deepEqual } from "@dnd-kit/state";
 
 export interface DroppableMethods {
   isDropTarget: boolean;
@@ -48,10 +49,18 @@ static const _makeBox = () => ({ el: undefined as HTMLElement | undefined });
     }
     if (entity) {
       const e = entity;
+      const self = this as any;
       e.id = input.id;
       e.disabled = input.disabled ?? false;
       if (input.data !== undefined) e.data = input.data;
-      if (input.accept !== undefined) e.accept = input.accept;
+      // accept — DEEP-COMPARED. Typically an array of type strings or a
+      // function. Inline literals like `accept={['foo']}` create a new
+      // reference every render. Matches React's
+      // `useOnValueChange(accept, ..., undefined, deepEqual)`.
+      if (!deepEqual(input.accept, self._prevAccept)) {
+        e.accept = input.accept;
+        self._prevAccept = input.accept;
+      }
       if (input.type !== undefined) e.type = input.type;
       // Sync collision config that can change at runtime. Not synced at init
       // because the Droppable constructor applies them. Any update after mount
@@ -84,6 +93,11 @@ static const _makeBox = () => ({ el: undefined as HTMLElement | undefined });
       e.element = _pending.el;
       _pending.el = undefined;
     }
+    // Seed previous value for deep-equality tracking in onUpdate. Without
+    // this, the first onUpdate after init would see _prevAccept === undefined
+    // and sync the initial value a second time — the constructor already
+    // applied it. Matches React's `useOnValueChange`.
+    (this as any)._prevAccept = input.accept;
     entity = e;
   }
   onDestroy() {
