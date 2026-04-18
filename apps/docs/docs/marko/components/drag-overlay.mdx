@@ -67,19 +67,21 @@ By default, when a drag operation ends, the overlay animates back to the positio
 ## Props
 
 <ParamField path="disabled" type="boolean" default="false">
-  Whether the drag overlay is disabled. When `true`, the overlay will not render its children during drag operations.
+  Whether the drag overlay is disabled. When `true`, the overlay will not render
+  its children during drag operations.
 </ParamField>
 
 <ParamField path="dropAnimation" type="DropAnimation | null" optional>
   Customize or disable the drop animation that plays when a drag operation ends.
 
-  - `undefined` – use the default animation (`250ms` ease)
-  - `null` – disable the drop animation entirely
-  - `{duration, easing}` – customize the animation timing
-</ParamField>
+- `undefined` – use the default animation (`250ms` ease)
+- `null` – disable the drop animation entirely
+- `{duration, easing}` – customize the animation timing
+  </ParamField>
 
 ## Body parameter
 
 <ResponseField name="source" type="Draggable">
-  The [Draggable](/concepts/draggable) instance that is the source of the current drag operation.
+  The [Draggable](/concepts/draggable) instance that is the source of the
+  current drag operation.
 </ResponseField>

@@ -5,9 +5,14 @@ description: 'Create sortable elements with the create-sortable tag.'
 icon: 'layer-group'
 ---
 
-import {Story} from '/snippets/story.mdx';
+import { Story } from '/snippets/story.mdx';
 
-<Story id="sortable-vertical-list--basic-setup" framework="marko" height="320" hero />
+<Story
+  id="sortable-vertical-list--basic-setup"
+  framework="marko"
+  height="320"
+  hero
+/>
 
 ## Usage
 
@@ -94,7 +99,9 @@ import {isSortable} from "@dnd-kit/dom/sortable";
 ```
 
 <Info>
-  Learn more about [type guards and manual state management](/concepts/sortable#optimistic-sorting) in the Sortable concepts page.
+  Learn more about [type guards and manual state
+  management](/concepts/sortable#optimistic-sorting) in the Sortable concepts
+  page.
 </Info>
 
 ## Input
@@ -140,7 +147,8 @@ import {isSortable} from "@dnd-kit/dom/sortable";
 </ParamField>
 
 <ParamField path="collisionPriority" type="number" optional>
-  The collision priority of this sortable element. Higher values take precedence when multiple droppable elements overlap.
+  The collision priority of this sortable element. Higher values take precedence
+  when multiple droppable elements overlap.
 </ParamField>
 
 <ParamField path="disabled" type="boolean" optional>
@@ -170,11 +178,13 @@ import {isSortable} from "@dnd-kit/dom/sortable";
 </ResponseField>
 
 <ResponseField name="setElement" type="(el: Element | undefined) => void">
-  Connect a DOM element to this sortable. Call in `onMount` with `$el()`, and in `onDestroy` with `undefined`.
+  Connect a DOM element to this sortable. Call in `onMount` with `$el()`, and in
+  `onDestroy` with `undefined`.
 </ResponseField>
 
 <ResponseField name="setHandle" type="(el: Element | undefined) => void">
-  Set a drag handle element. Call in `onMount` with `$el()` on the handle element.
+  Set a drag handle element. Call in `onMount` with `$el()` on the handle
+  element.
 </ResponseField>
 
 <ResponseField name="setSource" type="(el: Element | undefined) => void">

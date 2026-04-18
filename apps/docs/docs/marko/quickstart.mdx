@@ -13,11 +13,10 @@ import Intro from '/snippets/quickstart/intro.mdx';
 
 The `@dnd-kit/marko` package provides a set of Marko v6 tags that you can use to build drag and drop interfaces. It is a thin Marko integration layer built on top of the [vanilla](/) library, so all of the same concepts are shared and can be used. You can refer to the vanilla documentation of these concepts, such as [plugins](/extend/plugins), [modifiers](/extend/modifiers), and [sensors](/extend/sensors).
 
-<Note>
-  `@dnd-kit/marko` requires Marko v6 with `@marko/runtime-tags`.
-</Note>
+<Note>`@dnd-kit/marko` requires Marko v6 with `@marko/runtime-tags`.</Note>
 
 ## Installation
+
 Before getting started, make sure you install `@dnd-kit/marko` in your project:
 
 <CodeGroup>
@@ -25,17 +24,18 @@ Before getting started, make sure you install `@dnd-kit/marko` in your project:
   npm install @dnd-kit/marko
   ```
 
-  ```bash yarn
-  yarn add @dnd-kit/marko
-  ```
+```bash yarn
+yarn add @dnd-kit/marko
+```
 
-  ```bash pnpm
-  pnpm add @dnd-kit/marko
-  ```
+```bash pnpm
+pnpm add @dnd-kit/marko
+```
 
-  ```bash bun
-  bun add @dnd-kit/marko
-  ```
+```bash bun
+bun add @dnd-kit/marko
+```
+
 </CodeGroup>
 
 Once installed, all `@dnd-kit/marko` tags are automatically available in your Marko templates — no imports needed.
@@ -133,13 +133,21 @@ Now that you have a basic understanding of how to make elements draggable and dr
     Create drag and drop contexts for your draggable and droppable elements.
   </Card>
 
-  <Card title="create-draggable" icon="bullseye-pointer" href="/marko/tags/create-draggable">
-    Learn how to make elements draggable with the `create-draggable` tag.
-  </Card>
+<Card
+  title="create-draggable"
+  icon="bullseye-pointer"
+  href="/marko/tags/create-draggable"
+>
+  Learn how to make elements draggable with the `create-draggable` tag.
+</Card>
 
-  <Card title="create-droppable" icon="expand" href="/marko/tags/create-droppable">
-    Learn how to create droppable targets with the `create-droppable` tag.
-  </Card>
+<Card
+  title="create-droppable"
+  icon="expand"
+  href="/marko/tags/create-droppable"
+>
+  Learn how to create droppable targets with the `create-droppable` tag.
+</Card>
 
   <Card title="create-sortable" icon="layer-group" href="/marko/tags/create-sortable">
     Learn how to create sortable elements with the `create-sortable` tag.

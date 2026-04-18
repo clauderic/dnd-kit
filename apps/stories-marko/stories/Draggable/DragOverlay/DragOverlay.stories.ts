@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/marko';
+import type {Meta, StoryObj} from '@storybook/marko';
 import DragOverlayApp from './DragOverlayApp.marko';
 
 const meta = {

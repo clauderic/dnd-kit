@@ -5,9 +5,14 @@ description: 'Make elements draggable with the create-draggable tag.'
 icon: 'bullseye-pointer'
 ---
 
-import {Story} from '/snippets/story.mdx';
+import { Story } from '/snippets/story.mdx';
 
-<Story id="draggable-basic-setup--example" framework="marko" height="200" hero />
+<Story
+  id="draggable-basic-setup--example"
+  framework="marko"
+  height="200"
+  hero
+/>
 
 ## Usage
 
@@ -28,7 +33,9 @@ The `<create-draggable>` tag requires a unique `id`. It provides a body paramete
 ```
 
 <Note>
-  You must call `setElement` in `onMount` to connect the DOM element to the drag system. Without this, the element cannot be dragged. Call `setElement(undefined)` in `onDestroy` to clean up.
+  You must call `setElement` in `onMount` to connect the DOM element to the drag
+  system. Without this, the element cannot be dragged. Call
+  `setElement(undefined)` in `onDestroy` to clean up.
 </Note>
 
 ## Input
@@ -66,7 +73,8 @@ The body parameter provides reactive properties and setter functions:
 </ResponseField>
 
 <ResponseField name="isDropping" type="boolean">
-  Whether this element is in the process of being dropped (animating to final position).
+  Whether this element is in the process of being dropped (animating to final
+  position).
 </ResponseField>
 
 <ResponseField name="isDragSource" type="boolean">
@@ -74,11 +82,13 @@ The body parameter provides reactive properties and setter functions:
 </ResponseField>
 
 <ResponseField name="setElement" type="(el: Element | undefined) => void">
-  Connect a DOM element to this draggable. Call in `onMount` with `$el()`, and in `onDestroy` with `undefined`.
+  Connect a DOM element to this draggable. Call in `onMount` with `$el()`, and
+  in `onDestroy` with `undefined`.
 </ResponseField>
 
 <ResponseField name="setHandle" type="(el: Element | undefined) => void">
-  Set a drag handle element. Call in `onMount` with `$el()` on the handle element.
+  Set a drag handle element. Call in `onMount` with `$el()` on the handle
+  element.
 </ResponseField>
 
 ## Guides

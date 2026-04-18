@@ -5,9 +5,14 @@ description: 'Create droppable targets with the create-droppable tag.'
 icon: 'expand'
 ---
 
-import {Story} from '/snippets/story.mdx';
+import { Story } from '/snippets/story.mdx';
 
-<Story id="droppable-basic-setup--example" framework="marko" height="400" hero />
+<Story
+  id="droppable-basic-setup--example"
+  framework="marko"
+  height="400"
+  hero
+/>
 
 ## Usage
 
@@ -71,9 +76,11 @@ The `<create-droppable>` tag requires a unique `id`. It provides a body paramete
 ## Output (body parameter)
 
 <ResponseField name="isDropTarget" type="boolean">
-  Whether this element is currently a drop target (a draggable is hovering over it).
+  Whether this element is currently a drop target (a draggable is hovering over
+  it).
 </ResponseField>
 
 <ResponseField name="setElement" type="(el: Element | undefined) => void">
-  Connect a DOM element to this droppable. Call in `onMount` with `$el()`, and in `onDestroy` with `undefined`.
+  Connect a DOM element to this droppable. Call in `onMount` with `$el()`, and
+  in `onDestroy` with `undefined`.
 </ResponseField>

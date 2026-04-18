@@ -67,18 +67,18 @@ Root context provider. Creates and manages the `DragDropManager` and wires up ev
 
 **Attributes**
 
-| Attribute | Type | Description |
-|---|---|---|
-| `manager` | `DragDropManager` | Use an externally created manager instead of creating one internally |
-| `plugins` | `Plugins` | Override the default plugin preset |
-| `sensors` | `Sensors` | Override the default sensor preset |
-| `modifiers` | `Modifiers` | Override the default modifiers |
-| `onBeforeDragStart` | `(event, manager) => void` | Fired before drag begins |
-| `onDragStart` | `(event, manager) => void` | Fired when drag starts |
-| `onDragMove` | `(event, manager) => void` | Fired while dragging |
-| `onDragOver` | `(event, manager) => void` | Fired when dragging over a new target |
-| `onDragEnd` | `(event, manager) => void` | Fired when drag ends (check `event.canceled`) |
-| `onCollision` | `(event, manager) => void` | Fired on collision detection updates |
+| Attribute           | Type                       | Description                                                          |
+| ------------------- | -------------------------- | -------------------------------------------------------------------- |
+| `manager`           | `DragDropManager`          | Use an externally created manager instead of creating one internally |
+| `plugins`           | `Plugins`                  | Override the default plugin preset                                   |
+| `sensors`           | `Sensors`                  | Override the default sensor preset                                   |
+| `modifiers`         | `Modifiers`                | Override the default modifiers                                       |
+| `onBeforeDragStart` | `(event, manager) => void` | Fired before drag begins                                             |
+| `onDragStart`       | `(event, manager) => void` | Fired when drag starts                                               |
+| `onDragMove`        | `(event, manager) => void` | Fired while dragging                                                 |
+| `onDragOver`        | `(event, manager) => void` | Fired when dragging over a new target                                |
+| `onDragEnd`         | `(event, manager) => void` | Fired when drag ends (check `event.canceled`)                        |
+| `onCollision`       | `(event, manager) => void` | Fired on collision detection updates                                 |
 
 **Body content**
 
@@ -92,24 +92,24 @@ Creates a draggable entity. Use the body parameter (`|draggable|`) to access sta
 
 **Attributes**
 
-| Attribute | Type | Description |
-|---|---|---|
-| `id` | `string \| number` | Unique identifier for this draggable |
-| `data` | `T` | Custom data attached to the draggable entity |
-| `disabled` | `boolean` | Disable dragging |
-| `sensors` | `Sensors` | Per-entity sensor override |
-| `modifiers` | `Modifiers` | Per-entity modifier override |
-| `plugins` | `Plugins` | Per-entity plugin override |
+| Attribute   | Type               | Description                                  |
+| ----------- | ------------------ | -------------------------------------------- |
+| `id`        | `string \| number` | Unique identifier for this draggable         |
+| `data`      | `T`                | Custom data attached to the draggable entity |
+| `disabled`  | `boolean`          | Disable dragging                             |
+| `sensors`   | `Sensors`          | Per-entity sensor override                   |
+| `modifiers` | `Modifiers`        | Per-entity modifier override                 |
+| `plugins`   | `Plugins`          | Per-entity plugin override                   |
 
 **Body parameter** (`DraggableMethods`)
 
-| Property/Method | Type | Description |
-|---|---|---|
-| `isDragging` | `boolean` | Whether this item is currently being dragged |
-| `isDropping` | `boolean` | Whether the drop animation is in progress |
-| `isDragSource` | `boolean` | Whether this item is the active drag source |
+| Property/Method  | Type                                     | Description                                   |
+| ---------------- | ---------------------------------------- | --------------------------------------------- |
+| `isDragging`     | `boolean`                                | Whether this item is currently being dragged  |
+| `isDropping`     | `boolean`                                | Whether the drop animation is in progress     |
+| `isDragSource`   | `boolean`                                | Whether this item is the active drag source   |
 | `setElement(el)` | `(el: HTMLElement \| undefined) => void` | Register/unregister the draggable DOM element |
-| `setHandle(el)` | `(el: HTMLElement \| undefined) => void` | Register/unregister a drag handle element |
+| `setHandle(el)`  | `(el: HTMLElement \| undefined) => void` | Register/unregister a drag handle element     |
 
 **Example**
 
@@ -153,22 +153,22 @@ Creates a droppable target zone.
 
 **Attributes**
 
-| Attribute | Type | Description |
-|---|---|---|
-| `id` | `string \| number` | Unique identifier for this droppable |
-| `data` | `T` | Custom data attached to the droppable entity |
-| `disabled` | `boolean` | Disable dropping |
-| `accept` | `Accept` | Filter which draggables can be dropped here |
-| `type` | `string` | Droppable type for collision matching |
-| `collisionDetector` | `CollisionDetector` | Custom collision detection algorithm |
-| `collisionPriority` | `CollisionPriority` | Priority for collision resolution |
+| Attribute           | Type                | Description                                  |
+| ------------------- | ------------------- | -------------------------------------------- |
+| `id`                | `string \| number`  | Unique identifier for this droppable         |
+| `data`              | `T`                 | Custom data attached to the droppable entity |
+| `disabled`          | `boolean`           | Disable dropping                             |
+| `accept`            | `Accept`            | Filter which draggables can be dropped here  |
+| `type`              | `string`            | Droppable type for collision matching        |
+| `collisionDetector` | `CollisionDetector` | Custom collision detection algorithm         |
+| `collisionPriority` | `CollisionPriority` | Priority for collision resolution            |
 
 **Body parameter** (`DroppableMethods`)
 
-| Property/Method | Type | Description |
-|---|---|---|
-| `isDropTarget` | `boolean` | Whether a draggable is currently over this zone |
-| `setElement(el)` | `(el: HTMLElement \| undefined) => void` | Register/unregister the droppable DOM element |
+| Property/Method  | Type                                     | Description                                     |
+| ---------------- | ---------------------------------------- | ----------------------------------------------- |
+| `isDropTarget`   | `boolean`                                | Whether a draggable is currently over this zone |
+| `setElement(el)` | `(el: HTMLElement \| undefined) => void` | Register/unregister the droppable DOM element   |
 
 **Example**
 
@@ -192,34 +192,34 @@ Creates a sortable entity — both draggable and droppable. Use with `move()` fr
 
 **Attributes**
 
-| Attribute | Type | Description |
-|---|---|---|
-| `id` | `string \| number` | Unique identifier for this sortable |
-| `index` | `number` | Current position in the list (must be reactive) |
-| `group` | `string` | Group identifier for multi-list sorting |
-| `data` | `T` | Custom data attached to the sortable entity |
-| `disabled` | `boolean` | Disable sorting |
-| `accept` | `Accept` | Filter which items can be sorted with this |
-| `type` | `string` | Sortable type for collision matching |
-| `transition` | `SortableTransition` | Configure the sort transition animation |
-| `sensors` | `Sensors` | Per-entity sensor override |
-| `modifiers` | `Modifiers` | Per-entity modifier override |
-| `plugins` | `Plugins` | Per-entity plugin override |
-| `collisionDetector` | `CollisionDetector` | Custom collision detection algorithm |
-| `collisionPriority` | `CollisionPriority` | Priority for collision resolution |
+| Attribute           | Type                 | Description                                     |
+| ------------------- | -------------------- | ----------------------------------------------- |
+| `id`                | `string \| number`   | Unique identifier for this sortable             |
+| `index`             | `number`             | Current position in the list (must be reactive) |
+| `group`             | `string`             | Group identifier for multi-list sorting         |
+| `data`              | `T`                  | Custom data attached to the sortable entity     |
+| `disabled`          | `boolean`            | Disable sorting                                 |
+| `accept`            | `Accept`             | Filter which items can be sorted with this      |
+| `type`              | `string`             | Sortable type for collision matching            |
+| `transition`        | `SortableTransition` | Configure the sort transition animation         |
+| `sensors`           | `Sensors`            | Per-entity sensor override                      |
+| `modifiers`         | `Modifiers`          | Per-entity modifier override                    |
+| `plugins`           | `Plugins`            | Per-entity plugin override                      |
+| `collisionDetector` | `CollisionDetector`  | Custom collision detection algorithm            |
+| `collisionPriority` | `CollisionPriority`  | Priority for collision resolution               |
 
 **Body parameter** (`SortableMethods`)
 
-| Property/Method | Type | Description |
-|---|---|---|
-| `isDragging` | `boolean` | Whether this item is being dragged |
-| `isDropping` | `boolean` | Whether the drop animation is in progress |
-| `isDragSource` | `boolean` | Whether this is the active drag source |
-| `isDropTarget` | `boolean` | Whether a draggable is over this item |
-| `setElement(el)` | `(el: HTMLElement \| undefined) => void` | Register/unregister the primary element |
-| `setHandle(el)` | `(el: HTMLElement \| undefined) => void` | Register/unregister a drag handle |
-| `setSource(el)` | `(el: HTMLElement \| undefined) => void` | Register/unregister the drag source element |
-| `setTarget(el)` | `(el: HTMLElement \| undefined) => void` | Register/unregister the drop target element |
+| Property/Method  | Type                                     | Description                                 |
+| ---------------- | ---------------------------------------- | ------------------------------------------- |
+| `isDragging`     | `boolean`                                | Whether this item is being dragged          |
+| `isDropping`     | `boolean`                                | Whether the drop animation is in progress   |
+| `isDragSource`   | `boolean`                                | Whether this is the active drag source      |
+| `isDropTarget`   | `boolean`                                | Whether a draggable is over this item       |
+| `setElement(el)` | `(el: HTMLElement \| undefined) => void` | Register/unregister the primary element     |
+| `setHandle(el)`  | `(el: HTMLElement \| undefined) => void` | Register/unregister a drag handle           |
+| `setSource(el)`  | `(el: HTMLElement \| undefined) => void` | Register/unregister the drag source element |
+| `setTarget(el)`  | `(el: HTMLElement \| undefined) => void` | Register/unregister the drop target element |
 
 **Example with drag handle**
 
