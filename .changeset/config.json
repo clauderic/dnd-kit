@@ -1,6 +1,11 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@1.5.0/schema.json",
-  "changelog": ["@changesets/changelog-github", {"repo": "clauderic/dnd-kit"}],
+  "changelog": [
+    "@changesets/changelog-github",
+    {
+      "repo": "clauderic/dnd-kit"
+    }
+  ],
   "commit": false,
   "fixed": [
     [
@@ -13,7 +18,8 @@
       "@dnd-kit/state",
       "@dnd-kit/vue",
       "@dnd-kit/solid",
-      "@dnd-kit/svelte"
+      "@dnd-kit/svelte",
+      "@dnd-kit/marko"
     ]
   ],
   "access": "public",
