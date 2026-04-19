@@ -1,5 +1,15 @@
 # @dnd-kit/dom
 
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.4.1
+  - @dnd-kit/collision@0.4.1
+  - @dnd-kit/geometry@0.4.1
+  - @dnd-kit/state@0.4.1
+
 ## 0.4.0
 
 ### Minor Changes
