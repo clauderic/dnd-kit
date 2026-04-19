@@ -50,7 +50,7 @@ The `useDroppable` hook accepts the following arguments:
 </ParamField>
 
 <ParamField path="element" type="Element | Ref<Element>">
-  If you already have a reference to the element, you can pass it to the `element` option instead of using the `ref` that is returned by the `useDraggable` hook to connect the draggable source element.
+  If you already have a reference to the element, you can pass it to the `element` option instead of using the `ref` that is returned by the `useDroppable` hook to connect the droppable target element.
 </ParamField>
 
 <ParamField path="accepts" type="string | number | Symbol | (type: string | number | Symbol) => boolean">
@@ -58,7 +58,7 @@ The `useDroppable` hook accepts the following arguments:
 </ParamField>
 
 <ParamField path="collisionDetector" type="(input: CollisionDetectorInput) => Collision | null">
-  Optionally supply a [collision detector](/concepts/droppable#detecting-collisions) function can be used to detect collisions between the droppable element and draggable elements.
+  Optionally supply a [collision detector](/concepts/droppable#detecting-collisions) function that can be used to detect collisions between the droppable element and draggable elements.
 </ParamField>
 
 <ParamField path="collisionPriority" type="number">
@@ -75,7 +75,7 @@ The `useDroppable` hook accepts the following arguments:
 
 <ParamField path="effects" type="() => Effect[]">
   <Info>This is an advanced feature and should not need to be used by most consumers.</Info>
-  You can supply a function that returns an array of reactive effects that can be set up and automatically cleaned up when the component invoking the `useDraggable` hook element is unmounted.
+  You can supply a function that returns an array of reactive effects that can be set up and automatically cleaned up when the component using the `useDroppable` hook is unmounted.
 </ParamField>
 
 ### Output
@@ -87,11 +87,11 @@ The `useDroppable` hook returns an object containing the following properties:
 </ResponseField>
 
 <ResponseField name="isDropTarget" type="boolean">
-  A boolean value that indicates whether the element is currently being dragged.
+  A boolean value that indicates whether the element is currently a drop target.
 </ResponseField>
 
 <ResponseField name="droppable" type="Droppable">
-  The [droppable](concepts/droppable) instance that is created by the `useDroppable` hook.
+  The [droppable](/concepts/droppable) instance that is created by the `useDroppable` hook.
 </ResponseField>
 
 export const app = `
