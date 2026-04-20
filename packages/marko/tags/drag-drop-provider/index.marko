@@ -1,0 +1,109 @@
+import {
+  DragDropManager,
+  defaultPreset,
+  resolveCustomizable,
+} from "@dnd-kit/dom";
+import type { DragDropManagerInput } from "@dnd-kit/dom";
+import { createRenderer } from "../../src/runtime/renderer.js";
+
+export interface Input extends DragDropManagerInput {
+  manager?: DragDropManager<any, any, any>;
+  content?: Marko.Body;
+  onBeforeDragStart?: (event: any, manager: any) => void;
+  onDragStart?: (event: any, manager: any) => void;
+  onDragMove?: (event: any, manager: any) => void;
+  onDragOver?: (event: any, manager: any) => void;
+  onDragEnd?: (event: any, manager: any) => void;
+  onCollision?: (event: any, manager: any) => void;
+}
+
+// SSR safety: DragDropManager is browser-only. During SSR (no window), we
+// defer creation to onMount via a null placeholder. All child tags guard
+// against a null manager via `manager != null` checks in their own onUpdate.
+// The content slot renders normally on the server — it just has no drag
+// behaviour until the client hydrates and onMount fires.
+static const isBrowser = typeof window !== "undefined";
+
+<let/manager=(input.manager as DragDropManager<any, any, any>) ??
+(isBrowser
+  ? new DragDropManager({
+      plugins: resolveCustomizable(input.plugins, defaultPreset.plugins),
+      sensors: resolveCustomizable(input.sensors, defaultPreset.sensors),
+      modifiers: resolveCustomizable(input.modifiers, defaultPreset.modifiers),
+    })
+  : (undefined as any))>
+
+<let-global/dndManager from="__dndKit_manager"/>
+
+<const/_=(() => {
+  if ($global) ($global as any).__dndKit_manager = manager;
+})()>
+
+<lifecycle
+  onMount() {
+    // If manager was not created during SSR (isBrowser was false at render
+    // time), create it now on the client before setting up listeners.
+    if (!manager && !input.manager) {
+      manager = new DragDropManager({
+        plugins: resolveCustomizable(input.plugins, defaultPreset.plugins),
+        sensors: resolveCustomizable(input.sensors, defaultPreset.sensors),
+        modifiers: resolveCustomizable(
+          input.modifiers,
+          defaultPreset.modifiers,
+        ),
+      });
+      if ($global) ($global as any).__dndKit_manager = manager;
+    }
+    (this as any).prevManager = manager;
+    dndManager = manager;
+    (this as any)._setupListeners();
+  }
+  onUpdate() {
+    if ((this as any).prevManager !== manager) {
+      (this as any).prevManager = manager;
+      ((this as any).cleanups as Array<() => void> | undefined)?.forEach((fn) =>
+        fn(),
+      );
+      dndManager = manager;
+      (this as any)._setupListeners();
+    }
+  }
+  _setupListeners() {
+    const m = manager;
+    if (!m) return; // SSR guard: no manager yet on server
+    const { renderer, trackRendering } = createRenderer();
+    m.renderer = renderer;
+
+    (this as any).cleanups = [
+      m.monitor.addEventListener("beforedragstart", (event, mgr) =>
+        trackRendering(() => input.onBeforeDragStart?.(event, mgr)),
+      ),
+      m.monitor.addEventListener("dragstart", (event, mgr) =>
+        input.onDragStart?.(event, mgr),
+      ),
+      m.monitor.addEventListener("dragover", (event, mgr) =>
+        trackRendering(() => input.onDragOver?.(event, mgr)),
+      ),
+      m.monitor.addEventListener("dragmove", (event, mgr) =>
+        trackRendering(() => input.onDragMove?.(event, mgr)),
+      ),
+      m.monitor.addEventListener("dragend", (event, mgr) =>
+        trackRendering(() => input.onDragEnd?.(event, mgr)),
+      ),
+      m.monitor.addEventListener("collision", (event, mgr) =>
+        input.onCollision?.(event, mgr),
+      ),
+    ];
+  }
+  onDestroy() {
+    ((this as any).cleanups as Array<() => void> | undefined)?.forEach((fn) =>
+      fn(),
+    );
+    dndManager = undefined as any;
+    if (!input.manager && manager) {
+      manager.destroy();
+    }
+  }
+>
+
+<${input.content}/>
