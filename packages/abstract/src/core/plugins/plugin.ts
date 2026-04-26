@@ -93,7 +93,7 @@ export abstract class Plugin<
    * @param callback - The effect callback to register
    * @returns A function to dispose of the effect
    */
-  protected registerEffect(callback: () => void) {
+  protected registerEffect(callback: () => void): CleanupFunction {
     const dispose = effect(callback.bind(this));
 
     this.#cleanupFunctions.add(dispose);

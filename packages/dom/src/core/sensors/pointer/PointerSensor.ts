@@ -130,7 +130,7 @@ export class PointerSensor extends Sensor<
     return constraints;
   }
 
-  public bind(source: Draggable, options = this.options) {
+  public bind(source: Draggable, options = this.options): CleanupFunction {
     const unbind = effect(() => {
       const controller = new AbortController();
       const {signal} = controller;
