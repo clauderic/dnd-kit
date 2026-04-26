@@ -287,6 +287,101 @@ mode: 'wide'
   </Step>
 </Steps>
 
+## API reference
+
+A quick lookup for common legacy APIs and their new equivalents, organized by category.
+
+### Context & Provider
+
+| Legacy (`@dnd-kit/core`) | New (`@dnd-kit/react`) |
+| --- | --- |
+| `DndContext` | [`DragDropProvider`](/react/components/drag-drop-provider) |
+
+### Events
+
+| Legacy | New |
+| --- | --- |
+| `active` | `event.operation.source` |
+| `over` | `event.operation.target` |
+| `active.id` | `event.operation.source.id` |
+| `onDragCancel` | Check `event.canceled` inside `onDragEnd` |
+
+### Sensors
+
+<Note>
+  The legacy `MouseSensor` and `TouchSensor` have been merged into a single [`PointerSensor`](/extend/sensors/pointer-sensor) that handles mouse, touch, and pen input via the native Pointer Events API. You can still apply different behavior per input type by passing a function to `activationConstraints` and branching on `event.pointerType` (`'mouse'`, `'touch'`, or `'pen'`):
+
+  ```tsx
+  import {DragDropProvider} from '@dnd-kit/react';
+  import {PointerSensor, PointerActivationConstraints} from '@dnd-kit/dom';
+
+  <DragDropProvider
+    sensors={(defaults) => [
+      ...defaults.filter((sensor) => sensor !== PointerSensor),
+      PointerSensor.configure({
+        activationConstraints(event, source) {
+          if (event.pointerType === 'touch') {
+            return [
+              new PointerActivationConstraints.Delay({value: 500, tolerance: {x: 5, y: 5}}),
+            ];
+          }
+          return [new PointerActivationConstraints.Distance({value: 8})];
+        },
+      }),
+    ]}
+  >
+    {/* ... */}
+  </DragDropProvider>
+  ```
+
+  If you don't configure it, the default already differentiates pointer types — see the [PointerSensor docs](/extend/sensors/pointer-sensor) for the full default behavior.
+</Note>
+
+| Legacy (`@dnd-kit/core`) | New (`@dnd-kit/dom`) |
+| --- | --- |
+| `useSensor` / `useSensors` | Built-in by default. Customize via the `sensors` prop on [`DragDropProvider`](/react/components/drag-drop-provider) |
+| `MouseSensor` | [`PointerSensor`](/extend/sensors/pointer-sensor) from `@dnd-kit/dom` |
+| `TouchSensor` | [`PointerSensor`](/extend/sensors/pointer-sensor) from `@dnd-kit/dom` |
+| `PointerSensor` | [`PointerSensor`](/extend/sensors/pointer-sensor) from `@dnd-kit/dom` |
+| `KeyboardSensor` | [`KeyboardSensor`](/extend/sensors/keyboard-sensor) from `@dnd-kit/dom` |
+
+### Collision detection
+
+| Legacy | New |
+| --- | --- |
+| `collisionDetection` prop on `DndContext` | `collisionDetector` option on [`useDroppable`](/react/hooks/use-droppable) / [`useSortable`](/react/hooks/use-sortable) |
+| `pointerWithin` | `pointerIntersection` from `@dnd-kit/collision` |
+| `closestCenter` | `closestCenter` from `@dnd-kit/collision` |
+| `closestCorners` | `closestCorners` from `@dnd-kit/collision` |
+
+### Modifiers
+
+See the [React modifiers guide](/react/guides/modifiers) for usage examples.
+
+| Legacy | New |
+| --- | --- |
+| `restrictToParentElement` | `RestrictToElement` from `@dnd-kit/dom/modifiers` |
+| `restrictToWindowEdges` | `RestrictToWindow` from `@dnd-kit/dom/modifiers` |
+| `restrictToVerticalAxis` | `RestrictToVerticalAxis` from `@dnd-kit/abstract/modifiers` |
+| `restrictToHorizontalAxis` | `RestrictToHorizontalAxis` from `@dnd-kit/abstract/modifiers` |
+| `createSnapModifier` | `SnapModifier` from `@dnd-kit/abstract/modifiers` |
+
+### Sortable
+
+<Note>
+  `SortableContext` is no longer needed. Sortable items register and coordinate with the [`DragDropProvider`](/react/components/drag-drop-provider) automatically when you use [`useSortable`](/react/hooks/use-sortable) — there's no wrapping context to configure. Use the `type` and `accept` options on `useSortable` to control which items can be sorted together.
+</Note>
+
+See the [sortable state management guide](/react/guides/sortable-state-management) for usage examples.
+
+| Legacy | New |
+| --- | --- |
+| `SortableContext` | No longer needed — see note above |
+| `arrayMove` | `move` from `@dnd-kit/helpers` |
+| `verticalListSortingStrategy` | Not needed — handled automatically |
+| `horizontalListSortingStrategy` | Not needed — handled automatically |
+| `rectSortingStrategy` | Not needed — handled automatically |
+
 ## Next steps
 
 <CardGroup cols={2}>
@@ -298,24 +393,24 @@ mode: 'wide'
     Build beautiful drag and drop interfaces in minutes with the new dnd kit
   </Card>
   <Card
-    title="Draggable elements"
-    icon="bullseye-pointer"
-    href="/concepts/draggable"
+    title="Managing sortable state"
+    icon="list-ol"
+    href="/react/guides/sortable-state-management"
   >
-    Learn how to make elements draggable with the new API
+    Use the `move` helper from `@dnd-kit/helpers` or manage state manually
   </Card>
   <Card
-    title="Droppable targets"
-    icon="expand"
-    href="/concepts/droppable"
+    title="Modifiers"
+    icon="sliders"
+    href="/react/guides/modifiers"
   >
-    Create drop zones and handle collision detection
+    Restrict movement to an element, axis, or snap to a grid in React
   </Card>
   <Card
-    title="Sortable lists"
-    icon="layer-group"
-    href="/concepts/sortable"
+    title="Feedback"
+    icon="clone"
+    href="/react/guides/feedback"
   >
-    Build sortable interfaces with array manipulation helpers
+    Configure drag feedback, clone overlays, and drop animations in React
   </Card>
 </CardGroup>

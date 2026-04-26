@@ -1,0 +1,188 @@
+---
+title: 'Modifiers'
+metaTitle: 'Modifiers - React | dnd kit'
+description: 'Restrict drag movement to an element, axis, or snap to a grid in React.'
+icon: 'sliders'
+---
+
+## Overview
+
+[Modifiers](/extend/modifiers) transform the movement of draggable elements during drag operations. They can restrict movement to axes or boundaries, adjust positioning, or implement custom movement logic.
+
+This guide covers how to use modifiers in React with hooks like [`useDraggable`](/react/hooks/use-draggable) and [`useSortable`](/react/hooks/use-sortable).
+
+## Restricting to a container element
+
+Use the `RestrictToElement` modifier from `@dnd-kit/dom/modifiers` to constrain dragging within a container. Pass the container's DOM element via a React ref:
+
+```tsx
+import {useRef} from 'react';
+import {DragDropProvider} from '@dnd-kit/react';
+import {useDraggable} from '@dnd-kit/react';
+import {RestrictToElement} from '@dnd-kit/dom/modifiers';
+
+function App() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <DragDropProvider>
+      <div ref={containerRef} style={{width: 400, height: 400, position: 'relative'}}>
+        <DraggableItem container={containerRef} />
+      </div>
+    </DragDropProvider>
+  );
+}
+
+function DraggableItem({container}: {container: React.RefObject<HTMLDivElement | null>}) {
+  const {ref} = useDraggable({
+    id: 'draggable-1',
+    modifiers: [
+      RestrictToElement.configure({
+        element: container.current,
+      }),
+    ],
+  });
+
+  return <div ref={ref}>Drag me</div>;
+}
+```
+
+<Tip>
+  The `element` option also accepts a function that receives the current drag operation and returns an element. This is useful when you need dynamic container references:
+
+  ```tsx
+  RestrictToElement.configure({
+    element: () => document.getElementById('my-container'),
+  })
+  ```
+</Tip>
+
+## Restricting to the window
+
+Use `RestrictToWindow` from `@dnd-kit/dom/modifiers` to prevent dragging outside the browser viewport:
+
+```tsx
+import {useDraggable} from '@dnd-kit/react';
+import {RestrictToWindow} from '@dnd-kit/dom/modifiers';
+
+function DraggableItem() {
+  const {ref} = useDraggable({
+    id: 'draggable-1',
+    modifiers: [RestrictToWindow],
+  });
+
+  return <div ref={ref}>Drag me</div>;
+}
+```
+
+## Restricting to an axis
+
+Use `RestrictToVerticalAxis` or `RestrictToHorizontalAxis` from `@dnd-kit/abstract/modifiers` to lock movement to a single axis:
+
+```tsx
+import {useSortable} from '@dnd-kit/react/sortable';
+import {RestrictToVerticalAxis} from '@dnd-kit/abstract/modifiers';
+
+function SortableItem({id, index}: {id: string; index: number}) {
+  const {ref} = useSortable({
+    id,
+    index,
+    modifiers: [RestrictToVerticalAxis],
+  });
+
+  return <div ref={ref}>Item {id}</div>;
+}
+```
+
+## Snapping to a grid
+
+Use the `SnapModifier` from `@dnd-kit/abstract/modifiers` to snap movement to a grid:
+
+```tsx
+import {useDraggable} from '@dnd-kit/react';
+import {SnapModifier} from '@dnd-kit/abstract/modifiers';
+
+function DraggableItem() {
+  const {ref} = useDraggable({
+    id: 'draggable-1',
+    modifiers: [
+      SnapModifier.configure({
+        size: 20, // Snap every 20px in both directions
+      }),
+    ],
+  });
+
+  return <div ref={ref}>Drag me</div>;
+}
+```
+
+The `size` option accepts a number for uniform snapping, or an object with separate `x` and `y` values:
+
+```tsx
+SnapModifier.configure({
+  size: {x: 50, y: 25}, // 50px horizontal, 25px vertical
+})
+```
+
+## Combining modifiers
+
+You can combine multiple modifiers. They are applied in order:
+
+```tsx
+import {useDraggable} from '@dnd-kit/react';
+import {RestrictToElement} from '@dnd-kit/dom/modifiers';
+import {SnapModifier} from '@dnd-kit/abstract/modifiers';
+
+function DraggableItem({container}: {container: React.RefObject<HTMLDivElement | null>}) {
+  const {ref} = useDraggable({
+    id: 'draggable-1',
+    modifiers: [
+      RestrictToElement.configure({element: container.current}),
+      SnapModifier.configure({size: 20}),
+    ],
+  });
+
+  return <div ref={ref}>Drag me</div>;
+}
+```
+
+## Global vs. per-draggable modifiers
+
+Modifiers can be set globally on the [`DragDropProvider`](/react/components/drag-drop-provider) to apply to all draggable elements, or on individual hooks for per-element control.
+
+### Global modifiers
+
+```tsx
+import {DragDropProvider} from '@dnd-kit/react';
+import {RestrictToWindow} from '@dnd-kit/dom/modifiers';
+
+function App() {
+  return (
+    <DragDropProvider modifiers={[RestrictToWindow]}>
+      {/* All draggable elements are restricted to the window */}
+    </DragDropProvider>
+  );
+}
+```
+
+### Per-draggable modifiers
+
+Per-draggable modifiers take precedence over global modifiers:
+
+```tsx
+import {useDraggable} from '@dnd-kit/react';
+import {RestrictToVerticalAxis} from '@dnd-kit/abstract/modifiers';
+
+function VerticalOnlyDraggable() {
+  const {ref} = useDraggable({
+    id: 'vertical-only',
+    modifiers: [RestrictToVerticalAxis],
+  });
+
+  return <div ref={ref}>I can only move vertically</div>;
+}
+```
+
+<Info>
+  For the full list of built-in modifiers and how to create custom modifiers, see the [core Modifiers documentation](/extend/modifiers).
+</Info>
