@@ -1,4 +1,4 @@
-import {RestrictToElement} from '@dnd-kit/dom/modifiers';
+import {RestrictToElement, SnapCenterToCursor} from '@dnd-kit/dom/modifiers';
 
 import {Info, Preview} from '../../../../components';
 import {DraggableExample} from '../../DraggableExample';
@@ -25,6 +25,44 @@ Modifiers let you dynamically modify the movement coordinates that are detected 
 - Restricting motion to the draggable node container's bounding rectangle
 - Restricting motion to the draggable node's scroll container bounding rectangle
 - Applying resistance or clamping the motion
+
+## Built-in modifiers
+
+### `@dnd-kit/abstract/modifiers`
+
+| Modifier | Description |
+|----------|-------------|
+| `RestrictToVerticalAxis` | Restricts drag movement to the vertical axis |
+| `RestrictToHorizontalAxis` | Restricts drag movement to the horizontal axis |
+| `SnapModifier` | Snaps drag movement to a grid |
+
+### `@dnd-kit/dom/modifiers`
+
+| Modifier | Description |
+|----------|-------------|
+| `RestrictToWindow` | Restricts the draggable element to stay within the viewport |
+| `RestrictToElement` | Restricts the draggable element to stay within a given element |
+| `SnapCenterToCursor` | Offsets the drag transform so the element's center snaps to the cursor position |
+
+#### `SnapCenterToCursor`
+
+When dragging starts from the edge of an element, `SnapCenterToCursor` immediately repositions the element so its center aligns with the cursor. This is useful for drag-and-drop interactions where the element should always be centered under the pointer.
+
+<Preview>
+  <DraggableExample modifiers={[SnapCenterToCursor]} />
+</Preview>
+
+```jsx
+import {useDraggable} from '@dnd-kit/react';
+import {SnapCenterToCursor} from '@dnd-kit/dom/modifiers';
+
+function Draggable({id}) {
+  const {ref} = useDraggable({
+    id,
+    modifiers: [SnapCenterToCursor],
+  });
+}
+```
 
 ## Usage
 

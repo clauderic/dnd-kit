@@ -3,7 +3,11 @@ import {
   RestrictToHorizontalAxis,
   RestrictToVerticalAxis,
 } from '@dnd-kit/abstract/modifiers';
-import {RestrictToElement, RestrictToWindow} from '@dnd-kit/dom/modifiers';
+import {
+  RestrictToElement,
+  RestrictToWindow,
+  SnapCenterToCursor,
+} from '@dnd-kit/dom/modifiers';
 
 import docs from './docs/ModifierDocs.mdx';
 import {DraggableExample} from '../DraggableExample';
@@ -68,4 +72,11 @@ export const ContainerModifier: Story = {
 export const SnapModifierExample: Story = {
   name: 'Snap to grid',
   render: SnapToGridExample,
+};
+
+export const SnapCenterToCursorModifier: Story = {
+  name: 'Snap center to cursor',
+  args: {
+    modifiers: [SnapCenterToCursor],
+  },
 };
