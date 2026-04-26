@@ -6,7 +6,7 @@ import {
 import {
   RestrictToElement,
   RestrictToWindow,
-  SnapCenterToCursor,
+  SnapToPointer,
 } from '@dnd-kit/dom/modifiers';
 
 import docs from './docs/ModifierDocs.mdx';
@@ -74,9 +74,9 @@ export const SnapModifierExample: Story = {
   render: SnapToGridExample,
 };
 
-export const SnapCenterToCursorModifier: Story = {
-  name: 'Snap center to cursor',
+export const SnapToPointerModifier: Story = {
+  name: 'Snap to pointer',
   args: {
-    modifiers: [SnapCenterToCursor],
+    modifiers: [SnapToPointer],
   },
 };

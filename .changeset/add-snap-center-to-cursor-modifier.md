@@ -1,5 +1,5 @@
 ---
-'@dnd-kit/dom': minor
+'@dnd-kit/dom': patch
 ---
 
-Added `SnapCenterToCursor` modifier that offsets the drag transform so the dragged element's center snaps to the cursor position.
+Added `SnapToPointer` modifier that offsets the drag transform so a specified anchor point of the dragged element snaps to the cursor position. Defaults to center.
