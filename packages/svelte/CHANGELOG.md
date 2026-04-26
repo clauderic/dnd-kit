@@ -1,5 +1,14 @@
 # @dnd-kit/svelte
 
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies [[`00fd955`](https://github.com/clauderic/dnd-kit/commit/00fd955c859cd87c5334c18f13eedb1e92bb6ef6)]:
+  - @dnd-kit/dom@0.4.1
+  - @dnd-kit/abstract@0.4.1
+  - @dnd-kit/state@0.4.1
+
 ## 0.4.0
 
 ### Minor Changes

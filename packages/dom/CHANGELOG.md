@@ -1,5 +1,17 @@
 # @dnd-kit/dom
 
+## 0.4.1
+
+### Patch Changes
+
+- [#2020](https://github.com/clauderic/dnd-kit/pull/2020) [`00fd955`](https://github.com/clauderic/dnd-kit/commit/00fd955c859cd87c5334c18f13eedb1e92bb6ef6) Thanks [@namgi2386](https://github.com/namgi2386)! - Fix DragOverlay flickering after drop
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.4.1
+  - @dnd-kit/collision@0.4.1
+  - @dnd-kit/geometry@0.4.1
+  - @dnd-kit/state@0.4.1
+
 ## 0.4.0
 
 ### Minor Changes
