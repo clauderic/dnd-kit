@@ -1,0 +1,79 @@
+import { Feedback } from "@dnd-kit/dom";
+import type { DragDropManager, Draggable, DropAnimation } from "@dnd-kit/dom";
+import { effect } from "@dnd-kit/state";
+
+export interface Input {
+  disabled?: boolean;
+  dropAnimation?: DropAnimation | null;
+  content?: Marko.Body<[Draggable]>;
+}
+
+<let-global/manager from="__dndKit_manager"/>
+
+// Direct reactive tracking of dragOperation.source via Preact effect.
+// Unlike consumer tags (create-sortable etc.) which use create-deep-signal
+// to bridge multiple entity properties, the overlay only needs ONE property:
+// dragOperation.source. A direct Preact effect is simpler and avoids the
+// Proxy/bridge timing issues that create-deep-signal has when its target
+// is available at render time rather than transitioning from undefined.
+<let/_source=null as Draggable | null>
+
+<div/$el data-dnd-overlay>
+  <lifecycle
+    onMount() {
+      if (!manager) return;
+      const mgr = manager as DragDropManager;
+
+      // Create a Preact effect that subscribes to dragOperation.source.
+      // When drag starts, source becomes non-null → _source updates →
+      // Marko re-renders → <if> shows overlay content.
+      // When drag ends, source becomes null → content hidden.
+      let first = true;
+      (this as any)._disposeEffect = effect(() => {
+        const src = mgr.dragOperation.source;
+        if (first) {
+          first = false;
+          // Initialize _source synchronously on first run.
+          // At mount time, no drag is active, so source is null.
+          _source = src ?? null;
+        } else {
+          _source = src ?? null;
+        }
+      });
+
+      // Register overlay element with the Feedback plugin.
+      (this as any)._syncOverlay();
+    }
+    onUpdate() {
+      (this as any)._syncOverlay();
+    }
+    _syncOverlay() {
+      if (!manager || input.disabled) return;
+      const feedback = (manager as DragDropManager).plugins.find(
+        (p): p is Feedback => p instanceof Feedback,
+      );
+      if (!feedback) return;
+      feedback.overlay = $el();
+      if (input.dropAnimation !== undefined) {
+        feedback.dropAnimation = input.dropAnimation;
+      }
+    }
+    onDestroy() {
+      // Dispose the Preact effect subscription.
+      (this as any)._disposeEffect?.();
+
+      // Unregister overlay from Feedback plugin.
+      if (!manager) return;
+      const feedback = (manager as DragDropManager).plugins.find(
+        (p): p is Feedback => p instanceof Feedback,
+      );
+      if (feedback) {
+        feedback.overlay = undefined;
+        feedback.dropAnimation = undefined;
+      }
+    }
+  >
+  <if=!input.disabled && _source != null>
+    <${input.content}(_source)/>
+  </if>
+</div>

@@ -1,0 +1,295 @@
+import {
+  Sortable,
+  defaultSortableTransition,
+  OptimisticSortingPlugin,
+} from "@dnd-kit/dom/sortable";
+import type { SortableInput } from "@dnd-kit/dom/sortable";
+import type { DragDropManager } from "@dnd-kit/dom";
+import type { Data, Plugins } from "@dnd-kit/abstract";
+import { batch, deepEqual } from "@dnd-kit/state";
+
+export interface SortableMethods {
+  isDragging: boolean;
+  isDropping: boolean;
+  isDragSource: boolean;
+  isDropTarget: boolean;
+  setElement(el: HTMLElement | undefined): void;
+  setHandle(el: HTMLElement | undefined): void;
+  setSource(el: HTMLElement | undefined): void;
+  setTarget(el: HTMLElement | undefined): void;
+}
+
+export interface Input<T extends Data = Data> {
+  id: string | number;
+  index: number;
+  group?: string;
+  data?: T;
+  disabled?: boolean;
+  sensors?: SortableInput<T>["sensors"];
+  modifiers?: SortableInput<T>["modifiers"];
+  plugins?: SortableInput<T>["plugins"];
+  accept?: SortableInput<T>["accept"];
+  type?: SortableInput<T>["type"];
+  collisionDetector?: SortableInput<T>["collisionDetector"];
+  collisionPriority?: SortableInput<T>["collisionPriority"];
+  transition?: SortableInput<T>["transition"];
+  content?: Marko.Body<[SortableMethods]>;
+}
+
+static const withoutOptimistic = (defaults: Plugins) =>
+  defaults.filter((p) => p !== OptimisticSortingPlugin);
+
+<let-global/manager from="__dndKit_manager"/>
+<let/entity=undefined as Sortable | undefined>
+
+static const _makeBox = () => ({
+  el: undefined as HTMLElement | undefined,
+  handle: undefined as HTMLElement | undefined,
+  source: undefined as HTMLElement | undefined,
+  target: undefined as HTMLElement | undefined,
+});
+<let/_pending=_makeBox()>
+
+<lifecycle
+  onMount() {
+    if (manager && !(this as any).initialized) (this as any)._initEntity();
+  }
+  onUpdate() {
+    // Case 1: manager just became available (arrives after children mount).
+    if (manager && !(this as any).initialized) {
+      (this as any)._initEntity();
+      return;
+    }
+    // Case 2: manager changed (input.manager prop replaced).
+    // Re-initialize entity with the new manager.
+    if (
+      manager &&
+      (this as any).initialized &&
+      entity &&
+      (entity as any).manager !== manager
+    ) {
+      (this as any).cleanup?.();
+      entity.destroy();
+      entity = undefined;
+      (this as any).initialized = false;
+      (this as any)._initEntity();
+      return;
+    }
+    // Case 3: normal prop updates — sync to existing entity.
+    if (entity) {
+      const e = entity;
+      const self = this as any;
+      e.id = input.id;
+      // Set draggable.disabled from input, but compute droppable.disabled
+      // separately: while this entity is the active drag source, its droppable
+      // must be disabled so it cannot win collision detection over real targets.
+      //
+      // Why: the Feedback plugin applies position:fixed + CSS translate to the
+      // source element, making it visually follow the pointer. The DOM Droppable's
+      // PositionObserver continuously refreshes droppable.shape from
+      // getBoundingClientRect(), so item1.droppable.shape always equals the
+      // pointer position. When the pointer reaches item3's center, item1 and
+      // item3 have identical shapes (same position, same collision score = Inf).
+      // item1 wins the tie because it is registered first in the droppables
+      // registry. item3 is never selected as the target.
+      //
+      // Disabling the source's droppable (via the Sortable.disabled setter) was
+      // tried in drag-drop-provider, but Marko's onUpdate overrides it on every
+      // re-render because Sortable.disabled is a single setter for both
+      // draggable and droppable. By computing it here in onUpdate itself, the
+      // value is always correct after each Marko flush.
+      e.draggable.disabled = input.disabled ?? false;
+      e.droppable.disabled =
+        (input.disabled ?? false) ||
+        (manager != null &&
+          !manager.dragOperation.status.idle &&
+          manager.dragOperation.source?.id === e.id);
+      if (input.data !== undefined) e.data = input.data;
+      batch(() => {
+        e.group = input.group;
+        e.index = input.index;
+      });
+      // transition: deep-compared. Marko's onUpdate runs on every re-render,
+      // so without this guard the merged `{...defaults, ...input.transition}`
+      // would be reassigned every render — each assignment triggers Preact
+      // reactive effects on the entity (Feedback plugin in particular reads
+      // transition). Deep-equality matches the React adapter's
+      // `useOnValueChange(transition, ..., undefined, deepEqual)`. The prev
+      // value is the raw `input.transition` (not the merged object) since
+      // that is the user-facing input whose change we want to detect.
+      if (!deepEqual(input.transition, self._prevTransition)) {
+        e.transition = { ...defaultSortableTransition, ...input.transition };
+        self._prevTransition = input.transition;
+      }
+      // refreshShape is preserved at every onUpdate-in-idle (existing
+      // behavior). The React adapter triggers it from a separate
+      // useOnValueChange(index, ...) with immediateEffect; aligning that
+      // is out of scope for this change.
+      if (e.manager?.dragOperation.status.idle && e.transition?.idle) {
+        e.refreshShape();
+      }
+      // Remaining props.
+      //
+      // sensors, modifiers, plugins, accept — DEEP-COMPARED.
+      //   These are typically arrays (or in accept's case, array | function)
+      //   whose reference changes every render when written inline in a
+      //   template (e.g. `plugins={[MyPlugin]}`). Without deep-equality,
+      //   they'd be reassigned every re-render, triggering Preact reactive
+      //   cascades through the entity's signal graph — notably Feedback,
+      //   which can then mis-time its render during drag. Matches the React
+      //   adapter's `useOnValueChange(..., undefined, deepEqual)` pattern.
+      //
+      // type, collisionDetector, collisionPriority — identity-compared via
+      //   the `!== undefined` guard. React compares these with Object.is;
+      //   they're scalars or stable function references, and the Preact
+      //   @reactive accessor's built-in equal-value short-circuit covers
+      //   the repeated-write case.
+      if (!deepEqual(input.sensors, self._prevSensors)) {
+        e.sensors = input.sensors;
+        self._prevSensors = input.sensors;
+      }
+      if (!deepEqual(input.modifiers, self._prevModifiers)) {
+        e.modifiers = input.modifiers;
+        self._prevModifiers = input.modifiers;
+      }
+      if (!deepEqual(input.plugins, self._prevPlugins)) {
+        e.plugins = input.plugins;
+        self._prevPlugins = input.plugins;
+      }
+      if (!deepEqual(input.accept, self._prevAccept)) {
+        e.accept = input.accept;
+        self._prevAccept = input.accept;
+      }
+      if (input.type !== undefined) e.type = input.type;
+      if (input.collisionDetector !== undefined)
+        e.collisionDetector = input.collisionDetector;
+      if (input.collisionPriority !== undefined)
+        e.collisionPriority = input.collisionPriority;
+    }
+  }
+  _initEntity() {
+    if (!manager) return;
+    const mgr = manager as DragDropManager;
+    const e = new Sortable(
+      {
+        id: input.id,
+        index: input.index,
+        group: input.group,
+        data: input.data,
+        disabled: input.disabled ?? false,
+        sensors: input.sensors,
+        modifiers: input.modifiers,
+        plugins: input.plugins ?? withoutOptimistic,
+        accept: input.accept,
+        type: input.type,
+        collisionDetector: input.collisionDetector,
+        collisionPriority: input.collisionPriority,
+        transition: { ...defaultSortableTransition, ...input.transition },
+        register: false,
+      },
+      mgr,
+    );
+    (this as any).cleanup = e.register();
+    (this as any).initialized = true;
+    if (_pending.el !== undefined) {
+      e.element = _pending.el;
+      _pending.el = undefined;
+    }
+    if (_pending.handle !== undefined) {
+      e.handle = _pending.handle;
+      _pending.handle = undefined;
+    }
+    if (_pending.source !== undefined) {
+      e.source = _pending.source;
+      _pending.source = undefined;
+    }
+    if (_pending.target !== undefined) {
+      e.target = _pending.target;
+      _pending.target = undefined;
+    }
+    // Seed previous values for the deep-equality-tracked props in onUpdate
+    // Case 3. Without seeding, the first onUpdate after init would see
+    // _prevX === undefined and sync the initial value a second time — the
+    // constructor already applied these, so a resync triggers a redundant
+    // reactive cascade. Matches React's `useOnValueChange`, which
+    // initializes its `tracked.current` to the initial value so the first
+    // effect run sees no change.
+    const self = this as any;
+    self._prevSensors = input.sensors;
+    self._prevModifiers = input.modifiers;
+    self._prevPlugins = input.plugins;
+    self._prevAccept = input.accept;
+    self._prevTransition = input.transition;
+    entity = e;
+  }
+  onDestroy() {
+    (this as any).cleanup?.();
+    entity?.destroy();
+  }
+>
+
+<create-deep-signal/tracked target=entity/>
+
+// Reading  here creates a reactive dependency on .
+// This is semantically correct (state is false with no manager) AND ensures
+// create-sortable re-renders when manager changes, triggering onUpdate so
+// entities can be (re-)initialized. This replaces the removed comma expression.
+<const/_isDragging=manager != null && ((tracked as any)?.isDragging ?? false)>
+<const/_isDropping=manager != null && ((tracked as any)?.isDropping ?? false)>
+<const/_isDragSource=(
+  manager != null && ((tracked as any)?.isDragSource ?? false)
+)>
+<const/_isDropTarget=(
+  manager != null && ((tracked as any)?.isDropTarget ?? false)
+)>
+
+<const/_s={
+  isDragging: _isDragging,
+  isDropping: _isDropping,
+  isDragSource: _isDragSource,
+  isDropTarget: _isDropTarget,
+  setElement: (el: HTMLElement | undefined) => {
+    if (entity) {
+      const e = entity;
+      if (
+        !el &&
+        e.element?.isConnected &&
+        !e.manager?.dragOperation.status.idle
+      )
+        return;
+      e.element = el;
+    } else if (el) {
+      _pending.el = el;
+    }
+  },
+  setHandle: (el: HTMLElement | undefined) => {
+    if (entity) {
+      const e = entity;
+      e.handle = el;
+    } else if (el) {
+      _pending.handle = el;
+    }
+  },
+  setSource: (el: HTMLElement | undefined) => {
+    if (entity) {
+      const e = entity;
+      if (!el && e.source?.isConnected && !e.manager?.dragOperation.status.idle)
+        return;
+      e.source = el;
+    } else if (el) {
+      _pending.source = el;
+    }
+  },
+  setTarget: (el: HTMLElement | undefined) => {
+    if (entity) {
+      const e = entity;
+      if (!el && e.target?.isConnected && !e.manager?.dragOperation.status.idle)
+        return;
+      e.target = el;
+    } else if (el) {
+      _pending.target = el;
+    }
+  },
+} as SortableMethods>
+
+<${input.content}(_s)/>
