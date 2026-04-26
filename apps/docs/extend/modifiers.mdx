@@ -74,6 +74,9 @@ Environment-specific modifiers for the DOM, available in `@dnd-kit/dom/modifiers
   <Card title="RestrictToElement">
     Constrain movement within a container element
   </Card>
+  <Card title="SnapCenterToCursor">
+    Offset the drag transform so the element's center snaps to the cursor position
+  </Card>
 </CardGroup>
 
 ## Usage
@@ -104,6 +107,19 @@ const draggable = new Draggable({
     })
   ],
 }, manager);
+```
+
+### SnapCenterToCursor
+
+When dragging starts from the edge of an element, `SnapCenterToCursor` immediately repositions the element so its center aligns with the cursor.
+
+```ts
+import {DragDropManager} from '@dnd-kit/dom';
+import {SnapCenterToCursor} from '@dnd-kit/dom/modifiers';
+
+const manager = new DragDropManager({
+  modifiers: [SnapCenterToCursor],
+});
 ```
 
 <Info>
