@@ -1,5 +1,16 @@
 # @dnd-kit/react
 
+## 0.4.1
+
+### Patch Changes
+
+- [#2021](https://github.com/clauderic/dnd-kit/pull/2021) [`de5a0f4`](https://github.com/clauderic/dnd-kit/commit/de5a0f4f1d36705e690468092447546142594734) Thanks [@lixiaoyan](https://github.com/lixiaoyan)! - Fixed `useDraggable` and `useSortable` reassigning the underlying entity's `sensors` on every render when `sensors` was passed as an inline array. The `sensors` prop is now compared with `deepEqual` (matching the existing behavior of `modifiers`, `plugins`, and `DragDropProvider`), preventing unnecessary mutations to the plugin registry that could disrupt in-progress sensor activation.
+
+- Updated dependencies [[`00fd955`](https://github.com/clauderic/dnd-kit/commit/00fd955c859cd87c5334c18f13eedb1e92bb6ef6)]:
+  - @dnd-kit/dom@0.4.1
+  - @dnd-kit/abstract@0.4.1
+  - @dnd-kit/state@0.4.1
+
 ## 0.4.0
 
 ### Minor Changes
