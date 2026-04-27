@@ -1,4 +1,4 @@
-import {RestrictToElement} from '@dnd-kit/dom/modifiers';
+import {RestrictToElement, SnapToPointer} from '@dnd-kit/dom/modifiers';
 
 import {Info, Preview} from '../../../../components';
 import {DraggableExample} from '../../DraggableExample';
@@ -25,6 +25,44 @@ Modifiers let you dynamically modify the movement coordinates that are detected 
 - Restricting motion to the draggable node container's bounding rectangle
 - Restricting motion to the draggable node's scroll container bounding rectangle
 - Applying resistance or clamping the motion
+
+## Built-in modifiers
+
+### `@dnd-kit/abstract/modifiers`
+
+| Modifier                   | Description                                    |
+| -------------------------- | ---------------------------------------------- |
+| `RestrictToVerticalAxis`   | Restricts drag movement to the vertical axis   |
+| `RestrictToHorizontalAxis` | Restricts drag movement to the horizontal axis |
+| `SnapModifier`             | Snaps drag movement to a grid                  |
+
+### `@dnd-kit/dom/modifiers`
+
+| Modifier            | Description                                                                                        |
+| ------------------- | -------------------------------------------------------------------------------------------------- |
+| `RestrictToWindow`  | Restricts the draggable element to stay within the viewport                                        |
+| `RestrictToElement` | Restricts the draggable element to stay within a given element                                     |
+| `SnapToPointer`     | Offsets the drag transform so a specified anchor point of the element snaps to the cursor position |
+
+#### `SnapToPointer`
+
+When dragging starts, `SnapToPointer` immediately repositions the element so the specified anchor point aligns with the cursor. The `anchor` option accepts an `{x, y}` object with values between `0` and `1` representing the relative position within the draggable element. Defaults to `{x: 0.5, y: 0.5}` (center).
+
+<Preview>
+  <DraggableExample modifiers={[SnapToPointer]} />
+</Preview>
+
+```jsx
+import {useDraggable} from '@dnd-kit/react';
+import {SnapToPointer} from '@dnd-kit/dom/modifiers';
+
+function Draggable({id}) {
+  const {ref} = useDraggable({
+    id,
+    modifiers: [SnapToPointer],
+  });
+}
+```
 
 ## Usage
 
