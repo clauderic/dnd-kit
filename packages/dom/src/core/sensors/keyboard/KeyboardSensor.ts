@@ -88,7 +88,7 @@ export class KeyboardSensor extends Sensor<
 
   protected listeners = new Listeners();
 
-  public bind(source: Draggable, options = this.options) {
+  public bind(source: Draggable, options = this.options): CleanupFunction {
     const unbind = effect(() => {
       const target = source.handle ?? source.element;
       const listener: EventListener = (event: Event) => {

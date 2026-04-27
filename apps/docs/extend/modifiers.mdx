@@ -21,7 +21,7 @@ Available in `@dnd-kit/abstract/modifiers`, these modifiers are environment-agno
   <Card title="RestrictToVerticalAxis">
     Constrain movement to the vertical axis only
   </Card>
-  <Card title="Snap">
+  <Card title="SnapToPointer">
     Snap movement to a grid with configurable size
   </Card>
 </CardGroup>
@@ -40,10 +40,7 @@ const manager = new DragDropManager({
 Example combining modifiers:
 
 ```ts
-import {
-  Snap,
-  RestrictToHorizontalAxis
-} from '@dnd-kit/abstract/modifiers';
+import {Snap, RestrictToHorizontalAxis} from '@dnd-kit/abstract/modifiers';
 
 // Horizontal movement that snaps to a grid
 const manager = new DragDropManager({
@@ -51,10 +48,10 @@ const manager = new DragDropManager({
     RestrictToHorizontalAxis,
     Snap.configure({
       size: {
-        x: 20,  // Snap every 20px horizontally
-        y: 0    // No vertical snapping (already restricted)
-      }
-    })
+        x: 20, // Snap every 20px horizontally
+        y: 0, // No vertical snapping (already restricted)
+      },
+    }),
   ],
 });
 ```
@@ -74,6 +71,10 @@ Environment-specific modifiers for the DOM, available in `@dnd-kit/dom/modifiers
   <Card title="RestrictToElement">
     Constrain movement within a container element
   </Card>
+  <Card title="SnapToPointer">
+    Offset the drag transform so a specified anchor point of the element snaps
+    to the cursor position
+  </Card>
 </CardGroup>
 
 ## Usage
@@ -82,28 +83,50 @@ Modifiers can be applied globally or per draggable element:
 
 ```ts
 import {DragDropManager} from '@dnd-kit/dom';
-import {
-  RestrictToWindow,
-  RestrictToElement
-} from '@dnd-kit/dom/modifiers';
+import {RestrictToWindow, RestrictToElement} from '@dnd-kit/dom/modifiers';
 
 // Global modifiers
 const manager = new DragDropManager({
-  modifiers: [
-    RestrictToWindow,
-  ],
+  modifiers: [RestrictToWindow],
 });
 
 // Per-draggable modifiers
-const draggable = new Draggable({
-  id: 'draggable-1',
-  element,
-  modifiers: [
-    RestrictToElement.configure({
-      element: containerElement
-    })
-  ],
-}, manager);
+const draggable = new Draggable(
+  {
+    id: 'draggable-1',
+    element,
+    modifiers: [
+      RestrictToElement.configure({
+        element: containerElement,
+      }),
+    ],
+  },
+  manager
+);
+```
+
+### SnapToPointer
+
+When dragging starts, `SnapToPointer` immediately repositions the element so the specified anchor point aligns with the cursor. The `anchor` option accepts an `{x, y}` object with values between `0` and `1` representing the relative position within the draggable element. Defaults to `{x: 0.5, y: 0.5}` (center).
+
+```ts
+import {DragDropManager} from '@dnd-kit/dom';
+import {SnapToPointer} from '@dnd-kit/dom/modifiers';
+
+// Default: snap center to cursor
+const manager = new DragDropManager({
+  modifiers: [SnapToPointer],
+});
+
+// Snap top-left corner to cursor
+const manager = new DragDropManager({
+  modifiers: [SnapToPointer.configure({anchor: {x: 0, y: 0}})],
+});
+
+// Snap bottom-right corner to cursor
+const manager = new DragDropManager({
+  modifiers: [SnapToPointer.configure({anchor: {x: 1, y: 1}})],
+});
 ```
 
 <Info>
@@ -181,10 +204,10 @@ class SnapToGrid extends Modifier {
 
 ```ts
 const snapToGrid = SnapToGrid.configure({
-  gridSize: 10
+  gridSize: 10,
 });
 
 const manager = new DragDropManager({
-  modifiers: [snapToGrid]
+  modifiers: [snapToGrid],
 });
 ```
