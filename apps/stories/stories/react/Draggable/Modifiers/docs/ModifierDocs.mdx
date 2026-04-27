@@ -30,23 +30,23 @@ Modifiers let you dynamically modify the movement coordinates that are detected 
 
 ### `@dnd-kit/abstract/modifiers`
 
-| Modifier | Description |
-|----------|-------------|
-| `RestrictToVerticalAxis` | Restricts drag movement to the vertical axis |
+| Modifier                   | Description                                    |
+| -------------------------- | ---------------------------------------------- |
+| `RestrictToVerticalAxis`   | Restricts drag movement to the vertical axis   |
 | `RestrictToHorizontalAxis` | Restricts drag movement to the horizontal axis |
-| `SnapModifier` | Snaps drag movement to a grid |
+| `SnapModifier`             | Snaps drag movement to a grid                  |
 
 ### `@dnd-kit/dom/modifiers`
 
-| Modifier | Description |
-|----------|-------------|
-| `RestrictToWindow` | Restricts the draggable element to stay within the viewport |
-| `RestrictToElement` | Restricts the draggable element to stay within a given element |
-| `SnapToPointer` | Offsets the drag transform so the element's center snaps to the cursor position |
+| Modifier            | Description                                                                                        |
+| ------------------- | -------------------------------------------------------------------------------------------------- |
+| `RestrictToWindow`  | Restricts the draggable element to stay within the viewport                                        |
+| `RestrictToElement` | Restricts the draggable element to stay within a given element                                     |
+| `SnapToPointer`     | Offsets the drag transform so a specified anchor point of the element snaps to the cursor position |
 
 #### `SnapToPointer`
 
-When dragging starts, `SnapToPointer` immediately repositions the element so the specified anchor point aligns with the cursor. Defaults to `center`. Other options are `top-left`, `top-right`, `bottom-left`, and `bottom-right`.
+When dragging starts, `SnapToPointer` immediately repositions the element so the specified anchor point aligns with the cursor. The `anchor` option accepts an `{x, y}` object with values between `0` and `1` representing the relative position within the draggable element. Defaults to `{x: 0.5, y: 0.5}` (center).
 
 <Preview>
   <DraggableExample modifiers={[SnapToPointer]} />

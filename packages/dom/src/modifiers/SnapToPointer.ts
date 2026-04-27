@@ -2,11 +2,16 @@ import {Modifier, configurator} from '@dnd-kit/abstract';
 import type {DragOperation} from '@dnd-kit/abstract';
 import type {DragDropManager} from '@dnd-kit/dom';
 
-type Anchor = 'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+interface Anchor {
+  x: number;
+  y: number;
+}
 
 interface Options {
   anchor?: Anchor;
 }
+
+const DEFAULT_ANCHOR: Anchor = {x: 0.5, y: 0.5};
 
 export class SnapToPointer extends Modifier<DragDropManager, Options> {
   apply({activatorEvent, shape, transform}: DragOperation) {
@@ -14,33 +19,11 @@ export class SnapToPointer extends Modifier<DragDropManager, Options> {
       return transform;
     }
 
-    const anchor = this.options?.anchor ?? 'center';
-    const {boundingRectangle, center} = shape.initial;
+    const anchor = this.options?.anchor ?? DEFAULT_ANCHOR;
+    const {boundingRectangle} = shape.initial;
 
-    let anchorX: number;
-    let anchorY: number;
-
-    switch (anchor) {
-      case 'top-left':
-        anchorX = boundingRectangle.left;
-        anchorY = boundingRectangle.top;
-        break;
-      case 'top-right':
-        anchorX = boundingRectangle.right;
-        anchorY = boundingRectangle.top;
-        break;
-      case 'bottom-left':
-        anchorX = boundingRectangle.left;
-        anchorY = boundingRectangle.bottom;
-        break;
-      case 'bottom-right':
-        anchorX = boundingRectangle.right;
-        anchorY = boundingRectangle.bottom;
-        break;
-      default:
-        anchorX = center.x;
-        anchorY = center.y;
-    }
+    const anchorX = boundingRectangle.left + boundingRectangle.width * anchor.x;
+    const anchorY = boundingRectangle.top + boundingRectangle.height * anchor.y;
 
     return {
       x: transform.x + activatorEvent.clientX - anchorX,
