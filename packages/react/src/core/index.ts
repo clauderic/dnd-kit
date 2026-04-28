@@ -9,6 +9,10 @@ export {
   useDraggable,
   type UseDraggableInput,
 } from './draggable/useDraggable.ts';
+export {
+  useDragHandle,
+  type UseDragHandleInput,
+} from './draggable/useDragHandle.ts';
 export {DragOverlay} from './draggable/DragOverlay.tsx';
 
 export {
