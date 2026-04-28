@@ -89,9 +89,9 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
   constructor(manager: DragDropManager, options?: FeedbackOptions) {
     super(manager, options);
 
-    const styleInjector = manager.registry.plugins.get(
-      StyleInjector as any
-    ) as StyleInjector | undefined;
+    const styleInjector = manager.registry.plugins.get(StyleInjector as any) as
+      | StyleInjector
+      | undefined;
 
     const unregisterStyles = styleInjector?.register(CSS_RULES);
 
@@ -461,29 +461,37 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       feedbackElement.removeAttribute(ATTRIBUTE);
       styles.reset();
 
-      if (savedCellWidths && isTableRow(element)) {
-        const cells = Array.from(element.cells);
+      const finalize = () => {
+        if (savedCellWidths && isTableRow(element)) {
+          const cells = Array.from(element.cells);
 
-        for (const [index, cell] of cells.entries()) {
-          cell.style.width = savedCellWidths[index] ?? '';
+          for (const [index, cell] of cells.entries()) {
+            cell.style.width = savedCellWidths[index] ?? '';
+          }
         }
+
+        source.status = 'idle';
+
+        const moved = state.current.translate != null;
+        const isDragging = dragOperation.status.dragging;
+
+        if (
+          placeholder &&
+          ((!isDragging && moved) ||
+            placeholder.parentElement !== feedbackElement.parentElement) &&
+          feedbackElement.isConnected
+        ) {
+          placeholder.replaceWith(feedbackElement);
+        }
+
+        placeholder?.remove();
+      };
+
+      if (feedbackElement === this.overlay) {
+        setTimeout(finalize, 0);
+      } else {
+        finalize();
       }
-
-      source.status = 'idle';
-
-      const moved = state.current.translate != null;
-      const isDragging = dragOperation.status.dragging;
-
-      if (
-        placeholder &&
-        ((!isDragging && moved) ||
-          placeholder.parentElement !== feedbackElement.parentElement) &&
-        feedbackElement.isConnected
-      ) {
-        placeholder.replaceWith(feedbackElement);
-      }
-
-      placeholder?.remove();
     };
 
     /* ---- Reactive effects ---- */
@@ -511,9 +519,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
           const currentShape = untracked(() => dragOperation.shape?.current);
           const keyboardTransition = options?.keyboardTransition;
           const translateTransition =
-            isKeyboardOperation &&
-            !reducedMotion &&
-            keyboardTransition !== null
+            isKeyboardOperation && !reducedMotion && keyboardTransition !== null
               ? `${keyboardTransition?.duration ?? 250}ms ${keyboardTransition?.easing ?? 'cubic-bezier(0.25, 1, 0.5, 1)'}`
               : '0ms linear';
 
