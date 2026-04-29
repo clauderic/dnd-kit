@@ -1,4 +1,4 @@
-import {createEffect, createMemo, onCleanup} from 'solid-js';
+import {createEffect, createMemo, onCleanup, splitProps} from 'solid-js';
 import {DragDropManager, defaultPreset, resolveCustomizable} from '@dnd-kit/dom';
 import {isSortable} from '@dnd-kit/dom/sortable';
 
@@ -27,8 +27,13 @@ export interface DragDropProviderProps
 export function DragDropProvider(props: DragDropProviderProps) {
   const {savePosition, restorePosition, clearPosition} = createSaveElementPosition();
   const {renderer, trackRendering} = useRenderer();
+  // Strip `children` before forwarding props to `DragDropManager`. The manager
+  // constructor spreads its input (`{...input}`) which would otherwise invoke
+  // Solid's `children` getter and synthesize an orphan component subtree on
+  // every memo recomputation. See #2015.
+  const [, managerProps] = splitProps(props, ['children']);
   const manager = createMemo(
-    () => props.manager ?? new DragDropManager(props)
+    () => props.manager ?? new DragDropManager(managerProps)
   );
 
   onCleanup(() => {
