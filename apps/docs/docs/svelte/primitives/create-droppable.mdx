@@ -76,6 +76,7 @@ export const droppableCode = `
 <script>
   import {createDroppable} from '@dnd-kit/svelte';
 
+  let {children} = $props();
   const droppable = createDroppable({id: 'droppable'});
 </script>
 
@@ -84,7 +85,7 @@ export const droppableCode = `
   class="droppable"
   class:active={droppable.isDropTarget}
 >
-  <slot />
+  {@render children?.()}
 </div>
 `.trim();
 
@@ -95,7 +96,7 @@ export const appCode = `
   import Droppable from './Droppable.svelte';
   import './styles.css';
 
-  let parent = null;
+  let parent = $state(null);
 
   function onDragEnd(event) {
     if (event.canceled) return;
