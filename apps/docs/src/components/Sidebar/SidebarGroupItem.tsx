@@ -20,7 +20,13 @@ export function SidebarGroupItem({
   isNested = false,
 }: SidebarGroupItemProps) {
   const hasActiveChild = containsPath(group.pages, currentPath);
-  const [isOpen, setIsOpen] = useState(hasActiveChild || !isNested);
+  // Nav groups can opt in to being expanded by default via `"defaultOpen": true`
+  // in docs.json. The field is preserved through the Mintlify config parser
+  // even though it's not part of the official NavGroup type.
+  const defaultOpen = (group as { defaultOpen?: boolean }).defaultOpen === true;
+  const [isOpen, setIsOpen] = useState(
+    hasActiveChild || defaultOpen || !isNested,
+  );
 
   // Nested groups (sub-groups like "Plugins", "Sensors") are collapsible
   if (isNested) {
