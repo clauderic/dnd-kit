@@ -3,7 +3,13 @@
  */
 
 interface ParamFieldProps {
+  /**
+   * The parameter or property name. Mintlify's `<ParamField>` uses `path`,
+   * while `<ResponseField>` uses `name` — both are accepted here so the
+   * same component can render input arguments and output properties.
+   */
   path?: string;
+  name?: string;
   type?: string;
   required?: boolean;
   default?: string;
@@ -80,17 +86,20 @@ function ParamHead({
 
 export function ParamField({
   path,
+  name,
   type,
   required,
   deprecated,
   default: defaultValue,
   children,
 }: ParamFieldProps) {
+  const fieldName = path ?? name;
+
   return (
     <div className="field my-2.5 border-stone-50 border-b pt-2.5 pb-5 dark:border-stone-800/50">
-      {path && (
+      {fieldName && (
         <ParamHead
-          name={path}
+          name={fieldName}
           type={type}
           required={required != null ? true : undefined}
           requiredLabel="required"
