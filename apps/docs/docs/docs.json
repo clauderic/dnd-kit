@@ -99,6 +99,7 @@
                   "react/guides/multiple-sortable-lists",
                   "react/guides/sortable-state-management",
                   "react/guides/collision-detection",
+                  "react/guides/sensors",
                   "react/guides/modifiers",
                   "react/guides/feedback"
                 ]

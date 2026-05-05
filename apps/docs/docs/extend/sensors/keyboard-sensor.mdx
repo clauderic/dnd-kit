@@ -38,13 +38,13 @@ The Keyboard sensor comes with these default key bindings:
 
 ```ts
 const defaultKeyboardCodes = {
-  start: ['Space', 'Enter'],    // Start dragging
-  cancel: ['Escape'],           // Cancel drag operation
-  end: ['Space', 'Enter'],      // End dragging
-  up: ['ArrowUp'],             // Move up
-  down: ['ArrowDown'],         // Move down
-  left: ['ArrowLeft'],         // Move left
-  right: ['ArrowRight'],       // Move right
+  start: ['Space', 'Enter'],          // Start dragging
+  cancel: ['Escape'],                 // Cancel drag operation
+  end: ['Space', 'Enter', 'Tab'],     // End dragging
+  up: ['ArrowUp'],                    // Move up
+  down: ['ArrowDown'],                // Move down
+  left: ['ArrowLeft'],                // Move left
+  right: ['ArrowRight'],              // Move right
 };
 ```
 
@@ -73,7 +73,7 @@ KeyboardSensor.configure({
 
 ## Default behavior
 
-By default, each key press moves the dragged item by 10 pixels. Hold <kbd>Shift</kbd> to move by 50 pixels instead.
+By default, each arrow key press moves the dragged item by 10 pixels. Hold <kbd>Shift</kbd> to multiply movement by 5 (so 50 pixels with the default offset).
 
 ## API Reference
 
@@ -94,6 +94,29 @@ By default, each key press moves the dragged item by 10 pixels. Hold <kbd>Shift<
   }
 
   type KeyCode = KeyboardEvent['code'];
+  ```
+</ParamField>
+
+<ParamField path="offset" type="number | {x: number; y: number}" default="10">
+  The number of pixels to move the dragged item per arrow key press. Pass a single number to apply equally to both axes, or an object to set per-axis values. Hold <kbd>Shift</kbd> while pressing an arrow key to multiply this offset by 5.
+
+  ```ts
+  KeyboardSensor.configure({
+    offset: {x: 20, y: 10}, // Move 20px horizontally, 10px vertically per key press
+  });
+  ```
+</ParamField>
+
+<ParamField path="preventActivation" type="(event: KeyboardEvent, source: Draggable) => boolean">
+  Return `true` to prevent the sensor from starting a drag for a given keydown event. By default, the sensor only activates when the keyboard event's target is the draggable's handle (or its element if no handle is set) — preventing accidental drags from focused descendants like buttons or inputs.
+
+  ```ts
+  KeyboardSensor.configure({
+    preventActivation: (event, source) => {
+      // Don't activate while a text input inside the draggable has focus
+      return event.target instanceof HTMLInputElement;
+    },
+  });
   ```
 </ParamField>
 
