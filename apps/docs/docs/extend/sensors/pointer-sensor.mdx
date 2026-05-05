@@ -131,7 +131,7 @@ PointerSensor.configure({
 
 ### Options
 
-<ParamField path="activationConstraints" type="ActivationConstraints&lt;PointerEvent&gt; | (event: PointerEvent, source: Draggable) =&gt; ActivationConstraints&lt;PointerEvent&gt;">
+<ParamField path="activationConstraints" type="ActivationConstraints<PointerEvent> | (event: PointerEvent, source: Draggable) => ActivationConstraints<PointerEvent> | undefined">
   Configure when dragging should start using an array of constraint instances:
 
   ```ts
@@ -156,7 +156,32 @@ PointerSensor.configure({
   });
   ```
 
-  Can be a fixed array of constraints or a function that returns constraints based on the event and source.
+  Can be a fixed array of constraints, a function that returns constraints based on the event and source, or `undefined` to fall back to the [defaults](#default-behavior).
+</ParamField>
+
+<ParamField path="activatorElements" type="(Element | undefined)[] | (source: Draggable) => (Element | undefined)[]">
+  The elements that should listen for `pointerdown` events to initiate a drag. By default, the sensor binds to the draggable's `handle` if set, otherwise to its `element`. Use this to designate one or more alternative elements (or compute them from the source) — for example, a separate "drag" button rendered outside the draggable element.
+
+  ```ts
+  PointerSensor.configure({
+    activatorElements: (source) => [source.element?.querySelector('[data-drag-handle]')],
+  });
+  ```
+</ParamField>
+
+<ParamField path="preventActivation" type="(event: PointerEvent, source: Draggable) => boolean">
+  Return `true` to prevent the sensor from activating for a given pointer event. Useful when you want to allow native interactions (text selection, button clicks, form input) inside a draggable element without starting a drag.
+
+  By default, the sensor prevents activation when the pointer target is an [interactive element](https://developer.mozilla.org/en-US/docs/Web/HTML/Content_categories#interactive_content) (like `<button>`, `<input>`, `<a>`) that isn't the draggable's handle or contained by it.
+
+  ```ts
+  PointerSensor.configure({
+    preventActivation: (event, source) => {
+      // Allow drags from anywhere except elements with [data-no-drag]
+      return event.target instanceof Element && event.target.closest('[data-no-drag]') !== null;
+    },
+  });
+  ```
 </ParamField>
 
 ### Built-in constraints
@@ -200,6 +225,29 @@ The Pointer sensor handles these events:
 - `pointerup`: Pointer release
 
 The sensor automatically binds listeners across all same-origin documents, enabling drag operations across same-origin iframes.
+
+## Touch and mobile
+
+The Pointer sensor handles touch input on mobile devices by default — no additional setup is required.
+
+On touch devices, dragging activates after a **250ms delay** with **5px movement tolerance**. This prevents accidental drags when scrolling. You can customize these constraints for your use case:
+
+```ts
+PointerSensor.configure({
+  activationConstraints(event) {
+    if (event.pointerType === 'touch') {
+      return [
+        new PointerActivationConstraints.Delay({
+          value: 150,    // Shorter delay for faster touch response
+          tolerance: 10, // More tolerance for finger movement
+        }),
+      ];
+    }
+
+    return undefined; // Use defaults for mouse/pen
+  },
+});
+```
 
 ### Best Practices
 

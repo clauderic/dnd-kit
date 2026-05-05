@@ -330,8 +330,8 @@ The `Sortable` class accepts the following arguments:
   Optionally restrict which types of items can be sorted together.
 </ParamField>
 
-<ParamField path="accepts" type="string | number | Symbol | ((type) => boolean)">
-  Optionally restrict which types of items can be dropped on this item.
+<ParamField path="accept" type="Type | Type[] | ((source: Draggable) => boolean)">
+  Restrict which draggables can be dropped on this sortable item. Pass a single [`type`](#param-type), an array of types, or a predicate that receives the draggable and returns `true` to accept it.
 </ParamField>
 
 <ParamField path="modifiers" type="Modifier[]">

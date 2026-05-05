@@ -126,8 +126,12 @@ The `Droppable` class accepts the following arguments:
   The DOM element to make droppable. While not required in the constructor, it must be set to enable dropping.
 </ParamField>
 
-<ParamField path="accepts" type="string | number | Symbol | ((draggable: Draggable) => boolean)">
-  Specify which draggable elements can be dropped on this target. See [accepting specific types](#accepting-specific-types) for more details.
+<ParamField path="accept" type="Type | Type[] | ((source: Draggable) => boolean)">
+  Restrict which draggables can be dropped on this target. Pass a single [`type`](#param-type), an array of types, or a predicate that receives the draggable and returns `true` to accept it. If omitted, every draggable is accepted. See [accepting specific types](#accepting-specific-types) for more details.
+</ParamField>
+
+<ParamField path="type" type="string | number | Symbol">
+  An identifier used by other droppables' `accept` rules to decide whether this droppable can be a target for a given draggable.
 </ParamField>
 
 <ParamField path="collisionDetector" type="CollisionDetector">

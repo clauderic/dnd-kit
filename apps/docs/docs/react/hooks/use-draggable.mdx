@@ -59,6 +59,10 @@ The `useDraggable` hook accepts the following arguments:
   An array of [sensors](/extend/sensors) that can be bound to the draggable element to detect drag interactions.
 </ParamField>
 
+<ParamField path="alignment" type="{ x: 'start' | 'center' | 'end'; y: 'start' | 'center' | 'end' }">
+  How the draggable's position should be aligned relative to its source element during drag operations. Used by the [Feedback plugin](/extend/plugins/feedback) when computing overlay placement.
+</ParamField>
+
 <ParamField path="data" type="{[key: string]: any}">
   The data argument is for advanced use-cases where you may need access to additional data about the draggable element in event handlers, modifiers, sensors or custom plugins.
 </ParamField>

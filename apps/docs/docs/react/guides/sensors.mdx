@@ -1,0 +1,217 @@
+---
+title: 'Configuring sensors'
+sidebarTitle: 'Configuring sensors'
+metaTitle: 'Configuring Sensors - React | dnd kit'
+description: 'Customize how drag operations start in React: pointer activation constraints, keyboard codes, drag handles, and per-pointer-type behavior.'
+icon: 'monitor-waveform'
+---
+
+## Overview
+
+[Sensors](/extend/sensors) detect user input and translate it into drag and drop operations. The defaults work well out of the box — `PointerSensor` (mouse, touch, pen) and `KeyboardSensor` are both registered automatically on every [`DragDropProvider`](/react/components/drag-drop-provider). You only need this guide when you want to customize when and how drags activate.
+
+<Note>
+  Sensors are part of `@dnd-kit/dom` and are imported from there:
+
+  ```ts
+  import {PointerSensor, KeyboardSensor, PointerActivationConstraints} from '@dnd-kit/dom';
+  ```
+</Note>
+
+## Where to configure sensors
+
+Sensors can be configured at three different levels:
+
+| Level | How | When to use |
+| --- | --- | --- |
+| **Global (provider)** | `sensors` prop on `DragDropProvider` | Apply behavior across every draggable |
+| **Per-draggable** | `sensors` option on `useDraggable` / `useSortable` | Override behavior for a specific element |
+| **Per-instance** | `Sensor.configure({...})` | Build a configured sensor descriptor that you pass to one of the above |
+
+Per-draggable sensors take precedence over global sensors.
+
+## Customizing PointerSensor
+
+`PointerSensor` handles **mouse, touch, and pen** input via the native [Pointer Events API](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events). It exposes three options: `activationConstraints`, `activatorElements`, and `preventActivation`.
+
+### Activation constraints
+
+Activation constraints control when a drag starts. Provide either an array of constraint instances, or a function that returns constraints based on the event.
+
+```tsx
+import {DragDropProvider} from '@dnd-kit/react';
+import {PointerSensor, PointerActivationConstraints} from '@dnd-kit/dom';
+
+<DragDropProvider
+  sensors={(defaults) => [
+    ...defaults.filter((sensor) => sensor !== PointerSensor),
+    PointerSensor.configure({
+      activationConstraints: [
+        // Drag starts after the pointer moves 8px
+        new PointerActivationConstraints.Distance({value: 8}),
+        // ...or after holding for 200ms with up to 10px tolerance
+        new PointerActivationConstraints.Delay({value: 200, tolerance: 10}),
+      ],
+    }),
+  ]}
+>
+  {/* ... */}
+</DragDropProvider>
+```
+
+When multiple constraints are provided, the drag activates as soon as **any one** is satisfied.
+
+### Per-pointer-type behavior
+
+Pass a function to `activationConstraints` to branch on `event.pointerType` (`'mouse'`, `'touch'`, or `'pen'`). This is the recommended way to give touch and mouse different activation behavior:
+
+```tsx
+PointerSensor.configure({
+  activationConstraints(event, source) {
+    if (event.pointerType === 'touch') {
+      // Longer delay for touch to avoid hijacking scroll gestures
+      return [
+        new PointerActivationConstraints.Delay({value: 250, tolerance: 5}),
+      ];
+    }
+
+    // Mouse and pen: 5px movement threshold
+    return [new PointerActivationConstraints.Distance({value: 5})];
+  },
+});
+```
+
+Returning `undefined` from the function falls back to the [default behavior](/extend/sensors/pointer-sensor#default-behavior).
+
+### Drag handles via activator elements
+
+By default, the sensor binds `pointerdown` to the draggable's `handle` (if set on the hook) or its main `element`. Use `activatorElements` to designate a different element — useful when you want to render a separate "drag" affordance outside the draggable's DOM subtree.
+
+```tsx
+PointerSensor.configure({
+  activatorElements: (source) => [
+    source.element?.querySelector('[data-drag-handle]'),
+  ],
+});
+```
+
+<Tip>
+  For the common case — a drag handle inside the draggable element — pass a `handle` ref directly to `useDraggable` or `useSortable` instead. `activatorElements` is for the less common case where the activator lives outside the source element.
+</Tip>
+
+### Preventing accidental drags
+
+The `preventActivation` callback returns `true` to skip a `pointerdown` event. By default, it returns `true` when the target is an interactive element (`<button>`, `<input>`, `<a>`, etc.) that isn't part of the handle — so clicks on buttons inside a draggable card don't start a drag.
+
+```tsx
+PointerSensor.configure({
+  preventActivation: (event, source) => {
+    // Don't start a drag from anything inside [data-no-drag]
+    return (
+      event.target instanceof Element &&
+      event.target.closest('[data-no-drag]') !== null
+    );
+  },
+});
+```
+
+## Customizing KeyboardSensor
+
+`KeyboardSensor` enables keyboard-driven drag and drop for accessibility. It activates when a focused draggable receives a configured "start" keydown event.
+
+### Custom key bindings
+
+```tsx
+import {KeyboardSensor} from '@dnd-kit/dom';
+
+KeyboardSensor.configure({
+  keyboardCodes: {
+    start: ['Space', 'Enter'],
+    cancel: ['Escape'],
+    end: ['Space', 'Enter', 'Tab'],
+    up: ['ArrowUp', 'KeyW'],
+    down: ['ArrowDown', 'KeyS'],
+    left: ['ArrowLeft', 'KeyA'],
+    right: ['ArrowRight', 'KeyD'],
+  },
+});
+```
+
+Key codes follow [`KeyboardEvent.code`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code) values.
+
+### Keyboard movement offset
+
+The `offset` option controls how many pixels each arrow key press moves the dragged element. Hold <kbd>Shift</kbd> to multiply the offset by 5.
+
+```tsx
+KeyboardSensor.configure({
+  offset: 20,                  // 20px per key press, 100px with Shift
+  // or per-axis:
+  // offset: {x: 20, y: 10},
+});
+```
+
+### Preventing keyboard activation
+
+By default, the keyboard sensor only activates when the focused element is the draggable's handle (or its element if no handle is set). Override `preventActivation` to customize:
+
+```tsx
+KeyboardSensor.configure({
+  preventActivation: (event, source) => {
+    // Don't activate while a text input inside the draggable has focus
+    return event.target instanceof HTMLInputElement;
+  },
+});
+```
+
+## Per-draggable sensors
+
+Both [`useDraggable`](/react/hooks/use-draggable) and [`useSortable`](/react/hooks/use-sortable) accept a `sensors` option that applies only to that element. Per-draggable sensors override global ones.
+
+```tsx
+import {useDraggable} from '@dnd-kit/react';
+import {PointerSensor, PointerActivationConstraints} from '@dnd-kit/dom';
+
+function StrictDragHandle({id}) {
+  const {ref} = useDraggable({
+    id,
+    sensors: [
+      PointerSensor.configure({
+        activationConstraints: [
+          // This particular draggable requires a longer hold to start
+          new PointerActivationConstraints.Delay({value: 500, tolerance: 5}),
+        ],
+      }),
+    ],
+  });
+
+  return <div ref={ref}>Hold me for half a second</div>;
+}
+```
+
+## Replacing vs. extending defaults
+
+The `sensors` prop on `DragDropProvider` accepts either an array (replaces defaults entirely) or a function that receives the defaults (lets you extend them).
+
+```tsx
+// Extend — keeps KeyboardSensor and adds a configured PointerSensor
+<DragDropProvider
+  sensors={(defaults) => [
+    ...defaults.filter((sensor) => sensor !== PointerSensor),
+    PointerSensor.configure({/* ... */}),
+  ]}
+>
+
+// Replace — only the listed sensors are active
+<DragDropProvider
+  sensors={[PointerSensor, KeyboardSensor]}
+>
+```
+
+<Warning>
+  If you replace the defaults with an array, double-check you're including `KeyboardSensor` — leaving it out removes keyboard accessibility.
+</Warning>
+
+## Migrating from `MouseSensor` and `TouchSensor`
+
+The legacy `@dnd-kit/core` package had separate `MouseSensor` and `TouchSensor` classes. They're consolidated into one `PointerSensor` here. To replicate the old per-input-type behavior, branch on `event.pointerType` inside `activationConstraints` (see [Per-pointer-type behavior](#per-pointer-type-behavior) above), or read the [Migration guide](/react/guides/migration#sensors) for the full mapping.

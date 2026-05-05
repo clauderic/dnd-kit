@@ -128,6 +128,10 @@ The `Draggable` class accepts the following arguments:
   An array of [sensors](/extend/sensors) to detect drag interactions.
 </ParamField>
 
+<ParamField path="alignment" type="{ x: 'start' | 'center' | 'end'; y: 'start' | 'center' | 'end' }">
+  How the draggable's position should be aligned relative to its source element during drag operations. Used by the [Feedback plugin](/extend/plugins/feedback) when computing overlay placement. Defaults are inferred from the element's geometry.
+</ParamField>
+
 <ParamField path="data" type="{[key: string]: any}">
   Optional data to associate with this draggable element, available in event handlers.
 </ParamField>
