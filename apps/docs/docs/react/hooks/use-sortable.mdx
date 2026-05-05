@@ -100,8 +100,16 @@ The `useSortable` hook accepts all of the same arguments as the [useDraggable](/
   If you already have a reference to the element you want to use as the droppable target for this sortable element, you can pass it to the `target` option instead of using the `targetRef` that is returned by the `useSortable` hook.
 </ParamField>
 
-<ParamField path="accepts" type="string | number | Symbol | (type: string | number | Symbol) => boolean">
-  Optionally supply a type of draggable element to only allow it to be dropped over certain droppable targets that [accept](#) this `type`.
+<ParamField path="accept" type="Type | Type[] | ((source: Draggable) => boolean)">
+  Restrict which draggables can be dropped on this sortable item. Pass a single [`type`](#param-type), an array of types, or a predicate that receives the draggable and returns `true` to accept it. If omitted, every draggable is accepted.
+</ParamField>
+
+<ParamField path="type" type="string | number | Symbol">
+  An identifier used by other sortables' or droppables' `accept` rules to decide whether this item can be a drop target for a given draggable.
+</ParamField>
+
+<ParamField path="group" type="string | number | Symbol">
+  An optional identifier for grouping sortable items. Items with the same `group` can be sorted within the same list — useful for [multi-list sortable layouts](/react/guides/multiple-sortable-lists). Items without a `group` are treated as belonging to the same implicit group.
 </ParamField>
 
 <ParamField path="collisionDetector" type="(input: CollisionDetectorInput) => Collision | null">

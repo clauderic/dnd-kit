@@ -1,0 +1,62 @@
+---
+title: 'useDragDropManager'
+sidebarTitle: 'useDragDropManager'
+metaTitle: 'useDragDropManager - React | dnd kit'
+description: 'Read the DragDropManager instance that the surrounding DragDropProvider created.'
+icon: 'gear'
+---
+
+## Overview
+
+`useDragDropManager` returns the [`DragDropManager`](/concepts/drag-drop-manager) instance that the surrounding [`DragDropProvider`](/react/components/drag-drop-provider) created. Use it for advanced cases that need direct access to the manager — registering custom event listeners on `manager.monitor`, looking up registered plugins via `manager.registry`, or imperatively dispatching actions.
+
+For most use cases — rendering UI based on drag state, reordering items in `onDragEnd`, etc. — prefer the higher-level hooks ([`useDragOperation`](/react/hooks/use-drag-operation), [`useDragDropMonitor`](/react/hooks/use-drag-drop-monitor)) or the event handlers on `DragDropProvider` itself.
+
+```tsx
+import {DragDropProvider} from '@dnd-kit/react';
+import {useDragDropManager} from '@dnd-kit/react';
+import {useEffect} from 'react';
+
+function DragLogger() {
+  const manager = useDragDropManager();
+
+  useEffect(() => {
+    if (!manager) return;
+
+    const cleanup = manager.monitor.addEventListener('dragstart', (event) => {
+      console.log('drag started for', event.operation.source.id);
+    });
+
+    return cleanup;
+  }, [manager]);
+
+  return null;
+}
+
+function App() {
+  return (
+    <DragDropProvider>
+      <DragLogger />
+      {/* ... */}
+    </DragDropProvider>
+  );
+}
+```
+
+<Warning>
+  The hook returns `null` when called outside of a `DragDropProvider`. Always guard against `null` before dereferencing the manager.
+</Warning>
+
+## API Reference
+
+### Output
+
+<ResponseField name="manager" type="DragDropManager | null">
+  The [`DragDropManager`](/concepts/drag-drop-manager) instance from the nearest ancestor `DragDropProvider`, or `null` if no provider is present.
+</ResponseField>
+
+## Related
+
+- [`useDragOperation`](/react/hooks/use-drag-operation) — reactive read of `source` and `target`
+- [`useDragDropMonitor`](/react/hooks/use-drag-drop-monitor) — subscribe to lifecycle events
+- [`DragDropManager`](/concepts/drag-drop-manager) — full reference for the manager API

@@ -1,0 +1,61 @@
+---
+title: 'useDragOperation'
+sidebarTitle: 'useDragOperation'
+metaTitle: 'useDragOperation - React | dnd kit'
+description: 'Reactively read the current drag source and target from any descendant of a DragDropProvider.'
+icon: 'eye'
+---
+
+## Overview
+
+`useDragOperation` returns a reactive snapshot of the current drag operation's `source` and `target`. Any component nested inside a [`DragDropProvider`](/react/components/drag-drop-provider) can call this hook to read live drag state and re-render whenever it changes — without subscribing to events manually.
+
+Use it when you need ambient awareness of a drag in progress (for example, to highlight a drop zone, render an overlay, or disable an unrelated UI affordance during a drag).
+
+```tsx
+import {DragDropProvider} from '@dnd-kit/react';
+import {useDragOperation} from '@dnd-kit/react';
+
+function DraggingIndicator() {
+  const {source, target} = useDragOperation();
+
+  if (!source) return null;
+
+  return (
+    <div role="status" aria-live="polite">
+      Dragging <strong>{String(source.id)}</strong>
+      {target ? <> over <strong>{String(target.id)}</strong></> : ' over no target'}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <DragDropProvider>
+      <DraggingIndicator />
+      {/* ...draggables and droppables... */}
+    </DragDropProvider>
+  );
+}
+```
+
+<Note>
+  The hook subscribes to changes via reactive computeds, so the calling component re-renders only when `source` or `target` actually changes — not on every pointer move. If you need pointer-level updates, use [`useDragDropMonitor`](/react/hooks/use-drag-drop-monitor) instead.
+</Note>
+
+## API Reference
+
+### Output
+
+<ResponseField name="source" type="Draggable | undefined">
+  The currently dragged [Draggable](/concepts/draggable) instance, or `undefined` when no drag is in progress.
+</ResponseField>
+
+<ResponseField name="target" type="Droppable | undefined">
+  The [Droppable](/concepts/droppable) instance the source is currently over, or `undefined` if the source is not over any drop target.
+</ResponseField>
+
+## Related
+
+- [`useDragDropMonitor`](/react/hooks/use-drag-drop-monitor) — subscribe to lifecycle events (`dragstart`, `dragmove`, `dragover`, `dragend`)
+- [`useDragDropManager`](/react/hooks/use-drag-drop-manager) — read the underlying manager for advanced use cases

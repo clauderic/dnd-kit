@@ -89,7 +89,9 @@
                   "react/hooks/use-draggable",
                   "react/hooks/use-droppable",
                   "react/hooks/use-sortable",
-                  "react/hooks/use-drag-drop-monitor"
+                  "react/hooks/use-drag-drop-monitor",
+                  "react/hooks/use-drag-operation",
+                  "react/hooks/use-drag-drop-manager"
                 ]
               },
               {
