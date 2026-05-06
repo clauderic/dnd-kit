@@ -1,0 +1,15 @@
+<create-draggable|draggable| id="draggable">
+  <div/$el class="btn">
+    <lifecycle
+      onMount() { draggable.setElement($el()); }
+      onDestroy() { draggable.setElement(undefined); }
+    />
+    Drag me
+    <button/$handle class="handle" aria-label="Drag handle">
+      <lifecycle
+        onMount() { draggable.setHandle($handle()); }
+        onDestroy() { draggable.setHandle(undefined); }
+      />
+    </button>
+  </div>
+</create-draggable>

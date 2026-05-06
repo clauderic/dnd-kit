@@ -1,0 +1,6 @@
+{
+  "attributes": {
+    "disabled": { "type": "expression" },
+    "dropAnimation": { "type": "expression" }
+  }
+}

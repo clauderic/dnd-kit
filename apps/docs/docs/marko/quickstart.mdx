@@ -1,0 +1,155 @@
+---
+title: 'Quickstart'
+metaTitle: 'Marko Quickstart - dnd kit'
+description: 'Start building drag and drop interfaces with Marko v6 in minutes.'
+icon: 'rocket'
+---
+
+import Intro from '/snippets/quickstart/intro.mdx';
+
+<Intro />
+
+## Overview
+
+The `@dnd-kit/marko` package provides a set of Marko v6 tags that you can use to build drag and drop interfaces. It is a thin Marko integration layer built on top of the [vanilla](/) library, so all of the same concepts are shared and can be used. You can refer to the vanilla documentation of these concepts, such as [plugins](/extend/plugins), [modifiers](/extend/modifiers), and [sensors](/extend/sensors).
+
+<Note>`@dnd-kit/marko` requires Marko v6 with `@marko/runtime-tags`.</Note>
+
+## Installation
+
+Before getting started, make sure you install `@dnd-kit/marko` in your project:
+
+<CodeGroup>
+  ```bash npm
+  npm install @dnd-kit/marko
+  ```
+
+```bash yarn
+yarn add @dnd-kit/marko
+```
+
+```bash pnpm
+pnpm add @dnd-kit/marko
+```
+
+```bash bun
+bun add @dnd-kit/marko
+```
+
+</CodeGroup>
+
+Once installed, all `@dnd-kit/marko` tags are automatically available in your Marko templates — no imports needed.
+
+## Making elements draggable
+
+Let's get started by creating draggable elements that can be dropped over droppable targets. To do so, we'll be using the `<create-draggable>` tag.
+
+The `<create-draggable>` tag requires a unique `id`. It provides a body parameter with a `setElement` function that you call in `onMount` to connect the element to the drag system.
+
+```marko
+<create-draggable|draggable| id="draggable">
+  <button/$el>
+    <lifecycle
+      onMount() { draggable.setElement($el()); }
+      onDestroy() { draggable.setElement(undefined); }
+    />
+    Draggable
+  </button>
+</create-draggable>
+```
+
+## Creating droppable elements
+
+In order for our draggable elements to have targets where they can be dropped, we need to create droppable elements. To do so, we'll be using the `<create-droppable>` tag.
+
+Like `<create-draggable>`, the `<create-droppable>` tag requires a unique `id`.
+
+```marko
+<create-droppable|droppable| id="droppable">
+  <div/$el style="width: 300px; height: 300px;">
+    <lifecycle
+      onMount() { droppable.setElement($el()); }
+      onDestroy() { droppable.setElement(undefined); }
+    />
+    Droppable
+  </div>
+</create-droppable>
+```
+
+## Putting all the pieces together
+
+Now that we have both draggable and droppable elements, we can put them together to create a simple drag and drop interaction.
+
+We'll be using the `<drag-drop-provider>` tag to wrap our draggable and droppable elements. This tag handles the drag and drop interactions and allows us to listen to drag and drop events.
+
+```marko App.marko
+<let/parent=undefined as string | undefined>
+
+<drag-drop-provider onDragEnd(event) {
+  if (!event.canceled) {
+    parent = event.operation.target?.id;
+  }
+}>
+  <if=parent == null>
+    <create-draggable|draggable| id="draggable">
+      <button/$el>
+        <lifecycle
+          onMount() { draggable.setElement($el()); }
+          onDestroy() { draggable.setElement(undefined); }
+        />
+        Draggable
+      </button>
+    </create-draggable>
+  </if>
+
+  <create-droppable|droppable| id="droppable">
+    <div/$el style="width: 300px; height: 300px;">
+      <lifecycle
+        onMount() { droppable.setElement($el()); }
+        onDestroy() { droppable.setElement(undefined); }
+      />
+      <if=parent === "droppable">
+        <create-draggable|draggable| id="draggable">
+          <button/$el2>
+            <lifecycle
+              onMount() { draggable.setElement($el2()); }
+              onDestroy() { draggable.setElement(undefined); }
+            />
+            Draggable
+          </button>
+        </create-draggable>
+      </if>
+    </div>
+  </create-droppable>
+</drag-drop-provider>
+```
+
+## Next steps
+
+Now that you have a basic understanding of how to make elements draggable and droppable, you can explore the concepts covered in this quickstart guide in more detail:
+
+<CardGroup>
+  <Card title="DragDropProvider" icon="sitemap" href="/marko/components/drag-drop-provider">
+    Create drag and drop contexts for your draggable and droppable elements.
+  </Card>
+
+<Card
+  title="create-draggable"
+  icon="bullseye-pointer"
+  href="/marko/tags/create-draggable"
+>
+  Learn how to make elements draggable with the `create-draggable` tag.
+</Card>
+
+<Card
+  title="create-droppable"
+  icon="expand"
+  href="/marko/tags/create-droppable"
+>
+  Learn how to create droppable targets with the `create-droppable` tag.
+</Card>
+
+  <Card title="create-sortable" icon="layer-group" href="/marko/tags/create-sortable">
+    Learn how to create sortable elements with the `create-sortable` tag.
+  </Card>
+</CardGroup>

@@ -92,6 +92,15 @@ Build drag and drop interfaces using SolidJS hooks and components
 </td>
 
 <td width="50%" valign="top">
+<br>
+<img src="apps/docs/public/images/logomark.svg" height="22" alt="Marko" />
+<br>
+
+<strong><a href="https://dndkit.com/marko/quickstart">Marko</a></strong>
+
+Build drag and drop interfaces using Marko v6 tags and components
+<br><br>
+
 </td>
 </tr>
 </table>
@@ -109,6 +118,7 @@ Visit **[dndkit.com](https://dndkit.com)** for full documentation, API reference
 | [`@dnd-kit/dom`](packages/dom)             | [![npm](https://img.shields.io/npm/v/@dnd-kit/dom.svg)](https://npm.im/@dnd-kit/dom)             | Framework-agnostic DOM layer |
 | [`@dnd-kit/geometry`](packages/geometry)   | [![npm](https://img.shields.io/npm/v/@dnd-kit/geometry.svg)](https://npm.im/@dnd-kit/geometry)   | Geometry utilities           |
 | [`@dnd-kit/helpers`](packages/helpers)     | [![npm](https://img.shields.io/npm/v/@dnd-kit/helpers.svg)](https://npm.im/@dnd-kit/helpers)     | Helper functions             |
+| [`@dnd-kit/marko`](packages/marko)         | [![npm](https://img.shields.io/npm/v/@dnd-kit/marko.svg)](https://npm.im/@dnd-kit/marko)         | Marko v6 adapter             |
 | [`@dnd-kit/react`](packages/react)         | [![npm](https://img.shields.io/npm/v/@dnd-kit/react.svg)](https://npm.im/@dnd-kit/react)         | React adapter                |
 | [`@dnd-kit/solid`](packages/solid)         | [![npm](https://img.shields.io/npm/v/@dnd-kit/solid.svg)](https://npm.im/@dnd-kit/solid)         | SolidJS adapter              |
 | [`@dnd-kit/state`](packages/state)         | [![npm](https://img.shields.io/npm/v/@dnd-kit/state.svg)](https://npm.im/@dnd-kit/state)         | Reactive state management    |

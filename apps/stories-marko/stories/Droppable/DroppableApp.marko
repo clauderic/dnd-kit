@@ -1,0 +1,25 @@
+import DraggableItem from "./DraggableItem.marko";
+import DroppableZone from "./DroppableZone.marko";
+
+<let/parent=(undefined as string | undefined)>
+
+<drag-drop-provider onDragEnd(event) {
+  if (!event.canceled && event.operation.target) {
+    parent = String(event.operation.target.id);
+  }
+}>
+  <div class="container">
+    <if=parent == null>
+      <DraggableItem id="item-1" label="Drag me"/>
+    </if>
+    <DroppableZone id="zone-1">
+      <if=parent != null>
+        <DraggableItem id="item-1" label="Drag me"/>
+      </if>
+      <else>
+        Drop here
+      </else>
+    </DroppableZone>
+  </div>
+  <p>Last dropped: ${parent ? 'item-1' : 'nothing yet'}</p>
+</drag-drop-provider>

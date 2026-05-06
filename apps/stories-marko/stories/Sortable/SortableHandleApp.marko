@@ -1,0 +1,23 @@
+import {move} from '@dnd-kit/helpers';
+import SortableItemWithHandle from './SortableItemWithHandle.marko';
+
+<let/items=Array.from({length: 10}, (_, i) => i + 1)>
+<let/snapshot=[] as number[]>
+
+<drag-drop-provider
+  onDragStart() {
+    snapshot = items.slice();
+  }
+  onDragOver(event) {
+    items = move(items, event);
+  }
+  onDragEnd(event) {
+    if (event.canceled) items = snapshot;
+  }
+>
+  <ul class="list">
+    <for|id, index| of=items by=(id) => id>
+      <SortableItemWithHandle id=id index=index/>
+    </for>
+  </ul>
+</drag-drop-provider>
