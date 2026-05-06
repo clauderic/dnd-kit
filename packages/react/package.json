@@ -11,17 +11,25 @@
     "LICENSE",
     "README.md",
     "index.js",
+    "index.js.map",
     "index.d.ts",
     "index.cjs",
+    "index.cjs.map",
     "hooks.js",
+    "hooks.js.map",
     "hooks.d.ts",
     "hooks.cjs",
+    "hooks.cjs.map",
     "sortable.js",
+    "sortable.js.map",
     "sortable.d.ts",
     "sortable.cjs",
+    "sortable.cjs.map",
     "utilities.js",
+    "utilities.js.map",
     "utilities.d.ts",
-    "utilities.cjs"
+    "utilities.cjs",
+    "utilities.cjs.map"
   ],
   "exports": {
     ".": {
