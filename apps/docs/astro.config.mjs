@@ -24,6 +24,11 @@ export default defineConfig({
       },
     }),
   ],
+  redirects: {
+    // Preserve legacy group/index links that predate the generated DndContext page.
+    '/legacy/api-documentation/context-provider':
+      '/legacy/api-documentation/context-provider/dnd-context',
+  },
   markdown: {
     shikiConfig: {
       theme: 'monokai',
