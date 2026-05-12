@@ -45,7 +45,7 @@ Check out our [Accessibility guide](../guides/accessibility) to learn more about
 
 ### Identifier
 
-The `id` argument is a string that should be a unique identifier, meaning there should be no other **draggable** elements that share that same identifier within a given [`DndContext`](./context-provider/) provider.
+The `id` argument is a string that should be a unique identifier, meaning there should be no other **draggable** elements that share that same identifier within a given [`DndContext`](/legacy/api-documentation/context-provider/dnd-context) provider.
 
 ### Listeners
 
@@ -144,7 +144,7 @@ For example, if the HTML element you are attaching the `useDraggable` `listeners
 | `role`                 | `"button"`                | <p>If possible, we recommend you use a semantic <code>&#x3C;button></code> element for the DOM element you plan on attaching draggable listeners to. </p><p></p><p>In case that's not possible, make sure you include the <code>role="button"</code>attribute, which is the default value.</p>      |
 | `tabIndex`             | `"0"`                     | In order for your draggable elements to receive keyboard focus, they **need** to have the `tabindex` attribute set to `0` if they are not natively interactive elements (such as the HTML `button` element). For this reason, the `useDraggable` hook sets the `tabindex="0"` attribute by default. |
 | `aria-roledescription` | `"draggable"`             | While `draggable` is a sensible default, we recommend you customize this value to something that is tailored to the use case you are building.                                                                                                                                                      |
-| `aria-describedby`     | `"DndContext-[uniqueId]"` | Each draggable item is provided a unique `aria-describedby` ID that points to the [screen reader instructions](./context-provider/#screen-reader-instructions) to be read out when a draggable item receives focus.                                                                                |
+| `aria-describedby`     | `"DndContext-[uniqueId]"` | Each draggable item is provided a unique `aria-describedby` ID that points to the [screen reader instructions](/legacy/api-documentation/context-provider/dnd-context#screen-reader-instructions) to be read out when a draggable item receives focus.                                                                                |
 
 To learn more about the best practices for making draggable interfaces accessible, read the full accessibility guide:
 

@@ -4,7 +4,7 @@ metaTitle: 'Keyboard Sensor - Legacy | dnd kit'
 icon: 'keyboard'
 ---
 
-The Keyboard sensor responds to [Keyboard events](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent). It is one of the default sensors used by the [DndContext](../context-provider/) provider if none are defined.
+The Keyboard sensor responds to [Keyboard events](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent). It is one of the default sensors used by the [DndContext](/legacy/api-documentation/context-provider/dnd-context) provider if none are defined.
 
 <Warning>
 In order for the Keyboard sensor to function properly, the activator element that receives the `useDraggable` [listeners](../draggable/use-draggable.md#listeners) **must** be able to receive focus. To learn more, read the in-depth [Accessibility guide](../../guides/accessibility).
@@ -44,7 +44,7 @@ const defaultKeyboardCodes = {
 
 You can customize these values, but keep in mind that the [third rule of ARIA ](https://www.w3.org/TR/using-aria/#3rdrule)requires that a user **must** be able to activate the action associated with a draggable widget using **both** the `enter` \(on Windows\) or `return` \(on macOS\) and the `space` key. To learn more, read the in-depth [accessibility guide](../../guides/accessibility).
 
-Keep in mind that you should also customize the screen reader instructions using the `screenReaderInstructions` prop of [`<DndContext>`](../context-provider/) if you update these values, as the screen reader instructions assume that the Keyboard sensor is initialized with the default keyboard shortcuts.
+Keep in mind that you should also customize the screen reader instructions using the `screenReaderInstructions` prop of [`<DndContext>`](/legacy/api-documentation/context-provider/dnd-context) if you update these values, as the screen reader instructions assume that the Keyboard sensor is initialized with the default keyboard shortcuts.
 
 The `move` keyboard codes are not a customizable option, because those are handled by the [coordinate getter function](./keyboard#coordinates-getter). To customize them, write a custom coordinate getter function.
 
