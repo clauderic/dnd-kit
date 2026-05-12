@@ -3,15 +3,15 @@ title: useSortable
 metaTitle: 'useSortable - Legacy | dnd kit'
 ---
 
-The `useSortable` hook is an abstraction that composes the [`useDroppable`](../../api-documentation/droppable) and [`useDraggable`](../../api-documentation/draggable) hooks.
+The `useSortable` hook is an abstraction that composes the [`useDroppable`](/legacy/api-documentation/droppable) and [`useDraggable`](/legacy/api-documentation/draggable) hooks.
 
 <Info>
-To function properly, the `useSortable` hook needs to be used within a descendant of a [`SortableContext`](./sortable-context) provider higher up in the tree.
+To function properly, the `useSortable` hook needs to be used within a descendant of a [`SortableContext`](/legacy/presets/sortable/sortable-context) provider higher up in the tree.
 </Info>
 
 ## Usage
 
-If you're already familiar with the [`useDraggable`](../../api-documentation/draggable) hook, the `useSortable` hook should look very familiar, since, it is an abstraction on top of it.
+If you're already familiar with the [`useDraggable`](/legacy/api-documentation/draggable) hook, the `useSortable` hook should look very familiar, since, it is an abstraction on top of it.
 
 In addition to the `attributes`, `listeners`,`transform` and `setNodeRef` arguments, which you should already be familiar with if you've used the `useDraggable` hook before, you'll notice that the `useSortable` hook also provides a [`transition`](#transform) argument.
 
@@ -41,23 +41,23 @@ function SortableItem(props) {
 
 ### Listeners
 
-The `listeners` property contains the [activator event handlers](../../api-documentation/sensors/#activators) for each [Sensor](../../api-documentation/sensors/) that is defined on the parent [`DndContext`](../../api-documentation/context-provider/#props) provider.
+The `listeners` property contains the [activator event handlers](/legacy/api-documentation/sensors#activators) for each [Sensor](/legacy/api-documentation/sensors) that is defined on the parent [`DndContext`](/legacy/api-documentation/context-provider/dnd-context#props) provider.
 
 It should be attached to the node(s) that you wish to use as the activator to begin a sort event. In most cases, that will be the same node as the one passed to `setNodeRef`, though not necessarily. For instance, when implementing a sortable element with a "drag handle", the ref should be attached to the parent node that should be sortable, but the listeners can be attached to the handle node instead.
 
-For additional details on the [`listeners`](../../api-documentation/draggable/#listeners) property, refer to the [`useDraggable`](../../api-documentation/draggable) documentation.
+For additional details on the [`listeners`](/legacy/api-documentation/draggable#listeners) property, refer to the [`useDraggable`](/legacy/api-documentation/draggable) documentation.
 
 ### Attributes
 
 The `useSortable` hook provides a set of sensible default attributes for draggable items. We recommend you attach these to your draggable elements, though nothing will break if you don't.
 
-For additional details on the [`attributes`](../../api-documentation/draggable/#attributes) property, refer to the [`useDraggable`](../../api-documentation/draggable) documentation.
+For additional details on the [`attributes`](/legacy/api-documentation/draggable#attributes) property, refer to the [`useDraggable`](/legacy/api-documentation/draggable) documentation.
 
 ### Transform
 
 The `transform` property represents the displacement and change of scale transformation that a sortable item needs to apply to transition to its new position without needing to update the DOM order.
 
-The `transform` property for the `useSortable` hook behaves similarly to the [`transform`](../../api-documentation/draggable/#transforms) property of the [`useDraggable`](../../api-documentation/draggable) hook for the active sortable item, when there is no [`DragOverlay`](../../api-documentation/draggable/drag-overlay) being used.
+The `transform` property for the `useSortable` hook behaves similarly to the [`transform`](/legacy/api-documentation/draggable#transforms) property of the [`useDraggable`](/legacy/api-documentation/draggable) hook for the active sortable item, when there is no [`DragOverlay`](/legacy/api-documentation/draggable/drag-overlay) being used.
 
 ### Node ref
 
@@ -92,7 +92,7 @@ function SortableItem(props) {
 }
 ```
 
-Since the `useSortable` hook is simply an abstraction on top of the [`useDraggable`](../../api-documentation/draggable/use-draggable) and [`useDroppable`](../../api-documentation/droppable/use-droppable) hooks, in some advanced use cases, you may also use the `setDroppableNodeRef` and `setDraggableNodeRef` properties to connect them to different nodes. For example, if you want the draggable element to have a different dimension than the droppable element that will be sortable:
+Since the `useSortable` hook is simply an abstraction on top of the [`useDraggable`](/legacy/api-documentation/draggable/use-draggable) and [`useDroppable`](/legacy/api-documentation/droppable/use-droppable) hooks, in some advanced use cases, you may also use the `setDroppableNodeRef` and `setDraggableNodeRef` properties to connect them to different nodes. For example, if you want the draggable element to have a different dimension than the droppable element that will be sortable:
 
 ```jsx
 function SortableItem(props) {
@@ -171,7 +171,7 @@ The `id` argument is a `string` or `number` that should be unique.
 
 Since the `useSortable` is an abstraction on top of the `useDroppable` and `useDraggable` hooks, which both require a unique identifier, the `useSortable` hook also requires a unique identifier.
 
-The argument passed to the `id` argument of `useSortable` should match the `id` passed in the `items` array of the parent [`SortableContext`](./sortable-context) provider.
+The argument passed to the `id` argument of `useSortable` should match the `id` passed in the `items` array of the parent [`SortableContext`](/legacy/presets/sortable/sortable-context) provider.
 
 ### Disabled
 
@@ -181,7 +181,7 @@ If you'd like to temporarily disable a sortable item from being interactive, set
 
 The transition argument controls the value of the `transition` property for you. It conveniently disables transform transitions while not dragging, but ensures that items transition back to their final positions when the drag operation is ended or cancelled.
 
-It also disables transitions for the active sortable element that is being dragged, unless there is a [`DragOverlay`](../../api-documentation/draggable/drag-overlay) being used.
+It also disables transitions for the active sortable element that is being dragged, unless there is a [`DragOverlay`](/legacy/api-documentation/draggable/drag-overlay) being used.
 
 The default transition is `250` milliseconds, with an easing function set to `ease`, but you can customize this and pass any valid [CSS transition timing function](https://developer.mozilla.org/en-US/docs/Web/CSS/transition-timing-function).
 
@@ -245,4 +245,4 @@ If you prefer to manage transitions yourself, you may also choose to do so, but 
 
 ### Sorting strategy
 
-Optionally, you can pass a local sorting strategy that differs from the [global sorting strategy](./sortable-context#strategy) passed to the parent `SortableContext` provider.
+Optionally, you can pass a local sorting strategy that differs from the [global sorting strategy](/legacy/presets/sortable/sortable-context#strategy) passed to the parent `SortableContext` provider.
