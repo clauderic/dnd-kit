@@ -4,7 +4,6 @@ import {
   computed,
   defineComponent,
   h,
-  onUnmounted,
   ref,
   watchEffect,
   type PropType,
@@ -64,7 +63,7 @@ export default /* #__PURE__ */ defineComponent({
     const source = computed(() => trackedDragOperation.value.source ?? null);
 
     // Register overlay element and dropAnimation with the Feedback plugin
-    watchEffect(() => {
+    watchEffect((onCleanup) => {
       const el = overlayRef.value;
       const mgr = manager.value;
 
@@ -79,7 +78,7 @@ export default /* #__PURE__ */ defineComponent({
       feedback.overlay = el;
       feedback.dropAnimation = props.dropAnimation;
 
-      onUnmounted(() => {
+      onCleanup(() => {
         feedback.overlay = undefined;
         feedback.dropAnimation = undefined;
       });
