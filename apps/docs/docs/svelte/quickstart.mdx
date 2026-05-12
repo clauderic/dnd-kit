@@ -45,7 +45,7 @@ Let's get started by creating draggable elements that can be dropped over droppa
 
 The `createDraggable` primitive requires a unique `id`. It returns an object with an `attach` function that you can use with the `{@attach}` directive to connect an element to the drag system.
 
-```svelte
+```svelte Draggable.svelte
 <script>
   import {createDraggable} from '@dnd-kit/svelte';
 
@@ -61,17 +61,19 @@ The `createDraggable` primitive requires a unique `id`. It returns an object wit
 
 In order for our draggable elements to have targets where they can be dropped, we need to create droppable elements. To do so, we'll be using the `createDroppable` primitive.
 
-Like `createDraggable`, the `createDroppable` primitive requires a unique `id`.
+Like `createDraggable`, the `createDroppable` primitive requires a unique `id`. This time, we'll accept the `id` as a prop so we can reuse the component for multiple droppable targets.
 
-```svelte
+```svelte Droppable.svelte
 <script>
   import {createDroppable} from '@dnd-kit/svelte';
 
-  const droppable = createDroppable({id: 'droppable'});
+  let {id, children} = $props();
+
+  const droppable = createDroppable({id});
 </script>
 
 <div {@attach droppable.attach} style="width: 300px; height: 300px;">
-  Droppable
+  {@render children?.()}
 </div>
 ```
 
@@ -81,14 +83,17 @@ Now that we have both draggable and droppable elements, we can put them together
 
 We'll be using the `DragDropProvider` component to wrap our draggable and droppable elements. This component handles the drag and drop interactions and allows us to listen to drag and drop events.
 
+<Note>
+  `createDraggable` and `createDroppable` rely on the context provided by `DragDropProvider`. They must be called from a component that is rendered **inside** a `DragDropProvider`, not from the same component that renders the provider — otherwise the context will not be available and an error will be thrown.
+</Note>
+
 ```svelte App.svelte
 <script>
-  import {DragDropProvider, createDraggable, createDroppable} from '@dnd-kit/svelte';
+  import {DragDropProvider} from '@dnd-kit/svelte';
+  import Draggable from './Draggable.svelte';
+  import Droppable from './Droppable.svelte';
 
   let parent = $state(undefined);
-
-  const draggable = createDraggable({id: 'draggable'});
-  const droppable = createDroppable({id: 'droppable'});
 
   function onDragEnd(event) {
     if (event.canceled) return;
@@ -98,14 +103,14 @@ We'll be using the `DragDropProvider` component to wrap our draggable and droppa
 
 <DragDropProvider {onDragEnd}>
   {#if parent == null}
-    <button {@attach draggable.attach}>Draggable</button>
+    <Draggable />
   {/if}
 
-  <div {@attach droppable.attach} style="width: 300px; height: 300px;">
+  <Droppable id="droppable">
     {#if parent === 'droppable'}
-      <button {@attach draggable.attach}>Draggable</button>
+      <Draggable />
     {/if}
-  </div>
+  </Droppable>
 </DragDropProvider>
 ```
 
