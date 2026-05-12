@@ -34,7 +34,8 @@ jobs:
           # https://github.com/atlassian/changesets/issues/550#issuecomment-811245508
           registry-url: 'https://registry.npmjs.org'
 
-      - run: npm install -g npm@10
+      # npm 11.5.1+ is required for OIDC trusted publishing to npm.
+      - run: npm install -g npm@11
 
       - uses: oven-sh/setup-bun@f4d14e03ff726c06358e5557344e1da148b56cf7 # v1
       - run: bun install && bun run build
