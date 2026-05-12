@@ -8,12 +8,12 @@ description: >-
 
 
 <Info>
-Before getting started, make sure you have followed the installation steps outlined in the [Installation guide](./installation).
+Before getting started, make sure you have followed the installation steps outlined in the [Installation guide](/legacy/introduction/installation).
 </Info>
 
 ### Context provider
 
-First, we'll set up the general structure of the app. In order for the [`useDraggable`](../api-documentation/draggable/use-draggable) and [`useDroppable`](../api-documentation/droppable/use-droppable) hooks to function correctly, you'll need to ensure that the components where they are used are wrapped within a [`<DndContext />`](../api-documentation/context-provider/dnd-context) component:
+First, we'll set up the general structure of the app. In order for the [`useDraggable`](/legacy/api-documentation/draggable/use-draggable) and [`useDroppable`](/legacy/api-documentation/droppable/use-droppable) hooks to function correctly, you'll need to ensure that the components where they are used are wrapped within a [`<DndContext />`](/legacy/api-documentation/context-provider/dnd-context) component:
 
 ```jsx App.jsx
 import React from 'react';
@@ -103,7 +103,7 @@ As you can see from the example above, it really only takes just a few lines to 
 
 - For performance reasons, we recommend you use **`transform`** over other positional CSS properties to move the dragged element.
 - You'll likely want to alter the **`z-index`** of your Draggable component to ensure it appears on top of other elements.
-- If your item needs to move from one container to another, we recommend you use the [`<DragOverlay>`](../api-documentation/draggable/drag-overlay) component.
+- If your item needs to move from one container to another, we recommend you use the [`<DragOverlay>`](/legacy/api-documentation/draggable/drag-overlay) component.
 </Success>
 
 Converting the `transform` object to a string can feel tedious. Fear not, you can avoid having to do this by hand by importing the `CSS` utility from the `@dnd-kit/utilities` package:
@@ -198,7 +198,7 @@ export function Draggable(props) {
 
 </CodeGroup>
 
-That's it! You've set up your first [**Droppable**](../api-documentation/droppable) \***\* and [**Draggable\*\*](../api-documentation/draggable) components.
+That's it! You've set up your first [**Droppable**](/legacy/api-documentation/droppable) \***\* and [**Draggable\*\*](/legacy/api-documentation/draggable) components.
 
 ### Pushing things a bit further
 

@@ -28,6 +28,22 @@ export default defineConfig({
     // Preserve legacy group/index links that predate the generated DndContext page.
     '/legacy/api-documentation/context-provider':
       '/legacy/api-documentation/context-provider/dnd-context',
+    // Keep stale production links working after legacy introduction pages are fixed.
+    '/legacy/introduction/api-documentation/context-provider/dnd-context':
+      '/legacy/api-documentation/context-provider/dnd-context',
+    '/legacy/introduction/api-documentation/draggable':
+      '/legacy/api-documentation/draggable',
+    '/legacy/introduction/api-documentation/draggable/drag-overlay':
+      '/legacy/api-documentation/draggable/drag-overlay',
+    '/legacy/introduction/api-documentation/draggable/use-draggable':
+      '/legacy/api-documentation/draggable/use-draggable',
+    '/legacy/introduction/api-documentation/droppable':
+      '/legacy/api-documentation/droppable',
+    '/legacy/introduction/api-documentation/droppable/use-droppable':
+      '/legacy/api-documentation/droppable/use-droppable',
+    '/legacy/introduction/guides/accessibility': '/legacy/guides/accessibility',
+    '/legacy/introduction/presets/sortable':
+      '/legacy/presets/sortable/overview',
   },
   markdown: {
     shikiConfig: {

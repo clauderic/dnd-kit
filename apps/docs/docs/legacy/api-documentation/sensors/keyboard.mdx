@@ -7,7 +7,7 @@ icon: 'keyboard'
 The Keyboard sensor responds to [Keyboard events](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent). It is one of the default sensors used by the [DndContext](/legacy/api-documentation/context-provider/dnd-context) provider if none are defined.
 
 <Warning>
-In order for the Keyboard sensor to function properly, the activator element that receives the `useDraggable` [listeners](../draggable/use-draggable.md#listeners) **must** be able to receive focus. To learn more, read the in-depth [Accessibility guide](../../guides/accessibility).
+In order for the Keyboard sensor to function properly, the activator element that receives the `useDraggable` [listeners](/legacy/api-documentation/draggable/use-draggable#listeners) **must** be able to receive focus. To learn more, read the in-depth [Accessibility guide](/legacy/guides/accessibility).
 </Warning>
 
 ### Activator
@@ -42,11 +42,11 @@ const defaultKeyboardCodes = {
 };
 ```
 
-You can customize these values, but keep in mind that the [third rule of ARIA ](https://www.w3.org/TR/using-aria/#3rdrule)requires that a user **must** be able to activate the action associated with a draggable widget using **both** the `enter` \(on Windows\) or `return` \(on macOS\) and the `space` key. To learn more, read the in-depth [accessibility guide](../../guides/accessibility).
+You can customize these values, but keep in mind that the [third rule of ARIA ](https://www.w3.org/TR/using-aria/#3rdrule)requires that a user **must** be able to activate the action associated with a draggable widget using **both** the `enter` \(on Windows\) or `return` \(on macOS\) and the `space` key. To learn more, read the in-depth [accessibility guide](/legacy/guides/accessibility).
 
 Keep in mind that you should also customize the screen reader instructions using the `screenReaderInstructions` prop of [`<DndContext>`](/legacy/api-documentation/context-provider/dnd-context) if you update these values, as the screen reader instructions assume that the Keyboard sensor is initialized with the default keyboard shortcuts.
 
-The `move` keyboard codes are not a customizable option, because those are handled by the [coordinate getter function](./keyboard#coordinates-getter). To customize them, write a custom coordinate getter function.
+The `move` keyboard codes are not a customizable option, because those are handled by the [coordinate getter function](/legacy/api-documentation/sensors/keyboard#coordinates-getter). To customize them, write a custom coordinate getter function.
 
 #### Coordinates getter
 
@@ -88,7 +88,7 @@ function customCoordinatesGetter(event, args) {
 }
 ```
 
-While the example above is fairly simple, you can build complex coordinate getters to support advanced use cases. The [Sortable](../../presets/sortable/) preset uses the `getNextCoordinates` option to build on top of the Keyboard sensor and move the active sortable item to its new index depending on the arrow key that is pressed.
+While the example above is fairly simple, you can build complex coordinate getters to support advanced use cases. The [Sortable](/legacy/presets/sortable/overview) preset uses the `getNextCoordinates` option to build on top of the Keyboard sensor and move the active sortable item to its new index depending on the arrow key that is pressed.
 
 #### Scroll behavior
 
