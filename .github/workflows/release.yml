@@ -5,15 +5,17 @@ on:
       - main
 
 permissions:
-  id-token: write # Required for OIDC
-  contents: write # Required for changesets/action@v1
-  pull-requests: write # Required for changesets/action@v1
+  contents: read
 
 jobs:
   release:
     name: ${{ matrix.channel }}
     runs-on: ubuntu-latest
     environment: production
+    permissions:
+      id-token: write # Required for OIDC
+      contents: write # Required for changesets/action@v1
+      pull-requests: write # Required for changesets/action@v1
     strategy:
       max-parallel: 1
       matrix:
@@ -21,25 +23,25 @@ jobs:
           - current
           - beta
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           fetch-depth: 0
 
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '20'
           # https://github.com/atlassian/changesets/issues/550#issuecomment-811245508
           registry-url: 'https://registry.npmjs.org'
 
-      - run: npm install -g npm@latest
+      - run: npm install -g npm@10
 
-      - uses: oven-sh/setup-bun@v1
+      - uses: oven-sh/setup-bun@f4d14e03ff726c06358e5557344e1da148b56cf7 # v1
       - run: bun install && bun run build
 
       - name: Create Release Pull Request or Publish to npm
         if: matrix.channel == 'current'
-        uses: changesets/action@v1
+        uses: changesets/action@d94a5c301145045a0960133674e003b265942a22 # v1.8.0
         with:
           publish: npm run release
         env:
