@@ -780,3 +780,72 @@ describe('move – edge cases', () => {
     expect(move(items, event)).toEqual(['a', 'c', 'd', 'b']);
   });
 });
+
+// ===========================================================================
+// move / swap – null items (regression: TypeError from `'id' in null`)
+// ===========================================================================
+
+describe('move / swap – null items in array', () => {
+  // `typeof null === 'object'` in JS, so without an explicit null guard the
+  // `'id' in item` check throws `TypeError: Cannot use 'in' operator to
+  // search for 'id' in null`. These tests lock in that null entries are
+  // silently skipped during the ID lookup.
+
+  it('move should not throw when flat array contains null entries', () => {
+    const items: any[] = [null, 'a', 'b'];
+    const event = dragOverEvent(mockSource('a'), mockTarget('b'));
+    expect(() => move(items, event)).not.toThrow();
+  });
+
+  it('move should correctly reorder a flat array containing null entries', () => {
+    const items: any[] = [null, 'a', 'b'];
+    const event = dragOverEvent(mockSource('a'), mockTarget('b'));
+    expect(move(items, event)).toEqual([null, 'b', 'a']);
+  });
+
+  it('move should treat a null source/target id as not found (no throw)', () => {
+    const items: any[] = [null, 'a', 'b'];
+    const event = dragOverEvent(mockSource('z'), mockTarget('a'));
+    const result = move(items, event);
+    expect(result).toBe(items);
+  });
+
+  it('swap should not throw when flat array contains null entries', () => {
+    const items: any[] = [null, 'a', 'b'];
+    const event = dragOverEvent(mockSource('a'), mockTarget('b'));
+    expect(() => swap(items, event)).not.toThrow();
+  });
+
+  it('swap should correctly swap items in a flat array containing null entries', () => {
+    const items: any[] = [null, 'a', 'b'];
+    const event = dragOverEvent(mockSource('a'), mockTarget('b'));
+    expect(swap(items, event)).toEqual([null, 'b', 'a']);
+  });
+
+  it('move should not throw when an {id} object array contains null entries', () => {
+    const items: any[] = [{id: 'a'}, null, {id: 'b'}];
+    const event = dragOverEvent(mockSource('a'), mockTarget('b'));
+    expect(() => move(items, event)).not.toThrow();
+    expect(move(items, event)).toEqual([null, {id: 'b'}, {id: 'a'}]);
+  });
+
+  it('move should not throw when a grouped record contains null entries', () => {
+    const items: Record<string, any[]> = {
+      A: [null, 'a1', 'a2'],
+      B: ['b1', null],
+    };
+    const source = mockSource('a1');
+    source.manager = {
+      dragOperation: {
+        position: {current: {x: 0, y: 0}},
+        shape: null,
+      },
+    };
+    const event = dragOverEvent(source, mockTarget('a2'));
+    expect(() => move(items, event)).not.toThrow();
+    expect(move(items, event)).toEqual({
+      A: [null, 'a2', 'a1'],
+      B: ['b1', null],
+    });
+  });
+});
