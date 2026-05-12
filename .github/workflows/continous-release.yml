@@ -4,19 +4,21 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Continuous release
     runs-on: ubuntu-latest
-    environment: production
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           # https://github.com/atlassian/changesets/issues/550#issuecomment-811245508
