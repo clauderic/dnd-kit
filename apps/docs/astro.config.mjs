@@ -9,6 +9,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   site: 'https://dndkit.com',
+  trailingSlash: 'ignore',
   integrations: [
     mintlify({ docsDir: './docs' }),
     react(),
@@ -26,11 +27,22 @@ export default defineConfig({
   ],
   redirects: {
     // Preserve legacy group/index links that predate the generated DndContext page.
+    // Remove this once a context-provider index page exists.
     '/legacy/api-documentation/context-provider':
       '/legacy/api-documentation/context-provider/dnd-context',
     // Keep stale production links working after legacy introduction pages are fixed.
+    // The legacy MDX previously used relative links like `../api-documentation/...`,
+    // which Mintlify resolved against `/legacy/introduction/...`, producing the URLs below.
+    '/legacy/introduction/api-documentation/context-provider':
+      '/legacy/api-documentation/context-provider/dnd-context',
     '/legacy/introduction/api-documentation/context-provider/dnd-context':
       '/legacy/api-documentation/context-provider/dnd-context',
+    '/legacy/introduction/api-documentation/context-provider/collision-detection-algorithms':
+      '/legacy/api-documentation/context-provider/collision-detection-algorithms',
+    '/legacy/introduction/api-documentation/context-provider/use-dnd-context':
+      '/legacy/api-documentation/context-provider/use-dnd-context',
+    '/legacy/introduction/api-documentation/context-provider/use-dnd-monitor':
+      '/legacy/api-documentation/context-provider/use-dnd-monitor',
     '/legacy/introduction/api-documentation/draggable':
       '/legacy/api-documentation/draggable',
     '/legacy/introduction/api-documentation/draggable/drag-overlay':
@@ -41,9 +53,25 @@ export default defineConfig({
       '/legacy/api-documentation/droppable',
     '/legacy/introduction/api-documentation/droppable/use-droppable':
       '/legacy/api-documentation/droppable/use-droppable',
+    '/legacy/introduction/api-documentation/modifiers':
+      '/legacy/api-documentation/modifiers',
+    '/legacy/introduction/api-documentation/sensors':
+      '/legacy/api-documentation/sensors',
+    '/legacy/introduction/api-documentation/sensors/keyboard':
+      '/legacy/api-documentation/sensors/keyboard',
+    '/legacy/introduction/api-documentation/sensors/mouse':
+      '/legacy/api-documentation/sensors/mouse',
+    '/legacy/introduction/api-documentation/sensors/pointer':
+      '/legacy/api-documentation/sensors/pointer',
+    '/legacy/introduction/api-documentation/sensors/touch':
+      '/legacy/api-documentation/sensors/touch',
     '/legacy/introduction/guides/accessibility': '/legacy/guides/accessibility',
     '/legacy/introduction/presets/sortable':
       '/legacy/presets/sortable/overview',
+    '/legacy/introduction/presets/sortable/sortable-context':
+      '/legacy/presets/sortable/sortable-context',
+    '/legacy/introduction/presets/sortable/use-sortable':
+      '/legacy/presets/sortable/use-sortable',
   },
   markdown: {
     shikiConfig: {
