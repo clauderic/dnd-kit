@@ -1,15 +1,17 @@
-import {Plugin, type UniqueIdentifier} from '@dnd-kit/abstract';
+import {Plugin} from '@dnd-kit/abstract';
 import type {DragDropManager} from '@dnd-kit/dom';
 import {move} from '@dnd-kit/helpers';
 import {batch} from '@dnd-kit/state';
 
 import {Sortable, SortableDroppable} from '../sortable.ts';
 import {isSortable} from '../utilities.ts';
+import {
+  getSortableIndices,
+  hasChanged,
+  type SortableInstances,
+} from './OptimisticSortingPlugin.helpers.ts';
 
 const defaultGroup = '__default__';
-
-type SortableInstances = Map<UniqueIdentifier | undefined, Set<Sortable>>;
-type SortableIndices = Map<UniqueIdentifier, number>;
 
 export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager) {
@@ -35,40 +37,6 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
       }
 
       return sortableInstances;
-    };
-
-    const getSortableIndices = (instances: SortableInstances) => {
-      const sortableIndices: SortableIndices = new Map();
-
-      for (const [, group] of instances) {
-        for (const sortable of group) {
-          sortableIndices.set(sortable.id, sortable.index);
-        }
-      }
-
-      return sortableIndices;
-    };
-
-    const hasChanged = (
-      expectedIndices: SortableIndices,
-      instances: SortableInstances,
-      newInstances: SortableInstances
-    ) => {
-      for (const [group, sortables] of instances) {
-        for (const sortable of sortables) {
-          const index = expectedIndices.get(sortable.id);
-
-          if (
-            sortable.index !== index ||
-            sortable.group !== group ||
-            !newInstances.get(group)?.has(sortable)
-          ) {
-            return true;
-          }
-        }
-      }
-
-      return false;
     };
 
     const unsubscribe = [
@@ -206,8 +174,8 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
               sortByInitialIndex
             );
             const sourceElement = source.sortable.element;
-            const initialIndex = initialSortables.indexOf(source.sortable);
-            const target = currentSortables[initialIndex];
+            const initialPosition = initialSortables.indexOf(source.sortable);
+            const target = currentSortables[initialPosition];
             const targetElement = target?.element;
 
             if (!target || !targetElement || !sourceElement) {
