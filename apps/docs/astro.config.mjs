@@ -35,13 +35,34 @@ export default defineConfig({
     },
     plugins: [tailwindcss()],
     resolve: {
-      alias: {
-        '@mintlify/astro/components': resolve('./src/lib/mintlify-components.tsx'),
-        '@mintlify/astro-internal-components': resolve(
-          '../../node_modules/@mintlify/astro/dist/utils/mintlify-components.js'
-        ),
-        '@components/CodeSandbox': resolve('./src/components/CodeSandbox.tsx'),
-      },
+      alias: [
+        {
+          // Generated Mintlify React snippets import this package directly.
+          find: /^@mintlify\/components$/,
+          replacement: resolve('./src/lib/mintlify-components-extended.tsx'),
+        },
+        {
+          // The wrapper above re-exports the real package under this escape hatch.
+          find: /^@mintlify\/components-original$/,
+          replacement: resolve(
+            '../../node_modules/@mintlify/components/dist/index.js',
+          ),
+        },
+        {
+          find: '@mintlify/astro/components',
+          replacement: resolve('./src/lib/mintlify-components.tsx'),
+        },
+        {
+          find: '@mintlify/astro-internal-components',
+          replacement: resolve(
+            '../../node_modules/@mintlify/astro/dist/utils/mintlify-components.js',
+          ),
+        },
+        {
+          find: '@components/CodeSandbox',
+          replacement: resolve('./src/components/CodeSandbox.tsx'),
+        },
+      ],
     },
   },
 });
