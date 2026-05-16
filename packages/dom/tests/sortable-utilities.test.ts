@@ -135,3 +135,128 @@ describe('isSortableOperation', () => {
     }
   });
 });
+
+// ---------------------------------------------------------------------------
+// Sortable disabled
+// ---------------------------------------------------------------------------
+
+describe('Sortable disabled', () => {
+  it('sets sortable.disabled when disabled is true', () => {
+    const sortable = createSortableWithDisabled(true);
+    expect(sortable.disabled).toBe(true);
+  });
+
+  it('disables dragging when disabled is true', () => {
+    const sortable = createSortableWithDisabled(true);
+    expect(sortable.draggable.disabled).toBe(true);
+  });
+
+  it('disables dropping when disabled is true', () => {
+    const sortable = createSortableWithDisabled(true);
+    expect(sortable.droppable.disabled).toBe(true);
+  });
+
+  it('clears sortable.disabled when disabled is false', () => {
+    const sortable = createSortableWithDisabled(false);
+    expect(sortable.disabled).toBe(false);
+  });
+
+  it('keeps dragging enabled when disabled is false', () => {
+    const sortable = createSortableWithDisabled(false);
+    expect(sortable.draggable.disabled).toBe(false);
+  });
+
+  it('keeps dropping enabled when disabled is false', () => {
+    const sortable = createSortableWithDisabled(false);
+    expect(sortable.droppable.disabled).toBe(false);
+  });
+
+  it('disables dragging when disabled.draggable is true', () => {
+    const sortable = createSortable('s1', 0);
+    sortable.disabled = {draggable: true};
+
+    expect(sortable.draggable.disabled).toBe(true);
+  });
+
+  it('returns split disabled state when disabled.draggable is true', () => {
+    const sortable = createSortable('s1', 0);
+    sortable.disabled = {draggable: true};
+
+    expect(sortable.disabled).toEqual({draggable: true, droppable: false});
+  });
+
+  it('keeps dropping enabled when disabled.draggable is true', () => {
+    const sortable = createSortable('s1', 0);
+    sortable.disabled = {draggable: true};
+
+    expect(sortable.droppable.disabled).toBe(false);
+  });
+
+  it('keeps dragging enabled when disabled.droppable is true', () => {
+    const sortable = createSortable('s1', 0);
+    sortable.disabled = {droppable: true};
+
+    expect(sortable.draggable.disabled).toBe(false);
+  });
+
+  it('returns split disabled state when disabled.droppable is true', () => {
+    const sortable = createSortable('s1', 0);
+    sortable.disabled = {droppable: true};
+
+    expect(sortable.disabled).toEqual({draggable: false, droppable: true});
+  });
+
+  it('disables dropping when disabled.droppable is true', () => {
+    const sortable = createSortable('s1', 0);
+    sortable.disabled = {droppable: true};
+
+    expect(sortable.droppable.disabled).toBe(true);
+  });
+
+  it('disables dragging when both disabled flags are true', () => {
+    const sortable = createSortable('s1', 0);
+    sortable.disabled = {draggable: true, droppable: true};
+
+    expect(sortable.draggable.disabled).toBe(true);
+  });
+
+  it('disables dropping when both disabled flags are true', () => {
+    const sortable = createSortable('s1', 0);
+    sortable.disabled = {draggable: true, droppable: true};
+
+    expect(sortable.droppable.disabled).toBe(true);
+  });
+
+  it('clears sortable.disabled when disabled is reset to false', () => {
+    const sortable = createSortable('s1', 0);
+    sortable.disabled = {draggable: true, droppable: true};
+    sortable.disabled = false;
+
+    expect(sortable.disabled).toBe(false);
+  });
+
+  it('re-enables dragging when disabled is reset to false', () => {
+    const sortable = createSortable('s1', 0);
+    sortable.disabled = {draggable: true, droppable: true};
+    sortable.disabled = false;
+
+    expect(sortable.draggable.disabled).toBe(false);
+  });
+
+  it('re-enables dropping when disabled is reset to false', () => {
+    const sortable = createSortable('s1', 0);
+    sortable.disabled = {draggable: true, droppable: true};
+    sortable.disabled = false;
+
+    expect(sortable.droppable.disabled).toBe(false);
+  });
+});
+
+function createSortableWithDisabled(
+  disabled: boolean | {draggable?: boolean; droppable?: boolean}
+) {
+  return new Sortable(
+    {id: 's1', index: 0, disabled, plugins: [], transition: null},
+    undefined
+  );
+}

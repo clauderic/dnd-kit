@@ -84,7 +84,12 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
   useOnElementChange(handle, (handle) => (sortable.handle = handle));
   useOnElementChange(element, (element) => (sortable.element = element));
   useOnElementChange(target, (target) => (sortable.target = target));
-  useOnValueChange(disabled, () => (sortable.disabled = disabled === true));
+  useOnValueChange(
+    disabled,
+    () => (sortable.disabled = disabled ?? false),
+    undefined,
+    deepEqual
+  );
   useOnValueChange(
     sensors,
     () => (sortable.sensors = sensors),
