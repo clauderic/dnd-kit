@@ -3,6 +3,7 @@ import {RestrictToVerticalAxis} from '@dnd-kit/abstract/modifiers';
 import {Feedback} from '@dnd-kit/dom';
 
 import {SortableExample} from '../SortableExample';
+import {AnchorElementsExample} from './AnchorElementsExample';
 import {AutoScrollExample} from './AutoScrollExample';
 
 const meta: Meta<typeof SortableExample> = {
@@ -28,6 +29,11 @@ export const WithDragHandle: Story = {
     dragHandle: true,
     itemCount: 100,
   },
+};
+
+export const AnchorElements: StoryObj<typeof AnchorElementsExample> = {
+  name: 'Anchor elements',
+  render: () => <AnchorElementsExample />,
 };
 
 export const VariableHeights: Story = {
@@ -143,7 +149,9 @@ type AutoScrollStory = StoryObj<typeof AutoScrollExample>;
 
 export const AutoScrollDisabled: AutoScrollStory = {
   name: 'Auto-scroll disabled',
-  render: (args: React.ComponentProps<typeof AutoScrollExample>) => <AutoScrollExample {...args} />,
+  render: (args: React.ComponentProps<typeof AutoScrollExample>) => (
+    <AutoScrollExample {...args} />
+  ),
   args: {
     itemCount: 100,
     threshold: 0,
@@ -152,7 +160,9 @@ export const AutoScrollDisabled: AutoScrollStory = {
 
 export const AutoScrollCustomSpeed: AutoScrollStory = {
   name: 'Auto-scroll custom speed',
-  render: (args: React.ComponentProps<typeof AutoScrollExample>) => <AutoScrollExample {...args} />,
+  render: (args: React.ComponentProps<typeof AutoScrollExample>) => (
+    <AutoScrollExample {...args} />
+  ),
   args: {
     itemCount: 100,
     acceleration: 50,

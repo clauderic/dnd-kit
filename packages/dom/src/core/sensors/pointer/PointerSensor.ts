@@ -12,9 +12,9 @@ import {
   getDocuments,
   getEventCoordinates,
   getFrameTransform,
+  getInteractiveElement,
   isElement,
   isHTMLElement,
-  isInteractiveElement,
   isPointerEvent,
   isTextInput,
   Listeners,
@@ -78,7 +78,11 @@ const defaults = Object.freeze<PointerSensorOptions>({
     if (!isElement(target)) return false;
     if (source.handle?.contains(target)) return false;
 
-    return isInteractiveElement(target);
+    const interactiveElement = getInteractiveElement(target);
+
+    if (interactiveElement === source.element) return false;
+
+    return Boolean(interactiveElement);
   },
 });
 
@@ -226,10 +230,10 @@ export class PointerSensor extends Sensor<
           capture: true,
         },
       },
-      {                                                                     
-        type: 'pointercancel',                 
-        listener: this.handleCancel,                                        
-      },   
+      {
+        type: 'pointercancel',
+        listener: this.handleCancel,
+      },
       {
         // Cancel activation if there is a competing Drag and Drop interaction
         type: 'dragstart',
