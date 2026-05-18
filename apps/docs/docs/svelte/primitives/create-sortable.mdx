@@ -149,8 +149,15 @@ All input properties accept plain values or getter functions for reactivity.
   The collision priority of this sortable element. Higher values take precedence when multiple droppable elements overlap.
 </ParamField>
 
-<ParamField path="disabled" type="boolean | (() => boolean)" optional>
-  Whether the sortable is disabled.
+<ParamField path="disabled" type="boolean | SortableDisabled | (() => boolean | SortableDisabled)" optional>
+  Whether the sortable is disabled. Pass an object to disable dragging and dropping independently:
+
+  ```ts
+  interface SortableDisabled {
+    draggable?: boolean; // Prevent this item from being dragged
+    droppable?: boolean; // Prevent other items from being dropped on this one
+  }
+  ```
 </ParamField>
 
 <ParamField path="data" type="Data | (() => Data)" optional>
