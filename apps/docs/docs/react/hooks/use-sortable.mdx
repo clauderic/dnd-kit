@@ -120,8 +120,16 @@ The `useSortable` hook accepts all of the same arguments as the [useDraggable](/
   Optionally supply a number to set the collision priority of the droppable target of this sortable element. The higher the number, the higher the priority when detecting collisions. This can be useful if there are multiple droppable elements that overlap.
 </ParamField>
 
-<ParamField path="disabled" type="boolean">
-  Set to `true` to prevent the sortable element from being sortable.
+<ParamField path="disabled" type="boolean | {draggable?: boolean; droppable?: boolean}">
+  Set to `true` to prevent the sortable element from being dragged or used as a drop target. Pass an object to disable dragging and dropping independently:
+
+  ```ts
+  // Disable dragging only — other items can still be dropped on this one
+  disabled: {draggable: true}
+
+  // Disable dropping only — this item can still be dragged
+  disabled: {droppable: true}
+  ```
 </ParamField>
 
 <ParamField path="plugins" type="PluginDescriptor[]">

@@ -50,14 +50,29 @@ export interface SortableTransition {
   idle?: boolean;
 }
 
+export interface SortableDisabled {
+  draggable?: boolean;
+  droppable?: boolean;
+}
+
+type SortableDisabledValue = boolean | SortableDisabled;
+
 const defaultPlugins: PluginConstructor[] = [
   SortableKeyboardPlugin,
   OptimisticSortingPlugin,
 ];
 
 export interface SortableInput<T extends Data>
-  extends Omit<DraggableInput<T>, 'plugins'>,
-    DroppableInput<T> {
+  extends Omit<DraggableInput<T>, 'disabled' | 'plugins'>,
+    Omit<DroppableInput<T>, 'disabled'> {
+  /**
+   * Whether the sortable item should be disabled.
+   *
+   * Passing a boolean disables dragging and dropping.
+   * Use the object form to disable dragging and dropping independently.
+   */
+  disabled?: boolean | SortableDisabled;
+
   /**
    * The index of the sortable item within its group.
    */
@@ -103,6 +118,22 @@ export const defaultSortableTransition: SortableTransition = {
   idle: false,
 };
 
+function normalizeDisabled(
+  disabled: SortableDisabledValue | undefined
+): Required<SortableDisabled> {
+  if (typeof disabled === 'boolean') {
+    return {
+      draggable: disabled,
+      droppable: disabled,
+    };
+  }
+
+  return {
+    draggable: disabled?.draggable ?? false,
+    droppable: disabled?.droppable ?? false,
+  };
+}
+
 interface TemporaryState {
   initialIndex: number;
   initialGroup: UniqueIdentifier | undefined;
@@ -141,6 +172,7 @@ export class Sortable<T extends Data = Data> {
   constructor(
     {
       effects: inputEffects = () => [],
+      disabled,
       group,
       index,
       sensors,
@@ -152,11 +184,17 @@ export class Sortable<T extends Data = Data> {
     manager: DragDropManager<any, any> | undefined
   ) {
     const plugins = resolveCustomizable(pluginsInput, defaultPlugins);
+    const disabledState = normalizeDisabled(disabled);
 
-    this.droppable = new SortableDroppable<T>(input, manager, this);
+    this.droppable = new SortableDroppable<T>(
+      {...input, disabled: disabledState.droppable},
+      manager,
+      this
+    );
     this.draggable = new SortableDraggable<T>(
       {
         ...input,
+        disabled: disabledState.draggable,
         plugins,
         effects: () => [
           () => {
@@ -351,18 +389,23 @@ export class Sortable<T extends Data = Data> {
     return this.draggable.element;
   }
 
-  public get disabled() {
-    return this.draggable.disabled && this.droppable.disabled;
+  public get disabled(): boolean | SortableDisabled {
+    const {disabled: draggable} = this.draggable;
+    const {disabled: droppable} = this.droppable;
+
+    return draggable === droppable ? draggable : {draggable, droppable};
   }
 
   public set plugins(value: Customizable<Plugins> | undefined) {
     this.draggable.plugins = resolveCustomizable(value, defaultPlugins);
   }
 
-  public set disabled(value: boolean) {
+  public set disabled(value: SortableDisabledValue) {
+    const disabled = normalizeDisabled(value);
+
     batch(() => {
-      this.droppable.disabled = value;
-      this.draggable.disabled = value;
+      this.droppable.disabled = disabled.droppable;
+      this.draggable.disabled = disabled.draggable;
     });
   }
 

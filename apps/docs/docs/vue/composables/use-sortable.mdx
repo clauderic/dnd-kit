@@ -139,8 +139,16 @@ All input properties accept plain values or Vue refs/getters (`MaybeRefOrGetter`
   The collision priority of this sortable element. Higher values take precedence when multiple droppable elements overlap.
 </ParamField>
 
-<ParamField path="disabled" type="MaybeRefOrGetter<boolean>" optional>
-  Whether the sortable is disabled.
+<ParamField path="disabled" type="MaybeRefOrGetter<boolean | {draggable?: boolean; droppable?: boolean}>" optional>
+  Whether the sortable is disabled. Pass an object to disable dragging and dropping independently:
+
+  ```ts
+  // Disable dragging only — other items can still be dropped on this one
+  disabled: {draggable: true}
+
+  // Disable dropping only — this item can still be dragged
+  disabled: {droppable: true}
+  ```
 </ParamField>
 
 <ParamField path="data" type="MaybeRefOrGetter<Data>" optional>

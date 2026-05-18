@@ -322,8 +322,15 @@ The `Sortable` class accepts the following arguments:
   ```
 </ParamField>
 
-<ParamField path="disabled" type="boolean">
-  Set to `true` to temporarily disable sorting for this item.
+<ParamField path="disabled" type="boolean | SortableDisabled">
+  Set to `true` to temporarily disable sorting for this item. Pass an object to disable dragging and dropping independently:
+
+  ```ts
+  interface SortableDisabled {
+    draggable?: boolean; // Prevent this item from being dragged
+    droppable?: boolean; // Prevent other items from being dropped on this one
+  }
+  ```
 </ParamField>
 
 <ParamField path="type" type="string | number | Symbol">
@@ -354,7 +361,7 @@ The `Sortable` instance provides these key properties:
 - `group`: The assigned group identifier
 - `isDragging`: Whether this item is currently being dragged
 - `isDropTarget`: Whether this item is currently a drop target
-- `disabled`: Whether sorting is disabled for this item
+- `disabled`: Whether sorting is disabled for this item. Returns a `boolean` when dragging and dropping share the same state, or a `{draggable, droppable}` object when they differ
 - `element`: The main DOM element
 - `target`: The drop target element (if different from main element)
 
