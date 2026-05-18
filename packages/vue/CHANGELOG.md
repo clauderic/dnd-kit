@@ -1,5 +1,22 @@
 # @dnd-kit/vue
 
+## 0.5.0
+
+### Minor Changes
+
+- [#2058](https://github.com/clauderic/dnd-kit/pull/2058) [`2dd8d0e`](https://github.com/clauderic/dnd-kit/commit/2dd8d0e2ef9427f8fd21688a615b9c3189a596d8) Thanks [@timagixe](https://github.com/timagixe)! - Allow `useSortable`, `createSortable` and `Sortable` to disable dragging and dropping independently with a `disabled` object while preserving the existing boolean behavior.
+
+### Patch Changes
+
+- [#2052](https://github.com/clauderic/dnd-kit/pull/2052) [`ecb43d6`](https://github.com/clauderic/dnd-kit/commit/ecb43d6dc6b3fa9d0cd3472e3516de44122f6bbc) Thanks [@clauderic](https://github.com/clauderic)! - Fix `onUnmounted` warning in Vue `DragOverlay` by using `watchEffect`'s `onCleanup` callback instead of the `onUnmounted` lifecycle hook
+
+- [#2043](https://github.com/clauderic/dnd-kit/pull/2043) [`a6bd445`](https://github.com/clauderic/dnd-kit/commit/a6bd4457b11a44d4e4f8b92bc1b7f47293af172f) Thanks [@clauderic](https://github.com/clauderic)! - Include sourcemap files in published packages. The build emits `.map` files alongside each entry point and writes `//# sourceMappingURL=...` comments into the bundles, but the `files` field in `package.json` did not list the maps, so they were excluded from the npm tarball. Bundlers attempting to load the referenced maps would fail with `ENOENT`, producing warnings (or build failures in strict CI setups).
+
+- Updated dependencies [[`e25b1b1`](https://github.com/clauderic/dnd-kit/commit/e25b1b16c8a3c52d8329ab031d9283c2987cfcb1), [`00fd955`](https://github.com/clauderic/dnd-kit/commit/00fd955c859cd87c5334c18f13eedb1e92bb6ef6), [`f23afe0`](https://github.com/clauderic/dnd-kit/commit/f23afe0b2f21d739c9300d1d4d35eb29b33021cb), [`2dd8d0e`](https://github.com/clauderic/dnd-kit/commit/2dd8d0e2ef9427f8fd21688a615b9c3189a596d8)]:
+  - @dnd-kit/dom@0.5.0
+  - @dnd-kit/abstract@0.5.0
+  - @dnd-kit/state@0.5.0
+
 ## 0.4.0
 
 ### Minor Changes

@@ -1,5 +1,14 @@
 # @dnd-kit/helpers
 
+## 0.5.0
+
+### Patch Changes
+
+- [#2027](https://github.com/clauderic/dnd-kit/pull/2027) [`a7ee830`](https://github.com/clauderic/dnd-kit/commit/a7ee830c2505c8d5ca7522d20a6ad55bfbe7ed4d) Thanks [@sourabh945](https://github.com/sourabh945)! - fix a check for the 'id' in items that causing TypeError in SortableContext add the gaurdrail for chekcing the item is not null.
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.5.0
+
 ## 0.4.0
 
 ### Minor Changes
