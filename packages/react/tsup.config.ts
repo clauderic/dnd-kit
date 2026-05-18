@@ -5,6 +5,7 @@ export default defineConfig((options) => ({
   outDir: './',
   external: [
     '@dnd-kit/abstract',
+    '@dnd-kit/collision',
     '@dnd-kit/react',
     '@dnd-kit/dom',
     '@dnd-kit/state',

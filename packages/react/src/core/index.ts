@@ -25,6 +25,9 @@ export {useDragOperation} from './hooks/useDragOperation.ts';
 export {useInstance} from './hooks/useInstance.ts';
 
 export {KeyboardSensor, PointerSensor} from '@dnd-kit/dom';
+export * as abstract from '@dnd-kit/abstract';
+export * as collision from '@dnd-kit/collision';
+export * as dom from '@dnd-kit/dom';
 export type {
   DragDropManager,
   CollisionEvent,
