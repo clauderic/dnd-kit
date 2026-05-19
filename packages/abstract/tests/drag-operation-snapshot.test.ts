@@ -165,4 +165,34 @@ describe('Drag operation event snapshots', () => {
     draggable.destroy();
     manager.destroy();
   });
+
+  it('should accumulate relative moves queued in the same tick', async () => {
+    const manager = new DragDropManager();
+    const draggable = new Draggable({id: 'd1', register: false}, manager);
+    let dragEndTransform: {x: number; y: number} | undefined;
+    let committedPosition: {x: number; y: number} | undefined;
+
+    draggable.register();
+
+    manager.monitor.addEventListener('dragend', (event) => {
+      dragEndTransform = point(event.operation.transform);
+      committedPosition = point(event.operation.position.current);
+    });
+
+    manager.actions.start({source: draggable, coordinates: {x: 0, y: 0}});
+    await flush();
+
+    manager.actions.move({by: {x: 10, y: 0}});
+    manager.actions.move({by: {x: 5, y: 0}});
+    await flush();
+
+    manager.actions.stop();
+    await flush();
+
+    expect(dragEndTransform).toEqual({x: 15, y: 0});
+    expect(committedPosition).toEqual({x: 15, y: 0});
+
+    draggable.destroy();
+    manager.destroy();
+  });
 });
