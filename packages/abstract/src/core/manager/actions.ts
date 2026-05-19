@@ -189,10 +189,12 @@ export class DragActions<
         return;
       }
 
-      const coordinates = args.to ?? {
-        x: dragOperation.position.current.x + (args.by?.x ?? 0),
-        y: dragOperation.position.current.y + (args.by?.y ?? 0),
-      };
+      const getCoordinates = () =>
+        args.to ?? {
+          x: dragOperation.position.current.x + (args.by?.x ?? 0),
+          y: dragOperation.position.current.y + (args.by?.y ?? 0),
+        };
+      const coordinates = getCoordinates();
 
       const event = defaultPreventable(
         {
@@ -213,7 +215,7 @@ export class DragActions<
           return;
         }
 
-        dragOperation.position.current = coordinates;
+        dragOperation.position.current = getCoordinates();
       });
     });
   }
