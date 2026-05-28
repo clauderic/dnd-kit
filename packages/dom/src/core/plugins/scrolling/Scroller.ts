@@ -9,7 +9,6 @@ import {
   scheduler,
   isKeyboardEvent,
   getDocument,
-  getFrameTransform,
   getRoot,
 } from '@dnd-kit/dom/utilities';
 import {Axes, type Axis, type Coordinates} from '@dnd-kit/geometry';

@@ -1,11 +1,10 @@
-import {getWindow} from '../execution-context/getWindow.ts';
 import {isDocument} from '../type-guards/isDocument.ts';
 import {isHTMLElement} from '../type-guards/isHTMLElement.ts';
 import {isSVGElement} from '../type-guards/isSVGElement.ts';
 import {getComputedStyles} from '../styles/getComputedStyles.ts';
 import {isFixed} from './isFixed.ts';
 import {isScrollable} from './isScrollable.ts';
-import { isShadowRoot } from '../type-guards/isShadowRoot.ts';
+import {isShadowRoot} from '../type-guards/isShadowRoot.ts';
 
 interface Options {
   limit?: number;
@@ -44,7 +43,7 @@ export function getScrollableAncestors(
       return scrollParents;
     }
 
-    if (escapeShadowDOM && isShadowRoot(node)){
+    if (escapeShadowDOM && isShadowRoot(node)) {
       return findScrollableAncestors(node.host);
     }
 
