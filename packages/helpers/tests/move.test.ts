@@ -312,6 +312,30 @@ describe('move – grouped record, ID-based fallback', () => {
     });
   });
 
+  it('should move to the end of the same numeric group when targeting the group container', () => {
+    const items = {
+      240: [24001, 24002, 24003],
+      241: [24101, 24102],
+    };
+    const source = mockSource(24001);
+    source.manager = {
+      dragOperation: {
+        position: {current: {x: 0, y: 1000}},
+        shape: null,
+      },
+    };
+    const target = mockTarget(240);
+    target.shape = {
+      center: {x: 0, y: 0},
+    };
+    const event = dragOverEvent(source, target);
+
+    expect(move(items, event)).toEqual({
+      240: [24002, 24003, 24001],
+      241: [24101, 24102],
+    });
+  });
+
   it('should return unchanged when source not found in any group', () => {
     const items = {
       A: ['a1', 'a2'],
@@ -359,6 +383,32 @@ describe('move – grouped record, optimistic reconciliation', () => {
     expect(move(items, event)).toEqual({
       A: ['a2', 'a3', 'a1'],
       B: ['b1', 'b2'],
+    });
+  });
+
+  it('should reconcile same-group reorder when group IDs are numbers', () => {
+    const items = {
+      240: [24001, 24002, 24003],
+      241: [24101, 24102],
+    };
+    const source = mockSortableSource({
+      id: 24001,
+      initialIndex: 0,
+      index: 2,
+      initialGroup: 240,
+      group: 240,
+    });
+    source.manager = {
+      dragOperation: {
+        position: {current: {x: 0, y: 0}},
+        shape: null,
+      },
+    };
+    const event = dragOverEvent(source, mockTarget(24001));
+
+    expect(move(items, event)).toEqual({
+      240: [24002, 24003, 24001],
+      241: [24101, 24102],
     });
   });
 

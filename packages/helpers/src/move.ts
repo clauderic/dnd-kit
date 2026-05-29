@@ -48,6 +48,19 @@ export function arraySwap<T extends any[]>(
 type Items = UniqueIdentifier[] | {id: UniqueIdentifier}[];
 
 /**
+ * Resolve a grouped record key from a UniqueIdentifier.
+ * Object keys are strings at runtime, even when sortable groups use numeric IDs.
+ */
+function getRecordKey(
+  items: Record<UniqueIdentifier, Items>,
+  id: UniqueIdentifier
+) {
+  const key = String(id);
+
+  return Object.prototype.hasOwnProperty.call(items, key) ? key : undefined;
+}
+
+/**
  * Check if the source has sortable index properties via duck typing.
  * The `move` helper lives in `@dnd-kit/helpers` which has no dependency on `@dnd-kit/dom`,
  * so we discover sortable properties at runtime.
@@ -154,17 +167,16 @@ function mutate<
   // Fallback: when the ID-based lookup fails for the source (e.g. computed IDs),
   // use the sortable index properties directly.
   if (sourceIndex === -1 && hasSortableIndices(source)) {
-    const srcParent = source.initialGroup;
+    const srcParent =
+      source.initialGroup == null
+        ? undefined
+        : getRecordKey(items, source.initialGroup);
     const srcIndex = source.initialIndex;
-    const tgtParent = source.group;
+    const tgtParent =
+      source.group == null ? undefined : getRecordKey(items, source.group);
     const tgtIndex = source.index;
 
-    if (
-      srcParent == null ||
-      tgtParent == null ||
-      !(srcParent in items) ||
-      !(tgtParent in items)
-    ) {
+    if (srcParent == null || tgtParent == null) {
       if ('preventDefault' in event) event.preventDefault();
       return items;
     }
@@ -205,14 +217,16 @@ function mutate<
     dragOperation.shape?.current.center ?? dragOperation.position.current;
 
   if (targetParent == null) {
-    if (target.id in items) {
+    const targetKey = getRecordKey(items, target.id);
+
+    if (targetKey != null) {
       const insertionIndex =
         target.shape && position.y > target.shape.center.y
-          ? items[target.id].length
+          ? items[targetKey].length
           : 0;
 
       // The target does not have any matching children, but appears to be a valid target
-      targetParent = target.id;
+      targetParent = targetKey;
       targetIndex = insertionIndex;
     }
   }
@@ -232,14 +246,17 @@ function mutate<
       sourceIndex === targetIndex &&
       hasSortableIndices(source)
     ) {
+      const sourceGroupParent =
+        source.group == null ? undefined : getRecordKey(items, source.group);
       const hasGroupChanged =
-        source.group != null && source.group !== sourceParent;
+        source.group != null && sourceGroupParent !== sourceParent;
       const hasIndexChanged = source.index !== sourceIndex;
 
       if (hasGroupChanged || hasIndexChanged) {
-        const reconciledTargetParent = source.group ?? sourceParent;
+        const reconciledTargetParent =
+          source.group == null ? sourceParent : sourceGroupParent;
 
-        if (reconciledTargetParent in items) {
+        if (reconciledTargetParent != null) {
           if (sourceParent === reconciledTargetParent) {
             return {
               ...items,
