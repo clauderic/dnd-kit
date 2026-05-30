@@ -1,0 +1,145 @@
+/*
+* <create-deep-signal> — Preact signals → Marko reactivity bridge.
+*
+* dnd-kit entities (Draggable, Droppable, Sortable) expose state as Preact
+* signals via the @reactive decorator from @preact/signals-core.
+* Marko's reactivity is a compile-time signal graph driven by <let>
+* variables. This tag bridges the two systems.
+*
+* Strategy:
+*   - A Proxy wraps the entity. Reads through the Proxy record which
+*     property keys are being accessed.
+*   - For each key accessed for the first time ON THE CURRENT TARGET,
+*     a Preact effect() is created that reads that specific property.
+*     Reading an @reactive property inside a Preact effect creates a
+*     Preact subscription.
+*   - When the Preact signal for that property changes, the effect re-runs
+*     and increments the Marko <let> variable `dirty`.
+*   - `dirty` is read in the <return> expression, so whenever `dirty`
+*     changes, the proxy is recreated and the caller's bindings update.
+*
+* Why per-property effects:
+*   A single effect over all properties would either miss new properties
+*   (if set up before first access) or require disposal and recreation on
+*   each new property access. Per-property effects are set up lazily on
+*   first access and stay stable for the lifetime of the component.
+*
+* Target change handling:
+*   `_bridge.target` tracks the current entity. When `input.target` changes
+*   (entity replaced — e.g. manager swap in create-sortable Case 2), all
+*   stale Preact effect subscriptions from the old entity are disposed and
+*   `_bridge.subs` is cleared before new subscriptions are created for the
+*   new entity. Without this, `_bridge.subs[key]` would short-circuit new
+*   subscription creation, leaving the new entity's signals untracked.
+*
+* Initial effect run:
+*   Each Preact effect runs once immediately on creation (this is how
+*   @preact/signals-core works). The first run is suppressed via a `first`
+*   flag so that creating a subscription doesn't cause a spurious re-render.
+*
+* Bridge object:
+*   `_bridge` is a mutable plain object held in a <let> variable. The
+*   object reference never changes (so no reactive updates), only its
+*   properties are mutated. This shares state between the <lifecycle>
+*   methods and the <return> expression.
+*/
+
+import { effect } from "@dnd-kit/state";
+
+export interface Input<T extends object | null | undefined> {
+  target: T;
+}
+
+<let/dirty=0>
+
+// Shared mutable state between <lifecycle> and <return> — not reactive.
+// Object reference is set once at instance creation and never changes.
+static const _makeBridge = () => ({
+  subscribe: null as ((obj: object, key: string | symbol) => void) | null,
+  subs: {} as Record<string, () => void>,
+  // Tracks the current target so stale subscriptions can be cleared
+  // when the entity is replaced (e.g. manager swap in create-sortable).
+  target: undefined as object | undefined,
+});
+<let/_bridge=_makeBridge()>
+
+<lifecycle
+  onMount() {
+    _bridge.subscribe = (obj: object, key: string | symbol) => {
+      // Only track string-keyed properties; skip symbols and already-tracked.
+      if (typeof key !== "string" || _bridge.subs[key]) return;
+
+      // Each property gets its own Preact effect. The effect reads the
+      // property (subscribing Preact to the signal) and increments dirty
+      // when the signal changes. The `first` flag suppresses the initial run.
+      let first = true;
+      _bridge.subs[key] = effect(() => {
+        void (obj as any)[key]; // Read: creates Preact subscription.
+        if (first) {
+          first = false;
+        } else {
+          dirty++; // Triggers Marko reactive graph re-evaluation.
+        }
+      });
+    };
+  }
+  onDestroy() {
+    // Dispose all Preact effect subscriptions.
+    for (const dispose of Object.values(_bridge.subs)) dispose();
+    _bridge.subscribe = null;
+    _bridge.target = undefined;
+  }
+>
+
+// Mutations on <let> variable properties are invalid inside reactive
+// expressions (Marko compiler rejects them). This static function performs
+// the bridge target-change mutation from plain JS, outside the reactive graph.
+// The IIFE in <return> reads input.target (creating the reactive dep) and
+// passes the bridge + target to this function which does the actual mutation.
+static const _maybeResetBridge = (
+  bridge: ReturnType<typeof _makeBridge>,
+  target: object | null | undefined,
+) => {
+  if (!target) {
+    // Clear tracking when entity is gone.
+    if (bridge.target !== undefined) {
+      for (const dispose of Object.values(bridge.subs)) dispose();
+      bridge.subs = {};
+      bridge.target = undefined;
+    }
+    return;
+  }
+  // Target changed — dispose stale Preact subscriptions from the old entity
+  // and clear subs so new subscriptions are created for the new entity.
+  // Without this, the short-circuit `if (bridge.subs[key]) return` in
+  // subscribe() would prevent subscriptions being created for the new entity,
+  // leaving its signals (isDragging, isDropping, etc.) untracked forever.
+  if (bridge.target !== target) {
+    for (const dispose of Object.values(bridge.subs)) dispose();
+    bridge.subs = {};
+    bridge.target = target;
+  }
+};
+
+<return=(() => {
+  // Reading dirty registers this expression in Marko's reactive graph.
+  // Any dirty++ call will cause this expression to re-evaluate.
+  void dirty;
+
+  const target = input.target;
+
+  // Perform bridge mutation via static function — mutations on <let>
+  // variable properties are not allowed inside reactive expressions.
+  const bridge = _bridge;
+  _maybeResetBridge(bridge, target);
+
+  if (!target) return target;
+
+  return new Proxy(target as object, {
+    get(obj, key) {
+      // Lazily create a Preact subscription for this property.
+      bridge.subscribe?.(obj, key);
+      return (obj as any)[key];
+    },
+  }) as typeof target;
+})()>

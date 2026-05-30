@@ -3,7 +3,10 @@
   "display": "Vanilla",
   "extends": "./base.json",
   "compilerOptions": {
-    "lib": ["dom", "ES2015"],
+    "lib": [
+      "dom",
+      "ES2017"
+    ],
     "target": "es6",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",

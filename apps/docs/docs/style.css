@@ -279,3 +279,34 @@ header:has(+ [data-page-title="Overview"]) #page-context-menu {
 #page-context-menu-button svg+span {
   display: none;
 }
+
+/* a[href="/marko/quickstart"] span[aria-label="code"] {
+  mask-image: url('/images/logomark.svg') !important;
+  -webkit-mask-image: url('/images/logomark.svg') !important;
+} */
+
+/* Marko logo in sidebar navigation */
+a[href="/marko/quickstart"]>span {
+  background-color: transparent !important;
+}
+
+a[href="/marko/quickstart"]>span>span[role="img"] {
+  background-color: transparent !important;
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+  background-image: url('/images/logomark.svg') !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+}
+
+/* Marko logo on homepage card */
+a[href="marko/quickstart"] span[role="img"] {
+  background-color: transparent !important;
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+  background-image: url('/images/logomark.svg') !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+}

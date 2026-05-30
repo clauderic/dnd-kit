@@ -1,0 +1,38 @@
+import DraggableItem from "./DraggableItem.marko";
+
+<let/parent=undefined as string | undefined>
+
+<drag-drop-provider onDragEnd(event) {
+  if (!event.canceled && event.operation.target) {
+    parent = String(event.operation.target.id);
+  }
+}>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; max-width:500px; margin:0 auto; padding:20px;">
+    <div style="display:flex; align-items:center; justify-content:center; min-height:100px;">
+      <if=parent == null>
+        <DraggableItem id="item-1"/>
+      </if>
+    </div>
+    <create-droppable|droppable| id="zone-1">
+      <div/$el class=("droppable" + (droppable.isDropTarget ? " active" : ""))
+        style="min-height:150px; padding:20px; border-radius:10px; display:flex; align-items:center; justify-content:center;"
+      >
+        <lifecycle
+          onMount() { droppable.setElement($el()); }
+          onDestroy() { droppable.setElement(undefined); }
+        />
+        <if=parent != null>
+          <DraggableItem id="item-1"/>
+        </if>
+        <else>
+          Drop here
+        </else>
+      </div>
+    </create-droppable>
+  </div>
+  <drag-overlay|source|>
+    <button class="btn" data-shadow="true">
+      Moving ${source.id}
+    </button>
+  </drag-overlay>
+</drag-drop-provider>

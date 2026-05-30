@@ -1,0 +1,12 @@
+<drag-drop-provider>
+    <ul>
+        <create-sortable|sortable| id="1" index=0>
+            <li class="item" + (sortable.isDragging ? " dragging" : "")>
+                Item 1
+            </li>
+        </create-sortable>
+        <create-sortable|sortable| id="2" index=1>
+            <li class="item">Item 2</li>
+        </create-sortable>
+    </ul>
+</drag-drop-provider>

@@ -11,5 +11,8 @@
     "./styles/sandbox": "./styles/sandbox.ts",
     "./register": "./register.ts",
     "./preview-head.html": "./preview-head.html"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2"
   }
 }

@@ -1,0 +1,221 @@
+---
+title: 'create-sortable'
+metaTitle: 'create-sortable - Marko | dnd kit'
+description: 'Create sortable elements with the create-sortable tag.'
+icon: 'layer-group'
+---
+
+import { Story } from '/snippets/story.mdx';
+
+<Story
+  id="sortable-vertical-list--basic-setup"
+  framework="marko"
+  height="320"
+  hero
+/>
+
+## Usage
+
+The `<create-sortable>` tag combines draggable and droppable behavior with sorting logic.
+
+```marko
+import {move} from "@dnd-kit/helpers";
+
+<let/items=[1, 2, 3, 4]>
+<let/snapshot=[] as number[]>
+
+<drag-drop-provider
+  onDragStart() { snapshot = items.slice(); }
+  onDragOver(event) { items = move(items, event); }
+  onDragEnd(event) { if (event.canceled) items = snapshot; }
+>
+  <ul>
+    <for|id, index| of=items>
+      <create-sortable|sortable| id=id index=index>
+        <li/$el>
+          <lifecycle
+            onMount() { sortable.setElement($el()); }
+            onDestroy() { sortable.setElement(undefined); }
+          />
+          Item ${id}
+        </li>
+      </create-sortable>
+    </for>
+  </ul>
+</drag-drop-provider>
+```
+
+<Note>
+  When using `<create-sortable>` inside a `<for>` loop, the `index` variable from the loop is automatically reactive — it updates as items are reordered. Visual sorting during drag is driven by calling `move()` in `onDragOver`. The `onDragEnd` handler only needs to restore the snapshot when the drag is canceled.
+</Note>
+
+## Without the move helper
+
+The example above uses the `move` helper from `@dnd-kit/helpers`, a convenience function that takes your items and a drag event and returns a new array with the item moved to its new position. It supports flat arrays and grouped records, handles canceled drags, and works with multiple lists.
+
+If you need more control over state updates, you can manage state manually using the `isSortable` type guard and the sortable properties (`initialIndex`, `index`).
+
+Call `move()` in `onDragOver` for live visual sorting, and restore the snapshot in `onDragEnd` only when the drag is canceled:
+
+```marko
+import {isSortable} from "@dnd-kit/dom/sortable";
+
+<let/items=[1, 2, 3, 4]>
+<let/snapshot=[] as number[]>
+
+<drag-drop-provider
+  onDragStart() { snapshot = items.slice(); }
+  onDragOver(event) {
+    const {source, target} = event.operation;
+
+    if (isSortable(source) && isSortable(target)) {
+      const fromIndex = source.index;
+      const toIndex = target.index;
+
+      if (fromIndex !== toIndex) {
+        const newItems = [...items];
+        const [removed] = newItems.splice(fromIndex, 1);
+        newItems.splice(toIndex, 0, removed);
+        items = newItems;
+      }
+    }
+  }
+  onDragEnd(event) { if (event.canceled) items = snapshot; }
+>
+  <ul>
+    <for|id, index| of=items>
+      <create-sortable|sortable| id=id index=index>
+        <li/$el>
+          <lifecycle
+            onMount() { sortable.setElement($el()); }
+            onDestroy() { sortable.setElement(undefined); }
+          />
+          Item ${id}
+        </li>
+      </create-sortable>
+    </for>
+  </ul>
+</drag-drop-provider>
+```
+
+<Info>
+  Learn more about [type guards and manual state
+  management](/concepts/sortable#optimistic-sorting) in the Sortable concepts
+  page.
+</Info>
+
+## Input
+
+<ParamField path="id" type="UniqueIdentifier" required>
+  A unique identifier for this sortable instance.
+</ParamField>
+
+<ParamField path="index" type="number" required>
+  The current index of this item in the sorted list.
+</ParamField>
+
+<ParamField path="group" type="string" optional>
+  The group this sortable belongs to. Used for sorting across multiple lists.
+</ParamField>
+
+<ParamField path="accept" type="string | string[]" optional>
+  The types of draggable elements this sortable accepts.
+</ParamField>
+
+<ParamField path="type" type="string" optional>
+  The type of this sortable element.
+</ParamField>
+
+<ParamField path="plugins" type="PluginDescriptor[]" optional>
+  An array of plugin descriptors for per-entity plugin configuration. Use `Plugin.configure()` to create descriptors. For example, `Feedback.configure({ feedback: 'clone' })`.
+</ParamField>
+
+<ParamField path="transition" type="SortableTransition" optional>
+  Animation transition configuration for sort operations.
+</ParamField>
+
+<ParamField path="modifiers" type="Modifier[]" optional>
+  Modifiers to apply to this sortable instance.
+</ParamField>
+
+<ParamField path="sensors" type="Sensor[]" optional>
+  Sensors to use for this sortable instance.
+</ParamField>
+
+<ParamField path="collisionDetector" type="CollisionDetector" optional>
+  A custom collision detection algorithm.
+</ParamField>
+
+<ParamField path="collisionPriority" type="number" optional>
+  The collision priority of this sortable element. Higher values take precedence
+  when multiple droppable elements overlap.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" optional>
+  Whether the sortable is disabled.
+</ParamField>
+
+<ParamField path="data" type="Data" optional>
+  Custom data to attach to this sortable instance.
+</ParamField>
+
+## Output (body parameter)
+
+<ResponseField name="isDragging" type="boolean">
+  Whether this element is currently being dragged.
+</ResponseField>
+
+<ResponseField name="isDropping" type="boolean">
+  Whether this element is in the process of being dropped.
+</ResponseField>
+
+<ResponseField name="isDragSource" type="boolean">
+  Whether this element is the source of the current drag operation.
+</ResponseField>
+
+<ResponseField name="isDropTarget" type="boolean">
+  Whether this element is currently a drop target.
+</ResponseField>
+
+<ResponseField name="setElement" type="(el: Element | undefined) => void">
+  Connect a DOM element to this sortable. Call in `onMount` with `$el()`, and in
+  `onDestroy` with `undefined`.
+</ResponseField>
+
+<ResponseField name="setHandle" type="(el: Element | undefined) => void">
+  Set a drag handle element. Call in `onMount` with `$el()` on the handle
+  element.
+</ResponseField>
+
+<ResponseField name="setSource" type="(el: Element | undefined) => void">
+  Set the drag source element (when different from the sortable element).
+</ResponseField>
+
+<ResponseField name="setTarget" type="(el: Element | undefined) => void">
+  Set the drop target element (when different from the sortable element).
+</ResponseField>
+
+## Guides
+
+### Using drag handles
+
+You can use `setHandle` to designate a specific element as the drag handle:
+
+```marko
+<create-sortable|sortable| id=id index=index>
+  <li/$el>
+    <lifecycle
+      onMount() { sortable.setElement($el()); }
+      onDestroy() { sortable.setElement(undefined); }
+    />
+    Item ${id}
+    <button/$handle class="handle">
+      <lifecycle
+        onMount() { sortable.setHandle($handle()); }
+        onDestroy() { sortable.setHandle(undefined); }
+      />
+      ⠿
+    </button>
+  </li>
+</create-sortable>
+```

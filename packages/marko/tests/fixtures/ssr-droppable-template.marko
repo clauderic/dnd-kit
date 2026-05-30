@@ -1,0 +1,14 @@
+<drag-drop-provider>
+    <div>
+        <create-draggable|draggable| id="drag-1">
+            <button class="btn" + (draggable.isDragging ? " dragging" : "")>
+                Drag me
+            </button>
+        </create-draggable>
+        <create-droppable|droppable| id="drop-1">
+            <div class="droppable" + (droppable.isDropTarget ? " active" : "")>
+                Drop here
+            </div>
+        </create-droppable>
+    </div>
+</drag-drop-provider>

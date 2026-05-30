@@ -1,0 +1,70 @@
+{
+  "name": "@dnd-kit/marko",
+  "version": "0.0.1",
+  "description": "Marko v6 adapter for @dnd-kit/dom",
+  "keywords": [
+    "dnd-kit",
+    "drag-and-drop",
+    "marko",
+    "marko-tags",
+    "marko-v6"
+  ],
+  "author": "Claudéric Demers",
+  "type": "module",
+  "license": "MIT",
+  "sideEffects": false,
+  "files": [
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md",
+    "marko.json",
+    "tags",
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./runtime/renderer": {
+      "types": "./dist/runtime/renderer.d.ts",
+      "import": "./dist/runtime/renderer.js"
+    },
+    "./runtime/defaults": {
+      "types": "./dist/runtime/defaults.d.ts",
+      "import": "./dist/runtime/defaults.js"
+    }
+  },
+  "scripts": {
+    "build": "bun run build:runtime",
+    "build:runtime": "tsup",
+    "dev": "bun run build:runtime --watch",
+    "test": "bun test",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "dependencies": {
+    "@dnd-kit/abstract": "^0.4.0",
+    "@dnd-kit/dom": "^0.4.0",
+    "@dnd-kit/state": "^0.4.0",
+    "tslib": "^2.6.2"
+  },
+  "peerDependencies": {
+    "@marko/runtime-tags": "6.0.155",
+    "marko": "^6.0.0"
+  },
+  "devDependencies": {
+    "@marko/compiler": "^5.39.60",
+    "@marko/runtime-tags": "6.0.155",
+    "@types/bun": "^1.0.0",
+    "marko": "^6.0.0",
+    "tsup": "8.3.0",
+    "typescript": "^5.5.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/clauderic/dnd-kit"
+  }
+}

@@ -1,0 +1,16 @@
+export interface Input {
+  id?: string;
+}
+
+<create-draggable|draggable| id=(input.id ?? "draggable")>
+  <button/$el
+    class=("btn" + (draggable.isDragging ? " dragging" : ""))
+    disabled=(draggable.isDragging || undefined)
+  >
+    <lifecycle
+      onMount() { draggable.setElement($el()); }
+      onDestroy() { draggable.setElement(undefined); }
+    />
+    draggable
+  </button>
+</create-draggable>

@@ -21,6 +21,10 @@ export const Story = ({ id, framework = "react", width = "100%", height = "250",
       localPort: 6010,
       productionHost: '69910d2a631cb57638616dcd',
     },
+    marko: {
+      localPort: 6011,
+      productionHost: '',
+    },
   };
   const config = STORYBOOKS[framework] ?? STORYBOOKS.react;
   const isDev = import.meta.env.DEV;
