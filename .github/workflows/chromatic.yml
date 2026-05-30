@@ -5,6 +5,9 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   chromatic-vanilla:
     name: Chromatic (Vanilla)
@@ -206,6 +209,9 @@ jobs:
       - chromatic-vue
       - chromatic-solid
       - chromatic-svelte
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
         with:

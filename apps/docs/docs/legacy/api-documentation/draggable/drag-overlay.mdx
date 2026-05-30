@@ -10,7 +10,7 @@ description: >-
 
 ## When should I use a drag overlay?
 
-Depending on your use-case, you may want to use a drag overlay rather than transforming the original draggable source element that is connected to the [`useDraggable`](./use-draggable) hook:
+Depending on your use-case, you may want to use a drag overlay rather than transforming the original draggable source element that is connected to the [`useDraggable`](/legacy/api-documentation/draggable/use-draggable) hook:
 
 - If you'd like to **show a preview** of where the draggable source will be when dropped, you can update the position of the draggable source while dragging without affecting the drag overlay.
 - If your item needs to **move from one container to another while dragging**, we strongly recommend you use the `<DragOverlay>` component so the draggable item can unmount from its original container while dragging and mount back into a different container without affecting the drag overlay.
@@ -24,7 +24,7 @@ You may render any valid JSX within the children of the `<DragOverlay>`.
 
 The `<DragOverlay>` component should **remain mounted at all times** so that it can perform the drop animation. If you conditionally render the `<DragOverlay>` component, drop animations will not work.
 
-As a rule of thumb, try to render the `<DragOverlay>` outside of your draggable components, and follow the [presentational component pattern ](./drag-overlay#presentational-components)to maintain a good separation of concerns.
+As a rule of thumb, try to render the `<DragOverlay>` outside of your draggable components, and follow the [presentational component pattern ](/legacy/api-documentation/draggable/drag-overlay#presentational-components)to maintain a good separation of concerns.
 
 Instead, you should conditionally render the children passed to the `<DragOverlay>`:
 
@@ -247,7 +247,7 @@ Prefer conditionally rendering the `children` of `<DragOverlay>` rather than con
 
 ### Class name and inline styles
 
-If you'd like to customize the[ wrapper element](./drag-overlay#wrapper-element) that the `DragOverlay`'s children are rendered into, use the `className` and `style` props:
+If you'd like to customize the[ wrapper element](/legacy/api-documentation/draggable/drag-overlay#wrapper-element) that the `DragOverlay`'s children are rendered into, use the `className` and `style` props:
 
 ```jsx
 <DragOverlay
@@ -296,7 +296,7 @@ The `<DragOverlay>` component should **remain mounted at all times** so that it 
 
 ### Modifiers
 
-Modifiers let you dynamically modify the movement coordinates that are detected by sensors. They can be used for a wide range of use-cases, which you can learn more about by reading the [Modifiers](../modifiers) documentation.
+Modifiers let you dynamically modify the movement coordinates that are detected by sensors. They can be used for a wide range of use-cases, which you can learn more about by reading the [Modifiers](/legacy/api-documentation/modifiers) documentation.
 
 For example, you can use modifiers to restrict the movement of the `<DragOverlay>` to the bounds of the window:
 
@@ -316,7 +316,7 @@ function App() {
 
 ### Transition
 
-By default, the `<DragOverlay>` component does not have any transitions, unless activated by the [`Keyboard` sensor](../sensors/keyboard). Use the `transition` prop to create a function that returns the transition based on the [activator event](../sensors/#activators). The default implementation is:
+By default, the `<DragOverlay>` component does not have any transitions, unless activated by the [`Keyboard` sensor](/legacy/api-documentation/sensors/keyboard). Use the `transition` prop to create a function that returns the transition based on the [activator event](/legacy/api-documentation/sensors#activators). The default implementation is:
 
 ```javascript
 function defaultTransition(activatorEvent) {

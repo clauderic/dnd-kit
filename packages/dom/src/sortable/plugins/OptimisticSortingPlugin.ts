@@ -1,10 +1,15 @@
-import {Plugin, type UniqueIdentifier} from '@dnd-kit/abstract';
+import {Plugin} from '@dnd-kit/abstract';
 import type {DragDropManager} from '@dnd-kit/dom';
 import {move} from '@dnd-kit/helpers';
 import {batch} from '@dnd-kit/state';
 
 import {Sortable, SortableDroppable} from '../sortable.ts';
 import {isSortable} from '../utilities.ts';
+import {
+  getSortableIndices,
+  hasChanged,
+  type SortableInstances,
+} from './OptimisticSortingPlugin.helpers.ts';
 
 const defaultGroup = '__default__';
 
@@ -13,10 +18,7 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
     super(manager);
 
     const getSortableInstances = () => {
-      const sortableInstances = new Map<
-        UniqueIdentifier | undefined,
-        Set<Sortable>
-      >();
+      const sortableInstances: SortableInstances = new Map();
 
       for (const droppable of manager.registry.droppables) {
         if (droppable instanceof SortableDroppable) {
@@ -32,10 +34,6 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
 
           instances.add(sortable);
         }
-      }
-
-      for (const [group, instances] of sortableInstances) {
-        sortableInstances.set(group, new Set(sort(instances)));
       }
 
       return sortableInstances;
@@ -59,6 +57,7 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
         }
 
         const instances = getSortableInstances();
+        const sortableIndices = getSortableIndices(instances);
         const sameGroup = source.sortable.group === target.sortable.group;
         const sourceInstances = instances.get(source.sortable.group);
         const targetInstances = sameGroup
@@ -74,19 +73,9 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
           manager.renderer.rendering.then(() => {
             const newInstances = getSortableInstances();
 
-            for (const [group, sortableInstances] of instances.entries()) {
-              const entries = Array.from(sortableInstances).entries();
-
-              for (const [index, sortable] of entries) {
-                if (
-                  sortable.index !== index ||
-                  sortable.group !== group ||
-                  !newInstances.get(group)?.has(sortable)
-                ) {
-                  // At least one index or group was changed so we should abort optimistic updates
-                  return;
-                }
-              }
+            if (hasChanged(sortableIndices, instances, newInstances)) {
+              // At least one index or group was changed so we should abort optimistic updates
+              return;
             }
 
             const sourceElement = source.sortable.element;
@@ -163,6 +152,7 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
 
         queueMicrotask(() => {
           const instances = getSortableInstances();
+          const sortableIndices = getSortableIndices(instances);
           const initialGroupInstances = instances.get(
             source.sortable.initialGroup
           );
@@ -171,20 +161,21 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
 
           // Wait for the renderer to handle the event before attempting to optimistically update
           manager.renderer.rendering.then(() => {
-            for (const [group, sortableInstances] of instances.entries()) {
-              const entries = Array.from(sortableInstances).entries();
+            const newInstances = getSortableInstances();
 
-              for (const [index, sortable] of entries) {
-                if (sortable.index !== index || sortable.group !== group) {
-                  // At least one index or group was changed so we should abort optimistic updates
-                  return;
-                }
-              }
+            if (hasChanged(sortableIndices, instances, newInstances)) {
+              // At least one index or group was changed so we should abort optimistic updates
+              return;
             }
 
-            const initialGroup = sort(initialGroupInstances);
+            const currentSortables = sort(initialGroupInstances);
+            const initialSortables = sort(
+              initialGroupInstances,
+              sortByInitialIndex
+            );
             const sourceElement = source.sortable.element;
-            const target = initialGroup[source.sortable.initialIndex];
+            const initialPosition = initialSortables.indexOf(source.sortable);
+            const target = currentSortables[initialPosition];
             const targetElement = target?.element;
 
             if (!target || !targetElement || !sourceElement) {
@@ -194,7 +185,7 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
             reorder(sourceElement, target.index, targetElement, source.index);
 
             batch(() => {
-              for (const [_, sortableInstances] of instances.entries()) {
+              for (const sortableInstances of instances.values()) {
                 const entries = Array.from(sortableInstances).values();
 
                 for (const sortable of entries) {
@@ -231,6 +222,10 @@ function sortByIndex(a: Sortable, b: Sortable) {
   return a.index - b.index;
 }
 
-function sort(instances: Set<Sortable>) {
-  return Array.from(instances).sort(sortByIndex);
+function sortByInitialIndex(a: Sortable, b: Sortable) {
+  return a.initialIndex - b.initialIndex;
+}
+
+function sort(instances: Set<Sortable>, sortFn = sortByIndex) {
+  return Array.from(instances).sort(sortFn);
 }

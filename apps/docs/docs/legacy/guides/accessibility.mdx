@@ -47,9 +47,9 @@ You know your application best, and while these sensible defaults will go a long
 
 The three main areas of focus for this guide to help you make your drag and drop interface more accessible are:
 
-- [Keyboard support](./accessibility#keyboard-support)
-- [Screen reader instructions](./accessibility#screen-reader-instructions)
-- [Live regions to provide screen reader announcements](./accessibility#screen-reader-announcements-using-live-regions)
+- [Keyboard support](/legacy/guides/accessibility#keyboard-support)
+- [Screen reader instructions](/legacy/guides/accessibility#screen-reader-instructions)
+- [Live regions to provide screen reader announcements](/legacy/guides/accessibility#screen-reader-announcements-using-live-regions)
 
 ### Keyboard support
 
@@ -64,11 +64,11 @@ For drag and drop interfaces, this means that the activator element that initiat
 
 Both these guidelines should be respected to comply with the [third rule of ARIA](https://www.w3.org/TR/using-aria/#3rdrule).
 
-The `@dnd-kit/core` library ships with a [Keyboard sensor ](../api-documentation/sensors/keyboard)that adheres to these guidelines. The keyboard sensor is one of the two sensors that are enabled by default on the [`<DndContext>`](../api-documentation/context-provider/) provider component.
+The `@dnd-kit/core` library ships with a [Keyboard sensor ](/legacy/api-documentation/sensors/keyboard)that adheres to these guidelines. The keyboard sensor is one of the two sensors that are enabled by default on the [`<DndContext>`](/legacy/api-documentation/context-provider/dnd-context) provider component.
 
 #### Focus
 
-In order for the Keyboard sensor to function properly, the activator element that receives the `useDraggable` [listeners](../api-documentation/draggable/use-draggable#listeners) **must** be able to receive focus.
+In order for the Keyboard sensor to function properly, the activator element that receives the `useDraggable` [listeners](/legacy/api-documentation/draggable/use-draggable#listeners) **must** be able to receive focus.
 
 The `tabindex` attribute dictates the order in which focus moves throughout the document.
 
@@ -89,11 +89,11 @@ After an item is picked up, it can be dropped using the `enter` (on Windows) or 
 
 A drag operation can be cancelled using the `escape` key. It is recommended to allow users to cancel the drag operation using the `escape` key for all sensors, not just the Keyboard sensor.
 
-The keyboard shortcuts of the Keyboard sensor can be [customized](../api-documentation/sensors/keyboard#keyboard-codes), but we discourage you to do so unless you maintain support for the `enter`, `return` and `space` keys to follow the guidelines set by the third rule of ARIA.
+The keyboard shortcuts of the Keyboard sensor can be [customized](/legacy/api-documentation/sensors/keyboard#keyboard-codes), but we discourage you to do so unless you maintain support for the `enter`, `return` and `space` keys to follow the guidelines set by the third rule of ARIA.
 
-By default, the [Keyboard sensor](../api-documentation/sensors/keyboard) moves in any given direction by `25` pixels when the arrow keys are pressed while dragging.
+By default, the [Keyboard sensor](/legacy/api-documentation/sensors/keyboard) moves in any given direction by `25` pixels when the arrow keys are pressed while dragging.
 
-This is an arbitrary default that is likely not suited for all use-cases. We encourage you to customize this behaviour and tailor it to the context of your application using the [`getNextCoordinates` option ](../api-documentation/sensors/keyboard#coordinates-getter)of the Keyboard sensor.
+This is an arbitrary default that is likely not suited for all use-cases. We encourage you to customize this behaviour and tailor it to the context of your application using the [`getNextCoordinates` option ](/legacy/api-documentation/sensors/keyboard#coordinates-getter)of the Keyboard sensor.
 
 For example, the `useSortable` hook ships with an augmented version of the Keyboard sensor that uses the `getNextCoordinates` option behind the scenes to find the coordinates of the next sortable element in any given direction when an arrow key is pressed.
 
@@ -105,7 +105,7 @@ In order to users know how to interact with draggable items using only the keybo
 
 #### Role
 
-To let users know that their focus is currently on a draggable item, the [`useDraggable`](../api-documentation/draggable/use-draggable) hook provides the [`role`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles) and [`aria-roledescription`](https://www.digitala11y.com/aria-roledescriptionproperties/), and [`aria-describedby`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques/Using_the_aria-describedby_attribute) attributes by default:
+To let users know that their focus is currently on a draggable item, the [`useDraggable`](/legacy/api-documentation/draggable/use-draggable) hook provides the [`role`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles) and [`aria-roledescription`](https://www.digitala11y.com/aria-roledescriptionproperties/), and [`aria-describedby`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques/Using_the_aria-describedby_attribute) attributes by default:
 
 | Attribute              | Default value             | Description                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | ---------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -113,13 +113,13 @@ To let users know that their focus is currently on a draggable item, the [`useDr
 | `aria-roledescription` | `"draggable"`             | Defines a human-readable, localized description for the role of an element that is read by screen readers.<br/>While <code>draggable</code> is a sensible default, we recommend you customize this value to something that is tailored to your use-case.                                                                                                                                                                                   |
 | `aria-describedby`     | `"DndContext-[uniqueId]"` | Each draggable item is provided a unique `aria-describedby` ID that points to the voiceover instructions to be read out when a draggable item receives focus                                                                                                                                                                                                                                                                                            |
 
-The `role` and `aria-roledescription` attributes can be customized via the [options passed to the `useDraggable` hook](../api-documentation/draggable/use-draggable#arguments).
+The `role` and `aria-roledescription` attributes can be customized via the [options passed to the `useDraggable` hook](/legacy/api-documentation/draggable/use-draggable#arguments).
 
 To customize the `aria-describedby` instructions, refer to the section below.
 
 #### Instructions
 
-By default, each [`<DndContext>`](../api-documentation/context-provider/) component renders a unique HTML element that is rendered off-screen to be used to provide these instructions to screen readers.
+By default, each [`<DndContext>`](/legacy/api-documentation/context-provider/dnd-context) component renders a unique HTML element that is rendered off-screen to be used to provide these instructions to screen readers.
 
 The default instructions are:
 
@@ -127,7 +127,7 @@ The default instructions are:
 > While dragging, use the arrow keys to move the item in any given direction.\
 > Press space or enter again to drop the item in its new position, or press escape to cancel.
 
-We recommend you customize and localize these instructions to your application and use-case using the `screenReaderInstructions` prop of [`<DndContext>`](../api-documentation/context-provider/dnd-context).
+We recommend you customize and localize these instructions to your application and use-case using the `screenReaderInstructions` prop of [`<DndContext>`](/legacy/api-documentation/context-provider/dnd-context).
 
 For example, if you were building a sortable grocery shopping list, you may want to tailor the instructions like so:
 
@@ -143,7 +143,7 @@ If your application supports multiple languages, make sure you also translate th
 
 When building accessible drag and drop interfaces, live regions should be used to provide screen reader announcements in real-time of time-sensitive information of what is currently happening with draggable and droppable elements without having to move focus .
 
-By default, each [`<DndContext>`](../api-documentation/context-provider/dnd-context) component renders a unique HTML element that is rendered off-screen to be used for live screen-reader announcements of events like when a drag operation has started, when a draggable item has been dragged over a droppable container, when a drag operation has ended, and when a drag operation has been cancelled.
+By default, each [`<DndContext>`](/legacy/api-documentation/context-provider/dnd-context) component renders a unique HTML element that is rendered off-screen to be used for live screen-reader announcements of events like when a drag operation has started, when a draggable item has been dragged over a droppable container, when a drag operation has ended, and when a drag operation has been cancelled.
 
 These instructions can be customized using the `announcements` prop of `DndContext`.
 
@@ -224,6 +224,6 @@ function App() {
     >
 ```
 
-The example above assumes that the [`closestCenter` collision detection strategy](../api-documentation/context-provider/collision-detection-algorithms#closest-center) is used, so the `over` property should always be defined.
+The example above assumes that the [`closestCenter` collision detection strategy](/legacy/api-documentation/context-provider/collision-detection-algorithms#closest-center) is used, so the `over` property should always be defined.
 
 If your application supports multiple languages, make sure you also translate these announcements. The `<DndContext>` component only ships with announcements in English due to bundle size concerns.

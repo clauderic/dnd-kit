@@ -8,14 +8,27 @@ import {
   isSortable,
   isSortableOperation,
 } from '@dnd-kit/dom/sortable';
+import type {SortableDisabled} from '@dnd-kit/dom/sortable';
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-function createSortable(id: string | number, index: number, group?: string) {
+interface CreateSortableOptions {
+  id?: string | number;
+  index?: number;
+  group?: string;
+  disabled?: boolean | SortableDisabled;
+}
+
+function createSortable({
+  id = 's1',
+  index = 0,
+  group,
+  disabled,
+}: CreateSortableOptions = {}) {
   const sortable = new Sortable(
-    {id, index, group, plugins: [], transition: null},
+    {id, index, group, disabled, plugins: [], transition: null},
     undefined
   );
   return sortable;
@@ -42,13 +55,13 @@ function mockOperation(
 
 describe('isSortable', () => {
   it('should return true for a SortableDraggable', () => {
-    const sortable = createSortable('s1', 0);
+    const sortable = createSortable({id: 's1', index: 0});
     expect(isSortable(sortable.draggable)).toBe(true);
     expect(sortable.draggable).toBeInstanceOf(SortableDraggable);
   });
 
   it('should return true for a SortableDroppable', () => {
-    const sortable = createSortable('s1', 0);
+    const sortable = createSortable({id: 's1', index: 0});
     expect(isSortable(sortable.droppable)).toBe(true);
     expect(sortable.droppable).toBeInstanceOf(SortableDroppable);
   });
@@ -74,34 +87,34 @@ describe('isSortable', () => {
 
 describe('isSortableOperation', () => {
   it('should return true when source and target are both sortable', () => {
-    const s1 = createSortable('s1', 0);
-    const s2 = createSortable('s2', 1);
+    const s1 = createSortable({id: 's1', index: 0});
+    const s2 = createSortable({id: 's2', index: 1});
     const op = mockOperation(s1.draggable, s2.droppable);
     expect(isSortableOperation(op)).toBe(true);
   });
 
   it('should return false when source is a plain Draggable', () => {
     const draggable = createDraggable('d1');
-    const sortable = createSortable('s1', 0);
+    const sortable = createSortable({id: 's1', index: 0});
     const op = mockOperation(draggable, sortable.droppable);
     expect(isSortableOperation(op)).toBe(false);
   });
 
   it('should return false when target is a plain Droppable', () => {
-    const sortable = createSortable('s1', 0);
+    const sortable = createSortable({id: 's1', index: 0});
     const droppable = createDroppable('d1');
     const op = mockOperation(sortable.draggable, droppable);
     expect(isSortableOperation(op)).toBe(false);
   });
 
   it('should return false when source is null', () => {
-    const sortable = createSortable('s1', 0);
+    const sortable = createSortable({id: 's1', index: 0});
     const op = mockOperation(null, sortable.droppable);
     expect(isSortableOperation(op)).toBe(false);
   });
 
   it('should return false when target is null', () => {
-    const sortable = createSortable('s1', 0);
+    const sortable = createSortable({id: 's1', index: 0});
     const op = mockOperation(sortable.draggable, null);
     expect(isSortableOperation(op)).toBe(false);
   });
@@ -119,8 +132,8 @@ describe('isSortableOperation', () => {
   });
 
   it('should narrow types to expose sortable properties on source', () => {
-    const s1 = createSortable('s1', 2, 'groupA');
-    const s2 = createSortable('s2', 5, 'groupA');
+    const s1 = createSortable({id: 's1', index: 2, group: 'groupA'});
+    const s2 = createSortable({id: 's2', index: 5, group: 'groupA'});
     const op = mockOperation(s1.draggable, s2.droppable);
 
     if (isSortableOperation(op)) {
@@ -133,5 +146,120 @@ describe('isSortableOperation', () => {
     } else {
       throw new Error('Expected isSortableOperation to return true');
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Sortable disabled
+// ---------------------------------------------------------------------------
+
+describe('Sortable disabled', () => {
+  it('sets sortable.disabled when disabled is true', () => {
+    const sortable = createSortable({disabled: true});
+    expect(sortable.disabled).toBe(true);
+  });
+
+  it('disables dragging when disabled is true', () => {
+    const sortable = createSortable({disabled: true});
+    expect(sortable.draggable.disabled).toBe(true);
+  });
+
+  it('disables dropping when disabled is true', () => {
+    const sortable = createSortable({disabled: true});
+    expect(sortable.droppable.disabled).toBe(true);
+  });
+
+  it('clears sortable.disabled when disabled is false', () => {
+    const sortable = createSortable({disabled: false});
+    expect(sortable.disabled).toBe(false);
+  });
+
+  it('keeps dragging enabled when disabled is false', () => {
+    const sortable = createSortable({disabled: false});
+    expect(sortable.draggable.disabled).toBe(false);
+  });
+
+  it('keeps dropping enabled when disabled is false', () => {
+    const sortable = createSortable({disabled: false});
+    expect(sortable.droppable.disabled).toBe(false);
+  });
+
+  it('disables dragging when disabled.draggable is true', () => {
+    const sortable = createSortable({disabled: {draggable: true}});
+
+    expect(sortable.draggable.disabled).toBe(true);
+  });
+
+  it('returns split disabled state when disabled.draggable is true', () => {
+    const sortable = createSortable({disabled: {draggable: true}});
+
+    expect(sortable.disabled).toEqual({draggable: true, droppable: false});
+  });
+
+  it('keeps dropping enabled when disabled.draggable is true', () => {
+    const sortable = createSortable({disabled: {draggable: true}});
+
+    expect(sortable.droppable.disabled).toBe(false);
+  });
+
+  it('keeps dragging enabled when disabled.droppable is true', () => {
+    const sortable = createSortable({disabled: {droppable: true}});
+
+    expect(sortable.draggable.disabled).toBe(false);
+  });
+
+  it('returns split disabled state when disabled.droppable is true', () => {
+    const sortable = createSortable({disabled: {droppable: true}});
+
+    expect(sortable.disabled).toEqual({draggable: false, droppable: true});
+  });
+
+  it('disables dropping when disabled.droppable is true', () => {
+    const sortable = createSortable({disabled: {droppable: true}});
+
+    expect(sortable.droppable.disabled).toBe(true);
+  });
+
+  it('disables dragging when both disabled flags are true', () => {
+    const sortable = createSortable({
+      disabled: {draggable: true, droppable: true},
+    });
+
+    expect(sortable.draggable.disabled).toBe(true);
+  });
+
+  it('disables dropping when both disabled flags are true', () => {
+    const sortable = createSortable({
+      disabled: {draggable: true, droppable: true},
+    });
+
+    expect(sortable.droppable.disabled).toBe(true);
+  });
+
+  it('clears sortable.disabled when disabled is reset to false', () => {
+    const sortable = createSortable({
+      disabled: {draggable: true, droppable: true},
+    });
+    sortable.disabled = false;
+
+    expect(sortable.disabled).toBe(false);
+  });
+
+  it('re-enables dragging when disabled is reset to false', () => {
+    const sortable = createSortable({
+      disabled: {draggable: true, droppable: true},
+    });
+    sortable.disabled = false;
+
+    expect(sortable.draggable.disabled).toBe(false);
+  });
+
+  it('re-enables dropping when disabled is reset to false', () => {
+    const sortable = createSortable({
+      disabled: {draggable: true, droppable: true},
+    });
+    sortable.disabled = false;
+
+    expect(sortable.droppable.disabled).toBe(false);
   });
 });

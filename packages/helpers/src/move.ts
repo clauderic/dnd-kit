@@ -84,7 +84,7 @@ function mutate<
   }
 
   const findIndex = (item: Items[0], id: UniqueIdentifier) =>
-    item === id || (typeof item === 'object' && 'id' in item && item.id === id);
+    item === id || ( item !== null && typeof item === 'object' && 'id' in item && item.id === id); // adding the fix/ guardrails for check the item is not null
 
   if (Array.isArray(items)) {
     const sourceIndex = items.findIndex((item) => findIndex(item, source.id));

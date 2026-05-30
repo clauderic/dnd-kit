@@ -22,7 +22,10 @@ export {
   getElementFromPoint,
   ProxiedElements,
 } from './element/index.ts';
-export {isInteractiveElement} from './element/isInteractiveElement.ts';
+export {
+  getInteractiveElement,
+  isInteractiveElement,
+} from './element/isInteractiveElement.ts';
 
 export {Listeners} from './event-listeners/index.ts';
 export {PositionObserver} from './observers/index.ts';

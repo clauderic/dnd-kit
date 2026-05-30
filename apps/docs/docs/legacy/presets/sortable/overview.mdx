@@ -102,7 +102,7 @@ export function SortableItem(props) {
 
 </CodeGroup>
 
-For most sortable lists, we recommend you use a [`DragOverlay`](../../api-documentation/draggable/drag-overlay) if your sortable list is scrollable or if the contents of the scrollable list are taller than the viewport of the window. Check out the[ sortable drag overlay guide](./#drag-overlay) below to learn more.
+For most sortable lists, we recommend you use a [`DragOverlay`](/legacy/api-documentation/draggable/drag-overlay) if your sortable list is scrollable or if the contents of the scrollable list are taller than the viewport of the window. Check out the[ sortable drag overlay guide](/legacy/presets/sortable/overview#drag-overlay) below to learn more.
 
 ## Architecture
 
@@ -111,7 +111,7 @@ The sortable preset builds on top of the primitives exposed by `@dnd-kit/core` t
 The sortable preset exposes two main concepts: [`SortableContext`](#sortable-context) and the [`useSortable`](#usesortable) hook:
 
 - The `SortableContext` provides information via context that is consumed by the `useSortable` hook.
-- The `useSortable` hook is an abstraction that composes the [`useDroppable`](../../api-documentation/droppable) and [`useDraggable`](../../api-documentation/draggable) hooks:
+- The `useSortable` hook is an abstraction that composes the [`useDroppable`](/legacy/api-documentation/droppable) and [`useDraggable`](/legacy/api-documentation/draggable) hooks:
 
 ![The useSortable hook](/images/legacy/use-sortable.png)
 
@@ -137,7 +137,7 @@ If you paid close attention to the illustration above, you may also have noticed
 
 ### Sortable Context
 
-In addition to the [`DndContext` provider](../../introduction/getting-started.md#context-provider), the Sortable preset requires its own context provider that contains the **sorted** array of the unique identifiers associated to each sortable item:
+In addition to the [`DndContext` provider](/legacy/introduction/getting-started#context-provider), the Sortable preset requires its own context provider that contains the **sorted** array of the unique identifiers associated to each sortable item:
 
 ```jsx
 import React, {useState} from 'react';
@@ -189,19 +189,19 @@ In order for the `SortableContext` component to function properly, make sure it 
 
 ### useSortable
 
-As outlined above, the `useSortable` hook combines both the [`useDraggable`](../../api-documentation/draggable) and [`useDroppable`](../../api-documentation/droppable) hooks to connect elements as both draggable sources and drop targets:
+As outlined above, the `useSortable` hook combines both the [`useDraggable`](/legacy/api-documentation/draggable) and [`useDroppable`](/legacy/api-documentation/droppable) hooks to connect elements as both draggable sources and drop targets:
 
 <Info>
 In most cases, the draggable and droppable hooks will be attached to the same node, and therefore be identical in size. They are represented as different nodes for illustration purposes above.
 </Info>
 
-If you're already familiar with the [`useDraggable`](../../api-documentation/draggable) hook, the [`useSortable`](./use-sortable) hook should look very familiar, since, it is an abstraction on top of it.
+If you're already familiar with the [`useDraggable`](/legacy/api-documentation/draggable) hook, the [`useSortable`](/legacy/presets/sortable/use-sortable) hook should look very familiar, since, it is an abstraction on top of it.
 
 In addition to the `attributes`, `listeners`,`transform` and `setNodeRef` properties, which you should already be familiar with if you've used the `useDraggable` hook before, you'll notice that the `useSortable` hook also provides a `transition` property.
 
 The `transform` property for `useSortable` represents the displacement and change of scale transformation that a sortable item needs to apply to transition to its new position without needing to update the DOM order.
 
-The `transform` property for the `useSortable` hook behaves similarly to the [`transform`](../../api-documentation/draggable/#transforms) property of the [`useDraggable`](../../api-documentation/draggable) hook for the active sortable item, when there is no [`DragOverlay`](../../api-documentation/draggable/drag-overlay) being used.
+The `transform` property for the `useSortable` hook behaves similarly to the [`transform`](/legacy/api-documentation/draggable#transforms) property of the [`useDraggable`](/legacy/api-documentation/draggable) hook for the active sortable item, when there is no [`DragOverlay`](/legacy/api-documentation/draggable/drag-overlay) being used.
 
 <CodeGroup>
 ```jsx SortableItem.jsx
@@ -246,19 +246,19 @@ const {transition} = useSortable({
 });
 ```
 
-For more details on the `useSortable` hook, read the full [API documentation](./use-sortable).
+For more details on the `useSortable` hook, read the full [API documentation](/legacy/presets/sortable/use-sortable).
 
 ### Sensors
 
-Sensors are an abstraction to manage and listen to different input methods. If you're unfamiliar with the concept of sensors, we recommend you read the [introduction to sensors](../../api-documentation/sensors/) first.
+Sensors are an abstraction to manage and listen to different input methods. If you're unfamiliar with the concept of sensors, we recommend you read the [introduction to sensors](/legacy/api-documentation/sensors) first.
 
-By default, the [Keyboard](../../api-documentation/sensors/keyboard) sensor moves the active draggable item by `25` pixels in the direction of the arrow key that was pressed. This is an arbitrary default, and can be customized using the `coordinateGetter` option of the keyboard sensor.
+By default, the [Keyboard](/legacy/api-documentation/sensors/keyboard) sensor moves the active draggable item by `25` pixels in the direction of the arrow key that was pressed. This is an arbitrary default, and can be customized using the `coordinateGetter` option of the keyboard sensor.
 
 The sortable preset ships with a custom coordinate getter function for the keyboard sensor that moves the active draggable to the closest sortable element in a given direction within the same `DndContext`.
 
 To use it, import the `sortableKeyboardCoordinates` coordinate getter function provided by `@dnd-kit/sortable`, and pass it to the `coordiniateGetter` option of the Keyboard sensor.
 
-In this example, we'll also be setting up the [Pointer](../../api-documentation/sensors/pointer) sensor, which is the other sensor that is enabled by default on `DndContext` if none are defined. We use the `useSensor` and `useSensors` hooks to initialize the sensors:
+In this example, we'll also be setting up the [Pointer](/legacy/api-documentation/sensors/pointer) sensor, which is the other sensor that is enabled by default on `DndContext` if none are defined. We use the `useSensor` and `useSensors` hooks to initialize the sensors:
 
 ```jsx
 import {
@@ -287,7 +287,7 @@ function App() {
 }
 ```
 
-If you'd like to use the [Mouse](../../api-documentation/sensors/mouse) and [Touch](../../api-documentation/sensors/touch) sensors instead of the [Pointer](../../api-documentation/sensors/pointer) sensor, simply initialize those sensors instead:
+If you'd like to use the [Mouse](/legacy/api-documentation/sensors/mouse) and [Touch](/legacy/api-documentation/sensors/touch) sensors instead of the [Pointer](/legacy/api-documentation/sensors/pointer) sensor, simply initialize those sensors instead:
 
 ```jsx
 import {
@@ -331,7 +331,7 @@ function App() {
 
 To learn more about sensors, read the in-depth documentation on sensors:
 
-<Card href="../../api-documentation/sensors" icon="signal-stream" horizontal>
+<Card href="/legacy/api-documentation/sensors" icon="signal-stream" horizontal>
 Sensors
 </Card>
 
@@ -348,9 +348,9 @@ Make sure to use the sorting strategy that is the most adapted to the use case y
 
 ### Collision detection algorithm
 
-The default collision detection algorithm of `DndContext` is the [rectangle intersection](../../api-documentation/context-provider/collision-detection-algorithms.md#rectangle-intersection) algorithm. While the rectangle intersection strategy is well suited for many use cases, it can be unforgiving, since it requires both the draggable and droppable bounding rectangles to come into direct contact and intersect.
+The default collision detection algorithm of `DndContext` is the [rectangle intersection](/legacy/api-documentation/context-provider/collision-detection-algorithms#rectangle-intersection) algorithm. While the rectangle intersection strategy is well suited for many use cases, it can be unforgiving, since it requires both the draggable and droppable bounding rectangles to come into direct contact and intersect.
 
-For sortable lists, we recommend using a more forgiving collision detection strategy such as the [closest center](../../api-documentation/context-provider/collision-detection-algorithms.md#closest-center) or [closest corners](../../api-documentation/context-provider/collision-detection-algorithms.md#closest-corners) algorithms.
+For sortable lists, we recommend using a more forgiving collision detection strategy such as the [closest center](/legacy/api-documentation/context-provider/collision-detection-algorithms#closest-center) or [closest corners](/legacy/api-documentation/context-provider/collision-detection-algorithms#closest-corners) algorithms.
 
 In this example, we'll be using the closest center algorithm:
 
@@ -371,7 +371,7 @@ function App() {
 
 To learn more about collision detection algorithms and when to use one over the other, read our guide on collision detection algorithms:
 
-<Card href="../../api-documentation/context-provider/collision-detection-algorithms" icon="diagram-venn" horizontal>
+<Card href="/legacy/api-documentation/context-provider/collision-detection-algorithms" icon="diagram-venn" horizontal>
 Collision Detection Algorithms
 </Card>
 
@@ -591,15 +591,15 @@ function App() {
 
 ### Drag Overlay
 
-For most sortable lists, we recommend you use a [`DragOverlay`](../../api-documentation/draggable/drag-overlay) if your sortable list is scrollable or if the contents of the scrollable list are taller than the viewport of the window.
+For most sortable lists, we recommend you use a [`DragOverlay`](/legacy/api-documentation/draggable/drag-overlay) if your sortable list is scrollable or if the contents of the scrollable list are taller than the viewport of the window.
 
 The `<DragOverlay>` component provides a way to render a draggable overlay that is removed from the normal document flow and is positioned relative to the viewport. The drag overlay also implements drop animations.
 
 A **common pitfall** when using the `DragOverlay` component is rendering the same component that calls `useSortable` inside the `DragOverlay`. This will lead to unexpected results, since there will be an `id` collision between the two components both calling `useDraggable` with the same `id`, since `useSortable` is an abstraction on top of `useDraggable`.
 
-Instead, create a presentational version of your component that you intend on rendering in the drag overlay, and another version that is sortable and renders the presentational component. There are two recommended patterns for this, either using [wrapper nodes](../../api-documentation/draggable/drag-overlay.md#wrapper-nodes) or[ ref forwarding](../../api-documentation/draggable/drag-overlay.md#ref-forwarding).
+Instead, create a presentational version of your component that you intend on rendering in the drag overlay, and another version that is sortable and renders the presentational component. There are two recommended patterns for this, either using [wrapper nodes](/legacy/api-documentation/draggable/drag-overlay#wrapper-nodes) or[ ref forwarding](/legacy/api-documentation/draggable/drag-overlay#ref-forwarding).
 
-In this example, we'll use the [ref forwarding](../../api-documentation/draggable/drag-overlay.md#ref-forwarding) pattern to avoid introducing wrapper nodes:
+In this example, we'll use the [ref forwarding](/legacy/api-documentation/draggable/drag-overlay#ref-forwarding) pattern to avoid introducing wrapper nodes:
 
 <CodeGroup>
 

@@ -16,11 +16,11 @@ This means that even if the draggable or droppable nodes look round or triangula
 
 ![Axis-aligned bounding boxes](/images/legacy/axis-aligned-rectangle.png)
 
-If you'd like to use other shapes than rectangles for detecting collisions, build your own [custom collision detection algorithm](./collision-detection-algorithms#custom-collision-detection-strategies).
+If you'd like to use other shapes than rectangles for detecting collisions, build your own [custom collision detection algorithm](/legacy/api-documentation/context-provider/collision-detection-algorithms#custom-collision-detection-strategies).
 
 ## Rectangle intersection
 
-By default, [`DndContext`](./dnd-context) uses the **rectangle intersection** collision detection algorithm.
+By default, [`DndContext`](/legacy/api-documentation/context-provider/dnd-context) uses the **rectangle intersection** collision detection algorithm.
 
 The algorithm works by ensuring there is no gap between any of the 4 sides of the rectangles. Any gap means a collision does not exist.
 
@@ -32,7 +32,7 @@ This means that in order for a draggable item to be considered **over** a droppa
 
 While the rectangle intersection algorithm is well suited for most drag and drop use cases, it can be unforgiving, since it requires both the draggable and droppable bounding rectangles to come into direct contact and intersect.
 
-For some use cases, such as [sortable](../../presets/sortable/) lists, using a more forgiving collision detection algorithm is recommended.
+For some use cases, such as [sortable](/legacy/presets/sortable/overview) lists, using a more forgiving collision detection algorithm is recommended.
 
 As its name suggests, the closest center algorithm finds the droppable container who's center is closest to the center of the bounding rectangle of the active draggable item:
 
