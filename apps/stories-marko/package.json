@@ -26,6 +26,7 @@
     "@storybook/marko": "^10.1.0",
     "@storybook/marko-vite": "^4.1.0",
     "@vueless/storybook-dark-mode": "^9.0.6",
+    "http-server": "^14.1.1",
     "storybook": "^10.3.5",
     "typescript": "^5.5.2",
     "vite": "^5.0.0"
