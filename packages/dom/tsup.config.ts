@@ -1,4 +1,4 @@
-import {defineConfig} from 'tsup';
+import { defineConfig } from 'tsup';
 
 export default defineConfig((options) => ({
   dts: true,
@@ -8,6 +8,7 @@ export default defineConfig((options) => ({
     '@dnd-kit/dom',
     '@dnd-kit/state',
     '@dnd-kit/geometry',
+    '@dnd-kit/helpers',
     '@dnd-kit/collision',
   ],
   format: ['esm', 'cjs'],
