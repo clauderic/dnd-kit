@@ -1,0 +1,19 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "lib": [
+      "DOM",
+      "ESNext"
+    ],
+    "target": "ESNext",
+    "types": [
+      "bun-types"
+    ],
+    "noEmit": true,
+    "emitDeclarationOnly": false
+  },
+  "include": [
+    "**/*.test.ts",
+    "setup.ts"
+  ]
+}
