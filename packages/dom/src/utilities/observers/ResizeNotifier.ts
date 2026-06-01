@@ -1,12 +1,11 @@
-import {canUseDOM} from '../execution-context/canUseDOM.ts';
-
-const Observer = canUseDOM
-  ? ResizeObserver
-  : class MockResizeObserver implements ResizeObserver {
-      observe() {}
-      unobserve() {}
-      disconnect() {}
-    };
+const Observer =
+  typeof ResizeObserver !== 'undefined'
+    ? ResizeObserver
+    : class MockResizeObserver implements ResizeObserver {
+        observe() {}
+        unobserve() {}
+        disconnect() {}
+      };
 
 export class ResizeNotifier extends Observer {
   #initialized = false;
