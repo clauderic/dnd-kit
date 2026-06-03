@@ -10,9 +10,9 @@ export interface Transform extends Coordinates {
 }
 
 export function parseTransform(computedStyles: {
-  scale: string;
+  scale?: string;
   transform: string;
-  translate: string;
+  translate?: string;
 }): Transform | null {
   const {scale, transform, translate} = computedStyles;
   const parsedScale = parseScale(scale);
