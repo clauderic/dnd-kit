@@ -1,5 +1,15 @@
 # @dnd-kit/abstract
 
+## 0.5.0
+
+### Patch Changes
+
+- [#2067](https://github.com/clauderic/dnd-kit/pull/2067) [`e4d1a7e`](https://github.com/clauderic/dnd-kit/commit/e4d1a7e2d93ed48a2b71232b47e9f9bdba43bb68) Thanks [@Philipp91](https://github.com/Philipp91)! - Supply correct Options type in return type of plugin configurator()
+
+- Updated dependencies []:
+  - @dnd-kit/geometry@0.5.0
+  - @dnd-kit/state@0.5.0
+
 ## 0.4.0
 
 ### Minor Changes
