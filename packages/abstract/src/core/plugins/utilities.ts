@@ -1,3 +1,4 @@
+import type {Plugin} from './plugin.ts';
 import type {
   PluginConstructor,
   PluginOptions,
@@ -34,7 +35,7 @@ export function configure<
 export function configurator<T extends PluginConstructor<any, any, any>>(
   plugin: T
 ) {
-  return (options: InferPluginOptions<T>): PluginDescriptor<any, any, T> => {
+  return (options: InferPluginOptions<T>): PluginDescriptor<any, Plugin<any, InferPluginOptions<T>>, T> => {
     return configure(plugin, options);
   };
 }
