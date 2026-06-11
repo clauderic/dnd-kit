@@ -1,5 +1,5 @@
-export function parseScale(scale: string) {
-  if (scale === 'none') {
+export function parseScale(scale?: string) {
+  if (!scale || scale === 'none') {
     return null;
   }
 
