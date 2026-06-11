@@ -1,5 +1,22 @@
 # @dnd-kit/react
 
+## 0.5.0
+
+### Minor Changes
+
+- [#2058](https://github.com/clauderic/dnd-kit/pull/2058) [`2dd8d0e`](https://github.com/clauderic/dnd-kit/commit/2dd8d0e2ef9427f8fd21688a615b9c3189a596d8) Thanks [@timagixe](https://github.com/timagixe)! - Allow `useSortable`, `createSortable` and `Sortable` to disable dragging and dropping independently with a `disabled` object while preserving the existing boolean behavior.
+
+### Patch Changes
+
+- [#2021](https://github.com/clauderic/dnd-kit/pull/2021) [`de5a0f4`](https://github.com/clauderic/dnd-kit/commit/de5a0f4f1d36705e690468092447546142594734) Thanks [@lixiaoyan](https://github.com/lixiaoyan)! - Fixed `useDraggable` and `useSortable` reassigning the underlying entity's `sensors` on every render when `sensors` was passed as an inline array. The `sensors` prop is now compared with `deepEqual` (matching the existing behavior of `modifiers`, `plugins`, and `DragDropProvider`), preventing unnecessary mutations to the plugin registry that could disrupt in-progress sensor activation.
+
+- [#2043](https://github.com/clauderic/dnd-kit/pull/2043) [`a6bd445`](https://github.com/clauderic/dnd-kit/commit/a6bd4457b11a44d4e4f8b92bc1b7f47293af172f) Thanks [@clauderic](https://github.com/clauderic)! - Include sourcemap files in published packages. The build emits `.map` files alongside each entry point and writes `//# sourceMappingURL=...` comments into the bundles, but the `files` field in `package.json` did not list the maps, so they were excluded from the npm tarball. Bundlers attempting to load the referenced maps would fail with `ENOENT`, producing warnings (or build failures in strict CI setups).
+
+- Updated dependencies [[`e4d1a7e`](https://github.com/clauderic/dnd-kit/commit/e4d1a7e2d93ed48a2b71232b47e9f9bdba43bb68), [`e25b1b1`](https://github.com/clauderic/dnd-kit/commit/e25b1b16c8a3c52d8329ab031d9283c2987cfcb1), [`00fd955`](https://github.com/clauderic/dnd-kit/commit/00fd955c859cd87c5334c18f13eedb1e92bb6ef6), [`e4792f3`](https://github.com/clauderic/dnd-kit/commit/e4792f3480eed6049ab74d7c786d6d72b36eb0a3), [`f23afe0`](https://github.com/clauderic/dnd-kit/commit/f23afe0b2f21d739c9300d1d4d35eb29b33021cb), [`2dd8d0e`](https://github.com/clauderic/dnd-kit/commit/2dd8d0e2ef9427f8fd21688a615b9c3189a596d8)]:
+  - @dnd-kit/abstract@0.5.0
+  - @dnd-kit/dom@0.5.0
+  - @dnd-kit/state@0.5.0
+
 ## 0.4.0
 
 ### Minor Changes

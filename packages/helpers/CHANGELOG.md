@@ -1,5 +1,16 @@
 # @dnd-kit/helpers
 
+## 0.5.0
+
+### Patch Changes
+
+- [#2074](https://github.com/clauderic/dnd-kit/pull/2074) [`90ddfcd`](https://github.com/clauderic/dnd-kit/commit/90ddfcd32b052c9ad956e19cf3c9a3450f22d257) Thanks [@timagixe](https://github.com/timagixe)! - Fix grouped record sorting with numeric group IDs
+
+- [#2027](https://github.com/clauderic/dnd-kit/pull/2027) [`a7ee830`](https://github.com/clauderic/dnd-kit/commit/a7ee830c2505c8d5ca7522d20a6ad55bfbe7ed4d) Thanks [@sourabh945](https://github.com/sourabh945)! - fix a check for the 'id' in items that causing TypeError in SortableContext add the gaurdrail for chekcing the item is not null.
+
+- Updated dependencies [[`e4d1a7e`](https://github.com/clauderic/dnd-kit/commit/e4d1a7e2d93ed48a2b71232b47e9f9bdba43bb68)]:
+  - @dnd-kit/abstract@0.5.0
+
 ## 0.4.0
 
 ### Minor Changes

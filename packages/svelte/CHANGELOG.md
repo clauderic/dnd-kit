@@ -1,5 +1,18 @@
 # @dnd-kit/svelte
 
+## 0.5.0
+
+### Minor Changes
+
+- [#2058](https://github.com/clauderic/dnd-kit/pull/2058) [`2dd8d0e`](https://github.com/clauderic/dnd-kit/commit/2dd8d0e2ef9427f8fd21688a615b9c3189a596d8) Thanks [@timagixe](https://github.com/timagixe)! - Allow `useSortable`, `createSortable` and `Sortable` to disable dragging and dropping independently with a `disabled` object while preserving the existing boolean behavior.
+
+### Patch Changes
+
+- Updated dependencies [[`e4d1a7e`](https://github.com/clauderic/dnd-kit/commit/e4d1a7e2d93ed48a2b71232b47e9f9bdba43bb68), [`e25b1b1`](https://github.com/clauderic/dnd-kit/commit/e25b1b16c8a3c52d8329ab031d9283c2987cfcb1), [`00fd955`](https://github.com/clauderic/dnd-kit/commit/00fd955c859cd87c5334c18f13eedb1e92bb6ef6), [`e4792f3`](https://github.com/clauderic/dnd-kit/commit/e4792f3480eed6049ab74d7c786d6d72b36eb0a3), [`f23afe0`](https://github.com/clauderic/dnd-kit/commit/f23afe0b2f21d739c9300d1d4d35eb29b33021cb), [`2dd8d0e`](https://github.com/clauderic/dnd-kit/commit/2dd8d0e2ef9427f8fd21688a615b9c3189a596d8)]:
+  - @dnd-kit/abstract@0.5.0
+  - @dnd-kit/dom@0.5.0
+  - @dnd-kit/state@0.5.0
+
 ## 0.4.0
 
 ### Minor Changes
