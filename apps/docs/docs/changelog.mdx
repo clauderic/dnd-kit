@@ -6,9 +6,38 @@ icon: 'clock'
 hideContextMenu: true
 ---
 
+## v0.5.0
+
+<Update label="v0.5.0" description="June 2026" tags={["Minor"]}>
+  **Independently disable dragging and dropping** — The [sortable](/concepts/sortable) `disabled` option now accepts an object form to disable dragging and dropping separately, while preserving the existing boolean behavior. Supported by `useSortable`, `createSortable`, and the `Sortable` class across all framework integrations.
+
+  ```ts
+  useSortable({
+    id,
+    index,
+    // Item can't be dragged, but others can still be dropped on it
+    disabled: {draggable: true, droppable: false},
+  });
+  ```
+
+  **Non-contiguous sortable indexes** — The `OptimisticSortingPlugin` now supports [sortable](/concepts/sortable) items with gaps in their index sequence.
+
+  **Bug fixes:**
+  - Allowed pointer dragging from descendants of interactive [draggable](/concepts/draggable) elements, such as text inside sortable anchor elements
+  - Fixed [drag overlay](/react/components/drag-overlay) flickering after drop
+  - Fixed a `TypeError` in `parseScale`/`parseTranslate` on browsers that don't support the individual `scale`/`translate` CSS properties (Chromium < 104)
+  - Fixed the [plugin](/extend/plugins) `configurator()` utility supplying an incorrect options type in its return type
+  - Fixed the `move` helper for grouped records with numeric group IDs
+  - Fixed a `TypeError` in the `move` and `swap` helpers when items contain `null` values
+  - React: Fixed `useDraggable` and `useSortable` reassigning sensors on every render when `sensors` was passed as an inline array, which could disrupt in-progress sensor activation
+  - Solid: Fixed `DragDropProvider` evaluating its `children` twice on initial mount
+  - Vue: Fixed an `onUnmounted` warning emitted by `DragOverlay`
+  - Included sourcemap files in published packages to fix bundler warnings about missing `.map` files
+</Update>
+
 ## v0.4.0
 
-<Update label="v0.4.0" description="April 2025" tags={["Minor"]}>
+<Update label="v0.4.0" description="April 2026" tags={["Minor"]}>
   **Event type system redesign** — Replaced `DragDropEvents` with `DragDropEventMap` and `DragDropEventHandlers`, following the DOM `EventMap` pattern for improved type safety.
 
   **Per-entity plugin configuration** — [Draggable](/concepts/draggable) entities now accept a `plugins` property for entity-specific plugin configuration. The `feedback` property has moved from the Draggable entity to the [Feedback plugin](/extend/plugins/feedback) configuration. [Sortable](/concepts/sortable) uses the same generic mechanism instead of custom registration.
@@ -33,19 +62,19 @@ hideContextMenu: true
 
 ## v0.3.2
 
-<Update label="v0.3.2" description="March 2025" tags={["Patch"]}>
+<Update label="v0.3.2" description="February 2026" tags={["Patch"]}>
   Fixed CSS cascade layer ordering so the [Feedback plugin](/extend/plugins/feedback) no longer overrides styles from CSS frameworks that use cascade layers (such as Tailwind CSS v4). The `@layer` block is now named `dnd-kit` and injected with the lowest priority.
 </Update>
 
 ## v0.3.1
 
-<Update label="v0.3.1" description="February 2025" tags={["Patch"]}>
+<Update label="v0.3.1" description="February 2026" tags={["Patch"]}>
   Fixed `onDragOver` firing before `onDragStart` when a drag operation began over a [droppable](/concepts/droppable) target.
 </Update>
 
 ## v0.3.0
 
-<Update label="v0.3.0" description="February 2025" tags={["Minor"]}>
+<Update label="v0.3.0" description="February 2026" tags={["Minor"]}>
   **Functional configuration** — Allow [plugins](/extend/plugins), [sensors](/extend/sensors), and modifiers to accept a function that receives the defaults, making it easy to extend or configure them without replacing the entire array.
 
   ```ts
@@ -66,7 +95,7 @@ hideContextMenu: true
 
 ## v0.2.4
 
-<Update label="v0.2.4" description="January 2025" tags={["Minor"]}>
+<Update label="v0.2.4" description="February 2026" tags={["Minor"]}>
   **Event type aliases** — Exposed ergonomic type aliases for drag and drop event handlers: `CollisionEvent`, `BeforeDragStartEvent`, `DragStartEvent`, `DragMoveEvent`, `DragOverEvent`, and `DragEndEvent`.
 
   **[Accessibility](/extend/plugins/accessibility)** — Respect `prefers-reduced-motion` media query across all animations including keyboard drag, drop animation, and [sortable](/concepts/sortable) swap transitions.
@@ -80,25 +109,25 @@ hideContextMenu: true
 
 ## v0.2.3
 
-<Update label="v0.2.3" description="December 2024" tags={["Patch"]}>
+<Update label="v0.2.3" description="January 2026" tags={["Patch"]}>
   Fixed a bug where custom [PointerSensor](/extend/sensors/pointer-sensor) options passed to `bind()` were not being respected by `activationConstraints()`.
 </Update>
 
 ## v0.2.2
 
-<Update label="v0.2.2" description="December 2024" tags={["Patch"]}>
+<Update label="v0.2.2" description="January 2026" tags={["Patch"]}>
   Fixed inverted `preventActivation` default option on [KeyboardSensor](/extend/sensors/keyboard-sensor).
 </Update>
 
 ## v0.2.1
 
-<Update label="v0.2.1" description="November 2024" tags={["Patch"]}>
+<Update label="v0.2.1" description="December 2025" tags={["Patch"]}>
   Fixed [PointerSensor](/extend/sensors/pointer-sensor) `defaults.preventActivation` not being applied when other sensor options were provided.
 </Update>
 
 ## v0.2.0
 
-<Update label="v0.2.0" description="November 2024" tags={["Minor"]}>
+<Update label="v0.2.0" description="December 2025" tags={["Minor"]}>
   **Refactored [PointerSensor](/extend/sensors/pointer-sensor)** — New composable activation constraints API with `PointerActivationConstraints.Delay` and `PointerActivationConstraints.Distance`. Improved defaults for different input types (mouse, touch, text inputs).
 
   **Conditional sensor activation** — Added `preventActivation` option to [PointerSensor](/extend/sensors/pointer-sensor) and [KeyboardSensor](/extend/sensors/keyboard-sensor) to conditionally prevent sensor activation on interactive elements.
@@ -111,7 +140,7 @@ hideContextMenu: true
 
 ## v0.1.x
 
-<Update label="v0.1.x" description="August – November 2024" tags={["Minor"]}>
+<Update label="v0.1.x" description="April – August 2025" tags={["Minor"]}>
   Initial beta releases establishing the core API:
 
   - [DragDropManager](/concepts/drag-drop-manager) with plugin architecture
