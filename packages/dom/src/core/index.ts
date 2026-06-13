@@ -12,10 +12,7 @@ export type {
 } from './manager/events.ts';
 
 export {Draggable, Droppable} from './entities/index.ts';
-export type {
-  DraggableInput,
-  DroppableInput,
-} from './entities/index.ts';
+export type {DraggableInput, DroppableInput} from './entities/index.ts';
 
 export type {Sensors} from './sensors/types.ts';
 export {
@@ -46,4 +43,7 @@ export type {
   DropAnimation,
   DropAnimationOptions,
   DropAnimationFunction,
+  AutoScrollerOptions,
+  ShouldScroll,
+  ShouldScrollArguments,
 } from './plugins/index.ts';
