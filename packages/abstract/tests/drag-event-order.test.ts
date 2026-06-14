@@ -134,6 +134,38 @@ describe('Drag event ordering', () => {
     manager.destroy();
   });
 
+  it('should start without a target when there is no initial droppable', async () => {
+    const manager = new DragDropManager();
+    const events: string[] = [];
+    let dragStartTarget: Droppable | null | undefined;
+
+    manager.monitor.addEventListener('dragstart', (event) => {
+      events.push('dragstart');
+      dragStartTarget = event.operation.target;
+    });
+    manager.monitor.addEventListener('dragover', () => {
+      events.push('dragover');
+    });
+
+    const draggable = new Draggable({id: 'item', register: false}, manager);
+    draggable.register();
+
+    manager.actions.start({
+      source: draggable,
+      coordinates: {x: 50, y: 50},
+    });
+
+    await flush();
+
+    expect(events).toEqual(['dragstart']);
+    expect(dragStartTarget).toBeNull();
+
+    manager.actions.stop();
+    await flush();
+    draggable.destroy();
+    manager.destroy();
+  });
+
   it('should resolve queued setDropTarget after dragover dispatches', async () => {
     const events: string[] = [];
     const renderingSnapshots: string[] = [];
