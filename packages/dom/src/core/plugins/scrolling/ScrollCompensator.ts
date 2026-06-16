@@ -85,7 +85,7 @@ export class ScrollCompensator extends CorePlugin<DragDropManager> {
         unsubscribeDragEnd();
       };
 
-      // Unsubscribe scroll event ASAP. 
+      // Unsubscribe scroll event ASAP.
       // dragmove events should never be dispatched after dragend.
       const unsubscribeDragEnd = manager.monitor.addEventListener(
         'dragend',
