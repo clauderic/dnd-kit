@@ -30,6 +30,9 @@ function getAccumulatedScrollOffsets(
 }
 
 export class ScrollCompensator extends CorePlugin<DragDropManager> {
+  #ancestors: Set<Element> | null = null;
+  #initial: Coordinates | null = null;
+
   constructor(manager: DragDropManager) {
     super(manager);
 
@@ -48,7 +51,8 @@ export class ScrollCompensator extends CorePlugin<DragDropManager> {
 
       if (ancestors.size === 0) return;
 
-      const initial = getAccumulatedScrollOffsets(ancestors);
+      this.#ancestors = ancestors;
+      this.#initial = getAccumulatedScrollOffsets(ancestors);
 
       const apply = (event: Event) => {
         const {target} = event;
@@ -61,19 +65,7 @@ export class ScrollCompensator extends CorePlugin<DragDropManager> {
           return;
         }
 
-        const current = getAccumulatedScrollOffsets(ancestors);
-        const delta = {
-          x: current.x - initial.x,
-          y: current.y - initial.y,
-        };
-
-        const previous = dragOperation.scrollAdjustment;
-
-        if (previous.x === delta.x && previous.y === delta.y) return;
-
-        dragOperation.scrollAdjustment = delta;
-
-        manager.actions.move({event, virtual: true});
+        this.compensate(event);
       };
 
       const root = sourceElement.ownerDocument ?? document;
@@ -82,6 +74,8 @@ export class ScrollCompensator extends CorePlugin<DragDropManager> {
 
       const cleanup = () => {
         root.removeEventListener('scroll', apply, listenerOptions);
+        this.#ancestors = null;
+        this.#initial = null;
         unsubscribeDragEnd();
       };
 
@@ -94,5 +88,24 @@ export class ScrollCompensator extends CorePlugin<DragDropManager> {
 
       return cleanup;
     });
+  }
+
+  public compensate(event?: Event) {
+    if (!this.#ancestors || !this.#initial) return;
+
+    const {dragOperation} = this.manager;
+    const current = getAccumulatedScrollOffsets(this.#ancestors);
+    const delta = {
+      x: current.x - this.#initial.x,
+      y: current.y - this.#initial.y,
+    };
+
+    const previous = dragOperation.scrollAdjustment;
+
+    if (previous.x === delta.x && previous.y === delta.y) return;
+
+    dragOperation.scrollAdjustment = delta;
+
+    this.manager.actions.move({event, virtual: true});
   }
 }
