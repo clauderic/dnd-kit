@@ -20,11 +20,12 @@ export function getScrollableElement(element: EventTarget | null) {
     return null;
   }
 
-  if (
-    isDocument(element) ||
-    element === getOwnerDocument(element).scrollingElement
-  ) {
-    return window;
+  if (isDocument(element)) {
+    return element.defaultView ?? window;
+  }
+
+  if (element === getOwnerDocument(element).scrollingElement) {
+    return getOwnerDocument(element)?.defaultView ?? window;
   }
 
   if (isHTMLElement(element)) {
