@@ -1,5 +1,17 @@
 # @dnd-kit/dom
 
+## 0.5.1
+
+### Patch Changes
+
+- [#2076](https://github.com/clauderic/dnd-kit/pull/2076) [`e00be08`](https://github.com/clauderic/dnd-kit/commit/e00be08c9b0c4dc521328917ec1dc42661e4ac00) Thanks [@timagixe](https://github.com/timagixe)! - Avoid requiring ResizeObserver at import time when importing @dnd-kit/dom/modifiers in DOM-like test environments.
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.5.1
+  - @dnd-kit/collision@0.5.1
+  - @dnd-kit/geometry@0.5.1
+  - @dnd-kit/state@0.5.1
+
 ## 0.5.0
 
 ### Minor Changes
