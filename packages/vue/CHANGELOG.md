@@ -1,5 +1,14 @@
 # @dnd-kit/vue
 
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies [[`e00be08`](https://github.com/clauderic/dnd-kit/commit/e00be08c9b0c4dc521328917ec1dc42661e4ac00)]:
+  - @dnd-kit/dom@0.5.1
+  - @dnd-kit/abstract@0.5.1
+  - @dnd-kit/state@0.5.1
+
 ## 0.5.0
 
 ### Minor Changes
