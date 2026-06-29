@@ -1,0 +1,208 @@
+.Scrollable {
+  width: 60%;
+  min-width: 300px;
+  margin: 40px 80px;
+  height: 350px;
+  outline: 3px solid rgba(0, 0, 0, 0.2);
+  background: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  overflow: auto;
+  position: relative;
+}
+
+.Hint {
+  position: relative;
+  z-index: 1;
+  max-width: 440px;
+  margin: 0 0 24px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.Hint code {
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(30, 185, 157, 0.12);
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.86em;
+  font-weight: 600;
+  color: #16967f;
+}
+
+.Spacer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 500%;
+  height: 500%;
+  --gradient: linear-gradient(65deg, #56fff420, #001AFF20, #5F6AF220, #F25FD020, #56FFF520, #F25FD020, #001AFF20, #56fff420);
+  background-image: var(--gradient);
+}
+
+.Scrollable > button {
+  position: relative;
+  z-index: 1;
+}
+
+/* Nested scrollables example: window > .Outer > .Inner */
+.Page {
+  min-height: 160vh;
+  padding: 60px 80px;
+}
+
+.Outer {
+  width: 70%;
+  min-width: 320px;
+  height: 320px;
+  margin-top: 24px;
+  overflow: auto;
+  outline: 3px solid rgba(0, 0, 0, 0.2);
+  background: #fff;
+  border-radius: 8px;
+}
+
+.OuterSpacer {
+  width: 160%;
+  min-height: 640px;
+  padding: 30px;
+  --gradient: linear-gradient(65deg, #56fff410, #001AFF10, #5F6AF210, #F25FD010);
+  background-image: var(--gradient);
+}
+
+.Inner {
+  width: 80%;
+  min-width: 280px;
+  height: 220px;
+  overflow: auto;
+  background: #fff;
+  outline: 3px dashed rgba(0, 0, 0, 0.18);
+  border-radius: 6px;
+  padding: 24px;
+  position: relative;
+}
+
+.Inner > button {
+  position: relative;
+  z-index: 1;
+}
+
+.InnerSpacer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 300%;
+  height: 300%;
+  --gradient: linear-gradient(65deg, #56fff420, #001AFF20, #5F6AF220, #F25FD020, #56FFF520, #F25FD020, #001AFF20, #56fff420);
+  background-image: var(--gradient);
+}
+
+.Hud {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10;
+  min-width: 220px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(34, 33, 81, 0.15);
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.HudTitle {
+  margin-bottom: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.HudRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 3px 0;
+  font-size: 13px;
+}
+
+.HudRow[data-highlight='true'] {
+  margin-top: 4px;
+  padding-top: 7px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.HudLabel {
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.HudRow[data-highlight='true'] .HudLabel {
+  color: #1eb99d;
+  font-weight: 700;
+}
+
+.HudValue {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+:global(.dark) .Scrollable {
+  outline: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+:global(.dark) .Hint {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+:global(.dark) .Hint code {
+  background: rgba(56, 255, 244, 0.14);
+  color: #56fff4;
+}
+
+:global(.dark) .Spacer {
+  --gradient: linear-gradient(65deg, #56fff480, #001AFF80, #5F6AF280, #F25FD080, #56FFF580, #F25FD080, #001AFF80, #56fff480);
+}
+
+:global(.dark) .Outer,
+:global(.dark) .Inner {
+  outline-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+:global(.dark) .OuterSpacer {
+  --gradient: linear-gradient(65deg, #56fff430, #001AFF30, #5F6AF230, #F25FD030);
+}
+
+:global(.dark) .InnerSpacer {
+  --gradient: linear-gradient(65deg, #56fff480, #001AFF80, #5F6AF280, #F25FD080, #56FFF580, #F25FD080, #001AFF80, #56fff480);
+}
+
+:global(.dark) .Hud {
+  background: #1c1c1e;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+:global(.dark) .HudTitle {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+:global(.dark) .HudLabel {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+:global(.dark) .HudValue {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+:global(.dark) .HudRow[data-highlight='true'] {
+  border-top-color: rgba(255, 255, 255, 0.12);
+}

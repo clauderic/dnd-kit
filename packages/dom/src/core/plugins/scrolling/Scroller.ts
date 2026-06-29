@@ -9,7 +9,6 @@ import {
   scheduler,
   isKeyboardEvent,
   getDocument,
-  getFrameTransform,
   getRoot,
 } from '@dnd-kit/dom/utilities';
 import {Axes, type Axis, type Coordinates} from '@dnd-kit/geometry';
@@ -17,6 +16,7 @@ import {Axes, type Axis, type Coordinates} from '@dnd-kit/geometry';
 import type {DragDropManager} from '../../manager/index.ts';
 
 import {ScrollIntentTracker} from './ScrollIntent.ts';
+import {ScrollCompensator} from './ScrollCompensator.ts';
 
 export interface ScrollOptions {
   acceleration?: number;
@@ -129,6 +129,11 @@ export class Scroller extends CorePlugin<DragDropManager> {
 
     if (by.y) element.scrollTop += by.y;
     if (by.x) element.scrollLeft += by.x;
+
+    // This runs inside a rAF, after ScrollCompensator's scroll-event-based compensation has already happened in the same frame,
+    // which leaves that compensation stale for every frame's painting.
+    // So trigger a fresh compensation right after scrolling to fix it.
+    this.manager.registry.plugins.get(ScrollCompensator)?.compensate();
   };
 
   public scroll = (

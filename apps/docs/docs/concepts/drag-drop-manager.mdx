@@ -138,6 +138,7 @@ const manager = new DragDropManager({
     - `Feedback`: Controls visual feedback during drag
     - `PreventSelection`: Prevents text selection while dragging
     - `ScrollListener`: Monitors scroll events during drag
+    - `ScrollCompensator`: Tracks scroll-induced displacement during drag
     - `Scroller`: Handles programmatic scrolling
   </Accordion>
 </AccordionGroup>
@@ -297,6 +298,9 @@ const draggable = new Draggable({
   - `source`: Currently dragged element
   - `target`: Current drop target
   - `position`: Current drag coordinates
+  - `transform`: Cumulative pointer displacement after modifiers pipeline
+  - `scrollAdjustment`: Cumulative scroll delta
+  - `adjustedTransform`: Cumulative source displacement in document coordinates (`transform` + `scrollAdjustment`)
   - `status`: Current operation status
   - `canceled`: Whether operation was canceled
 

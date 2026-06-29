@@ -15,6 +15,7 @@ import {
   Cursor,
   Feedback,
   Scroller,
+  ScrollCompensator,
   ScrollListener,
   PreventSelection,
   StyleInjector,
@@ -49,7 +50,7 @@ export class DragDropManager<
 
     super({
       ...input,
-      plugins: [ScrollListener, Scroller, StyleInjector, ...plugins],
+      plugins: [ScrollListener, ScrollCompensator, Scroller, StyleInjector, ...plugins],
       sensors,
       modifiers,
     });

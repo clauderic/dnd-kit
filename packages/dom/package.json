@@ -83,6 +83,7 @@
   },
   "devDependencies": {
     "@dnd-kit/eslint-config": "*",
+    "@happy-dom/global-registrator": "^20.9.0",
     "bun-types": "^1.2.15",
     "eslint": "^8.38.0",
     "tsup": "8.3.0",
