@@ -5,6 +5,7 @@ import {Feedback} from '@dnd-kit/dom';
 import {SortableExample} from '../SortableExample';
 import {AnchorElementsExample} from './AnchorElementsExample';
 import {AutoScrollExample} from './AutoScrollExample';
+import {ScrollableItemsExample} from './ScrollableItemsExample';
 
 const meta: Meta<typeof SortableExample> = {
   title: 'React/Sortable/Vertical list',
@@ -166,6 +167,30 @@ export const AutoScrollCustomSpeed: AutoScrollStory = {
   args: {
     itemCount: 100,
     acceleration: 50,
+  },
+};
+
+type ScrollableItemsStory = StoryObj<typeof ScrollableItemsExample>;
+
+export const ScrollableSiblingItems: ScrollableItemsStory = {
+  name: 'Scrollable sibling items',
+  render: (args) => <ScrollableItemsExample {...args} />,
+  args: {
+    itemCount: 8,
+    preventSiblingScroll: true,
+  },
+  argTypes: {
+    itemCount: {
+      control: {type: 'number', min: 2, max: 20, step: 1},
+    },
+    preventSiblingScroll: {
+      control: 'boolean',
+    },
+    testIdPrefix: {
+      table: {
+        disable: true,
+      },
+    },
   },
 };
 

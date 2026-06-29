@@ -5,6 +5,7 @@ import type {Axis} from '@dnd-kit/geometry';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import {Scroller} from './Scroller.ts';
+import type {ShouldScroll} from './Scroller.ts';
 import {scheduler} from '../../../utilities/scheduling/scheduler.ts';
 
 export interface AutoScrollerOptions {
@@ -13,6 +14,11 @@ export interface AutoScrollerOptions {
    * @default 25
    */
   acceleration?: number;
+  /**
+   * Predicate that controls whether a scrollable candidate is eligible for
+   * auto-scrolling during the current drag operation.
+   */
+  shouldScroll?: ShouldScroll;
   /**
    * Percentage of container dimensions that defines the scroll activation zone.
    * A single number applies to both axes. Use `{ x, y }` to set per-axis
@@ -48,6 +54,7 @@ export class AutoScroller extends Plugin<DragDropManager, AutoScrollerOptions> {
       if (status.dragging) {
         const scrollOptions = {
           acceleration: this.options?.acceleration,
+          shouldScroll: this.options?.shouldScroll,
           threshold:
             typeof this.options?.threshold === 'number'
               ? {x: this.options.threshold, y: this.options.threshold}
