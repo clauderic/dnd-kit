@@ -13,8 +13,9 @@ import {
 import type {DragDropManager} from '../../manager/index.ts';
 import type {Draggable} from '../../entities/index.ts';
 import {AutoScroller} from '../../plugins/index.ts';
+import {isKeyboardKey, type KeyCode} from './KeyboardSensor.helpers.ts';
 
-export type KeyCode = KeyboardEvent['code'];
+export type {KeyCode};
 
 export type KeyboardCodes = {
   start: KeyCode[];
@@ -34,7 +35,7 @@ export interface KeyboardSensorOptions {
    */
   offset?: number | {x: number; y: number};
   /**
-   * The keyboard codes that activate the keyboard sensor.
+   * The keyboard keys that activate the keyboard sensor.
    *
    * @default {
    *   start: ['Space', 'Enter'],
@@ -131,7 +132,7 @@ export class KeyboardSensor extends Sensor<
       preventActivation = defaults.preventActivation,
     } = options ?? {};
 
-    if (!keyboardCodes.start.includes(event.code)) {
+    if (!isKeyboardKey(event, keyboardCodes.start)) {
       return;
     }
 
@@ -196,23 +197,23 @@ export class KeyboardSensor extends Sensor<
   ) {
     const {keyboardCodes = defaults.keyboardCodes} = options ?? {};
 
-    if (isKeycode(event, [...keyboardCodes.end, ...keyboardCodes.cancel])) {
+    if (isKeyboardKey(event, [...keyboardCodes.end, ...keyboardCodes.cancel])) {
       event.preventDefault();
-      const canceled = isKeycode(event, keyboardCodes.cancel);
+      const canceled = isKeyboardKey(event, keyboardCodes.cancel);
 
       this.handleEnd(event, canceled);
       return;
     }
 
-    if (isKeycode(event, keyboardCodes.up)) {
+    if (isKeyboardKey(event, keyboardCodes.up)) {
       this.handleMove('up', event);
-    } else if (isKeycode(event, keyboardCodes.down)) {
+    } else if (isKeyboardKey(event, keyboardCodes.down)) {
       this.handleMove('down', event);
     }
 
-    if (isKeycode(event, keyboardCodes.left)) {
+    if (isKeyboardKey(event, keyboardCodes.left)) {
       this.handleMove('left', event);
-    } else if (isKeycode(event, keyboardCodes.right)) {
+    } else if (isKeyboardKey(event, keyboardCodes.right)) {
       this.handleMove('right', event);
     }
   }
@@ -297,8 +298,4 @@ export class KeyboardSensor extends Sensor<
   static configure = configurator(KeyboardSensor);
 
   static defaults = defaults;
-}
-
-function isKeycode(event: KeyboardEvent, codes: KeyCode[]) {
-  return codes.includes(event.code);
 }
