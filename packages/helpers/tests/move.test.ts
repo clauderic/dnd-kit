@@ -59,6 +59,36 @@ function dragEndEvent(source: any, target: any, canceled = false) {
   } as any;
 }
 
+/** Build a drag manager mock with droppable item center measurements. */
+function managerWithDroppableCenters(
+  position: {x: number; y: number},
+  centers: Record<string, number>
+) {
+  return {
+    dragOperation: {
+      position: {current: position},
+      shape: null,
+    },
+    registry: {
+      droppables: {
+        get(id: string | number) {
+          const center = centers[String(id)];
+
+          if (center == null) {
+            return undefined;
+          }
+
+          return {
+            shape: {
+              center: {x: 662, y: center},
+            },
+          };
+        },
+      },
+    },
+  };
+}
+
 // ===========================================================================
 // arrayMove / arraySwap
 // ===========================================================================
@@ -333,6 +363,121 @@ describe('move – grouped record, ID-based fallback', () => {
     expect(move(items, event)).toEqual({
       240: [24002, 24003, 24001],
       241: [24101, 24102],
+    });
+  });
+
+  it('should use child item centers when crossing groups over a non-empty container', () => {
+    const items = {
+      A: ['A0', 'A1', 'A2'],
+      B: ['B0'],
+      C: ['B1'],
+    };
+    const source = mockSource('A1');
+    source.manager = managerWithDroppableCenters({x: 627, y: 296}, {B0: 249});
+    const target = mockTarget('B');
+    target.shape = {
+      center: {x: 662, y: 301},
+    };
+    const event = dragOverEvent(source, target);
+
+    expect(move(items, event)).toEqual({
+      A: ['A0', 'A2'],
+      B: ['B0', 'A1'],
+      C: ['B1'],
+    });
+  });
+
+  it('should not offset child-based container insertion by the container center', () => {
+    const items = {
+      A: ['A0'],
+      B: ['B0', 'B1', 'B2'],
+    };
+    const source = mockSource('A0');
+    source.manager = managerWithDroppableCenters(
+      {x: 627, y: 475},
+      {
+        B0: 400,
+        B1: 500,
+        B2: 600,
+      }
+    );
+    const target = mockTarget('B');
+    target.shape = {
+      center: {x: 662, y: 450},
+    };
+    const event = dragOverEvent(source, target);
+
+    expect(move(items, event)).toEqual({
+      A: [],
+      B: ['B0', 'A0', 'B1', 'B2'],
+    });
+  });
+
+  it('should ignore the source item when measuring a same-container target', () => {
+    const items = {
+      B: ['B0', 'B1', 'B2'],
+    };
+    const source = mockSource('B0');
+    source.manager = managerWithDroppableCenters(
+      {x: 627, y: 550},
+      {
+        B0: 400,
+        B1: 500,
+        B2: 600,
+      }
+    );
+    const target = mockTarget('B');
+    target.shape = {
+      center: {x: 662, y: 450},
+    };
+    const event = dragOverEvent(source, target);
+
+    expect(move(items, event)).toEqual({
+      B: ['B1', 'B0', 'B2'],
+    });
+  });
+
+  it('should use child item centers for object items when targeting a container', () => {
+    const items = {
+      A: [{id: 'A0'}],
+      B: [{id: 'B0'}, {id: 'B1'}],
+    };
+    const source = mockSource('A0');
+    source.manager = managerWithDroppableCenters(
+      {x: 627, y: 475},
+      {
+        B0: 400,
+        B1: 500,
+      }
+    );
+    const target = mockTarget('B');
+    target.shape = {
+      center: {x: 662, y: 600},
+    };
+    const event = dragOverEvent(source, target);
+
+    expect(move(items, event)).toEqual({
+      A: [],
+      B: [{id: 'B0'}, {id: 'A0'}, {id: 'B1'}],
+    });
+  });
+
+  it('should fall back to the container center when child measurements are unavailable', () => {
+    const items = {
+      A: ['A0'],
+      B: ['B0'],
+    };
+    const source = mockSource('A0');
+    source.manager = managerWithDroppableCenters({x: 627, y: 550}, {});
+    const target = mockTarget('B');
+    target.shape = {
+      center: {x: 662, y: 500},
+    };
+    const event = dragOverEvent(source, target);
+
+    expect(move(items, event)).toEqual({
+      A: [],
+      B: ['B0', 'A0'],
     });
   });
 
