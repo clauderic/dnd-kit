@@ -142,7 +142,9 @@ function mutate<
   W extends DragDropManager<U, V>,
 >(
   items: T,
-  event: DragDropEventMap<U, V, W>['dragover'] | DragDropEventMap<U, V, W>['dragend'],
+  event:
+    | DragDropEventMap<U, V, W>['dragover']
+    | DragDropEventMap<U, V, W>['dragend'],
   mutation: typeof arrayMove | typeof arraySwap
 ): T {
   const {source, target, canceled} = event.operation;
@@ -385,7 +387,9 @@ export function move<
   W extends DragDropManager<U, V>,
 >(
   items: T,
-  event: DragDropEventMap<U, V, W>['dragover'] | DragDropEventMap<U, V, W>['dragend']
+  event:
+    | DragDropEventMap<U, V, W>['dragover']
+    | DragDropEventMap<U, V, W>['dragend']
 ) {
   return mutate(items, event, arrayMove);
 }
@@ -397,7 +401,9 @@ export function swap<
   W extends DragDropManager<U, V>,
 >(
   items: T,
-  event: DragDropEventMap<U, V, W>['dragover'] | DragDropEventMap<U, V, W>['dragend']
+  event:
+    | DragDropEventMap<U, V, W>['dragover']
+    | DragDropEventMap<U, V, W>['dragend']
 ) {
   return mutate(items, event, arraySwap);
 }
