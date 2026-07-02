@@ -1,7 +1,7 @@
 import {effect, untracked} from '@dnd-kit/state';
 import {Modifier, type DragOperation} from '@dnd-kit/abstract';
 import {restrictShapeToBoundingRectangle} from '@dnd-kit/abstract/modifiers';
-import {Rectangle, type BoundingRectangle} from '@dnd-kit/geometry';
+import {Rectangle, type BoundingRectangle, type Coordinates} from '@dnd-kit/geometry';
 import type {DragDropManager} from '@dnd-kit/dom';
 import {getViewportBoundingRectangle} from '@dnd-kit/dom/utilities';
 
@@ -21,9 +21,11 @@ export class RestrictToWindow extends Modifier<DragDropManager> {
 
     this.destroy = effect(() => {
       if (dragOperation.status.idle) {
+        this.previousConstrainedTransform = {x: 0, y: 0};
         return;
       }
 
+      this.previousConstrainedTransform = {x: 0, y: 0};
       getWindowBoundingRectangle();
 
       window.addEventListener('resize', getWindowBoundingRectangle);
@@ -35,23 +37,26 @@ export class RestrictToWindow extends Modifier<DragDropManager> {
   }
 
   windowBoundingRectangle: BoundingRectangle | undefined;
+  private previousConstrainedTransform: Coordinates = {x: 0, y: 0};
 
   apply({shape, transform}: DragOperation) {
     if (!this.windowBoundingRectangle || !shape) {
       return transform;
     }
 
-    const {initial, current} = shape;
-    const {height, width} = current.boundingRectangle;
-    const left = initial.center.x - width / 2;
-    const top = initial.center.y - height / 2;
+    const {current} = shape;
+    const {left, top, width, height} = current.boundingRectangle;
+
+    const baseLeft = left - this.previousConstrainedTransform.x;
+    const baseTop = top - this.previousConstrainedTransform.y;
 
     const restrictedTransform = restrictShapeToBoundingRectangle(
-      new Rectangle(left, top, width, height),
+      new Rectangle(baseLeft, baseTop, width, height),
       transform,
       this.windowBoundingRectangle
     );
 
+    this.previousConstrainedTransform = restrictedTransform;
     return restrictedTransform;
   }
 }
