@@ -576,7 +576,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             translate = {x: 0, y: 0};
           }
 
-          if (!translate || dropAnimationConfig === null) {
+          if (!translate || dropAnimationConfig === null || feedbackElement !== feedbackPlugin.overlay) {
             cleanup();
             return;
           }
