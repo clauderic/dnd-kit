@@ -22,29 +22,29 @@ The `createDraggable` primitive requires a unique `id`. It returns an object wit
 
 ## Input
 
-All input properties accept plain values or getter functions for reactivity.
+Input properties are plain values that are read reactively. To keep an option in sync with reactive state, define it as a getter property on the input object (for example, `createDraggable({id, get disabled() { return disabled; }})`) so the primitive re-reads it when the underlying `$state` changes.
 
-<ParamField path="id" type="UniqueIdentifier | (() => UniqueIdentifier)" required>
+<ParamField path="id" type="UniqueIdentifier" required>
   A unique identifier for this draggable instance.
 </ParamField>
 
-<ParamField path="disabled" type="boolean | (() => boolean)" optional>
+<ParamField path="disabled" type="boolean" optional>
   Whether the draggable is disabled.
 </ParamField>
 
-<ParamField path="plugins" type="PluginDescriptor[] | (() => PluginDescriptor[])" optional>
+<ParamField path="plugins" type="PluginDescriptor[]" optional>
   An array of plugin descriptors for per-entity plugin configuration. Use `Plugin.configure()` to create descriptors. For example, `Feedback.configure({ feedback: 'clone' })`.
 </ParamField>
 
-<ParamField path="modifiers" type="Modifier[] | (() => Modifier[])" optional>
+<ParamField path="modifiers" type="Modifier[]" optional>
   Modifiers to apply to this draggable instance.
 </ParamField>
 
-<ParamField path="sensors" type="Sensor[] | (() => Sensor[])" optional>
+<ParamField path="sensors" type="Sensor[]" optional>
   Sensors to use for this draggable instance.
 </ParamField>
 
-<ParamField path="data" type="Data | (() => Data)" optional>
+<ParamField path="data" type="Data" optional>
   Custom data to attach to this draggable instance.
 </ParamField>
 
@@ -101,15 +101,15 @@ You can render a completely different element while the draggable element is bei
 
 <img src="/images/draggable/drag-overlay.png" />
 
-```svelte
+<CodeGroup>
+```svelte App.svelte
 <script>
-  import {DragDropProvider, DragOverlay, createDraggable} from '@dnd-kit/svelte';
-
-  const draggable = createDraggable({id: 'draggable'});
+  import {DragDropProvider, DragOverlay} from '@dnd-kit/svelte';
+  import Draggable from './Draggable.svelte';
 </script>
 
 <DragDropProvider>
-  <button {@attach draggable.attach}>Draggable</button>
+  <Draggable id="draggable" />
   <DragOverlay>
     {#snippet children(source)}
       <div>I will be rendered while dragging...</div>
@@ -117,6 +117,19 @@ You can render a completely different element while the draggable element is bei
   </DragOverlay>
 </DragDropProvider>
 ```
+
+```svelte Draggable.svelte
+<script>
+  import {createDraggable} from '@dnd-kit/svelte';
+
+  let {id} = $props();
+
+  const draggable = createDraggable({id});
+</script>
+
+<button {@attach draggable.attach}>Draggable</button>
+```
+</CodeGroup>
 
 The `<DragOverlay>` component will only render its children when a drag operation is in progress. This can be useful for rendering a completely different element while the draggable element is being dragged.
 

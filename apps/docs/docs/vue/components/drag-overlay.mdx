@@ -15,24 +15,43 @@ The `DragOverlay` component renders a custom overlay element while a drag operat
 
 Import and place the `DragOverlay` component inside a [`DragDropProvider`](/vue/components/drag-drop-provider). Its children will only be rendered when a drag operation is active.
 
-```vue
-<script setup>
-import {ref} from 'vue';
-import {DragDropProvider, DragOverlay, useDraggable} from '@dnd-kit/vue';
+<Note>
+  Composables like `useDraggable` must be called in a **child component** of `DragDropProvider`, not in the same component that renders the provider — Vue's `provide`/`inject` only resolves injections from ancestor components.
+</Note>
 
-const element = ref(null);
-useDraggable({id: 'my-item', element});
+<CodeGroup>
+```vue App.vue
+<script setup>
+import {DragDropProvider, DragOverlay} from '@dnd-kit/vue';
+import Draggable from './Draggable.vue';
 </script>
 
 <template>
   <DragDropProvider>
-    <button ref="element">Drag me</button>
+    <Draggable id="my-item" />
     <DragOverlay>
       <div>I will be rendered while dragging...</div>
     </DragOverlay>
   </DragDropProvider>
 </template>
 ```
+
+```vue Draggable.vue
+<script setup>
+import {ref} from 'vue';
+import {useDraggable} from '@dnd-kit/vue';
+
+const props = defineProps(['id']);
+const element = ref(null);
+
+useDraggable({id: props.id, element});
+</script>
+
+<template>
+  <button ref="element">Drag me</button>
+</template>
+```
+</CodeGroup>
 
 <Warning>
   You should only render the `DragOverlay` component once per [DragDropProvider](/vue/components/drag-drop-provider).

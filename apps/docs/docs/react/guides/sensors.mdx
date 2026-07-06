@@ -81,7 +81,7 @@ PointerSensor.configure({
 });
 ```
 
-Returning `undefined` from the function falls back to the [default behavior](/extend/sensors/pointer-sensor#default-behavior).
+Returning `undefined` from the function means **no activation constraints** — the drag starts immediately on `pointerdown`. The [default behavior](/extend/sensors/pointer-sensor#default-behavior) is not restored; if you want the defaults for a given pointer type, return those constraints explicitly.
 
 ### Drag handles via activator elements
 

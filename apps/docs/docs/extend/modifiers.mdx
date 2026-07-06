@@ -22,7 +22,7 @@ Available in `@dnd-kit/abstract/modifiers`, these modifiers are environment-agno
   <Card title="RestrictToVerticalAxis">
     Constrain movement to the vertical axis only
   </Card>
-  <Card title="Snap">
+  <Card title="SnapModifier">
     Snap movement to a grid with configurable size
   </Card>
 </CardGroup>
@@ -42,19 +42,16 @@ Example combining modifiers:
 
 ```ts
 import {
-  Snap,
+  SnapModifier,
   RestrictToHorizontalAxis
 } from '@dnd-kit/abstract/modifiers';
 
-// Horizontal movement that snaps to a grid
+// Horizontal movement that snaps to a 20px grid
 const manager = new DragDropManager({
   modifiers: [
-    RestrictToHorizontalAxis,
-    Snap.configure({
-      size: {
-        x: 20,  // Snap every 20px horizontally
-        y: 0    // No vertical snapping (already restricted)
-      }
+    RestrictToHorizontalAxis, // Vertical movement is already restricted
+    SnapModifier.configure({
+      size: 20, // Snap every 20px
     })
   ],
 });

@@ -103,53 +103,53 @@ Call `move()` in `onDragOver` for live visual sorting, and restore the snapshot 
 
 ## Input
 
-All input properties accept plain values or getter functions for reactivity.
+Input properties are plain values that are read reactively. To keep an option in sync with reactive state, define it as a **getter property** on the input object (e.g. `createSortable({get id() { return id; }, get index() { return index; }})`) so the primitive re-reads it when the underlying `$state` changes.
 
-<ParamField path="id" type="UniqueIdentifier | (() => UniqueIdentifier)" required>
+<ParamField path="id" type="UniqueIdentifier" required>
   A unique identifier for this sortable instance.
 </ParamField>
 
-<ParamField path="index" type="number | (() => number)" required>
+<ParamField path="index" type="number" required>
   The current index of this item in the sorted list.
 </ParamField>
 
-<ParamField path="group" type="string | (() => string)" optional>
+<ParamField path="group" type="string" optional>
   The group this sortable belongs to. Used for sorting across multiple lists.
 </ParamField>
 
-<ParamField path="accept" type="string | string[] | (() => string | string[])" optional>
+<ParamField path="accept" type="string | string[]" optional>
   The types of draggable elements this sortable accepts.
 </ParamField>
 
-<ParamField path="type" type="string | (() => string)" optional>
+<ParamField path="type" type="string" optional>
   The type of this sortable element.
 </ParamField>
 
-<ParamField path="plugins" type="PluginDescriptor[] | (() => PluginDescriptor[])" optional>
+<ParamField path="plugins" type="PluginDescriptor[]" optional>
   An array of plugin descriptors for per-entity plugin configuration. Use `Plugin.configure()` to create descriptors. For example, `Feedback.configure({ feedback: 'clone' })`.
 </ParamField>
 
-<ParamField path="transition" type="SortableTransition | (() => SortableTransition)" optional>
+<ParamField path="transition" type="SortableTransition" optional>
   Animation transition configuration for sort operations.
 </ParamField>
 
-<ParamField path="modifiers" type="Modifier[] | (() => Modifier[])" optional>
+<ParamField path="modifiers" type="Modifier[]" optional>
   Modifiers to apply to this sortable instance.
 </ParamField>
 
-<ParamField path="sensors" type="Sensor[] | (() => Sensor[])" optional>
+<ParamField path="sensors" type="Sensor[]" optional>
   Sensors to use for this sortable instance.
 </ParamField>
 
-<ParamField path="collisionDetector" type="CollisionDetector | (() => CollisionDetector)" optional>
+<ParamField path="collisionDetector" type="CollisionDetector" optional>
   A custom collision detection algorithm.
 </ParamField>
 
-<ParamField path="collisionPriority" type="number | (() => number)" optional>
+<ParamField path="collisionPriority" type="number" optional>
   The collision priority of this sortable element. Higher values take precedence when multiple droppable elements overlap.
 </ParamField>
 
-<ParamField path="disabled" type="boolean | SortableDisabled | (() => boolean | SortableDisabled)" optional>
+<ParamField path="disabled" type="boolean | SortableDisabled" optional>
   Whether the sortable is disabled. Pass an object to disable dragging and dropping independently:
 
   ```ts
@@ -160,7 +160,7 @@ All input properties accept plain values or getter functions for reactivity.
   ```
 </ParamField>
 
-<ParamField path="data" type="Data | (() => Data)" optional>
+<ParamField path="data" type="Data" optional>
   Custom data to attach to this sortable instance.
 </ParamField>
 

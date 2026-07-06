@@ -105,7 +105,7 @@ The `useSortable` hook accepts all of the same arguments as the [useDraggable](/
 </ParamField>
 
 <ParamField path="type" type="string | number | Symbol">
-  An identifier used by other sortables' or droppables' `accept` rules to decide whether this item can be a drop target for a given draggable.
+  An identifier for this item that other sortables' or droppables' `accept` rules check when **this item is dragged** — it determines where this item can be dropped. Whether this item can act as a drop target for other draggables is governed by its own [`accept`](#param-accept) rule.
 </ParamField>
 
 <ParamField path="group" type="string | number | Symbol">

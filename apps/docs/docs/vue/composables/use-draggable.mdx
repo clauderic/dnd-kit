@@ -96,24 +96,39 @@ You can render a completely different element while the draggable element is bei
 
 <img src="/images/draggable/drag-overlay.png" />
 
-```vue
+<CodeGroup>
+```vue App.vue
 <script setup>
-import {ref} from 'vue';
-import {DragDropProvider, DragOverlay, useDraggable} from '@dnd-kit/vue';
-
-const element = ref(null);
-useDraggable({id: 'draggable', element});
+import {DragDropProvider, DragOverlay} from '@dnd-kit/vue';
+import Draggable from './Draggable.vue';
 </script>
 
 <template>
   <DragDropProvider>
-    <button ref="element">Draggable</button>
+    <Draggable id="draggable" />
     <DragOverlay>
       <div>I will be rendered while dragging...</div>
     </DragOverlay>
   </DragDropProvider>
 </template>
 ```
+
+```vue Draggable.vue
+<script setup>
+import {ref} from 'vue';
+import {useDraggable} from '@dnd-kit/vue';
+
+const props = defineProps(['id']);
+const element = ref(null);
+
+useDraggable({id: props.id, element});
+</script>
+
+<template>
+  <button ref="element">Draggable</button>
+</template>
+```
+</CodeGroup>
 
 The `<DragOverlay>` component will only render its children when a drag operation is in progress. This can be useful for rendering a completely different element while the draggable element is being dragged.
 

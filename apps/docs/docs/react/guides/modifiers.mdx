@@ -39,7 +39,7 @@ function DraggableItem({container}: {container: React.RefObject<HTMLDivElement |
     id: 'draggable-1',
     modifiers: [
       RestrictToElement.configure({
-        element: container.current,
+        element: () => container.current,
       }),
     ],
   });
@@ -48,8 +48,12 @@ function DraggableItem({container}: {container: React.RefObject<HTMLDivElement |
 }
 ```
 
+<Note>
+  Pass a function (`element: () => container.current`) rather than the ref's current value (`element: container.current`). The function is evaluated when a drag starts, after the ref is populated. Passing `container.current` directly captures `null` on the initial render, and the modifier silently applies no restriction.
+</Note>
+
 <Tip>
-  The `element` option also accepts a function that receives the current drag operation and returns an element. This is useful when you need dynamic container references:
+  The function form also receives the current drag operation, which is useful when you need dynamic container references:
 
   ```tsx
   RestrictToElement.configure({
@@ -138,7 +142,7 @@ function DraggableItem({container}: {container: React.RefObject<HTMLDivElement |
   const {ref} = useDraggable({
     id: 'draggable-1',
     modifiers: [
-      RestrictToElement.configure({element: container.current}),
+      RestrictToElement.configure({element: () => container.current}),
       SnapModifier.configure({size: 20}),
     ],
   });

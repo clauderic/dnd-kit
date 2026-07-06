@@ -43,7 +43,7 @@ function App() {
 ```
 
 <Warning>
-  The hook returns `null` when called outside of a `DragDropProvider`. Always guard against `null` before dereferencing the manager.
+  When called outside of a `DragDropProvider`, the hook does not return `null` at runtime — it returns a shared default manager instance that all provider-less hooks fall back to. The return type is still `DragDropManager | null`, so a `null` guard is needed to satisfy TypeScript.
 </Warning>
 
 ## API Reference
@@ -51,7 +51,7 @@ function App() {
 ### Output
 
 <ResponseField name="manager" type="DragDropManager | null">
-  The [`DragDropManager`](/concepts/drag-drop-manager) instance from the nearest ancestor `DragDropProvider`, or `null` if no provider is present.
+  The [`DragDropManager`](/concepts/drag-drop-manager) instance from the nearest ancestor `DragDropProvider`, or a shared default manager instance if no provider is present.
 </ResponseField>
 
 ## Related
