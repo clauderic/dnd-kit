@@ -33,23 +33,25 @@ Listen to drag and drop events to respond to user interactions:
 function App() {
   return (
     <DragDropProvider
-      onBeforeDragStart={({source, event}) => {
+      onBeforeDragStart={(event) => {
         // Optionally prevent dragging
-        if (shouldPreventDrag(source)) {
+        if (shouldPreventDrag(event.operation.source)) {
           event.preventDefault();
         }
       }}
-      onDragStart={({source}) => {
-        console.log('Started dragging', source.id);
+      onDragStart={({operation}) => {
+        console.log('Started dragging', operation.source.id);
       }}
       onDragMove={({operation}) => {
         const {position} = operation;
         console.log('Current position:', position);
       }}
-      onDragOver={({source, target}) => {
-        console.log(`${source.id} is over ${target.id}`);
+      onDragOver={({operation}) => {
+        const {source, target} = operation;
+        console.log(`${source.id} is over ${target?.id}`);
       }}
-      onDragEnd={({source, target}) => {
+      onDragEnd={({operation}) => {
+        const {source, target} = operation;
         if (target) {
           console.log(`Dropped ${source.id} onto ${target.id}`);
         }

@@ -36,7 +36,7 @@ Returns the droppable with the **greatest overlap area** with the dragged elemen
 
 ### `closestCenter`
 
-Picks the droppable whose **center point** is closest to the dragged element's center. Ideal for card stacking or grids where items snap to the nearest slot.
+First runs `defaultCollisionDetection` and returns its result when the dragged element intersects a droppable; only when there is **no intersection** does it fall back to picking the droppable whose **center point** is closest to the dragged element's center. Ideal for card stacking or grids where items should snap to the nearest slot even without overlapping it.
 
 <Frame>
   <img src="/images/droppable/closest-center.svg" alt="Closest center: a line from the dragged element's center to the closest droppable's center" />

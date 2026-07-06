@@ -39,28 +39,28 @@ manager.monitor.addEventListener('dragend', (event) => {
 
 ## Accepting Specific Types
 
-You can restrict which draggable elements can be dropped by using the `accepts` property. See the [draggable types](/concepts/draggable#types) documentation for more details.
+You can restrict which draggable elements can be dropped by using the `accept` property. See the [draggable types](/concepts/draggable#types) documentation for more details.
 
 ```js
 // Accept only draggables with type 'item'
 const droppable = new Droppable({
   id: 'drop-zone',
   element,
-  accepts: 'item'
+  accept: 'item'
 }, manager);
 
 // Accept multiple types
 const droppable = new Droppable({
   id: 'drop-zone',
   element,
-  accepts: ['item', 'card']
+  accept: ['item', 'card']
 }, manager);
 
 // Use a function for custom logic
 const droppable = new Droppable({
   id: 'drop-zone',
   element,
-  accepts: (draggable) => {
+  accept: (draggable) => {
     // Custom acceptance logic
     return draggable.type === 'item' && draggable.data.category === 'fruit';
   }
@@ -69,7 +69,7 @@ const droppable = new Droppable({
 
 ## Collision Detection
 
-By default, the `Droppable` class uses rectangle intersection to detect when draggable elements are over the drop target:
+By default, the `Droppable` class uses the `defaultCollisionDetection` algorithm from `@dnd-kit/collision`: it first checks whether the pointer is over the drop target, and falls back to rectangle intersection when there is no pointer collision (for example, during keyboard-driven drags):
 
 <img src="/images/droppable/shape-intersection.svg" alt="Rectangle intersection collision detection" />
 
@@ -131,12 +131,13 @@ The `Droppable` class accepts the following arguments:
 </ParamField>
 
 <ParamField path="type" type="string | number | Symbol">
-  An identifier used by other droppables' `accept` rules to decide whether this droppable can be a target for a given draggable.
+  An optional identifier to categorize this droppable. Whether a draggable can be dropped on this target is determined by this droppable's own [`accept`](#param-accept) rule checked against the **draggable's** `type` — a droppable's `type` is not consulted by `accept` rules.
 </ParamField>
 
 <ParamField path="collisionDetector" type="CollisionDetector">
   A function to determine when draggable elements are over this target. See [collision detection](#collision-detection) for built-in options, such as:
-  - `shapeIntersection`: Default, uses rectangle intersection
+  - `defaultCollisionDetection`: Default, uses pointer intersection with a fallback to rectangle intersection
+  - `shapeIntersection`: Uses rectangle intersection
   - `pointerIntersection`: Uses pointer position for precise detection
   - `closestCenter`: Uses center point distance, ideal for card stacking
   - `directionBiased`: Considers drag direction, useful for sortable lists

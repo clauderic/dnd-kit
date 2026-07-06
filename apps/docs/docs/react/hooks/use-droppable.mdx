@@ -58,7 +58,7 @@ The `useDroppable` hook accepts the following arguments:
 </ParamField>
 
 <ParamField path="type" type="string | number | Symbol">
-  An identifier used by other droppables' `accept` rules to decide whether this droppable can be a target for a given draggable. Has no effect on its own — it pairs with `accept`.
+  An optional identifier to categorize this droppable. Whether a draggable can be dropped on this target is determined by this droppable's own [`accept`](#param-accept) rule checked against the **draggable's** `type` — a droppable's `type` is not consulted by `accept` rules.
 </ParamField>
 
 <ParamField path="collisionDetector" type="(input: CollisionDetectorInput) => Collision | null">

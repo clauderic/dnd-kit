@@ -72,7 +72,11 @@ The manager comes with sensible defaults, but you can customize its behavior. Th
 Use the function form to add to or configure the defaults without replacing them:
 
 ```js
-import {DragDropManager} from '@dnd-kit/dom';
+import {
+  DragDropManager,
+  PointerSensor,
+  PointerActivationConstraints,
+} from '@dnd-kit/dom';
 import {RestrictToWindow} from '@dnd-kit/dom/modifiers';
 
 const manager = new DragDropManager({
@@ -83,7 +87,9 @@ const manager = new DragDropManager({
   sensors: (defaults) => [
     ...defaults,
     PointerSensor.configure({
-      activationConstraints: { distance: 5 },
+      activationConstraints: [
+        new PointerActivationConstraints.Distance({value: 5}),
+      ],
     }),
   ],
 
