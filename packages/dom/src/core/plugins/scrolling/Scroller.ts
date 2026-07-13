@@ -14,12 +14,23 @@ import {
 } from '@dnd-kit/dom/utilities';
 import {Axes, type Axis, type Coordinates} from '@dnd-kit/geometry';
 
+import type {Draggable, Droppable} from '../../entities/index.ts';
 import type {DragDropManager} from '../../manager/index.ts';
 
 import {ScrollIntentTracker} from './ScrollIntent.ts';
 
+export interface ShouldScrollArguments {
+  scrollable: Element;
+  source: Draggable | null;
+  target: Droppable | null;
+  manager: DragDropManager;
+}
+
+export type ShouldScroll = (args: ShouldScrollArguments) => boolean;
+
 export interface ScrollOptions {
   acceleration?: number;
+  shouldScroll?: ShouldScroll;
   threshold?: Record<Axis, number>;
 }
 
@@ -146,7 +157,7 @@ export class Scroller extends CorePlugin<DragDropManager> {
       return false;
     }
 
-    const {position} = this.manager.dragOperation;
+    const {position, source, target} = this.manager.dragOperation;
     const currentPosition = position?.current;
 
     if (currentPosition) {
@@ -166,6 +177,17 @@ export class Scroller extends CorePlugin<DragDropManager> {
       }
 
       for (const scrollableElement of elements) {
+        if (
+          scrollOptions?.shouldScroll?.({
+            scrollable: scrollableElement,
+            source,
+            target,
+            manager: this.manager,
+          }) === false
+        ) {
+          continue;
+        }
+
         const elementCanScroll = canScroll(scrollableElement, by);
 
         if (elementCanScroll.x || elementCanScroll.y) {

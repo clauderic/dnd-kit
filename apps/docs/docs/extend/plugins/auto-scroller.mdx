@@ -117,6 +117,24 @@ function App() {
   Base scroll speed multiplier. The scroll speed scales linearly as the pointer approaches the edge of a scrollable container — higher values scroll faster.
 </ParamField>
 
+<ParamField path="shouldScroll" type="(args: { scrollable: Element; source: Draggable | null; target: Droppable | null; manager: DragDropManager }) => boolean">
+  Predicate that controls whether a scrollable candidate is eligible for auto-scrolling during the current drag operation.
+
+  Return `false` to skip a candidate and continue checking the next scrollable ancestor. This is useful when draggable items are themselves scrollable and should not auto-scroll while hovering over sibling items.
+
+  ```ts
+  AutoScroller.configure({
+    shouldScroll({scrollable, source}) {
+      return (
+        source?.element?.contains(scrollable) ||
+        !scrollable.classList.contains('Item')
+      );
+    },
+  });
+  ```
+
+</ParamField>
+
 <ParamField path="threshold" type="number | { x: number; y: number }" default="{ x: 0.2, y: 0.2 }">
   Percentage of container dimensions that defines the scroll activation zone. For example, `0.2` means scrolling activates when the pointer enters the outer 20% of a scrollable container.
 
