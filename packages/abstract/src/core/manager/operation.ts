@@ -1,4 +1,4 @@
-import {Position, type Shape} from '@dnd-kit/geometry';
+import {Point, Position, type Shape} from '@dnd-kit/geometry';
 import type {Coordinates} from '@dnd-kit/geometry';
 import {
   batch,
@@ -155,6 +155,19 @@ export class DragOperation<T extends Draggable, U extends Droppable>
 
   #transform = {x: 0, y: 0};
 
+  #computeTransform(transform: Coordinates) {
+    let nextTransform = transform;
+
+    for (const modifier of this.modifiers) {
+      nextTransform = modifier.apply({
+        ...this.snapshot(),
+        transform: nextTransform,
+      });
+    }
+
+    return nextTransform;
+  }
+
   /**
    * Gets the current transform after applying all modifiers.
    *
@@ -162,19 +175,17 @@ export class DragOperation<T extends Draggable, U extends Droppable>
    */
   @derived
   public get transform() {
-    const {x, y} = this.position.delta;
-    let transform = {x, y};
-
-    for (const modifier of this.modifiers) {
-      transform = modifier.apply({
-        ...this.snapshot(),
-        transform,
-      });
-    }
+    const transform = this.#computeTransform(this.position.delta);
 
     this.#transform = transform;
 
     return transform;
+  }
+
+  public getTransform(coordinates = this.position.current) {
+    return this.#computeTransform(
+      Point.delta(Point.from(coordinates), this.position.initial)
+    );
   }
 
   /**
@@ -182,12 +193,14 @@ export class DragOperation<T extends Draggable, U extends Droppable>
    *
    * @returns An immutable snapshot of the current operation state
    */
-  public snapshot(): DragOperationSnapshot<T, U> {
+  public snapshot(
+    overrides: Partial<Pick<DragOperationSnapshot<T, U>, 'transform'>> = {}
+  ): DragOperationSnapshot<T, U> {
     return untracked(() => ({
       source: this.source,
       target: this.target,
       activatorEvent: this.activatorEvent,
-      transform: this.#transform,
+      transform: overrides.transform ?? this.#transform,
       shape: this.shape ? snapshot(this.shape) : null,
       position: snapshot(this.position),
       status: snapshot(this.status),
