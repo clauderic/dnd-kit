@@ -60,16 +60,20 @@ KeyboardSensor.configure({
     end: ['Tab'],
 
     // Use WASD for movement
-    up: ['KeyW'],
-    down: ['KeyS'],
-    left: ['KeyA'],
-    right: ['KeyD'],
+    up: ['w'],
+    down: ['s'],
+    left: ['a'],
+    right: ['d'],
 
     // Additional cancel keys
-    cancel: ['Escape', 'KeyQ'],
+    cancel: ['Escape', 'q'],
   },
 });
 ```
+
+Key bindings are matched against [`KeyboardEvent.key`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key), so they respect keyboard layouts and operating system key remaps. Use `KeyboardEvent.key` values such as `w`, `Enter`, and `ArrowUp`. The `Space` alias is also supported for the Space key.
+
+If you are migrating a configuration that used [`KeyboardEvent.code`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code), common `Key*` and `Digit*` values such as `KeyW` and `Digit1` are normalized for compatibility. Other physical key codes, such as `NumpadEnter`, `BracketLeft`, or `Slash`, should be replaced with the key value they produce. Other named keys must match `KeyboardEvent.key` casing.
 
 ## Default behavior
 
@@ -80,7 +84,7 @@ By default, each arrow key press moves the dragged item by 10 pixels. Hold <kbd>
 ### Options
 
 <ParamField path="keyboardCodes" type="KeyboardCodes">
-  Configure which keyboard codes trigger different actions:
+  Configure which keyboard keys trigger different actions:
 
   ```ts
   interface KeyboardCodes {
@@ -93,7 +97,7 @@ By default, each arrow key press moves the dragged item by 10 pixels. Hold <kbd>
     right: KeyCode[];    // Move right
   }
 
-  type KeyCode = KeyboardEvent['code'];
+  type KeyCode = KeyboardEvent['key'];
   ```
 </ParamField>
 

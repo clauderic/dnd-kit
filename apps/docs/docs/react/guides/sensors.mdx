@@ -2,7 +2,7 @@
 title: 'Configuring sensors'
 sidebarTitle: 'Configuring sensors'
 metaTitle: 'Configuring Sensors - React | dnd kit'
-description: 'Customize how drag operations start in React: pointer activation constraints, keyboard codes, drag handles, and per-pointer-type behavior.'
+description: 'Customize how drag operations start in React: pointer activation constraints, keyboard keys, drag handles, and per-pointer-type behavior.'
 icon: 'monitor-waveform'
 ---
 
@@ -129,15 +129,17 @@ KeyboardSensor.configure({
     start: ['Space', 'Enter'],
     cancel: ['Escape'],
     end: ['Space', 'Enter', 'Tab'],
-    up: ['ArrowUp', 'KeyW'],
-    down: ['ArrowDown', 'KeyS'],
-    left: ['ArrowLeft', 'KeyA'],
-    right: ['ArrowRight', 'KeyD'],
+    up: ['ArrowUp', 'w'],
+    down: ['ArrowDown', 's'],
+    left: ['ArrowLeft', 'a'],
+    right: ['ArrowRight', 'd'],
   },
 });
 ```
 
-Key codes follow [`KeyboardEvent.code`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code) values.
+Key bindings follow [`KeyboardEvent.key`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) values so they respect keyboard layouts and operating system key remaps. Use values such as `w`, `Enter`, and `ArrowUp`. The `Space` alias is also supported for the Space key.
+
+When migrating older `KeyboardEvent.code` configs, common `Key*` and `Digit*` values such as `KeyW` and `Digit1` still normalize for compatibility. Other physical key codes, such as `NumpadEnter`, `BracketLeft`, or `Slash`, should be replaced with the key value they produce. Other named keys must match `KeyboardEvent.key` casing.
 
 ### Keyboard movement offset
 

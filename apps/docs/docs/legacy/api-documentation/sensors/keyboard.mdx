@@ -14,6 +14,10 @@ In order for the Keyboard sensor to function properly, the activator element tha
 
 The keyboard activator is the `onKeyDown` event handler. The Keyboard sensor is initialized if the [`event.code`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code) property matches one of the `start` keys passed to `keyboardCodes` option of the Keyboard sensor.
 
+<Note>
+  This legacy page documents the older `@dnd-kit/core` keyboard sensor behavior. The current `@dnd-kit/dom` `KeyboardSensor` matches custom bindings against [`KeyboardEvent.key`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) instead, with common `Key*` and `Digit*` code values normalized for migration.
+</Note>
+
 By default, the keys that activate the Keyboard sensor are `Space` and `Enter`.
 
 ### Options

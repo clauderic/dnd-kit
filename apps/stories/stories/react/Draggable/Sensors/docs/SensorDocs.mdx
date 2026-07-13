@@ -103,7 +103,7 @@ The keyboard sensor activates when the `handle` or `element` of a draggable sour
 
 #### Configuration
 
-The Keyboard sensor can be configured to respond to different keyboard codes:
+The Keyboard sensor can be configured to respond to different keyboard keys:
 
 ```js
 import {KeyboardSensor} from '@dnd-kit/dom';
@@ -122,6 +122,8 @@ const sensors = [
   }),
 ];
 ```
+
+Keyboard sensor bindings use [`KeyboardEvent.key`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) values such as `w`, `Enter`, and `ArrowUp`. Common legacy `Key*` and `Digit*` code values normalize for compatibility, but physical key codes such as `NumpadEnter` should be replaced with the key value they produce. Other named keys must match `KeyboardEvent.key` casing.
 
 You may customize these values, but do keep in mind that the [third rule of ARIA](https://www.w3.org/TR/using-aria/#3rdrule) requires that a user must be able to activate the action associated with a draggable widget using both the enter (on Windows) or return (on macOS) and the space key. To learn more, read the in-depth accessibility guide.
 
