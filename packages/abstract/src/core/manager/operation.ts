@@ -1,4 +1,4 @@
-import {Position, type Shape} from '@dnd-kit/geometry';
+import {Point, Position, type Shape} from '@dnd-kit/geometry';
 import type {Coordinates} from '@dnd-kit/geometry';
 import {
   batch,
@@ -162,15 +162,7 @@ export class DragOperation<T extends Draggable, U extends Droppable>
    */
   @derived
   public get transform() {
-    const {x, y} = this.position.delta;
-    let transform = {x, y};
-
-    for (const modifier of this.modifiers) {
-      transform = modifier.apply({
-        ...this.snapshot(),
-        transform,
-      });
-    }
+    const transform = this.computeTransform();
 
     this.#transform = transform;
 
@@ -182,17 +174,57 @@ export class DragOperation<T extends Draggable, U extends Droppable>
    *
    * @returns An immutable snapshot of the current operation state
    */
-  public snapshot(): DragOperationSnapshot<T, U> {
-    return untracked(() => ({
+  public snapshot(coordinates?: Coordinates): DragOperationSnapshot<T, U> {
+    return untracked(() => {
+      const transform = this.computeTransform(coordinates);
+
+      if (!coordinates || Point.equals(coordinates, this.position.current)) {
+        this.#transform = transform;
+      }
+
+      return this.createSnapshot(transform, coordinates);
+    });
+  }
+
+  private computeTransform(coordinates: Coordinates = this.position.current) {
+    const {initial} = this.position;
+    let transform = {
+      x: coordinates.x - initial.x,
+      y: coordinates.y - initial.y,
+    };
+
+    for (const modifier of this.modifiers) {
+      transform = modifier.apply(
+        untracked(() => this.createSnapshot(transform, coordinates))
+      );
+    }
+
+    return transform;
+  }
+
+  private createSnapshot(
+    transform: Coordinates,
+    coordinates = this.position.current
+  ): DragOperationSnapshot<T, U> {
+    const position = snapshot(this.position);
+
+    if (!Point.equals(coordinates, this.position.current)) {
+      Object.assign(position, {
+        current: coordinates,
+        previous: this.position.current,
+      });
+    }
+
+    return {
       source: this.source,
       target: this.target,
       activatorEvent: this.activatorEvent,
-      transform: this.#transform,
+      transform,
       shape: this.shape ? snapshot(this.shape) : null,
-      position: snapshot(this.position),
+      position,
       status: snapshot(this.status),
       canceled: this.canceled,
-    }));
+    };
   }
 
   /**
