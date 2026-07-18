@@ -167,7 +167,7 @@ export class DragOperation<T extends Draggable, U extends Droppable>
 
     for (const modifier of this.modifiers) {
       transform = modifier.apply({
-        ...this.snapshot(),
+        ...untracked(() => this.#snapshot(transform)),
         transform,
       });
     }
@@ -183,16 +183,20 @@ export class DragOperation<T extends Draggable, U extends Droppable>
    * @returns An immutable snapshot of the current operation state
    */
   public snapshot(): DragOperationSnapshot<T, U> {
-    return untracked(() => ({
+    return untracked(() => this.#snapshot(this.transform));
+  }
+
+  #snapshot(transform: Coordinates): DragOperationSnapshot<T, U> {
+    return {
       source: this.source,
       target: this.target,
       activatorEvent: this.activatorEvent,
-      transform: this.#transform,
+      transform,
       shape: this.shape ? snapshot(this.shape) : null,
       position: snapshot(this.position),
       status: snapshot(this.status),
       canceled: this.canceled,
-    }));
+    };
   }
 
   /**
