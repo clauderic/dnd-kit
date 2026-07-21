@@ -3,6 +3,9 @@ import {computed, deepEqual, reactive} from '@dnd-kit/state';
 import {
   canScroll,
   detectScrollIntent,
+  getFrameTransformedScrollPosition,
+  getAxisInversionState,
+  type ScrollIntentDetectorContext,
   getScrollableAncestors,
   getElementFromPoint,
   ScrollDirection,
@@ -151,13 +154,13 @@ export class Scroller extends CorePlugin<DragDropManager> {
 
     if (currentPosition) {
       const {by} = options ?? {};
-      const intent = by
+      const requestedDirection = by
         ? {
             x: getScrollIntent(by.x),
             y: getScrollIntent(by.y),
           }
         : undefined;
-      const scrollIntent = intent
+      const scrollIntent = requestedDirection
         ? undefined
         : this.scrollIntentTracker.current;
 
@@ -169,13 +172,16 @@ export class Scroller extends CorePlugin<DragDropManager> {
         const elementCanScroll = canScroll(scrollableElement, by);
 
         if (elementCanScroll.x || elementCanScroll.y) {
-          const {speed, direction} = detectScrollIntent(
-            scrollableElement,
-            currentPosition,
-            intent,
-            scrollOptions?.acceleration,
-            scrollOptions?.threshold
-          );
+          const ctx: ScrollIntentDetectorContext = {
+            element: scrollableElement,
+            scrollPosition:
+              getFrameTransformedScrollPosition(scrollableElement),
+            inverted: getAxisInversionState(scrollableElement),
+            pointer: currentPosition,
+            operation: this.manager.dragOperation,
+            requestedDirection,
+          };
+          const {speed, direction} = detectScrollIntent(ctx, scrollOptions);
 
           if (scrollIntent) {
             for (const axis of Axes) {

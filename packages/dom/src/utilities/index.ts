@@ -36,11 +36,19 @@ export {showPopover, hidePopover, supportsPopover} from './popover/index.ts';
 export {
   canScroll,
   detectScrollIntent,
+  getFrameTransformedScrollPosition,
+  getAxisInversionState,
   getScrollableAncestors,
   getFirstScrollableAncestor,
   isDocumentScrollingElement,
   ScrollDirection,
   scrollIntoViewIfNeeded,
+} from './scroll/index.ts';
+export type {
+  ScrollIntentDetectorContext,
+  ScrollIntentDetectorOptions,
+  ScrollIntent,
+  ScrollPosition,
 } from './scroll/index.ts';
 
 export {scheduler, Scheduler, timeout} from './scheduling/index.ts';
