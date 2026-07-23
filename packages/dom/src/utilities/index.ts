@@ -51,6 +51,7 @@ export {
 } from './scroll/index.ts';
 export type {
   ScrollActivation,
+  ScrollIntentDetector,
   ScrollIntentDetectorContext,
   ScrollIntentDetectorOptions,
   ScrollIntent,

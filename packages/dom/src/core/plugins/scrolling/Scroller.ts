@@ -5,6 +5,7 @@ import {
   detectScrollIntent,
   getFrameTransformedScrollPosition,
   getAxisInversionState,
+  type ScrollIntentDetector,
   type ScrollIntentDetectorContext,
   getScrollableAncestors,
   getElementFromPoint,
@@ -24,6 +25,7 @@ import {ScrollIntentTracker} from './ScrollIntent.ts';
 export interface ScrollOptions {
   acceleration?: number;
   threshold?: Record<Axis, number>;
+  detectScrollIntent?: ScrollIntentDetector;
 }
 
 export class Scroller extends CorePlugin<DragDropManager> {
@@ -181,7 +183,9 @@ export class Scroller extends CorePlugin<DragDropManager> {
             operation: this.manager.dragOperation,
             requestedDirection,
           };
-          const {speed, direction} = detectScrollIntent(ctx, scrollOptions);
+          const detect: ScrollIntentDetector =
+            scrollOptions?.detectScrollIntent ?? detectScrollIntent;
+          const {speed, direction} = detect(ctx, scrollOptions);
 
           if (scrollIntent) {
             for (const axis of Axes) {

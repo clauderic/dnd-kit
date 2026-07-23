@@ -18,6 +18,7 @@ export {getAxisInversionState} from './getAxisInversionState.ts';
 export type {
   ScrollActivation,
   ScrollIntent,
+  ScrollIntentDetector,
   ScrollIntentDetectorContext,
   ScrollIntentDetectorOptions,
 } from './detectScrollIntent.ts';

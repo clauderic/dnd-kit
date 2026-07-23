@@ -41,6 +41,11 @@ export interface ScrollIntent {
   speed: Record<Axis, number>;
 }
 
+export type ScrollIntentDetector = (
+  ctx: ScrollIntentDetectorContext,
+  options?: ScrollIntentDetectorOptions
+) => ScrollIntent;
+
 const defaultAcceleration = 25;
 
 const defaultThreshold: Record<Axis, number> = {
