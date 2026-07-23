@@ -123,6 +123,53 @@ function App() {
   A single number applies to both axes. Use `{ x, y }` for per-axis control. Setting an axis to `0` disables auto-scrolling on that axis.
 </ParamField>
 
+<ParamField path="detectScrollIntent" type="(context: ScrollIntentDetectorContext, options?: ScrollIntentDetectorOptions) => ScrollIntent">
+  Custom function that computes the scroll direction and speed from the pointer position, overriding the built-in detector. See [Custom scroll intent detector](#custom-scroll-intent-detector).
+</ParamField>
+
+## Custom scroll intent detector
+
+By default, the `AutoScroller` activates scrolling when the pointer enters the activation zones near a container's edges. Provide a `detectScrollIntent` function to take full control over the scroll direction and speed.
+
+A detector receives a context describing the scrollable element and pointer, along with the auto scroller options.
+
+The context provides:
+
+- `element` — the scrollable element being evaluated.
+- `scrollPosition` — the container's `rect` and its `isTop` / `isBottom` / `isLeft` / `isRight` edge state.
+- `pointer` — the current pointer coordinates.
+- `inverted` — whether each axis is visually inverted, for example by a negative `scale` transform.
+- `operation` — the active drag operation, when available.
+
+Example:
+
+```ts
+import {DragDropManager, AutoScroller} from '@dnd-kit/dom';
+import {
+  detectScrollIntent,
+  ScrollDirection,
+  type ScrollIntentDetector,
+} from '@dnd-kit/dom/utilities';
+
+const verticalOnly: ScrollIntentDetector = (context, options) => {
+  const intent = detectScrollIntent(context, options);
+
+  return {
+    direction: {...intent.direction, x: ScrollDirection.Idle},
+    speed: {...intent.speed, x: 0},
+  };
+};
+
+const manager = new DragDropManager({
+  plugins: (defaults) => [
+    ...defaults,
+    AutoScroller.configure({detectScrollIntent: verticalOnly}),
+  ],
+});
+```
+
+See [Configuration](#configuration) for setup in other frameworks.
+
 ## Disabling
 
 To disable auto-scrolling, omit the `AutoScroller` from the plugins array:
