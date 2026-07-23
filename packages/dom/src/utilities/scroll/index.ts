@@ -4,13 +4,22 @@ export {
   getScrollableAncestors,
 } from './getScrollableAncestors.ts';
 export {getScrollableElement} from './getScrollableElement.ts';
-export {detectScrollIntent, ScrollDirection} from './detectScrollIntent.ts';
+export {
+  detectScrollIntent,
+  ScrollDirection,
+  detectActivation,
+  suppressOpposingIntent,
+  applyAcceleration,
+  applyAxisInversion,
+  stopAtBoundaries,
+} from './detectScrollIntent.ts';
 export {getFrameTransformedScrollPosition} from './getFrameTransformedScrollPosition.ts';
 export {getAxisInversionState} from './getAxisInversionState.ts';
 export type {
+  ScrollActivation,
+  ScrollIntent,
   ScrollIntentDetectorContext,
   ScrollIntentDetectorOptions,
-  ScrollIntent,
 } from './detectScrollIntent.ts';
 export {getScrollPosition} from './getScrollPosition.ts';
 export type {ScrollPosition} from './getScrollPosition.ts';

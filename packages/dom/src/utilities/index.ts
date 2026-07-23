@@ -36,6 +36,11 @@ export {showPopover, hidePopover, supportsPopover} from './popover/index.ts';
 export {
   canScroll,
   detectScrollIntent,
+  detectActivation,
+  suppressOpposingIntent,
+  applyAcceleration,
+  applyAxisInversion,
+  stopAtBoundaries,
   getFrameTransformedScrollPosition,
   getAxisInversionState,
   getScrollableAncestors,
@@ -45,6 +50,7 @@ export {
   scrollIntoViewIfNeeded,
 } from './scroll/index.ts';
 export type {
+  ScrollActivation,
   ScrollIntentDetectorContext,
   ScrollIntentDetectorOptions,
   ScrollIntent,

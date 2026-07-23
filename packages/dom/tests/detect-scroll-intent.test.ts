@@ -159,6 +159,20 @@ describe('detectScrollIntent', () => {
     expect(speed.y).toBe(25);
   });
 
+  it('stays idle on an inverted axis when the container cannot scroll further', () => {
+    const {direction, speed} = detectScrollIntent({
+      ...defaultContext,
+      pointer: {x: 50, y: 0},
+      inverted: {x: false, y: true},
+      scrollPosition: {...defaultContext.scrollPosition, isBottom: true},
+    });
+    expect(direction).toEqual({
+      x: ScrollDirection.Idle,
+      y: ScrollDirection.Idle,
+    });
+    expect(speed).toEqual({x: 0, y: 0});
+  });
+
   describe('legacy signature', () => {
     it.each(edgeCases)(
       'scrolls toward the $name edge with speed increasing linearly',

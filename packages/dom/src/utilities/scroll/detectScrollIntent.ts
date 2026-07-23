@@ -1,4 +1,9 @@
-import type {Axis, Coordinates} from '@dnd-kit/geometry';
+import {
+  Axes,
+  type Axis,
+  type BoundingRectangle,
+  type Coordinates,
+} from '@dnd-kit/geometry';
 import type {DragOperation, Draggable, Droppable} from '@dnd-kit/abstract';
 
 import {getFrameTransformedScrollPosition} from './getFrameTransformedScrollPosition.ts';
@@ -9,6 +14,11 @@ export enum ScrollDirection {
   Idle = 0,
   Forward = 1,
   Reverse = -1,
+}
+
+export interface ScrollActivation {
+  direction: Record<Axis, ScrollDirection>;
+  intensity: Record<Axis, number>;
 }
 
 export interface ScrollIntentDetectorContext {
@@ -105,109 +115,18 @@ function detectScrollIntentImpl(
   options?: ScrollIntentDetectorOptions
 ): ScrollIntent {
   const {pointer, scrollPosition, inverted, requestedDirection} = ctx;
-  const {
-    rect: scrollContainerRect,
-    isTop,
-    isLeft,
-    isBottom,
-    isRight,
-  } = scrollPosition;
-  const {x, y} = pointer;
-  const {x: isXAxisInverted, y: isYAxisInverted} = inverted;
 
-  const acceleration = options?.acceleration ?? defaultAcceleration;
-  const thresholdPercentage = options?.threshold ?? defaultThreshold;
-  const tolerance = options?.tolerance ?? defaultTolerance;
+  const activation = detectActivation(
+    pointer,
+    scrollPosition.rect,
+    options?.threshold,
+    options?.tolerance
+  );
+  const suppressed = suppressOpposingIntent(activation, requestedDirection);
+  const resolved = applyAcceleration(suppressed, options?.acceleration);
+  const flipped = applyAxisInversion(resolved, inverted);
 
-  const direction: Record<Axis, ScrollDirection> = {
-    x: ScrollDirection.Idle,
-    y: ScrollDirection.Idle,
-  };
-  const speed = {
-    x: 0,
-    y: 0,
-  };
-  const threshold = {
-    height: scrollContainerRect.height * thresholdPercentage.y,
-    width: scrollContainerRect.width * thresholdPercentage.x,
-  };
-
-  if (
-    threshold.height > 0 &&
-    (!isTop || (isYAxisInverted && !isBottom)) &&
-    y <= scrollContainerRect.top + threshold.height &&
-    requestedDirection?.y !== ScrollDirection.Forward &&
-    x >= scrollContainerRect.left - tolerance.x &&
-    x <= scrollContainerRect.right + tolerance.x
-  ) {
-    // Scroll Up (or Down if inverted)
-    direction.y = isYAxisInverted
-      ? ScrollDirection.Forward
-      : ScrollDirection.Reverse;
-    speed.y =
-      acceleration *
-      Math.abs(
-        (scrollContainerRect.top + threshold.height - y) / threshold.height
-      );
-  } else if (
-    threshold.height > 0 &&
-    (!isBottom || (isYAxisInverted && !isTop)) &&
-    y >= scrollContainerRect.bottom - threshold.height &&
-    requestedDirection?.y !== ScrollDirection.Reverse &&
-    x >= scrollContainerRect.left - tolerance.x &&
-    x <= scrollContainerRect.right + tolerance.x
-  ) {
-    // Scroll Down (or Up if inverted)
-    direction.y = isYAxisInverted
-      ? ScrollDirection.Reverse
-      : ScrollDirection.Forward;
-    speed.y =
-      acceleration *
-      Math.abs(
-        (scrollContainerRect.bottom - threshold.height - y) / threshold.height
-      );
-  }
-
-  if (
-    threshold.width > 0 &&
-    (!isRight || (isXAxisInverted && !isLeft)) &&
-    x >= scrollContainerRect.right - threshold.width &&
-    requestedDirection?.x !== ScrollDirection.Reverse &&
-    y >= scrollContainerRect.top - tolerance.y &&
-    y <= scrollContainerRect.bottom + tolerance.y
-  ) {
-    // Scroll Right (or Left if inverted)
-    direction.x = isXAxisInverted
-      ? ScrollDirection.Reverse
-      : ScrollDirection.Forward;
-    speed.x =
-      acceleration *
-      Math.abs(
-        (scrollContainerRect.right - threshold.width - x) / threshold.width
-      );
-  } else if (
-    threshold.width > 0 &&
-    (!isLeft || (isXAxisInverted && !isRight)) &&
-    x <= scrollContainerRect.left + threshold.width &&
-    requestedDirection?.x !== ScrollDirection.Forward &&
-    y >= scrollContainerRect.top - tolerance.y &&
-    y <= scrollContainerRect.bottom + tolerance.y
-  ) {
-    // Scroll Left (or Right if inverted)
-    direction.x = isXAxisInverted
-      ? ScrollDirection.Forward
-      : ScrollDirection.Reverse;
-    speed.x =
-      acceleration *
-      Math.abs(
-        (scrollContainerRect.left + threshold.width - x) / threshold.width
-      );
-  }
-
-  return {
-    direction,
-    speed,
-  };
+  return stopAtBoundaries(flipped, scrollPosition);
 }
 
 function isScrollIntentDetectorContext(
@@ -219,4 +138,133 @@ function isScrollIntentDetectorContext(
     'pointer' in value &&
     'inverted' in value
   );
+}
+
+export function detectActivation(
+  pointer: Coordinates,
+  rect: BoundingRectangle,
+  threshold: Record<Axis, number> = defaultThreshold,
+  tolerance: Record<Axis, number> = defaultTolerance
+): ScrollActivation {
+  const direction: Record<Axis, ScrollDirection> = {
+    x: ScrollDirection.Idle,
+    y: ScrollDirection.Idle,
+  };
+  const intensity: Record<Axis, number> = {x: 0, y: 0};
+  
+  const band = {x: rect.width * threshold.x, y: rect.height * threshold.y};
+  const within = {
+    x:
+      pointer.x >= rect.left - tolerance.x &&
+      pointer.x <= rect.right + tolerance.x,
+    y:
+      pointer.y >= rect.top - tolerance.y &&
+      pointer.y <= rect.bottom + tolerance.y,
+  };
+
+  if (band.y > 0 && pointer.y <= rect.top + band.y && within.x) {
+    direction.y = ScrollDirection.Reverse;
+    intensity.y = Math.abs((rect.top + band.y - pointer.y) / band.y);
+  } else if (band.y > 0 && pointer.y >= rect.bottom - band.y && within.x) {
+    direction.y = ScrollDirection.Forward;
+    intensity.y = Math.abs((rect.bottom - band.y - pointer.y) / band.y);
+  }
+
+  if (band.x > 0 && pointer.x >= rect.right - band.x && within.y) {
+    direction.x = ScrollDirection.Forward;
+    intensity.x = Math.abs((rect.right - band.x - pointer.x) / band.x);
+  } else if (band.x > 0 && pointer.x <= rect.left + band.x && within.y) {
+    direction.x = ScrollDirection.Reverse;
+    intensity.x = Math.abs((rect.left + band.x - pointer.x) / band.x);
+  }
+
+  return {direction, intensity};
+}
+
+export function suppressOpposingIntent(
+  activation: ScrollActivation,
+  requestedDirection?: Record<Axis, ScrollDirection>
+): ScrollActivation {
+  if (!requestedDirection) {
+    return activation;
+  }
+
+  const direction = {...activation.direction};
+  const intensity = {...activation.intensity};
+
+  for (const axis of Axes) {
+    const current = direction[axis];
+
+    if (
+      current !== ScrollDirection.Idle &&
+      requestedDirection[axis] === invert(current)
+    ) {
+      direction[axis] = ScrollDirection.Idle;
+      intensity[axis] = 0;
+    }
+  }
+
+  return {direction, intensity};
+}
+
+export function applyAcceleration(
+  activation: ScrollActivation,
+  acceleration: number = defaultAcceleration
+): ScrollIntent {
+  const {direction, intensity} = activation;
+  const speed: Record<Axis, number> = {
+    x: intensity.x * acceleration,
+    y: intensity.y * acceleration,
+  };
+
+  return {direction, speed};
+}
+
+export function applyAxisInversion(
+  intent: ScrollIntent,
+  inverted: Record<Axis, boolean>
+): ScrollIntent {
+  const {direction, speed} = intent;
+
+  return {
+    direction: {
+      x: inverted.x ? invert(direction.x) : direction.x,
+      y: inverted.y ? invert(direction.y) : direction.y,
+    },
+    speed,
+  };
+}
+
+function invert(direction: ScrollDirection): ScrollDirection {
+  switch (direction) {
+    case ScrollDirection.Forward:
+      return ScrollDirection.Reverse;
+    case ScrollDirection.Reverse:
+      return ScrollDirection.Forward;
+    case ScrollDirection.Idle:
+      return ScrollDirection.Idle;
+  }
+}
+
+export function stopAtBoundaries(
+  intent: ScrollIntent,
+  scrollPosition: ScrollPosition
+): ScrollIntent {
+  const direction = {...intent.direction};
+  const speed = {...intent.speed};
+  const atStart = {x: scrollPosition.isLeft, y: scrollPosition.isTop};
+  const atEnd = {x: scrollPosition.isRight, y: scrollPosition.isBottom};
+
+  for (const axis of Axes) {
+    const blocked =
+      (direction[axis] === ScrollDirection.Forward && atEnd[axis]) ||
+      (direction[axis] === ScrollDirection.Reverse && atStart[axis]);
+
+    if (blocked) {
+      direction[axis] = ScrollDirection.Idle;
+      speed[axis] = 0;
+    }
+  }
+
+  return {direction, speed};
 }
