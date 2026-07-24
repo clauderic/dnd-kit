@@ -77,4 +77,42 @@ test.describe('AutoScroller options', () => {
       await dnd.waitForDrop();
     });
   });
+
+  test.describe('custom scroll intent detector', () => {
+    test.beforeEach(async ({dnd}) => {
+      await dnd.goto('react-sortable-vertical-list--auto-scroll-custom-intent');
+      await expect(dnd.items.first()).toBeVisible();
+    });
+
+    test('auto-scrolls by the customized 80-20 activation zones', async ({
+      dnd,
+    }) => {
+      const first = dnd.items.nth(0);
+      const box = await first.boundingBox();
+      const viewport = dnd.page.viewportSize()!;
+      const centerX = box!.x + box!.width / 2;
+
+      const getScrollTop = () =>
+        dnd.page.evaluate(() => document.scrollingElement?.scrollTop ?? 0);
+
+      await dnd.page.mouse.move(centerX, box!.y + box!.height / 2);
+      await dnd.page.mouse.down();
+
+      // Lower zone (bottom 20%): scroll the page down.
+      await dnd.page.mouse.move(centerX, viewport.height - 10, {steps: 20});
+
+      await expect.poll(getScrollTop, {timeout: 3_000}).toBeGreaterThan(0);
+      const scrolledDown = await getScrollTop();
+
+      // Upper zone (top 80%): scroll the page up.
+      await dnd.page.mouse.move(centerX, viewport.height / 2, {steps: 20});
+
+      await expect
+        .poll(getScrollTop, {timeout: 3_000})
+        .toBeLessThan(scrolledDown);
+
+      await dnd.page.mouse.up();
+      await dnd.waitForDrop();
+    });
+  });
 });
