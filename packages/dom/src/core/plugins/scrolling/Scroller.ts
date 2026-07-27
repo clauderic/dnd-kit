@@ -13,7 +13,6 @@ import {
   scheduler,
   isKeyboardEvent,
   getDocument,
-  getFrameTransform,
   getRoot,
 } from '@dnd-kit/dom/utilities';
 import {Axes, type Axis, type Coordinates} from '@dnd-kit/geometry';
@@ -22,10 +21,16 @@ import type {DragDropManager} from '../../manager/index.ts';
 
 import {ScrollIntentTracker} from './ScrollIntent.ts';
 
+export interface ScrollSnapshot {
+  element: Element;
+  before: {scrollLeft: number; scrollTop: number};
+}
+
 export interface ScrollOptions {
   acceleration?: number;
   threshold?: Record<Axis, number>;
   detectScrollIntent?: ScrollIntentDetector;
+  onScroll?: (snapshot: ScrollSnapshot) => void;
 }
 
 export class Scroller extends CorePlugin<DragDropManager> {
@@ -123,17 +128,34 @@ export class Scroller extends CorePlugin<DragDropManager> {
     });
   }
 
-  #meta: {element: Element; by: Coordinates} | undefined;
+  #meta:
+    | {
+        element: Element;
+        by: Coordinates;
+        onScroll?: ScrollOptions['onScroll'];
+      }
+    | undefined;
 
   #scroll = () => {
     if (!this.#meta) {
       return;
     }
 
-    const {element, by} = this.#meta;
+    const {element, by, onScroll} = this.#meta;
+    const before = {
+      scrollLeft: element.scrollLeft,
+      scrollTop: element.scrollTop,
+    };
 
     if (by.y) element.scrollTop += by.y;
     if (by.x) element.scrollLeft += by.x;
+
+    if (
+      element.scrollLeft !== before.scrollLeft ||
+      element.scrollTop !== before.scrollTop
+    ) {
+      onScroll?.({element, before});
+    }
   };
 
   public scroll = (
@@ -218,6 +240,7 @@ export class Scroller extends CorePlugin<DragDropManager> {
                   x: scrollLeftBy,
                   y: scrollTopBy,
                 },
+                onScroll: scrollOptions?.onScroll,
               };
 
               scheduler.schedule(this.#scroll);
