@@ -20,7 +20,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           # https://github.com/atlassian/changesets/issues/550#issuecomment-811245508
           registry-url: https://registry.npmjs.org
 
