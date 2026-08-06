@@ -35,7 +35,6 @@ export class Scheduler<T extends (callback: Callback) => any> {
   };
 }
 
-// AFTER:
 export const scheduler = new Scheduler((callback) => {
   // If the main document is hidden (e.g. user opened a popup window), run rAF
   // on the visible popup window instead so the scheduler isn't throttled.
