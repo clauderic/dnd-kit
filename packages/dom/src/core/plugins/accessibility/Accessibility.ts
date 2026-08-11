@@ -95,6 +95,18 @@ export class Accessibility extends Plugin<DragDropManager> {
             const element = liveRegionTextNode;
             if (!element) return;
 
+            /**
+             * Suppress self-dragover announcements (source over its own droppable
+             * target) regardless of whether custom announcements are provided.
+             * The default `dragover` announcement has this guard, but it must
+             * also be applied when users pass custom `announcements` to the
+             * Accessibility plugin.
+             */
+            if (eventName === 'dragover') {
+              const {source, target} = event.operation;
+              if (source?.id === target?.id) return;
+            }
+
             const announcement = getAnnouncement?.(event, manager);
 
             if (announcement && element.nodeValue !== announcement) {
