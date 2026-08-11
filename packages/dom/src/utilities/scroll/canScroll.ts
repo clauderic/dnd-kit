@@ -1,10 +1,13 @@
 import type {Coordinates} from '@dnd-kit/geometry';
 
-import {getScrollPosition} from './getScrollPosition.ts';
+import {getScrollPosition, type ScrollPosition} from './getScrollPosition.ts';
 
-export function canScroll(scrollableElement: Element, by?: Coordinates) {
-  const {isTop, isBottom, isLeft, isRight, position} =
-    getScrollPosition(scrollableElement);
+export function canScroll(
+  scrollableElement: Element,
+  scrollPosition: ScrollPosition = getScrollPosition(scrollableElement),
+  by?: Coordinates
+) {
+  const {isTop, isBottom, isLeft, isRight, position} = scrollPosition;
 
   const {x, y} = by ?? {x: 0, y: 0};
 
