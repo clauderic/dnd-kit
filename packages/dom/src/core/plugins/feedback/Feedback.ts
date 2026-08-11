@@ -363,7 +363,14 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       if (!feedbackElement.hasAttribute('popover')) {
         feedbackElement.setAttribute('popover', 'manual');
       }
-      showPopover(feedbackElement);
+      if (!showPopover(feedbackElement)) {
+        // showPopover can fail silently if the element is not connected
+        // or showPopover() throws. When it fails, the popover="manual"
+        // attribute remains set but the popover is never opened, causing
+        // Chrome's UA stylesheet [popover]:not(:popover-open) { display: none }
+        // to hide the dragged element. Remove the attribute as a fallback.
+        feedbackElement.removeAttribute('popover');
+      }
       feedbackElement.addEventListener('beforetoggle', preventPopoverClose);
     }
 
