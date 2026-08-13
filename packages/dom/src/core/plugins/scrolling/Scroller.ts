@@ -207,7 +207,9 @@ export class Scroller extends CorePlugin<DragDropManager> {
           };
           const detect: ScrollIntentDetector =
             scrollOptions?.detectScrollIntent ?? detectScrollIntent;
-          const {speed, direction} = detect(ctx, scrollOptions);
+          const detected = detect(ctx, scrollOptions);
+          const speed = {...detected.speed};
+          const direction = {...detected.direction};
 
           if (scrollIntent) {
             for (const axis of Axes) {
