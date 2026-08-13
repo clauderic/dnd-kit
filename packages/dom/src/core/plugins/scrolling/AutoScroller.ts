@@ -2,6 +2,7 @@ import {configurator, Plugin} from '@dnd-kit/abstract';
 import {effect} from '@dnd-kit/state';
 import type {CleanupFunction} from '@dnd-kit/state';
 import type {Axis} from '@dnd-kit/geometry';
+import type {ScrollIntentDetector} from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import {Scroller} from './Scroller.ts';
@@ -20,6 +21,11 @@ export interface AutoScrollerOptions {
    * @default { x: 0.2, y: 0.2 }
    */
   threshold?: number | Record<Axis, number>;
+  /**
+   * Custom scroll intent detector used to compute the scroll direction and
+   * speed from the pointer position.
+   */
+  detectScrollIntent?: ScrollIntentDetector;
 }
 
 const AUTOSCROLL_INTERVAL = 10;
@@ -52,6 +58,7 @@ export class AutoScroller extends Plugin<DragDropManager, AutoScrollerOptions> {
             typeof this.options?.threshold === 'number'
               ? {x: this.options.threshold, y: this.options.threshold}
               : this.options?.threshold,
+          detectScrollIntent: this.options?.detectScrollIntent,
         };
 
         const canScroll = scroller.scroll(undefined, scrollOptions);

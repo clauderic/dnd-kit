@@ -1,9 +1,20 @@
+import type {BoundingRectangle, Coordinates} from '@dnd-kit/geometry';
+
 import {getBoundingRectangle} from '../bounding-rectangle/getBoundingRectangle.ts';
 import {getViewportBoundingRectangle} from '../bounding-rectangle/getViewportBoundingRectangle.ts';
 import {getWindow} from '../execution-context/getWindow.ts';
 import {isDocumentScrollingElement} from './documentScrollingElement.ts';
 
-export function getScrollPosition(scrollableElement: Element) {
+export interface ScrollPosition {
+  rect: BoundingRectangle;
+  position: {current: Coordinates; max: Coordinates};
+  isTop: boolean;
+  isLeft: boolean;
+  isBottom: boolean;
+  isRight: boolean;
+}
+
+export function getScrollPosition(scrollableElement: Element): ScrollPosition {
   const window = getWindow(scrollableElement);
   const rect = isDocumentScrollingElement(scrollableElement)
     ? getViewportBoundingRectangle(scrollableElement)

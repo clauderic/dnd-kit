@@ -15,7 +15,11 @@ export type {
 } from './feedback/index.ts';
 
 export {AutoScroller, Scroller, ScrollListener} from './scrolling/index.ts';
-export type {AutoScrollerOptions} from './scrolling/index.ts';
+export type {
+  AutoScrollerOptions,
+  ScrollOptions,
+  ScrollSnapshot,
+} from './scrolling/index.ts';
 
 export {PreventSelection} from './selection/PreventSelection.ts';
 

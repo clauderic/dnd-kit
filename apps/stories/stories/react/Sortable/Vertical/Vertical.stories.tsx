@@ -5,6 +5,7 @@ import {Feedback} from '@dnd-kit/dom';
 import {SortableExample} from '../SortableExample';
 import {AnchorElementsExample} from './AnchorElementsExample';
 import {AutoScrollExample} from './AutoScrollExample';
+import {CustomScrollIntentExample} from './CustomScrollIntentExample';
 
 const meta: Meta<typeof SortableExample> = {
   title: 'React/Sortable/Vertical list',
@@ -166,6 +167,18 @@ export const AutoScrollCustomSpeed: AutoScrollStory = {
   args: {
     itemCount: 100,
     acceleration: 50,
+  },
+};
+
+export const AutoScrollCustomIntent: StoryObj<
+  typeof CustomScrollIntentExample
+> = {
+  name: 'Auto-scroll custom intent detector',
+  render: (args: React.ComponentProps<typeof CustomScrollIntentExample>) => (
+    <CustomScrollIntentExample {...args} />
+  ),
+  args: {
+    itemCount: 100,
   },
 };
 
