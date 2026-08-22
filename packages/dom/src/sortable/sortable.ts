@@ -24,6 +24,9 @@ import {
   getComputedStyles,
   getWindow,
   computeTranslate,
+  isElement,
+  isShadowRoot,
+  parseTransform,
   prefersReducedMotion,
   ProxiedElements,
 } from '@dnd-kit/dom/utilities';
@@ -132,6 +135,33 @@ function normalizeDisabled(
     draggable: disabled?.draggable ?? false,
     droppable: disabled?.droppable ?? false,
   };
+}
+
+function getAncestorScale(element: Element) {
+  const scale = {x: 1, y: 1};
+  let ancestor = element.parentNode;
+
+  while (ancestor) {
+    if (isShadowRoot(ancestor)) {
+      ancestor = ancestor.host;
+      continue;
+    }
+
+    if (!isElement(ancestor)) {
+      break;
+    }
+
+    const transform = parseTransform(getComputedStyles(ancestor));
+
+    if (transform) {
+      scale.x *= transform.scaleX;
+      scale.y *= transform.scaleY;
+    }
+
+    ancestor = ancestor.parentNode;
+  }
+
+  return scale;
 }
 
 interface TemporaryState {
@@ -301,9 +331,15 @@ export class Sortable<T extends Data = Data> {
           return;
         }
 
+        const scale = getAncestorScale(element);
         const delta = {
-          x: shape.boundingRectangle.left - updatedShape.boundingRectangle.left,
-          y: shape.boundingRectangle.top - updatedShape.boundingRectangle.top,
+          x:
+            (shape.boundingRectangle.left -
+              updatedShape.boundingRectangle.left) /
+            (scale.x || 1),
+          y:
+            (shape.boundingRectangle.top - updatedShape.boundingRectangle.top) /
+            (scale.y || 1),
         };
 
         const {translate} = getComputedStyles(element);
