@@ -1,6 +1,6 @@
 import {type Data} from '@dnd-kit/abstract';
 import type {SortableInput} from '@dnd-kit/dom/sortable';
-import {defaultSortableTransition, Sortable} from '@dnd-kit/dom/sortable';
+import {resolveSortableTransition, Sortable} from '@dnd-kit/dom/sortable';
 import {batch} from '@dnd-kit/state';
 import {createEffect, createSignal, on} from 'solid-js';
 
@@ -18,10 +18,7 @@ export interface UseSortableInput<T extends Data = Data>
 export function useSortable<T extends Data = Data>(
   input: UseSortableInput<T>
 ) {
-  const transition = {
-    ...defaultSortableTransition,
-    ...input.transition,
-  };
+  const transition = resolveSortableTransition(input.transition);
 
   const sortable = useInstance((manager) => {
     return new Sortable(
@@ -67,9 +64,7 @@ export function useSortable<T extends Data = Data>(
     sortable.accept = input.accept;
     sortable.type = input.type;
     sortable.collisionPriority = input.collisionPriority;
-    sortable.transition = input.transition
-      ? {...defaultSortableTransition, ...input.transition}
-      : defaultSortableTransition;
+    sortable.transition = resolveSortableTransition(input.transition);
 
     if (input.collisionDetector) {
       sortable.collisionDetector = input.collisionDetector;

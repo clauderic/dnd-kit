@@ -1,6 +1,7 @@
 export {
   Sortable,
   defaultSortableTransition,
+  resolveSortableTransition,
   SortableDraggable,
   SortableDroppable,
 } from './sortable.ts';

@@ -1,8 +1,8 @@
 import {type Data, type Plugins} from '@dnd-kit/abstract';
 import type {SortableInput} from '@dnd-kit/dom/sortable';
 import {
-  defaultSortableTransition,
   OptimisticSortingPlugin,
+  resolveSortableTransition,
   Sortable,
 } from '@dnd-kit/dom/sortable';
 import {batch} from '@dnd-kit/state';
@@ -30,10 +30,7 @@ export function createSortable<T extends Data = Data>(
         ...input,
         register: false,
         plugins: input.plugins ?? withoutOptimisticSorting,
-        transition: {
-          ...defaultSortableTransition,
-          ...input.transition,
-        },
+        transition: resolveSortableTransition(input.transition),
       },
       manager
     );
@@ -53,10 +50,7 @@ export function createSortable<T extends Data = Data>(
     sortable.type = input.type;
     sortable.collisionPriority = input.collisionPriority;
     sortable.collisionDetector = input.collisionDetector;
-    sortable.transition = {
-      ...defaultSortableTransition,
-      ...input.transition,
-    };
+    sortable.transition = resolveSortableTransition(input.transition);
 
     if (input.data) {
       sortable.data = input.data;

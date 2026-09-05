@@ -118,6 +118,14 @@ export const defaultSortableTransition: SortableTransition = {
   idle: false,
 };
 
+export function resolveSortableTransition(
+  transition: SortableTransition | null | undefined
+): SortableTransition | null {
+  return transition === null
+    ? null
+    : {...defaultSortableTransition, ...transition};
+}
+
 function normalizeDisabled(
   disabled: SortableDisabledValue | undefined
 ): Required<SortableDisabled> {
