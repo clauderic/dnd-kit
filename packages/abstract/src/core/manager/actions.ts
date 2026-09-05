@@ -10,6 +10,7 @@ import type {
 import type {DragDropManager} from './manager.ts';
 import {defaultPreventable} from './events.ts';
 import {StatusValue} from './status.ts';
+import {collisionState} from '../collision/state.ts';
 
 /**
  * Provides actions for controlling drag and drop operations.
@@ -29,6 +30,9 @@ export class DragActions<
    * @param manager - The drag and drop manager instance
    */
   constructor(private readonly manager: V) {}
+
+  #moves = new Set<() => void>();
+  #stopping?: {controller: AbortController; cancel: () => void};
 
   /**
    * Sets the source of the drag operation.
@@ -60,17 +64,37 @@ export class DragActions<
         return Promise.resolve(false);
       }
 
-      dragOperation.targetIdentifier = id;
-
-      const event = defaultPreventable({
-        operation: dragOperation.snapshot(),
-      });
-
-      if (dragOperation.status.dragging) {
-        this.manager.monitor.dispatch('dragover', event);
+      const state = collisionState(this.manager);
+      const release = state.begin();
+      state.serial++;
+      if (
+        id != null &&
+        id === dragOperation.sourceIdentifier &&
+        state.applied &&
+        state.applied.source === id &&
+        state.applied.target !== id
+      ) {
+        state.applied.acknowledgment = id;
       }
 
-      return this.manager.renderer.rendering.then(() => event.defaultPrevented);
+      try {
+        dragOperation.targetIdentifier = id;
+
+        const event = defaultPreventable({
+          operation: dragOperation.snapshot(),
+        });
+
+        if (dragOperation.status.dragging) {
+          this.manager.monitor.dispatch('dragover', event);
+        }
+
+        return this.manager.renderer.rendering
+          .then(() => event.defaultPrevented)
+          .finally(release);
+      } catch (error) {
+        release();
+        throw error;
+      }
     });
   }
 
@@ -112,6 +136,7 @@ export class DragActions<
       }
 
       const controller = new AbortController();
+      collisionState(this.manager).reset();
 
       const {event: nativeEvent, coordinates} = args;
 
@@ -185,7 +210,13 @@ export class DragActions<
       const {dragOperation} = this.manager;
       const {status, controller} = dragOperation;
 
-      if (!status.dragging || !controller || controller.signal.aborted) {
+      if (
+        !status.dragging ||
+        !controller ||
+        controller.signal.aborted ||
+        (this.#stopping?.controller === controller &&
+          !collisionState(this.manager).continuing)
+      ) {
         return;
       }
 
@@ -203,8 +234,13 @@ export class DragActions<
         this.manager.monitor.dispatch('dragmove', event);
       }
 
-      queueMicrotask(() => {
-        if (event.defaultPrevented) {
+      const apply = () => {
+        if (!this.#moves.delete(apply)) return;
+        if (
+          event.defaultPrevented ||
+          controller.signal.aborted ||
+          dragOperation.controller !== controller
+        ) {
           return;
         }
 
@@ -214,7 +250,9 @@ export class DragActions<
         };
 
         dragOperation.position.current = coordinates;
-      });
+      };
+      this.#moves.add(apply);
+      queueMicrotask(apply);
     });
   }
 
@@ -250,68 +288,119 @@ export class DragActions<
 
       if (!controller || controller.signal.aborted) return;
 
-      let promise: Promise<void> | undefined;
-      const suspend = () => {
-        const output = {
-          resume: () => {},
-          abort: () => {},
+      if (this.#stopping?.controller === controller) {
+        if (args.canceled) this.#stopping.cancel();
+        return;
+      }
+
+      const state = collisionState(this.manager);
+      let canceled = args.canceled ?? false;
+      let finished = false;
+      let dispose: (() => void) | undefined;
+
+      const finish = () => {
+        if (finished) return;
+        finished = true;
+        dispose?.();
+        this.#stopping = undefined;
+        controller.abort();
+        this.#moves.clear();
+
+        let promise: Promise<void> | undefined;
+        const suspend = () => {
+          const output = {resume: () => {}, abort: () => {}};
+          promise = new Promise<void>((resolve, reject) => {
+            output.resume = resolve;
+            output.abort = reject;
+          });
+          return output;
         };
 
-        promise = new Promise<void>((resolve, reject) => {
-          output.resume = resolve;
-          output.abort = reject;
-        });
+        const cleanup = () => {
+          // A renderer or drop animation from an old operation cannot reset a
+          // newly started operation.
+          if (dragOperation.controller !== controller) return;
+          dragOperation.controller = undefined;
+          state.reset();
+          dragOperation.reset();
+        };
 
-        return output;
-      };
+        const end = () => {
+          this.manager.renderer.rendering.then(() => {
+            if (dragOperation.controller !== controller) return;
+            dragOperation.status.set(StatusValue.Dropped);
+            const source = dragOperation.source;
 
-      controller.abort();
-
-      const end = () => {
-        this.manager.renderer.rendering.then(() => {
-          dragOperation.status.set(StatusValue.Dropped);
-
-          const dropping = untracked(
-            () => dragOperation.source?.status === 'dropping'
-          );
-
-          const cleanup = () => {
-            if (dragOperation.controller === controller) {
-              dragOperation.controller = undefined;
+            if (source?.status === 'dropping') {
+              const dispose = effect(() => {
+                if (source.status === 'idle') {
+                  dispose();
+                  cleanup();
+                }
+              });
+            } else {
+              this.manager.renderer.rendering.then(cleanup, cleanup);
             }
-            dragOperation.reset();
-          };
+          }, cleanup);
+        };
 
-          if (dropping) {
-            const {source} = dragOperation;
-
-            // Wait until the source has finished dropping before resetting the operation
-            const dispose = effect(() => {
-              if (source?.status === 'idle') {
-                dispose();
-                cleanup();
-              }
-            });
-          } else {
-            this.manager.renderer.rendering.then(cleanup);
-          }
+        dragOperation.canceled = canceled;
+        this.manager.monitor.dispatch('dragend', {
+          nativeEvent: args.event,
+          operation: dragOperation.snapshot(),
+          canceled,
+          suspend,
         });
+
+        if (promise) promise.then(end, cleanup);
+        else end();
       };
 
-      dragOperation.canceled = args.canceled ?? false;
+      this.#stopping = {
+        controller,
+        cancel: () => {
+          canceled = true;
+          finish();
+        },
+      };
 
-      this.manager.monitor.dispatch('dragend', {
-        nativeEvent: args.event,
-        operation: dragOperation.snapshot(),
-        canceled: args.canceled ?? false,
-        suspend,
-      });
+      const reconcile = () => {
+        if (finished || dragOperation.controller !== controller) return;
+        dispose?.();
+        dispose = undefined;
 
-      if (promise) {
-        promise.then(end).catch(() => dragOperation.reset());
-      } else {
-        end();
-      }
+        const waitForPending = () => {
+          dispose = effect(() => {
+            if (!state.pending.value) queueMicrotask(reconcile);
+          });
+        };
+        // A plugin may still be deciding whether to consume a queued sensor
+        // move. Its synchronous lease keeps that move out of the terminal flush.
+        if (state.pending.value) {
+          waitForPending();
+          return;
+        }
+
+        // Pointer sensors can queue their last move and stop in the same turn.
+        // Consume it before taking the terminal snapshot. Cancellation skips it.
+        batch(() => {
+          for (const apply of this.#moves) apply();
+        });
+        if (state.dirty) this.manager.collisionObserver.forceUpdate();
+        state.flush?.();
+        if (finished) return; // A collision listener may have canceled the drag.
+
+        if (state.pending.value) {
+          // Wait only for work already owned by the renderer, never a timer or
+          // a distance threshold. A newer target may need its own commit.
+          waitForPending();
+        } else {
+          finish();
+        }
+      };
+
+      if (canceled) finish();
+      else reconcile();
     });
   }
 }

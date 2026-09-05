@@ -10,12 +10,16 @@ import {
   hasChanged,
   type SortableInstances,
 } from './OptimisticSortingPlugin.helpers.ts';
+import {createCollisionSuspension} from './collisionSuspension.ts';
 
 const defaultGroup = '__default__';
 
 export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager) {
     super(manager);
+
+    const suspensions = createCollisionSuspension(manager);
+    let destroyed = false;
 
     const getSortableInstances = () => {
       const sortableInstances: SortableInstances = new Map();
@@ -66,11 +70,34 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
 
         if (!sourceInstances || !targetInstances) return;
 
-        queueMicrotask(() => {
-          if (event.defaultPrevented) return;
+        const sourceGroup = source.sortable.group;
+        const targetGroup = target.sortable.group;
+        const affected = () => {
+          const instances = getSortableInstances();
+          return [
+            ...(instances.get(sourceGroup) ?? []),
+            ...(instances.get(targetGroup) ?? []),
+          ].map((sortable) => sortable.droppable);
+        };
+        // Acquire during dispatch, before either the notifier's render promise
+        // or another dragover listener can finish this placement.
+        const suspension = suspensions.acquire(affected());
+        if (!suspension) return;
 
-          // Wait for the renderer to handle the event before attempting to optimistically update
-          manager.renderer.rendering.then(() => {
+        const current = () =>
+          suspension.current &&
+          !this.disabled &&
+          dragOperation.source?.id === source.id &&
+          dragOperation.target?.id === target.id;
+
+        queueMicrotask(async () => {
+          try {
+            if (!current() || event.defaultPrevented) return;
+
+            // Give controlled sorting its commit before attempting a fallback.
+            if (!(await suspension.waitFor(manager.renderer.rendering))) return;
+            if (!current() || event.defaultPrevented) return;
+
             const newInstances = getSortableInstances();
 
             if (hasChanged(sortableIndices, instances, newInstances)) {
@@ -106,8 +133,6 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
             const sourceIndex = newState[targetGroup].indexOf(source.sortable);
             const targetIndex = newState[targetGroup].indexOf(target.sortable);
 
-            manager.collisionObserver.disable();
-
             reorder(sourceElement, sourceIndex, targetElement, targetIndex);
 
             batch(() => {
@@ -125,10 +150,19 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
               }
             });
 
-            manager.actions
-              .setDropTarget(source.id)
-              .then(() => manager.collisionObserver.enable());
-          });
+            if (!current()) return;
+            const acknowledgment = manager.actions.setDropTarget(source.id);
+            // Release at the commit, before the action promise's completion
+            // wakes terminal reconciliation. The source write is synchronous.
+            acknowledgment.catch(() => {});
+            await suspension.waitFor(manager.renderer.rendering);
+          } finally {
+            try {
+              if (suspension.current) suspension.include(affected());
+            } finally {
+              suspension.release();
+            }
+          }
         });
       }),
       manager.monitor.addEventListener('dragend', (event, manager) => {
@@ -137,9 +171,9 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
         }
 
         const {dragOperation} = manager;
-        const {source} = dragOperation;
+        const {source, controller} = dragOperation;
 
-        if (!isSortable(source)) {
+        if (!controller || !isSortable(source)) {
           return;
         }
 
@@ -150,7 +184,16 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
           return;
         }
 
-        queueMicrotask(() => {
+        // Cancellation has already aborted the controller. A rollback may
+        // finish for that controller only, never for a subsequent drag.
+        const current = () =>
+          !destroyed &&
+          dragOperation.controller === controller &&
+          dragOperation.source?.id === source.id &&
+          dragOperation.canceled;
+
+        queueMicrotask(async () => {
+          if (!current()) return;
           const instances = getSortableInstances();
           const sortableIndices = getSortableIndices(instances);
           const initialGroupInstances = instances.get(
@@ -160,7 +203,11 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
           if (!initialGroupInstances) return;
 
           // Wait for the renderer to handle the event before attempting to optimistically update
-          manager.renderer.rendering.then(() => {
+          const rendered = await manager.renderer.rendering.then(
+            () => true,
+            () => false
+          );
+          if (rendered && current()) {
             const newInstances = getSortableInstances();
 
             if (hasChanged(sortableIndices, instances, newInstances)) {
@@ -194,15 +241,17 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
                 }
               }
             });
-          });
+          }
         });
       }),
     ];
 
     this.destroy = () => {
+      destroyed = true;
       for (const unsubscribeListener of unsubscribe) {
         unsubscribeListener();
       }
+      suspensions.destroy();
     };
   }
 }

@@ -1,11 +1,11 @@
-import {signal, untracked, type Signal, effects} from '@dnd-kit/state';
-import type {Coordinates} from '@dnd-kit/geometry';
+import {signal, untracked, type Signal, effect} from '@dnd-kit/state';
 
 import type {DragDropManager} from '../manager/index.ts';
 import type {Draggable, Droppable} from '../entities/index.ts';
 import {Plugin} from '../plugins/index.ts';
 import type {Collision, CollisionDetector, Collisions} from './types.ts';
 import {sortCollisions} from './utilities.ts';
+import {collisionState} from './state.ts';
 
 const DEFAULT_VALUE: Collisions = [];
 
@@ -38,53 +38,82 @@ export class CollisionObserver<
     this.computeCollisions = this.computeCollisions.bind(this);
     this.#collisions = signal(DEFAULT_VALUE);
 
-    this.destroy = effects(
-      () => {
-        const collisions = this.computeCollisions();
-        const coordinates = untracked(
-          () => this.manager.dragOperation.position.current
-        );
-
-        if (collisions !== DEFAULT_VALUE) {
-          const previousCoordinates = this.#previousCoordinates;
-          this.#previousCoordinates = coordinates;
-
-          if (
-            previousCoordinates &&
-            coordinates.x == previousCoordinates.x &&
-            coordinates.y == previousCoordinates.y
-          ) {
-            return;
-          }
-        } else {
-          this.#previousCoordinates = undefined;
-        }
-
-        this.#collisions.value = collisions;
-      },
-      () => {
-        const {dragOperation} = this.manager;
-
-        if (dragOperation.status.initialized) {
-          this.forceUpdate();
-        }
+    const state = collisionState(manager);
+    // Package-internal capability shared with DOM plugins across bundle entry
+    // points. It is intentionally absent from the public class and exports.
+    Object.defineProperty(
+      this,
+      Symbol.for('@dnd-kit/abstract/collision-transaction'),
+      {
+        value: () => state.begin(),
       }
     );
+    const dispose = effect(() => {
+      const {dragOperation, registry} = manager;
+      const {source, shape, status} = dragOperation;
+      const position = dragOperation.position.current;
+      const transform = dragOperation.transform;
+
+      if (
+        position !== state.position ||
+        transform.x !== state.transform?.x ||
+        transform.y !== state.transform?.y
+      ) {
+        state.input++;
+        state.position = position;
+        state.transform = transform;
+      }
+
+      if (status.initialized && shape) {
+        // Subscribe without running user detectors. Computation runs once after
+        // the reactive batch, when feedback and all changed rectangles agree.
+        // The registry's default iterator intentionally does not subscribe.
+        for (const entry of registry.droppables.value) {
+          void entry.id;
+          if (entry.disabled || (source && !entry.accepts(source))) continue;
+          void entry.collisionDetector;
+          void entry.collisionPriority;
+          void entry.shape;
+        }
+      }
+
+      this.#invalidate();
+    });
+
+    this.destroy = () => {
+      this.#destroyed = true;
+      dispose();
+      state.reset();
+    };
   }
 
-  #previousCoordinates: Coordinates | undefined;
+  #destroyed = false;
+  #scheduled = false;
+
+  #invalidate() {
+    const state = collisionState(this.manager);
+    state.dirty = true;
+    if (this.#scheduled || this.#destroyed) return;
+    this.#scheduled = true;
+    queueMicrotask(() => {
+      this.#scheduled = false;
+      if (state.dirty && !this.#destroyed) this.forceUpdate();
+    });
+  }
 
   /**
    * Forces an immediate update of collision detection.
    *
-   * @param immediate - If true, updates collisions immediately. If false, resets previous coordinates.
+   * @param immediate - If true, updates synchronously. Otherwise coalesces an update at the end of the current turn.
    */
   public forceUpdate(immediate = true) {
     untracked(() => {
+      if (this.#destroyed) return;
       if (immediate) {
+        collisionState(this.manager).dirty = false;
         this.#collisions.value = this.computeCollisions();
       } else {
-        this.#previousCoordinates = undefined;
+        this.#invalidate();
       }
     });
   }
@@ -110,7 +139,7 @@ export class CollisionObserver<
     const collisions: Collision[] = [];
     const potentialTargets = [];
 
-    for (const entry of entries ?? registry.droppables) {
+    for (const entry of entries ?? registry.droppables.value) {
       if (entry.disabled) {
         continue;
       }

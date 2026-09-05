@@ -21,6 +21,7 @@ import {
 } from '../plugins/index.ts';
 import {KeyboardSensor} from '../sensors/keyboard/KeyboardSensor.ts';
 import {PointerSensor} from '../sensors/pointer/PointerSensor.ts';
+import {CollisionGeometry} from '../plugins/collision/geometry.ts';
 
 export interface Input extends DragDropManagerInput<DragDropManager> {}
 
@@ -49,7 +50,13 @@ export class DragDropManager<
 
     super({
       ...input,
-      plugins: [ScrollListener, Scroller, StyleInjector, ...plugins],
+      plugins: [
+        CollisionGeometry,
+        ScrollListener,
+        Scroller,
+        StyleInjector,
+        ...plugins,
+      ],
       sensors,
       modifiers,
     });

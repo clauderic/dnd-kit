@@ -1,0 +1,344 @@
+{
+  "baselineCommit": "aa53b823",
+  "runtime": "Chrome 152, Storybook dev",
+  "tests": {
+    "unit": 179,
+    "collisionBrowser": 11,
+    "reactCompatibility": 34,
+    "frameworkSortable": 18
+  },
+  "detectorCallComparison": {
+    "targets": 20,
+    "separateSynchronousRectangleUpdates": 20,
+    "baselineCalls": 400,
+    "implementationCalls": 20
+  },
+  "cases": [
+    {
+      "case": "collision-reproductions-CO-20215-s-a-changing-drag-footprint-current",
+      "observations": {
+        "point": {
+          "x": 537,
+          "y": 448.96875
+        },
+        "tailTargets": [],
+        "ownDescendantsAdmitted": false,
+        "visualSizes": [
+          "274x180",
+          "320x180"
+        ]
+      }
+    },
+    {
+      "case": "collision-reproductions-CO-3ffee-he-same-Kanban-gap-position-current",
+      "observations": [
+        "3",
+        "3",
+        "3",
+        "3",
+        "3",
+        "3",
+        "3",
+        "3",
+        "3",
+        "3"
+      ]
+    },
+    {
+      "case": "collision-reproductions-CO-f9e3c-s-a-changing-drag-footprint-current",
+      "observations": {
+        "point": {
+          "x": 200,
+          "y": 1037.96875
+        },
+        "tailTargets": [],
+        "ownDescendantsAdmitted": false,
+        "visualSizes": [
+          "274x156",
+          "320x260"
+        ]
+      }
+    },
+    {
+      "case": "collision-reproductions-au-fbc94-in-stable-during-1px-jitter-current",
+      "observations": {
+        "point": {
+          "x": 641,
+          "y": 275.8125
+        },
+        "targets": [
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A"
+        ]
+      }
+    },
+    {
+      "case": "collision-reproductions-dr-a5e61-xcludes-its-own-descendants-current",
+      "observations": {
+        "point": {
+          "x": 191,
+          "y": 568.265625
+        },
+        "tailTargets": [],
+        "ownDescendantsAdmitted": false,
+        "visualSizes": [
+          "300x584"
+        ]
+      }
+    },
+    {
+      "case": "collision-reproductions-ga-ca052--across-the-column-boundary-current",
+      "observations": [
+        "A",
+        "A",
+        "A",
+        "A",
+        "B",
+        "B",
+        "B",
+        "A"
+      ]
+    },
+    {
+      "case": "collision-reproductions-ke-05fc4-sh-before-an-immediate-drop-current",
+      "observations": [
+        "2",
+        "3",
+        "4",
+        "1"
+      ]
+    },
+    {
+      "case": "collision-reproductions-ne-cc62b-hen-visual-feedback-resizes-current",
+      "observations": {
+        "point": {
+          "x": 890,
+          "y": 469.265625
+        },
+        "tailTargets": [],
+        "ownDescendantsAdmitted": false,
+        "visualSizes": [
+          "208x56",
+          "254x56",
+          "300x56"
+        ]
+      }
+    },
+    {
+      "case": "collision-reproductions-re-bce32-vening-same-direction-input-current",
+      "observations": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "case": "collision-reproductions-sc-2785d-et-in-the-scroll-event-turn-current",
+      "observations": {
+        "before": {
+          "event": "snapshot",
+          "point": {
+            "x": 740,
+            "y": 287.8125
+          },
+          "source": "drag",
+          "target": "A",
+          "collisions": [
+            {
+              "id": "A",
+              "value": null,
+              "type": 2,
+              "priority": 3
+            }
+          ],
+          "shapes": [
+            {
+              "id": "A",
+              "rect": {
+                "width": 220,
+                "height": 160,
+                "left": 630,
+                "top": 207.8125,
+                "right": 850,
+                "bottom": 367.8125
+              }
+            },
+            {
+              "id": "B",
+              "rect": {
+                "width": 220,
+                "height": 160,
+                "left": 630,
+                "top": 367.8125,
+                "right": 850,
+                "bottom": 527.8125
+              }
+            },
+            {
+              "id": "C",
+              "rect": {
+                "width": 220,
+                "height": 160,
+                "left": 630,
+                "top": 527.8125,
+                "right": 850,
+                "bottom": 687.8125
+              }
+            }
+          ],
+          "sourceShape": {
+            "width": 188,
+            "height": 64,
+            "left": 646,
+            "top": 255.8125,
+            "right": 834,
+            "bottom": 319.8125
+          }
+        },
+        "after": {
+          "event": "snapshot",
+          "point": {
+            "x": 740,
+            "y": 287.8125
+          },
+          "source": "drag",
+          "target": "B",
+          "collisions": [
+            {
+              "id": "B",
+              "value": null,
+              "type": 2,
+              "priority": 3
+            }
+          ],
+          "shapes": [
+            {
+              "id": "A",
+              "rect": {
+                "width": 220,
+                "height": 160,
+                "left": 630,
+                "top": 47.8125,
+                "right": 850,
+                "bottom": 207.8125
+              }
+            },
+            {
+              "id": "B",
+              "rect": {
+                "width": 220,
+                "height": 160,
+                "left": 630,
+                "top": 207.8125,
+                "right": 850,
+                "bottom": 367.8125
+              }
+            },
+            {
+              "id": "C",
+              "rect": {
+                "width": 220,
+                "height": 160,
+                "left": 630,
+                "top": 367.8125,
+                "right": 850,
+                "bottom": 527.8125
+              }
+            }
+          ],
+          "sourceShape": {
+            "width": 188,
+            "height": 64,
+            "left": 646,
+            "top": 255.8125,
+            "right": 834,
+            "bottom": 319.8125
+          }
+        }
+      }
+    },
+    {
+      "case": "collision-reproductions-th-96fb5-rs-a-vertical-sortable-list-current",
+      "observations": [
+        {
+          "index": 1,
+          "point": {
+            "x": 520,
+            "y": 288.8125
+          },
+          "raw": "1"
+        },
+        {
+          "index": 1,
+          "point": {
+            "x": 520,
+            "y": 289.8125
+          },
+          "raw": "1"
+        },
+        {
+          "index": 0,
+          "point": {
+            "x": 520,
+            "y": 286.8125
+          },
+          "raw": "1"
+        },
+        {
+          "index": 0,
+          "point": {
+            "x": 520,
+            "y": 285.8125
+          },
+          "raw": "1"
+        },
+        {
+          "index": 0,
+          "point": {
+            "x": 520,
+            "y": 283.8125
+          },
+          "raw": "1"
+        },
+        {
+          "index": 0,
+          "point": {
+            "x": 520,
+            "y": 280.8125
+          },
+          "raw": "1"
+        },
+        {
+          "index": 0,
+          "point": {
+            "x": 520,
+            "y": 278.8125
+          },
+          "raw": "1"
+        }
+      ]
+    }
+  ],
+  "implementationBase": "8b9e1add"
+}

@@ -12,12 +12,19 @@ import {Scroller} from '@dnd-kit/dom';
 import type {DragDropManager, Droppable} from '@dnd-kit/dom';
 
 import {isSortable} from '../utilities.ts';
+import {createCollisionSuspension} from './collisionSuspension.ts';
 
 const TOLERANCE = 10;
 
 export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager) {
     super(manager);
+
+    const suspensions = createCollisionSuspension(manager);
+    let destroyed = false;
+    let commands:
+      | {controller: AbortController; directions: Direction[]; running: boolean}
+      | undefined;
 
     const cleanupEffect = effect(() => {
       const {dragOperation} = manager;
@@ -41,150 +48,214 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
       }
     });
 
-    const unsubscribe = manager.monitor.addEventListener(
-      'dragmove',
-      (event, manager: DragDropManager) => {
-        queueMicrotask(() => {
-          if (this.disabled || event.defaultPrevented || !event.nativeEvent) {
-            return;
-          }
+    const run = async (queue: NonNullable<typeof commands>) => {
+      queue.running = true;
+      const suspension = suspensions.acquire();
+      if (!suspension) {
+        queue.running = false;
+        queue.directions.length = 0;
+        return;
+      }
 
-          const {dragOperation} = manager;
+      const current = () =>
+        suspension.current &&
+        !this.disabled &&
+        suspension.controller === queue.controller;
 
-          if (!isKeyboardEvent(event.nativeEvent)) {
-            return;
-          }
+      try {
+        while (queue.directions.length && current()) {
+          const direction = queue.directions.shift()!;
+          const {dragOperation, actions, collisionObserver, registry} = manager;
+          const {source, target, shape} = dragOperation;
+          if (!isSortable(source) || !shape) return;
 
-          if (!isSortable(dragOperation.source)) {
-            return;
-          }
-
-          if (!dragOperation.shape) {
-            return;
-          }
-
-          const {actions, collisionObserver, registry} = manager;
-          const {by} = event;
-
-          if (!by) {
-            return;
-          }
-
-          const direction = getDirection(by);
-          const {source, target} = dragOperation;
-          const {center} = dragOperation.shape.current;
+          suspension.include([source.sortable.droppable]);
+          const {center} = shape.current;
           const potentialTargets: Droppable[] = [];
           const cleanup: CleanupFunction[] = [];
 
-          batch(() => {
-            for (const droppable of registry.droppables) {
-              const {id} = droppable;
+          // Neither reactive observers nor the automatic collision pass may
+          // see the keyboard query's temporary visible rectangles.
+          const collisions = batch(() => {
+            try {
+              for (const droppable of registry.droppables) {
+                const {id, element} = droppable;
 
-              if (
-                !droppable.accepts(source) ||
-                (id === target?.id && isSortable(droppable)) ||
-                !droppable.element
-              ) {
-                continue;
+                if (
+                  droppable.disabled ||
+                  !droppable.accepts(source) ||
+                  (id === target?.id && isSortable(droppable)) ||
+                  !element
+                ) {
+                  continue;
+                }
+
+                const previousShape = droppable.shape;
+                const shape = new DOMRectangle(element, {
+                  getBoundingClientRect: (element) =>
+                    getVisibleBoundingRectangle(element, undefined, 0.2),
+                });
+
+                if (!shape.height || !shape.width) continue;
+
+                if (
+                  (direction == 'down' &&
+                    center.y + TOLERANCE < shape.center.y) ||
+                  (direction == 'up' &&
+                    center.y - TOLERANCE > shape.center.y) ||
+                  (direction == 'left' &&
+                    center.x - TOLERANCE > shape.center.x) ||
+                  (direction == 'right' &&
+                    center.x + TOLERANCE < shape.center.x)
+                ) {
+                  potentialTargets.push(droppable);
+                  cleanup.push(() => (droppable.shape = previousShape));
+                  droppable.shape = shape;
+                }
               }
 
-              let previousShape = droppable.shape;
-              const shape = new DOMRectangle(droppable.element, {
-                getBoundingClientRect: (element) =>
-                  getVisibleBoundingRectangle(element, undefined, 0.2),
-              });
-
-              if (!shape.height || !shape.width) continue;
-
-              if (
-                (direction == 'down' &&
-                  center.y + TOLERANCE < shape.center.y) ||
-                (direction == 'up' && center.y - TOLERANCE > shape.center.y) ||
-                (direction == 'left' &&
-                  center.x - TOLERANCE > shape.center.x) ||
-                (direction == 'right' && center.x + TOLERANCE < shape.center.x)
-              ) {
-                potentialTargets.push(droppable);
-                droppable.shape = shape;
-                cleanup.push(() => (droppable.shape = previousShape));
-              }
+              return collisionObserver.computeCollisions(
+                potentialTargets,
+                closestCorners
+              );
+            } finally {
+              for (const restore of cleanup) restore();
             }
           });
 
-          event.preventDefault();
-          collisionObserver.disable();
-
-          const collisions = collisionObserver.computeCollisions(
-            potentialTargets,
-            closestCorners
-          );
-          batch(() => cleanup.forEach((clean) => clean()));
-
+          suspension.include(potentialTargets);
           const [firstCollision] = collisions;
-
-          if (!firstCollision) {
-            return;
-          }
+          if (!firstCollision || !current()) continue;
 
           const {id} = firstCollision;
           const {index, group} = source.sortable;
+          if (!(await suspension.waitFor(actions.setDropTarget(id)))) return;
+          if (!current()) return;
 
-          actions.setDropTarget(id).then(() => {
-            // Wait until optimistic sorting has a chance to update the DOM
-            const {source, target, shape} = dragOperation;
+          // Optimistic sorting acquires its own token during setDropTarget's
+          // synchronous dragover dispatch. Wait for that commit explicitly.
+          await suspension.waitForOthers();
+          if (!current()) return;
 
-            if (!source || !isSortable(source) || !shape) {
+          const {
+            source: updatedSource,
+            target: updatedTarget,
+            shape: updatedDragShape,
+          } = dragOperation;
+          if (
+            !isSortable(updatedSource) ||
+            updatedSource.id !== source.id ||
+            !updatedDragShape
+          )
+            return;
+          if (
+            !updatedTarget ||
+            (updatedTarget.id !== id && updatedTarget.id !== updatedSource.id)
+          ) {
+            return;
+          }
+          if (updatedTarget.disabled || !updatedTarget.accepts(updatedSource))
+            return;
+
+          const {
+            index: newIndex,
+            group: newGroup,
+            target: targetElement,
+          } = updatedSource.sortable;
+          const updated = index !== newIndex || group !== newGroup;
+          const element = updated ? targetElement : updatedTarget.element;
+          if (!element) continue;
+
+          suspension.include([updatedSource.sortable.droppable, updatedTarget]);
+          scrollIntoViewIfNeeded(element);
+          const updatedShape = new DOMRectangle(element);
+          const delta = Rectangle.delta(
+            updatedShape,
+            Rectangle.from(updatedDragShape.current.boundingRectangle),
+            updatedSource.alignment
+          );
+
+          if (!current()) return;
+          suspension.run(() => actions.move({by: delta}));
+
+          if (updated) {
+            if (
+              !(await suspension.waitFor(
+                actions.setDropTarget(updatedSource.id)
+              ))
+            )
+              return;
+          } else {
+            if (!(await suspension.waitFor(manager.renderer.rendering))) return;
+          }
+          // The queued position write runs before these render continuations.
+          // Keep ownership through it, including when no sortable index changed.
+        }
+      } finally {
+        queue.running = false;
+        queue.directions.length = 0;
+        suspension.release();
+      }
+    };
+
+    const unsubscribe = manager.monitor.addEventListener(
+      'dragmove',
+      (event) => {
+        const {controller, source} = manager.dragOperation;
+        if (!controller || !event.by || !isKeyboardEvent(event.nativeEvent))
+          return;
+        if (!isSortable(source)) return;
+        const sourceId = source.id;
+        const direction = getDirection(event.by);
+        if (!direction) return;
+        const admission = suspensions.acquire();
+        if (!admission) return;
+
+        queueMicrotask(() => {
+          try {
+            const {dragOperation} = manager;
+            if (
+              destroyed ||
+              this.disabled ||
+              event.defaultPrevented ||
+              controller.signal.aborted ||
+              dragOperation.controller !== controller ||
+              !dragOperation.status.dragging ||
+              !isSortable(dragOperation.source) ||
+              dragOperation.source.id !== sourceId ||
+              !dragOperation.shape
+            ) {
               return;
             }
 
-            const {
-              index: newIndex,
-              group: newGroup,
-              target: targetElement,
-            } = source.sortable;
-            const updated = index !== newIndex || group !== newGroup;
-
-            const element = updated ? targetElement : target?.element;
-
-            if (!element) return;
-
-            scrollIntoViewIfNeeded(element);
-            const updatedShape = new DOMRectangle(element);
-
-            if (!updatedShape) {
-              return;
+            // Prevent the sensor's queued movement even when another command is
+            // still rendering. Accepted arrow presses are processed in order.
+            event.preventDefault();
+            if (commands?.controller !== controller) {
+              commands = {controller, directions: [], running: false};
             }
-
-            const delta = Rectangle.delta(
-              updatedShape,
-              Rectangle.from(shape.current.boundingRectangle),
-              source.alignment
-            );
-
-            actions.move({
-              by: delta,
-            });
-
-            if (updated) {
-              actions
-                .setDropTarget(source.id)
-                .then(() => collisionObserver.enable());
-            } else {
-              collisionObserver.enable();
-            }
-          });
+            commands.directions.push(direction);
+            if (!commands.running) void run(commands);
+          } finally {
+            admission.release();
+          }
         });
       }
     );
 
     this.destroy = () => {
+      destroyed = true;
+      if (commands) commands.directions.length = 0;
       unsubscribe();
       cleanupEffect();
+      suspensions.destroy();
     };
   }
 }
 
-function getDirection(delta: Coordinates) {
+type Direction = 'right' | 'left' | 'down' | 'up';
+
+function getDirection(delta: Coordinates): Direction | undefined {
   const {x, y} = delta;
 
   if (x > 0) {
