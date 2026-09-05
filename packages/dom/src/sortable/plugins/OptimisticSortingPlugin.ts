@@ -10,7 +10,7 @@ import {
   hasChanged,
   type SortableInstances,
 } from './OptimisticSortingPlugin.helpers.ts';
-import {createDragTasks} from '../../utilities/dragTasks.ts';
+import {createDragTasks} from '../../../../abstract/src/utilities/dragTasks.ts';
 
 const defaultGroup = '__default__';
 

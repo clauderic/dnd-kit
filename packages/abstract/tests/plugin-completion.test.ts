@@ -1,6 +1,5 @@
 import {expect, it} from 'bun:test';
 import {DragDropManager, Draggable, Droppable, Plugin} from '@dnd-kit/abstract';
-import type {DragDropManager as DOMDragDropManager} from '@dnd-kit/dom';
 import {pointerIntersection} from '@dnd-kit/collision';
 import {Rectangle} from '@dnd-kit/geometry';
 import {createDragTasks} from '../src/utilities/dragTasks.ts';
@@ -9,7 +8,7 @@ async function flush() {
   for (let i = 0; i < 40; i++) await Promise.resolve();
 }
 
-class PlacementPlugin extends Plugin<DOMDragDropManager> {
+class PlacementPlugin extends Plugin {
   readonly tasks = createDragTasks(this.manager);
   destroy() {
     this.tasks.destroy();
@@ -19,7 +18,7 @@ class PlacementPlugin extends Plugin<DOMDragDropManager> {
 
 it('returned plugin work joins abstract collision and drop delivery', async () => {
   const manager = new DragDropManager();
-  const plugin = new PlacementPlugin(manager as unknown as DOMDragDropManager);
+  const plugin = new PlacementPlugin(manager);
   const {tasks} = plugin;
   const source = new Draggable({id: 'source', register: false}, manager);
   source.register();

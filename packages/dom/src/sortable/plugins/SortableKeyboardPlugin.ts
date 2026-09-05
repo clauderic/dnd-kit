@@ -12,7 +12,7 @@ import {Scroller} from '@dnd-kit/dom';
 import type {DragDropManager, Droppable} from '@dnd-kit/dom';
 
 import {isSortable} from '../utilities.ts';
-import {createDragTasks} from '../../utilities/dragTasks.ts';
+import {createDragTasks} from '../../../../abstract/src/utilities/dragTasks.ts';
 
 const TOLERANCE = 10;
 

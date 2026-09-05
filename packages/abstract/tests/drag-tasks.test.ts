@@ -29,7 +29,7 @@ async function setup() {
   return manager;
 }
 
-describe('DOM handler lifetime', () => {
+describe('Drag handler lifetime', () => {
   it('destroying one owner finishes only its work and invalidates continuations', async () => {
     const manager = await setup();
     const first = createDragTasks(manager);

@@ -5,7 +5,11 @@ export interface DragTask {
   waitFor(work: Promise<unknown>): Promise<boolean>;
 }
 
-/** Lifetime guards for asynchronous work returned by a plugin's event handler. */
+/**
+ * Lifetime guards for asynchronous work returned by a plugin's event handler.
+ * This module has no shared state; consuming bundles include it at build time
+ * without exposing an additional package entry point or sharing private state.
+ */
 export function createDragTasks(
   manager: DragDropManager<any, any>,
   enabled: () => boolean = () => true
