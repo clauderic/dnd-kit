@@ -6,7 +6,7 @@
     "collisionBrowser": 13,
     "reactCompatibility": 43,
     "frameworkSortable": 18,
-    "nestedStoryBrowser": 15,
+    "nestedStoryBrowser": 22,
     "feedbackCloneBrowser": 3
   },
   "detectorCallComparison": {
@@ -510,6 +510,20 @@
         "path": "third",
         "placements": []
       }
+    ]
+  },
+  "nestedCollectionHoverPreview": {
+    "defaultDelayMilliseconds": 400,
+    "scope": "Story-only pointer/touch transfers to a different parent; same-parent sorting and keyboard commands remain immediate.",
+    "collisionRegressionsDelayMilliseconds": 0,
+    "cases": [
+      "Progress before placement and immediate sorting after transfer",
+      "Progress retained across targets in one destination",
+      "Return to current parent cancels preview and reorders immediately",
+      "Keyboard transfer remains immediate",
+      "A different destination restarts the countdown",
+      "Drop before expiry cancels transfer",
+      "Escape before expiry cancels transfer"
     ]
   }
 }

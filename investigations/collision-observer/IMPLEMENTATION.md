@@ -77,7 +77,7 @@ Clone feedback owns both its cloned tree and the droppable proxies into that tre
 
 - All ten buildable packages built, including declaration generation.
 - 207 abstract, collision, DOM, and sorting unit tests passed after integration with current main (`8b9e1add`).
-- 13 collision browser regressions, 15 nested-collection story cases, and 3 clone-feedback lifecycle cases passed.
+- 13 collision browser regressions, 22 nested-collection story cases, and 3 clone-feedback lifecycle cases passed.
 - 43 existing React browser cases passed, including horizontal/vertical sorting, keyboard, multiple lists, empty columns, cancellation, scrolling, tables, transforms, overlays, and iframes.
 - 18 existing sortable browser cases passed across Vue, Solid, and Svelte.
 - Targeted TypeScript and formatting checks passed.
@@ -86,6 +86,8 @@ Clone feedback owns both its cloned tree and the droppable proxies into that tre
 The renderer-boundary refactor and nested story reran package builds, unit tests, collision regressions, broader React compatibility, framework sortable cases, and targeted type/format checks.
 
 The nested-collection story at `React/Sortable/Nested collections/Example` is a finished board with recursive collections, card transfers, empty groups, root reordering, keyboard reversal, cancellation, and reset. Cards and collections accept each other as reorder targets and can both enter collection contents. They retain the normal collision priorities, preserving pointer containment ahead of shape-only intersections. A collection background transfers children from other groups and preserves the order of children already in that group. Collection reorder targets use their header rectangles, and only the labeled root band appends at root; the surrounding board is layout, not an append target. Its tree update guards against cycles. All eight diagnostic stories remain available. Light, dark, and 390px layouts were visually inspected.
+
+The polished story also has an optional 400ms hover delay before pointer/touch transfers to a different parent. A destination highlight and progress ring preview the move without changing layout. Moving between targets in that destination preserves the countdown; leaving, releasing, canceling, or unmounting clears it. On expiry, the story requests a fresh collision pass and lets the usual target action apply the latest destination. Reordering within the current parent and keyboard commands remain immediate. This is a story presentation choice, adjustable through its Container hover delay control; the library still adds no timer. The existing placement-path and responsiveness regressions explicitly use a zero delay, while seven additional browser cases check the countdown and cancellation with a controlled clock.
 
 Browser validation used installed Chrome with the Storybook development servers. Some initial runs were interrupted by development-server dependency optimization/reloading; clean runs above completed after it settled. The table checks initially could not load because the already-declared `@tanstack/react-table` dependency was absent locally. Restoring that dependency required no manifest or lockfile changes.
 

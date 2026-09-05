@@ -56,7 +56,8 @@ export function createNestedTrace(getItems: () => BoardNode[]) {
   let active = false;
   let frame = 0;
   let started = 0;
-  let metadata: Record<string, unknown> = {};
+  let metadata: Record<string, unknown> & {transferDelayMilliseconds?: number} =
+    {};
   let initial: Record<string, unknown> | null = null;
   let ending: Record<string, unknown> | null = null;
   let initialGeometry: Record<string, unknown> | null = null;
@@ -172,7 +173,7 @@ export function createNestedTrace(getItems: () => BoardNode[]) {
   }
 
   const trace = {
-    start(nextManager: DragDropManager) {
+    start(nextManager: DragDropManager, transferDelay: number) {
       cancelAnimationFrame(frame);
       manager = nextManager;
       active = true;
@@ -185,6 +186,7 @@ export function createNestedTrace(getItems: () => BoardNode[]) {
       lastFrame = '';
       lastItems = getItems();
       metadata = {
+        transferDelayMilliseconds: transferDelay,
         startedAt: new Date().toISOString(),
         url: window.location.href,
         viewport: {

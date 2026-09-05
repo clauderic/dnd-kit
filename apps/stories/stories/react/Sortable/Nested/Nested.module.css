@@ -138,6 +138,7 @@
 }
 
 .Board {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: start;
@@ -215,6 +216,7 @@
 }
 
 .Contents {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -356,6 +358,77 @@
 .Card[aria-hidden='true'],
 .Collection[aria-hidden='true'] {
   opacity: 0.4;
+}
+
+.Contents[data-pending='true'] {
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--accent) 65%, transparent);
+  background: color-mix(in srgb, var(--accent) 7%, var(--well));
+}
+.Board[data-pending='true'] > .Append {
+  border-color: #6384d8;
+  background: #6384d812;
+}
+.TransferCue {
+  position: absolute;
+  top: 7px;
+  right: 8px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: calc(100% - 16px);
+  padding: 5px 9px 5px 6px;
+  border: 1px solid color-mix(in srgb, var(--accent, #6384d8) 35%, var(--line));
+  border-radius: 20px;
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow: 0 2px 8px #25283a12;
+  font-size: 10px;
+  font-weight: 500;
+  pointer-events: none;
+}
+.TransferCue span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.TransferCue svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  stroke-width: 1.8;
+  transform: rotate(-90deg);
+}
+.TransferTrack {
+  stroke: var(--line);
+}
+.TransferProgress {
+  stroke: var(--accent, #6384d8);
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  animation: transfer-progress var(--transfer-delay) linear both;
+}
+.Board > .TransferCue {
+  top: auto;
+  bottom: 0;
+  right: 50%;
+  transform: translateX(50%);
+}
+.Board[data-pending='true'] > .Append {
+  color: transparent;
+}
+@keyframes transfer-progress {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .TransferProgress {
+    animation: none;
+  }
 }
 .Card[data-dragging='true']:not([aria-hidden]),
 .Collection[data-dragging='true']:not([aria-hidden]) {

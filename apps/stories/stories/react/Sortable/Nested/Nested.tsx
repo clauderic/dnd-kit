@@ -1,4 +1,11 @@
-import {useEffect, useLayoutEffect, useRef, useState} from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import type {CSSProperties, PropsWithChildren} from 'react';
 import {CollisionPriority} from '@dnd-kit/abstract';
 import {Feedback} from '@dnd-kit/dom';
@@ -11,11 +18,17 @@ import {Handle} from '../../components/index.ts';
 import {initialItems, locate, moveNode, type BoardNode} from './tree.ts';
 import {createNestedTrace} from './trace.ts';
 import {TraceControls} from './TraceControls.tsx';
+import {
+  TRANSFER_DELAY,
+  useContainerHover,
+  type ContainerHover,
+} from './useContainerHover.ts';
 import styles from './Nested.module.css';
 
 const ROOT = 'board';
 const contentsId = (id: string) => `contents:${id}`;
 const acceptedTypes = ['card', 'collection'];
+const HoverContext = createContext<ContainerHover | null>(null);
 type Operation = Parameters<
   DragDropEventHandlers['onDragOver']
 >[0]['operation'];
@@ -57,12 +70,17 @@ function sort(items: BoardNode[], operation: Operation) {
     : items;
 }
 
-export function Nested() {
+export function Nested({
+  transferDelay = TRANSFER_DELAY,
+}: {
+  transferDelay?: number;
+}) {
   const [items, setItems] = useState(initialItems);
   const current = useRef(items);
   const snapshot = useRef(items);
   const [dragging, setDragging] = useState(false);
   const [trace] = useState(() => createNestedTrace(() => current.current));
+  const hover = useContainerHover(current, transferDelay);
 
   useEffect(() => trace.attach(), [trace]);
   useLayoutEffect(() => trace.commit(), [items, trace]);
@@ -98,31 +116,39 @@ export function Nested() {
       </header>
       <DragDropProvider
         onDragStart={(_, manager) => {
-          trace.start(manager);
+          hover.start(manager);
+          trace.start(manager, transferDelay);
           snapshot.current = current.current;
           setDragging(true);
         }}
         onDragMove={(event) => trace.move(event)}
-        onCollision={(event) => trace.collision(event.collisions)}
+        onCollision={(event, manager) => {
+          trace.collision(event.collisions);
+          hover.collision(event, manager);
+        }}
         onDragOver={(event) => {
           event.preventDefault();
+          hover.clear();
           const next = sort(current.current, event.operation);
           trace.over(next);
           update(next);
         }}
         onDragEnd={(event) => {
+          hover.end();
           trace.end(event);
           if (event.canceled) update(snapshot.current);
           setDragging(false);
         }}
       >
-        <Contents id={ROOT} label="the board" root empty={items.length === 0}>
-          <Nodes items={items} parent={null} depth={0} />
-        </Contents>
+        <HoverContext.Provider value={hover.preview}>
+          <Contents id={ROOT} label="the board" root empty={items.length === 0}>
+            <Nodes items={items} parent={null} depth={0} />
+          </Contents>
+        </HoverContext.Provider>
       </DragDropProvider>
       <footer className={styles.Footer}>
         <span>
-          <Grip /> Drag cards or collections to make room for what’s next.
+          <Grip /> Drag to reorder. Hold over a collection to move inside.
         </span>
         <span>
           <kbd>Space</kbd> pick up / drop{' '}
@@ -256,6 +282,9 @@ function Contents({
   root?: boolean;
   empty: boolean;
 }>) {
+  const hover = useContext(HoverContext);
+  const pending =
+    hover?.parent === (root ? null : id.slice('contents:'.length));
   const {ref, isDropTarget} = useDroppable({
     id,
     type: 'contents',
@@ -271,7 +300,29 @@ function Contents({
       className={root ? styles.Board : styles.Contents}
       data-board-contents={id}
       data-over={isDropTarget}
+      data-pending={pending}
     >
+      {pending && (
+        <div
+          key={hover.startedAt}
+          className={styles.TransferCue}
+          style={{'--transfer-delay': `${hover.duration}ms`} as CSSProperties}
+          role="status"
+          data-transfer-cue={id}
+        >
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <circle className={styles.TransferTrack} cx="10" cy="10" r="7" />
+            <circle
+              className={styles.TransferProgress}
+              cx="10"
+              cy="10"
+              r="7"
+              pathLength="1"
+            />
+          </svg>
+          <span>Move into {label}</span>
+        </div>
+      )}
       {children}
       <div
         ref={root ? ref : undefined}

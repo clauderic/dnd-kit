@@ -1,8 +1,13 @@
-import {test, expect, type Page} from '@playwright/test';
+import {test as base, expect, type Page} from '@playwright/test';
 import type {} from '../stories/react/Sortable/Nested/trace.ts';
 import pointerPath from './fixtures/nested-collections-pointer-path.json' with {type: 'json'};
 import headerPath from './fixtures/nested-collections-header-path.json' with {type: 'json'};
 import containerPath from './fixtures/nested-collections-container-path.json' with {type: 'json'};
+
+// Keep the collision regressions independent of the story's optional delay.
+const test = base.extend<{transferDelay: number}>({
+  transferDelay: [0, {option: true}],
+});
 
 const node = (page: Page, id: string) =>
   page.locator(
@@ -36,13 +41,191 @@ async function moveInside(page: Page, id: string) {
   await settle(page);
 }
 
-test.beforeEach(async ({page}) => {
+test.beforeEach(async ({page, transferDelay}) => {
   await page.goto(
-    '/iframe.html?id=react-sortable-nested-collections--example&viewMode=story'
+    `/iframe.html?id=react-sortable-nested-collections--example&viewMode=story&args=transferDelay:${transferDelay}`
   );
   await expect(
     page.getByRole('heading', {name: 'Good things take shape.'})
   ).toBeVisible();
+});
+
+test.describe('container hover preview', () => {
+  test.use({transferDelay: 400});
+
+  async function begin(page: Page) {
+    await page.clock.install();
+    await pickUp(page, 'Give buttons some love');
+    await settle(page);
+    await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  }
+
+  async function pointAt(page: Page, id: string) {
+    const rect = (await page
+      .locator(`[data-board-append="contents:${id}"]`)
+      .boundingBox())!;
+    await page.mouse.move(rect.x + rect.width / 2, rect.y + rect.height / 2);
+    await page.clock.runFor(32);
+  }
+
+  test('shows progress before transferring, then reorders immediately in its new group', async ({
+    page,
+  }) => {
+    await begin(page);
+    await pointAt(page, 'launch');
+    expect(
+      await page.evaluate(
+        () =>
+          window.__nestedCollectionsTrace!.snapshot().transferDelayMilliseconds
+      )
+    ).toBe(400);
+    await expect(
+      page.locator('[data-transfer-cue="contents:launch"]')
+    ).toBeVisible();
+    await page.clock.runFor(300);
+    await expect(node(page, 'buttons')).toHaveAttribute(
+      'data-parent',
+      'components'
+    );
+    await page.clock.runFor(100);
+    await expect(node(page, 'buttons')).toHaveAttribute(
+      'data-parent',
+      'launch'
+    );
+    await expect(page.locator('[data-transfer-cue]')).toHaveCount(0);
+
+    const rect = (await node(page, 'checklist').boundingBox())!;
+    await page.mouse.move(rect.x + rect.width / 2, rect.y + rect.height / 2);
+    await page.clock.runFor(32);
+    await expect
+      .poll(() =>
+        page
+          .locator(
+            '[data-board-contents="contents:launch"] > [data-board-node]:not([aria-hidden="true"])'
+          )
+          .evaluateAll((nodes) =>
+            nodes.map((node) => node.getAttribute('data-board-node'))
+          )
+      )
+      .toEqual(['story', 'buttons', 'checklist']);
+    await expect(page.locator('[data-transfer-cue]')).toHaveCount(0);
+    await page.mouse.up();
+    await page.clock.runFor(100);
+  });
+
+  test('moving between targets in one destination keeps its progress', async ({
+    page,
+  }) => {
+    await begin(page);
+    await pointAt(page, 'launch');
+    await page.clock.runFor(200);
+    const rect = (await node(page, 'checklist').boundingBox())!;
+    await page.mouse.move(rect.x + rect.width / 2, rect.y + rect.height / 2);
+    await page.clock.runFor(200);
+    await expect(node(page, 'buttons')).toHaveAttribute(
+      'data-parent',
+      'launch'
+    );
+    await page.mouse.up();
+    await page.clock.runFor(100);
+  });
+
+  test('returning to its own group cancels the preview and reorders immediately', async ({
+    page,
+  }) => {
+    await begin(page);
+    await pointAt(page, 'someday');
+    await page.clock.runFor(200);
+    const rect = (await node(page, 'inputs').boundingBox())!;
+    await page.mouse.move(rect.x + rect.width / 2, rect.y + rect.height / 2);
+    await page.clock.runFor(32);
+    await expect(page.locator('[data-transfer-cue]')).toHaveCount(0);
+    const order = () =>
+      page
+        .locator(
+          '[data-board-contents="contents:components"] > [data-board-node]:not([aria-hidden="true"])'
+        )
+        .evaluateAll((nodes) =>
+          nodes.map((node) => node.getAttribute('data-board-node'))
+        );
+    await expect.poll(order).toEqual(['inputs', 'buttons']);
+    await page.clock.runFor(1000);
+    await expect.poll(order).toEqual(['inputs', 'buttons']);
+    await page.mouse.up();
+    await page.clock.runFor(100);
+  });
+
+  test('keyboard transfers remain immediate', async ({page}) => {
+    await page.clock.install();
+    await page
+      .getByRole('button', {name: 'Drag Give buttons some love', exact: true})
+      .focus();
+    await page.keyboard.press('Space');
+    await expect(page.locator('[data-nested-board]')).toHaveAttribute(
+      'data-dragging',
+      'true'
+    );
+    await settle(page);
+    await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+    await page.keyboard.press('ArrowRight');
+    await page.clock.runFor(32);
+    await expect(node(page, 'buttons')).not.toHaveAttribute(
+      'data-parent',
+      'components'
+    );
+    await expect(page.locator('[data-transfer-cue]')).toHaveCount(0);
+    await page.keyboard.press('Escape');
+    await page.clock.runFor(100);
+  });
+
+  test('leaving cancels the preview and entering another group starts fresh', async ({
+    page,
+  }) => {
+    await begin(page);
+    await pointAt(page, 'someday');
+    await page.clock.runFor(200);
+    await pointAt(page, 'launch');
+    await expect(
+      page.locator('[data-transfer-cue="contents:someday"]')
+    ).toHaveCount(0);
+    await expect(
+      page.locator('[data-transfer-cue="contents:launch"]')
+    ).toBeVisible();
+    await page.clock.runFor(200);
+    await expect(node(page, 'buttons')).toHaveAttribute(
+      'data-parent',
+      'components'
+    );
+    await page.clock.runFor(200);
+    await expect(node(page, 'buttons')).toHaveAttribute(
+      'data-parent',
+      'launch'
+    );
+    await page.mouse.up();
+    await page.clock.runFor(100);
+  });
+
+  for (const action of ['drop', 'cancel'] as const) {
+    test(`${action} before the delay cancels the pending transfer`, async ({
+      page,
+    }) => {
+      await begin(page);
+      await pointAt(page, 'someday');
+      await expect(page.locator('[data-transfer-cue]')).toBeVisible();
+      if (action === 'cancel') await page.keyboard.press('Escape');
+      await page.mouse.up();
+      await page.clock.runFor(1000);
+      await expect(node(page, 'buttons')).toHaveAttribute(
+        'data-parent',
+        'components'
+      );
+      await expect(page.locator('[data-transfer-cue]')).toHaveCount(0);
+      await expect(page.locator('[data-nested-board]')).toHaveAttribute(
+        'data-dragging',
+        'false'
+      );
+    });
+  }
 });
 
 test('a deeply nested card transfers into an empty collection and stays there with a stationary pointer', async ({
@@ -323,6 +506,7 @@ test('copy trace retains the starting layout, input, collisions, geometry, and f
     JSON.parse(document.documentElement.dataset.copiedTrace!)
   );
   expect(trace.schema).toBe('dnd-kit/nested-collections-trace@1');
+  expect(trace.transferDelayMilliseconds).toBe(0);
   expect(trace.initial.source).toBe('buttons');
   expect(
     trace.initial.tree.find((node: {id: string}) => node.id === 'buttons')
