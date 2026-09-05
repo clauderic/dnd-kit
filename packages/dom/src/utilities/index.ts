@@ -38,6 +38,7 @@ export {
   detectScrollIntent,
   getScrollableAncestors,
   getFirstScrollableAncestor,
+  getScrollPosition,
   isDocumentScrollingElement,
   ScrollDirection,
   scrollIntoViewIfNeeded,

@@ -1,6 +1,6 @@
 import {Rectangle, type Axis, type Coordinates} from '@dnd-kit/geometry';
 
-import {getScrollPosition} from './getScrollPosition.ts';
+import {getScrollPosition, type ScrollPosition} from './getScrollPosition.ts';
 import {getFrameTransform} from '../frame/getFrameTransform.ts';
 import {getComputedStyles} from '../styles/getComputedStyles.ts';
 import {parseTransform} from '../transform/parseTransform.ts';
@@ -32,11 +32,11 @@ export function detectScrollIntent(
   intent?: ScrollIntent,
   acceleration = 25,
   thresholdPercentage = defaultThreshold,
-  tolerance = defaultTolerance
+  tolerance = defaultTolerance,
+  scrollPosition: ScrollPosition = getScrollPosition(scrollableElement)
 ) {
   const {x, y} = coordinates;
-  const {rect, isTop, isBottom, isLeft, isRight} =
-    getScrollPosition(scrollableElement);
+  const {rect, isTop, isBottom, isLeft, isRight} = scrollPosition;
   const frameTransform = getFrameTransform(scrollableElement);
   const computedStyles = getComputedStyles(scrollableElement, true);
   const parsedTransform = parseTransform(computedStyles);
