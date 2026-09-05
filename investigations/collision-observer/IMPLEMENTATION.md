@@ -71,7 +71,7 @@ A focused comparison using 20 targets and 20 separate synchronous rectangle upda
 
 - All ten buildable packages built, including declaration generation.
 - 200 abstract, collision, DOM, and sorting unit tests passed after integration with current main (`8b9e1add`).
-- 13 collision browser regressions and 6 nested-collection story cases passed.
+- 13 collision browser regressions and 10 nested-collection story cases passed.
 - 34 existing React browser cases passed, including horizontal/vertical sorting, keyboard, multiple lists, empty columns, cancellation, scrolling, tables, transforms, overlays, and iframes.
 - 18 existing sortable browser cases passed across Vue, Solid, and Svelte.
 - Targeted TypeScript and formatting checks passed.
@@ -79,7 +79,7 @@ A focused comparison using 20 targets and 20 separate synchronous rectangle upda
 
 The renderer-boundary refactor and nested story reran package builds, unit tests, collision regressions, broader React compatibility, framework sortable cases, and targeted type/format checks.
 
-The nested-collection story at `React/Sortable/Nested collections/Example` is a finished board with recursive collections, card transfers, empty groups, root reordering, keyboard reversal, cancellation, and reset. It uses the normal collision detectors and explicit type acceptance: cards sort against cards; collections sort against collection headers; both can enter collection contents. Its tree update guards against cycles. All eight diagnostic stories remain available. Light, dark, and 390px layouts were visually inspected.
+The nested-collection story at `React/Sortable/Nested collections/Example` is a finished board with recursive collections, card transfers, empty groups, root reordering, keyboard reversal, cancellation, and reset. It uses the normal collision detectors and explicit type acceptance: cards sort against cards; collections sort against collection headers; both can enter collection contents. Collection reorder targets use their header rectangles, and only the labeled root band appends at root; the surrounding board is layout, not an append target. Its tree update guards against cycles. All eight diagnostic stories remain available. Light, dark, and 390px layouts were visually inspected.
 
 Browser validation used installed Chrome with the Storybook development servers. Some initial runs were interrupted by development-server dependency optimization/reloading; clean runs above completed after it settled. The table checks initially could not load because the already-declared `@tanstack/react-table` dependency was absent locally. Restoring that dependency required no manifest or lockfile changes.
 
@@ -97,6 +97,14 @@ DND_BROWSER_CHANNEL=chrome bunx playwright test --config tests/collision-reprodu
 ```
 
 The current browser suite writes full traces under `apps/stories/test-results/collision-reproductions`. The [historical evidence](evidence.json) preserves the original baseline/PR comparison; the [implementation evidence](implementation-evidence.json) records the current outcomes.
+
+## Nested collection trace and follow-up
+
+The story's **Copy trace** button exports the latest drag: the newest 1,000 events plus the pinned starting layout, first geometry sample, and drag-end snapshot. It records input coordinates and sequence numbers, published collisions and their cached rectangles, actual/computed target IDs, model placements and React commits, scroll, and animation state. Raw DOM rectangles are sampled at most once per animation frame, independently of collision callbacks. Cached rectangles can intentionally project an animation's final position while raw DOM rectangles reflect its current position. Recording runs outside reactive tracking and does not update React state, force collisions, or refresh library geometry. Starting another drag replaces the trace; dropping retains it. Clipboard denial exposes a selectable JSON field. From the story iframe console, `window.__nestedCollectionsTrace.export()` returns the same JSON.
+
+The supplied September 5 trace contained 61 changed placements in 4.4 seconds; no consecutive changed placements shared an input sequence, and some pointer movements were subpixel. The collection first left its parent on pickup, then alternated between the first and last root slots. In that story, whole collection rectangles were registered as reorder targets even though only their headers represented that action, and the entire root board was registered as append-to-end. Reordering exposed a gap below the short collection, which made the board win; appending restored the original tall collection under the pointer, which made it win on the next movement.
+
+Replaying the supplied 129 input coordinates reproduced 57 placements, including 47 root-slot shuffles. Correcting the story's target refs reduced the same replay to five transfers (`progress → ideas → website → ideas → progress`) and zero root shuffles. No observer suppression or time/distance threshold was added for this case. The saved pointer-path regression and a pickup regression cover both mistakes. This is a correction to the story's target semantics; it does not establish convergence for arbitrary layouts.
 
 ## Limits
 

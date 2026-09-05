@@ -1,4 +1,4 @@
-import {useRef, useState} from 'react';
+import {useEffect, useLayoutEffect, useRef, useState} from 'react';
 import type {CSSProperties, PropsWithChildren} from 'react';
 import {CollisionPriority} from '@dnd-kit/abstract';
 import {Feedback} from '@dnd-kit/dom';
@@ -9,6 +9,8 @@ import {useSortable} from '@dnd-kit/react/sortable';
 
 import {Handle} from '../../components/index.ts';
 import {initialItems, locate, moveNode, type BoardNode} from './tree.ts';
+import {createNestedTrace} from './trace.ts';
+import {TraceControls} from './TraceControls.tsx';
 import styles from './Nested.module.css';
 
 const ROOT = 'board';
@@ -58,6 +60,10 @@ export function Nested() {
   const current = useRef(items);
   const snapshot = useRef(items);
   const [dragging, setDragging] = useState(false);
+  const [trace] = useState(() => createNestedTrace(() => current.current));
+
+  useEffect(() => trace.attach(), [trace]);
+  useLayoutEffect(() => trace.commit(), [items, trace]);
 
   function update(next: BoardNode[]) {
     current.current = next;
@@ -74,27 +80,36 @@ export function Nested() {
           <h1>Good things take shape.</h1>
           <p>A place for the big picture. And all the little details.</p>
         </div>
-        <button
-          className={styles.Reset}
-          disabled={dragging}
-          onClick={() => update(initialItems())}
-        >
-          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <path d="M4 7a6.5 6.5 0 1 1-.3 5M4 3v4h4" />
-          </svg>
-          Reset board
-        </button>
+        <div className={styles.Toolbar}>
+          <TraceControls trace={trace} />
+          <button
+            className={styles.Reset}
+            disabled={dragging}
+            onClick={() => update(initialItems())}
+          >
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M4 7a6.5 6.5 0 1 1-.3 5M4 3v4h4" />
+            </svg>
+            Reset board
+          </button>
+        </div>
       </header>
       <DragDropProvider
-        onDragStart={() => {
+        onDragStart={(_, manager) => {
+          trace.start(manager);
           snapshot.current = current.current;
           setDragging(true);
         }}
+        onDragMove={(event) => trace.move(event)}
+        onCollision={(event) => trace.collision(event.collisions)}
         onDragOver={(event) => {
           event.preventDefault();
-          update(sort(current.current, event.operation));
+          const next = sort(current.current, event.operation);
+          trace.over(next);
+          update(next);
         }}
         onDragEnd={(event) => {
+          trace.end(event);
           if (event.canceled) update(snapshot.current);
           setDragging(false);
         }}
@@ -152,7 +167,7 @@ function Node({
   depth: number;
 }) {
   const collection = node.children != null;
-  const {ref, handleRef, isDragging, isDragSource} = useSortable({
+  const {ref, targetRef, handleRef, isDragging, isDragSource} = useSortable({
     id: node.id,
     index,
     group: parent ? contentsId(parent) : ROOT,
@@ -177,7 +192,10 @@ function Node({
       data-source={isDragSource}
       data-dragging={isDragging}
     >
-      <div className={styles.NodeHeader}>
+      <div
+        ref={collection ? targetRef : undefined}
+        className={styles.NodeHeader}
+      >
         {collection ? (
           <span className={styles.CollectionIcon}>
             <Folder />
@@ -246,7 +264,7 @@ function Contents({
 
   return (
     <div
-      ref={ref}
+      ref={root ? undefined : ref}
       role="list"
       aria-label={label}
       className={root ? styles.Board : styles.Contents}
@@ -255,6 +273,7 @@ function Contents({
     >
       {children}
       <div
+        ref={root ? ref : undefined}
         className={empty ? styles.Empty : styles.Append}
         data-board-append={id}
       >

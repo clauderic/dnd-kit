@@ -6,7 +6,7 @@
     "collisionBrowser": 13,
     "reactCompatibility": 34,
     "frameworkSortable": 18,
-    "nestedStoryBrowser": 6
+    "nestedStoryBrowser": 10
   },
   "detectorCallComparison": {
     "targets": 20,
@@ -356,7 +356,11 @@
       "Root collection reorder and own-descendant exclusion",
       "Immediate nested-list keyboard reversal and drop",
       "Card transfer to root and reset",
-      "390px viewport without horizontal overflow"
+      "390px viewport without horizontal overflow",
+      "Copy retains starting tree, input, collisions, geometry, and final placement",
+      "Clipboard denial preserves selectable JSON for a canceled drag",
+      "Picking up a nested collection preserves its parent",
+      "Replay the supplied 129 pointer coordinates without alternating root slots"
     ],
     "visualReview": ["1440px light", "1440px dark", "390px light"]
   },
@@ -368,5 +372,21 @@
     "Measurement and rendering rejection recovery",
     "Cancellation followed by a new drag",
     "Destruction retains underlying renderer ownership"
-  ]
+  ],
+  "nestedCollectionFollowUp": {
+    "reportedPlacements": 61,
+    "reportedDurationMilliseconds": 4369.8,
+    "sameInputConsecutivePlacements": 0,
+    "replayBefore": {
+      "placements": 57,
+      "rootSlotShuffles": 47
+    },
+    "replayAfter": {
+      "placements": 5,
+      "rootSlotShuffles": 0,
+      "parents": ["progress", "ideas", "website", "ideas", "progress"]
+    },
+    "fixture": "apps/stories/tests/fixtures/nested-collections-pointer-path.json",
+    "fix": "Collection header targetRef and explicit root append band; no library collision-policy changes"
+  }
 }

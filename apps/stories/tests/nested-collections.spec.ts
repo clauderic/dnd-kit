@@ -1,4 +1,6 @@
 import {test, expect, type Page} from '@playwright/test';
+import type {} from '../stories/react/Sortable/Nested/trace.ts';
+import pointerPath from './fixtures/nested-collections-pointer-path.json' with {type: 'json'};
 
 const node = (page: Page, id: string) =>
   page.locator(
@@ -181,4 +183,162 @@ test('the board fits a narrow screen without horizontal overflow', async ({
     390
   );
   await page.getByRole('button', {name: 'Reset board'}).click();
+});
+
+test('copy trace retains the starting layout, input, collisions, geometry, and final placement', async ({
+  page,
+}) => {
+  await page.evaluate(() => {
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: async (text: string) => {
+          document.documentElement.dataset.copiedTrace = text;
+        },
+      },
+    });
+  });
+  await pickUp(page, 'Give buttons some love');
+  await moveInside(page, 'someday');
+  await page.mouse.up();
+  await settle(page);
+  await page.getByRole('button', {name: 'Copy trace', exact: true}).click();
+  await expect(page.getByRole('status', {name: 'Trace export'})).toContainText(
+    'Copied'
+  );
+  const trace = await page.evaluate(() =>
+    JSON.parse(document.documentElement.dataset.copiedTrace!)
+  );
+  expect(trace.schema).toBe('dnd-kit/nested-collections-trace@1');
+  expect(trace.initial.source).toBe('buttons');
+  expect(
+    trace.initial.tree.find((node: {id: string}) => node.id === 'buttons')
+      .parent
+  ).toBe('components');
+  expect(trace.ending.event).toBe('dragend');
+  expect(trace.active).toBe(false);
+  expect(trace.ending.sourceLocation.parent).toBe('someday');
+  expect(
+    trace.events.some((entry: {event: string}) => entry.event === 'dragmove')
+  ).toBe(true);
+  expect(
+    trace.events.some(
+      (entry: {event: string; collisions?: unknown[]}) =>
+        entry.event === 'collision' && entry.collisions?.length
+    )
+  ).toBe(true);
+  expect(
+    trace.events.some(
+      (entry: {event: string; droppables?: {dom: unknown; shape: unknown}[]}) =>
+        entry.event === 'frame' &&
+        entry.droppables?.some((drop) => drop.dom && drop.shape)
+    )
+  ).toBe(true);
+  expect(trace.omittedEvents).toBe(0);
+  await page.getByRole('button', {name: 'Dismiss', exact: true}).click();
+  await page.getByRole('button', {name: 'Reset board'}).click();
+  await settle(page, 20);
+  expect(
+    await page.evaluate(
+      () => window.__nestedCollectionsTrace!.snapshot().totalEvents
+    )
+  ).toBe(trace.totalEvents);
+});
+
+test('a blocked clipboard exposes selectable JSON and preserves a canceled drag', async ({
+  page,
+}) => {
+  await page.evaluate(() => {
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: async () => {
+          throw new DOMException('Blocked', 'NotAllowedError');
+        },
+      },
+    });
+  });
+  await pickUp(page, 'Components');
+  await page.keyboard.press('Escape');
+  await page.mouse.up();
+  await page.getByRole('button', {name: 'Copy trace', exact: true}).click();
+  const field = page.getByRole('textbox', {name: 'Drag trace JSON'});
+  await expect(field).toBeVisible();
+  const trace = JSON.parse(await field.inputValue());
+  expect(trace.ending.canceled).toBe(true);
+  expect(trace.initial.source).toBe('components');
+  // Drag feedback prevents text selection until its drop cleanup finishes.
+  await expect(node(page, 'components')).toHaveAttribute(
+    'data-source',
+    'false'
+  );
+  await field.click();
+  expect(
+    await field.evaluate(
+      (element: HTMLTextAreaElement) =>
+        element.selectionEnd - element.selectionStart
+    )
+  ).toBe((await field.inputValue()).length);
+});
+
+test('picking up a nested collection keeps it in its current parent', async ({
+  page,
+}) => {
+  await pickUp(page, 'Components');
+  await settle(page);
+  await expect(node(page, 'components')).toHaveAttribute(
+    'data-parent',
+    'system'
+  );
+  await page.keyboard.press('Escape');
+  await page.mouse.up();
+});
+
+test.describe('reported nested collection pointer path', () => {
+  test.use({viewport: pointerPath.viewport, deviceScaleFactor: 2});
+
+  test('small pointer movements transfer between collections without alternating root slots', async ({
+    page,
+  }) => {
+    await page.evaluate(() => document.fonts.ready);
+    await page.mouse.move(pointerPath.start.x, pointerPath.start.y);
+    await page.mouse.down();
+    await page.mouse.move(pointerPath.start.x + 6, pointerPath.start.y);
+    await expect(page.locator('[data-nested-board]')).toHaveAttribute(
+      'data-dragging',
+      'true'
+    );
+    for (const [x, y, pauseFrames] of pointerPath.moves) {
+      if (pauseFrames) await settle(page, pauseFrames);
+      await page.mouse.move(x, y);
+      await settle(page, 1);
+    }
+    await page.mouse.up();
+    await expect(page.locator('[data-nested-board]')).toHaveAttribute(
+      'data-dragging',
+      'false'
+    );
+    const parents = await page.evaluate(() =>
+      window
+        .__nestedCollectionsTrace!.snapshot()
+        .events.filter((entry) => entry.event === 'dragover')
+        .map(
+          (entry) => entry.placement as {changed: boolean; to: {parent: string}}
+        )
+        .filter((placement) => placement.changed)
+        .map((placement) => placement.to.parent)
+    );
+    expect(parents).toEqual([
+      'progress',
+      'ideas',
+      'website',
+      'ideas',
+      'progress',
+    ]);
+    await expect(node(page, 'components')).toHaveAttribute(
+      'data-parent',
+      'progress'
+    );
+    await expect(page.locator('[data-board-node]')).toHaveCount(18);
+  });
 });

@@ -91,6 +91,52 @@
   outline-offset: 3px;
 }
 
+.Toolbar {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.TraceControls {
+  position: relative;
+}
+.Reset.CopyTrace {
+  font-size: 11px;
+}
+.TraceMessage {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  width: min(350px, calc(100vw - 32px));
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 6px 20px #25283a15;
+  font-size: 12px;
+}
+.TraceMessage p {
+  margin: 0 0 10px;
+}
+.TraceMessage textarea {
+  width: 100%;
+  height: 170px;
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--ink);
+  background: var(--well);
+  font: 10px monospace;
+}
+.TraceMessage button {
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
 .Board {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -394,6 +440,7 @@
     align-items: flex-start;
     margin-bottom: 24px;
     gap: 12px;
+    flex-wrap: wrap;
   }
   .Intro h1 {
     font-size: 22px;
