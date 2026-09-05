@@ -1,5 +1,5 @@
 import {batch, CleanupFunction, effect} from '@dnd-kit/state';
-import {Plugin} from '@dnd-kit/abstract';
+import {CollisionPlugin} from '@dnd-kit/abstract';
 import {closestCorners} from '@dnd-kit/collision';
 import {
   DOMRectangle,
@@ -16,11 +16,13 @@ import {createCollisionSuspension} from './collisionSuspension.ts';
 
 const TOLERANCE = 10;
 
-export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
+export class SortableKeyboardPlugin extends CollisionPlugin<DragDropManager> {
   constructor(manager: DragDropManager) {
     super(manager);
 
-    const suspensions = createCollisionSuspension(manager);
+    const suspensions = createCollisionSuspension(manager, () =>
+      this.beginCollisionTransaction()
+    );
     let destroyed = false;
     let commands:
       | {controller: AbortController; directions: Direction[]; running: boolean}

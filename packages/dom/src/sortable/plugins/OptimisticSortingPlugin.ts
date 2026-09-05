@@ -1,4 +1,4 @@
-import {Plugin} from '@dnd-kit/abstract';
+import {CollisionPlugin} from '@dnd-kit/abstract';
 import type {DragDropManager} from '@dnd-kit/dom';
 import {move} from '@dnd-kit/helpers';
 import {batch} from '@dnd-kit/state';
@@ -14,11 +14,13 @@ import {createCollisionSuspension} from './collisionSuspension.ts';
 
 const defaultGroup = '__default__';
 
-export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
+export class OptimisticSortingPlugin extends CollisionPlugin<DragDropManager> {
   constructor(manager: DragDropManager) {
     super(manager);
 
-    const suspensions = createCollisionSuspension(manager);
+    const suspensions = createCollisionSuspension(manager, () =>
+      this.beginCollisionTransaction()
+    );
     let destroyed = false;
 
     const getSortableInstances = () => {

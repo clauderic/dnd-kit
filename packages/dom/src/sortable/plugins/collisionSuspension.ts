@@ -1,7 +1,6 @@
 import type {UniqueIdentifier} from '@dnd-kit/abstract';
 import type {DragDropManager, Droppable} from '@dnd-kit/dom';
 import {batch, untracked} from '@dnd-kit/state';
-import {acquireCollisionTransaction} from '../../core/plugins/collision/transaction.ts';
 
 interface Suspension {
   readonly controller: AbortController;
@@ -35,7 +34,10 @@ function isCurrent(manager: DragDropManager, controller: AbortController) {
   );
 }
 
-export function createCollisionSuspension(manager: DragDropManager) {
+export function createCollisionSuspension(
+  manager: DragDropManager,
+  beginTransaction: () => Pick<Suspension, 'release' | 'run'>
+) {
   const owned = new Set<Suspension>();
   let destroyed = false;
 
@@ -78,7 +80,7 @@ export function createCollisionSuspension(manager: DragDropManager) {
       }
 
       const currentGate = gate;
-      const releaseTransaction = acquireCollisionTransaction(manager);
+      const transaction = beginTransaction();
       const affected = new Set<UniqueIdentifier>();
       const elements = new Set<Element>();
       let released = false;
@@ -119,7 +121,7 @@ export function createCollisionSuspension(manager: DragDropManager) {
         }),
         include,
         run(callback) {
-          if (suspension.current) releaseTransaction.run(callback);
+          if (suspension.current) transaction.run(callback);
         },
         waitFor(rendering) {
           return rendering.then(
@@ -167,7 +169,7 @@ export function createCollisionSuspension(manager: DragDropManager) {
                 }
               }
             } finally {
-              releaseTransaction();
+              transaction.release();
             }
           }
         },

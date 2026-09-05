@@ -1,5 +1,10 @@
 import {expect, it} from 'bun:test';
-import {DragDropManager, Draggable, Droppable} from '@dnd-kit/abstract';
+import {
+  DragDropManager,
+  Draggable,
+  Droppable,
+  CollisionPlugin,
+} from '@dnd-kit/abstract';
 import type {DragDropManager as DOMDragDropManager} from '@dnd-kit/dom';
 import {pointerIntersection} from '@dnd-kit/collision';
 import {Rectangle} from '@dnd-kit/geometry';
@@ -9,11 +14,21 @@ async function flush() {
   for (let i = 0; i < 40; i++) await Promise.resolve();
 }
 
-it('a DOM placement lease joins the built abstract observer and terminal transaction', async () => {
-  const manager = new DragDropManager();
-  const suspensions = createCollisionSuspension(
-    manager as unknown as DOMDragDropManager
+class PlacementPlugin extends CollisionPlugin<DOMDragDropManager> {
+  readonly suspensions = createCollisionSuspension(this.manager, () =>
+    this.beginCollisionTransaction()
   );
+
+  destroy() {
+    this.suspensions.destroy();
+    super.destroy();
+  }
+}
+
+it('a placement plugin joins abstract collision and drop delivery through inheritance', async () => {
+  const manager = new DragDropManager();
+  const plugin = new PlacementPlugin(manager as unknown as DOMDragDropManager);
+  const {suspensions} = plugin;
   const source = new Draggable({id: 'source', register: false}, manager);
   source.register();
   const droppable = new Droppable(
@@ -52,7 +67,7 @@ it('a DOM placement lease joins the built abstract observer and terminal transac
     expect(ends).toEqual(['target']);
     expect(manager.dragOperation.status.idle).toBe(true);
   } finally {
-    suspensions.destroy();
+    plugin.destroy();
     manager.destroy();
     await flush();
   }

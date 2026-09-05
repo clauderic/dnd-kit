@@ -1,8 +1,11 @@
 import {describe, expect, it, mock} from 'bun:test';
 import type {Droppable} from '@dnd-kit/dom';
 
-import {createSetup, ElementFixture} from './fixtures.ts';
-import {createCollisionSuspension} from '../collisionSuspension.ts';
+import {
+  createSetup,
+  ElementFixture,
+  createCollisionSuspension,
+} from './fixtures.ts';
 
 describe('private sortable collision suspension', () => {
   for (const reverse of [false, true]) {

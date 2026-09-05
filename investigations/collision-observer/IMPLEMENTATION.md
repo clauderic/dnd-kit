@@ -1,6 +1,6 @@
 # Collision observer implementation
 
-Implemented after the [reproduction and review](README.md). No public options, methods, detector signatures, event shapes, or package exports were added. There is no timeout, cooldown, pointer-distance threshold, recent-target blacklist, or direction-change delay in the collision policy.
+Implemented after the [reproduction and review](README.md). Application options, detector signatures, and event shapes are unchanged. Plugin authors gain the exported `CollisionPlugin` subclass and its protected `beginCollisionTransaction()` extension point; this is an additive API change. The generic `Plugin` class is unchanged. There is no timeout, cooldown, pointer-distance threshold, recent-target blacklist, or direction-change delay in the collision policy.
 
 ## Behavior
 
@@ -26,7 +26,9 @@ Target writes, controlled DOM measurements, optimistic sorting, and accepted key
 
 Normal drop drains the latest accepted input and owned placement work before taking the terminal snapshot. Cancellation remains immediate. A lease-scoped continuation lets an already accepted keyboard command finish its position compensation while stopping; unrelated moves cannot change that pending drop.
 
-The DOM and abstract bundles share a nonenumerable, private symbol capability on the observer. This joins their transaction ownership without exporting an internal module or adding a public observer method. The DOM collision-event gate still works with an older abstract bundle, but complete terminal draining requires the matching abstract implementation. The workspace releases these packages together.
+The abstract `CollisionPlugin` subclass owns the transaction contract through its protected `beginCollisionTransaction()` method. It returns `release()` and `run(callback)` operations backed by the same internal state used by abstract target actions and terminal reconciliation. The abstract implementation has no knowledge of platform-specific consumers. Sortable plugins extend this specialized class and inject transaction acquisition into their helper; measurement and element ownership remain in the DOM package. Required geometry measurement uses a core wrapper around its collision plugin so application plugin replacement cannot remove it. Sortable plugins remain removable. There is no symbol lookup, observer augmentation, private-module import across packages, or silent fallback for incompatible versions. The workspace releases these packages together.
+
+Plugins acquire a transaction before deferring accepted work, check operation validity before continuing, and release it in `finally` and on destruction. Transactions are independent and releases are idempotent. Abstract-only regression tests exercise this contract without importing a platform package, including overlapping ownership, live detection, pending drop completion, cancellation, stale continuations, exception handling, external disabling, and separate managers.
 
 ## Geometry policy
 
@@ -49,12 +51,14 @@ A focused comparison using 20 targets and 20 separate synchronous rectangle upda
 ## Validation
 
 - All ten buildable packages built, including declaration generation.
-- 179 abstract, collision, DOM, and sorting unit tests passed after integration with current main (`8b9e1add`).
+- 187 abstract, collision, DOM, and sorting unit tests passed after integration with current main (`8b9e1add`).
 - 11 collision browser regressions passed.
 - 34 existing React browser cases passed, including horizontal/vertical sorting, keyboard, multiple lists, empty columns, cancellation, scrolling, tables, transforms, overlays, and iframes.
 - 18 existing sortable browser cases passed across Vue, Solid, and Svelte.
 - Targeted TypeScript and formatting checks passed.
-- Public declaration comparison found only documentation/private-marker changes and the DOM `accepts` override of its existing inherited signature; package exports and public inputs are unchanged.
+- Declarations include the additive `CollisionPlugin` export and its protected transaction contract. The generic `Plugin` class is unchanged. The DOM `accepts` override retains its existing inherited signature; application inputs are unchanged.
+
+The specialized-subclass follow-up reran all package builds, 187 unit tests, the 11 collision browser regressions, and targeted type/format checks. The broader React and framework compatibility runs above preceded that follow-up. A preliminary browser run timed out awaiting animation frames while the target remained stable; the complete subclass regression run passed without changing the test.
 
 Browser validation used installed Chrome with the Storybook development servers. Some initial runs were interrupted by development-server dependency optimization/reloading; clean runs above completed after it settled. The table checks initially could not load because the already-declared `@tanstack/react-table` dependency was absent locally. Restoring that dependency required no manifest or lockfile changes.
 

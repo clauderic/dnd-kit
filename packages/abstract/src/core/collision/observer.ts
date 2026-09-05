@@ -39,15 +39,6 @@ export class CollisionObserver<
     this.#collisions = signal(DEFAULT_VALUE);
 
     const state = collisionState(manager);
-    // Package-internal capability shared with DOM plugins across bundle entry
-    // points. It is intentionally absent from the public class and exports.
-    Object.defineProperty(
-      this,
-      Symbol.for('@dnd-kit/abstract/collision-transaction'),
-      {
-        value: () => state.begin(),
-      }
-    );
     const dispose = effect(() => {
       const {dragOperation, registry} = manager;
       const {source, shape, status} = dragOperation;

@@ -45,7 +45,7 @@ async function setup() {
   const targets: Droppable[] = [];
 
   // The only simulated DOM work is the committed measurement. The manager,
-  // entities, detectors and cross-bundle transaction capability are real.
+  // entities, detectors and inherited plugin transaction contract are real.
   for (const [index, id] of ids.entries()) {
     const target = new Droppable(
       {
@@ -92,7 +92,9 @@ async function setup() {
   };
   await start();
   expect(manager.dragOperation.targetIdentifier).toBe('A');
-  const plugin = new CollisionGeometry(manager as unknown as DOMManager);
+  const domManager = manager as unknown as DOMManager;
+  manager.plugins = [CollisionGeometry];
+  const plugin = domManager.registry.plugins.get(CollisionGeometry)!;
   measurements.length = detectedLayouts.length = collisions.length = 0;
 
   cleanups.push(async () => {
@@ -133,6 +135,17 @@ async function setup() {
 }
 
 describe('Controlled collision geometry commits', () => {
+  it('retains required measurements when application plugins are replaced', async () => {
+    const test = await setup();
+    test.manager.plugins = [];
+    const rendering = await test.place('B');
+    test.commit([200, 0, 400]);
+    rendering.resolve();
+    await flush();
+    expect(test.measurements).toEqual(['A', 'B', 'C']);
+    expect(test.manager.dragOperation.targetIdentifier).toBe('B');
+  });
+
   it('remeasures a newer placement after the old pending commit and publishes only coherent final geometry', async () => {
     const test = await setup();
     const first = await test.place('B');

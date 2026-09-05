@@ -2,7 +2,7 @@
   "baselineCommit": "aa53b823",
   "runtime": "Chrome 152, Storybook dev",
   "tests": {
-    "unit": 179,
+    "unit": 187,
     "collisionBrowser": 11,
     "reactCompatibility": 34,
     "frameworkSortable": 18
@@ -23,26 +23,12 @@
         },
         "tailTargets": [],
         "ownDescendantsAdmitted": false,
-        "visualSizes": [
-          "274x180",
-          "320x180"
-        ]
+        "visualSizes": ["274x180", "320x180"]
       }
     },
     {
       "case": "collision-reproductions-CO-3ffee-he-same-Kanban-gap-position-current",
-      "observations": [
-        "3",
-        "3",
-        "3",
-        "3",
-        "3",
-        "3",
-        "3",
-        "3",
-        "3",
-        "3"
-      ]
+      "observations": ["3", "3", "3", "3", "3", "3", "3", "3", "3", "3"]
     },
     {
       "case": "collision-reproductions-CO-f9e3c-s-a-changing-drag-footprint-current",
@@ -53,10 +39,7 @@
         },
         "tailTargets": [],
         "ownDescendantsAdmitted": false,
-        "visualSizes": [
-          "274x156",
-          "320x260"
-        ]
+        "visualSizes": ["274x156", "320x260"]
       }
     },
     {
@@ -99,32 +82,16 @@
         },
         "tailTargets": [],
         "ownDescendantsAdmitted": false,
-        "visualSizes": [
-          "300x584"
-        ]
+        "visualSizes": ["300x584"]
       }
     },
     {
       "case": "collision-reproductions-ga-ca052--across-the-column-boundary-current",
-      "observations": [
-        "A",
-        "A",
-        "A",
-        "A",
-        "B",
-        "B",
-        "B",
-        "A"
-      ]
+      "observations": ["A", "A", "A", "A", "B", "B", "B", "A"]
     },
     {
       "case": "collision-reproductions-ke-05fc4-sh-before-an-immediate-drop-current",
-      "observations": [
-        "2",
-        "3",
-        "4",
-        "1"
-      ]
+      "observations": ["2", "3", "4", "1"]
     },
     {
       "case": "collision-reproductions-ne-cc62b-hen-visual-feedback-resizes-current",
@@ -135,23 +102,12 @@
         },
         "tailTargets": [],
         "ownDescendantsAdmitted": false,
-        "visualSizes": [
-          "208x56",
-          "254x56",
-          "300x56"
-        ]
+        "visualSizes": ["208x56", "254x56", "300x56"]
       }
     },
     {
       "case": "collision-reproductions-re-bce32-vening-same-direction-input-current",
-      "observations": [
-        1,
-        0,
-        1,
-        0,
-        1,
-        0
-      ]
+      "observations": [1, 0, 1, 0, 1, 0]
     },
     {
       "case": "collision-reproductions-sc-2785d-et-in-the-scroll-event-turn-current",

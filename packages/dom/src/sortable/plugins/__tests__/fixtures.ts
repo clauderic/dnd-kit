@@ -1,12 +1,25 @@
 /// <reference types="bun-types" />
 
 import {mock} from 'bun:test';
-import type {UniqueIdentifier} from '@dnd-kit/abstract';
+import {CollisionPlugin, type UniqueIdentifier} from '@dnd-kit/abstract';
 import type {DragDropManager, Droppable} from '@dnd-kit/dom';
 import {Rectangle} from '@dnd-kit/geometry';
 
 // Load the sortable entry before either plugin to preserve their module cycle.
 import {Sortable} from '../../sortable.ts';
+import {createCollisionSuspension as createSuspension} from '../collisionSuspension.ts';
+
+class PlacementPlugin extends CollisionPlugin<DragDropManager> {
+  createSuspension() {
+    return createSuspension(this.manager, () =>
+      this.beginCollisionTransaction()
+    );
+  }
+}
+
+export function createCollisionSuspension(manager: DragDropManager) {
+  return new PlacementPlugin(manager).createSuspension();
+}
 
 export function deferred() {
   let resolve!: () => void;
