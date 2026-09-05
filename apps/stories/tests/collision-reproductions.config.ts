@@ -3,7 +3,7 @@ import {defineConfig} from '@playwright/test';
 // Regression cases for layout feedback and immediate sortable reversal.
 export default defineConfig({
   testDir: '.',
-  testMatch: 'collision-reproductions.spec.ts',
+  testMatch: ['collision-reproductions.spec.ts', 'nested-collections.spec.ts'],
   timeout: 30_000,
   retries: 0,
   workers: 1,

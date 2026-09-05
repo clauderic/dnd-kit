@@ -1,0 +1,416 @@
+.Example {
+  --ink: #343741;
+  --muted: #878b95;
+  --line: #e8e9ee;
+  --surface: #fff;
+  --well: #f5f6f8;
+  width: min(1160px, 100%);
+  margin: 0 auto;
+  padding: 18px 24px 32px;
+  color: var(--ink);
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.Intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 38px;
+}
+.Eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.8px;
+  color: var(--muted);
+}
+.Eyebrow > span {
+  width: 7px;
+  height: 7px;
+  background: #8294bc;
+  border-radius: 2px;
+  transform: rotate(-12deg);
+}
+.Intro h1 {
+  margin: 14px 0 8px;
+  font-family: var(--font-family);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -1px;
+}
+.Intro p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.Reset {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 9px 12px;
+  background: var(--surface);
+  color: #727681;
+  font: inherit;
+  font-size: 11px;
+  box-shadow: 0 1px 2px #25283a04;
+  cursor: pointer;
+}
+.Reset svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.Reset:hover {
+  color: var(--ink);
+  border-color: #c9ccd5;
+}
+.Reset:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.Reset:focus-visible,
+.NodeHeader :global(.handle):focus-visible {
+  outline: 2px solid #6384d8;
+  outline-offset: 3px;
+}
+
+.Board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 20px;
+  border-radius: 10px;
+}
+.Collection {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface);
+  box-shadow: 0 2px 3px #25283a03;
+}
+.NodeHeader {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 50px;
+  padding: 10px 12px 10px 15px;
+}
+.Title {
+  min-width: 0;
+  flex: 1;
+  font-size: 13px;
+  line-height: 1.55;
+  font-weight: 500;
+}
+.Collection[data-depth='0'] > .NodeHeader {
+  min-height: 64px;
+}
+.Collection[data-depth='0'] > .NodeHeader .Title {
+  font-size: 13px;
+  font-weight: 600;
+}
+.CollectionIcon {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+}
+.CollectionIcon svg,
+.EmptyIcon svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.Count {
+  color: var(--muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.NodeHeader :global(.handle) {
+  width: 20px;
+  min-width: 20px;
+  height: 26px;
+  margin: 0;
+  padding: 0;
+  border-radius: 4px;
+  opacity: 0.45;
+  cursor: grab;
+  touch-action: none;
+}
+.NodeHeader :global(.handle):hover,
+.NodeHeader :global(.handle):focus-visible {
+  opacity: 1;
+  background-color: var(--well);
+}
+
+.Contents {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  min-height: 48px;
+  border-top: 1px solid var(--line);
+  background: var(--well);
+}
+.Contents .Contents {
+  padding: 9px;
+  gap: 9px;
+  background: color-mix(in srgb, var(--well) 65%, var(--surface));
+}
+.Card {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--accent);
+  border-radius: 6px;
+  background: var(--surface);
+  box-shadow: 0 2px 3px #25283a04;
+}
+.Card > .NodeHeader {
+  align-items: flex-start;
+  padding: 13px 8px 4px 11px;
+  gap: 8px;
+  min-height: 45px;
+}
+.Card .Title {
+  padding-top: 2px;
+  font-size: 12px;
+}
+.Check {
+  width: 12px;
+  height: 12px;
+  border: 1px solid #d7dae2;
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.Card .NodeHeader :global(.handle) {
+  height: 21px;
+  margin-top: -1px;
+}
+.CardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 12px 12px 31px;
+}
+.Tag {
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  line-height: 1.3;
+  color: color-mix(in srgb, var(--accent) 85%, #333);
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface));
+}
+.CardMeta {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  margin-left: auto;
+}
+.Note {
+  color: var(--muted);
+  font-size: 8px;
+}
+.Avatar {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 13%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 12%, var(--surface));
+  color: var(--accent);
+  font-size: 7px;
+  font-weight: 600;
+}
+.Append {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 28px;
+  border: 1px dashed transparent;
+  border-radius: 5px;
+  color: var(--muted);
+  font-size: 9px;
+}
+.Append > span {
+  font-size: 14px;
+  font-weight: 300;
+}
+.Board > .Append {
+  grid-column: 1 / -1;
+  margin-top: -10px;
+}
+.Empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 110px;
+  border: 1px dashed #d8dce5;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 9px;
+}
+.Empty strong {
+  font-weight: 400;
+  color: #6e7482;
+  font-size: 10px;
+}
+.EmptyIcon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin-bottom: 3px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.Example[data-dragging='true'] .Append {
+  border-color: #d8dce5;
+}
+.Contents[data-over='true'] > .Append,
+.Contents[data-over='true'] > .Empty,
+.Board[data-over='true'] > .Append {
+  border-color: #819bd8;
+  color: #5574b6;
+  background: #6384d80b;
+}
+.Card[aria-hidden='true'],
+.Collection[aria-hidden='true'] {
+  opacity: 0.4;
+}
+.Card[data-dragging='true']:not([aria-hidden]),
+.Collection[data-dragging='true']:not([aria-hidden]) {
+  box-shadow:
+    0 16px 40px #25283a25,
+    0 2px 8px #25283a12;
+}
+
+.Footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  padding-top: 22px;
+  margin-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 9px;
+}
+.Footer > span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.Footer > span:first-child {
+  gap: 8px;
+}
+.Footer kbd {
+  font: inherit;
+  padding: 2px 4px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--surface);
+  color: #727681;
+}
+.Separator {
+  margin: 0 3px;
+}
+
+:global(.dark) .Example {
+  --ink: #ececf0;
+  --muted: #969aa5;
+  --line: #454850;
+  --surface: #35383e;
+  --well: #2f3238;
+}
+:global(.dark) .Reset,
+:global(.dark) .Empty strong,
+:global(.dark) .Footer kbd {
+  color: #b8bcc6;
+}
+:global(.dark) .Tag {
+  color: color-mix(in srgb, var(--accent) 70%, #fff);
+}
+
+@media (max-width: 950px) {
+  .Example {
+    padding-inline: 12px;
+  }
+  .Board {
+    gap: 12px;
+  }
+  .Contents {
+    padding: 8px;
+  }
+  .NodeHeader {
+    padding-inline: 10px;
+    gap: 6px;
+  }
+  .Footer {
+    flex-wrap: wrap;
+  }
+  .Note {
+    display: none;
+  }
+}
+@media (max-width: 700px) {
+  .Board {
+    grid-template-columns: 1fr;
+  }
+  .Intro {
+    align-items: flex-start;
+    margin-bottom: 24px;
+    gap: 12px;
+  }
+  .Intro h1 {
+    font-size: 22px;
+  }
+  .Intro p {
+    font-size: 11px;
+  }
+  .Reset {
+    font-size: 0;
+    padding: 8px;
+    gap: 0;
+  }
+  .Reset svg {
+    width: 16px;
+    height: 16px;
+  }
+  .Footer {
+    font-size: 8px;
+  }
+}

@@ -70,6 +70,7 @@ const preview = {
               'Horizontal list',
               'Grid',
               'Multiple lists',
+              'Nested collections',
               'Iframe',
               'Virtualized',
             ],

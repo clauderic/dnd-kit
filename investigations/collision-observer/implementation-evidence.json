@@ -2,10 +2,11 @@
   "baselineCommit": "aa53b823",
   "runtime": "Chrome 152, Storybook dev",
   "tests": {
-    "unit": 195,
+    "unit": 200,
     "collisionBrowser": 13,
     "reactCompatibility": 34,
-    "frameworkSortable": 18
+    "frameworkSortable": 18,
+    "nestedStoryBrowser": 6
   },
   "detectorCallComparison": {
     "targets": 20,
@@ -321,7 +322,7 @@
     }
   ],
   "implementationBase": "8b9e1add",
-  "completionModel": "Action-owned listener promises with internal relative-input sequencing",
+  "completionModel": "Action-owned listener promises with internal relative-input sequencing and DOM rendering that includes geometry measurement",
   "puckFollowUp": {
     "baseline": "Working prototype before completed-placement reconciliation and animation-measurement fixes",
     "observations": [
@@ -345,5 +346,27 @@
       }
     ],
     "measurementOnly": "Correcting animation measurements alone retained a two-layout cycle."
-  }
+  },
+  "nestedCollectionStory": {
+    "id": "react-sortable-nested-collections--example",
+    "diagnosticStoriesRetained": true,
+    "cases": [
+      "Deeply nested card into empty collection; stable for 40 stationary observation frames",
+      "Collection transfer preserves children; cancellation restores the whole tree",
+      "Root collection reorder and own-descendant exclusion",
+      "Immediate nested-list keyboard reversal and drop",
+      "Card transfer to root and reset",
+      "390px viewport without horizontal overflow"
+    ],
+    "visualReview": ["1440px light", "1440px dark", "390px light"]
+  },
+  "geometryCompletionCoverage": [
+    "Plain async dragover listener final layout",
+    "Plain async dragmove listener final layout before drop",
+    "Concurrent render reads and later layout writes",
+    "Renderer replacement and restoration",
+    "Measurement and rendering rejection recovery",
+    "Cancellation followed by a new drag",
+    "Destruction retains underlying renderer ownership"
+  ]
 }
