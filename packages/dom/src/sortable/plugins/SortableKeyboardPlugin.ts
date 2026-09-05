@@ -79,6 +79,7 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
                 if (
                   droppable.disabled ||
                   !droppable.accepts(source) ||
+                  id === source.id ||
                   (id === target?.id && isSortable(droppable)) ||
                   !element
                 ) {
@@ -118,7 +119,20 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
             }
           });
 
-          const [firstCollision] = collisions;
+          // Keep keyboard reordering within the current group when a sibling
+          // exists in that direction. A nested child's nearer corners should
+          // not intercept a reversal across its parent. Explicit higher
+          // collision priorities still take precedence.
+          const firstCollision =
+            collisions.find(({id, priority}) => {
+              const target = registry.droppables.get(id);
+              return (
+                priority === collisions[0]?.priority &&
+                target != null &&
+                isSortable(target) &&
+                target.sortable.group === source.sortable.group
+              );
+            }) ?? collisions[0];
           if (!firstCollision || !task.current) return;
 
           const {id} = firstCollision;

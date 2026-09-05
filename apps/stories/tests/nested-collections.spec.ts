@@ -157,6 +157,117 @@ test('keyboard sorting reverses within a nested list and commits on drop', async
   await expect.poll(order).toEqual(['inputs', 'buttons']);
 });
 
+test('a group reorders across a sibling card in both keyboard directions', async ({
+  page,
+}) => {
+  await page
+    .getByRole('button', {name: 'Drag Components', exact: true})
+    .focus();
+  await page.keyboard.press('Space');
+  await expect(page.locator('[data-nested-board]')).toHaveAttribute(
+    'data-dragging',
+    'true'
+  );
+  const order = () =>
+    page
+      .locator(
+        '[data-board-contents="contents:system"] > [data-board-node]:not([aria-hidden="true"])'
+      )
+      .evaluateAll((nodes) =>
+        nodes.map((node) => node.getAttribute('data-board-node'))
+      );
+  await page.keyboard.press('ArrowUp');
+  await expect.poll(order).toEqual(['components', 'tokens']);
+  await page.keyboard.press('ArrowDown');
+  await expect.poll(order).toEqual(['tokens', 'components']);
+  await page.keyboard.press('Space');
+  await expect(page.locator('[data-nested-board]')).toHaveAttribute(
+    'data-dragging',
+    'false'
+  );
+  await expect(node(page, 'buttons')).toHaveAttribute(
+    'data-parent',
+    'components'
+  );
+  await expect(node(page, 'inputs')).toHaveAttribute(
+    'data-parent',
+    'components'
+  );
+});
+
+test('a card reorders across a sibling group in both keyboard directions', async ({
+  page,
+}) => {
+  await page
+    .getByRole('button', {name: 'Drag Make color feel consistent', exact: true})
+    .focus();
+  await page.keyboard.press('Space');
+  await expect(page.locator('[data-nested-board]')).toHaveAttribute(
+    'data-dragging',
+    'true'
+  );
+  const order = () =>
+    page
+      .locator(
+        '[data-board-contents="contents:system"] > [data-board-node]:not([aria-hidden="true"])'
+      )
+      .evaluateAll((nodes) =>
+        nodes.map((node) => node.getAttribute('data-board-node'))
+      );
+  await page.keyboard.press('ArrowDown');
+  await expect.poll(order).toEqual(['components', 'tokens']);
+  await page.keyboard.press('ArrowUp');
+  await expect.poll(order).toEqual(['tokens', 'components']);
+  await page.keyboard.press('Space');
+  await expect(page.locator('[data-nested-board]')).toHaveAttribute(
+    'data-dragging',
+    'false'
+  );
+  await expect(node(page, 'buttons')).toHaveAttribute(
+    'data-parent',
+    'components'
+  );
+  await expect(node(page, 'inputs')).toHaveAttribute(
+    'data-parent',
+    'components'
+  );
+});
+
+test('a group moves above and below a sibling card with the pointer', async ({
+  page,
+}) => {
+  await pickUp(page, 'Components');
+  const order = () =>
+    page
+      .locator(
+        '[data-board-contents="contents:system"] > [data-board-node]:not([aria-hidden="true"])'
+      )
+      .evaluateAll((nodes) =>
+        nodes.map((node) => node.getAttribute('data-board-node'))
+      );
+  for (const expected of [
+    ['components', 'tokens'],
+    ['tokens', 'components'],
+  ]) {
+    const rect = (await node(page, 'tokens').boundingBox())!;
+    await page.mouse.move(rect.x + rect.width / 2, rect.y + rect.height / 2, {
+      steps: 16,
+    });
+    await settle(page, 20);
+    await expect.poll(order).toEqual(expected);
+  }
+  await page.mouse.up();
+  await expect(page.locator('[data-board-node]')).toHaveCount(18);
+  await expect(node(page, 'buttons')).toHaveAttribute(
+    'data-parent',
+    'components'
+  );
+  await expect(node(page, 'inputs')).toHaveAttribute(
+    'data-parent',
+    'components'
+  );
+});
+
 test('a card can move to the root and reset restores the original arrangement', async ({
   page,
 }) => {
@@ -296,29 +407,33 @@ test('picking up a nested collection keeps it in its current parent', async ({
   await page.mouse.up();
 });
 
-for (const {name, path, source, placements} of [
+for (const {name, path, source, placements, finalParent} of [
   {
     name: 'root slots',
     path: pointerPath,
     source: 'components',
+    finalParent: 'progress',
     placements: [
       ['progress', 2],
       ['ideas', 3],
       ['website', 2],
       ['ideas', 3],
       ['progress', 2],
+      ['progress', 1],
     ],
   },
   {
     name: 'cloned collection headers',
     path: headerPath,
     source: 'components',
+    finalParent: 'ideas',
     placements: [
+      ['system', 0],
       ['progress', 2],
       ['ideas', 3],
       ['website', 2],
+      ['website', 0],
       ['ideas', 1],
-      ['ideas', 3],
       ['board', 1],
       ['ideas', 3],
       ['ideas', 0],
@@ -328,14 +443,10 @@ for (const {name, path, source, placements} of [
     name: 'resizing nested containers',
     path: containerPath,
     source: 'website',
-    placements: [
-      ['ideas', 2],
-      ['ideas', 1],
-      ['ideas', 2],
-      ['someday', 0],
-      ['ideas', 2],
-      ['someday', 0],
-    ],
+    finalParent: 'ideas',
+    // The pointer stays in its own group's background. That no longer
+    // appends the source, so Someday never shifts underneath the pointer.
+    placements: [],
   },
 ]) {
   test.describe(`reported pointer path: ${name}`, () => {
@@ -403,7 +514,7 @@ for (const {name, path, source, placements} of [
       }
       await expect(node(page, source)).toHaveAttribute(
         'data-parent',
-        String(placements.at(-1)![0])
+        finalParent
       );
       await expect(page.locator('[data-board-node]')).toHaveCount(18);
     });

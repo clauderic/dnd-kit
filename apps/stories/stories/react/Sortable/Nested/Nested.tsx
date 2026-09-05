@@ -50,7 +50,9 @@ function sort(items: BoardNode[], operation: Operation) {
   if (id === ROOT) return moveNode(items, from.node.id, null, items.length);
   if (!id.startsWith('contents:')) return items;
   const parent = locate(items, id.slice('contents:'.length))?.node;
-  return parent?.children
+  // Hovering a group's background preserves the position of its own children.
+  // Sibling targets reorder them; this region only transfers from another group.
+  return parent?.children && from.parent !== parent.id
     ? moveNode(items, from.node.id, parent.id, parent.children.length)
     : items;
 }
@@ -172,8 +174,7 @@ function Node({
     index,
     group: parent ? contentsId(parent) : ROOT,
     type: collection ? 'collection' : 'card',
-    accept: collection ? acceptedTypes : 'card',
-    collisionPriority: collection ? CollisionPriority.Low : undefined,
+    accept: acceptedTypes,
     plugins: (defaults) => [
       ...defaults,
       Feedback.configure({feedback: 'clone'}),
@@ -259,7 +260,7 @@ function Contents({
     id,
     type: 'contents',
     accept: acceptedTypes,
-    collisionPriority: root ? CollisionPriority.Lowest : CollisionPriority.Low,
+    collisionPriority: root ? CollisionPriority.Lowest : undefined,
   });
 
   return (

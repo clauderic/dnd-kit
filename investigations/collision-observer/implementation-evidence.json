@@ -2,11 +2,11 @@
   "baselineCommit": "aa53b823",
   "runtime": "Chrome 152, Storybook dev",
   "tests": {
-    "unit": 203,
+    "unit": 207,
     "collisionBrowser": 13,
     "reactCompatibility": 43,
     "frameworkSortable": 18,
-    "nestedStoryBrowser": 12,
+    "nestedStoryBrowser": 15,
     "feedbackCloneBrowser": 3
   },
   "detectorCallComparison": {
@@ -361,7 +361,10 @@
       "Copy retains starting tree, input, collisions, geometry, and final placement",
       "Clipboard denial preserves selectable JSON for a canceled drag",
       "Picking up a nested collection preserves its parent",
-      "Replay the supplied 129 pointer coordinates without alternating root slots"
+      "Replay the supplied 129 pointer coordinates without alternating root slots",
+      "Group crosses a sibling card in both pointer directions, preserving children",
+      "Group crosses a sibling card in both keyboard directions, preserving children",
+      "Card crosses a sibling group in both keyboard directions, preserving children"
     ],
     "visualReview": ["1440px light", "1440px dark", "390px light"]
   },
@@ -428,5 +431,85 @@
   ],
   "validationLimits": {
     "workspaceBuild": "Documentation app fails on mdast-util-to-string CommonJS named export; all ten package builds pass."
+  },
+  "nestedCollectionMixedSiblingFollowUp": {
+    "storyPolicy": "Cards and collections accept each other with default collision priorities; own collection background preserves child order.",
+    "keyboardPolicy": "Prefer siblings within the highest priority tier; otherwise use the nearest candidate. Always exclude the source from directional selection.",
+    "replays": [
+      {
+        "path": "first",
+        "placements": [
+          {
+            "parent": "progress",
+            "index": 2
+          },
+          {
+            "parent": "ideas",
+            "index": 3
+          },
+          {
+            "parent": "website",
+            "index": 2
+          },
+          {
+            "parent": "ideas",
+            "index": 3
+          },
+          {
+            "parent": "progress",
+            "index": 2
+          },
+          {
+            "parent": "progress",
+            "index": 1
+          }
+        ]
+      },
+      {
+        "path": "second",
+        "placements": [
+          {
+            "parent": "system",
+            "index": 0
+          },
+          {
+            "parent": "progress",
+            "index": 2
+          },
+          {
+            "parent": "ideas",
+            "index": 3
+          },
+          {
+            "parent": "website",
+            "index": 2
+          },
+          {
+            "parent": "website",
+            "index": 0
+          },
+          {
+            "parent": "ideas",
+            "index": 1
+          },
+          {
+            "parent": "board",
+            "index": 1
+          },
+          {
+            "parent": "ideas",
+            "index": 3
+          },
+          {
+            "parent": "ideas",
+            "index": 0
+          }
+        ]
+      },
+      {
+        "path": "third",
+        "placements": []
+      }
+    ]
   }
 }

@@ -1,7 +1,14 @@
 import {afterEach, describe, expect, it} from 'bun:test';
 import {effect} from '@dnd-kit/state';
+import {Rectangle} from '@dnd-kit/geometry';
 
-import {createSetup, deferred, flush, preventable} from './fixtures.ts';
+import {
+  createSetup,
+  deferred,
+  ElementFixture,
+  flush,
+  preventable,
+} from './fixtures.ts';
 import {OptimisticSortingPlugin} from '../OptimisticSortingPlugin.ts';
 import {SortableKeyboardPlugin} from '../SortableKeyboardPlugin.ts';
 
@@ -162,6 +169,34 @@ function keyboardSetup(count = 3) {
 }
 
 describe('keyboard sorting completion', () => {
+  it('excludes its own header when the drag footprint is taller and the current target is elsewhere', async () => {
+    const setup = keyboardSetup();
+    setup.operation.target = null;
+    setup.operation.shape.current = new Rectangle(0, 0, 100, 200);
+    const sibling = setup.items[1].element as unknown as ElementFixture;
+    sibling.rectangle = new Rectangle(0, -80, 100, 60);
+
+    await setup.key({x: 0, y: -25}).finished;
+
+    expect(setup.calls).toEqual(['1']);
+  });
+
+  for (const scenario of [
+    'sibling',
+    'no sibling',
+    'higher priority',
+  ] as const) {
+    it(`prefers group peers while respecting ${scenario}`, async () => {
+      const setup = keyboardSetup();
+      setup.items[1].group = 'nested';
+      if (scenario === 'no sibling') setup.items[2].disabled = true;
+      if (scenario === 'higher priority') setup.items[1].collisionPriority = 5;
+      const event = setup.key();
+      await event.finished;
+      expect(setup.calls[0]).toBe(scenario === 'sibling' ? '2' : '1');
+    });
+  }
+
   it('restores temporary shapes within the batch and releases when no target exists', async () => {
     const setup = keyboardSetup();
     const original = setup.items[1].droppable.shape!;

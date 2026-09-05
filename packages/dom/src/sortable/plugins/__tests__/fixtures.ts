@@ -203,11 +203,17 @@ export function createSetup(count = 3) {
       computeCollisions: mock(
         (entries: Droppable[], detector: Droppable['collisionDetector']) =>
           entries
-            .map((droppable) =>
-              detector({droppable, dragOperation: operation as any})
-            )
+            .map((droppable) => {
+              const collision = detector({
+                droppable,
+                dragOperation: operation as any,
+              });
+              if (collision && droppable.collisionPriority != null)
+                collision.priority = droppable.collisionPriority;
+              return collision;
+            })
             .filter((collision) => collision != null)
-            .sort((a, b) => b.value - a.value)
+            .sort((a, b) => b.priority - a.priority || b.value - a.value)
       ),
     },
     actions: {
