@@ -1,7 +1,8 @@
-import {CollisionPlugin, CorePlugin} from '@dnd-kit/abstract';
+import {CorePlugin} from '@dnd-kit/abstract';
 import {batch, untracked} from '@dnd-kit/state';
 
 import type {DragDropManager} from '../../manager/index.ts';
+import {createDragTasks} from '../../../utilities/dragTasks.ts';
 
 /** One coherent measurement pass for changes that can move multiple targets. */
 export function refreshCollisionGeometry(manager: DragDropManager) {
@@ -27,63 +28,33 @@ export function refreshCollisionGeometry(manager: DragDropManager) {
 export class CollisionGeometry extends CorePlugin<DragDropManager> {
   constructor(manager: DragDropManager) {
     super(manager);
-    const observer = new GeometryObserver(manager);
-    this.destroy = () => {
-      observer.destroy();
-      super.destroy();
-    };
-  }
-}
-
-class GeometryObserver extends CollisionPlugin<DragDropManager> {
-  constructor(manager: DragDropManager) {
-    super(manager);
-    let destroyed = false;
-    let pending: AbortController | undefined;
+    const tasks = createDragTasks(manager);
+    let pending: {controller: AbortController; work: Promise<void>} | undefined;
     let revision = 0;
-    const transactions = new Set<() => void>();
     const unsubscribe = manager.monitor.addEventListener('dragover', () => {
       const {controller} = manager.dragOperation;
       if (!controller || controller.signal.aborted) return;
       revision++;
-      if (pending === controller) return;
-      pending = controller;
-      const transaction = this.beginCollisionTransaction();
-      const release = () => {
-        transactions.delete(release);
-        controller.signal.removeEventListener('abort', release);
-        transaction.release();
-      };
-      transactions.add(release);
-      controller.signal.addEventListener('abort', release, {once: true});
-
-      // Read rendering after every dragover listener has had a chance to start
-      // its update. This continuation measures before the target action releases
-      // its render transaction; no frame or position-observer timer is needed.
-      queueMicrotask(async () => {
+      if (pending?.controller === controller) return pending.work;
+      const work = tasks.run(async (task) => {
         try {
           let measured: number;
           do {
-            if (destroyed || controller.signal.aborted) return;
             measured = revision;
-            await manager.renderer.rendering;
-            if (destroyed || manager.dragOperation.controller !== controller)
-              return;
+            if (!(await task.waitFor(manager.renderer.rendering))) return;
             refreshCollisionGeometry(manager);
           } while (measured !== revision);
-        } catch {
-          // A rejected commit must still release collision and drop delivery.
         } finally {
-          if (pending === controller) pending = undefined;
-          release();
+          if (pending?.work === work) pending = undefined;
         }
       });
+      pending = {controller, work};
+      return work;
     });
 
     this.destroy = () => {
-      destroyed = true;
       unsubscribe();
-      for (const release of transactions) release();
+      tasks.destroy();
     };
   }
 }

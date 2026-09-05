@@ -242,6 +242,7 @@ test('keyboard commands accepted during rendering finish before an immediate dro
 });
 
 type NestedEvent = {
+  sequence: number;
   event: string;
   source: string | null;
   target: string | null;
@@ -303,6 +304,43 @@ async function nestedReplay(
 
 async function attachNested(info: TestInfo, result: unknown) {
   await saveEvidence(info, 'nested-collision-evidence.json', result);
+}
+
+for (const offset of [320, 338]) {
+  test(`Puck root item stays placed at moving container edge ${offset}`, async ({
+    page,
+  }, info) => {
+    await page.goto(
+      '/iframe.html?id=react-sortable-collision-reproductions-nested--puck-nested-grid&viewMode=story'
+    );
+    const handle = page.locator('[data-nested-handle="item:1"]').first();
+    await handle.waitFor();
+    const source = (await page
+      .locator('[data-nested-node="item:1"]')
+      .first()
+      .boundingBox())!;
+    const from = (await handle.boundingBox())!;
+    await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(
+      from.x + from.width / 2 + 8,
+      from.y + from.height / 2
+    );
+    await settle(page, 2);
+    const point = {x: source.x + offset, y: source.y + 211};
+    await page.mouse.move(point.x, point.y, {steps: 12});
+    await settle(page, 30);
+    const before = (await nestedTrace(page)).at(-1)!.sequence;
+    await settle(page, 40);
+    const events = await nestedTrace(page);
+    await attachNested(info, {point, before, events});
+    expect(
+      events.filter(
+        ({event, sequence}) => event === 'dragover' && sequence > before
+      )
+    ).toHaveLength(0);
+    await page.keyboard.press('Escape');
+  });
 }
 
 test('nested/root transfers remain stable when visual feedback resizes', async ({

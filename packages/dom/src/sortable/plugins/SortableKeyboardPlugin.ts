@@ -1,5 +1,5 @@
 import {batch, CleanupFunction, effect} from '@dnd-kit/state';
-import {CollisionPlugin} from '@dnd-kit/abstract';
+import {Plugin} from '@dnd-kit/abstract';
 import {closestCorners} from '@dnd-kit/collision';
 import {
   DOMRectangle,
@@ -12,21 +12,15 @@ import {Scroller} from '@dnd-kit/dom';
 import type {DragDropManager, Droppable} from '@dnd-kit/dom';
 
 import {isSortable} from '../utilities.ts';
-import {createCollisionSuspension} from './collisionSuspension.ts';
+import {createSortableTasks} from './tasks.ts';
 
 const TOLERANCE = 10;
 
-export class SortableKeyboardPlugin extends CollisionPlugin<DragDropManager> {
+export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager) {
     super(manager);
 
-    const suspensions = createCollisionSuspension(manager, () =>
-      this.beginCollisionTransaction()
-    );
-    let destroyed = false;
-    let commands:
-      | {controller: AbortController; directions: Direction[]; running: boolean}
-      | undefined;
+    const tasks = createSortableTasks(manager, () => !this.disabled);
 
     const cleanupEffect = effect(() => {
       const {dragOperation} = manager;
@@ -50,28 +44,28 @@ export class SortableKeyboardPlugin extends CollisionPlugin<DragDropManager> {
       }
     });
 
-    const run = async (queue: NonNullable<typeof commands>) => {
-      queue.running = true;
-      const suspension = suspensions.acquire();
-      if (!suspension) {
-        queue.running = false;
-        queue.directions.length = 0;
-        return;
-      }
-
-      const current = () =>
-        suspension.current &&
-        !this.disabled &&
-        suspension.controller === queue.controller;
-
-      try {
-        while (queue.directions.length && current()) {
-          const direction = queue.directions.shift()!;
+    const unsubscribe = manager.monitor.addEventListener(
+      'dragmove',
+      (event) => {
+        const {controller, source} = manager.dragOperation;
+        if (!controller || !event.by || !isKeyboardEvent(event.nativeEvent))
+          return;
+        if (!isSortable(source)) return;
+        const direction = getDirection(event.by);
+        if (!direction) return;
+        return tasks.run([], async (task) => {
+          if (
+            !task.current ||
+            event.defaultPrevented ||
+            !manager.dragOperation.shape
+          )
+            return;
+          event.preventDefault();
           const {dragOperation, actions, collisionObserver, registry} = manager;
           const {source, target, shape} = dragOperation;
           if (!isSortable(source) || !shape) return;
 
-          suspension.include([source.sortable.droppable]);
+          task.include([source.sortable.droppable]);
           const {center} = shape.current;
           const potentialTargets: Droppable[] = [];
           const cleanup: CleanupFunction[] = [];
@@ -125,19 +119,14 @@ export class SortableKeyboardPlugin extends CollisionPlugin<DragDropManager> {
             }
           });
 
-          suspension.include(potentialTargets);
+          task.include(potentialTargets);
           const [firstCollision] = collisions;
-          if (!firstCollision || !current()) continue;
+          if (!firstCollision || !task.current) return;
 
           const {id} = firstCollision;
           const {index, group} = source.sortable;
-          if (!(await suspension.waitFor(actions.setDropTarget(id)))) return;
-          if (!current()) return;
-
-          // Optimistic sorting acquires its own token during setDropTarget's
-          // synchronous dragover dispatch. Wait for that commit explicitly.
-          await suspension.waitForOthers();
-          if (!current()) return;
+          if (!(await task.waitFor(actions.setDropTarget(id)))) return;
+          if (!task.current) return;
 
           const {
             source: updatedSource,
@@ -166,9 +155,9 @@ export class SortableKeyboardPlugin extends CollisionPlugin<DragDropManager> {
           } = updatedSource.sortable;
           const updated = index !== newIndex || group !== newGroup;
           const element = updated ? targetElement : updatedTarget.element;
-          if (!element) continue;
+          if (!element) return;
 
-          suspension.include([updatedSource.sortable.droppable, updatedTarget]);
+          task.include([updatedSource.sortable.droppable, updatedTarget]);
           scrollIntoViewIfNeeded(element);
           const updatedShape = new DOMRectangle(element);
           const delta = Rectangle.delta(
@@ -177,80 +166,28 @@ export class SortableKeyboardPlugin extends CollisionPlugin<DragDropManager> {
             updatedSource.alignment
           );
 
-          if (!current()) return;
-          suspension.run(() => actions.move({by: delta}));
+          if (!task.current) return;
+          // Finish the original accepted move. A second action would be new
+          // input after stop and would dispatch an artificial dragmove event.
+          dragOperation.position.current = {
+            x: dragOperation.position.current.x + delta.x,
+            y: dragOperation.position.current.y + delta.y,
+          };
 
           if (updated) {
-            if (
-              !(await suspension.waitFor(
-                actions.setDropTarget(updatedSource.id)
-              ))
-            )
+            if (!(await task.waitFor(actions.setDropTarget(updatedSource.id))))
               return;
           } else {
-            if (!(await suspension.waitFor(manager.renderer.rendering))) return;
-          }
-          // The queued position write runs before these render continuations.
-          // Keep ownership through it, including when no sortable index changed.
-        }
-      } finally {
-        queue.running = false;
-        queue.directions.length = 0;
-        suspension.release();
-      }
-    };
-
-    const unsubscribe = manager.monitor.addEventListener(
-      'dragmove',
-      (event) => {
-        const {controller, source} = manager.dragOperation;
-        if (!controller || !event.by || !isKeyboardEvent(event.nativeEvent))
-          return;
-        if (!isSortable(source)) return;
-        const sourceId = source.id;
-        const direction = getDirection(event.by);
-        if (!direction) return;
-        const admission = suspensions.acquire();
-        if (!admission) return;
-
-        queueMicrotask(() => {
-          try {
-            const {dragOperation} = manager;
-            if (
-              destroyed ||
-              this.disabled ||
-              event.defaultPrevented ||
-              controller.signal.aborted ||
-              dragOperation.controller !== controller ||
-              !dragOperation.status.dragging ||
-              !isSortable(dragOperation.source) ||
-              dragOperation.source.id !== sourceId ||
-              !dragOperation.shape
-            ) {
-              return;
-            }
-
-            // Prevent the sensor's queued movement even when another command is
-            // still rendering. Accepted arrow presses are processed in order.
-            event.preventDefault();
-            if (commands?.controller !== controller) {
-              commands = {controller, directions: [], running: false};
-            }
-            commands.directions.push(direction);
-            if (!commands.running) void run(commands);
-          } finally {
-            admission.release();
+            if (!(await task.waitFor(manager.renderer.rendering))) return;
           }
         });
       }
     );
 
     this.destroy = () => {
-      destroyed = true;
-      if (commands) commands.directions.length = 0;
       unsubscribe();
       cleanupEffect();
-      suspensions.destroy();
+      tasks.destroy();
     };
   }
 }

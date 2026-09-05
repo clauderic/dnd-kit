@@ -1,34 +1,26 @@
 import {expect, it} from 'bun:test';
-import {
-  DragDropManager,
-  Draggable,
-  Droppable,
-  CollisionPlugin,
-} from '@dnd-kit/abstract';
+import {DragDropManager, Draggable, Droppable, Plugin} from '@dnd-kit/abstract';
 import type {DragDropManager as DOMDragDropManager} from '@dnd-kit/dom';
 import {pointerIntersection} from '@dnd-kit/collision';
 import {Rectangle} from '@dnd-kit/geometry';
-import {createCollisionSuspension} from '../src/sortable/plugins/collisionSuspension.ts';
+import {createDragTasks} from '../src/utilities/dragTasks.ts';
 
 async function flush() {
   for (let i = 0; i < 40; i++) await Promise.resolve();
 }
 
-class PlacementPlugin extends CollisionPlugin<DOMDragDropManager> {
-  readonly suspensions = createCollisionSuspension(this.manager, () =>
-    this.beginCollisionTransaction()
-  );
-
+class PlacementPlugin extends Plugin<DOMDragDropManager> {
+  readonly tasks = createDragTasks(this.manager);
   destroy() {
-    this.suspensions.destroy();
+    this.tasks.destroy();
     super.destroy();
   }
 }
 
-it('a placement plugin joins abstract collision and drop delivery through inheritance', async () => {
+it('returned plugin work joins abstract collision and drop delivery', async () => {
   const manager = new DragDropManager();
   const plugin = new PlacementPlugin(manager as unknown as DOMDragDropManager);
-  const {suspensions} = plugin;
+  const {tasks} = plugin;
   const source = new Draggable({id: 'source', register: false}, manager);
   source.register();
   const droppable = new Droppable(
@@ -46,23 +38,25 @@ it('a placement plugin joins abstract collision and drop delivery through inheri
     await flush();
     manager.dragOperation.shape = new Rectangle(45, 45, 10, 10);
     await flush();
-    const lease = suspensions.acquire()!;
-    expect(lease.current).toBe(true);
+    let release!: () => void;
+    const work = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    manager.monitor.addEventListener('dragmove', (event) =>
+      tasks.run(async (task) => {
+        event.preventDefault();
+        if (!(await task.waitFor(work))) return;
+        manager.dragOperation.position.current = {x: 251, y: 50};
+      })
+    );
     manager.actions.move({to: {x: 250, y: 50}});
     manager.actions.stop();
     await flush();
     expect(manager.collisionObserver.disabled).toBe(false);
     expect(manager.dragOperation.targetIdentifier).toBeNull();
     expect(ends).toEqual([]);
-
-    // Only a still-owned continuation can finish already accepted input after
-    // stop. An unrelated programmatic move cannot change the pending drop.
     manager.actions.move({to: {x: 0, y: 0}});
-    lease.run(() => manager.actions.move({to: {x: 251, y: 50}}));
-    await flush();
-    expect(manager.dragOperation.position.current).toEqual({x: 251, y: 50});
-
-    lease.release();
+    release();
     await flush();
     expect(ends).toEqual(['target']);
     expect(manager.dragOperation.status.idle).toBe(true);

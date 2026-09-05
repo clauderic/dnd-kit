@@ -1,4 +1,3 @@
-import {signal} from '@dnd-kit/state';
 import type {Coordinates} from '@dnd-kit/geometry';
 import type {UniqueIdentifier} from '../entities/index.ts';
 import type {DragDropManager} from '../manager/index.ts';
@@ -10,10 +9,7 @@ export class CollisionState {
   dirty = false;
   position: Coordinates | undefined;
   transform: Coordinates | undefined;
-  pending = signal(0);
-  writes = new Set<object>();
   serial = 0;
-  continuing = 0;
   applied?: {
     input: number;
     source: UniqueIdentifier | null;
@@ -27,28 +23,6 @@ export class CollisionState {
     this.applied = undefined;
     this.position = undefined;
     this.transform = undefined;
-    this.writes.clear();
-    this.pending.value = 0;
-  }
-
-  begin() {
-    const token = {};
-    this.writes.add(token);
-    this.pending.value = this.writes.size;
-    const release = () => {
-      if (this.writes.delete(token)) this.pending.value = this.writes.size;
-    };
-    return Object.assign(release, {
-      run: (callback: () => void) => {
-        if (!this.writes.has(token)) return;
-        this.continuing++;
-        try {
-          callback();
-        } finally {
-          this.continuing--;
-        }
-      },
-    });
   }
 }
 

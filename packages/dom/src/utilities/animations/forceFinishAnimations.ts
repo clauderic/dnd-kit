@@ -1,29 +1,4 @@
-import {Scheduler} from '../scheduling/scheduler.ts';
 import {isKeyframeEffect} from '../type-guards/isKeyframeEffect.ts';
-
-const scheduler = new Scheduler((callback) => setTimeout(callback, 0));
-const animations = new Map<Document | Element, Animation[]>();
-const clear = animations.clear.bind(animations);
-
-function getDocumentAnimations(element: Element): Animation[] {
-  const document = element.ownerDocument;
-  let documentAnimations = animations.get(document);
-
-  if (documentAnimations) return documentAnimations;
-
-  documentAnimations = document.getAnimations();
-  animations.set(document, documentAnimations);
-  scheduler.schedule(clear);
-
-  const elementAnimations = documentAnimations.filter(
-    (animation) =>
-      isKeyframeEffect(animation.effect) && animation.effect.target === element
-  );
-
-  animations.set(element, elementAnimations);
-
-  return documentAnimations;
-}
 
 /*
  * Force animations on ancestors of the element into their end state
@@ -39,7 +14,11 @@ export function forceFinishAnimations(
     isValidTarget?: (target: Element) => boolean;
   }
 ): (() => void) | undefined {
-  const animations = getDocumentAnimations(element)
+  // Rendering can start an ancestor animation in the same turn as a previous
+  // measurement. A cached list would mix its final rectangle with its children's
+  // animated rectangles, creating collision candidates that share no layout.
+  const animations = element.ownerDocument
+    .getAnimations()
     .filter((animation) => {
       if (isKeyframeEffect(animation.effect)) {
         const {target} = animation.effect;
@@ -59,7 +38,7 @@ export function forceFinishAnimations(
       const {effect, currentTime} = animation;
       const duration = effect?.getComputedTiming().duration;
 
-      if (animation.pending || animation.playState === 'finished') return;
+      if (animation.playState === 'finished') return;
 
       if (
         typeof duration == 'number' &&

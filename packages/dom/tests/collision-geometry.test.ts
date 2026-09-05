@@ -45,7 +45,7 @@ async function setup() {
   const targets: Droppable[] = [];
 
   // The only simulated DOM work is the committed measurement. The manager,
-  // entities, detectors and inherited plugin transaction contract are real.
+  // entities, detectors and action completion are real.
   for (const [index, id] of ids.entries()) {
     const target = new Droppable(
       {
@@ -127,9 +127,9 @@ async function setup() {
       // The action already captured its resolved renderer. The geometry job
       // reads the controlled commit after dispatch, in its queued continuation.
       manager.renderer = {rendering: rendering.promise};
-      await action;
+      action.catch(() => {});
       await flush();
-      return rendering;
+      return {...rendering, action};
     },
   };
 }
@@ -204,7 +204,7 @@ describe('Controlled collision geometry commits', () => {
     expect(test.ends).toHaveLength(1);
   });
 
-  it('destroy releases a geometry-only lease so a pending drop can complete', async () => {
+  it('destroy finishes returned measurement work so a pending drop can complete', async () => {
     const test = await setup();
     const rendering = await test.place('B');
     test.manager.actions.move({to: {x: 250, y: 50}});

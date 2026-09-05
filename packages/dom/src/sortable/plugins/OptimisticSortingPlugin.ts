@@ -1,4 +1,4 @@
-import {CollisionPlugin} from '@dnd-kit/abstract';
+import {Plugin} from '@dnd-kit/abstract';
 import type {DragDropManager} from '@dnd-kit/dom';
 import {move} from '@dnd-kit/helpers';
 import {batch} from '@dnd-kit/state';
@@ -10,17 +10,15 @@ import {
   hasChanged,
   type SortableInstances,
 } from './OptimisticSortingPlugin.helpers.ts';
-import {createCollisionSuspension} from './collisionSuspension.ts';
+import {createSortableTasks} from './tasks.ts';
 
 const defaultGroup = '__default__';
 
-export class OptimisticSortingPlugin extends CollisionPlugin<DragDropManager> {
+export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager) {
     super(manager);
 
-    const suspensions = createCollisionSuspension(manager, () =>
-      this.beginCollisionTransaction()
-    );
+    const tasks = createSortableTasks(manager);
     let destroyed = false;
 
     const getSortableInstances = () => {
@@ -81,23 +79,17 @@ export class OptimisticSortingPlugin extends CollisionPlugin<DragDropManager> {
             ...(instances.get(targetGroup) ?? []),
           ].map((sortable) => sortable.droppable);
         };
-        // Acquire during dispatch, before either the notifier's render promise
-        // or another dragover listener can finish this placement.
-        const suspension = suspensions.acquire(affected());
-        if (!suspension) return;
-
-        const current = () =>
-          suspension.current &&
-          !this.disabled &&
-          dragOperation.source?.id === source.id &&
-          dragOperation.target?.id === target.id;
-
-        queueMicrotask(async () => {
+        return tasks.run(affected(), async (task) => {
+          const current = () =>
+            task.current &&
+            !this.disabled &&
+            dragOperation.source?.id === source.id &&
+            dragOperation.target?.id === target.id;
           try {
             if (!current() || event.defaultPrevented) return;
 
             // Give controlled sorting its commit before attempting a fallback.
-            if (!(await suspension.waitFor(manager.renderer.rendering))) return;
+            if (!(await task.waitFor(manager.renderer.rendering))) return;
             if (!current() || event.defaultPrevented) return;
 
             const newInstances = getSortableInstances();
@@ -153,17 +145,9 @@ export class OptimisticSortingPlugin extends CollisionPlugin<DragDropManager> {
             });
 
             if (!current()) return;
-            const acknowledgment = manager.actions.setDropTarget(source.id);
-            // Release at the commit, before the action promise's completion
-            // wakes terminal reconciliation. The source write is synchronous.
-            acknowledgment.catch(() => {});
-            await suspension.waitFor(manager.renderer.rendering);
+            await task.waitFor(manager.actions.setDropTarget(source.id));
           } finally {
-            try {
-              if (suspension.current) suspension.include(affected());
-            } finally {
-              suspension.release();
-            }
+            if (task.current) task.include(affected());
           }
         });
       }),
@@ -253,7 +237,7 @@ export class OptimisticSortingPlugin extends CollisionPlugin<DragDropManager> {
       for (const unsubscribeListener of unsubscribe) {
         unsubscribeListener();
       }
-      suspensions.destroy();
+      tasks.destroy();
     };
   }
 }

@@ -10,8 +10,8 @@ afterEach(() => {
   for (const dispose of cleanup.splice(0).reverse()) dispose();
 });
 
-describe('optimistic sorting transactions', () => {
-  it('acquires during dragover and holds through source acknowledgment rendering', async () => {
+describe('optimistic sorting completion', () => {
+  it('returns work covering source acknowledgment and committed measurement', async () => {
     const setup = createSetup();
     const plugin = new OptimisticSortingPlugin(setup.manager);
     cleanup.push(() => plugin.destroy());
@@ -25,17 +25,15 @@ describe('optimistic sorting transactions', () => {
     });
 
     const targeting = setup.manager.actions.setDropTarget('1');
-    expect(setup.collision().defaultPrevented).toBe(true);
     await flush();
     render.resolve();
-    await targeting;
     await flush();
     expect(setup.items.map(({index}) => index)).toEqual([1, 0, 2]);
     expect(setup.calls).toEqual(['1', '0']);
-    expect(setup.collision().defaultPrevented).toBe(true);
+    expect(setup.fixture.pendingTargetRenders).toBeGreaterThan(0);
     acknowledgment.resolve();
+    await targeting;
     await flush();
-    expect(setup.collision().defaultPrevented).toBe(false);
     expect(setup.items[0].droppable.refreshShape).toHaveBeenCalled();
     expect(setup.fixture.collisionObserver.enable).not.toHaveBeenCalled();
   });
@@ -51,10 +49,9 @@ describe('optimistic sorting transactions', () => {
     await flush();
     expect(setup.items.map(({index}) => index)).toEqual([0, 1, 2]);
     expect(setup.calls).toEqual(['1']);
-    expect(setup.collision().defaultPrevented).toBe(false);
   });
 
-  it('opens the gate before an acknowledged render wakes terminal reconciliation', async () => {
+  it('finishes placement before its action reports completion', async () => {
     const setup = createSetup();
     const plugin = new OptimisticSortingPlugin(setup.manager);
     cleanup.push(() => plugin.destroy());
@@ -62,19 +59,19 @@ describe('optimistic sorting transactions', () => {
     setup.fixture.renderer.rendering = render.promise;
     void setup.manager.actions.setDropTarget('1');
     await flush();
-    const gatesAtIdle: boolean[] = [];
+    const indicesAtIdle: number[] = [];
     setup.fixture.onRenderIdle = () => {
       // An earlier action can wake the stop loop just as its fallback starts
       // another action. The terminal check rechecks pending ownership first.
       if (!setup.fixture.pendingTargetRenders) {
-        gatesAtIdle.push(setup.collision().defaultPrevented);
+        indicesAtIdle.push(setup.items[0].index);
       }
     };
     render.resolve();
     await flush();
     expect(setup.calls).toEqual(['1', '0']);
-    expect(gatesAtIdle.length).toBeGreaterThan(0);
-    expect(gatesAtIdle.every((prevented) => !prevented)).toBe(true);
+    expect(indicesAtIdle.length).toBeGreaterThan(0);
+    expect(indicesAtIdle.every((index) => index === 1)).toBe(true);
   });
 
   it('releases when rendering rejects', async () => {
@@ -91,7 +88,6 @@ describe('optimistic sorting transactions', () => {
     await targeting;
     await flush();
     expect(setup.items[0].index).toBe(0);
-    expect(setup.collision().defaultPrevented).toBe(false);
   });
 
   it('measures a controlled commit without applying the optimistic fallback', async () => {
@@ -108,7 +104,6 @@ describe('optimistic sorting transactions', () => {
     await flush();
     expect(setup.calls).toEqual(['1']);
     expect(setup.items[0].droppable.refreshShape).toHaveBeenCalledTimes(1);
-    expect(setup.collision().defaultPrevented).toBe(false);
   });
 
   for (const action of ['abort', 'replace', 'destroy'] as const) {
@@ -128,7 +123,6 @@ describe('optimistic sorting transactions', () => {
       await flush();
       expect(setup.items.map(({index}) => index)).toEqual([0, 1, 2]);
       expect(setup.calls).toEqual(['1']);
-      expect(setup.collision().defaultPrevented).toBe(false);
     });
   }
 
@@ -169,7 +163,7 @@ function keyboardSetup(count = 3) {
   return {...setup, plugin};
 }
 
-describe('keyboard sorting transactions', () => {
+describe('keyboard sorting completion', () => {
   it('restores temporary shapes within the batch and releases when no target exists', async () => {
     const setup = keyboardSetup();
     const original = setup.items[1].droppable.shape!;
@@ -180,7 +174,6 @@ describe('keyboard sorting transactions', () => {
       })
     );
     setup.fixture.collisionObserver.computeCollisions.mockImplementation(() => {
-      expect(setup.collision().defaultPrevented).toBe(true);
       expect(setup.items[1].droppable.shape).not.toBe(original);
       return [];
     });
@@ -190,7 +183,6 @@ describe('keyboard sorting transactions', () => {
     expect(setup.items[1].droppable.shape).toBe(original);
     expect(observations.every((shape) => shape === original)).toBe(true);
     expect(setup.calls).toEqual([]);
-    expect(setup.collision().defaultPrevented).toBe(false);
   });
 
   it('serializes accepted arrow presses through their optimistic commits', async () => {
@@ -203,15 +195,14 @@ describe('keyboard sorting transactions', () => {
     const second = setup.key();
     await flush();
     expect(first.defaultPrevented).toBe(true);
-    expect(second.defaultPrevented).toBe(true);
+    expect(second.defaultPrevented).toBe(false);
     expect(setup.calls).toEqual(['1']);
-    expect(setup.collision().defaultPrevented).toBe(true);
     render.resolve();
-    await flush();
+    await Promise.all([first.finished, second.finished]);
     expect(setup.calls).toEqual(['1', '0', '2', '0']);
     expect(setup.items[0].index).toBe(2);
-    expect(setup.fixture.actions.move).toHaveBeenCalledTimes(2);
-    expect(setup.collision().defaultPrevented).toBe(false);
+    expect(setup.positions).toHaveLength(2);
+    expect(setup.fixture.actions.move).not.toHaveBeenCalled();
   });
 
   it('releases when the target element disappears during rendering', async () => {
@@ -223,8 +214,7 @@ describe('keyboard sorting transactions', () => {
     setup.items[1].target = undefined;
     render.resolve();
     await flush();
-    expect(setup.fixture.actions.move).not.toHaveBeenCalled();
-    expect(setup.collision().defaultPrevented).toBe(false);
+    expect(setup.positions).toHaveLength(0);
   });
 
   it('discards queued commands and alignment from an aborted drag', async () => {
@@ -241,12 +231,11 @@ describe('keyboard sorting transactions', () => {
     render.resolve();
     await flush();
     expect(setup.calls).toEqual(['1']);
-    expect(setup.fixture.actions.move).not.toHaveBeenCalled();
-    expect(setup.collision().defaultPrevented).toBe(false);
+    expect(setup.positions).toHaveLength(0);
     setup.key();
     await flush();
     expect(setup.calls).toEqual(['1', '1']);
-    expect(setup.fixture.actions.move).toHaveBeenCalledTimes(1);
+    expect(setup.positions).toHaveLength(1);
   });
 
   it('rejects a queued event belonging to a previous controller', async () => {
@@ -255,7 +244,7 @@ describe('keyboard sorting transactions', () => {
     setup.operation.controller = new AbortController();
     await flush();
     expect(setup.calls).toEqual([]);
-    expect(setup.fixture.actions.move).not.toHaveBeenCalled();
+    expect(setup.positions).toHaveLength(0);
   });
 
   it('releases without alignment when target rendering rejects', async () => {
@@ -266,8 +255,7 @@ describe('keyboard sorting transactions', () => {
     await flush();
     render.reject(new Error('render failed'));
     await flush();
-    expect(setup.fixture.actions.move).not.toHaveBeenCalled();
-    expect(setup.collision().defaultPrevented).toBe(false);
+    expect(setup.positions).toHaveLength(0);
   });
 
   for (const change of ['source', 'disabled target', 'destroy'] as const) {
@@ -284,8 +272,7 @@ describe('keyboard sorting transactions', () => {
       if (change === 'destroy') setup.plugin.destroy();
       render.resolve();
       await flush();
-      expect(setup.fixture.actions.move).not.toHaveBeenCalled();
-      expect(setup.collision().defaultPrevented).toBe(false);
+      expect(setup.positions).toHaveLength(0);
     });
   }
 });

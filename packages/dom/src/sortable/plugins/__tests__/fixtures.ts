@@ -1,26 +1,12 @@
 /// <reference types="bun-types" />
 
 import {mock} from 'bun:test';
-import {CollisionPlugin, type UniqueIdentifier} from '@dnd-kit/abstract';
+import type {UniqueIdentifier} from '@dnd-kit/abstract';
 import type {DragDropManager, Droppable} from '@dnd-kit/dom';
 import {Rectangle} from '@dnd-kit/geometry';
 
 // Load the sortable entry before either plugin to preserve their module cycle.
 import {Sortable} from '../../sortable.ts';
-import {createCollisionSuspension as createSuspension} from '../collisionSuspension.ts';
-
-class PlacementPlugin extends CollisionPlugin<DragDropManager> {
-  createSuspension() {
-    return createSuspension(this.manager, () =>
-      this.beginCollisionTransaction()
-    );
-  }
-}
-
-export function createCollisionSuspension(manager: DragDropManager) {
-  return new PlacementPlugin(manager).createSuspension();
-}
-
 export function deferred() {
   let resolve!: () => void;
   let reject!: (error: Error) => void;
@@ -99,7 +85,7 @@ export class ElementFixture {
 export function createSetup(count = 3) {
   const listeners = new Map<
     string,
-    Set<(event: any, manager: DragDropManager) => void>
+    Set<(event: any, manager: DragDropManager) => unknown>
   >();
   const document = {
     nodeType: 9,
@@ -161,6 +147,25 @@ export function createSetup(count = 3) {
     position: {current: {x: 50, y: 30}},
     shape: {current: new Rectangle(0, 0, 100, 60)},
   };
+  let position = operation.position.current;
+  const positions: {x: number; y: number}[] = [];
+  Object.defineProperty(operation.position, 'current', {
+    get: () => position,
+    set: (next: typeof position) => {
+      const {left, top, width, height} =
+        operation.shape.current.boundingRectangle;
+      operation.shape = {
+        current: new Rectangle(
+          left + next.x - position.x,
+          top + next.y - position.y,
+          width,
+          height
+        ),
+      };
+      position = next;
+      positions.push(next);
+    },
+  });
   const calls: (UniqueIdentifier | null)[] = [];
   const manager = {
     dragOperation: operation,
@@ -177,16 +182,17 @@ export function createSetup(count = 3) {
     monitor: {
       addEventListener(
         name: string,
-        listener: (event: any, manager: DragDropManager) => void
+        listener: (event: any, manager: DragDropManager) => unknown
       ) {
         if (!listeners.has(name)) listeners.set(name, new Set());
         listeners.get(name)!.add(listener);
         return () => listeners.get(name)!.delete(listener);
       },
       dispatch(name: string, event: any) {
-        for (const listener of Array.from(listeners.get(name) ?? [])) {
-          listener(event, manager as unknown as DragDropManager);
-        }
+        const work = Array.from(listeners.get(name) ?? []).map((listener) =>
+          listener(event, manager as unknown as DragDropManager)
+        );
+        return Promise.all(work).then(() => {});
       },
     },
     collisionObserver: {
@@ -211,8 +217,9 @@ export function createSetup(count = 3) {
         calls.push(id);
         operation.target = droppables.get(id!) ?? null;
         const event = preventable({operation: {...operation}});
-        manager.monitor.dispatch('dragover', event);
-        return manager.renderer.rendering
+        const work = manager.monitor.dispatch('dragover', event);
+        return Promise.all([work, manager.renderer.rendering])
+          .then(() => manager.renderer.rendering)
           .then(() => event.defaultPrevented)
           .finally(() => {
             manager.pendingTargetRenders--;
@@ -239,6 +246,9 @@ export function createSetup(count = 3) {
   for (const item of items)
     item.draggable.manager = manager as unknown as DragDropManager;
 
+  // Model the action layer's relative-input ordering; its real implementation
+  // is covered by abstract action tests and the browser keyboard/drop cases.
+  let keyboardWork = Promise.resolve();
   return {
     manager: manager as unknown as DragDropManager,
     fixture: manager,
@@ -247,6 +257,7 @@ export function createSetup(count = 3) {
     droppables,
     operation,
     calls,
+    positions,
     view,
     collision() {
       const event = preventable({collisions: []});
@@ -258,8 +269,13 @@ export function createSetup(count = 3) {
         by,
         nativeEvent: new KeyboardEventFixture(items[0].element!),
       });
-      manager.monitor.dispatch('dragmove', event);
-      return event;
+      const controller = operation.controller;
+      const finished = keyboardWork.then(() => {
+        if (operation.controller === controller && !controller.signal.aborted)
+          return manager.monitor.dispatch('dragmove', event);
+      });
+      keyboardWork = finished.catch(() => {});
+      return Object.assign(event, {finished});
     },
   };
 }

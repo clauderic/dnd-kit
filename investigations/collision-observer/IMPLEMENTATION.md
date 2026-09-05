@@ -1,6 +1,6 @@
 # Collision observer implementation
 
-Implemented after the [reproduction and review](README.md). Application options, detector signatures, and event shapes are unchanged. Plugin authors gain the exported `CollisionPlugin` subclass and its protected `beginCollisionTransaction()` extension point; this is an additive API change. The generic `Plugin` class is unchanged. There is no timeout, cooldown, pointer-distance threshold, recent-target blacklist, or direction-change delay in the collision policy.
+Implemented after the [reproduction and review](README.md). Application options, detector signatures, event shapes, package exports, and the generic `Plugin` class are unchanged. Promises returned directly from action-owned `dragmove` and `dragover` listeners now contribute to action completion. This is a behavioral extension, documented below. There is no timeout, cooldown, pointer-distance threshold, recent-target blacklist, or direction-change delay in the collision policy.
 
 ## Behavior
 
@@ -11,6 +11,7 @@ Implemented after the [reproduction and review](README.md). Application options,
 | Touching vertical rows, 66→63px pointer reversal                         | Reorders on that first reverse input                                           |
 | Repeated 65→63→65→63px reversals                                         | Source index follows 1→0→1→0, with no intervening forward input required       |
 | Nested-to-root transfer that resizes visual feedback                     | Stable placement; the visual still resizes                                     |
+| Puck root card at the moving container edge                              | No repeated transfers while the pointer is stationary                          |
 | Dragging a container over its children                                   | Strict descendants excluded before ranking; sortable self-target remains valid |
 | Scroll with stationary pointer                                           | New target selected in the scroll event's microtask turn                       |
 | Input received during a pending render                                   | Latest input reconciled after the owned work completes                         |
@@ -20,15 +21,27 @@ Implemented after the [reproduction and review](README.md). Application options,
 
 The observer explicitly subscribes to position, resolved transform, live shape, registry membership, IDs, eligibility, detectors, priorities, and target shapes. Automatic computation is coalesced into a microtask after the reactive batch, instead of recomputing for every individual rectangle write and then suppressing publication solely because the pointer stayed still. `forceUpdate(true)` remains synchronous; `forceUpdate(false)` now schedules actual computation.
 
-The notifier reconciles published results against the actual target. Collision IDs retain their number/string distinction. A source retarget used by sorting acknowledges a consumed placement at a particular input revision. Measuring that placement again cannot replay it; the next input can revisit the same candidate immediately. Input that arrived while an earlier placement was still rendering is not consumed by that earlier acknowledgment.
+The notifier reconciles published results against the actual target. Collision IDs retain their number/string distinction. A completed target action records the collision result produced by its committed layout, paired with the actual target and input revision. Measuring that result again cannot request another placement. Sorting can also acknowledge placement through its existing source retarget. The next input can revisit the same candidate immediately, and a later independent change of candidate is still actionable. Input that arrived while an earlier placement was still rendering is not consumed by that earlier acknowledgment.
 
-Target writes, controlled DOM measurements, optimistic sorting, and accepted keyboard commands hold independent internal leases. Public `enable()` and `disable()` remain an idempotent boolean switch; releasing an internal lease cannot enable a caller's disabled observer. New input is retained until all relevant work completes. Generation checks and idempotent release prevent stale render completions from affecting a later drag. Reentrant collision listeners can prevent, stop, disable, retarget, or invalidate a decision.
+Collision selection and action completion have separate private state. The observer keeps computing the latest geometry and input; the notifier defers applying another target while accepted actions are finishing. Public `enable()` and `disable()` remain an idempotent boolean switch. Reentrant collision listeners can prevent, stop, disable, retarget, or invalidate a decision.
 
-Normal drop drains the latest accepted input and owned placement work before taking the terminal snapshot. Cancellation remains immediate. A lease-scoped continuation lets an already accepted keyboard command finish its position compensation while stopping; unrelated moves cannot change that pending drop.
+## Action completion
 
-The abstract `CollisionPlugin` subclass owns the transaction contract through its protected `beginCollisionTransaction()` method. It returns `release()` and `run(callback)` operations backed by the same internal state used by abstract target actions and terminal reconciliation. The abstract implementation has no knowledge of platform-specific consumers. Sortable plugins extend this specialized class and inject transaction acquisition into their helper; measurement and element ownership remain in the DOM package. Required geometry measurement uses a core wrapper around its collision plugin so application plugin replacement cannot remove it. Sortable plugins remain removable. There is no symbol lookup, observer augmentation, private-module import across packages, or silent fallback for incompatible versions. The workspace releases these packages together.
+`setDropTarget()` already returns a completion promise. It now covers work returned by that action's `dragover` listeners, the renderer captured during dispatch, and any render started before those handlers settle. Every sibling handler finishes before a rejection is reported. A nested target action waits only for its own handlers and renderer; it never waits for the parent action or a global set of jobs. A same-target acknowledgment resolves immediately instead of joining itself.
 
-Plugins acquire a transaction before deferring accepted work, check operation validity before continuing, and release it in `finally` and on destruction. Transactions are independent and releases are idempotent. Abstract-only regression tests exercise this contract without importing a platform package, including overlapping ownership, live detection, pending drop completion, cancellation, stale continuations, exception handling, external disabling, and separate managers.
+`move()` retains its existing queued default position write. Returning an asynchronous handler does not delay that write or replay old movement when the promise settles. A handler that consumes movement must prevent the default before the queued write. The action remains pending until both its default write and returned work finish. Normal drop drains accepted actions and reconciles final collisions before taking its snapshot; new movement is refused after stop is requested. Cancellation remains immediate, and stale completions cannot release a later operation's work.
+
+Optimistic sorting returns its placement work from an ordinary `Plugin` event handler. Its promise includes the source acknowledgment and measurement of affected rows and old/new ancestors. The abstract action layer sequences relative input before dispatch, owns queued commands immediately, and discards undispatched commands on cancellation. Absolute pointer input bypasses that queue. Keyboard handlers return one promise per command and await only their own target action; they maintain no private input queue. They update position as part of that original input, so no privileged continuation or second synthetic `dragmove` is needed. Pending tasks are guarded against cancellation, replacement, and destruction inside the DOM package. Controlled geometry measurement is again a single core plugin whose listener returns a measurement promise.
+
+There is no collision-specific plugin subclass, observer capability, shared collision-event gate, public transaction API, or cross-package access to private state. Abstract code knows only actions, events, returned promises, and rendering. DOM ownership and measurement stay in the DOM package.
+
+### Compatibility boundary
+
+Completion tracking applies to promises returned **directly to the monitor** while an action dispatches `dragmove` or `dragover`. Synchronous listeners and non-promise return values keep their behavior. Other events remain notifications. A detached asynchronous task that is not returned is not owned by the action. Existing framework callback wrappers are unchanged; wrappers that discard return values do not acquire asynchronous completion semantics automatically.
+
+A direct asynchronous listener can therefore postpone subsequent target application or normal drop for as long as its returned work takes. Pointer position and raw detection remain live; cancellation does not wait. This replaces previously ignored promise results with an explicit completion meaning. It is a deliberate behavioral change, not a guarantee that arbitrary asynchronous application callbacks cannot stall completion.
+
+Relative input listeners are dispatched in command order after the previous command completes, so each sees its committed position. Keyboard input now dispatches one `dragmove` per original command, without an extra synthetic event for position compensation. Consumers still receive the original event and final drop position.
 
 ## Geometry policy
 
@@ -42,23 +55,23 @@ Initial dimensions and resolved translation use the existing global coordinate s
 
 ## Measurement and cost
 
-Known placement commits refresh eligible DOM targets in one batch after the renderer settles, including controlled application layouts. A revision loop retains a newer placement that arrives while an older commit is pending. Optimistic sorting also refreshes its affected groups and ancestor containers before releasing ownership. Scroll refreshes current geometry directly and no longer waits on the old 50ms collision invalidation timer.
+Known placement commits refresh eligible DOM targets in one batch after the renderer settles, including controlled application layouts. A revision loop retains a newer placement that arrives while an older commit is pending. Optimistic sorting also refreshes its affected groups and ancestor containers before releasing ownership. Scroll refreshes current geometry directly and no longer waits on the old 50ms collision invalidation timer. Ancestor animation measurements also query the current animation list and project newly pending animations immediately; a cached list could mix a container's final position with its children's animated positions.
 
 An input-only collision pass reuses target measurements. A placement or scroll currently performs an O(n) eligible-target refresh; it does not maintain a spatial index or attempt to infer which arbitrary application layouts moved. Existing generic position-observer throttling remains for unrelated browser layout observation, but known placement and scroll correctness do not depend on that timer.
 
-A focused comparison using 20 targets and 20 separate synchronous rectangle updates measured **400 detector calls on the baseline and 20 with this implementation**. Regression tests also check one pass for a reactive measurement batch, coalesced input, and repeated deferred force-update requests. This measures redundant scans, not general browser throughput or a latency benchmark.
+A focused comparison using 20 targets and 20 separate synchronous rectangle updates measured **400 detector calls on the baseline and 20 with this implementation**. Regression tests also check one pass for a reactive measurement batch, coalesced input, and repeated deferred force-update requests. This measures redundant scans, not general browser throughput or a latency benchmark. Animation projection now reads the live animation list for each measurement; that cost is outside this detector-call comparison.
 
 ## Validation
 
 - All ten buildable packages built, including declaration generation.
-- 187 abstract, collision, DOM, and sorting unit tests passed after integration with current main (`8b9e1add`).
-- 11 collision browser regressions passed.
+- 195 abstract, collision, DOM, and sorting unit tests passed after integration with current main (`8b9e1add`).
+- 13 collision browser regressions passed.
 - 34 existing React browser cases passed, including horizontal/vertical sorting, keyboard, multiple lists, empty columns, cancellation, scrolling, tables, transforms, overlays, and iframes.
 - 18 existing sortable browser cases passed across Vue, Solid, and Svelte.
 - Targeted TypeScript and formatting checks passed.
-- Declarations include the additive `CollisionPlugin` export and its protected transaction contract. The generic `Plugin` class is unchanged. The DOM `accepts` override retains its existing inherited signature; application inputs are unchanged.
+- Public exports and method/event signatures remain unchanged; the DOM `accepts` override retains its existing inherited signature.
 
-The specialized-subclass follow-up reran all package builds, 187 unit tests, the 11 collision browser regressions, and targeted type/format checks. The broader React and framework compatibility runs above preceded that follow-up. A preliminary browser run timed out awaiting animation frames while the target remained stable; the complete subclass regression run passed without changing the test.
+The action-completion implementation reran package builds, unit tests, collision regressions, broader React compatibility, framework sortable cases, and targeted type/format checks.
 
 Browser validation used installed Chrome with the Storybook development servers. Some initial runs were interrupted by development-server dependency optimization/reloading; clean runs above completed after it settled. The table checks initially could not load because the already-declared `@tanstack/react-table` dependency was absent locally. Restoring that dependency required no manifest or lockfile changes.
 
@@ -81,4 +94,6 @@ The current browser suite writes full traces under `apps/stories/test-results/co
 
 Structural exclusion follows DOM ownership, including shadow roots and accessible frames; it cannot infer logical parentage for children rendered into unrelated portals.
 
-This fixes the measured auto-height and feedback-resize loops and the delivery/eligibility failures that accompanied them. It does not prove convergence for arbitrary application layouts or custom detectors that deliberately change winners after each placement. If a placement moves the actual contact boundary across the pointer, that is different from the area/center and footprint-resize mechanisms reproduced here; no generic detector can infer its cause from geometry alone.
+The Puck follow-up reproduced continuous transfers at two container-edge positions while the pointer remained stationary. Correcting animation measurement alone still left a two-layout cycle; recording the action's resulting collision before reopening notification stopped it. The regressions check the stationary loop, not a general promise of stable placement under arbitrary pointer jitter across moving contact boundaries.
+
+This fixes the measured auto-height, feedback-resize, and Puck container-edge loops and the delivery/eligibility failures that accompanied them. It does not prove convergence for arbitrary application layouts or custom detectors that deliberately change winners after each placement. Completed placement geometry is consumed at its originating input revision; fresh input remains actionable. Arbitrary asynchronous layout work detached from action completion, or a custom detector changing winners independently after completion, is not a convergence guarantee.

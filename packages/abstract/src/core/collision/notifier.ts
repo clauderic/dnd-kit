@@ -7,6 +7,7 @@ import {defaultPreventable} from '../manager/events.ts';
 
 import type {Collision} from './types.ts';
 import {collisionState} from './state.ts';
+import {actionState} from '../manager/completion.ts';
 
 export class CollisionNotifier extends CorePlugin {
   constructor(manager: DragDropManager<any, any>) {
@@ -26,7 +27,7 @@ export class CollisionNotifier extends CorePlugin {
           !dragOperation.status.dragging ||
           dragOperation.controller?.signal.aborted ||
           collisionObserver.disabled ||
-          state.pending.value ||
+          actionState(manager).pending.value ||
           Entity.pendingIdChanges
         )
           return;
@@ -71,9 +72,9 @@ export class CollisionNotifier extends CorePlugin {
         }
 
         const target = dragOperation.target;
-        // Sorting's source retarget acknowledges the placement we already applied.
-        // Measurement/forced publication may repeat it; a new input (including a
-        // tiny reversal) or a different candidate is a new decision.
+        // Completion records the result of the committed layout as consumed.
+        // Measuring it again cannot request another placement. New input or a
+        // later independent change of candidate is a new decision.
         if (
           applied?.input === input &&
           applied.target === id &&
@@ -90,10 +91,10 @@ export class CollisionNotifier extends CorePlugin {
           source: dragOperation.sourceIdentifier,
           target: id,
         };
-        // setDropTarget owns its render transaction. It cannot resume a public
-        // suspension or a different plugin's pending work on completion.
+        // Target actions finish their handlers and rendering before reopening
+        // notification. Detection continues to retain the latest input.
         manager.actions.setDropTarget(id).catch(() => {
-          // The action releases its transaction on renderer failure as well.
+          // Failed actions still finish bookkeeping after all handlers settle.
         });
       });
 
@@ -108,7 +109,7 @@ export class CollisionNotifier extends CorePlugin {
       void manager.collisionObserver.collisions;
       void manager.collisionObserver.disabled;
       void manager.dragOperation.status.dragging;
-      void state.pending.value;
+      void actionState(manager).pending.value;
       schedule();
     });
 

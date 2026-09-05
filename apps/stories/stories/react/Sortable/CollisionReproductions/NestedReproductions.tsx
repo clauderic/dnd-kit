@@ -407,9 +407,7 @@ function Reproduction({scenario}: {scenario: Scenario}) {
           <button
             type="button"
             onClick={() =>
-              setTraceView(
-                JSON.stringify(trace.current.events.slice(-8), null, 2)
-              )
+              setTraceView(JSON.stringify(trace.current.events, null, 2))
             }
           >
             Show latest trace

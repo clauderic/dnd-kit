@@ -180,6 +180,53 @@ function threeTargetSetup() {
 }
 
 describe('Collision observer/notifier desired regressions', () => {
+  it('consumes the geometry produced by a target action without replaying that layout', async () => {
+    const setup = threeTargetSetup();
+    let placements = 0;
+    setup.manager.monitor.addEventListener('dragover', ({operation}) => {
+      const id = operation.target?.id;
+      if (id !== 'A' && id !== 'B') return;
+      placements++;
+      // Each placement moves the contact boundary so the other target wins.
+      // This is controlled layout feedback, without a sortable self-retarget.
+      batch(() => {
+        setup.droppables.get('A')!.shape = new Rectangle(
+          id === 'A' ? 200 : 0,
+          0,
+          100,
+          100
+        );
+        setup.droppables.get('B')!.shape = new Rectangle(
+          id === 'A' ? 0 : 200,
+          0,
+          100,
+          100
+        );
+      });
+    });
+    await setup.start();
+    await flushMicrotasks();
+    expect(placements).toBe(1);
+    expectTarget(setup, 'A');
+    expect(setup.computed()).toEqual(['B']);
+    await setup.forceUpdate();
+    expect(placements).toBe(1);
+
+    // A fresh one-pixel input remains immediately actionable.
+    await setup.moveTo(49, 50, false);
+    expect(placements).toBe(2);
+    expectTarget(setup, 'B');
+    expect(setup.computed()).toEqual(['A']);
+
+    // Later independent geometry is not hidden by the completed placement.
+    batch(() => {
+      setup.droppables.get('A')!.shape = new Rectangle(400, 0, 100, 100);
+      setup.droppables.get('C')!.shape = new Rectangle(0, 0, 100, 100);
+    });
+    await flushMicrotasks();
+    expectTarget(setup, 'C');
+  });
+
   it('moving both pointer and drag shape publishes and targets B', async () => {
     const setup = createSetup();
     await setup.start();

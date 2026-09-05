@@ -2,8 +2,8 @@
   "baselineCommit": "aa53b823",
   "runtime": "Chrome 152, Storybook dev",
   "tests": {
-    "unit": 187,
-    "collisionBrowser": 11,
+    "unit": 195,
+    "collisionBrowser": 13,
     "reactCompatibility": 34,
     "frameworkSortable": 18
   },
@@ -15,32 +15,8 @@
   },
   "cases": [
     {
-      "case": "collision-reproductions-CO-20215-s-a-changing-drag-footprint-current",
-      "observations": {
-        "point": {
-          "x": 537,
-          "y": 448.96875
-        },
-        "tailTargets": [],
-        "ownDescendantsAdmitted": false,
-        "visualSizes": ["274x180", "320x180"]
-      }
-    },
-    {
       "case": "collision-reproductions-CO-3ffee-he-same-Kanban-gap-position-current",
-      "observations": ["3", "3", "3", "3", "3", "3", "3", "3", "3", "3"]
-    },
-    {
-      "case": "collision-reproductions-CO-f9e3c-s-a-changing-drag-footprint-current",
-      "observations": {
-        "point": {
-          "x": 200,
-          "y": 1037.96875
-        },
-        "tailTargets": [],
-        "ownDescendantsAdmitted": false,
-        "visualSizes": ["274x156", "320x260"]
-      }
+      "observations": ["1", "3", "3", "3", "3", "3", "3", "3", "3", "3"]
     },
     {
       "case": "collision-reproductions-au-fbc94-in-stable-during-1px-jitter-current",
@@ -74,36 +50,12 @@
       }
     },
     {
-      "case": "collision-reproductions-dr-a5e61-xcludes-its-own-descendants-current",
-      "observations": {
-        "point": {
-          "x": 191,
-          "y": 568.265625
-        },
-        "tailTargets": [],
-        "ownDescendantsAdmitted": false,
-        "visualSizes": ["300x584"]
-      }
-    },
-    {
       "case": "collision-reproductions-ga-ca052--across-the-column-boundary-current",
       "observations": ["A", "A", "A", "A", "B", "B", "B", "A"]
     },
     {
       "case": "collision-reproductions-ke-05fc4-sh-before-an-immediate-drop-current",
       "observations": ["2", "3", "4", "1"]
-    },
-    {
-      "case": "collision-reproductions-ne-cc62b-hen-visual-feedback-resizes-current",
-      "observations": {
-        "point": {
-          "x": 890,
-          "y": 469.265625
-        },
-        "tailTargets": [],
-        "ownDescendantsAdmitted": false,
-        "visualSizes": ["208x56", "254x56", "300x56"]
-      }
     },
     {
       "case": "collision-reproductions-re-bce32-vening-same-direction-input-current",
@@ -294,7 +246,104 @@
           "raw": "1"
         }
       ]
+    },
+    {
+      "case": "collision-reproductions-CO-20215-s-a-changing-drag-footprint-current",
+      "observations": {
+        "point": {
+          "x": 537,
+          "y": 448.96875
+        },
+        "tailTargets": [],
+        "ownDescendantsAdmitted": false,
+        "visualSizes": ["274x180", "320x180"]
+      }
+    },
+    {
+      "case": "collision-reproductions-CO-f9e3c-s-a-changing-drag-footprint-current",
+      "observations": {
+        "point": {
+          "x": 200,
+          "y": 1037.96875
+        },
+        "tailTargets": [],
+        "ownDescendantsAdmitted": false,
+        "visualSizes": ["274x156", "320x260"]
+      }
+    },
+    {
+      "case": "collision-reproductions-Pu-5c11b-t-moving-container-edge-338-current",
+      "observations": {
+        "point": {
+          "x": 377,
+          "y": 524.96875
+        },
+        "tailTargets": [],
+        "ownDescendantsAdmitted": false,
+        "visualSizes": ["274x180", "320x180"]
+      }
+    },
+    {
+      "case": "collision-reproductions-Pu-afa39-t-moving-container-edge-320-current",
+      "observations": {
+        "point": {
+          "x": 359,
+          "y": 524.96875
+        },
+        "tailTargets": [],
+        "ownDescendantsAdmitted": false,
+        "visualSizes": ["274x180", "320x180"]
+      }
+    },
+    {
+      "case": "collision-reproductions-dr-a5e61-xcludes-its-own-descendants-current",
+      "observations": {
+        "point": {
+          "x": 191,
+          "y": 568.265625
+        },
+        "tailTargets": [],
+        "ownDescendantsAdmitted": false,
+        "visualSizes": ["300x584"]
+      }
+    },
+    {
+      "case": "collision-reproductions-ne-cc62b-hen-visual-feedback-resizes-current",
+      "observations": {
+        "point": {
+          "x": 890,
+          "y": 469.265625
+        },
+        "tailTargets": [],
+        "ownDescendantsAdmitted": false,
+        "visualSizes": ["208x56", "254x56", "300x56"]
+      }
     }
   ],
-  "implementationBase": "8b9e1add"
+  "implementationBase": "8b9e1add",
+  "completionModel": "Action-owned listener promises with internal relative-input sequencing",
+  "puckFollowUp": {
+    "baseline": "Working prototype before completed-placement reconciliation and animation-measurement fixes",
+    "observations": [
+      {
+        "point": {
+          "x": 359,
+          "y": 524.96875
+        },
+        "stationaryTailFrames": 40,
+        "baselineTransfers": 147,
+        "fixedTransfers": 0
+      },
+      {
+        "point": {
+          "x": 377,
+          "y": 524.96875
+        },
+        "stationaryTailFrames": 40,
+        "baselineTransfers": 156,
+        "fixedTransfers": 0
+      }
+    ],
+    "measurementOnly": "Correcting animation measurements alone retained a two-layout cycle."
+  }
 }
