@@ -51,7 +51,9 @@ Relative input listeners are dispatched in command order after the previous comm
 
 ## Geometry policy
 
-Default detection still prefers pointer containment and retains existing priority/type ordering. Its rectangular shape fallback translates the drag's initial footprint by the current resolved modifier transform. Destination-driven visual resizing therefore cannot introduce another destination into that fallback query.
+Default detection prefers pointer containment and retains existing priority/type ordering. Among rectangular pointer hits at equal priority, it now prefers the smaller target (`1 / (1 + area)`). A rectangle contained within another has smaller area even when both resize, so a child cannot lose to its parent merely because their centers move. This is stateless: crossing the child boundary changes its pointer eligibility immediately. Equal-area overlaps retain the observer’s stable ordering. This also changes selection among overlapping, non-nested rectangles; consumers wanting center-distance ranking can use the unchanged explicit `pointerIntersection` detector. Nonrectangular/custom containment retains that detector’s existing ranking.
+
+Its rectangular shape fallback translates the drag's initial footprint by the current resolved modifier transform. Destination-driven visual resizing therefore cannot introduce another destination into that fallback query.
 
 The footprint's dimensions are established once per drag, or when shape history is explicitly reset. This is a deliberate default-policy choice: changing source content size mid-drag also leaves those query dimensions unchanged. Target geometry remains live. The public `dragOperation.shape.current` remains live as well, and explicit `shapeIntersection` or custom detectors receive it without a wrapper, cloned entity, or temporary operation mutation. Custom shapes, including rectangle subclasses with different intersection semantics, keep their own geometry operations.
 
@@ -67,12 +69,14 @@ An input-only collision pass reuses target measurements. Each completed DOM rend
 
 A focused comparison using 20 targets and 20 separate synchronous rectangle updates measured **400 detector calls on the baseline and 20 with this implementation**. Regression tests also check one pass for a reactive measurement batch, coalesced input, and repeated deferred force-update requests. This measures redundant scans, not general browser throughput or a latency benchmark. Animation projection now reads the live animation list for each measurement; that cost is outside this detector-call comparison.
 
+Clone feedback owns both its cloned tree and the droppable proxies into that tree. Descendant attributes/text, direct child replacement, and newly registered targets cause the clone and proxies to be replaced together in one reactive batch. Matching original and cloned descendants avoids temporary marker mutations that would retrigger the observer. The source root always maps to its placeholder, even with a separate header drop target. Cleanup only releases mappings still owned by that placeholder.
+
 ## Validation
 
 - All ten buildable packages built, including declaration generation.
-- 200 abstract, collision, DOM, and sorting unit tests passed after integration with current main (`8b9e1add`).
-- 13 collision browser regressions and 10 nested-collection story cases passed.
-- 34 existing React browser cases passed, including horizontal/vertical sorting, keyboard, multiple lists, empty columns, cancellation, scrolling, tables, transforms, overlays, and iframes.
+- 203 abstract, collision, DOM, and sorting unit tests passed after integration with current main (`8b9e1add`).
+- 13 collision browser regressions, 12 nested-collection story cases, and 3 clone-feedback lifecycle cases passed.
+- 43 existing React browser cases passed, including horizontal/vertical sorting, keyboard, multiple lists, empty columns, cancellation, scrolling, tables, transforms, overlays, and iframes.
 - 18 existing sortable browser cases passed across Vue, Solid, and Svelte.
 - Targeted TypeScript and formatting checks passed.
 - Public exports and method/event signatures remain unchanged; the DOM `accepts` override retains its existing inherited signature.
@@ -104,7 +108,16 @@ The story's **Copy trace** button exports the latest drag: the newest 1,000 even
 
 The supplied September 5 trace contained 61 changed placements in 4.4 seconds; no consecutive changed placements shared an input sequence, and some pointer movements were subpixel. The collection first left its parent on pickup, then alternated between the first and last root slots. In that story, whole collection rectangles were registered as reorder targets even though only their headers represented that action, and the entire root board was registered as append-to-end. Reordering exposed a gap below the short collection, which made the board win; appending restored the original tall collection under the pointer, which made it win on the next movement.
 
-Replaying the supplied 129 input coordinates reproduced 57 placements, including 47 root-slot shuffles. Correcting the story's target refs reduced the same replay to five transfers (`progress → ideas → website → ideas → progress`) and zero root shuffles. No observer suppression or time/distance threshold was added for this case. The saved pointer-path regression and a pickup regression cover both mistakes. This is a correction to the story's target semantics; it does not establish convergence for arbitrary layouts.
+Replaying the supplied 129 input coordinates reproduced 57 placements, including 47 root-slot shuffles. Correcting the story's target refs reduced the same replay to five transfers (`progress → ideas → website → ideas → progress`) and zero root shuffles. At that revision, no library collision-policy change was made for this case. The saved pointer-path regression and a pickup regression cover both mistakes. This is a correction to the story's target semantics; it does not establish convergence for arbitrary layouts.
+
+Two subsequent traces exposed library failures that narrowing the story’s hit areas did not address:
+
+- **Cloned header lifetime:** replacing clone feedback’s children detached the original header proxy while collision detection continued measuring it. Replaying the 173-input Components path reproduced 39 placements; 270 sampled source targets were disconnected, including 117 zero-width cached rectangles. Updating the cloned tree and its proxies together reduced this to eight placements, with zero disconnected or zero-size source samples. The story’s sorting callback and target refs were unchanged.
+- **Nested pointer ranking:** Website refresh alternated between its parent and Someday while the pointer stayed inside both contents rectangles. Someday grew from 129px to 343px and the outer contents shrank from 636px to 553px, reversing their center-distance ranking. The proxy fix alone still reproduced 18 placements. Default rectangular pointer specificity reduced this to six placements: the source enters Someday, leaves when the pointer crosses its header, and enters again when it crosses back, without repeated parent/child transfers. An explicit center-distance detector still exhibits the score reversal in the geometry regression, preserving its existing semantics.
+
+The three saved pointer paths now cover the root gap, header replacement, and nested-resize cases. Each checks the complete placement sequence and connected, nonzero source target geometry throughout the drag. Native browser tests additionally cover cloned descendant attribute/text changes, replacing the original header, registering a new child target, cleanup, and ownership after repeated cleanup. Geometry tests cover the captured nested dimensions and immediate quarter-pixel boundary crossings. No timer, movement threshold, extra observer state, or public API was introduced for these follow-ups.
+
+The package build passes for all ten packages. A broader workspace build also attempted the documentation app and stopped on its `mdast-util-to-string` CommonJS named-export error; this follow-up does not change documentation dependencies.
 
 ## Limits
 

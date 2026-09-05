@@ -2,11 +2,12 @@
   "baselineCommit": "aa53b823",
   "runtime": "Chrome 152, Storybook dev",
   "tests": {
-    "unit": 200,
+    "unit": 203,
     "collisionBrowser": 13,
-    "reactCompatibility": 34,
+    "reactCompatibility": 43,
     "frameworkSortable": 18,
-    "nestedStoryBrowser": 10
+    "nestedStoryBrowser": 12,
+    "feedbackCloneBrowser": 3
   },
   "detectorCallComparison": {
     "targets": 20,
@@ -387,6 +388,45 @@
       "parents": ["progress", "ideas", "website", "ideas", "progress"]
     },
     "fixture": "apps/stories/tests/fixtures/nested-collections-pointer-path.json",
-    "fix": "Collection header targetRef and explicit root append band; no library collision-policy changes"
+    "fix": "Collection header targetRef and explicit root append band; no library collision-policy changes",
+    "additionalTraces": [
+      {
+        "source": "components",
+        "inputs": 173,
+        "fixture": "apps/stories/tests/fixtures/nested-collections-header-path.json",
+        "before": {
+          "placements": 39,
+          "disconnectedSourceSamples": 270,
+          "zeroWidthSourceSamples": 117
+        },
+        "after": {
+          "placements": 8,
+          "disconnectedSourceSamples": 0,
+          "zeroWidthSourceSamples": 0
+        },
+        "fix": "Replace cloned descendants and target proxies in the same batch; map the source root to its placeholder."
+      },
+      {
+        "source": "website",
+        "inputs": 120,
+        "fixture": "apps/stories/tests/fixtures/nested-collections-container-path.json",
+        "withProxyFixOnly": {
+          "placements": 18
+        },
+        "after": {
+          "placements": 6
+        },
+        "fix": "Default rectangular pointer hits prefer smaller area; explicit pointerIntersection keeps center-distance ranking."
+      }
+    ]
+  },
+  "feedbackCloneCases": [
+    "Descendant attribute and text changes",
+    "Original target replacement",
+    "New target registration",
+    "Proxy cleanup and later-owner preservation"
+  ],
+  "validationLimits": {
+    "workspaceBuild": "Documentation app fails on mdast-util-to-string CommonJS named export; all ten package builds pass."
   }
 }

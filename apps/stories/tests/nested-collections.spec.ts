@@ -1,6 +1,8 @@
 import {test, expect, type Page} from '@playwright/test';
 import type {} from '../stories/react/Sortable/Nested/trace.ts';
 import pointerPath from './fixtures/nested-collections-pointer-path.json' with {type: 'json'};
+import headerPath from './fixtures/nested-collections-header-path.json' with {type: 'json'};
+import containerPath from './fixtures/nested-collections-container-path.json' with {type: 'json'};
 
 const node = (page: Page, id: string) =>
   page.locator(
@@ -294,51 +296,116 @@ test('picking up a nested collection keeps it in its current parent', async ({
   await page.mouse.up();
 });
 
-test.describe('reported nested collection pointer path', () => {
-  test.use({viewport: pointerPath.viewport, deviceScaleFactor: 2});
+for (const {name, path, source, placements} of [
+  {
+    name: 'root slots',
+    path: pointerPath,
+    source: 'components',
+    placements: [
+      ['progress', 2],
+      ['ideas', 3],
+      ['website', 2],
+      ['ideas', 3],
+      ['progress', 2],
+    ],
+  },
+  {
+    name: 'cloned collection headers',
+    path: headerPath,
+    source: 'components',
+    placements: [
+      ['progress', 2],
+      ['ideas', 3],
+      ['website', 2],
+      ['ideas', 1],
+      ['ideas', 3],
+      ['board', 1],
+      ['ideas', 3],
+      ['ideas', 0],
+    ],
+  },
+  {
+    name: 'resizing nested containers',
+    path: containerPath,
+    source: 'website',
+    placements: [
+      ['ideas', 2],
+      ['ideas', 1],
+      ['ideas', 2],
+      ['someday', 0],
+      ['ideas', 2],
+      ['someday', 0],
+    ],
+  },
+]) {
+  test.describe(`reported pointer path: ${name}`, () => {
+    test.use({
+      viewport: path.viewport,
+      deviceScaleFactor: path.viewport.devicePixelRatio,
+    });
 
-  test('small pointer movements transfer between collections without alternating root slots', async ({
-    page,
-  }) => {
-    await page.evaluate(() => document.fonts.ready);
-    await page.mouse.move(pointerPath.start.x, pointerPath.start.y);
-    await page.mouse.down();
-    await page.mouse.move(pointerPath.start.x + 6, pointerPath.start.y);
-    await expect(page.locator('[data-nested-board]')).toHaveAttribute(
-      'data-dragging',
-      'true'
-    );
-    for (const [x, y, pauseFrames] of pointerPath.moves) {
-      if (pauseFrames) await settle(page, pauseFrames);
-      await page.mouse.move(x, y);
-      await settle(page, 1);
-    }
-    await page.mouse.up();
-    await expect(page.locator('[data-nested-board]')).toHaveAttribute(
-      'data-dragging',
-      'false'
-    );
-    const parents = await page.evaluate(() =>
-      window
-        .__nestedCollectionsTrace!.snapshot()
-        .events.filter((entry) => entry.event === 'dragover')
-        .map(
-          (entry) => entry.placement as {changed: boolean; to: {parent: string}}
-        )
-        .filter((placement) => placement.changed)
-        .map((placement) => placement.to.parent)
-    );
-    expect(parents).toEqual([
-      'progress',
-      'ideas',
-      'website',
-      'ideas',
-      'progress',
-    ]);
-    await expect(node(page, 'components')).toHaveAttribute(
-      'data-parent',
-      'progress'
-    );
-    await expect(page.locator('[data-board-node]')).toHaveCount(18);
+    test('small pointer movements do not repeat layout-driven placements', async ({
+      page,
+    }) => {
+      await page.evaluate(() => document.fonts.ready);
+      await page.mouse.move(path.start.x, path.start.y);
+      await page.mouse.down();
+      await page.mouse.move(path.start.x + 6, path.start.y);
+      await expect(page.locator('[data-nested-board]')).toHaveAttribute(
+        'data-dragging',
+        'true'
+      );
+      for (const [x, y, pauseFrames] of path.moves) {
+        if (pauseFrames) await settle(page, pauseFrames);
+        await page.mouse.move(x, y);
+        await settle(page, 1);
+      }
+      await page.mouse.up();
+      await expect(page.locator('[data-nested-board]')).toHaveAttribute(
+        'data-dragging',
+        'false'
+      );
+      const result = await page.evaluate((source) => {
+        const trace = window.__nestedCollectionsTrace!.snapshot();
+        return {
+          omitted: trace.omittedEvents,
+          placements: trace.events
+            .filter((entry) => entry.event === 'dragover')
+            .map(
+              (entry) =>
+                entry.placement as {
+                  changed: boolean;
+                  to: {parent: string; index: number};
+                }
+            )
+            .filter((placement) => placement.changed)
+            .map(({to}) => [to.parent, to.index]),
+          sourceTargets: trace.events
+            .filter((entry) => entry.event === 'frame')
+            .flatMap((entry) =>
+              (
+                entry.droppables as {
+                  id: string;
+                  connected: boolean;
+                  shape: {width: number; height: number} | null;
+                }[]
+              ).filter((target) => target.id === source)
+            ),
+        };
+      }, source);
+      expect(result.omitted).toBe(0);
+      expect(result.placements).toEqual(placements);
+      expect(result.sourceTargets.length).toBeGreaterThan(0);
+      for (const target of result.sourceTargets) {
+        expect(target.connected).toBe(true);
+        expect(target.shape?.width).toBeGreaterThan(0);
+        expect(target.shape?.height).toBeGreaterThan(0);
+      }
+      await expect(node(page, source)).toHaveAttribute(
+        'data-parent',
+        String(placements.at(-1)![0])
+      );
+      await expect(page.locator('[data-board-node]')).toHaveCount(18);
+    });
   });
-});
+}

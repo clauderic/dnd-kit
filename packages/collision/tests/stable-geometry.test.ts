@@ -74,14 +74,64 @@ describe('Default collision geometry', () => {
   it('keeps pointer containment and priority unchanged', () => {
     const {target} = setup();
     const input = target('inside', new Rectangle(220, 0, 20, 100));
-    expect(defaultCollisionDetection(input)).toEqual(
-      pointerIntersection(input)
-    );
+    const explicit = pointerIntersection(input)!;
+    expect(defaultCollisionDetection(input)).toEqual({
+      ...explicit,
+      value: 1 / (1 + 20 * 100),
+    });
+    expect(explicit.value).toBe(1);
     expect(defaultCollisionDetection(input)!.priority).toBe(
       CollisionPriority.High
     );
     expect(defaultCollisionDetection(input)!.type).toBe(
       CollisionType.PointerIntersection
+    );
+  });
+
+  it('keeps a nested rectangle ahead of its parent as their centers move', () => {
+    const {dragOperation, target} = setup();
+    dragOperation.position.current = {x: 458, y: 419};
+    const parent = target('parent', new Rectangle(150, 259, 355, 636));
+    const child = target('child', new Rectangle(163, 418, 329, 129));
+    const explicit = () =>
+      pointerIntersection(child)!.value - pointerIntersection(parent)!.value;
+    expect(explicit()).toBeGreaterThan(0);
+    expect(defaultCollisionDetection(child)!.value).toBeGreaterThan(
+      defaultCollisionDetection(parent)!.value
+    );
+
+    // Dimensions from the reported empty-container transfer. The child grows
+    // while its parent shrinks because the source no longer occupies a sibling.
+    child.droppable.shape = new Rectangle(163, 418, 329, 343);
+    parent.droppable.shape = new Rectangle(150, 259, 355, 553);
+    expect(explicit()).toBeLessThan(0);
+    expect(defaultCollisionDetection(child)!.value).toBeGreaterThan(
+      defaultCollisionDetection(parent)!.value
+    );
+  });
+
+  it('enters and leaves a nested pointer target on the first subpixel crossing', () => {
+    const {dragOperation, target} = setup(new Rectangle(450, 400, 10, 10));
+    const child = target('child', new Rectangle(163, 418, 329, 343));
+    for (const y of [418.125, 417.875, 418.125, 417.875]) {
+      dragOperation.position.current = {x: 458, y};
+      expect(
+        defaultCollisionDetection(child)?.type ===
+          CollisionType.PointerIntersection
+      ).toBe(y >= 418);
+    }
+  });
+
+  it('preserves center ranking for a custom shape with rectangular bounds', () => {
+    const {target} = setup();
+    class CustomShape extends Rectangle {
+      containsPoint(point: {x: number; y: number}) {
+        return super.containsPoint(point);
+      }
+    }
+    const input = target('custom', new CustomShape(220, 0, 20, 100));
+    expect(defaultCollisionDetection(input)).toEqual(
+      pointerIntersection(input)
     );
   });
 

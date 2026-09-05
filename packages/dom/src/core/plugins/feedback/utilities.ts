@@ -1,7 +1,6 @@
-import {untracked} from '@dnd-kit/state';
+import {batch, untracked} from '@dnd-kit/state';
 import {
   cloneElement,
-  generateUniqueId,
   getFrameElement,
   showPopover,
   ProxiedElements,
@@ -9,97 +8,93 @@ import {
 } from '@dnd-kit/dom/utilities';
 
 import type {Draggable, Droppable} from '../../entities/index.ts';
-import {ATTR_PREFIX, PLACEHOLDER_ATTRIBUTE} from './constants.ts';
+import {PLACEHOLDER_ATTRIBUTE} from './constants.ts';
 
 /**
  * Creates a placeholder element for a draggable source
  * The placeholder maintains the original element's dimensions and position
  */
-export function createPlaceholder(
-  source: Draggable,
-  type = 'hidden'
-): Element | undefined {
+export function createPlaceholder(source: Draggable, type = 'hidden') {
   return untracked(() => {
     const {element, manager} = source;
 
     if (!element || !manager) return;
 
-    const containedDroppables = findContainedDroppables(
-      element,
-      manager.registry.droppables
-    );
-    const cleanup: Array<() => void> = [];
     const placeholder = cloneElement(element);
     const {remove} = placeholder;
-
-    proxyDroppableElements(containedDroppables, placeholder, cleanup);
-    configurePlaceholder(placeholder, type);
-
-    // Override remove to handle cleanup of proxies
-    placeholder.remove = () => {
-      cleanup.forEach((fn) => fn());
-      remove.call(placeholder);
+    let cleanup: Array<() => void> = [];
+    const release = () => cleanup.splice(0).forEach((fn) => fn());
+    const proxy = () => {
+      cleanup = proxyDroppableElements(
+        element,
+        placeholder,
+        manager.registry.droppables
+      );
     };
 
-    return placeholder;
+    proxy();
+    configurePlaceholder(placeholder, type);
+
+    // The source may have only a descendant target, but sorting still moves and
+    // animates its whole placeholder rather than its floating feedback element.
+    ProxiedElements.set(element, placeholder);
+
+    placeholder.remove = () => {
+      batch(() => {
+        release();
+        if (ProxiedElements.get(element) === placeholder)
+          ProxiedElements.delete(element);
+        remove.call(placeholder);
+      });
+    };
+
+    return {
+      element: placeholder,
+      updateChildren() {
+        untracked(() =>
+          batch(() => {
+            // Restore original targets before finding their replacement clones.
+            // Publishing the replacement tree and proxies together prevents a
+            // measurement against detached descendants of the previous clone.
+            release();
+            placeholder.replaceChildren(...cloneElement(element).childNodes);
+            proxy();
+            ProxiedElements.set(element, placeholder);
+          })
+        );
+      },
+    };
   });
 }
 
-/**
- * Maps droppable elements contained within the source element
- * Returns a map of droppables to their temporary identifier attributes
- */
-function findContainedDroppables(
+/** Match original targets to the corresponding elements in the cloned tree. */
+function proxyDroppableElements(
   element: Element,
+  placeholder: Element,
   droppables: Iterable<Droppable>
-): Map<Droppable, string> {
-  const containedDroppables = new Map<Droppable, string>();
+): Array<() => void> {
+  const originals = [element, ...element.querySelectorAll('*')];
+  const clones = [placeholder, ...placeholder.querySelectorAll('*')];
+  const counterparts = new Map(
+    originals.map((original, index) => [original, clones[index]])
+  );
+  const cleanup: Array<() => void> = [];
 
   for (const droppable of droppables) {
-    if (!droppable.element) continue;
+    const original = droppable.element;
+    const clone = original && counterparts.get(original);
+    if (!original || !clone) continue;
 
-    if (element === droppable.element || element.contains(droppable.element)) {
-      const identifierAttribute = `${ATTR_PREFIX}${generateUniqueId('dom-id')}`;
-      droppable.element.setAttribute(identifierAttribute, '');
-      containedDroppables.set(droppable, identifierAttribute);
-    }
-  }
-
-  return containedDroppables;
-}
-
-/**
- * Sets up proxy relationships between original droppable elements and their clones
- */
-function proxyDroppableElements(
-  containedDroppables: Map<Droppable, string>,
-  placeholder: Element,
-  cleanup: Array<() => void>
-): void {
-  for (const [droppable, identifierAttribute] of containedDroppables) {
-    if (!droppable.element) continue;
-
-    const selector = `[${identifierAttribute}]`;
-    const clonedElement = placeholder.matches(selector)
-      ? placeholder
-      : placeholder.querySelector(selector);
-
-    droppable.element.removeAttribute(identifierAttribute);
-
-    if (!clonedElement) continue;
-
-    const originalElement = droppable.element;
-
-    droppable.proxy = clonedElement;
-    clonedElement.removeAttribute(identifierAttribute);
-
-    ProxiedElements.set(originalElement, clonedElement);
-
+    droppable.proxy = clone;
+    ProxiedElements.set(original, clone);
     cleanup.push(() => {
-      ProxiedElements.delete(originalElement);
-      droppable.proxy = undefined;
+      if (ProxiedElements.get(original) === clone)
+        ProxiedElements.delete(original);
+      if (droppable.proxy === clone) droppable.proxy = undefined;
     });
   }
+
+  return cleanup;
 }
 
 /**
