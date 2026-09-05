@@ -4,8 +4,8 @@ import {getScrollPosition, type ScrollPosition} from './getScrollPosition.ts';
 
 export function canScroll(
   scrollableElement: Element,
-  scrollPosition: ScrollPosition = getScrollPosition(scrollableElement),
-  by?: Coordinates
+  by?: Coordinates,
+  scrollPosition: ScrollPosition = getScrollPosition(scrollableElement)
 ) {
   const {isTop, isBottom, isLeft, isRight, position} = scrollPosition;
 

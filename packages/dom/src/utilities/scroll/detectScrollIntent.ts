@@ -29,11 +29,11 @@ interface ScrollIntent {
 export function detectScrollIntent(
   scrollableElement: Element,
   coordinates: Coordinates,
-  scrollPosition: ScrollPosition = getScrollPosition(scrollableElement),
   intent?: ScrollIntent,
   acceleration = 25,
   thresholdPercentage = defaultThreshold,
-  tolerance = defaultTolerance
+  tolerance = defaultTolerance,
+  scrollPosition: ScrollPosition = getScrollPosition(scrollableElement)
 ) {
   const {x, y} = coordinates;
   const {rect, isTop, isBottom, isLeft, isRight} = scrollPosition;
