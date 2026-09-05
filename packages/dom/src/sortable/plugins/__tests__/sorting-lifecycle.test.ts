@@ -11,7 +11,7 @@ afterEach(() => {
 });
 
 describe('optimistic sorting completion', () => {
-  it('returns work covering source acknowledgment and committed measurement', async () => {
+  it('returns work covering source acknowledgment', async () => {
     const setup = createSetup();
     const plugin = new OptimisticSortingPlugin(setup.manager);
     cleanup.push(() => plugin.destroy());
@@ -34,7 +34,6 @@ describe('optimistic sorting completion', () => {
     acknowledgment.resolve();
     await targeting;
     await flush();
-    expect(setup.items[0].droppable.refreshShape).toHaveBeenCalled();
     expect(setup.fixture.collisionObserver.enable).not.toHaveBeenCalled();
   });
 
@@ -90,7 +89,7 @@ describe('optimistic sorting completion', () => {
     expect(setup.items[0].index).toBe(0);
   });
 
-  it('measures a controlled commit without applying the optimistic fallback', async () => {
+  it('finishes a controlled commit without applying the optimistic fallback', async () => {
     const setup = createSetup();
     const plugin = new OptimisticSortingPlugin(setup.manager);
     cleanup.push(() => plugin.destroy());
@@ -103,7 +102,6 @@ describe('optimistic sorting completion', () => {
     render.resolve();
     await flush();
     expect(setup.calls).toEqual(['1']);
-    expect(setup.items[0].droppable.refreshShape).toHaveBeenCalledTimes(1);
   });
 
   for (const action of ['abort', 'replace', 'destroy'] as const) {

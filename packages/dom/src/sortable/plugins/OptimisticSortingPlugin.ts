@@ -10,7 +10,7 @@ import {
   hasChanged,
   type SortableInstances,
 } from './OptimisticSortingPlugin.helpers.ts';
-import {createSortableTasks} from './tasks.ts';
+import {createDragTasks} from '../../utilities/dragTasks.ts';
 
 const defaultGroup = '__default__';
 
@@ -18,7 +18,7 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager) {
     super(manager);
 
-    const tasks = createSortableTasks(manager);
+    const tasks = createDragTasks(manager, () => !this.disabled);
     let destroyed = false;
 
     const getSortableInstances = () => {
@@ -70,85 +70,67 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
 
         if (!sourceInstances || !targetInstances) return;
 
-        const sourceGroup = source.sortable.group;
-        const targetGroup = target.sortable.group;
-        const affected = () => {
-          const instances = getSortableInstances();
-          return [
-            ...(instances.get(sourceGroup) ?? []),
-            ...(instances.get(targetGroup) ?? []),
-          ].map((sortable) => sortable.droppable);
-        };
-        return tasks.run(affected(), async (task) => {
+        return tasks.run(async (task) => {
           const current = () =>
-            task.current &&
-            !this.disabled &&
-            dragOperation.source?.id === source.id &&
-            dragOperation.target?.id === target.id;
-          try {
-            if (!current() || event.defaultPrevented) return;
+            task.current && dragOperation.target?.id === target.id;
+          if (!current() || event.defaultPrevented) return;
 
-            // Give controlled sorting its commit before attempting a fallback.
-            if (!(await task.waitFor(manager.renderer.rendering))) return;
-            if (!current() || event.defaultPrevented) return;
+          // Give controlled sorting its commit before attempting a fallback.
+          if (!(await task.waitFor(manager.renderer.rendering))) return;
+          if (!current() || event.defaultPrevented) return;
 
-            const newInstances = getSortableInstances();
+          const newInstances = getSortableInstances();
 
-            if (hasChanged(sortableIndices, instances, newInstances)) {
-              // At least one index or group was changed so we should abort optimistic updates
-              return;
+          if (hasChanged(sortableIndices, instances, newInstances)) {
+            // At least one index or group was changed so we should abort optimistic updates
+            return;
+          }
+
+          const sourceElement = source.sortable.element;
+          const targetElement = target.sortable.element;
+
+          if (!targetElement || !sourceElement) {
+            return;
+          }
+
+          if (!sameGroup && target.id === source.sortable.group) {
+            return;
+          }
+
+          const orderedSourceSortables = sort(sourceInstances);
+          const orderedTargetSortables = sameGroup
+            ? orderedSourceSortables
+            : sort(targetInstances);
+          const sourceGroup = source.sortable.group ?? defaultGroup;
+          const targetGroup = target.sortable.group ?? defaultGroup;
+          const state = {
+            [sourceGroup]: orderedSourceSortables,
+            [targetGroup]: orderedTargetSortables,
+          };
+          const newState = move(state, event);
+
+          if (state === newState) return;
+
+          const sourceIndex = newState[targetGroup].indexOf(source.sortable);
+          const targetIndex = newState[targetGroup].indexOf(target.sortable);
+
+          reorder(sourceElement, sourceIndex, targetElement, targetIndex);
+
+          batch(() => {
+            for (const [index, sortable] of newState[sourceGroup].entries()) {
+              sortable.index = index;
             }
 
-            const sourceElement = source.sortable.element;
-            const targetElement = target.sortable.element;
-
-            if (!targetElement || !sourceElement) {
-              return;
-            }
-
-            if (!sameGroup && target.id === source.sortable.group) {
-              return;
-            }
-
-            const orderedSourceSortables = sort(sourceInstances);
-            const orderedTargetSortables = sameGroup
-              ? orderedSourceSortables
-              : sort(targetInstances);
-            const sourceGroup = source.sortable.group ?? defaultGroup;
-            const targetGroup = target.sortable.group ?? defaultGroup;
-            const state = {
-              [sourceGroup]: orderedSourceSortables,
-              [targetGroup]: orderedTargetSortables,
-            };
-            const newState = move(state, event);
-
-            if (state === newState) return;
-
-            const sourceIndex = newState[targetGroup].indexOf(source.sortable);
-            const targetIndex = newState[targetGroup].indexOf(target.sortable);
-
-            reorder(sourceElement, sourceIndex, targetElement, targetIndex);
-
-            batch(() => {
-              for (const [index, sortable] of newState[sourceGroup].entries()) {
+            if (!sameGroup) {
+              for (const [index, sortable] of newState[targetGroup].entries()) {
+                sortable.group = target.sortable.group;
                 sortable.index = index;
               }
+            }
+          });
 
-              if (!sameGroup) {
-                for (const [index, sortable] of newState[
-                  targetGroup
-                ].entries()) {
-                  sortable.group = target.sortable.group;
-                  sortable.index = index;
-                }
-              }
-            });
-
-            if (!current()) return;
-            await task.waitFor(manager.actions.setDropTarget(source.id));
-          } finally {
-            if (task.current) task.include(affected());
-          }
+          if (!current()) return;
+          await task.waitFor(manager.actions.setDropTarget(source.id));
         });
       }),
       manager.monitor.addEventListener('dragend', (event, manager) => {

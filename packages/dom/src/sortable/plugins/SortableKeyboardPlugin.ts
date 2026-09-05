@@ -12,7 +12,7 @@ import {Scroller} from '@dnd-kit/dom';
 import type {DragDropManager, Droppable} from '@dnd-kit/dom';
 
 import {isSortable} from '../utilities.ts';
-import {createSortableTasks} from './tasks.ts';
+import {createDragTasks} from '../../utilities/dragTasks.ts';
 
 const TOLERANCE = 10;
 
@@ -20,7 +20,7 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager) {
     super(manager);
 
-    const tasks = createSortableTasks(manager, () => !this.disabled);
+    const tasks = createDragTasks(manager, () => !this.disabled);
 
     const cleanupEffect = effect(() => {
       const {dragOperation} = manager;
@@ -53,7 +53,7 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
         if (!isSortable(source)) return;
         const direction = getDirection(event.by);
         if (!direction) return;
-        return tasks.run([], async (task) => {
+        return tasks.run(async (task) => {
           if (
             !task.current ||
             event.defaultPrevented ||
@@ -65,7 +65,6 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
           const {source, target, shape} = dragOperation;
           if (!isSortable(source) || !shape) return;
 
-          task.include([source.sortable.droppable]);
           const {center} = shape.current;
           const potentialTargets: Droppable[] = [];
           const cleanup: CleanupFunction[] = [];
@@ -119,7 +118,6 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
             }
           });
 
-          task.include(potentialTargets);
           const [firstCollision] = collisions;
           if (!firstCollision || !task.current) return;
 
@@ -157,7 +155,6 @@ export class SortableKeyboardPlugin extends Plugin<DragDropManager> {
           const element = updated ? targetElement : updatedTarget.element;
           if (!element) return;
 
-          task.include([updatedSource.sortable.droppable, updatedTarget]);
           scrollIntoViewIfNeeded(element);
           const updatedShape = new DOMRectangle(element);
           const delta = Rectangle.delta(

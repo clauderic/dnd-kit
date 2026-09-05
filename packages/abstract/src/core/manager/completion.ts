@@ -106,7 +106,7 @@ export function dispatchWithCompletion(
 }
 
 export async function finishAction(
-  work: Promise<void>,
+  work: Promise<void> | undefined,
   render: () => Promise<void>
 ) {
   let rendering: Promise<void>;
@@ -115,7 +115,9 @@ export async function finishAction(
   } catch (error) {
     rendering = Promise.reject(error);
   }
-  const results = await Promise.allSettled([work, rendering]);
+  const results = await Promise.allSettled(
+    work ? [work, rendering] : [rendering]
+  );
   // Handlers may start another commit before resolving or rejecting. Finish it
   // before reporting failure or allowing another collision decision.
   try {

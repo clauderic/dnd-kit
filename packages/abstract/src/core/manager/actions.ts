@@ -38,6 +38,20 @@ export class DragActions<
 
   #stopping?: {controller: AbortController; cancel: () => void};
 
+  #render(
+    controller: AbortController | undefined,
+    source: UniqueIdentifier | null
+  ) {
+    const operation = this.manager.dragOperation;
+    if (
+      operation.controller !== controller ||
+      controller?.signal.aborted ||
+      operation.sourceIdentifier !== source
+    )
+      return Promise.resolve();
+    return this.manager.renderer.rendering;
+  }
+
   /**
    * Sets the source of the drag operation.
    *
@@ -69,6 +83,7 @@ export class DragActions<
       }
 
       const state = collisionState(this.manager);
+      const {controller, sourceIdentifier} = dragOperation;
       const receipt = state.applied;
       const consumesCollision =
         receipt?.target === id && receipt.acknowledgment == null;
@@ -96,9 +111,9 @@ export class DragActions<
               this.manager.monitor.dispatch('dragover', event)
             )
           : undefined;
-        const completion = work
-          ? finishAction(work, () => this.manager.renderer.rendering)
-          : this.manager.renderer.rendering;
+        const completion = finishAction(work, () =>
+          this.#render(controller, sourceIdentifier)
+        );
 
         return completion
           .then(() => event.defaultPrevented)
@@ -277,7 +292,7 @@ export class DragActions<
         );
 
         let failure: {error: unknown} | undefined;
-        const work =
+        const returnedWork =
           (args.propagate ?? true)
             ? dispatchWithCompletion(
                 event,
@@ -288,6 +303,9 @@ export class DragActions<
               )
             : undefined;
 
+        const work = returnedWork
+          ? finishAction(returnedWork, () => this.#render(controller, sourceId))
+          : undefined;
         let applied = false;
         let settled = !work;
         const complete = () => {

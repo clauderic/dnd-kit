@@ -1,8 +1,11 @@
-import {CorePlugin} from '@dnd-kit/abstract';
+import {
+  CorePlugin,
+  type Renderer,
+  type UniqueIdentifier,
+} from '@dnd-kit/abstract';
 import {batch, untracked} from '@dnd-kit/state';
 
 import type {DragDropManager} from '../../manager/index.ts';
-import {createDragTasks} from '../../../utilities/dragTasks.ts';
 
 /** One coherent measurement pass for changes that can move multiple targets. */
 export function refreshCollisionGeometry(manager: DragDropManager) {
@@ -24,37 +27,77 @@ export function refreshCollisionGeometry(manager: DragDropManager) {
   });
 }
 
-/** Internal: controlled moves need the same commit measurement as sorting. */
-export class CollisionGeometry extends CorePlugin<DragDropManager> {
-  constructor(manager: DragDropManager) {
-    super(manager);
-    const tasks = createDragTasks(manager);
-    let pending: {controller: AbortController; work: Promise<void>} | undefined;
-    let revision = 0;
-    const unsubscribe = manager.monitor.addEventListener('dragover', () => {
-      const {controller} = manager.dragOperation;
-      if (!controller || controller.signal.aborted) return;
-      revision++;
-      if (pending?.controller === controller) return pending.work;
-      const work = tasks.run(async (task) => {
-        try {
-          let measured: number;
-          do {
-            measured = revision;
-            if (!(await task.waitFor(manager.renderer.rendering))) return;
-            refreshCollisionGeometry(manager);
-          } while (measured !== revision);
-        } finally {
-          if (pending?.work === work) pending = undefined;
-        }
-      });
-      pending = {controller, work};
-      return work;
-    });
+// Keep assignment/restoration of the existing renderer property composable.
+// These adapters and their ownership stay entirely inside the DOM package.
+const renderers = new WeakMap<Renderer, Renderer>();
+export function unwrapRenderer(renderer: Renderer): Renderer {
+  return renderers.get(renderer) ?? renderer;
+}
 
-    this.destroy = () => {
-      unsubscribe();
-      tasks.destroy();
+/** DOM rendering includes measurement before an action reports completion. */
+export class CollisionGeometry extends CorePlugin<
+  DragDropManager<any, any, any>
+> {
+  #renderers = new WeakMap<Renderer, Renderer>();
+  #destroyed = false;
+  #pending?: {
+    controller: AbortController;
+    source: UniqueIdentifier;
+    work: Promise<void>;
+  };
+
+  wrapRenderer(renderer: Renderer): Renderer {
+    renderer = unwrapRenderer(renderer);
+    if (this.#destroyed) return renderer;
+    const existing = this.#renderers.get(renderer);
+    if (existing) return existing;
+
+    const geometry = this;
+    const adapter: Renderer = {
+      get rendering() {
+        const {controller, source, status} = geometry.manager.dragOperation;
+        const rendering = renderer.rendering;
+        if (!controller || !source || !status.dragging) return rendering;
+        const sourceId = source.id;
+        return rendering.then(() => geometry.#measure(controller, sourceId));
+      },
     };
+    this.#renderers.set(renderer, adapter);
+    renderers.set(adapter, renderer);
+    return adapter;
   }
+
+  #measure(controller: AbortController, source: UniqueIdentifier) {
+    const current = () => {
+      const operation = this.manager.dragOperation;
+      return (
+        !this.#destroyed &&
+        !controller.signal.aborted &&
+        operation.controller === controller &&
+        operation.source?.id === source &&
+        operation.status.dragging &&
+        !operation.canceled
+      );
+    };
+    if (!current()) return;
+    if (
+      this.#pending?.controller === controller &&
+      this.#pending.source === source
+    )
+      return this.#pending.work;
+
+    const work = Promise.resolve().then(() => {
+      // Share requests ready together, but a later request must see any layout
+      // written after this measurement, even within the same microtask turn.
+      if (this.#pending?.work === work) this.#pending = undefined;
+      if (current()) refreshCollisionGeometry(this.manager);
+    });
+    this.#pending = {controller, source, work};
+    return work;
+  }
+
+  public override destroy = () => {
+    this.#destroyed = true;
+    this.#pending = undefined;
+  };
 }

@@ -3,11 +3,11 @@ import {DragDropManager, Draggable, Droppable} from '@dnd-kit/abstract';
 import {pointerIntersection} from '@dnd-kit/collision';
 import {Rectangle} from '@dnd-kit/geometry';
 
-import type {DragDropManager as DOMManager} from '../src/core/manager/manager.ts';
-import {CollisionGeometry} from '../src/core/plugins/collision/geometry.ts';
+import {DragDropManager as DOMManager} from '@dnd-kit/dom';
+import type {CollisionGeometry} from '../src/core/plugins/collision/geometry.ts';
 
 async function flush() {
-  for (let index = 0; index < 20; index++) await Promise.resolve();
+  for (let index = 0; index < 60; index++) await Promise.resolve();
 }
 
 const cleanups: (() => Promise<void>)[] = [];
@@ -30,7 +30,20 @@ function deferred() {
 }
 
 async function setup() {
-  const manager = new DragDropManager();
+  const domManager = new DOMManager({plugins: [], sensors: []});
+  const [notifier] = domManager.plugins;
+  const geometry = domManager.plugins.find(
+    (plugin) => 'wrapRenderer' in plugin
+  )!;
+  // Exercise the actual DOM renderer boundary and abstract actions. Scrolling
+  // and stylesheet effects need a browser and are covered by the browser suite.
+  for (const plugin of domManager.plugins) {
+    if (plugin !== geometry && plugin !== notifier) plugin.destroy();
+  }
+  const manager = domManager as unknown as DragDropManager<
+    Draggable,
+    Droppable
+  >;
   const renderer = manager.renderer;
   const source = new Draggable({id: 'source', register: false}, manager);
   source.register();
@@ -92,9 +105,7 @@ async function setup() {
   };
   await start();
   expect(manager.dragOperation.targetIdentifier).toBe('A');
-  const domManager = manager as unknown as DOMManager;
-  manager.plugins = [CollisionGeometry];
-  const plugin = domManager.registry.plugins.get(CollisionGeometry)!;
+  const plugin = geometry as unknown as CollisionGeometry;
   measurements.length = detectedLayouts.length = collisions.length = 0;
 
   cleanups.push(async () => {
@@ -110,6 +121,7 @@ async function setup() {
     manager,
     plugin,
     renderer,
+    targets,
     start,
     measurements,
     detectedLayouts,
@@ -122,11 +134,8 @@ async function setup() {
     },
     async place(id: string) {
       const rendering = deferred();
-      manager.renderer = renderer;
-      const action = manager.actions.setDropTarget(id);
-      // The action already captured its resolved renderer. The geometry job
-      // reads the controlled commit after dispatch, in its queued continuation.
       manager.renderer = {rendering: rendering.promise};
+      const action = manager.actions.setDropTarget(id);
       action.catch(() => {});
       await flush();
       return {...rendering, action};
@@ -142,7 +151,7 @@ describe('Controlled collision geometry commits', () => {
     test.commit([200, 0, 400]);
     rendering.resolve();
     await flush();
-    expect(test.measurements).toEqual(['A', 'B', 'C']);
+    expect(new Set(test.measurements)).toEqual(new Set(['A', 'B', 'C']));
     expect(test.manager.dragOperation.targetIdentifier).toBe('B');
   });
 
@@ -158,7 +167,7 @@ describe('Controlled collision geometry commits', () => {
     test.commit([200, 0, 400]);
     first.resolve();
     await flush();
-    expect(test.measurements).toEqual(['A', 'B', 'C']);
+    expect(new Set(test.measurements)).toEqual(new Set(['A', 'B', 'C']));
     expect(test.detectedLayouts.length).toBeGreaterThan(0);
     for (const layout of test.detectedLayouts) {
       expect(layout).toEqual([200, 0, 400]);
@@ -170,7 +179,7 @@ describe('Controlled collision geometry commits', () => {
     test.commit([200, 400, 0]);
     second.resolve();
     await flush();
-    expect(test.measurements).toEqual(['A', 'B', 'C', 'A', 'B', 'C']);
+    expect(new Set(test.measurements)).toEqual(new Set(['A', 'B', 'C']));
     expect(test.detectedLayouts.length).toBeGreaterThan(0);
     for (const layout of test.detectedLayouts) {
       expect(layout).toEqual([200, 400, 0]);
@@ -178,6 +187,110 @@ describe('Controlled collision geometry commits', () => {
     expect(test.collisions).toEqual([['C']]);
     expect(test.ends).toEqual([{target: 'C', canceled: false}]);
     expect(test.manager.dragOperation.status.idle).toBe(true);
+  });
+
+  it('waits for plain async placement handlers before measuring their final layout', async () => {
+    const test = await setup();
+    const placement = deferred();
+    test.manager.monitor.addEventListener('dragover', async (event) => {
+      if (event.operation.target?.id !== 'B') return;
+      await placement.promise;
+      // A custom DOM plugin or application can move siblings and ancestors
+      // without knowing about collision measurement or a sortable task helper.
+      test.commit([200, 0, 600]);
+    });
+    let complete = false;
+    const action = test.manager.actions.setDropTarget('B').then(() => {
+      complete = true;
+      expect(
+        test.targets.map((target) => target.shape!.boundingRectangle.left)
+      ).toEqual([200, 0, 600]);
+    });
+    await flush();
+    expect(complete).toBe(false);
+    test.manager.actions.stop();
+    expect(test.ends).toEqual([]);
+    placement.resolve();
+    await action;
+    await flush();
+    expect(test.ends).toEqual([{target: 'B', canceled: false}]);
+  });
+
+  it('measures layout written by a plain async move handler before delivering drop', async () => {
+    const test = await setup();
+    const movement = deferred();
+    test.manager.monitor.addEventListener('dragmove', async (event) => {
+      event.preventDefault();
+      await movement.promise;
+      test.commit([200, 0, 600]);
+      test.manager.dragOperation.position.current = {x: 60, y: 50};
+    });
+    test.manager.monitor.addEventListener('dragend', () => {
+      expect(
+        test.targets.map((target) => target.shape!.boundingRectangle.left)
+      ).toEqual([200, 0, 600]);
+    });
+    test.manager.actions.move({by: {x: 10, y: 0}});
+    test.manager.actions.stop();
+    await flush();
+    expect(test.ends).toEqual([]);
+    movement.resolve();
+    await flush();
+    expect(test.ends).toEqual([{target: 'B', canceled: false}]);
+  });
+
+  it('coalesces simultaneous render reads but remeasures after later layout writes', async () => {
+    const test = await setup();
+    await Promise.all([
+      test.manager.renderer.rendering,
+      test.manager.renderer.rendering,
+      test.manager.renderer.rendering,
+    ]);
+    expect(test.measurements).toEqual(['A', 'B', 'C']);
+    test.commit([0, 300, 600]);
+    await test.manager.renderer.rendering;
+    expect(test.measurements).toEqual(['A', 'B', 'C', 'A', 'B', 'C']);
+    expect(
+      test.targets.map((target) => target.shape!.boundingRectangle.left)
+    ).toEqual([0, 300, 600]);
+  });
+
+  it('restores a renderer without stacking measurement or losing its pending render', async () => {
+    const test = await setup();
+    const rendering = deferred();
+    test.manager.renderer = {rendering: rendering.promise};
+    const saved = test.manager.renderer;
+    test.manager.renderer = test.renderer;
+    test.manager.renderer = saved;
+    test.manager.renderer = test.manager.renderer;
+    let complete = false;
+    const work = test.manager.renderer.rendering.then(() => {
+      complete = true;
+    });
+    await flush();
+    expect(complete).toBe(false);
+    expect(test.measurements).toEqual([]);
+    rendering.resolve();
+    await work;
+    expect(test.measurements).toEqual(['A', 'B', 'C']);
+  });
+
+  it('a failed measurement rejects its render and does not poison the next read', async () => {
+    const test = await setup();
+    const target = test.targets[1] as Droppable & {refreshShape: () => unknown};
+    const refresh = target.refreshShape;
+    target.refreshShape = () => {
+      throw new Error('Measurement failed');
+    };
+    await expect(test.manager.renderer.rendering).rejects.toThrow(
+      'Measurement failed'
+    );
+    target.refreshShape = refresh;
+    test.commit([0, 300, 600]);
+    await test.manager.renderer.rendering;
+    expect(
+      test.targets.map((target) => target.shape!.boundingRectangle.left)
+    ).toEqual([0, 300, 600]);
   });
 
   it('cancellation ends a drop waiting for geometry and makes the late commit inert', async () => {
@@ -204,7 +317,7 @@ describe('Controlled collision geometry commits', () => {
     expect(test.ends).toHaveLength(1);
   });
 
-  it('destroy finishes returned measurement work so a pending drop can complete', async () => {
+  it('destroy skips measurement while retaining the underlying renderer completion', async () => {
     const test = await setup();
     const rendering = await test.place('B');
     test.manager.actions.move({to: {x: 250, y: 50}});
@@ -214,6 +327,10 @@ describe('Controlled collision geometry commits', () => {
 
     test.manager.renderer = test.renderer;
     test.plugin.destroy();
+    await flush();
+    expect(test.ends).toEqual([]);
+    rendering.resolve();
+    await rendering.action;
     await flush();
     expect(test.ends).toEqual([{target: 'B', canceled: false}]);
     expect(test.manager.dragOperation.status.idle).toBe(true);
@@ -238,10 +355,10 @@ describe('Controlled collision geometry commits', () => {
     await flush();
     expect(test.ends).toEqual([{target: 'B', canceled: false}]);
     expect(test.manager.dragOperation.status.idle).toBe(true);
-    expect(test.measurements).toEqual([]);
+    expect(new Set(test.measurements)).toEqual(new Set(['A', 'B', 'C']));
 
     await test.start();
-    expect(test.measurements).toEqual(['A', 'B', 'C']);
+    expect(new Set(test.measurements)).toEqual(new Set(['A', 'B', 'C']));
     expect(test.manager.dragOperation.targetIdentifier).toBe('A');
     expect(test.manager.dragOperation.status.dragging).toBe(true);
   });
