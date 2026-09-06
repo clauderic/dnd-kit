@@ -3,12 +3,13 @@
   "tasks": {
     "build": {
       "outputs": [
-        "./packages/**/*.js",
-        "./packages/**/*.js.map",
-        "./packages/**/*.cjs",
-        "./packages/**/*.cjs.map",
-        "./packages/**/*.d.ts",
-        "./packages/**/*.d.cts",
+        "*.js",
+        "*.js.map",
+        "*.cjs",
+        "*.cjs.map",
+        "*.d.ts",
+        "*.d.cts",
+        "plugins/**",
         "dist/**",
         "storybook-static/**"
       ],

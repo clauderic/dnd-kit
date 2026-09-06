@@ -1,15 +1,23 @@
 import {Droppable as AbstractDroppable} from '@dnd-kit/abstract';
 import type {
   Data,
+  Draggable as AbstractDraggable,
   DroppableInput as AbstractDroppableInput,
 } from '@dnd-kit/abstract';
 import {defaultCollisionDetection} from '@dnd-kit/collision';
 import type {CollisionDetector} from '@dnd-kit/collision';
 import {reactive, signal, untracked} from '@dnd-kit/state';
 import type {BoundingRectangle, Shape} from '@dnd-kit/geometry';
-import {DOMRectangle, PositionObserver} from '@dnd-kit/dom/utilities';
+import {
+  DOMRectangle,
+  getFrameElement,
+  isShadowRoot,
+  PositionObserver,
+  ProxiedElements,
+} from '@dnd-kit/dom/utilities';
 
 import type {DragDropManager} from '../../manager/manager.ts';
+import type {Draggable} from '../draggable/draggable.ts';
 
 type OptionalInput = 'collisionDetector';
 
@@ -118,5 +126,49 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<
     return this.proxy ?? this.#element;
   }
 
+  public override accepts(draggable: AbstractDraggable): boolean {
+    if (!super.accepts(draggable)) return false;
+
+    // Sortables can use a separate target within their own source element.
+    if (this.id === draggable.id) return true;
+
+    const source = (draggable as Draggable).element;
+
+    if (!source) return true;
+
+    const placeholder = ProxiedElements.get(source);
+
+    // Feedback may move the source and proxy its droppables to a placeholder.
+    // Check both trees, including the original target hidden by its proxy.
+    return ![source, placeholder].some(
+      (root) =>
+        root &&
+        (isStrictDescendant(root, this.#element) ||
+          isStrictDescendant(root, this.proxy))
+    );
+  }
+
   public refreshShape: () => Shape | undefined;
+}
+
+function isStrictDescendant(root: Element, element: Element | undefined) {
+  if (!element || element === root) return false;
+
+  let current: Element | undefined = element;
+
+  while (current) {
+    if (root.contains(current)) return true;
+
+    const treeRoot = current.getRootNode();
+
+    // Native contains() stops at shadow and document boundaries. Only cross
+    // a frame boundary for connected nodes, not detached nodes it once owned.
+    current = isShadowRoot(treeRoot)
+      ? treeRoot.host
+      : treeRoot === current.ownerDocument
+        ? (getFrameElement(current) ?? undefined)
+        : undefined;
+  }
+
+  return false;
 }
