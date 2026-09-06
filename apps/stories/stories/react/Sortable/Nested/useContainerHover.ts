@@ -5,7 +5,7 @@ import type {DragDropEventHandlers} from '@dnd-kit/react';
 
 import {locate, type BoardNode} from './tree.ts';
 
-export const TRANSFER_DELAY = 400;
+export const TRANSFER_DELAY = 750;
 
 export interface ContainerHover {
   parent: string | null;

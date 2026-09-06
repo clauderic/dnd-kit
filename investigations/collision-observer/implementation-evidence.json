@@ -513,7 +513,7 @@
     ]
   },
   "nestedCollectionHoverPreview": {
-    "defaultDelayMilliseconds": 400,
+    "defaultDelayMilliseconds": 750,
     "scope": "Story-only pointer/touch transfers to a different parent; same-parent sorting and keyboard commands remain immediate.",
     "collisionRegressionsDelayMilliseconds": 0,
     "cases": [
