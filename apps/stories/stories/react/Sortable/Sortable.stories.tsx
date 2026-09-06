@@ -4,6 +4,7 @@ import SortableApp from './SortableApp.tsx';
 import sortableSource from './SortableApp.tsx?raw';
 import {baseStyles, sortableStyles} from '@dnd-kit/stories-shared/styles/sandbox';
 import {QuickstartExample} from './Quickstart.tsx';
+import ScaledSortableApp from './ScaledSortableApp.tsx';
 
 import docs from './docs/SortableDocs.mdx';
 
@@ -29,6 +30,11 @@ type Story = StoryObj<typeof SortableApp>;
 
 export const Example: Story = {
   name: 'Example',
+};
+
+export const ScaledParent: Story = {
+  name: 'Scaled parent',
+  render: () => <ScaledSortableApp />,
 };
 
 export const Quickstart: Story = {
