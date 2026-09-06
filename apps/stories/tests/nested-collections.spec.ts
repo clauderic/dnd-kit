@@ -71,6 +71,105 @@ test.describe('container hover preview', () => {
     await page.clock.runFor(32);
   }
 
+  for (const {name, parent, target, region, expected} of [
+    {
+      name: 'above the first card',
+      parent: 'ready',
+      target: 'welcome',
+      region: 'above',
+      expected: ['buttons', 'welcome', 'launch'],
+    },
+    {
+      name: 'beside the first card',
+      parent: 'ready',
+      target: 'welcome',
+      region: 'beside',
+      expected: ['buttons', 'welcome', 'launch'],
+    },
+    {
+      name: 'over the top half of a card',
+      parent: 'ready',
+      target: 'welcome',
+      region: 'top',
+      expected: ['buttons', 'welcome', 'launch'],
+    },
+    {
+      name: 'over the bottom half of a card',
+      parent: 'ready',
+      target: 'welcome',
+      region: 'bottom',
+      expected: ['welcome', 'buttons', 'launch'],
+    },
+    {
+      name: 'between a card and a collection',
+      parent: 'ready',
+      target: 'launch',
+      region: 'above',
+      expected: ['welcome', 'buttons', 'launch'],
+    },
+    {
+      name: 'above the first nested card',
+      parent: 'launch',
+      target: 'story',
+      region: 'above',
+      expected: ['buttons', 'story', 'checklist'],
+    },
+    {
+      name: 'between nested cards',
+      parent: 'launch',
+      target: 'checklist',
+      region: 'above',
+      expected: ['story', 'buttons', 'checklist'],
+    },
+    {
+      name: 'in the append region',
+      parent: 'ready',
+      target: 'ready',
+      region: 'append',
+      expected: ['welcome', 'launch', 'buttons'],
+    },
+  ]) {
+    test(`transfers to the hovered slot ${name}`, async ({page}) => {
+      await begin(page);
+      const rect = (await (
+        region === 'append'
+          ? page.locator(`[data-board-append="contents:${target}"]`)
+          : node(page, target)
+      ).boundingBox())!;
+      await page.mouse.move(
+        region === 'beside' ? rect.x - 5 : rect.x + rect.width / 2,
+        region === 'above'
+          ? rect.y - 5
+          : region === 'bottom'
+            ? rect.y + rect.height - 10
+            : region === 'append'
+              ? rect.y + rect.height / 2
+              : rect.y + 10
+      );
+      await page.clock.runFor(300);
+      await expect(node(page, 'buttons')).toHaveAttribute(
+        'data-parent',
+        'components'
+      );
+      await page.clock.runFor(200);
+      const order = () =>
+        page
+          .locator(
+            `[data-board-contents="contents:${parent}"] > [data-board-node]:not([aria-hidden="true"])`
+          )
+          .evaluateAll((nodes) =>
+            nodes.map((node) => node.getAttribute('data-board-node'))
+          );
+      await expect.poll(order).toEqual(expected);
+      // Committing the transfer must not move it again at a stationary pointer.
+      await page.clock.runFor(1000);
+      await expect.poll(order).toEqual(expected);
+      await page.mouse.up();
+      await page.clock.runFor(100);
+      await expect.poll(order).toEqual(expected);
+    });
+  }
+
   test('highlights the destination before transferring, then reorders immediately in its new group', async ({
     page,
   }) => {
@@ -128,13 +227,22 @@ test.describe('container hover preview', () => {
     await begin(page);
     await pointAt(page, 'launch');
     await page.clock.runFor(200);
-    const rect = (await node(page, 'checklist').boundingBox())!;
-    await page.mouse.move(rect.x + rect.width / 2, rect.y + rect.height / 2);
+    const rect = (await node(page, 'story').boundingBox())!;
+    await page.mouse.move(rect.x + rect.width / 2, rect.y + 10);
     await page.clock.runFor(200);
     await expect(node(page, 'buttons')).toHaveAttribute(
       'data-parent',
       'launch'
     );
+    expect(
+      await page
+        .locator(
+          '[data-board-contents="contents:launch"] > [data-board-node]:not([aria-hidden="true"])'
+        )
+        .evaluateAll((nodes) =>
+          nodes.map((node) => node.getAttribute('data-board-node'))
+        )
+    ).toEqual(['buttons', 'story', 'checklist']);
     await page.mouse.up();
     await page.clock.runFor(100);
   });
@@ -619,10 +727,11 @@ for (const {name, path, source, placements, finalParent} of [
     source: 'components',
     finalParent: 'progress',
     placements: [
-      ['progress', 2],
-      ['ideas', 3],
+      // Container gaps insert at the pointer's slot instead of appending.
+      ['progress', 1],
+      ['ideas', 1],
       ['website', 2],
-      ['ideas', 3],
+      ['ideas', 1],
       ['progress', 2],
       ['progress', 1],
     ],
@@ -634,13 +743,12 @@ for (const {name, path, source, placements, finalParent} of [
     finalParent: 'ideas',
     placements: [
       ['system', 0],
-      ['progress', 2],
-      ['ideas', 3],
-      ['website', 2],
+      ['progress', 1],
+      ['ideas', 1],
+      ['website', 1],
       ['website', 0],
       ['ideas', 1],
       ['board', 1],
-      ['ideas', 3],
       ['ideas', 0],
     ],
   },

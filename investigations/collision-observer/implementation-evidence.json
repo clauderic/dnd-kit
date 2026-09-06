@@ -6,7 +6,7 @@
     "collisionBrowser": 13,
     "reactCompatibility": 43,
     "frameworkSortable": 18,
-    "nestedStoryBrowser": 22,
+    "nestedStoryBrowser": 30,
     "feedbackCloneBrowser": 3
   },
   "detectorCallComparison": {
@@ -541,5 +541,56 @@
     ],
     "runtime": "Static Storybook, bundled Chromium 147, two workers, no retries",
     "staticReactBrowserTests": 81
+  },
+  "nestedCollectionInsertionFollowUp": {
+    "baseline": "Hovering five pixels above the first card selected contents:ready and appended buttons at index 2 instead of 0.",
+    "fix": "Resolve container transfers from the current pointer and immediate child target midpoints in the collision registry.",
+    "newBrowserCases": 8,
+    "cases": [
+      "Top padding",
+      "Side padding",
+      "Top half of a card",
+      "Bottom half of a card",
+      "Gap before a collection",
+      "Nested top padding",
+      "Nested gap",
+      "Append region"
+    ],
+    "checks": [
+      "Exact sibling order after transfer, stationary hold, and drop",
+      "Latest insertion slot when moving within a destination during its original countdown"
+    ],
+    "recordedPathPlacements": [
+      {
+        "path": "first",
+        "placements": [
+          ["progress", 1],
+          ["ideas", 1],
+          ["website", 2],
+          ["ideas", 1],
+          ["progress", 2],
+          ["progress", 1]
+        ]
+      },
+      {
+        "path": "second",
+        "placements": [
+          ["system", 0],
+          ["progress", 1],
+          ["ideas", 1],
+          ["website", 1],
+          ["website", 0],
+          ["ideas", 1],
+          ["board", 1],
+          ["ideas", 0]
+        ]
+      },
+      {
+        "path": "third",
+        "placements": []
+      }
+    ],
+    "runtime": "Static Storybook, Chromium 147, two workers, no retries",
+    "staticReactBrowserTests": 89
   }
 }

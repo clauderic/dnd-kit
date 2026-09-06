@@ -8,7 +8,7 @@ import {
 } from 'react';
 import type {CSSProperties, PropsWithChildren} from 'react';
 import {CollisionPriority} from '@dnd-kit/abstract';
-import {Feedback} from '@dnd-kit/dom';
+import {Feedback, type DragDropManager} from '@dnd-kit/dom';
 import {isKeyboardEvent} from '@dnd-kit/dom/utilities';
 import {DragDropProvider, useDroppable} from '@dnd-kit/react';
 import type {DragDropEventHandlers} from '@dnd-kit/react';
@@ -33,7 +33,11 @@ type Operation = Parameters<
   DragDropEventHandlers['onDragOver']
 >[0]['operation'];
 
-function sort(items: BoardNode[], operation: Operation) {
+function sort(
+  items: BoardNode[],
+  operation: Operation,
+  manager: DragDropManager
+) {
   const {source, target} = operation;
   if (!source || !target || source.id === target.id) return items;
   const from = locate(items, String(source.id));
@@ -65,9 +69,20 @@ function sort(items: BoardNode[], operation: Operation) {
   const parent = locate(items, id.slice('contents:'.length))?.node;
   // Hovering a group's background preserves the position of its own children.
   // Sibling targets reorder them; this region only transfers from another group.
-  return parent?.children && from.parent !== parent.id
-    ? moveNode(items, from.node.id, parent.id, parent.children.length)
-    : items;
+  if (!parent?.children || from.parent === parent.id) return items;
+
+  let index = parent.children.length;
+  if (!isKeyboardEvent(operation.activatorEvent)) {
+    // Padding and gaps belong to the container. Resolve their insertion slot
+    // against the same measured targets used when hovering a child directly.
+    const next = parent.children.findIndex((child) => {
+      const rect = manager.registry.droppables.get(child.id)?.shape
+        ?.boundingRectangle;
+      return rect && operation.position.current.y <= rect.top + rect.height / 2;
+    });
+    if (next !== -1) index = next;
+  }
+  return moveNode(items, from.node.id, parent.id, index);
 }
 
 export function Nested({
@@ -126,10 +141,10 @@ export function Nested({
           trace.collision(event.collisions);
           hover.collision(event, manager);
         }}
-        onDragOver={(event) => {
+        onDragOver={(event, manager) => {
           event.preventDefault();
           hover.clear();
-          const next = sort(current.current, event.operation);
+          const next = sort(current.current, event.operation, manager);
           trace.over(next);
           update(next);
         }}
