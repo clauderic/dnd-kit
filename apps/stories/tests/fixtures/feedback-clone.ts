@@ -1,5 +1,4 @@
-// Resolve public and private modules together through Vite so the test shares
-// their runtime state, including the current development module revision.
+// Bundle public and private modules together so they share runtime state.
 export {
   DragDropManager,
   Draggable,
@@ -8,3 +7,9 @@ export {
 export {ProxiedElements} from '@dnd-kit/dom/utilities';
 export {createPlaceholder} from '../../../../packages/dom/src/core/plugins/feedback/utilities.ts';
 export {createElementMutationObserver} from '../../../../packages/dom/src/core/plugins/feedback/observers.ts';
+
+declare global {
+  interface Window {
+    feedbackFixture: typeof import('./feedback-clone.ts');
+  }
+}

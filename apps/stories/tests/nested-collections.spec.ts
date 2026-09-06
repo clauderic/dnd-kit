@@ -9,6 +9,9 @@ const test = base.extend<{transferDelay: number}>({
   transferDelay: [0, {option: true}],
 });
 
+// These gestures target the full board; recorded paths override this viewport.
+test.use({viewport: {width: 1440, height: 1100}});
+
 const node = (page: Page, id: string) =>
   page.locator(
     `[data-board-node="${id}"]:not([aria-hidden="true"], [aria-hidden="true"] *)`
@@ -68,7 +71,7 @@ test.describe('container hover preview', () => {
     await page.clock.runFor(32);
   }
 
-  test('shows progress before transferring, then reorders immediately in its new group', async ({
+  test('highlights the destination before transferring, then reorders immediately in its new group', async ({
     page,
   }) => {
     await begin(page);
@@ -80,7 +83,9 @@ test.describe('container hover preview', () => {
       )
     ).toBe(400);
     await expect(
-      page.locator('[data-transfer-cue="contents:launch"]')
+      page.locator(
+        '[data-board-contents="contents:launch"][data-pending="true"]'
+      )
     ).toBeVisible();
     await page.clock.runFor(300);
     await expect(node(page, 'buttons')).toHaveAttribute(
@@ -92,7 +97,9 @@ test.describe('container hover preview', () => {
       'data-parent',
       'launch'
     );
-    await expect(page.locator('[data-transfer-cue]')).toHaveCount(0);
+    await expect(
+      page.locator('[data-board-contents][data-pending="true"]')
+    ).toHaveCount(0);
 
     const rect = (await node(page, 'checklist').boundingBox())!;
     await page.mouse.move(rect.x + rect.width / 2, rect.y + rect.height / 2);
@@ -108,7 +115,9 @@ test.describe('container hover preview', () => {
           )
       )
       .toEqual(['story', 'buttons', 'checklist']);
-    await expect(page.locator('[data-transfer-cue]')).toHaveCount(0);
+    await expect(
+      page.locator('[data-board-contents][data-pending="true"]')
+    ).toHaveCount(0);
     await page.mouse.up();
     await page.clock.runFor(100);
   });
@@ -139,7 +148,9 @@ test.describe('container hover preview', () => {
     const rect = (await node(page, 'inputs').boundingBox())!;
     await page.mouse.move(rect.x + rect.width / 2, rect.y + rect.height / 2);
     await page.clock.runFor(32);
-    await expect(page.locator('[data-transfer-cue]')).toHaveCount(0);
+    await expect(
+      page.locator('[data-board-contents][data-pending="true"]')
+    ).toHaveCount(0);
     const order = () =>
       page
         .locator(
@@ -173,7 +184,9 @@ test.describe('container hover preview', () => {
       'data-parent',
       'components'
     );
-    await expect(page.locator('[data-transfer-cue]')).toHaveCount(0);
+    await expect(
+      page.locator('[data-board-contents][data-pending="true"]')
+    ).toHaveCount(0);
     await page.keyboard.press('Escape');
     await page.clock.runFor(100);
   });
@@ -186,10 +199,14 @@ test.describe('container hover preview', () => {
     await page.clock.runFor(200);
     await pointAt(page, 'launch');
     await expect(
-      page.locator('[data-transfer-cue="contents:someday"]')
+      page.locator(
+        '[data-board-contents="contents:someday"][data-pending="true"]'
+      )
     ).toHaveCount(0);
     await expect(
-      page.locator('[data-transfer-cue="contents:launch"]')
+      page.locator(
+        '[data-board-contents="contents:launch"][data-pending="true"]'
+      )
     ).toBeVisible();
     await page.clock.runFor(200);
     await expect(node(page, 'buttons')).toHaveAttribute(
@@ -211,7 +228,9 @@ test.describe('container hover preview', () => {
     }) => {
       await begin(page);
       await pointAt(page, 'someday');
-      await expect(page.locator('[data-transfer-cue]')).toBeVisible();
+      await expect(
+        page.locator('[data-board-contents][data-pending="true"]')
+      ).toBeVisible();
       if (action === 'cancel') await page.keyboard.press('Escape');
       await page.mouse.up();
       await page.clock.runFor(1000);
@@ -219,7 +238,9 @@ test.describe('container hover preview', () => {
         'data-parent',
         'components'
       );
-      await expect(page.locator('[data-transfer-cue]')).toHaveCount(0);
+      await expect(
+        page.locator('[data-board-contents][data-pending="true"]')
+      ).toHaveCount(0);
       await expect(page.locator('[data-nested-board]')).toHaveAttribute(
         'data-dragging',
         'false'

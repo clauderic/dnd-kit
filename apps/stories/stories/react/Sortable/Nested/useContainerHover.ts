@@ -5,12 +5,10 @@ import type {DragDropEventHandlers} from '@dnd-kit/react';
 
 import {locate, type BoardNode} from './tree.ts';
 
-export const TRANSFER_DELAY = 750;
+export const TRANSFER_DELAY = 500;
 
 export interface ContainerHover {
   parent: string | null;
-  startedAt: number;
-  duration: number;
 }
 
 /** A presentation choice for this story; collision detection stays live. */
@@ -105,7 +103,7 @@ export function useContainerHover(
       }, delay),
     };
     pending.current = next;
-    setPreview({parent, startedAt: performance.now(), duration: delay});
+    setPreview({parent});
   };
 
   return {

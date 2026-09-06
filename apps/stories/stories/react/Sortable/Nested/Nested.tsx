@@ -302,27 +302,6 @@ function Contents({
       data-over={isDropTarget}
       data-pending={pending}
     >
-      {pending && (
-        <div
-          key={hover.startedAt}
-          className={styles.TransferCue}
-          style={{'--transfer-delay': `${hover.duration}ms`} as CSSProperties}
-          role="status"
-          data-transfer-cue={id}
-        >
-          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <circle className={styles.TransferTrack} cx="10" cy="10" r="7" />
-            <circle
-              className={styles.TransferProgress}
-              cx="10"
-              cy="10"
-              r="7"
-              pathLength="1"
-            />
-          </svg>
-          <span>Move into {label}</span>
-        </div>
-      )}
       {children}
       <div
         ref={root ? ref : undefined}

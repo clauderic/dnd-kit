@@ -38,7 +38,7 @@ From the repository root:
 
 ```sh
 bun run build --filter='./packages/*'
-bun test packages/abstract/tests/collision-observer-reproductions.test.ts
+bun test packages/collision/tests/collision-observer-reproductions.test.ts
 ```
 
 From `apps/stories`:

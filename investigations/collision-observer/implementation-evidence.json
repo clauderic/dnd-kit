@@ -513,11 +513,11 @@
     ]
   },
   "nestedCollectionHoverPreview": {
-    "defaultDelayMilliseconds": 750,
+    "defaultDelayMilliseconds": 500,
     "scope": "Story-only pointer/touch transfers to a different parent; same-parent sorting and keyboard commands remain immediate.",
     "collisionRegressionsDelayMilliseconds": 0,
     "cases": [
-      "Progress before placement and immediate sorting after transfer",
+      "Destination highlight before placement and immediate sorting after transfer",
       "Progress retained across targets in one destination",
       "Return to current parent cancels preview and reorders immediately",
       "Keyboard transfer remains immediate",
@@ -525,5 +525,21 @@
       "Drop before expiry cancels transfer",
       "Escape before expiry cancels transfer"
     ]
+  },
+  "ciFollowUp": {
+    "packageTests": 274,
+    "abstract": 47,
+    "collision": 60,
+    "dom": 100,
+    "state": 7,
+    "helpers": 60,
+    "abstractCachedEntriesRestored": 12,
+    "baselineFailures": [
+      "Unbuilt downstream collision import in four abstract test files",
+      "Development-only fixture URL on static server",
+      "Nested gestures outside the default CI viewport"
+    ],
+    "runtime": "Static Storybook, bundled Chromium 147, two workers, no retries",
+    "staticReactBrowserTests": 81
   }
 }

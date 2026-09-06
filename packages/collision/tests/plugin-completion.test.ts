@@ -2,7 +2,7 @@ import {expect, it} from 'bun:test';
 import {DragDropManager, Draggable, Droppable, Plugin} from '@dnd-kit/abstract';
 import {pointerIntersection} from '@dnd-kit/collision';
 import {Rectangle} from '@dnd-kit/geometry';
-import {createDragTasks} from '../src/utilities/dragTasks.ts';
+import {createDragTasks} from '../../abstract/src/utilities/dragTasks.ts';
 
 async function flush() {
   for (let i = 0; i < 40; i++) await Promise.resolve();
