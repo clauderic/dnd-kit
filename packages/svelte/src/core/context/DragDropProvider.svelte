@@ -43,8 +43,8 @@
 
   const {renderer, trackRendering} = createRenderer();
 
-  // Create manager once; plugins/sensors/modifiers are synced reactively via $effect below
-  const manager = managerProp ?? new DragDropManager({});
+  const manager =
+    managerProp ?? new DragDropManager({plugins, sensors, modifiers});
 
   manager.renderer = renderer;
 
