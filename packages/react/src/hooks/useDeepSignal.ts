@@ -1,66 +1,88 @@
-import {useMemo, useRef} from 'react';
+import {useMemo} from 'react';
 import {flushSync} from 'react-dom';
-import {effect, untracked} from '@dnd-kit/state';
+import {effect, signal, untracked} from '@dnd-kit/state';
 
 import {useIsomorphicLayoutEffect} from './useIsomorphicLayoutEffect.ts';
 import {useForceUpdate} from './useForceUpdate.ts';
+import {useLatest} from './useLatest.ts';
 
 /** Trigger a re-render when reading signal properties of an object. */
 export function useDeepSignal<T extends object | null | undefined>(
   target: T,
   synchronous?: (property: keyof T, oldValue: any, newValue: any) => boolean
 ): T {
-  const tracked = useRef(new Map<string | symbol, any>());
   const forceUpdate = useForceUpdate();
+  const synchronousRef = useLatest(synchronous);
+  const tracker = useMemo(() => {
+    const tracked = new Map<string | symbol, any>();
 
-  useIsomorphicLayoutEffect(() => {
-    if (!target) {
-      tracked.current.clear();
-      return;
-    }
-
-    return effect(() => {
-      let stale = false;
-      let sync = false;
-
-      for (const entry of tracked.current) {
-        const [key] = entry;
-        const value = untracked(() => entry[1]);
-        const latestValue = (target as any)[key];
-
-        if (value !== latestValue) {
-          stale = true;
-          tracked.current.set(key, latestValue);
-          sync = synchronous?.(key as keyof T, value, latestValue) ?? false;
-        }
-      }
-
-      if (stale) {
-        if (sync) {
-          // Defer flushSync to a microtask to avoid calling it from within
-          // a React lifecycle method (e.g. useEffect batch), which happens when
-          // signal updates are triggered synchronously from a React effect
-          queueMicrotask(() => flushSync(forceUpdate));
-        } else {
-          forceUpdate();
-        }
-      }
-    });
-  }, [target]);
-
-  return useMemo(
-    () =>
-      target
+    return {
+      tracked,
+      propertyCount: signal(0),
+      active: false,
+      proxy: target
         ? new Proxy(target, {
             get(target, key) {
               const value = (target as any)[key];
 
-              tracked.current.set(key, value);
+              // Reads must not overwrite the observer's comparison baseline.
+              if (!tracked.has(key)) tracked.set(key, value);
 
               return value;
             },
           })
         : target,
-    [target]
-  );
+    };
+  }, [target]);
+
+  // Publish newly read properties after commit, without notifying from render.
+  // The map only grows for a given target, so its size versions the key set.
+  useIsomorphicLayoutEffect(() => {
+    tracker.propertyCount.value = tracker.tracked.size;
+  });
+
+  useIsomorphicLayoutEffect(() => {
+    if (!target) return;
+
+    const {tracked, propertyCount} = tracker;
+    tracker.active = true;
+    const dispose = effect(() => {
+      // Keep the effect alive, but refresh its dependencies for late reads.
+      propertyCount.value;
+
+      let stale = false;
+      let sync = false;
+
+      for (const [key, value] of tracked) {
+        const latestValue = (target as any)[key];
+
+        if (!Object.is(value, latestValue)) {
+          stale = true;
+          tracked.set(key, latestValue);
+          sync =
+            untracked(() =>
+              synchronousRef.current?.(key as keyof T, value, latestValue)
+            ) === true || sync;
+        }
+      }
+
+      if (stale) {
+        if (sync) {
+          // Signal updates can originate in a React lifecycle method.
+          queueMicrotask(() => {
+            if (tracker.active) flushSync(forceUpdate);
+          });
+        } else {
+          forceUpdate();
+        }
+      }
+    });
+
+    return () => {
+      tracker.active = false;
+      dispose();
+    };
+  }, [target, tracker, forceUpdate, synchronousRef]);
+
+  return tracker.proxy;
 }

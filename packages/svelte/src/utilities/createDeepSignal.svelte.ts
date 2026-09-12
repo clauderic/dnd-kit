@@ -1,66 +1,80 @@
-import {effect, untracked} from '@dnd-kit/state';
+import {effect, signal} from '@dnd-kit/state';
+import {untrack} from 'svelte';
 
-/**
- * Bridge between @dnd-kit/state (Preact signals) and Svelte 5 reactivity.
- *
- * Uses a hybrid push-pull strategy:
- * - Pull: A Proxy tracks which properties the template actually reads
- * - Push: A single @dnd-kit/state effect watches only tracked properties
- *   and bumps a single $state dirty counter when any change
- * - Read: Getters read `dirty` (so Svelte subscribes) then return
- *   the current value from the instance
- */
+/** Bridge tracked properties from @dnd-kit/state to Svelte reactivity. */
 export function createDeepSignal<T extends object | null | undefined>(
   getTarget: () => T
 ): {readonly current: T} {
-  const tracked = new Map<string | symbol, any>();
   let dirty = $state(0);
+  let version = 0;
+  const tracker = $derived.by(() => ({
+    target: getTarget(),
+    tracked: new Map<string | symbol, any>(),
+    propertyCount: signal(0),
+    active: false,
+    queued: false,
+  }));
 
   $effect(() => {
-    const target = getTarget();
+    const current = tracker;
+    const {target, tracked, propertyCount} = current;
+    if (!target) return;
 
-    if (!target) {
-      tracked.clear();
-      return;
-    }
+    current.active = true;
+    const dispose = effect(() =>
+      untrack(() => {
+        propertyCount.value;
+        let stale = false;
 
-    const dispose = effect(() => {
-      let stale = false;
+        for (const [key, value] of tracked) {
+          const latestValue = (target as any)[key];
 
-      for (const entry of tracked) {
-        const [key] = entry;
-        const value = untracked(() => entry[1]);
-        const latestValue = (target as any)[key];
-
-        if (value !== latestValue) {
-          stale = true;
-          tracked.set(key, latestValue);
+          if (!Object.is(value, latestValue)) {
+            stale = true;
+            tracked.set(key, latestValue);
+          }
         }
-      }
 
-      if (stale) {
-        dirty++;
-      }
-    });
+        // Never read dirty here: that would make it a dependency of $effect.
+        if (stale) dirty = ++version;
+      })
+    );
 
-    return dispose;
+    return () => {
+      current.active = false;
+      dispose();
+    };
   });
 
   return {
     get current(): T {
-      const target = getTarget();
-
-      // Reading dirty subscribes the Svelte template/effect to changes
+      const current = tracker;
+      const {target, tracked} = current;
       void dirty;
 
       return target
-        ? (new Proxy(target as object, {
-            get(obj, key) {
-              const value = (obj as any)[key];
-              tracked.set(key, value);
+        ? new Proxy(target, {
+            get(target, key) {
+              const value = (target as any)[key];
+
+              // Subsequent reads must not overwrite the observer's baseline.
+              if (!tracked.has(key)) {
+                tracked.set(key, value);
+
+                if (current.active && !current.queued) {
+                  current.queued = true;
+                  // Do not update reactive state while evaluating the template.
+                  queueMicrotask(() => {
+                    current.queued = false;
+                    if (current.active)
+                      current.propertyCount.value = tracked.size;
+                  });
+                }
+              }
+
               return value;
             },
-          }) as T)
+          })
         : target;
     },
   };
