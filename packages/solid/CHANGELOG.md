@@ -1,5 +1,18 @@
 # @dnd-kit/solid
 
+## 0.5.1
+
+### Patch Changes
+
+- [#2135](https://github.com/clauderic/dnd-kit/pull/2135) [`5185c8f`](https://github.com/clauderic/dnd-kit/commit/5185c8f75c087a9df5a240413fcd639e27f3a078) Thanks [@kimjunha1231](https://github.com/kimjunha1231)! - Fix missing state updates when draggable, droppable, or sortable properties are first read on a later render in React, Vue, Solid, and Svelte. Retain signal subscriptions across view updates and prevent update loops for getters that return new objects.
+
+- [#2131](https://github.com/clauderic/dnd-kit/pull/2131) [`037663b`](https://github.com/clauderic/dnd-kit/commit/037663b51f7e0f1b1b89f8eef16397d3c5ace5e1) Thanks [@NektarTheo](https://github.com/NektarTheo)! - Respect `transition: null` in the React, Vue, Solid and Svelte sortable bindings. The bindings previously merged `defaultSortableTransition` before constructing or updating the core `Sortable`, which replaced an explicit `null` with the default transition, so sortable items kept animating. They now use the new `resolveSortableTransition` helper exported from `@dnd-kit/dom/sortable`, which preserves `null` while still merging partial transitions with the defaults.
+
+- Updated dependencies [[`d3f965f`](https://github.com/clauderic/dnd-kit/commit/d3f965fbc4c73592830e581b828768dd7c1243af), [`e00be08`](https://github.com/clauderic/dnd-kit/commit/e00be08c9b0c4dc521328917ec1dc42661e4ac00), [`8a1c807`](https://github.com/clauderic/dnd-kit/commit/8a1c807b172c95efa83670682843735b4a79682b), [`037663b`](https://github.com/clauderic/dnd-kit/commit/037663b51f7e0f1b1b89f8eef16397d3c5ace5e1)]:
+  - @dnd-kit/dom@0.5.1
+  - @dnd-kit/abstract@0.5.1
+  - @dnd-kit/state@0.5.1
+
 ## 0.5.0
 
 ### Minor Changes

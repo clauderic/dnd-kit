@@ -1,5 +1,23 @@
 # @dnd-kit/dom
 
+## 0.5.1
+
+### Patch Changes
+
+- [#2094](https://github.com/clauderic/dnd-kit/pull/2094) [`d3f965f`](https://github.com/clauderic/dnd-kit/commit/d3f965fbc4c73592830e581b828768dd7c1243af) Thanks [@timagixe](https://github.com/timagixe)! - Match KeyboardSensor shortcuts against KeyboardEvent.key so keyboard controls respect keyboard layouts and operating system key remaps. Common legacy Key* and Digit* configs still normalize.
+
+- [#2076](https://github.com/clauderic/dnd-kit/pull/2076) [`e00be08`](https://github.com/clauderic/dnd-kit/commit/e00be08c9b0c4dc521328917ec1dc42661e4ac00) Thanks [@timagixe](https://github.com/timagixe)! - Avoid requiring ResizeObserver at import time when importing @dnd-kit/dom/modifiers in DOM-like test environments.
+
+- [#2126](https://github.com/clauderic/dnd-kit/pull/2126) [`8a1c807`](https://github.com/clauderic/dnd-kit/commit/8a1c807b172c95efa83670682843735b4a79682b) Thanks [@waterWang](https://github.com/waterWang)! - Reuse each scroll container's position measurement during auto-scrolling to avoid duplicate layout reads while preserving the existing scroll utility argument order.
+
+- [#2131](https://github.com/clauderic/dnd-kit/pull/2131) [`037663b`](https://github.com/clauderic/dnd-kit/commit/037663b51f7e0f1b1b89f8eef16397d3c5ace5e1) Thanks [@NektarTheo](https://github.com/NektarTheo)! - Respect `transition: null` in the React, Vue, Solid and Svelte sortable bindings. The bindings previously merged `defaultSortableTransition` before constructing or updating the core `Sortable`, which replaced an explicit `null` with the default transition, so sortable items kept animating. They now use the new `resolveSortableTransition` helper exported from `@dnd-kit/dom/sortable`, which preserves `null` while still merging partial transitions with the defaults.
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.5.1
+  - @dnd-kit/collision@0.5.1
+  - @dnd-kit/geometry@0.5.1
+  - @dnd-kit/state@0.5.1
+
 ## 0.5.0
 
 ### Minor Changes
