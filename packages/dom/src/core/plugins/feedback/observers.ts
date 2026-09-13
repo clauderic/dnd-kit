@@ -13,13 +13,13 @@ import {isTableRow} from './utilities.ts';
 export function createElementMutationObserver(
   element: Element,
   placeholder: Element,
-  clone: boolean
+  updateChildren?: () => void
 ): MutationObserver {
   const observer = new MutationObserver((mutations) => {
     let hasChildrenMutations = false;
 
     for (const mutation of mutations) {
-      if (mutation.target !== element) {
+      if (mutation.target !== element || mutation.type === 'childList') {
         hasChildrenMutations = true;
         continue;
       }
@@ -52,10 +52,7 @@ export function createElementMutationObserver(
           }
 
           for (const key of Array.from(styles)) {
-            if (
-              IGNORED_STYLES.includes(key) ||
-              key.startsWith(CSS_PREFIX)
-            ) {
+            if (IGNORED_STYLES.includes(key) || key.startsWith(CSS_PREFIX)) {
               continue;
             }
 
@@ -71,13 +68,12 @@ export function createElementMutationObserver(
       }
     }
 
-    if (hasChildrenMutations && clone) {
-      placeholder.replaceChildren(...element.cloneNode(true).childNodes);
-    }
+    if (hasChildrenMutations) updateChildren?.();
   });
 
   observer.observe(element, {
     attributes: true,
+    characterData: true,
     subtree: true,
     childList: true,
   });
@@ -158,7 +154,9 @@ export interface ResizeObserverContext {
   setSavedCellWidths: (widths: string[]) => void;
 }
 
-export function createResizeObserver(ctx: ResizeObserverContext): ResizeObserver {
+export function createResizeObserver(
+  ctx: ResizeObserverContext
+): ResizeObserver {
   return new ResizeObserver(() => {
     const placeholderShape = new DOMRectangle(ctx.placeholder, {
       frameTransform: ctx.frameTransform,

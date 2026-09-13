@@ -2,6 +2,7 @@ import {CorePlugin} from '@dnd-kit/abstract';
 import {effect} from '@dnd-kit/state';
 
 import type {DragDropManager} from '../../manager/index.ts';
+import {refreshCollisionGeometry} from '../collision/geometry.ts';
 
 const listenerOptions: AddEventListenerOptions = {
   capture: true,
@@ -9,8 +10,6 @@ const listenerOptions: AddEventListenerOptions = {
 };
 
 export class ScrollListener extends CorePlugin<DragDropManager> {
-  #timeout: NodeJS.Timeout | undefined;
-
   constructor(manager: DragDropManager) {
     super(manager);
 
@@ -36,11 +35,7 @@ export class ScrollListener extends CorePlugin<DragDropManager> {
   }
 
   private handleScroll = () => {
-    if (this.#timeout == null) {
-      this.#timeout = setTimeout(() => {
-        this.manager.collisionObserver.forceUpdate(false);
-        this.#timeout = undefined;
-      }, 50);
-    }
+    refreshCollisionGeometry(this.manager);
+    this.manager.collisionObserver.forceUpdate(false);
   };
 }

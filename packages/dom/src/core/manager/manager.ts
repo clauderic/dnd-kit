@@ -6,6 +6,7 @@ import {
   type Modifiers,
   type Plugins,
   type Sensors,
+  type Renderer,
 } from '@dnd-kit/abstract';
 
 import type {Draggable, Droppable} from '../entities/index.ts';
@@ -21,6 +22,10 @@ import {
 } from '../plugins/index.ts';
 import {KeyboardSensor} from '../sensors/keyboard/KeyboardSensor.ts';
 import {PointerSensor} from '../sensors/pointer/PointerSensor.ts';
+import {
+  CollisionGeometry,
+  unwrapRenderer,
+} from '../plugins/collision/geometry.ts';
 
 export interface Input extends DragDropManagerInput<DragDropManager> {}
 
@@ -39,6 +44,18 @@ export class DragDropManager<
   U extends Draggable<T> = Draggable<T>,
   V extends Droppable<T> = Droppable<T>,
 > extends AbstractDragDropManager<U, V> {
+  public override get renderer(): Renderer {
+    const renderer = super.renderer;
+    return (
+      this.registry.plugins.get(CollisionGeometry)?.wrapRenderer(renderer) ??
+      renderer
+    );
+  }
+
+  public override set renderer(renderer: Renderer) {
+    super.renderer = unwrapRenderer(renderer);
+  }
+
   constructor(input: Input = {}) {
     const plugins = resolveCustomizable(input.plugins, defaultPreset.plugins);
     const sensors = resolveCustomizable(input.sensors, defaultPreset.sensors);
@@ -49,7 +66,13 @@ export class DragDropManager<
 
     super({
       ...input,
-      plugins: [ScrollListener, Scroller, StyleInjector, ...plugins],
+      plugins: [
+        CollisionGeometry,
+        ScrollListener,
+        Scroller,
+        StyleInjector,
+        ...plugins,
+      ],
       sensors,
       modifiers,
     });
