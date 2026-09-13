@@ -186,6 +186,8 @@ Use the `move` helper when your data structure matches its expectations (flat ar
 
 ## Type guards
 
+Both guards preserve custom `data` types when narrowing to sortable instances. `isSortableOperation` infers the source and target data types independently. See [Type Guards](/concepts/sortable#type-guards) for a typed example.
+
 ### `isSortable`
 
 Checks whether a `Draggable` or `Droppable` is a sortable instance, narrowing the type to expose `index`, `initialIndex`, `group`, and `initialGroup`:

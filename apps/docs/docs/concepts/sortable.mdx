@@ -241,6 +241,23 @@ manager.monitor.addEventListener('dragend', (event) => {
 
 `@dnd-kit/dom/sortable` exports two type guards to help you work with sortable drag operations.
 
+Both guards preserve the data types of the input entities. For example, a `Draggable<ItemData>` narrows to `SortableDraggable<ItemData>`, so its `data` remains typed as `ItemData`. `isSortableOperation` preserves the source and target data types independently, even when they differ.
+
+```ts
+import type {Draggable} from '@dnd-kit/dom';
+import {isSortable} from '@dnd-kit/dom/sortable';
+
+interface ItemData {
+  title: string;
+}
+
+function getSortableTitle(source: Draggable<ItemData> | null) {
+  if (isSortable(source)) {
+    return source.data.title; // string
+  }
+}
+```
+
 ### `isSortable`
 
 Checks whether a `Draggable` or `Droppable` instance is a sortable element. If it returns `true`, the type is narrowed to expose sortable-specific properties like `index`, `initialIndex`, `group`, and `initialGroup`.
