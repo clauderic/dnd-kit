@@ -61,6 +61,62 @@ function getRecordKey(
 }
 
 /**
+ * Resolve an item ID from either a primitive item or an object with an `id` field.
+ */
+function getItemId(item: Items[number]): UniqueIdentifier | undefined {
+  if (item === null) {
+    return undefined;
+  }
+
+  return typeof item === 'object' && 'id' in item ? item.id : item;
+}
+
+/**
+ * Resolve the insertion index for a container target.
+ * Uses measured child centers when available, excluding the source item for same-container moves.
+ * Falls back to the container center when child measurements are unavailable.
+ */
+function getContainerInsertionIndex(
+  children: Items,
+  source: Draggable,
+  target: Droppable,
+  position: {y: number},
+  excludedItemId?: UniqueIdentifier
+) {
+  const {registry} = source.manager!;
+  let hasMeasuredChildren = false;
+  let insertionIndex = 0;
+
+  for (const item of children) {
+    const id = getItemId(item);
+
+    if (id === excludedItemId) {
+      continue;
+    }
+
+    const droppable = id == null ? undefined : registry?.droppables.get(id);
+
+    if (droppable?.shape) {
+      hasMeasuredChildren = true;
+
+      if (Math.round(position.y) < Math.round(droppable.shape.center.y)) {
+        return insertionIndex;
+      }
+    }
+
+    insertionIndex++;
+  }
+
+  if (hasMeasuredChildren) {
+    return insertionIndex;
+  }
+
+  return target.shape && position.y > target.shape.center.y
+    ? insertionIndex
+    : 0;
+}
+
+/**
  * Check if the source has sortable index properties via duck typing.
  * The `move` helper lives in `@dnd-kit/helpers` which has no dependency on `@dnd-kit/dom`,
  * so we discover sortable properties at runtime.
@@ -86,7 +142,9 @@ function mutate<
   W extends DragDropManager<U, V>,
 >(
   items: T,
-  event: DragDropEventMap<U, V, W>['dragover'] | DragDropEventMap<U, V, W>['dragend'],
+  event:
+    | DragDropEventMap<U, V, W>['dragover']
+    | DragDropEventMap<U, V, W>['dragend'],
   mutation: typeof arrayMove | typeof arraySwap
 ): T {
   const {source, target, canceled} = event.operation;
@@ -97,7 +155,7 @@ function mutate<
   }
 
   const findIndex = (item: Items[0], id: UniqueIdentifier) =>
-    item === id || ( item !== null && typeof item === 'object' && 'id' in item && item.id === id); // adding the fix/ guardrails for check the item is not null
+    getItemId(item) === id;
 
   if (Array.isArray(items)) {
     const sourceIndex = items.findIndex((item) => findIndex(item, source.id));
@@ -141,6 +199,7 @@ function mutate<
   let sourceParent: UniqueIdentifier | undefined;
   let targetIndex = -1;
   let targetParent: UniqueIdentifier | undefined;
+  let targetIsContainer = false;
 
   for (const [id, children] of entries) {
     if (sourceIndex === -1) {
@@ -220,14 +279,18 @@ function mutate<
     const targetKey = getRecordKey(items, target.id);
 
     if (targetKey != null) {
-      const insertionIndex =
-        target.shape && position.y > target.shape.center.y
-          ? items[targetKey].length
-          : 0;
+      const insertionIndex = getContainerInsertionIndex(
+        items[targetKey],
+        source,
+        target,
+        position,
+        sourceParent === targetKey ? source.id : undefined
+      );
 
       // The target does not have any matching children, but appears to be a valid target
       targetParent = targetKey;
       targetIndex = insertionIndex;
+      targetIsContainer = true;
     }
   }
 
@@ -300,7 +363,7 @@ function mutate<
 
   const isBelowTarget =
     target.shape && Math.round(position.y) > Math.round(target.shape.center.y);
-  const modifier = isBelowTarget ? 1 : 0;
+  const modifier = targetIsContainer ? 0 : isBelowTarget ? 1 : 0;
   const sourceItem = items[sourceParent][sourceIndex];
 
   return {
@@ -324,7 +387,9 @@ export function move<
   W extends DragDropManager<U, V>,
 >(
   items: T,
-  event: DragDropEventMap<U, V, W>['dragover'] | DragDropEventMap<U, V, W>['dragend']
+  event:
+    | DragDropEventMap<U, V, W>['dragover']
+    | DragDropEventMap<U, V, W>['dragend']
 ) {
   return mutate(items, event, arrayMove);
 }
@@ -336,7 +401,9 @@ export function swap<
   W extends DragDropManager<U, V>,
 >(
   items: T,
-  event: DragDropEventMap<U, V, W>['dragover'] | DragDropEventMap<U, V, W>['dragend']
+  event:
+    | DragDropEventMap<U, V, W>['dragover']
+    | DragDropEventMap<U, V, W>['dragend']
 ) {
   return mutate(items, event, arraySwap);
 }
