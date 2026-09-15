@@ -20,6 +20,7 @@ export type {
 } from './manager/index.ts';
 
 export {
+  CollisionNotifier,
   CollisionPriority,
   CollisionType,
   sortCollisions,
