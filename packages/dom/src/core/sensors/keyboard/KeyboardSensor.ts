@@ -12,7 +12,6 @@ import {
 
 import type {DragDropManager} from '../../manager/index.ts';
 import type {Draggable} from '../../entities/index.ts';
-import {AutoScroller} from '../../plugins/index.ts';
 import {isKeyboardKey, type KeyCode} from './KeyboardSensor.helpers.ts';
 
 export type {KeyCode};
@@ -173,8 +172,6 @@ export class KeyboardSensor extends Sensor<
 
     if (controller.signal.aborted) return this.cleanup();
 
-    this.sideEffects();
-
     const sourceDocument = getDocument(element);
     const listeners = [
       this.listeners.bind(sourceDocument, [
@@ -268,18 +265,6 @@ export class KeyboardSensor extends Sensor<
       this.manager.actions.move({
         event,
         by,
-      });
-    }
-  }
-
-  private sideEffects() {
-    const autoScroller = this.manager.registry.plugins.get(AutoScroller as any);
-
-    if (autoScroller?.disabled === false) {
-      autoScroller.disable();
-
-      this.#cleanupFunctions.push(() => {
-        autoScroller.enable();
       });
     }
   }
