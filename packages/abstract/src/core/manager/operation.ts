@@ -28,6 +28,8 @@ export interface DragOperationSnapshot<
   readonly canceled: boolean;
   readonly position: Position;
   readonly transform: Coordinates;
+  readonly scrollAdjustment: Coordinates;
+  readonly adjustedTransform: Coordinates;
   readonly status: Status;
   get shape(): WithHistory<Shape> | null;
   set shape(value: Shape | null);
@@ -116,6 +118,10 @@ export class DragOperation<T extends Draggable, U extends Droppable>
   @reactive
   public accessor modifiers: Modifier[] = [];
 
+  /** Cumulative scroll delta accumulated during the drag across all scrollable ancestors */
+  @reactive
+  public accessor scrollAdjustment: Coordinates = {x: 0, y: 0};
+
   /** Current position of the dragged entity */
   public position = new Position({x: 0, y: 0});
 
@@ -169,12 +175,29 @@ export class DragOperation<T extends Draggable, U extends Droppable>
       transform = modifier.apply({
         ...this.snapshot(),
         transform,
+        adjustedTransform: {
+          x: transform.x + this.scrollAdjustment.x,
+          y: transform.y + this.scrollAdjustment.y,
+        },
       });
     }
 
     this.#transform = transform;
 
     return transform;
+  }
+
+  /**
+   * Gets the transform combined with the cumulative scroll adjustment.
+   *
+   * @returns The adjusted transform coordinates
+   */
+  @derived
+  public get adjustedTransform(): Coordinates {
+    return {
+      x: this.transform.x + this.scrollAdjustment.x,
+      y: this.transform.y + this.scrollAdjustment.y,
+    };
   }
 
   /**
@@ -188,6 +211,11 @@ export class DragOperation<T extends Draggable, U extends Droppable>
       target: this.target,
       activatorEvent: this.activatorEvent,
       transform: this.#transform,
+      scrollAdjustment: this.scrollAdjustment,
+      adjustedTransform: {
+        x: this.#transform.x + this.scrollAdjustment.x,
+        y: this.#transform.y + this.scrollAdjustment.y,
+      },
       shape: this.shape ? snapshot(this.shape) : null,
       position: snapshot(this.position),
       status: snapshot(this.status),
@@ -203,7 +231,7 @@ export class DragOperation<T extends Draggable, U extends Droppable>
    * - Sets status to idle
    * - Clears source and target identifiers
    * - Resets shape history
-   * - Resets position and transform
+   * - Resets position, transform, and scroll adjustment
    * - Clears modifiers
    */
   public reset() {
@@ -214,6 +242,7 @@ export class DragOperation<T extends Draggable, U extends Droppable>
       this.#shape.reset();
       this.position.reset({x: 0, y: 0});
       this.#transform = {x: 0, y: 0};
+      this.scrollAdjustment = {x: 0, y: 0};
       this.modifiers = [];
     });
   }

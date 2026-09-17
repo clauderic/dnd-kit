@@ -14,7 +14,7 @@ export type {
   KeyboardTransition,
 } from './feedback/index.ts';
 
-export {AutoScroller, Scroller, ScrollListener} from './scrolling/index.ts';
+export {AutoScroller, Scroller, ScrollCompensator, ScrollListener} from './scrolling/index.ts';
 export type {AutoScrollerOptions} from './scrolling/index.ts';
 
 export {PreventSelection} from './selection/PreventSelection.ts';
