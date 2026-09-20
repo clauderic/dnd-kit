@@ -26,6 +26,7 @@ import {ATTRIBUTE, CSS_PREFIX, CSS_RULES} from './constants.ts';
 import {
   createPlaceholder,
   isSameFrame,
+  isTableElement,
   isTableRow,
   preventPopoverClose,
 } from './utilities.ts';
@@ -341,6 +342,13 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       },
       CSS_PREFIX
     );
+
+    if (feedbackElement === element && isTableElement(element)) {
+      // Fixed positioning blockifies table-internal elements; the anonymous
+      // table boxes generated around their contents inherit border-spacing,
+      // offsetting the contents from the measured border-box anchor.
+      styles.set({'border-spacing': '0px'});
+    }
 
     /* ---- Placeholder setup ---- */
 
