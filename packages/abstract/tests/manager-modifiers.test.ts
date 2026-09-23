@@ -152,6 +152,30 @@ describe('Manager modifier lifecycle', () => {
     manager.destroy();
   });
 
+  it('should expose the next modified transform in dragmove events without feedback', async () => {
+    const manager = new DragDropManager({modifiers: [ClampXModifier]});
+    const draggable = new Draggable({id: 'd1', register: false}, manager);
+    const transforms: Array<{x: number; y: number}> = [];
+
+    draggable.register();
+    manager.monitor.addEventListener('dragmove', (event) => {
+      transforms.push(event.operation.transform);
+    });
+
+    manager.actions.start({source: draggable, coordinates: {x: 0, y: 0}});
+    await flush();
+
+    manager.actions.move({by: {x: 100, y: 50}});
+
+    expect(transforms).toEqual([{x: 0, y: 50}]);
+
+    await flush();
+    expect(manager.dragOperation.snapshot().transform).toEqual({x: 0, y: 50});
+
+    draggable.destroy();
+    manager.destroy();
+  });
+
   it('should destroy per-operation modifiers when draggable modifiers change mid-drag', () => {
     let destroyCount = 0;
 
