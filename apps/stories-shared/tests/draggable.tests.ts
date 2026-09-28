@@ -33,16 +33,60 @@ export function draggableTests(stories: DraggableStories) {
         box!.y + box!.height / 2
       );
       await dnd.page.mouse.down();
-      await dnd.page.mouse.move(
-        box!.x + box!.width / 2,
-        box!.y + 100,
-        {steps: 10}
-      );
+      await dnd.page.mouse.move(box!.x + box!.width / 2, box!.y + 100, {
+        steps: 10,
+      });
 
       await expect(dnd.dragging).toHaveCount(1);
 
       await dnd.page.mouse.up();
       await dnd.waitForDrop();
+    });
+
+    test('keeps feedback styles mounted between drags', async ({dnd}) => {
+      const button = dnd.buttons.first();
+      const feedbackStyles = () =>
+        dnd.page.evaluate(() => {
+          const styles = Array.from(document.querySelectorAll('style')).filter(
+            (style) => style.textContent?.includes('[data-dnd-dragging]')
+          );
+
+          return {
+            count: styles.length,
+            retained: styles.filter((style) =>
+              style.hasAttribute('data-test-retained')
+            ).length,
+          };
+        });
+
+      await dnd.pointer.drag(button, button);
+      await dnd.waitForDrop();
+
+      await expect.poll(feedbackStyles).toEqual({count: 1, retained: 0});
+      await dnd.page.evaluate(() => {
+        Array.from(document.querySelectorAll('style'))
+          .find((style) => style.textContent?.includes('[data-dnd-dragging]'))
+          ?.setAttribute('data-test-retained', '');
+      });
+
+      const box = await button.boundingBox();
+      await dnd.page.mouse.move(
+        box!.x + box!.width / 2,
+        box!.y + box!.height / 2
+      );
+      await dnd.page.mouse.down();
+      await dnd.page.mouse.move(box!.x + box!.width / 2, box!.y + 100, {
+        steps: 10,
+      });
+      await expect(dnd.dragging).toHaveCount(1);
+
+      // Re-inserting the stylesheet would create a new element without the marker.
+      await expect.poll(feedbackStyles).toEqual({count: 1, retained: 1});
+
+      await dnd.page.mouse.up();
+      await dnd.waitForDrop();
+
+      await expect.poll(feedbackStyles).toEqual({count: 1, retained: 1});
     });
   });
 

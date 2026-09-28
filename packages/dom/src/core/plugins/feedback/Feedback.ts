@@ -93,7 +93,9 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       | StyleInjector
       | undefined;
 
-    const unregisterStyles = styleInjector?.register(CSS_RULES);
+    // These rules only match `data-dnd-*` attributes, so they can stay injected
+    // between drags instead of being added and removed on every drag.
+    const unregisterStyles = styleInjector?.register(CSS_RULES, {retain: true});
 
     if (unregisterStyles) {
       const originalDestroy = this.destroy.bind(this);
