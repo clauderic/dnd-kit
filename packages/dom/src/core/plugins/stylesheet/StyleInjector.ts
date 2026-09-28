@@ -10,6 +10,22 @@ export interface StyleInjectorOptions {
   nonce?: string;
 }
 
+export interface StyleRegistrationOptions {
+  /**
+   * Keep the rules injected in a root after the drag operation that required
+   * them ends, until the rules are unregistered or the plugin is destroyed.
+   *
+   * Adding or removing a stylesheet makes the browser recalculate styles for
+   * the entire document, so rules that are injected and removed on every drag
+   * add that cost to the start and end of each drag. Only retain rules that
+   * have no effect outside of a drag operation, such as rules scoped to
+   * `data-dnd-*` attributes.
+   *
+   * @default false
+   */
+  retain?: boolean;
+}
+
 interface StyleRegistration {
   refCount: number;
   cleanup: CleanupFunction;
@@ -20,14 +36,31 @@ const styleRegistry = new Map<
   Map<string, StyleRegistration>
 >();
 
+function isAttached(root: Document | ShadowRoot) {
+  return isShadowRoot(root) ? root.host.isConnected : root.defaultView != null;
+}
+
 export class StyleInjector extends CorePlugin<
   DragDropManager,
   StyleInjectorOptions
 > {
-  #registeredRules = new Set<string>();
+  /**
+   * Registered CSS rules, mapped to whether they are retained between drag
+   * operations.
+   */
+  @reactive
+  private accessor registeredRules = new Map<string, boolean>();
 
   @reactive
   private accessor additionalRoots = new Set<Document | ShadowRoot>();
+
+  /**
+   * Roots that have taken part in a drag operation, where retained rules stay
+   * injected between drag operations.
+   */
+  #retainedRoots = new Set<Document | ShadowRoot>();
+
+  #injections = new Map<Document | ShadowRoot, Map<string, CleanupFunction>>();
 
   constructor(manager: DragDropManager, options?: StyleInjectorOptions) {
     super(manager, options);
@@ -42,11 +75,22 @@ export class StyleInjector extends CorePlugin<
    *
    * Returns a cleanup function that unregisters the rules.
    */
-  public register(cssRules: string): CleanupFunction {
-    this.#registeredRules.add(cssRules);
+  public register(
+    cssRules: string,
+    options?: StyleRegistrationOptions
+  ): CleanupFunction {
+    untracked(() => {
+      const rules = new Map(this.registeredRules);
+      rules.set(cssRules, options?.retain ?? false);
+      this.registeredRules = rules;
+    });
 
     return () => {
-      this.#registeredRules.delete(cssRules);
+      untracked(() => {
+        const rules = new Map(this.registeredRules);
+        rules.delete(cssRules);
+        this.registeredRules = rules;
+      });
     };
   }
 
@@ -96,21 +140,83 @@ export class StyleInjector extends CorePlugin<
     return new Set();
   }
 
+  /**
+   * Injects and removes only the rules whose target roots changed, so that a
+   * stylesheet that is still needed is never removed and added back.
+   */
   #syncStyles() {
-    const {roots} = this;
-    const cleanups: CleanupFunction[] = [];
+    const {roots, registeredRules} = this;
 
     for (const root of roots) {
-      for (const cssRules of this.#registeredRules) {
-        cleanups.push(this.#inject(root, cssRules));
+      this.#retainedRoots.add(root);
+    }
+
+    const wanted = new Map<Document | ShadowRoot, Set<string>>();
+
+    for (const root of this.#retainedRoots) {
+      const active = roots.has(root);
+
+      if (!active && !isAttached(root)) {
+        this.#retainedRoots.delete(root);
+        continue;
+      }
+
+      for (const [cssRules, retain] of registeredRules) {
+        if (!active && !retain) continue;
+
+        let rules = wanted.get(root);
+
+        if (!rules) {
+          rules = new Set();
+          wanted.set(root, rules);
+        }
+
+        rules.add(cssRules);
       }
     }
 
-    return () => {
-      for (const cleanup of cleanups) {
+    for (const [root, injected] of this.#injections) {
+      const rules = wanted.get(root);
+
+      for (const [cssRules, cleanup] of injected) {
+        if (rules?.has(cssRules)) continue;
+
+        cleanup();
+        injected.delete(cssRules);
+      }
+
+      if (injected.size === 0) {
+        this.#injections.delete(root);
+      }
+    }
+
+    for (const [root, rules] of wanted) {
+      let injected = this.#injections.get(root);
+
+      if (!injected) {
+        injected = new Map();
+        this.#injections.set(root, injected);
+      }
+
+      for (const cssRules of rules) {
+        if (!injected.has(cssRules)) {
+          injected.set(cssRules, this.#inject(root, cssRules));
+        }
+      }
+    }
+  }
+
+  public destroy() {
+    for (const injected of this.#injections.values()) {
+      for (const cleanup of injected.values()) {
         cleanup();
       }
-    };
+    }
+
+    this.#injections.clear();
+    this.#retainedRoots.clear();
+
+    super.destroy();
   }
 
   #inject(root: Document | ShadowRoot, cssRules: string): CleanupFunction {
