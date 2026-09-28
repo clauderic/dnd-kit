@@ -25,6 +25,32 @@ function flush() {
 }
 
 describe('Manager-level modifiers', () => {
+  it('should include the latest transformed coordinates in snapshots', async () => {
+    const manager = new DragDropManager({modifiers: [ClampXModifier]});
+    const draggable = new Draggable({id: 'd1', register: false}, manager);
+    let transform: {x: number; y: number} | undefined;
+
+    manager.monitor.addEventListener('dragend', (event) => {
+      transform = event.operation.transform;
+    });
+
+    draggable.register();
+    manager.actions.start({source: draggable, coordinates: {x: 0, y: 0}});
+    await flush();
+
+    batch(() => {
+      manager.dragOperation.position.current = {x: 100, y: 50};
+    });
+
+    manager.actions.stop();
+    await flush();
+
+    expect(transform).toEqual({x: 0, y: 50});
+
+    draggable.destroy();
+    manager.destroy();
+  });
+
   it('should apply manager modifiers when draggable has none', () => {
     const manager = new DragDropManager({modifiers: [ClampXModifier]});
     const draggable = new Draggable({id: 'd1', register: false}, manager);
