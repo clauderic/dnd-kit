@@ -89,6 +89,65 @@ export function sortableVerticalTests(stories: SortableVerticalStories) {
       await dnd.page.mouse.up();
       await dnd.waitForDrop();
     });
+
+    test('placeholder takes the slot before the source leaves the flow', async ({
+      dnd,
+    }) => {
+      await dnd.page.evaluate(() => {
+        const order: string[] = [];
+        (window as any).__dndOrder = order;
+
+        new MutationObserver((records) => {
+          for (const record of records) {
+            if (
+              record.type === 'attributes' &&
+              (record.target as Element).hasAttribute('data-dnd-dragging')
+            ) {
+              order.push('dragging');
+            }
+
+            for (const node of record.addedNodes) {
+              if (
+                node instanceof Element &&
+                node.hasAttribute('data-dnd-placeholder')
+              ) {
+                order.push('placeholder');
+              }
+            }
+          }
+        }).observe(document.body, {
+          subtree: true,
+          childList: true,
+          attributes: true,
+          attributeFilter: ['data-dnd-dragging'],
+        });
+      });
+
+      const first = dnd.items.nth(0);
+      const third = dnd.items.nth(2);
+
+      const sourceBox = await first.boundingBox();
+      const targetBox = await third.boundingBox();
+
+      await dnd.page.mouse.move(
+        sourceBox!.x + sourceBox!.width / 2,
+        sourceBox!.y + sourceBox!.height / 2
+      );
+      await dnd.page.mouse.down();
+      await dnd.page.mouse.move(
+        targetBox!.x + targetBox!.width / 2,
+        targetBox!.y + targetBox!.height / 2,
+        {steps: 10}
+      );
+
+      await expect(dnd.placeholder).toHaveCount(1);
+      expect(
+        await dnd.page.evaluate(() => (window as any).__dndOrder.slice(0, 2))
+      ).toEqual(['placeholder', 'dragging']);
+
+      await dnd.page.mouse.up();
+      await dnd.waitForDrop();
+    });
   });
 
   test.describe('Sortable vertical list with drag handle', () => {
