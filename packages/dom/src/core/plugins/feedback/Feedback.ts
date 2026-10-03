@@ -314,6 +314,21 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       top: top + delta.y,
     };
 
+    /* ---- Placeholder setup ---- */
+
+    if (placeholder) {
+      element.insertAdjacentElement('afterend', placeholder);
+
+      if (options?.rootElement) {
+        const root =
+          typeof options.rootElement === 'function'
+            ? options.rootElement(source)
+            : options.rootElement;
+
+        root.appendChild(element);
+      }
+    }
+
     /* ---- Apply initial feedback styles ---- */
 
     feedbackElement.setAttribute(ATTRIBUTE, 'true');
@@ -341,21 +356,6 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       },
       CSS_PREFIX
     );
-
-    /* ---- Placeholder setup ---- */
-
-    if (placeholder) {
-      element.insertAdjacentElement('afterend', placeholder);
-
-      if (options?.rootElement) {
-        const root =
-          typeof options.rootElement === 'function'
-            ? options.rootElement(source)
-            : options.rootElement;
-
-        root.appendChild(element);
-      }
-    }
 
     /* ---- Popover promotion ---- */
 
