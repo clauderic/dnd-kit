@@ -270,10 +270,11 @@ export class PointerSensor extends Sensor<
   protected handlePointerMove(event: PointerEvent, source: Draggable) {
     if (this.controller?.activated === false) {
       this.controller?.onEvent(event);
-      return;
     }
 
-    if (this.manager.dragOperation.status.dragging) {
+    const {status} = this.manager.dragOperation;
+
+    if (status.initializing || status.dragging) {
       const coordinates = getEventCoordinates(event);
       const offset = getFrameTransform(source.element);
 
@@ -286,7 +287,9 @@ export class PointerSensor extends Sensor<
       this.latest.event = event;
       this.latest.coordinates = coordinates;
 
-      scheduler.schedule(this.handleMove);
+      if (status.dragging) {
+        scheduler.schedule(this.handleMove);
+      }
     }
   }
 
@@ -373,6 +376,14 @@ export class PointerSensor extends Sensor<
     ]);
 
     this.#cleanup.add(unbind);
+
+    // Flush the latest coordinates once the drag operation starts,
+    // in case pointer moves were recorded while it was initializing.
+    manager.renderer.rendering.then(() => {
+      if (!controller.signal.aborted && manager.dragOperation.status.dragging) {
+        scheduler.schedule(this.handleMove);
+      }
+    });
   }
 
   protected handleCancel(event: Event) {
