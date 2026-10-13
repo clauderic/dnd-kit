@@ -20,6 +20,11 @@ export default defineConfig({
       name: 'chromium',
       use: {browserName: 'chromium'},
     },
+    {
+      name: 'firefox',
+      testMatch: '**/draggable-popup.spec.ts',
+      use: {browserName: 'firefox'},
+    },
   ],
   webServer: {
     command: 'npx http-server storybook-static --port 6006 --silent',
