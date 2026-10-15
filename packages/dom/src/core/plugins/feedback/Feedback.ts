@@ -6,6 +6,7 @@ import {
   getFixedPositionOffset,
   getFrameTransform,
   getRoot,
+  getScrollableAncestors,
   getWindow,
   isHTMLElement,
   prefersReducedMotion,
@@ -318,6 +319,24 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
     /* ---- Apply initial feedback styles ---- */
 
+    const feedbackWindow = getWindow(feedbackElement);
+
+    // Taking the source out of flow shrinks the scrollable content, so a
+    // container scrolled to its end has its scrollTop clamped by the browser
+    // (notably Safari), which leaves the fixed feedback element a row off.
+    // Capture each ancestor's offset so it can be restored once the placeholder
+    // restores the content size.
+    const initialScrollPositions = new Map<
+      Element,
+      {top: number; left: number}
+    >();
+    for (const ancestor of getScrollableAncestors(element)) {
+      initialScrollPositions.set(ancestor, {
+        top: ancestor.scrollTop,
+        left: ancestor.scrollLeft,
+      });
+    }
+
     feedbackElement.setAttribute(ATTRIBUTE, 'true');
 
     const transform = untracked(() => dragOperation.transform);
@@ -356,6 +375,17 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             : options.rootElement;
 
         root.appendChild(element);
+      }
+    }
+
+    // Restore the scroll offsets now that the placeholder has restored the size.
+    for (const [ancestor, position] of initialScrollPositions) {
+      if (ancestor.scrollTop !== position.top) {
+        ancestor.scrollTop = position.top;
+      }
+
+      if (ancestor.scrollLeft !== position.left) {
+        ancestor.scrollLeft = position.left;
       }
     }
 
@@ -401,7 +431,6 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     const initialShape = new DOMRectangle(feedbackElement);
     untracked(() => (dragOperation.shape = initialShape));
 
-    const feedbackWindow = getWindow(feedbackElement);
     const handleWindowResize = (event: Event) => {
       this.manager.actions.stop({event});
     };
