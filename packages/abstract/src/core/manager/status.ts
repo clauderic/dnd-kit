@@ -49,6 +49,16 @@ export class Status {
   }
 
   /**
+   * Checks if the status is initialization-pending.
+   *
+   * @returns true if a drag operation is about to start
+   */
+  @derived
+  public get initializationPending(): boolean {
+    return this.value === StatusValue.InitializationPending;
+  }
+
+  /**
    * Checks if the status is initializing.
    *
    * @returns true if a drag operation is being initialized

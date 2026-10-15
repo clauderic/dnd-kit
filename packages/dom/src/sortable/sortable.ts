@@ -209,7 +209,7 @@ export class Sortable<T extends Data = Data> {
             const status = this.manager?.dragOperation.status;
 
             if (
-              status?.initializing &&
+              status?.initializationPending &&
               this.id === this.manager?.dragOperation.source?.id
             ) {
               store.clear(this.manager);
