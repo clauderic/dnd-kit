@@ -168,6 +168,7 @@ export class DragActions<
    * @param args.event - The event that triggered the move
    * @param args.cancelable - Whether the move can be canceled
    * @param args.propagate - Whether to dispatch dragmove events
+   * @param args.virtual - Whether the move is virtual (dispatches the event without updating position)
    */
   move(args: {
     /** The relative coordinates to move by. */
@@ -180,6 +181,8 @@ export class DragActions<
     cancelable?: boolean;
     /** Whether to propagate the dragmove event to the manager. */
     propagate?: boolean;
+    /** Whether the move is virtual (dispatches the event without updating position). */
+    virtual?: boolean;
   }): void {
     return untracked(() => {
       const {dragOperation} = this.manager;
@@ -202,6 +205,8 @@ export class DragActions<
       if (args.propagate ?? true) {
         this.manager.monitor.dispatch('dragmove', event);
       }
+
+      if (args.virtual) return;
 
       queueMicrotask(() => {
         if (event.defaultPrevented) {

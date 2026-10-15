@@ -5,7 +5,7 @@ import type {Axis} from '@dnd-kit/geometry';
 
 import type {DragDropManager} from '../../manager/index.ts';
 import {Scroller} from './Scroller.ts';
-import {scheduler} from '../../../utilities/scheduling/scheduler.ts';
+import {scheduler} from '@dnd-kit/dom/utilities';
 
 export interface AutoScrollerOptions {
   /**
