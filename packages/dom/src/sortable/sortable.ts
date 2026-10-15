@@ -30,6 +30,7 @@ import {
 
 import {SortableKeyboardPlugin} from './plugins/SortableKeyboardPlugin.ts';
 import {OptimisticSortingPlugin} from './plugins/OptimisticSortingPlugin.ts';
+import {scheduleAnimation} from './animations.ts';
 
 export interface SortableTransition {
   /**
@@ -282,62 +283,89 @@ export class Sortable<T extends Data = Data> {
       }
 
       manager.renderer.rendering.then(() => {
-        const {element} = this;
+        let element: Element | undefined;
+        let translate: [string, string] | undefined;
 
-        if (!element) {
-          return;
-        }
+        scheduleAnimation({
+          prepare: () => {
+            element = this.element;
 
-        // Cancel CSS transitions on transform-related properties before measuring.
-        // These transitions (e.g. `transition: transform` from user CSS) would cause
-        // getBoundingClientRect() to return the mid-transition position rather than
-        // the element's final resting position, resulting in an incorrect delta.
-        for (const animation of element.getAnimations()) {
-          if (
-            'transitionProperty' in animation &&
-            (animation.transitionProperty === 'transform' ||
-              animation.transitionProperty === 'translate' ||
-              animation.transitionProperty === 'scale')
-          ) {
-            animation.cancel();
-          }
-        }
-
-        const updatedShape = this.refreshShape();
-
-        if (!updatedShape) {
-          return;
-        }
-
-        const delta = {
-          x: shape.boundingRectangle.left - updatedShape.boundingRectangle.left,
-          y: shape.boundingRectangle.top - updatedShape.boundingRectangle.top,
-        };
-
-        const {translate} = getComputedStyles(element);
-        const currentTranslate = computeTranslate(element, translate, false);
-        const finalTranslate = computeTranslate(element, translate);
-
-        if (delta.x || delta.y) {
-          const resolvedTransition = prefersReducedMotion(getWindow(element))
-            ? {...transition, duration: 0}
-            : transition;
-
-          animateTransform({
-            element,
-            keyframes: {
-              translate: [
-                `${currentTranslate.x + delta.x}px ${currentTranslate.y + delta.y}px ${currentTranslate.z}`,
-                `${finalTranslate.x}px ${finalTranslate.y}px ${finalTranslate.z}`,
-              ],
-            },
-            options: resolvedTransition,
-          }).then(() => {
-            if (!manager.dragOperation.status.dragging) {
-              this.droppable.shape = undefined;
+            if (!element) {
+              return false;
             }
-          });
-        }
+
+            // Cancel CSS transitions on transform-related properties before measuring.
+            // These transitions (e.g. `transition: transform` from user CSS) would cause
+            // getBoundingClientRect() to return the mid-transition position rather than
+            // the element's final resting position, resulting in an incorrect delta.
+            for (const animation of element.getAnimations()) {
+              if (
+                'transitionProperty' in animation &&
+                (animation.transitionProperty === 'transform' ||
+                  animation.transitionProperty === 'translate' ||
+                  animation.transitionProperty === 'scale')
+              ) {
+                animation.cancel();
+              }
+            }
+
+            return true;
+          },
+          measure: () => {
+            const updatedShape = this.refreshShape();
+
+            if (!element || !updatedShape) {
+              return false;
+            }
+
+            const delta = {
+              x:
+                shape.boundingRectangle.left -
+                updatedShape.boundingRectangle.left,
+              y:
+                shape.boundingRectangle.top -
+                updatedShape.boundingRectangle.top,
+            };
+
+            if (!delta.x && !delta.y) {
+              return false;
+            }
+
+            const styles = getComputedStyles(element);
+            const currentTranslate = computeTranslate(
+              element,
+              styles.translate,
+              false
+            );
+            const finalTranslate = computeTranslate(element, styles.translate);
+
+            translate = [
+              `${currentTranslate.x + delta.x}px ${currentTranslate.y + delta.y}px ${currentTranslate.z}`,
+              `${finalTranslate.x}px ${finalTranslate.y}px ${finalTranslate.z}`,
+            ];
+
+            return true;
+          },
+          animate: () => {
+            if (!element || !translate) {
+              return;
+            }
+
+            const resolvedTransition = prefersReducedMotion(getWindow(element))
+              ? {...transition, duration: 0}
+              : transition;
+
+            animateTransform({
+              element,
+              keyframes: {translate},
+              options: resolvedTransition,
+            }).then(() => {
+              if (!manager.dragOperation.status.dragging) {
+                this.droppable.shape = undefined;
+              }
+            });
+          },
+        });
       });
     });
   }
