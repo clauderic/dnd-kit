@@ -10,7 +10,7 @@ import {
   defaultScreenReaderInstructions,
 } from './defaults.ts';
 import type {Announcements, ScreenReaderInstructions} from './types.ts';
-import {isFocusable} from './utilities.ts';
+import {isFocusable, supportsPressedState} from './utilities.ts';
 import {createHiddenText} from './HiddenText.ts';
 import {createLiveRegion} from './LiveRegion.ts';
 
@@ -186,7 +186,11 @@ export class Accessibility extends Plugin<DragDropManager> {
             );
           }
 
-          for (const key of ['aria-pressed', 'aria-grabbed']) {
+          const stateAttributes = supportsPressedState(activator)
+            ? ['aria-pressed', 'aria-grabbed']
+            : ['aria-grabbed'];
+
+          for (const key of stateAttributes) {
             const value = String(draggable.isDragging);
 
             if (activator.getAttribute(key) !== value) {
