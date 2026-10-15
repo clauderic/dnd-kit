@@ -15,6 +15,8 @@ This plugin is always included automatically — you do not need to add it to yo
 
 Other plugins (such as [Feedback](/extend/plugins/feedback)) register CSS rules with the `StyleInjector`. During a drag operation, the `StyleInjector` automatically injects those rules into the relevant document and shadow roots, and cleans them up when the operation ends.
 
+Rules registered with `retain: true` stay injected in a root after the first drag operation that uses it, until they are unregistered. Adding or removing a stylesheet makes the browser recalculate styles for the entire document, so retaining rules keeps that cost out of the start and end of every drag. The [Feedback](/extend/plugins/feedback) plugin retains its rules, which only match `data-dnd-*` attributes.
+
 ### Document Roots
 
 For `Document` roots, CSS is injected via a `<style>` element prepended to `<head>`. This ensures that any `@layer` declarations appear before layers from regular stylesheets, giving them the lowest cascade priority.
@@ -118,9 +120,11 @@ function App() {
 
 ## API
 
-### `register(cssRules: string)`
+### `register(cssRules: string, options?: {retain?: boolean})`
 
 Registers CSS rules to be injected into the active drag operation's document and shadow roots. Returns a cleanup function that unregisters the rules.
+
+Pass `retain: true` to keep the rules injected between drag operations. Only retain rules that have no effect outside of a drag, such as rules scoped to `data-dnd-*` attributes; rules like `* { cursor: grabbing; }` must stay drag-only.
 
 ```ts
 const styleInjector = manager.registry.plugins.get(StyleInjector);
@@ -131,6 +135,12 @@ const unregister = styleInjector.register(`
 
 // Later, when no longer needed:
 unregister();
+
+// Rules that only match during a drag can stay injected between drags:
+const unregisterRetained = styleInjector.register(
+  `[data-dnd-dragging] { opacity: 0.5; }`,
+  {retain: true}
+);
 ```
 
 ### `addRoot(root: Document | ShadowRoot)`
