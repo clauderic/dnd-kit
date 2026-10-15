@@ -1,5 +1,18 @@
 # @dnd-kit/vue
 
+## 0.5.1
+
+### Patch Changes
+
+- [#2135](https://github.com/clauderic/dnd-kit/pull/2135) [`5185c8f`](https://github.com/clauderic/dnd-kit/commit/5185c8f75c087a9df5a240413fcd639e27f3a078) Thanks [@kimjunha1231](https://github.com/kimjunha1231)! - Fix missing state updates when draggable, droppable, or sortable properties are first read on a later render in React, Vue, Solid, and Svelte. Retain signal subscriptions across view updates and prevent update loops for getters that return new objects.
+
+- [#2131](https://github.com/clauderic/dnd-kit/pull/2131) [`037663b`](https://github.com/clauderic/dnd-kit/commit/037663b51f7e0f1b1b89f8eef16397d3c5ace5e1) Thanks [@NektarTheo](https://github.com/NektarTheo)! - Respect `transition: null` in the React, Vue, Solid and Svelte sortable bindings. The bindings previously merged `defaultSortableTransition` before constructing or updating the core `Sortable`, which replaced an explicit `null` with the default transition, so sortable items kept animating. They now use the new `resolveSortableTransition` helper exported from `@dnd-kit/dom/sortable`, which preserves `null` while still merging partial transitions with the defaults.
+
+- Updated dependencies [[`22a39ef`](https://github.com/clauderic/dnd-kit/commit/22a39ef766e671d395b4dc80a094fc81dac143f9), [`d3f965f`](https://github.com/clauderic/dnd-kit/commit/d3f965fbc4c73592830e581b828768dd7c1243af), [`69987d5`](https://github.com/clauderic/dnd-kit/commit/69987d50452b18eeb47881c626c2ebdc5871c5a7), [`e00be08`](https://github.com/clauderic/dnd-kit/commit/e00be08c9b0c4dc521328917ec1dc42661e4ac00), [`cf4fb8a`](https://github.com/clauderic/dnd-kit/commit/cf4fb8a24940821da096c910def84a4a9dddf780), [`d5071ec`](https://github.com/clauderic/dnd-kit/commit/d5071ec13dbceb08258b50b099987d362231e8e6), [`8a1c807`](https://github.com/clauderic/dnd-kit/commit/8a1c807b172c95efa83670682843735b4a79682b), [`bce5778`](https://github.com/clauderic/dnd-kit/commit/bce5778b8873b164fa287e8e59b64c56eddca2ae), [`037663b`](https://github.com/clauderic/dnd-kit/commit/037663b51f7e0f1b1b89f8eef16397d3c5ace5e1), [`3ff8588`](https://github.com/clauderic/dnd-kit/commit/3ff858831b398cc7012375c4eef132df1f30dbd6)]:
+  - @dnd-kit/dom@0.5.1
+  - @dnd-kit/abstract@0.5.1
+  - @dnd-kit/state@0.5.1
+
 ## 0.5.0
 
 ### Minor Changes

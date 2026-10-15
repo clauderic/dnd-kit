@@ -1,5 +1,15 @@
 # @dnd-kit/abstract
 
+## 0.5.1
+
+### Patch Changes
+
+- [#2149](https://github.com/clauderic/dnd-kit/pull/2149) [`69987d5`](https://github.com/clauderic/dnd-kit/commit/69987d50452b18eeb47881c626c2ebdc5871c5a7) Thanks [@ManiShah7](https://github.com/ManiShah7)! - Fix stale `initialIndex` and `initialGroup` on `Sortable` in `onBeforeDragStart` after the item has moved. Add an `initializationPending` getter to the drag operation status.
+
+- Updated dependencies []:
+  - @dnd-kit/geometry@0.5.1
+  - @dnd-kit/state@0.5.1
+
 ## 0.5.0
 
 ### Patch Changes

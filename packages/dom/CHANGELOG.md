@@ -1,5 +1,35 @@
 # @dnd-kit/dom
 
+## 0.5.1
+
+### Patch Changes
+
+- [#2153](https://github.com/clauderic/dnd-kit/pull/2153) [`22a39ef`](https://github.com/clauderic/dnd-kit/commit/22a39ef766e671d395b4dc80a094fc81dac143f9) Thanks [@pedroapfilho](https://github.com/pedroapfilho)! - The `Accessibility` plugin no longer sets `aria-pressed` on draggable activators whose role isn't `button`, such as `role="tab"`, where the attribute isn't allowed.
+
+- [#2094](https://github.com/clauderic/dnd-kit/pull/2094) [`d3f965f`](https://github.com/clauderic/dnd-kit/commit/d3f965fbc4c73592830e581b828768dd7c1243af) Thanks [@timagixe](https://github.com/timagixe)! - Match KeyboardSensor shortcuts against KeyboardEvent.key so keyboard controls respect keyboard layouts and operating system key remaps. Common legacy Key* and Digit* configs still normalize.
+
+- [#2149](https://github.com/clauderic/dnd-kit/pull/2149) [`69987d5`](https://github.com/clauderic/dnd-kit/commit/69987d50452b18eeb47881c626c2ebdc5871c5a7) Thanks [@ManiShah7](https://github.com/ManiShah7)! - Fix stale `initialIndex` and `initialGroup` on `Sortable` in `onBeforeDragStart` after the item has moved. Add an `initializationPending` getter to the drag operation status.
+
+- [#2076](https://github.com/clauderic/dnd-kit/pull/2076) [`e00be08`](https://github.com/clauderic/dnd-kit/commit/e00be08c9b0c4dc521328917ec1dc42661e4ac00) Thanks [@timagixe](https://github.com/timagixe)! - Avoid requiring ResizeObserver at import time when importing @dnd-kit/dom/modifiers in DOM-like test environments.
+
+- [#2151](https://github.com/clauderic/dnd-kit/pull/2151) [`cf4fb8a`](https://github.com/clauderic/dnd-kit/commit/cf4fb8a24940821da096c910def84a4a9dddf780) Thanks [@cpruijsen](https://github.com/cpruijsen)! - Record pointer moves received while a drag operation is initializing so the drag position catches up when the operation starts, instead of staying at the pointerdown position until the next pointer move.
+
+- [#2152](https://github.com/clauderic/dnd-kit/pull/2152) [`d5071ec`](https://github.com/clauderic/dnd-kit/commit/d5071ec13dbceb08258b50b099987d362231e8e6) Thanks [@Bhavani2016](https://github.com/Bhavani2016)! - Prevent body-targeted clicks following pointer drops from unexpectedly dismissing popups, while preserving iframe dragging.
+
+- [#2126](https://github.com/clauderic/dnd-kit/pull/2126) [`8a1c807`](https://github.com/clauderic/dnd-kit/commit/8a1c807b172c95efa83670682843735b4a79682b) Thanks [@waterWang](https://github.com/waterWang)! - Reuse each scroll container's position measurement during auto-scrolling to avoid duplicate layout reads while preserving the existing scroll utility argument order.
+
+- [#2142](https://github.com/clauderic/dnd-kit/pull/2142) [`bce5778`](https://github.com/clauderic/dnd-kit/commit/bce5778b8873b164fa287e8e59b64c56eddca2ae) Thanks [@chasegiunta](https://github.com/chasegiunta)! - Keep the Feedback plugin's styles injected between drag operations instead of adding and removing its `<style>` element on every drag. Each stylesheet change forces the browser to recalculate styles for the whole document, which caused jank at the start and end of drags on large pages. `StyleInjector.register()` accepts a new `retain` option for rules that are inert outside of a drag, and only adds or removes the stylesheets whose target roots actually changed.
+
+- [#2131](https://github.com/clauderic/dnd-kit/pull/2131) [`037663b`](https://github.com/clauderic/dnd-kit/commit/037663b51f7e0f1b1b89f8eef16397d3c5ace5e1) Thanks [@NektarTheo](https://github.com/NektarTheo)! - Respect `transition: null` in the React, Vue, Solid and Svelte sortable bindings. The bindings previously merged `defaultSortableTransition` before constructing or updating the core `Sortable`, which replaced an explicit `null` with the default transition, so sortable items kept animating. They now use the new `resolveSortableTransition` helper exported from `@dnd-kit/dom/sortable`, which preserves `null` while still merging partial transitions with the defaults.
+
+- [#2134](https://github.com/clauderic/dnd-kit/pull/2134) [`3ff8588`](https://github.com/clauderic/dnd-kit/commit/3ff858831b398cc7012375c4eef132df1f30dbd6) Thanks [@timagixe](https://github.com/timagixe)! - Preserve custom data types when narrowing with `isSortable` and `isSortableOperation` instead of widening them to `any`. Source and target data types are inferred independently for sortable operations.
+
+- Updated dependencies [[`69987d5`](https://github.com/clauderic/dnd-kit/commit/69987d50452b18eeb47881c626c2ebdc5871c5a7)]:
+  - @dnd-kit/abstract@0.5.1
+  - @dnd-kit/collision@0.5.1
+  - @dnd-kit/geometry@0.5.1
+  - @dnd-kit/state@0.5.1
+
 ## 0.5.0
 
 ### Minor Changes
