@@ -121,7 +121,7 @@ mode: 'wide'
     }
     ```
 
-    ```tsx After {2-4,7-8}
+    ```tsx After {2-4,8-9}
     function DraggableItem({id}) {
       const draggable = useDraggable({
         id,
@@ -130,7 +130,7 @@ mode: 'wide'
       return (
         <div
           ref={draggable.ref}
-          className={isDragging ? 'dragging' : ''}
+          className={draggable.isDragging ? 'dragging' : ''}
         >
           Item {id}
         </div>
