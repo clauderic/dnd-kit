@@ -300,12 +300,34 @@ export class PointerSensor extends Sensor<
       event.stopPropagation();
 
       const canceled = !status.initialized;
+      const ownerDocument = getDocument(event.target);
+      const ownerWindow = ownerDocument.defaultView;
+
+      if (!canceled && ownerWindow) {
+        const suppressClick = (clickEvent: MouseEvent) => {
+          if (
+            clickEvent.target === ownerDocument.body &&
+            clickEvent.detail > 0
+          ) {
+            clickEvent.preventDefault();
+            clickEvent.stopImmediatePropagation();
+          }
+        };
+
+        ownerWindow.addEventListener('click', suppressClick, true);
+
+        // Suppress the body-targeted click following a drop before it
+        // reaches document-level outside-click handlers.
+        ownerWindow.setTimeout(() => {
+          ownerWindow.removeEventListener('click', suppressClick, true);
+        }, 0);
+      }
+
       this.manager.actions.stop({event, canceled});
     }
 
     this.cleanup();
   }
-
   protected handleKeyDown(event: KeyboardEvent) {
     if (event.key === 'Escape') {
       event.preventDefault();
