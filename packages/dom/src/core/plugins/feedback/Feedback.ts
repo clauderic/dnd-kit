@@ -444,7 +444,11 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       }
     };
 
+    let cleanedUp = false;
     const cleanup = () => {
+      if (cleanedUp) return;
+      cleanedUp = true;
+
       elementMutationObserver?.disconnect();
       documentMutationObserver?.disconnect();
       resizeObserver.disconnect();
@@ -576,7 +580,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
             translate = {x: 0, y: 0};
           }
 
-          if (!translate || dropAnimationConfig === null) {
+          if (!translate || dropAnimationConfig === null || feedbackElement !== feedbackPlugin.overlay) {
             cleanup();
             return;
           }
@@ -602,7 +606,14 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       }
     );
 
+    const dragendUnsubscribe = manager.monitor.addEventListener('dragend', () => {
+      if (feedbackElement !== feedbackPlugin.overlay) {
+        cleanup();
+      }
+    });
+
     return () => {
+      dragendUnsubscribe();
       cleanup();
       cleanupEffects();
     };

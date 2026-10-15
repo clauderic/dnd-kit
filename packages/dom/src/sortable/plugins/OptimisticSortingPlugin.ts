@@ -17,6 +17,10 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
   constructor(manager: DragDropManager) {
     super(manager);
 
+    let originalSourceElement: Element | undefined;
+    let originalParent: Node | null = null;
+    let originalNextSibling: Node | null = null;
+
     const getSortableInstances = () => {
       const sortableInstances: SortableInstances = new Map();
 
@@ -40,6 +44,22 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
     };
 
     const unsubscribe = [
+      manager.monitor.addEventListener('dragstart', (event, manager) => {
+        if (this.disabled) {
+          return;
+        }
+
+        const {dragOperation} = manager;
+        const {source} = dragOperation;
+
+        if (isSortable(source)) {
+          originalSourceElement = source.sortable.element;
+          if (originalSourceElement) {
+            originalParent = originalSourceElement.parentNode;
+            originalNextSibling = originalSourceElement.nextSibling;
+          }
+        }
+      }),
       manager.monitor.addEventListener('dragover', (event, manager) => {
         if (this.disabled) {
           return;
@@ -132,6 +152,20 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
         });
       }),
       manager.monitor.addEventListener('dragend', (event, manager) => {
+        // Restore the original DOM position of the dragged element so the renderer (e.g. React)
+        // can reconcile the DOM starting from a clean, expected state.
+        if (originalSourceElement && originalParent) {
+          if (originalNextSibling && originalNextSibling.parentNode === originalParent) {
+            originalParent.insertBefore(originalSourceElement, originalNextSibling);
+          } else {
+            originalParent.appendChild(originalSourceElement);
+          }
+        }
+
+        originalSourceElement = undefined;
+        originalParent = null;
+        originalNextSibling = null;
+
         if (!event.canceled) {
           return;
         }
@@ -167,22 +201,6 @@ export class OptimisticSortingPlugin extends Plugin<DragDropManager> {
               // At least one index or group was changed so we should abort optimistic updates
               return;
             }
-
-            const currentSortables = sort(initialGroupInstances);
-            const initialSortables = sort(
-              initialGroupInstances,
-              sortByInitialIndex
-            );
-            const sourceElement = source.sortable.element;
-            const initialPosition = initialSortables.indexOf(source.sortable);
-            const target = currentSortables[initialPosition];
-            const targetElement = target?.element;
-
-            if (!target || !targetElement || !sourceElement) {
-              return;
-            }
-
-            reorder(sourceElement, target.index, targetElement, source.index);
 
             batch(() => {
               for (const sortableInstances of instances.values()) {
