@@ -121,15 +121,11 @@ export function useDroppableMeasuring(
     [dragging, disabled]
   );
 
-  useEffect(
-    () => {
-      if (queue && queue.length > 0) {
-        setQueue(null);
-      }
-    },
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(queue)]
-  );
+  useEffect(() => {
+    if (queue && queue.length > 0) {
+      setQueue((current) => (current === queue ? null : current));
+    }
+  }, [queue]);
 
   useEffect(
     () => {
