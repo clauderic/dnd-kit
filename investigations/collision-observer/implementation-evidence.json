@@ -1,0 +1,596 @@
+{
+  "baselineCommit": "aa53b823",
+  "runtime": "Chrome 152, Storybook dev",
+  "tests": {
+    "unit": 207,
+    "collisionBrowser": 13,
+    "reactCompatibility": 43,
+    "frameworkSortable": 18,
+    "nestedStoryBrowser": 30,
+    "feedbackCloneBrowser": 3
+  },
+  "detectorCallComparison": {
+    "targets": 20,
+    "separateSynchronousRectangleUpdates": 20,
+    "baselineCalls": 400,
+    "implementationCalls": 20
+  },
+  "cases": [
+    {
+      "case": "collision-reproductions-CO-3ffee-he-same-Kanban-gap-position-current",
+      "observations": ["1", "3", "3", "3", "3", "3", "3", "3", "3", "3"]
+    },
+    {
+      "case": "collision-reproductions-au-fbc94-in-stable-during-1px-jitter-current",
+      "observations": {
+        "point": {
+          "x": 641,
+          "y": 275.8125
+        },
+        "targets": [
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A"
+        ]
+      }
+    },
+    {
+      "case": "collision-reproductions-ga-ca052--across-the-column-boundary-current",
+      "observations": ["A", "A", "A", "A", "B", "B", "B", "A"]
+    },
+    {
+      "case": "collision-reproductions-ke-05fc4-sh-before-an-immediate-drop-current",
+      "observations": ["2", "3", "4", "1"]
+    },
+    {
+      "case": "collision-reproductions-re-bce32-vening-same-direction-input-current",
+      "observations": [1, 0, 1, 0, 1, 0]
+    },
+    {
+      "case": "collision-reproductions-sc-2785d-et-in-the-scroll-event-turn-current",
+      "observations": {
+        "before": {
+          "event": "snapshot",
+          "point": {
+            "x": 740,
+            "y": 287.8125
+          },
+          "source": "drag",
+          "target": "A",
+          "collisions": [
+            {
+              "id": "A",
+              "value": null,
+              "type": 2,
+              "priority": 3
+            }
+          ],
+          "shapes": [
+            {
+              "id": "A",
+              "rect": {
+                "width": 220,
+                "height": 160,
+                "left": 630,
+                "top": 207.8125,
+                "right": 850,
+                "bottom": 367.8125
+              }
+            },
+            {
+              "id": "B",
+              "rect": {
+                "width": 220,
+                "height": 160,
+                "left": 630,
+                "top": 367.8125,
+                "right": 850,
+                "bottom": 527.8125
+              }
+            },
+            {
+              "id": "C",
+              "rect": {
+                "width": 220,
+                "height": 160,
+                "left": 630,
+                "top": 527.8125,
+                "right": 850,
+                "bottom": 687.8125
+              }
+            }
+          ],
+          "sourceShape": {
+            "width": 188,
+            "height": 64,
+            "left": 646,
+            "top": 255.8125,
+            "right": 834,
+            "bottom": 319.8125
+          }
+        },
+        "after": {
+          "event": "snapshot",
+          "point": {
+            "x": 740,
+            "y": 287.8125
+          },
+          "source": "drag",
+          "target": "B",
+          "collisions": [
+            {
+              "id": "B",
+              "value": null,
+              "type": 2,
+              "priority": 3
+            }
+          ],
+          "shapes": [
+            {
+              "id": "A",
+              "rect": {
+                "width": 220,
+                "height": 160,
+                "left": 630,
+                "top": 47.8125,
+                "right": 850,
+                "bottom": 207.8125
+              }
+            },
+            {
+              "id": "B",
+              "rect": {
+                "width": 220,
+                "height": 160,
+                "left": 630,
+                "top": 207.8125,
+                "right": 850,
+                "bottom": 367.8125
+              }
+            },
+            {
+              "id": "C",
+              "rect": {
+                "width": 220,
+                "height": 160,
+                "left": 630,
+                "top": 367.8125,
+                "right": 850,
+                "bottom": 527.8125
+              }
+            }
+          ],
+          "sourceShape": {
+            "width": 188,
+            "height": 64,
+            "left": 646,
+            "top": 255.8125,
+            "right": 834,
+            "bottom": 319.8125
+          }
+        }
+      }
+    },
+    {
+      "case": "collision-reproductions-th-96fb5-rs-a-vertical-sortable-list-current",
+      "observations": [
+        {
+          "index": 1,
+          "point": {
+            "x": 520,
+            "y": 288.8125
+          },
+          "raw": "1"
+        },
+        {
+          "index": 1,
+          "point": {
+            "x": 520,
+            "y": 289.8125
+          },
+          "raw": "1"
+        },
+        {
+          "index": 0,
+          "point": {
+            "x": 520,
+            "y": 286.8125
+          },
+          "raw": "1"
+        },
+        {
+          "index": 0,
+          "point": {
+            "x": 520,
+            "y": 285.8125
+          },
+          "raw": "1"
+        },
+        {
+          "index": 0,
+          "point": {
+            "x": 520,
+            "y": 283.8125
+          },
+          "raw": "1"
+        },
+        {
+          "index": 0,
+          "point": {
+            "x": 520,
+            "y": 280.8125
+          },
+          "raw": "1"
+        },
+        {
+          "index": 0,
+          "point": {
+            "x": 520,
+            "y": 278.8125
+          },
+          "raw": "1"
+        }
+      ]
+    },
+    {
+      "case": "collision-reproductions-CO-20215-s-a-changing-drag-footprint-current",
+      "observations": {
+        "point": {
+          "x": 537,
+          "y": 448.96875
+        },
+        "tailTargets": [],
+        "ownDescendantsAdmitted": false,
+        "visualSizes": ["274x180", "320x180"]
+      }
+    },
+    {
+      "case": "collision-reproductions-CO-f9e3c-s-a-changing-drag-footprint-current",
+      "observations": {
+        "point": {
+          "x": 200,
+          "y": 1037.96875
+        },
+        "tailTargets": [],
+        "ownDescendantsAdmitted": false,
+        "visualSizes": ["274x156", "320x260"]
+      }
+    },
+    {
+      "case": "collision-reproductions-Pu-5c11b-t-moving-container-edge-338-current",
+      "observations": {
+        "point": {
+          "x": 377,
+          "y": 524.96875
+        },
+        "tailTargets": [],
+        "ownDescendantsAdmitted": false,
+        "visualSizes": ["274x180", "320x180"]
+      }
+    },
+    {
+      "case": "collision-reproductions-Pu-afa39-t-moving-container-edge-320-current",
+      "observations": {
+        "point": {
+          "x": 359,
+          "y": 524.96875
+        },
+        "tailTargets": [],
+        "ownDescendantsAdmitted": false,
+        "visualSizes": ["274x180", "320x180"]
+      }
+    },
+    {
+      "case": "collision-reproductions-dr-a5e61-xcludes-its-own-descendants-current",
+      "observations": {
+        "point": {
+          "x": 191,
+          "y": 568.265625
+        },
+        "tailTargets": [],
+        "ownDescendantsAdmitted": false,
+        "visualSizes": ["300x584"]
+      }
+    },
+    {
+      "case": "collision-reproductions-ne-cc62b-hen-visual-feedback-resizes-current",
+      "observations": {
+        "point": {
+          "x": 890,
+          "y": 469.265625
+        },
+        "tailTargets": [],
+        "ownDescendantsAdmitted": false,
+        "visualSizes": ["208x56", "254x56", "300x56"]
+      }
+    }
+  ],
+  "implementationBase": "8b9e1add",
+  "completionModel": "Action-owned listener promises with internal relative-input sequencing and DOM rendering that includes geometry measurement",
+  "puckFollowUp": {
+    "baseline": "Working prototype before completed-placement reconciliation and animation-measurement fixes",
+    "observations": [
+      {
+        "point": {
+          "x": 359,
+          "y": 524.96875
+        },
+        "stationaryTailFrames": 40,
+        "baselineTransfers": 147,
+        "fixedTransfers": 0
+      },
+      {
+        "point": {
+          "x": 377,
+          "y": 524.96875
+        },
+        "stationaryTailFrames": 40,
+        "baselineTransfers": 156,
+        "fixedTransfers": 0
+      }
+    ],
+    "measurementOnly": "Correcting animation measurements alone retained a two-layout cycle."
+  },
+  "nestedCollectionStory": {
+    "id": "react-sortable-nested-collections--example",
+    "diagnosticStoriesRetained": true,
+    "cases": [
+      "Deeply nested card into empty collection; stable for 40 stationary observation frames",
+      "Collection transfer preserves children; cancellation restores the whole tree",
+      "Root collection reorder and own-descendant exclusion",
+      "Immediate nested-list keyboard reversal and drop",
+      "Card transfer to root and reset",
+      "390px viewport without horizontal overflow",
+      "Copy retains starting tree, input, collisions, geometry, and final placement",
+      "Clipboard denial preserves selectable JSON for a canceled drag",
+      "Picking up a nested collection preserves its parent",
+      "Replay the supplied 129 pointer coordinates without alternating root slots",
+      "Group crosses a sibling card in both pointer directions, preserving children",
+      "Group crosses a sibling card in both keyboard directions, preserving children",
+      "Card crosses a sibling group in both keyboard directions, preserving children"
+    ],
+    "visualReview": ["1440px light", "1440px dark", "390px light"]
+  },
+  "geometryCompletionCoverage": [
+    "Plain async dragover listener final layout",
+    "Plain async dragmove listener final layout before drop",
+    "Concurrent render reads and later layout writes",
+    "Renderer replacement and restoration",
+    "Measurement and rendering rejection recovery",
+    "Cancellation followed by a new drag",
+    "Destruction retains underlying renderer ownership"
+  ],
+  "nestedCollectionFollowUp": {
+    "reportedPlacements": 61,
+    "reportedDurationMilliseconds": 4369.8,
+    "sameInputConsecutivePlacements": 0,
+    "replayBefore": {
+      "placements": 57,
+      "rootSlotShuffles": 47
+    },
+    "replayAfter": {
+      "placements": 5,
+      "rootSlotShuffles": 0,
+      "parents": ["progress", "ideas", "website", "ideas", "progress"]
+    },
+    "fixture": "apps/stories/tests/fixtures/nested-collections-pointer-path.json",
+    "fix": "Collection header targetRef and explicit root append band; no library collision-policy changes",
+    "additionalTraces": [
+      {
+        "source": "components",
+        "inputs": 173,
+        "fixture": "apps/stories/tests/fixtures/nested-collections-header-path.json",
+        "before": {
+          "placements": 39,
+          "disconnectedSourceSamples": 270,
+          "zeroWidthSourceSamples": 117
+        },
+        "after": {
+          "placements": 8,
+          "disconnectedSourceSamples": 0,
+          "zeroWidthSourceSamples": 0
+        },
+        "fix": "Replace cloned descendants and target proxies in the same batch; map the source root to its placeholder."
+      },
+      {
+        "source": "website",
+        "inputs": 120,
+        "fixture": "apps/stories/tests/fixtures/nested-collections-container-path.json",
+        "withProxyFixOnly": {
+          "placements": 18
+        },
+        "after": {
+          "placements": 6
+        },
+        "fix": "Default rectangular pointer hits prefer smaller area; explicit pointerIntersection keeps center-distance ranking."
+      }
+    ]
+  },
+  "feedbackCloneCases": [
+    "Descendant attribute and text changes",
+    "Original target replacement",
+    "New target registration",
+    "Proxy cleanup and later-owner preservation"
+  ],
+  "validationLimits": {
+    "workspaceBuild": "Documentation app fails on mdast-util-to-string CommonJS named export; all ten package builds pass."
+  },
+  "nestedCollectionMixedSiblingFollowUp": {
+    "storyPolicy": "Cards and collections accept each other with default collision priorities; own collection background preserves child order.",
+    "keyboardPolicy": "Prefer siblings within the highest priority tier; otherwise use the nearest candidate. Always exclude the source from directional selection.",
+    "replays": [
+      {
+        "path": "first",
+        "placements": [
+          {
+            "parent": "progress",
+            "index": 2
+          },
+          {
+            "parent": "ideas",
+            "index": 3
+          },
+          {
+            "parent": "website",
+            "index": 2
+          },
+          {
+            "parent": "ideas",
+            "index": 3
+          },
+          {
+            "parent": "progress",
+            "index": 2
+          },
+          {
+            "parent": "progress",
+            "index": 1
+          }
+        ]
+      },
+      {
+        "path": "second",
+        "placements": [
+          {
+            "parent": "system",
+            "index": 0
+          },
+          {
+            "parent": "progress",
+            "index": 2
+          },
+          {
+            "parent": "ideas",
+            "index": 3
+          },
+          {
+            "parent": "website",
+            "index": 2
+          },
+          {
+            "parent": "website",
+            "index": 0
+          },
+          {
+            "parent": "ideas",
+            "index": 1
+          },
+          {
+            "parent": "board",
+            "index": 1
+          },
+          {
+            "parent": "ideas",
+            "index": 3
+          },
+          {
+            "parent": "ideas",
+            "index": 0
+          }
+        ]
+      },
+      {
+        "path": "third",
+        "placements": []
+      }
+    ]
+  },
+  "nestedCollectionHoverPreview": {
+    "defaultDelayMilliseconds": 500,
+    "scope": "Story-only pointer/touch transfers to a different parent; same-parent sorting and keyboard commands remain immediate.",
+    "collisionRegressionsDelayMilliseconds": 0,
+    "cases": [
+      "Destination highlight before placement and immediate sorting after transfer",
+      "Progress retained across targets in one destination",
+      "Return to current parent cancels preview and reorders immediately",
+      "Keyboard transfer remains immediate",
+      "A different destination restarts the countdown",
+      "Drop before expiry cancels transfer",
+      "Escape before expiry cancels transfer"
+    ]
+  },
+  "ciFollowUp": {
+    "packageTests": 274,
+    "abstract": 47,
+    "collision": 60,
+    "dom": 100,
+    "state": 7,
+    "helpers": 60,
+    "abstractCachedEntriesRestored": 12,
+    "baselineFailures": [
+      "Unbuilt downstream collision import in four abstract test files",
+      "Development-only fixture URL on static server",
+      "Nested gestures outside the default CI viewport"
+    ],
+    "runtime": "Static Storybook, bundled Chromium 147, two workers, no retries",
+    "staticReactBrowserTests": 81
+  },
+  "nestedCollectionInsertionFollowUp": {
+    "baseline": "Hovering five pixels above the first card selected contents:ready and appended buttons at index 2 instead of 0.",
+    "fix": "Resolve container transfers from the current pointer and immediate child target midpoints in the collision registry.",
+    "newBrowserCases": 8,
+    "cases": [
+      "Top padding",
+      "Side padding",
+      "Top half of a card",
+      "Bottom half of a card",
+      "Gap before a collection",
+      "Nested top padding",
+      "Nested gap",
+      "Append region"
+    ],
+    "checks": [
+      "Exact sibling order after transfer, stationary hold, and drop",
+      "Latest insertion slot when moving within a destination during its original countdown"
+    ],
+    "recordedPathPlacements": [
+      {
+        "path": "first",
+        "placements": [
+          ["progress", 1],
+          ["ideas", 1],
+          ["website", 2],
+          ["ideas", 1],
+          ["progress", 2],
+          ["progress", 1]
+        ]
+      },
+      {
+        "path": "second",
+        "placements": [
+          ["system", 0],
+          ["progress", 1],
+          ["ideas", 1],
+          ["website", 1],
+          ["website", 0],
+          ["ideas", 1],
+          ["board", 1],
+          ["ideas", 0]
+        ]
+      },
+      {
+        "path": "third",
+        "placements": []
+      }
+    ],
+    "runtime": "Static Storybook, Chromium 147, two workers, no retries",
+    "staticReactBrowserTests": 89
+  }
+}

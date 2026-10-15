@@ -1,0 +1,193 @@
+.Reproduction {
+  color: #243146;
+  background: #f5f7fb;
+  padding: 20px;
+  font:
+    14px/1.45 Arial,
+    sans-serif;
+  min-width: 1140px;
+}
+
+.Reproduction * {
+  box-sizing: border-box;
+}
+.Intro {
+  width: 1060px;
+}
+.Intro h2 {
+  margin: 0 0 10px;
+  font-size: 22px;
+}
+.Intro ol {
+  padding-left: 22px;
+  margin: 8px 0;
+}
+.Intro p {
+  margin: 8px 0;
+}
+.Toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.Toolbar button {
+  padding: 6px 10px;
+}
+.Status {
+  display: block;
+  height: 38px;
+  padding-top: 8px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.Root {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 18px;
+  width: 1100px;
+  min-height: 660px;
+  border: 1px solid #a1aec1;
+  background: #e9eef6;
+}
+
+.Root[data-nested-layout='grid'] {
+  display: grid;
+  grid-template-columns: repeat(2, 320px);
+  gap: 18px;
+  align-content: start;
+  width: 696px;
+}
+
+.Root > section {
+  width: 300px;
+  flex: 0 0 300px;
+}
+.Root[data-nested-layout='grid'] > section {
+  width: 320px;
+}
+.Container,
+.Item {
+  /* Shared preview styles lay out every section and halve its child widths. */
+  display: block;
+  margin: 0;
+  max-width: none;
+  border: 1px solid #a7b5cc;
+  border-radius: 5px;
+  background: #fff;
+  min-width: 0;
+}
+.Container > *,
+.Item > * {
+  width: auto;
+}
+.Container {
+  border-left: 3px solid #748ed5;
+}
+.Item {
+  height: var(--item-height);
+  overflow: hidden;
+}
+.NodeHeader {
+  display: flex;
+  align-items: center;
+  height: 38px;
+  padding: 3px 8px;
+  gap: 6px;
+}
+.Container > .NodeHeader {
+  height: 40px;
+  background: #f1f4fd;
+}
+.Label {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  font:
+    bold 14px Arial,
+    sans-serif;
+  color: inherit;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 4px;
+}
+.Handle {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  border: 1px solid #b7c4d8;
+  border-radius: 3px;
+  color: #405777;
+  background: white;
+  cursor: grab;
+  touch-action: none;
+  font:
+    24px/24px Arial,
+    sans-serif;
+  padding: 0;
+}
+.Handle:active {
+  cursor: grabbing;
+}
+.ItemDetail {
+  font-size: 11px;
+  color: #596880;
+  padding: 0 12px;
+  pointer-events: none;
+}
+.Children {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px dashed #a0b0ca;
+  margin: 10px;
+  padding: 10px;
+  min-height: 90px;
+  background: #edf2fb;
+}
+.Children > section {
+  width: 100%;
+}
+.Append {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 32px;
+  min-height: 32px;
+  border: 1px dashed #9baac2;
+  color: #526581;
+  font-size: 11px;
+  pointer-events: none;
+  background: #e1e9f7;
+}
+.Root > .Append {
+  min-width: 80px;
+  min-height: 180px;
+  flex: 1 0 80px;
+}
+.Root[data-nested-layout='grid'] > .Append {
+  grid-column: 1 / -1;
+  min-height: 64px;
+}
+[data-nested-selected='true'] {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+[data-nested-target='true'] {
+  box-shadow: inset 0 0 0 2px #df8a24;
+}
+.TracePanel {
+  margin-top: 16px;
+  width: 1040px;
+}
+.TracePanel pre {
+  height: 260px;
+  overflow: auto;
+  background: #172131;
+  color: #dbe5f4;
+  padding: 14px;
+  font: 11px/1.45 monospace;
+  white-space: pre;
+}

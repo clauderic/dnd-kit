@@ -72,8 +72,16 @@ export class DragDropManager<T extends Draggable, U extends Droppable> {
   /** Registry that manages draggable and droppable entities */
   public registry: DragDropRegistry<T, U, DragDropManager<T, U>>;
 
+  #renderer!: Renderer;
+
   /** Handles rendering of drag and drop visual feedback */
-  public renderer: Renderer;
+  public get renderer(): Renderer {
+    return this.#renderer;
+  }
+
+  public set renderer(renderer: Renderer) {
+    this.#renderer = renderer;
+  }
 
   /**
    * Creates a new drag and drop manager instance.

@@ -216,10 +216,11 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         parseInt(borderBlockEndWidth)
       : 0;
 
-    const placeholder =
+    const placeholderState =
       feedback !== 'move' && !this.overlay
         ? createPlaceholder(source, clone ? 'clone' : 'hidden')
         : null;
+    const placeholder = placeholderState?.element;
     const isKeyboardOperation = untracked(() =>
       isKeyboardEvent(manager.dragOperation.activatorEvent)
     );
@@ -420,7 +421,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       elementMutationObserver = createElementMutationObserver(
         element,
         placeholder,
-        clone
+        clone ? placeholderState?.updateChildren : undefined
       );
       documentMutationObserver = createDocumentMutationObserver(
         element,
