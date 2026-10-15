@@ -1,58 +1,81 @@
-import {effect, untracked} from '@dnd-kit/state';
+import {effect, signal} from '@dnd-kit/state';
 import type {ComputedRef, MaybeRefOrGetter} from 'vue';
-import {computed, onWatcherCleanup, ref, toValue, watchEffect} from 'vue';
+import {computed, ref, toValue, watch} from 'vue';
 
 /** Trigger a recompute when reading signal properties of an object. */
 export function useDeepSignal<T extends object | null | undefined>(
   target: MaybeRefOrGetter<T>
 ): ComputedRef<T> {
-  const tracked = new Map<string | symbol, any>();
   const dirty = ref(0);
+  let version = 0;
+  const tracker = computed(() => ({
+    target: toValue(target),
+    tracked: new Map<string | symbol, any>(),
+    propertyCount: signal(0),
+    active: false,
+    queued: false,
+  }));
 
-  watchEffect(() => {
-    const _target = toValue(target);
-    if (!_target) {
-      tracked.clear();
-      return;
-    }
+  // An explicit source keeps reads inside the signal effect out of this watch.
+  watch(
+    tracker,
+    (current, _, onCleanup) => {
+      const {target, tracked, propertyCount} = current;
+      if (!target) return;
 
-    onWatcherCleanup(
-      effect(() => {
+      current.active = true;
+      const dispose = effect(() => {
+        propertyCount.value;
         let stale = false;
 
-        for (const entry of tracked) {
-          const [key] = entry;
-          const value = untracked(() => entry[1]);
-          const latestValue = (_target as any)[key];
+        for (const [key, value] of tracked) {
+          const latestValue = (target as any)[key];
 
-          if (value !== latestValue) {
+          if (!Object.is(value, latestValue)) {
             stale = true;
             tracked.set(key, latestValue);
           }
         }
 
-        if (stale) {
-          dirty.value++;
-        }
-      })
-    );
-  }, {flush: 'post'});
+        if (stale) dirty.value = ++version;
+      });
+
+      onCleanup(() => {
+        current.active = false;
+        dispose();
+      });
+    },
+    {flush: 'post', immediate: true}
+  );
 
   return computed(() => {
-    const _target = toValue(target);
-
+    const current = tracker.value;
+    const {target, tracked} = current;
     void dirty.value;
 
-    return _target
-      ? new Proxy(_target, {
+    return target
+      ? new Proxy(target, {
           get(target, key) {
             const value = (target as any)[key];
 
-            tracked.set(key, value);
+            // Subsequent reads must not overwrite the observer's baseline.
+            if (!tracked.has(key)) {
+              tracked.set(key, value);
+
+              if (current.active && !current.queued) {
+                current.queued = true;
+                // Refresh dependencies after the current render has finished.
+                queueMicrotask(() => {
+                  current.queued = false;
+                  if (current.active)
+                    current.propertyCount.value = tracked.size;
+                });
+              }
+            }
 
             return value;
           },
         })
-      : _target;
+      : target;
   });
 }

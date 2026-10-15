@@ -1,6 +1,6 @@
 import {type Data} from '@dnd-kit/abstract';
 import type {SortableInput} from '@dnd-kit/dom/sortable';
-import {defaultSortableTransition, Sortable} from '@dnd-kit/dom/sortable';
+import {resolveSortableTransition, Sortable} from '@dnd-kit/dom/sortable';
 import {batch} from '@dnd-kit/state';
 import {useDeepSignal} from '@dnd-kit/vue/composables';
 import {toValueDeep, unrefElement} from '@dnd-kit/vue/utilities';
@@ -26,10 +26,9 @@ export interface UseSortableInput<T extends Data = Data>
 }
 
 export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
-  const transition = computed(() => ({
-    ...defaultSortableTransition,
-    ...toValue(input.transition),
-  }));
+  const transition = computed(() =>
+    resolveSortableTransition(toValue(input.transition))
+  );
 
   const sortable = useInstance((manager) => {
     const _input = toValueDeep(input);

@@ -128,13 +128,11 @@ export const CustomTransition: Story = {
   },
 };
 
-export const DisableTransition: Story = {
-  name: 'Disable transition',
+export const DisabledTransition: Story = {
+  name: 'Disabled transition',
   args: {
     debug: false,
-    transition: {
-      duration: 0,
-    },
+    transition: null,
   },
 };
 

@@ -24,7 +24,7 @@ interface Props {
   plugins?: Customizable<Plugins>;
   modifiers?: Modifiers;
   layout?: 'vertical' | 'horizontal' | 'grid';
-  transition?: SortableTransition;
+  transition?: SortableTransition | null;
   itemCount?: number;
   optimistic?: boolean;
   collisionDetector?: CollisionDetector;
@@ -87,7 +87,7 @@ interface SortableProps {
   dragHandle?: boolean;
   plugins?: Customizable<Plugins>;
   optimistic?: boolean;
-  transition?: SortableTransition;
+  transition?: SortableTransition | null;
   style?: React.CSSProperties;
 }
 

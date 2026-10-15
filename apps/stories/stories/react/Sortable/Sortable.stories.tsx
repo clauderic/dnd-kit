@@ -2,8 +2,12 @@ import type {Meta, StoryObj} from '@storybook/react-vite';
 
 import SortableApp from './SortableApp.tsx';
 import sortableSource from './SortableApp.tsx?raw';
-import {baseStyles, sortableStyles} from '@dnd-kit/stories-shared/styles/sandbox';
+import {
+  baseStyles,
+  sortableStyles,
+} from '@dnd-kit/stories-shared/styles/sandbox';
 import {QuickstartExample} from './Quickstart.tsx';
+import {ConditionalStateExample} from './ConditionalStateExample.tsx';
 
 import docs from './docs/SortableDocs.mdx';
 
@@ -35,4 +39,11 @@ export const Quickstart: Story = {
   name: 'Quickstart',
   tags: ['hidden'],
   render: () => <QuickstartExample />,
+};
+
+export const ConditionalState: StoryObj<typeof ConditionalStateExample> = {
+  name: 'Conditional state',
+  tags: ['hidden'],
+  args: {initiallyShowState: false},
+  render: (args) => <ConditionalStateExample {...args} />,
 };

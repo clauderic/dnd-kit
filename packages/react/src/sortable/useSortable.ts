@@ -1,7 +1,7 @@
 import {useCallback} from 'react';
 import {batch, deepEqual} from '@dnd-kit/state';
 import {type Data} from '@dnd-kit/abstract';
-import {Sortable, defaultSortableTransition} from '@dnd-kit/dom/sortable';
+import {Sortable, resolveSortableTransition} from '@dnd-kit/dom/sortable';
 import type {SortableInput} from '@dnd-kit/dom/sortable';
 import {useInstance} from '@dnd-kit/react';
 import {
@@ -38,7 +38,7 @@ export function useSortable<T extends Data = Data>(input: UseSortableInput<T>) {
     type,
     plugins,
   } = input;
-  const transition = {...defaultSortableTransition, ...input.transition};
+  const transition = resolveSortableTransition(input.transition);
   const sortable = useInstance((manager) => {
     return new Sortable(
       {

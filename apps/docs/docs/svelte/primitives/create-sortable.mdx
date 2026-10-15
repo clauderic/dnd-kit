@@ -129,8 +129,9 @@ Input properties are plain values that are read reactively. To keep an option in
   An array of plugin descriptors for per-entity plugin configuration. Use `Plugin.configure()` to create descriptors. For example, `Feedback.configure({ feedback: 'clone' })`.
 </ParamField>
 
-<ParamField path="transition" type="SortableTransition" optional>
-  Animation transition configuration for sort operations.
+<ParamField path="transition" type="SortableTransition | null" optional>
+  Animation transition configuration for sort operations. Set to `null` to
+  disable sortable transitions entirely.
 </ParamField>
 
 <ParamField path="modifiers" type="Modifier[]" optional>

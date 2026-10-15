@@ -5,6 +5,7 @@ import {
   detectScrollIntent,
   getScrollableAncestors,
   getElementFromPoint,
+  getScrollPosition,
   ScrollDirection,
   scheduler,
   isKeyboardEvent,
@@ -166,7 +167,12 @@ export class Scroller extends CorePlugin<DragDropManager> {
       }
 
       for (const scrollableElement of elements) {
-        const elementCanScroll = canScroll(scrollableElement, by);
+        const scrollPosition = getScrollPosition(scrollableElement);
+        const elementCanScroll = canScroll(
+          scrollableElement,
+          by,
+          scrollPosition
+        );
 
         if (elementCanScroll.x || elementCanScroll.y) {
           const {speed, direction} = detectScrollIntent(
@@ -174,7 +180,9 @@ export class Scroller extends CorePlugin<DragDropManager> {
             currentPosition,
             intent,
             scrollOptions?.acceleration,
-            scrollOptions?.threshold
+            scrollOptions?.threshold,
+            undefined,
+            scrollPosition
           );
 
           if (scrollIntent) {
