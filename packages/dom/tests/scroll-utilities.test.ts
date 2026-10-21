@@ -131,4 +131,20 @@ describe('scroll utilities', () => {
     });
     expect(getBoundingClientRect).toHaveBeenCalledTimes(1);
   });
+
+  it('treats [-max, 0] as the horizontal range in RTL containers', () => {
+    window.getComputedStyle = () =>
+      ({transform: 'none', direction: 'rtl'}) as CSSStyleDeclaration;
+    const {element} = createScrollableElement();
+    element.scrollLeft = -400;
+
+    const {position, isLeft, isRight} = getScrollPosition(element);
+    expect(position.min.x).toBe(-400);
+    expect(position.max.x).toBe(0);
+    expect({isLeft, isRight}).toEqual({isLeft: true, isRight: false});
+    expect(canScroll(element)).toMatchObject({left: false, right: true});
+
+    element.scrollLeft = 0;
+    expect(canScroll(element)).toMatchObject({left: true, right: false});
+  });
 });

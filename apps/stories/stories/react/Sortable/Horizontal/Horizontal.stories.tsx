@@ -93,3 +93,16 @@ export const NestedScroll: Story = {
     </div>
   ),
 };
+
+export const RightToLeft: Story = {
+  name: 'Right-to-left',
+  args: {
+    ...defaultArgs,
+    itemCount: 50,
+  },
+  render: (args) => (
+    <div dir="rtl" style={{width: '100vw', overflowX: 'auto'}}>
+      <SortableExample {...args} />
+    </div>
+  ),
+};
