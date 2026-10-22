@@ -60,6 +60,7 @@ export {
   isKeyboardEvent,
   isPointerEvent,
   isShadowRoot,
+  isNode,
 } from './type-guards/index.ts';
 export {isTextInput} from './type-guards/isTextInput.ts';
 
