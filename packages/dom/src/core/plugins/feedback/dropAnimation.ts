@@ -73,6 +73,14 @@ export function runDropAnimation(ctx: DropAnimationContext): void {
     return;
   }
 
+  // A drop handler may unmount the source. Animating its detached feedback
+  // would leave an orphaned placeholder affecting layout until the animation ends.
+  if (!ctx.feedbackElement.isConnected) {
+    ctx.cleanup();
+    requestAnimationFrame(ctx.restoreFocus);
+    return;
+  }
+
   const {
     duration = DEFAULT_DURATION,
     easing = DEFAULT_EASING,
