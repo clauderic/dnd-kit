@@ -58,4 +58,4 @@ function App() {
 
 ## Documentation
 
-Visit [dndkit.com](https://dndkit.com/solid) for full documentation, guides, and interactive examples.
+Visit [dndkit.com](https://dndkit.com/solid/quickstart) for full documentation, guides, and interactive examples.

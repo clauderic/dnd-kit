@@ -47,4 +47,4 @@ function App() {
 
 ## Documentation
 
-Visit [dndkit.com](https://dndkit.com/react) for full documentation, guides, and interactive examples.
+Visit [dndkit.com](https://dndkit.com/react/quickstart) for full documentation, guides, and interactive examples.

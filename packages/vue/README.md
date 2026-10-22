@@ -52,4 +52,4 @@ function onDragEnd(event) {
 
 ## Documentation
 
-Visit [dndkit.com](https://dndkit.com/vue) for full documentation, guides, and interactive examples.
+Visit [dndkit.com](https://dndkit.com/vue/quickstart) for full documentation, guides, and interactive examples.
