@@ -1,3 +1,9 @@
+# Framework documentation entry points
+/react /react/quickstart
+/vue /vue/quickstart
+/svelte /svelte/quickstart
+/solid /solid/quickstart
+
 # Legacy redirects from the previous dndkit.com documentation
 /overview /
 /introduction/getting-started /legacy/introduction/getting-started

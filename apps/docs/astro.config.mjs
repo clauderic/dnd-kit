@@ -26,6 +26,10 @@ export default defineConfig({
     }),
   ],
   redirects: {
+    '/react': '/react/quickstart',
+    '/vue': '/vue/quickstart',
+    '/svelte': '/svelte/quickstart',
+    '/solid': '/solid/quickstart',
     // Preserve legacy group/index links that predate the generated DndContext page.
     // Remove this once a context-provider index page exists.
     '/legacy/api-documentation/context-provider':
