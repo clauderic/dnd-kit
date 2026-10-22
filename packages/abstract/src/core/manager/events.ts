@@ -4,6 +4,7 @@ import type {Draggable, Droppable} from '../entities/index.ts';
 import type {Collisions} from '../collision/index.ts';
 import type {DragDropManager} from './manager.ts';
 import type {DragOperationSnapshot} from './operation.ts';
+import {recordCompletion} from './completion.ts';
 
 /** Base type for event handler functions */
 export type Events = Record<string, (...args: any[]) => void>;
@@ -76,7 +77,8 @@ class Monitor<T extends Events> {
     }
 
     for (const listener of listeners) {
-      listener(...args);
+      const result = listener(...args);
+      recordCompletion(args[0], result);
     }
   }
 }
@@ -133,6 +135,8 @@ export type DragDropEventMap<
  * Map of drag and drop event handler signatures, keyed by event name.
  * Each handler receives the event object and the manager instance.
  * Derived from `DragDropEventMap`.
+ * Returned promises from `dragmove` and `dragover` handlers are included in
+ * the originating action's completion. Other events remain notifications.
  *
  * @template T - The type of draggable entities
  * @template U - The type of droppable entities
