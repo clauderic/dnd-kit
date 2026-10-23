@@ -490,7 +490,7 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
       };
 
       if (feedbackElement === this.overlay) {
-        setTimeout(finalize, 0);
+        queueMicrotask(finalize);
       } else {
         finalize();
       }
