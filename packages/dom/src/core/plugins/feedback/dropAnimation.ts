@@ -49,7 +49,7 @@ export interface DropAnimationContext {
   animation: DropAnimation | undefined;
   getElementMutationObserver: () => MutationObserver | undefined;
   cleanup: () => void;
-  restoreFocus: () => void;
+  restoreFocus: (timeout?: number) => void;
 }
 
 export function runDropAnimation(ctx: DropAnimationContext): void {
@@ -67,24 +67,27 @@ export function runDropAnimation(ctx: DropAnimationContext): void {
 
     Promise.resolve(result).then(() => {
       ctx.cleanup();
-      requestAnimationFrame(ctx.restoreFocus);
+      ctx.restoreFocus();
     });
 
     return;
   }
 
-  // A drop handler may unmount the source. Animating its detached feedback
-  // would leave an orphaned placeholder affecting layout until the animation ends.
+  const {duration = DEFAULT_DURATION, easing = DEFAULT_EASING} =
+    animation ?? {};
+  const effectiveDuration = prefersReducedMotion(getWindow(ctx.feedbackElement))
+    ? 0
+    : ctx.moved || ctx.feedbackElement !== ctx.element
+      ? duration
+      : 0;
+
+  // A drop handler may unmount the source. Release its layout slot immediately,
+  // but allow a briefly detached keyboard target to return before restoring focus.
   if (!ctx.feedbackElement.isConnected) {
     ctx.cleanup();
-    requestAnimationFrame(ctx.restoreFocus);
+    ctx.restoreFocus(effectiveDuration);
     return;
   }
-
-  const {
-    duration = DEFAULT_DURATION,
-    easing = DEFAULT_EASING,
-  } = animation ?? {};
 
   showPopover(ctx.feedbackElement);
 
@@ -98,9 +101,7 @@ export function runDropAnimation(ctx: DropAnimationContext): void {
 
   const target = ctx.placeholder ?? ctx.element;
   const options = {
-    frameTransform: isSameFrame(ctx.feedbackElement, target)
-      ? null
-      : undefined,
+    frameTransform: isSameFrame(ctx.feedbackElement, target) ? null : undefined,
   };
   const current = new DOMRectangle(ctx.feedbackElement, options);
   const currentTranslate =
@@ -154,17 +155,13 @@ export function runDropAnimation(ctx: DropAnimationContext): void {
       ],
     },
     options: {
-      duration: prefersReducedMotion(getWindow(ctx.feedbackElement))
-        ? 0
-        : ctx.moved || ctx.feedbackElement !== ctx.element
-          ? duration
-          : 0,
+      duration: effectiveDuration,
       easing,
     },
   }).then(() => {
     ctx.feedbackElement.removeAttribute(DROPPING_ATTRIBUTE);
     runningAnimation?.finish();
     ctx.cleanup();
-    requestAnimationFrame(ctx.restoreFocus);
+    ctx.restoreFocus();
   });
 }
