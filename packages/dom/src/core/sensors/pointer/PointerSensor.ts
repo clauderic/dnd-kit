@@ -216,23 +216,33 @@ export class PointerSensor extends Sensor<
 
     this.controller = controller;
 
+    // Only follow the pointer that started the interaction, so that other
+    // pointers (such as a second finger on a touch screen) cannot move,
+    // drop or cancel the drag operation.
+    const {pointerId} = event;
+    const forPointer =
+      (listener: (event: PointerEvent) => void) => (event: PointerEvent) => {
+        if (event.pointerId === pointerId) {
+          listener(event);
+        }
+      };
+
     const documents = getDocuments();
     const unbindListeners = this.listeners.bind(documents, [
       {
         type: 'pointermove',
-        listener: (event: PointerEvent) =>
-          this.handlePointerMove(event, source),
+        listener: forPointer((event) => this.handlePointerMove(event, source)),
       },
       {
         type: 'pointerup',
-        listener: this.handlePointerUp,
+        listener: forPointer(this.handlePointerUp),
         options: {
           capture: true,
         },
       },
       {
         type: 'pointercancel',
-        listener: this.handleCancel,
+        listener: forPointer(this.handleCancel),
       },
       {
         // Cancel activation if there is a competing Drag and Drop interaction

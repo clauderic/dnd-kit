@@ -95,10 +95,14 @@ class TestPointerEvent extends Event {
   clientX: number;
   clientY: number;
 
-  constructor(type: string, init: {clientX?: number; clientY?: number} = {}) {
+  constructor(
+    type: string,
+    init: {clientX?: number; clientY?: number; pointerId?: number} = {}
+  ) {
     super(type, {cancelable: true});
     this.clientX = init.clientX ?? 0;
     this.clientY = init.clientY ?? 0;
+    this.pointerId = init.pointerId ?? 1;
   }
 }
 
@@ -123,6 +127,7 @@ function createTestDocument() {
     KeyboardEvent: TestKeyboardEvent,
     PointerEvent: TestPointerEvent,
     frameElement: null,
+    setTimeout: globalThis.setTimeout,
   }) as unknown as Window & typeof globalThis;
 
   testWindow.self = testWindow;
@@ -259,6 +264,154 @@ describe('PointerSensor', () => {
     expect(manager.dragOperation.position.current).toMatchObject({
       x: 30,
       y: 40,
+    });
+
+    unbind();
+    manager.destroy();
+  });
+
+  describe('with another pointer active during the drag', () => {
+    async function startDrag() {
+      const context = setup(() => []);
+      const {element, rendering} = context;
+
+      element.dispatchEvent(
+        new TestPointerEvent('pointerdown', {clientX: 10, clientY: 10})
+      );
+      rendering.resolve();
+      await flush();
+
+      document.dispatchEvent(
+        new TestPointerEvent('pointermove', {clientX: 30, clientY: 40})
+      );
+      await flush();
+
+      expect(context.manager.dragOperation.status.dragging).toBe(true);
+      expect(context.manager.dragOperation.position.current).toMatchObject({
+        x: 30,
+        y: 40,
+      });
+
+      return context;
+    }
+
+    it('ignores moves from the other pointer', async () => {
+      const {manager, unbind} = await startDrag();
+      const dragmove = jest.fn();
+      manager.monitor.addEventListener('dragmove', dragmove);
+
+      document.dispatchEvent(
+        new TestPointerEvent('pointermove', {
+          clientX: 200,
+          clientY: 300,
+          pointerId: 2,
+        })
+      );
+      await flush();
+
+      expect(dragmove).not.toHaveBeenCalled();
+      expect(manager.dragOperation.position.current).toMatchObject({
+        x: 30,
+        y: 40,
+      });
+
+      document.dispatchEvent(
+        new TestPointerEvent('pointermove', {clientX: 50, clientY: 60})
+      );
+      await flush();
+
+      expect(dragmove).toHaveBeenCalledTimes(1);
+      expect(manager.dragOperation.position.current).toMatchObject({
+        x: 50,
+        y: 60,
+      });
+
+      unbind();
+      manager.destroy();
+    });
+
+    it('keeps dragging when the other pointer is released', async () => {
+      const {manager, unbind} = await startDrag();
+      const dragend = jest.fn();
+      manager.monitor.addEventListener('dragend', dragend);
+
+      document.dispatchEvent(
+        new TestPointerEvent('pointerup', {
+          clientX: 200,
+          clientY: 300,
+          pointerId: 2,
+        })
+      );
+      await flush();
+
+      expect(dragend).not.toHaveBeenCalled();
+      expect(manager.dragOperation.status.dragging).toBe(true);
+
+      document.dispatchEvent(
+        new TestPointerEvent('pointerup', {clientX: 30, clientY: 40})
+      );
+      await flush();
+
+      expect(dragend).toHaveBeenCalledTimes(1);
+      expect(dragend.mock.calls[0][0].canceled).toBe(false);
+
+      unbind();
+      manager.destroy();
+    });
+
+    it('keeps dragging when the other pointer is canceled', async () => {
+      const {manager, unbind} = await startDrag();
+      const dragend = jest.fn();
+      manager.monitor.addEventListener('dragend', dragend);
+
+      document.dispatchEvent(
+        new TestPointerEvent('pointercancel', {pointerId: 2})
+      );
+      await flush();
+
+      expect(dragend).not.toHaveBeenCalled();
+      expect(manager.dragOperation.status.dragging).toBe(true);
+
+      document.dispatchEvent(new TestPointerEvent('pointercancel'));
+      await flush();
+
+      expect(dragend).toHaveBeenCalledTimes(1);
+      expect(dragend.mock.calls[0][0].canceled).toBe(true);
+
+      unbind();
+      manager.destroy();
+    });
+  });
+
+  it('ignores other pointers while activation is pending', async () => {
+    const {manager, element, rendering, unbind} = setup(() => [
+      new PointerActivationConstraints.Delay({value: 50, tolerance: 5}),
+    ]);
+
+    element.dispatchEvent(
+      new TestPointerEvent('pointerdown', {clientX: 10, clientY: 10})
+    );
+
+    // A second pointer moving beyond the tolerance must not abort activation
+    document.dispatchEvent(
+      new TestPointerEvent('pointermove', {
+        clientX: 200,
+        clientY: 300,
+        pointerId: 2,
+      })
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 80));
+
+    expect(manager.dragOperation.status.initializing).toBe(true);
+
+    rendering.resolve();
+    await flush();
+
+    expect(manager.dragOperation.status.dragging).toBe(true);
+    expect(manager.dragOperation.position.current).toMatchObject({
+      x: 10,
+      y: 10,
     });
 
     unbind();
