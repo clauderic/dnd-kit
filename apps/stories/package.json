@@ -31,7 +31,7 @@
   "devDependencies": {
     "@dnd-kit/eslint-config": "*",
     "@measured/auto-frame-component": "^0.1.7",
-    "@playwright/test": "^1.58.2",
+    "@playwright/test": "^1.64.1",
     "@storybook/addon-docs": "^9.0.15",
     "@storybook/addon-links": "^9.0.15",
     "@storybook/react-vite": "^9.0.15",
