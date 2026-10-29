@@ -2,4 +2,4 @@
 '@dnd-kit/dom': patch
 ---
 
-Fix auto-scroll in RTL scroll containers. `getScrollPosition` now exposes `position.min`, and the horizontal scroll range is `[-max, 0]` when the container's direction is `rtl`.
+Fix auto-scroll in RTL scroll containers. `getScrollPosition` now exposes `position.min` and accounts for writing modes and reversed flex layouts when determining a container's horizontal scroll bounds.

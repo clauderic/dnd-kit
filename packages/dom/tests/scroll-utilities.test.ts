@@ -14,10 +14,28 @@ beforeEach(() => {
     configurable: true,
     value: {
       frameElement: null,
-      getComputedStyle: () => ({transform: 'none'}),
     },
   });
+  mockComputedStyles();
 });
+
+function mockComputedStyles(styles: Partial<CSSStyleDeclaration> = {}) {
+  const getComputedStyle = mock(
+    () =>
+      ({
+        transform: 'none',
+        direction: 'ltr',
+        writingMode: 'horizontal-tb',
+        display: 'block',
+        flexDirection: 'row',
+        flexWrap: 'nowrap',
+        ...styles,
+      }) as CSSStyleDeclaration
+  );
+  window.getComputedStyle = getComputedStyle;
+
+  return getComputedStyle;
+}
 
 afterEach(() => {
   if (originalWindow) {
@@ -130,11 +148,11 @@ describe('scroll utilities', () => {
       speed: {x: 0, y: 18.75},
     });
     expect(getBoundingClientRect).toHaveBeenCalledTimes(1);
+    expect(window.getComputedStyle).toHaveBeenCalledTimes(1);
   });
 
   it('treats [-max, 0] as the horizontal range in RTL containers', () => {
-    window.getComputedStyle = () =>
-      ({transform: 'none', direction: 'rtl'}) as CSSStyleDeclaration;
+    mockComputedStyles({direction: 'rtl'});
     const {element} = createScrollableElement();
     element.scrollLeft = -400;
 
@@ -146,5 +164,205 @@ describe('scroll utilities', () => {
 
     element.scrollLeft = 0;
     expect(canScroll(element)).toMatchObject({left: true, right: false});
+  });
+
+  const horizontalRanges: {
+    name: string;
+    styles: Partial<CSSStyleDeclaration>;
+    min: number;
+    max: number;
+  }[] = [
+    {name: 'LTR blocks', styles: {}, min: 0, max: 400},
+    {name: 'RTL blocks', styles: {direction: 'rtl'}, min: -400, max: 0},
+    {
+      name: 'RTL reversed flex rows',
+      styles: {direction: 'rtl', display: 'flex', flexDirection: 'row-reverse'},
+      min: 0,
+      max: 400,
+    },
+    {
+      name: 'LTR reversed inline-flex rows',
+      styles: {display: 'inline-flex', flexDirection: 'row-reverse'},
+      min: -400,
+      max: 0,
+    },
+    {
+      name: 'RTL reversed flex columns',
+      styles: {
+        direction: 'rtl',
+        display: 'flex',
+        flexDirection: 'column-reverse',
+      },
+      min: -400,
+      max: 0,
+    },
+    {
+      name: 'RTL vertical-lr blocks',
+      styles: {direction: 'rtl', writingMode: 'vertical-lr'},
+      min: 0,
+      max: 400,
+    },
+    {
+      name: 'LTR vertical-rl blocks',
+      styles: {writingMode: 'vertical-rl'},
+      min: -400,
+      max: 0,
+    },
+    {
+      name: 'RTL sideways-lr blocks',
+      styles: {direction: 'rtl', writingMode: 'sideways-lr'},
+      min: 0,
+      max: 400,
+    },
+    {
+      name: 'LTR sideways-rl blocks',
+      styles: {writingMode: 'sideways-rl'},
+      min: -400,
+      max: 0,
+    },
+    {
+      name: 'vertical-lr reversed flex columns',
+      styles: {
+        writingMode: 'vertical-lr',
+        display: 'flex',
+        flexDirection: 'column-reverse',
+      },
+      min: -400,
+      max: 0,
+    },
+    {
+      name: 'vertical-rl reversed flex columns',
+      styles: {
+        writingMode: 'vertical-rl',
+        display: 'flex',
+        flexDirection: 'column-reverse',
+      },
+      min: 0,
+      max: 400,
+    },
+    {
+      name: 'vertical-lr reversed flex rows',
+      styles: {
+        writingMode: 'vertical-lr',
+        display: 'flex',
+        flexDirection: 'row-reverse',
+      },
+      min: 0,
+      max: 400,
+    },
+    {
+      name: 'LTR flex columns with reversed wrapping',
+      styles: {
+        display: 'flex',
+        flexDirection: 'column',
+        flexWrap: 'wrap-reverse',
+      },
+      min: -400,
+      max: 0,
+    },
+    {
+      name: 'RTL flex columns with reversed wrapping',
+      styles: {
+        direction: 'rtl',
+        display: 'flex',
+        flexDirection: 'column',
+        flexWrap: 'wrap-reverse',
+      },
+      min: 0,
+      max: 400,
+    },
+    {
+      name: 'vertical-rl flex rows with reversed wrapping',
+      styles: {
+        writingMode: 'vertical-rl',
+        display: 'flex',
+        flexWrap: 'wrap-reverse',
+      },
+      min: 0,
+      max: 400,
+    },
+    {
+      name: 'RTL blocks with unused flex properties',
+      styles: {
+        direction: 'rtl',
+        flexDirection: 'row-reverse',
+        flexWrap: 'wrap-reverse',
+      },
+      min: -400,
+      max: 0,
+    },
+  ];
+
+  for (const {name, styles, min, max} of horizontalRanges) {
+    it(`uses the physical scroll edges for ${name}`, () => {
+      mockComputedStyles(styles);
+      const {element} = createScrollableElement();
+
+      element.scrollLeft = min;
+      expect(getScrollPosition(element)).toMatchObject({
+        position: {min: {x: min}, max: {x: max}},
+        isLeft: true,
+        isRight: false,
+      });
+      expect(canScroll(element)).toMatchObject({left: false, right: true});
+      expect(detectScrollIntent(element, {x: 5, y: 50}).direction.x).toBe(
+        ScrollDirection.Idle
+      );
+      expect(detectScrollIntent(element, {x: 95, y: 50}).direction.x).toBe(
+        ScrollDirection.Forward
+      );
+
+      element.scrollLeft = (min + max) / 2;
+      expect(canScroll(element)).toMatchObject({left: true, right: true});
+      expect(canScroll(element, {x: -201, y: 0}).left).toBe(false);
+      expect(canScroll(element, {x: 201, y: 0}).right).toBe(false);
+
+      element.scrollLeft = max;
+      expect(getScrollPosition(element)).toMatchObject({
+        isLeft: false,
+        isRight: true,
+      });
+      expect(canScroll(element)).toMatchObject({left: true, right: false});
+      expect(detectScrollIntent(element, {x: 5, y: 50}).direction.x).toBe(
+        ScrollDirection.Reverse
+      );
+      expect(detectScrollIntent(element, {x: 95, y: 50}).direction.x).toBe(
+        ScrollDirection.Idle
+      );
+    });
+  }
+
+  it('reuses cached styles without probing the scroll offset', () => {
+    const getComputedStyle = mockComputedStyles({
+      direction: 'rtl',
+      display: 'flex',
+      flexDirection: 'row-reverse',
+    });
+    const {element, getBoundingClientRect} = createScrollableElement();
+    const setScrollLeft = mock();
+    Object.defineProperty(element, 'scrollLeft', {
+      get: () => 0,
+      set: setScrollLeft,
+    });
+
+    for (let i = 0; i < 2; i++) {
+      const scrollPosition = getScrollPosition(element);
+      expect(canScroll(element, undefined, scrollPosition).right).toBe(true);
+      expect(
+        detectScrollIntent(
+          element,
+          {x: 95, y: 50},
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          scrollPosition
+        ).direction.x
+      ).toBe(ScrollDirection.Forward);
+    }
+
+    expect(getComputedStyle).toHaveBeenCalledTimes(1);
+    expect(getBoundingClientRect).toHaveBeenCalledTimes(2);
+    expect(setScrollLeft).not.toHaveBeenCalled();
   });
 });

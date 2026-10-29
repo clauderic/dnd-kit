@@ -5,7 +5,14 @@ import {getComputedStyles} from '../styles/getComputedStyles.ts';
 import {isDocumentScrollingElement} from './documentScrollingElement.ts';
 
 export interface ScrollPosition {
-  rect: {width: number; height: number; top: number; left: number; bottom: number; right: number};
+  rect: {
+    width: number;
+    height: number;
+    top: number;
+    left: number;
+    bottom: number;
+    right: number;
+  };
   position: {
     current: {x: number; y: number};
     min: {x: number; y: number};
@@ -19,12 +26,13 @@ export interface ScrollPosition {
 
 export function getScrollPosition(scrollableElement: Element): ScrollPosition {
   const window = getWindow(scrollableElement);
-  const rect = isDocumentScrollingElement(scrollableElement)
+  const isDocument = isDocumentScrollingElement(scrollableElement);
+  const rect = isDocument
     ? getViewportBoundingRectangle(scrollableElement)
     : getBoundingRectangle(scrollableElement);
 
   const vv = window.visualViewport;
-  const dimensions = isDocumentScrollingElement(scrollableElement)
+  const dimensions = isDocument
     ? {
         height: vv?.height ?? window.innerHeight,
         width: vv?.width ?? window.innerWidth,
@@ -34,20 +42,22 @@ export function getScrollPosition(scrollableElement: Element): ScrollPosition {
         width: scrollableElement.clientWidth,
       };
   const rangeX = scrollableElement.scrollWidth - dimensions.width;
-  // In RTL, scrollLeft runs from -rangeX (fully left) to 0 (start, fully right)
-  const isRtl =
-    getComputedStyles(scrollableElement, true).direction === 'rtl';
+  const styles = getComputedStyles(scrollableElement, true);
+  // Element flow adjustments do not apply to the viewport's formatting context.
+  const hasNegativeScrollLeft = isDocument
+    ? styles.direction === 'rtl'
+    : isHorizontalScrollReversed(styles);
   const position = {
     current: {
       x: scrollableElement.scrollLeft,
       y: scrollableElement.scrollTop,
     },
     min: {
-      x: isRtl ? -rangeX : 0,
+      x: hasNegativeScrollLeft ? -rangeX : 0,
       y: 0,
     },
     max: {
-      x: isRtl ? 0 : rangeX,
+      x: hasNegativeScrollLeft ? 0 : rangeX,
       y: scrollableElement.scrollHeight - dimensions.height,
     },
   };
@@ -65,4 +75,30 @@ export function getScrollPosition(scrollableElement: Element): ScrollPosition {
     isBottom,
     isRight,
   };
+}
+
+function isHorizontalScrollReversed(styles: CSSStyleDeclaration): boolean {
+  const {direction, display, writingMode} = styles;
+  const isVertical =
+    writingMode === 'vertical-lr' ||
+    writingMode === 'vertical-rl' ||
+    writingMode === 'sideways-lr' ||
+    writingMode === 'sideways-rl';
+  const isReversed = isVertical
+    ? writingMode === 'vertical-rl' || writingMode === 'sideways-rl'
+    : direction === 'rtl';
+
+  if (display !== 'flex' && display !== 'inline-flex') {
+    return isReversed;
+  }
+
+  const {flexDirection, flexWrap} = styles;
+  const isRow = flexDirection === 'row' || flexDirection === 'row-reverse';
+  const isHorizontalMainAxis = isVertical ? !isRow : isRow;
+  // Flex reversal changes the scroll origin on the main or cross axis.
+  const isFlexReversed = isHorizontalMainAxis
+    ? flexDirection === 'row-reverse' || flexDirection === 'column-reverse'
+    : flexWrap === 'wrap-reverse';
+
+  return isReversed !== isFlexReversed;
 }
