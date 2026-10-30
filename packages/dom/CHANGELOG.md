@@ -1,5 +1,19 @@
 # @dnd-kit/dom
 
+## 0.5.2
+
+### Patch Changes
+
+- [#2166](https://github.com/clauderic/dnd-kit/pull/2166) [`73862f4`](https://github.com/clauderic/dnd-kit/commit/73862f4c2478c5fa45adb70b918879acd699f8d5) Thanks [@mkantautas](https://github.com/mkantautas)! - Only follow the pointer that started a drag operation in the `PointerSensor`. Moving, releasing or canceling another pointer, such as a second finger on a touch screen, no longer moves, drops or cancels the drag, or aborts a pending activation.
+
+- [#2157](https://github.com/clauderic/dnd-kit/pull/2157) [`d51ca2a`](https://github.com/clauderic/dnd-kit/commit/d51ca2ae744729c86f0f010ee6ff7d7cb55c10ba) Thanks [@amjadfqs](https://github.com/amjadfqs)! - Fix auto-scroll in RTL scroll containers. `getScrollPosition` now exposes `position.min` and accounts for writing modes and reversed flex layouts when determining a container's horizontal scroll bounds.
+
+- Updated dependencies []:
+  - @dnd-kit/abstract@0.5.2
+  - @dnd-kit/collision@0.5.2
+  - @dnd-kit/geometry@0.5.2
+  - @dnd-kit/state@0.5.2
+
 ## 0.5.1
 
 ### Patch Changes
