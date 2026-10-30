@@ -1,6 +1,6 @@
 import {supportsPopover} from './supportsPopover.ts';
 
-export function showPopover(element: Element) {
+export function showPopover(element: Element): boolean {
   try {
     if (
       supportsPopover(element) &&
@@ -10,8 +10,11 @@ export function showPopover(element: Element) {
       !element.matches(':popover-open')
     ) {
       element.showPopover();
+      return true;
     }
   } catch (error) {
     // no-op
   }
+
+  return false;
 }
