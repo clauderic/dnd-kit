@@ -88,6 +88,39 @@ export function draggableTests(stories: DraggableStories) {
 
       await expect.poll(feedbackStyles).toEqual({count: 1, retained: 1});
     });
+
+    test('hides placeholder descendants that set visibility: visible', async ({
+      dnd,
+    }) => {
+      const button = dnd.buttons.first();
+
+      // Some SVG exports put `visibility: visible` on their paths, which
+      // overrides the `visibility: hidden` inherited from the placeholder.
+      await button.evaluate((element) => {
+        element.insertAdjacentHTML(
+          'beforeend',
+          '<svg width="10" height="10"><path d="M0 0h10v10H0z" style="visibility: visible" /></svg>'
+        );
+      });
+
+      const box = await button.boundingBox();
+      await dnd.page.mouse.move(
+        box!.x + box!.width / 2,
+        box!.y + box!.height / 2
+      );
+      await dnd.page.mouse.down();
+      await dnd.page.mouse.move(box!.x + box!.width / 2, box!.y + 100, {
+        steps: 10,
+      });
+      await expect(dnd.dragging).toHaveCount(1);
+      await expect(dnd.placeholder).toHaveCount(1);
+
+      await expect(dnd.placeholder.locator('path')).toBeHidden();
+      await expect(dnd.dragging.locator('path')).toBeVisible();
+
+      await dnd.page.mouse.up();
+      await dnd.waitForDrop();
+    });
   });
 
   test.describe('Draggable with drag handle', () => {
