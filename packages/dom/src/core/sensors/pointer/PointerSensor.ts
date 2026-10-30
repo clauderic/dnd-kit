@@ -8,6 +8,7 @@ import {
 } from '@dnd-kit/abstract';
 import type {Coordinates} from '@dnd-kit/geometry';
 import {
+  getComputedStyles,
   getDocument,
   getDocuments,
   getEventCoordinates,
@@ -72,6 +73,19 @@ const defaults = Object.freeze<PointerSensorOptions>({
   },
   preventActivation(event, source) {
     const {target} = event;
+
+    // Touch-based dragging only works when the activator opts out of browser
+    // gesture handling; otherwise the browser cancels the pointer stream for
+    // scrolling and activation would immediately fail.
+    if (event.pointerType === 'touch') {
+      const activator = source.handle ?? source.element;
+      if (activator) {
+        const touchAction = getComputedStyles(activator).touchAction;
+        if (touchAction !== 'none') {
+          return true;
+        }
+      }
+    }
 
     if (target === source.element) return false;
     if (target === source.handle) return false;
