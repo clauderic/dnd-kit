@@ -11,9 +11,9 @@ export function canScroll(
 
   const {x, y} = by ?? {x: 0, y: 0};
 
-  const top = !isTop && position.current.y + y > 0;
+  const top = !isTop && position.current.y + y > position.min.y;
   const bottom = !isBottom && position.current.y + y < position.max.y;
-  const left = !isLeft && position.current.x + x > 0;
+  const left = !isLeft && position.current.x + x > position.min.x;
   const right = !isRight && position.current.x + x < position.max.x;
 
   return {
