@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@sveltejs/package": "^2.5.7",
-    "svelte": "^5.29.0",
+    "svelte": "^5.55.7",
     "typescript": "^5.5.2"
   },
   "publishConfig": {

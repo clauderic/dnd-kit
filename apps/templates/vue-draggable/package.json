@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@dnd-kit/vue": "beta",
-    "vue": "^3.5.0"
+    "vue": "^3.5.42"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.0",
