@@ -73,7 +73,7 @@
   },
   "devDependencies": {
     "esbuild-plugin-solid": "^0.6.0",
-    "tsup": "8.3.0",
+    "tsup": "8.4.0",
     "typescript": "^5.5.2",
     "solid-js": "^1.9.0"
   },

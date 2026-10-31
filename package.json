@@ -28,6 +28,9 @@
   "name": "dnd-kit-experimental",
   "overrides": {
     "acorn": "8.14.0",
-    "ajv": "8.17.1"
+    "ajv": "8.17.1",
+    "storybook": "9.1.21",
+    "svelte": "5.57.3",
+    "vue": "3.5.44"
   }
 }

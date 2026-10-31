@@ -16,10 +16,10 @@
     "@dnd-kit/storybook-addon-codesandbox": "*"
   },
   "devDependencies": {
-    "@storybook/addon-links": "^9.0.15",
-    "@storybook/html-vite": "^9.0.15",
+    "@storybook/addon-links": "^9.1.21",
+    "@storybook/html-vite": "^9.1.21",
     "@vueless/storybook-dark-mode": "^9.0.6",
-    "storybook": "^9.0.15",
+    "storybook": "^9.1.21",
     "typescript": "^5.7.3",
     "vite": "^6.0.0"
   }
