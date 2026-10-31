@@ -1,5 +1,11 @@
 # @dnd-kit/state
 
+## 0.5.3
+
+### Patch Changes
+
+- [#2171](https://github.com/clauderic/dnd-kit/pull/2171) [`5fdff86`](https://github.com/clauderic/dnd-kit/commit/5fdff86cad4e18ce8a0990581762c4dfa7d9fd88) Thanks [@clauderic](https://github.com/clauderic)! - Copy snapshot properties as own data properties so an enumerable `__proto__` key cannot change the returned object's prototype. Preserve inherited enumerable getters and untracked reads. This prevents returned-object prototype injection when snapshotting untrusted data; downstream impact depends on how consumers use that snapshot.
+
 ## 0.5.2
 
 ## 0.5.1
