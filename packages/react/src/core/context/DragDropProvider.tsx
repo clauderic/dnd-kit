@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  useEffect,
-  useRef,
-  useInsertionEffect,
-  type PropsWithChildren,
-} from 'react';
+import {useEffect, useRef, type PropsWithChildren} from 'react';
 import type {Data, DragDropEventHandlers} from '@dnd-kit/abstract';
 import {
   DragDropManager,
@@ -155,13 +150,25 @@ export function DragDropProvider<
 
 function useStableInstance<T extends {destroy(): void}>(create: () => T): T {
   const ref = useRef<T | null>(null);
+  const cleanupVersion = useRef(0);
 
   if (!ref.current) {
     ref.current = create();
   }
 
-  useInsertionEffect(() => {
-    return () => ref.current?.destroy();
+  useEffect(() => {
+    const version = ++cleanupVersion.current;
+
+    return () => {
+      const instance = ref.current;
+
+      queueMicrotask(() => {
+        // Strict Mode replays passive Effects while preserving this ref.
+        if (cleanupVersion.current === version) {
+          instance?.destroy();
+        }
+      });
+    };
   }, []);
 
   return ref.current;
