@@ -8,8 +8,18 @@ import type {
 } from '../entities/index.ts';
 
 import type {DragDropManager} from './manager.ts';
-import {defaultPreventable} from './events.ts';
+import {defaultPreventable, type DragOverEvent} from './events.ts';
 import {StatusValue} from './status.ts';
+
+type DeferredDragOverEvent<
+  T extends Draggable,
+  U extends Droppable,
+  V extends DragDropManager<T, U>,
+> = {
+  event: DragOverEvent<T, U, V>;
+  resolve(value: boolean): void;
+  reject(reason?: unknown): void;
+};
 
 /**
  * Provides actions for controlling drag and drop operations.
@@ -29,6 +39,75 @@ export class DragActions<
    * @param manager - The drag and drop manager instance
    */
   constructor(private readonly manager: V) {}
+
+  #deferredDragOverEvents: DeferredDragOverEvent<T, U, V>[] | null = null;
+
+  #dispatchDragOver(event: DragOverEvent<T, U, V>): Promise<boolean> {
+    const deferredEvents = this.#deferredDragOverEvents;
+
+    if (deferredEvents) {
+      return new Promise<boolean>((resolve, reject) => {
+        deferredEvents.push({event, resolve, reject});
+      });
+    }
+
+    return this.#dispatchDragOverNow(event);
+  }
+
+  #dispatchDragOverNow(event: DragOverEvent<T, U, V>): Promise<boolean> {
+    this.manager.monitor.dispatch('dragover', event);
+    return this.manager.renderer.rendering.then(() => event.defaultPrevented);
+  }
+
+  #flushDeferredDragOverEvents() {
+    const events = this.#deferredDragOverEvents;
+    this.#deferredDragOverEvents = null;
+
+    if (!events) {
+      return;
+    }
+
+    let error: unknown;
+
+    for (const {event, resolve, reject} of events) {
+      try {
+        this.#dispatchDragOverNow(event).then(resolve, reject);
+      } catch (reason) {
+        error ??= reason;
+        reject(reason);
+      }
+    }
+
+    if (error) {
+      throw error;
+    }
+  }
+
+  #resolveDeferredDragOverEvents(value: boolean) {
+    const events = this.#deferredDragOverEvents;
+    this.#deferredDragOverEvents = null;
+
+    if (!events) {
+      return;
+    }
+
+    for (const {resolve} of events) {
+      resolve(value);
+    }
+  }
+
+  #rejectDeferredDragOverEvents(reason: unknown) {
+    const events = this.#deferredDragOverEvents;
+    this.#deferredDragOverEvents = null;
+
+    if (!events) {
+      return;
+    }
+
+    for (const {reject} of events) {
+      reject(reason);
+    }
+  }
 
   /**
    * Sets the source of the drag operation.
@@ -67,7 +146,7 @@ export class DragActions<
       });
 
       if (dragOperation.status.dragging) {
-        this.manager.monitor.dispatch('dragover', event);
+        return this.#dispatchDragOver(event);
       }
 
       return this.manager.renderer.rendering.then(() => event.defaultPrevented);
@@ -144,14 +223,41 @@ export class DragActions<
         const {status} = dragOperation;
         if (status.current !== StatusValue.Initializing) return;
 
-        batch(() => {
-          dragOperation.status.set(StatusValue.Dragging);
+        this.#deferredDragOverEvents = [];
 
-          this.manager.monitor.dispatch('dragstart', {
-            nativeEvent,
-            operation: dragOperation.snapshot(),
-            cancelable: false,
-          });
+        dragOperation.status.set(StatusValue.Dragging);
+
+        // Let start-time collision effects populate the initial target before
+        // dragstart, while keeping dragover ordered after dragstart.
+        queueMicrotask(() => {
+          try {
+            if (
+              controller.signal.aborted ||
+              dragOperation.status.current !== StatusValue.Dragging
+            ) {
+              this.#resolveDeferredDragOverEvents(false);
+              return;
+            }
+
+            this.manager.monitor.dispatch('dragstart', {
+              nativeEvent,
+              operation: dragOperation.snapshot(),
+              cancelable: false,
+            });
+
+            if (
+              controller.signal.aborted ||
+              dragOperation.status.current !== StatusValue.Dragging
+            ) {
+              this.#resolveDeferredDragOverEvents(false);
+              return;
+            }
+
+            this.#flushDeferredDragOverEvents();
+          } catch (error) {
+            this.#rejectDeferredDragOverEvents(error);
+            throw error;
+          }
         });
       });
 
