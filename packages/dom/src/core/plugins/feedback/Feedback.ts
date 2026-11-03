@@ -35,6 +35,7 @@ import {
   createResizeObserver,
 } from './observers.ts';
 import {runDropAnimation, type DropAnimation} from './dropAnimation.ts';
+import {scheduleFocusRestoration} from './focus.ts';
 
 export type FeedbackType = 'default' | 'move' | 'clone' | 'none';
 
@@ -81,6 +82,9 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
    */
   public dropAnimation: DropAnimation | null | undefined;
 
+  #cancelFocusRestoration: (() => void) | undefined;
+  #focusGeneration = 0;
+
   private state: State = {
     initial: {},
     current: {},
@@ -107,6 +111,21 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
 
     this.registerEffect(this.#trackOverlayRoot.bind(this, styleInjector));
     this.registerEffect(this.#render);
+    this.registerEffect(() => {
+      const unsubscribe = manager.monitor.addEventListener(
+        'beforedragstart',
+        () => {
+          this.#focusGeneration++;
+          this.#cancelFocusRestoration?.();
+        }
+      );
+
+      return () => {
+        unsubscribe();
+        this.#focusGeneration++;
+        this.#cancelFocusRestoration?.();
+      };
+    });
   }
 
   #trackOverlayRoot(styleInjector: StyleInjector | undefined) {
@@ -434,16 +453,27 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
     /* ---- Cleanup ---- */
 
     const id = manager.dragOperation.source?.id;
+    const focusGeneration = this.#focusGeneration;
 
-    const restoreFocus = () => {
-      if (!isKeyboardOperation || id == null) return;
+    const restoreFocus = (timeout = 0) => {
+      if (
+        !isKeyboardOperation ||
+        id == null ||
+        focusGeneration !== this.#focusGeneration
+      )
+        return;
 
-      const draggable = manager.registry.draggables.get(id);
-      const focusTarget = draggable?.handle ?? draggable?.element;
+      this.#cancelFocusRestoration?.();
+      this.#cancelFocusRestoration = scheduleFocusRestoration(
+        element.ownerDocument,
+        () => {
+          const draggable = manager.registry.draggables.get(id);
+          const target = draggable?.handle ?? draggable?.element;
 
-      if (isHTMLElement(focusTarget)) {
-        focusTarget.focus();
-      }
+          return isHTMLElement(target) ? target : undefined;
+        },
+        timeout
+      );
     };
 
     const cleanup = () => {
