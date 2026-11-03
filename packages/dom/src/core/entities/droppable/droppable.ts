@@ -5,7 +5,7 @@ import type {
 } from '@dnd-kit/abstract';
 import {defaultCollisionDetection} from '@dnd-kit/collision';
 import type {CollisionDetector} from '@dnd-kit/collision';
-import {reactive, signal, untracked} from '@dnd-kit/state';
+import {derived, reactive, signal, untracked} from '@dnd-kit/state';
 import type {BoundingRectangle, Shape} from '@dnd-kit/geometry';
 import {DOMRectangle, PositionObserver} from '@dnd-kit/dom/utilities';
 
@@ -116,6 +116,28 @@ export class Droppable<T extends Data = Data> extends AbstractDroppable<
 
   get element() {
     return this.proxy ?? this.#element;
+  }
+
+  @derived
+  public override get isDropTarget() {
+    if (super.isDropTarget) {
+      return true;
+    }
+
+    const {element, manager} = this;
+    const {source, target} = manager?.dragOperation ?? {};
+
+    if (!element) return false;
+    if (this.disabled) return false;
+    if (!source) return false;
+    if (!this.accepts(source)) return false;
+    if (!(target instanceof Droppable)) return false;
+
+    const targetElement = target.element;
+
+    if (!targetElement) return false;
+
+    return element !== targetElement && element.contains(targetElement);
   }
 
   public refreshShape: () => Shape | undefined;
