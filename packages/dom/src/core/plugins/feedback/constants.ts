@@ -37,8 +37,9 @@ export const CSS_RULES = `
     transition: none;
   }
 
-  :is(:root,:host) [${PLACEHOLDER_ATTRIBUTE}='hidden'] {
-    visibility: hidden;
+  :is(:root,:host) [${PLACEHOLDER_ATTRIBUTE}='hidden'],
+  :is(:root,:host) [${PLACEHOLDER_ATTRIBUTE}='hidden'] * {
+    visibility: hidden !important;
   }
 
   [${ATTRIBUTE}] * {
