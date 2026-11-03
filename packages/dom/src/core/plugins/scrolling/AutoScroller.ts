@@ -68,6 +68,7 @@ export class AutoScroller extends Plugin<DragDropManager, AutoScrollerOptions> {
 
           return () => {
             clearInterval(interval);
+            scroller.autoScrolling = false;
           };
         } else {
           scroller.autoScrolling = false;
