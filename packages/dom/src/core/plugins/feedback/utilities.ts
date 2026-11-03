@@ -139,3 +139,13 @@ export function preventPopoverClose(event: Event) {
 export function isTableRow(element: Element): element is HTMLTableRowElement {
   return element.tagName === 'TR';
 }
+
+/**
+ * Checks if an element is an internal table element, meaning an element
+ * whose layout depends on the table formatting context it is part of
+ */
+export function isTableElement(element: Element): boolean {
+  return ['TR', 'TD', 'TH', 'THEAD', 'TBODY', 'TFOOT'].includes(
+    element.tagName
+  );
+}

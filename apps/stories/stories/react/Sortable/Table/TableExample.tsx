@@ -88,7 +88,11 @@ const initialData: RowData[] = [
   },
 ];
 
-export function TableExample() {
+interface TableExampleProps {
+  borderSpacing?: number;
+}
+
+export function TableExample({borderSpacing = 0}: TableExampleProps) {
   const [rows, setRows] = useState(initialData);
   const [columns, setColumns] = useState(initialColumns);
   const initialOrder = useRef({
@@ -129,7 +133,7 @@ export function TableExample() {
           border: '1px solid #e2e8f0',
         }}
       >
-        <table style={tableStyles}>
+        <table style={{...tableStyles, borderSpacing}}>
           <thead>
             <tr>
               <th style={thStyles} />
