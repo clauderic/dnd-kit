@@ -44,5 +44,20 @@ export function getDocuments(
     // Ignore cross-origin parent access
   }
 
+   // Traverse any window.open() popup documents registered by the host app.
+  try {
+    const extraDocuments = (globalThis as any).__dndKitDocuments__ as Set<Document> | undefined;
+    if (extraDocuments) {
+      for (const extraDoc of extraDocuments) {
+        if (extraDoc && !seen.has(extraDoc)) {
+          seen.add(extraDoc);
+          docs.push(extraDoc);
+        }
+      }
+    }
+  } catch {
+    // Ignore
+  }
+
   return docs;
 }
