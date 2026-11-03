@@ -18,3 +18,8 @@ export const TanstackTable: StoryObj<typeof TanstackTableExample> = {
   name: 'Tanstack Table',
   render: () => <TanstackTableExample />,
 };
+
+export const BorderSpacing: StoryObj<typeof TableExample> = {
+  name: 'Border spacing',
+  render: () => <TableExample borderSpacing={12} />,
+};
