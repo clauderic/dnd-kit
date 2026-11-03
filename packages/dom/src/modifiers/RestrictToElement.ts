@@ -2,6 +2,7 @@ import {Modifier, configurator} from '@dnd-kit/abstract';
 import {restrictShapeToBoundingRectangle} from '@dnd-kit/abstract/modifiers';
 import {BoundingRectangle, Rectangle} from '@dnd-kit/geometry';
 import {effect, signal} from '@dnd-kit/state';
+import type {Coordinates} from '@dnd-kit/geometry';
 import type {DragDropManager} from '@dnd-kit/dom';
 import {getBoundingRectangle} from '@dnd-kit/dom/utilities';
 
@@ -14,6 +15,7 @@ interface Options {
 
 export class RestrictToElement extends Modifier<DragDropManager, Options> {
   private boundingRectangle = signal<BoundingRectangle | null>(null);
+  private previousConstrainedTransform: Coordinates = {x: 0, y: 0};
 
   constructor(manager: DragDropManager, options?: Options) {
     super(manager, options);
@@ -27,6 +29,8 @@ export class RestrictToElement extends Modifier<DragDropManager, Options> {
       const {status} = dragOperation;
 
       if (status.initialized) {
+        this.previousConstrainedTransform = {x: 0, y: 0};
+
         const {element} = this.options;
         const target =
           typeof element === 'function' ? element(dragOperation) : element;
@@ -82,17 +86,19 @@ export class RestrictToElement extends Modifier<DragDropManager, Options> {
       return transform;
     }
 
-    const {initial, current} = shape;
-    const {height, width} = current.boundingRectangle;
-    const left = initial.center.x - width / 2;
-    const top = initial.center.y - height / 2;
+    const {current} = shape;
+    const {left, top, width, height} = current.boundingRectangle;
+
+    const baseLeft = left - this.previousConstrainedTransform.x;
+    const baseTop = top - this.previousConstrainedTransform.y;
 
     const restrictedTransform = restrictShapeToBoundingRectangle(
-      new Rectangle(left, top, width, height),
+      new Rectangle(baseLeft, baseTop, width, height),
       transform,
       boundingRectangle
     );
 
+    this.previousConstrainedTransform = restrictedTransform;
     return restrictedTransform;
   }
 
