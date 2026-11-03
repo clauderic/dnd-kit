@@ -1,4 +1,5 @@
 import {configurator, Sensor} from '@dnd-kit/abstract';
+import type {Coordinates} from '@dnd-kit/geometry';
 import {effect} from '@dnd-kit/state';
 import type {CleanupFunction} from '@dnd-kit/state';
 import {
@@ -268,8 +269,40 @@ export class KeyboardSensor extends Sensor<
       this.manager.actions.move({
         event,
         by,
+        to: this.getMoveTarget(by),
       });
     }
+  }
+
+  /**
+   * Modifiers such as `RestrictToElement` or `SnapModifier` can render the
+   * draggable away from its tracked position. When the rendered position is
+   * stable under the modifiers, move from whichever of the two positions is
+   * further along the direction of travel, so that key presses a modifier
+   * absorbed (e.g. past an edge) are not replayed when moving back.
+   */
+  private getMoveTarget(by: Coordinates): Coordinates {
+    const {dragOperation} = this.manager;
+    const {modifiers, position, transform} = dragOperation;
+    const operation = dragOperation.snapshot();
+    const modified = modifiers.reduce(
+      (value, modifier) => modifier.apply({...operation, transform: value}),
+      transform
+    );
+    const stable = modified.x === transform.x && modified.y === transform.y;
+
+    const getTarget = (axis: 'x' | 'y') => {
+      const tracked = position.current[axis];
+      const rendered = position.initial[axis] + transform[axis];
+      let start = tracked;
+
+      if (stable && by[axis] > 0) start = Math.max(tracked, rendered);
+      if (stable && by[axis] < 0) start = Math.min(tracked, rendered);
+
+      return start + by[axis];
+    };
+
+    return {x: getTarget('x'), y: getTarget('y')};
   }
 
   private sideEffects() {
