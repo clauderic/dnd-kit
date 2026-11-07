@@ -25,6 +25,8 @@ export const CSS_RULES = `
     left: var(${CSS_PREFIX}left, 0px) !important;
     right: unset !important;
     bottom: unset !important;
+    /* top and left already place the element's border box, a margin would offset it a second time */
+    margin: 0 !important;
     width: var(${CSS_PREFIX}width, auto);
     max-width: var(${CSS_PREFIX}width, auto);
     height: var(${CSS_PREFIX}height, auto);
@@ -59,7 +61,6 @@ export const CSS_RULES = `
       overflow: visible;
       background: unset;
       border: unset;
-      margin: unset;
       padding: unset;
       color: inherit;
 
