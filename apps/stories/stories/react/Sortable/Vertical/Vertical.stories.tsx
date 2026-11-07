@@ -5,6 +5,7 @@ import {Feedback} from '@dnd-kit/dom';
 import {SortableExample} from '../SortableExample';
 import {AnchorElementsExample} from './AnchorElementsExample';
 import {AutoScrollExample} from './AutoScrollExample';
+import {ScrollLockedModalExample} from './ScrollLockedModalExample';
 
 const meta: Meta<typeof SortableExample> = {
   title: 'React/Sortable/Vertical list',
@@ -177,4 +178,9 @@ export const NestedScroll: Story = {
       <SortableExample {...args} />
     </div>
   ),
+};
+
+export const ScrollLockedModal: StoryObj<typeof ScrollLockedModalExample> = {
+  name: 'Scroll-locked modal',
+  render: () => <ScrollLockedModalExample />,
 };

@@ -22,7 +22,7 @@ export function getVisibleBoundingRectangle(
   let ancestor: HTMLElement | null = element.parentElement;
 
   while (ancestor && ancestor !== ownerDocument.documentElement) {
-    if (!isOverflowVisible(ancestor)) {
+    if (!isOverflowVisible(ancestor) && !isBodyOverflowPropagated(ancestor)) {
       const ancestorRect = ancestor.getBoundingClientRect();
 
       const marginTop = margin * (ancestorRect.bottom - ancestorRect.top);
@@ -60,10 +60,7 @@ export function getVisibleBoundingRectangle(
 
   rect = {
     top: Math.max(rect.top, viewportTop - viewportMarginY),
-    right: Math.min(
-      rect.right,
-      viewportLeft + viewportWidth + viewportMarginX
-    ),
+    right: Math.min(rect.right, viewportLeft + viewportWidth + viewportMarginX),
     bottom: Math.min(
       rect.bottom,
       viewportTop + viewportHeight + viewportMarginY
@@ -86,4 +83,32 @@ export function getVisibleBoundingRectangle(
   }
 
   return rect;
+}
+
+function isBodyOverflowPropagated(element: HTMLElement): boolean {
+  const {body, documentElement} = element.ownerDocument;
+
+  if (
+    element !== body ||
+    element.parentElement !== documentElement ||
+    documentElement.localName !== 'html' ||
+    documentElement.namespaceURI !== 'http://www.w3.org/1999/xhtml'
+  ) {
+    return false;
+  }
+
+  const rootStyle = getComputedStyle(documentElement);
+  const bodyStyle = getComputedStyle(element);
+
+  // HTML body overflow is applied to the viewport instead of the body's box.
+  // Any containment on either element disables this propagation.
+  // https://www.w3.org/TR/css-overflow-3/#overflow-propagation
+  return (
+    rootStyle.overflowX === 'visible' &&
+    rootStyle.overflowY === 'visible' &&
+    rootStyle.display !== 'none' &&
+    bodyStyle.display !== 'none' &&
+    rootStyle.contain === 'none' &&
+    bodyStyle.contain === 'none'
+  );
 }
