@@ -1,4 +1,4 @@
-import type {Coordinates} from '@dnd-kit/geometry';
+import {Point, type Coordinates} from '@dnd-kit/geometry';
 import {batch, effect, untracked} from '@dnd-kit/state';
 
 import type {
@@ -189,10 +189,31 @@ export class DragActions<
         return;
       }
 
+      const operation = dragOperation.snapshot();
+      const {position} = operation;
+      const projected = Point.from(
+        args.to ?? {
+          x: position.current.x + (args.by?.x ?? 0),
+          y: position.current.y + (args.by?.y ?? 0),
+        }
+      );
+
+      /*
+       * The position is only updated once listeners had a chance to prevent the move,
+       * so report the position this move will produce. Otherwise listeners always see
+       * the previous position, one move behind (noticeable with the keyboard sensor).
+       */
+      if (!Point.equals(position.current, projected)) {
+        Object.assign(position, {
+          previous: position.current,
+          current: projected,
+        });
+      }
+
       const event = defaultPreventable(
         {
           nativeEvent: args.event,
-          operation: dragOperation.snapshot(),
+          operation,
           by: args.by,
           to: args.to,
         },
