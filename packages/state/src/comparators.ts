@@ -35,7 +35,36 @@ export function deepEqual<T>(a: T, b: T): boolean {
     return !hasDifferentValues;
   }
 
+  if (a instanceof Date && b instanceof Date) {
+    return a.getTime() === b.getTime();
+  }
+
+  if (a instanceof Map && b instanceof Map) {
+    if (a.size !== b.size) {
+      return false;
+    }
+
+    for (const [key, value] of a) {
+      if (!b.has(key) || !deepEqual(value, b.get(key))) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   if (typeof a === 'object' && typeof b === 'object') {
+    // Non-plain objects (RegExp, class instances, etc.) carry internal
+    // state that is not captured by enumerable keys, and values of
+    // different classes should never compare equal.
+    const aPrototype = Object.getPrototypeOf(a);
+    if (
+      aPrototype !== Object.getPrototypeOf(b) ||
+      (aPrototype !== null && aPrototype !== Object.prototype)
+    ) {
+      return false;
+    }
+
     const aKeys = Object.keys(a);
     const bKeys = Object.keys(b);
     if (aKeys.length !== bKeys.length) return false;
