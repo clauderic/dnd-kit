@@ -1,5 +1,10 @@
 import {batch, reactive, untracked, WeakStore} from '@dnd-kit/state';
-import type {CollisionPriority, Customizable, Modifiers, Plugins} from '@dnd-kit/abstract';
+import type {
+  CollisionPriority,
+  Customizable,
+  Modifiers,
+  Plugins,
+} from '@dnd-kit/abstract';
 import type {
   Data,
   PluginConstructor,
@@ -22,8 +27,10 @@ import type {
 import {
   animateTransform,
   getComputedStyles,
+  getFrameTransform,
   getWindow,
   computeTranslate,
+  isHTMLElement,
   prefersReducedMotion,
   ProxiedElements,
 } from '@dnd-kit/dom/utilities';
@@ -309,9 +316,17 @@ export class Sortable<T extends Data = Data> {
           return;
         }
 
+        // The shapes are measured in screen pixels, but `translate` is applied in the
+        // coordinate space of the element's parent, which ancestors may have scaled
+        const scale = getAncestorScale(element);
         const delta = {
-          x: shape.boundingRectangle.left - updatedShape.boundingRectangle.left,
-          y: shape.boundingRectangle.top - updatedShape.boundingRectangle.top,
+          x:
+            (shape.boundingRectangle.left -
+              updatedShape.boundingRectangle.left) /
+            scale.x,
+          y:
+            (shape.boundingRectangle.top - updatedShape.boundingRectangle.top) /
+            scale.y,
         };
 
         const {translate} = getComputedStyles(element);
@@ -583,4 +598,41 @@ export class SortableDroppable<T extends Data> extends Droppable<T> {
   get group() {
     return this.sortable.group;
   }
+}
+
+/**
+ * Returns the scale that ancestors apply to the coordinate space of an element,
+ * for example a parent with `transform: scale(2)` or a scaled iframe.
+ *
+ * It is measured on the closest ancestor with a layout box, by comparing its
+ * rendered size with its layout size.
+ */
+function getAncestorScale(element: Element): {x: number; y: number} {
+  const frameTransform = getFrameTransform(element);
+  const scale = {x: frameTransform.scaleX, y: frameTransform.scaleY};
+
+  for (
+    let ancestor = element.parentElement;
+    ancestor;
+    ancestor = ancestor.parentElement
+  ) {
+    if (
+      !isHTMLElement(ancestor) ||
+      !ancestor.offsetWidth ||
+      !ancestor.offsetHeight
+    ) {
+      continue;
+    }
+
+    const {width, height} = ancestor.getBoundingClientRect();
+
+    if (width && height) {
+      scale.x *= width / ancestor.offsetWidth;
+      scale.y *= height / ancestor.offsetHeight;
+    }
+
+    break;
+  }
+
+  return scale;
 }
