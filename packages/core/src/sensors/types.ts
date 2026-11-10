@@ -62,6 +62,11 @@ export interface SensorProps<T> {
 
 export type SensorInstance = {
   autoScrollEnabled: boolean;
+  /**
+   * Called when the `DndContext` unmounts while the sensor is active,
+   * so that the sensor can remove any event listeners it has attached.
+   */
+  teardown?(): void;
 };
 
 export type SensorActivatorFunction<T> = (

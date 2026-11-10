@@ -42,6 +42,7 @@ export class KeyboardSensor implements SensorInstance {
   private referenceCoordinates: Coordinates | undefined;
   private listeners: Listeners;
   private windowListeners: Listeners;
+  private timeoutId: NodeJS.Timeout | null = null;
 
   constructor(private props: KeyboardSensorProps) {
     const {
@@ -63,7 +64,9 @@ export class KeyboardSensor implements SensorInstance {
     this.windowListeners.add(EventName.Resize, this.handleCancel);
     this.windowListeners.add(EventName.VisibilityChange, this.handleCancel);
 
-    setTimeout(() => this.listeners.add(EventName.Keydown, this.handleKeyDown));
+    this.timeoutId = setTimeout(() =>
+      this.listeners.add(EventName.Keydown, this.handleKeyDown)
+    );
   }
 
   private handleStart() {
@@ -269,9 +272,18 @@ export class KeyboardSensor implements SensorInstance {
     onCancel();
   }
 
+  public teardown() {
+    this.detach();
+  }
+
   private detach() {
     this.listeners.removeAll();
     this.windowListeners.removeAll();
+
+    if (this.timeoutId !== null) {
+      clearTimeout(this.timeoutId);
+      this.timeoutId = null;
+    }
   }
 
   static activators: Activators<KeyboardSensorOptions> = [
