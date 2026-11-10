@@ -150,6 +150,10 @@ export class AbstractPointerSensor implements SensorInstance {
     this.handleStart();
   }
 
+  public teardown() {
+    this.detach();
+  }
+
   private detach() {
     this.listeners.removeAll();
     this.windowListeners.removeAll();

@@ -526,6 +526,14 @@ export const DndContext = memo(function DndContext({
 
   useSensorSetup(sensors);
 
+  useEffect(() => {
+    return () => {
+      // Remove the listeners of the active sensor when unmounting during a drag operation
+      activeSensorRef.current?.teardown?.();
+      activeSensorRef.current = null;
+    };
+  }, []);
+
   useIsomorphicLayoutEffect(() => {
     if (activeNodeRect && status === Status.Initializing) {
       setStatus(Status.Initialized);
