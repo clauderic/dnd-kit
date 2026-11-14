@@ -22,10 +22,16 @@ export function useSignal<T = any>(signal: Signal<T>, sync = false) {
 
           if (!read.current) return;
 
+          // Defer to a microtask so a signal that changes while React is mid-commit does not
+          // schedule a synchronous update from within a React lifecycle method — which triggers
+          // the "useInsertionEffect must not schedule updates" warning. This happens, for
+          // example, when dnd-kit resets the drag operation from a layout effect at drag end
+          // and a component reads that state via `useDragOperation`. Mirrors the guard already
+          // present in `useDeepSignal`.
           if (sync) {
-            flushSync(forceUpdate);
+            queueMicrotask(() => flushSync(forceUpdate));
           } else {
-            forceUpdate();
+            queueMicrotask(forceUpdate);
           }
         }
       }),
