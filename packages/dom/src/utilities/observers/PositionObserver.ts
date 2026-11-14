@@ -1,4 +1,4 @@
-import {BoundingRectangle, Rectangle} from '@dnd-kit/geometry';
+import {BoundingRectangle} from '@dnd-kit/geometry';
 
 import {throttle} from '../scheduling/throttle.ts';
 
@@ -126,27 +126,46 @@ export class PositionObserver {
     const rootMargin = `${insetTop}px ${insetRight}px ${insetBottom}px ${insetLeft}px`;
 
     this.boundingClientRect = clientRect;
+
+    /*
+     * An element clipped on both sides of an axis by a scrollable ancestor can
+     * move along that axis without the visible part of it changing, which no
+     * intersection observer reports. Such an element keeps being observed
+     * again at every interval.
+     */
+    const clippedOnBothSides =
+      (clientRect.top < visibleRect.top &&
+        clientRect.bottom > visibleRect.bottom) ||
+      (clientRect.left < visibleRect.left &&
+        clientRect.right > visibleRect.right);
+    let initial = true;
+
     this.#positionObserver = new IntersectionObserver(
       (entries: IntersectionObserverEntry[]) => {
         const [entry] = entries;
-        const {intersectionRect} = entry;
-        /*
-         * The intersection ratio returned by the intersection observer entry
-         * represents the ratio of the intersectionRect to the boundingClientRect,
-         * which is not what we want. We want the ratio of the intersectionRect
-         * to the rootBounds (visible rect).
-         */
-        const intersectionRatio =
-          entry.intersectionRatio !== 1
-            ? entry.intersectionRatio
-            : Rectangle.intersectionRatio(
-                intersectionRect,
-                getVisibleBoundingRectangle(element)
-              );
 
-        if (intersectionRatio !== 1) {
-          this.#observePosition();
+        /*
+         * The initial entry is delivered as soon as the element is observed:
+         * the element only needs to be observed again if it moved or resized
+         * since it was measured. Any later entry means that the visible part
+         * of the element changed.
+         *
+         * Comparing the intersection to the whole bounding rectangle of the
+         * element (`entry.intersectionRatio`) never settles for an element that
+         * an ancestor clips: it was observed again every 75ms, forever.
+         */
+        if (initial) {
+          initial = false;
+
+          if (
+            !clippedOnBothSides &&
+            isRectEqual(entry.boundingClientRect, clientRect)
+          ) {
+            return;
+          }
         }
+
+        this.#observePosition();
       },
       {
         threshold,
