@@ -9,19 +9,32 @@ import type {UniqueIdentifier} from './types.ts';
  * for example, `Draggable` or `Droppable` entities.
  */
 export class EntityRegistry<T extends Entity> {
-  private map = signal<Map<UniqueIdentifier, T>>(new Map());
+  private map = new Map<UniqueIdentifier, T>();
+  private version = signal(0);
+  private keys = new WeakMap<T, UniqueIdentifier>();
+  private snapshot: T[] | undefined;
   private cleanupFunctions = new WeakMap<T, () => void>();
+
+  private entries(): T[] {
+    return (this.snapshot ??= Array.from(this.map.values()));
+  }
+
+  private changed() {
+    this.snapshot = undefined;
+    this.version.value = this.version.peek() + 1;
+  }
 
   /**
    * Iterator for the EntityRegistry class.
    * @returns An iterator for the values in the map.
    */
   public [Symbol.iterator]() {
-    return this.map.peek().values();
+    return this.entries().values();
   }
 
   public get value() {
-    return this.map.value.values();
+    this.version.value;
+    return this.entries().values();
   }
 
   /**
@@ -30,7 +43,8 @@ export class EntityRegistry<T extends Entity> {
    * @returns True if the entity exists, false otherwise.
    */
   public has(identifier: UniqueIdentifier): boolean {
-    return this.map.value.has(identifier);
+    this.version.value;
+    return this.map.has(identifier);
   }
 
   /**
@@ -39,7 +53,8 @@ export class EntityRegistry<T extends Entity> {
    * @returns The entity if it exists, undefined otherwise.
    */
   public get(identifier: UniqueIdentifier): T | undefined {
-    return this.map.value.get(identifier);
+    this.version.value;
+    return this.map.get(identifier);
   }
 
   /**
@@ -49,8 +64,7 @@ export class EntityRegistry<T extends Entity> {
    * @returns A function that unregisters the entity.
    */
   public register = (key: UniqueIdentifier, value: T) => {
-    const current = this.map.peek();
-    const currentValue = current.get(key);
+    const currentValue = this.map.get(key);
     const unregister = () => this.unregister(key, value);
 
     if (currentValue === value) return unregister;
@@ -63,20 +77,21 @@ export class EntityRegistry<T extends Entity> {
       }
     }
 
-    const updatedMap = new Map(current);
-
     // Remove ghost registrations: if this entity exists at a different key
     // (stale entry from before its id changed), clean it up
-    for (const [existingKey, existingValue] of current) {
-      if (existingValue === value && existingKey !== key) {
-        updatedMap.delete(existingKey);
-        break;
-      }
+    const existingKey = this.keys.get(value);
+
+    if (
+      existingKey !== undefined &&
+      existingKey !== key &&
+      this.map.get(existingKey) === value
+    ) {
+      this.map.delete(existingKey);
     }
 
-    updatedMap.set(key, value);
-
-    this.map.value = updatedMap;
+    this.map.set(key, value);
+    this.keys.set(value, key);
+    this.changed();
 
     const cleanup = effects(...value.effects());
     this.cleanupFunctions.set(value, cleanup);
@@ -90,9 +105,7 @@ export class EntityRegistry<T extends Entity> {
    * @param value - The entity instance to unregister.
    */
   public unregister = (key: UniqueIdentifier, value: T) => {
-    const current = this.map.peek();
-
-    if (current.get(key) !== value) {
+    if (this.map.get(key) !== value) {
       return;
     }
 
@@ -100,10 +113,9 @@ export class EntityRegistry<T extends Entity> {
     cleanup?.();
     this.cleanupFunctions.delete(value);
 
-    const updatedMap = new Map(current);
-    updatedMap.delete(key);
-
-    this.map.value = updatedMap;
+    this.map.delete(key);
+    this.keys.delete(value);
+    this.changed();
   };
 
   /**
@@ -116,6 +128,7 @@ export class EntityRegistry<T extends Entity> {
       entry.destroy();
     }
 
-    this.map.value = new Map();
+    this.map = new Map();
+    this.changed();
   }
 }
