@@ -135,86 +135,98 @@ export class Accessibility extends Plugin<DragDropManager> {
       }
     };
 
-    const mutations = new Set<() => void>();
-
-    function executeMutations() {
-      for (const operation of mutations) {
-        operation();
-      }
+    interface DraggableSnapshot {
+      activator: Element;
+      isDragging: boolean;
+      disabled: boolean;
     }
 
-    this.registerEffect(() => {
-      mutations.clear();
+    let pendingActivators: DraggableSnapshot[] = [];
 
-      // Re-run effect when any of the draggable elements change
+    const syncAttributes = () => {
+      const activators = pendingActivators;
+
+      if (activators.length === 0) return;
+
+      pendingActivators = [];
+
+      if (!hiddenTextElement || !liveRegionElement) {
+        initialize();
+      }
+
+      const safari = isSafari();
+
+      for (const {activator, isDragging, disabled} of activators) {
+        if (
+          (!isFocusable(activator) || safari) &&
+          !activator.hasAttribute('tabindex')
+        ) {
+          activator.setAttribute('tabindex', '0');
+        }
+
+        if (
+          !activator.hasAttribute('role') &&
+          activator.tagName.toLowerCase() !== 'button'
+        ) {
+          activator.setAttribute('role', defaultAttributes.role);
+        }
+
+        if (!activator.hasAttribute('aria-roledescription')) {
+          activator.setAttribute(
+            'aria-roledescription',
+            defaultAttributes.roleDescription
+          );
+        }
+
+        if (!activator.hasAttribute('aria-describedby')) {
+          activator.setAttribute('aria-describedby', descriptionId);
+        }
+
+        const stateAttributes = supportsPressedState(activator)
+          ? ['aria-pressed', 'aria-grabbed']
+          : ['aria-grabbed'];
+        const draggingValue = String(isDragging);
+
+        for (const key of stateAttributes) {
+          if (activator.getAttribute(key) !== draggingValue) {
+            activator.setAttribute(key, draggingValue);
+          }
+        }
+
+        const disabledValue = String(disabled);
+
+        if (activator.getAttribute('aria-disabled') !== disabledValue) {
+          activator.setAttribute('aria-disabled', disabledValue);
+        }
+      }
+    };
+
+    this.registerEffect(() => {
+      const activators: DraggableSnapshot[] = [];
+
+      // Re-run effect when any of the draggable elements or states change
       for (const draggable of this.manager.registry.draggables.value) {
         const activator = draggable.handle ?? draggable.element;
 
         if (activator) {
-          if (!hiddenTextElement || !liveRegionElement) {
-            mutations.add(initialize);
-          }
-
-          if (
-            (!isFocusable(activator) || isSafari()) &&
-            !activator.hasAttribute('tabindex')
-          ) {
-            mutations.add(() => activator.setAttribute('tabindex', '0'));
-          }
-
-          if (
-            !activator.hasAttribute('role') &&
-            !(activator.tagName.toLowerCase() === 'button')
-          ) {
-            mutations.add(() =>
-              activator.setAttribute('role', defaultAttributes.role)
-            );
-          }
-
-          if (!activator.hasAttribute('aria-roledescription')) {
-            mutations.add(() =>
-              activator.setAttribute(
-                'aria-roledescription',
-                defaultAttributes.roleDescription
-              )
-            );
-          }
-
-          if (!activator.hasAttribute('aria-describedby')) {
-            mutations.add(() =>
-              activator.setAttribute('aria-describedby', descriptionId)
-            );
-          }
-
-          const stateAttributes = supportsPressedState(activator)
-            ? ['aria-pressed', 'aria-grabbed']
-            : ['aria-grabbed'];
-
-          for (const key of stateAttributes) {
-            const value = String(draggable.isDragging);
-
-            if (activator.getAttribute(key) !== value) {
-              mutations.add(() => activator.setAttribute(key, value));
-            }
-          }
-
-          const disabled = String(draggable.disabled);
-
-          if (activator.getAttribute('aria-disabled') !== disabled) {
-            mutations.add(() =>
-              activator.setAttribute('aria-disabled', disabled)
-            );
-          }
+          activators.push({
+            activator,
+            isDragging: draggable.isDragging,
+            disabled: draggable.disabled,
+          });
         }
       }
 
-      if (mutations.size > 0) {
-        scheduler.schedule(executeMutations);
+      pendingActivators = activators;
+
+      if (activators.length > 0) {
+        scheduler.schedule(syncAttributes);
       }
     });
 
     this.destroy = () => {
       super.destroy();
+      pendingActivators = [];
       hiddenTextElement?.remove();
       liveRegionElement?.remove();
       eventListeners.forEach((unsubscribe) => unsubscribe());
