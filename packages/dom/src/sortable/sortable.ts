@@ -11,7 +11,7 @@ import {
   defaultCollisionDetection,
   type CollisionDetector,
 } from '@dnd-kit/collision';
-import type {Alignment} from '@dnd-kit/geometry';
+import type {Alignment, BoundingRectangle} from '@dnd-kit/geometry';
 import {Draggable, Droppable, Feedback} from '@dnd-kit/dom';
 import type {
   DraggableInput,
@@ -187,6 +187,7 @@ export class Sortable<T extends Data = Data> {
       type,
       transition = defaultSortableTransition,
       plugins: pluginsInput,
+      collisionDetector = sortableCollisionDetection,
       ...input
     }: SortableInput<T>,
     manager: DragDropManager<any, any> | undefined
@@ -195,7 +196,7 @@ export class Sortable<T extends Data = Data> {
     const disabledState = normalizeDisabled(disabled);
 
     this.droppable = new SortableDroppable<T>(
-      {...input, disabled: disabledState.droppable},
+      {...input, collisionDetector, disabled: disabledState.droppable},
       manager,
       this
     );
@@ -450,7 +451,7 @@ export class Sortable<T extends Data = Data> {
   }
 
   public set collisionDetector(value: CollisionDetector | undefined) {
-    this.droppable.collisionDetector = value ?? defaultCollisionDetection;
+    this.droppable.collisionDetector = value ?? sortableCollisionDetection;
   }
 
   public set alignment(value: Alignment | undefined) {
@@ -569,7 +570,7 @@ export class SortableDraggable<T extends Data> extends Draggable<T> {
 
 export class SortableDroppable<T extends Data> extends Droppable<T> {
   constructor(
-    input: DraggableInput<T>,
+    input: DroppableInput<T>,
     manager: DragDropManager | undefined,
     public sortable: Sortable<T>
   ) {
@@ -583,4 +584,66 @@ export class SortableDroppable<T extends Data> extends Droppable<T> {
   get group() {
     return this.sortable.group;
   }
+}
+
+const sortableCollisionDetection: CollisionDetector = (input) => {
+  const {dragOperation, droppable} = input;
+  const {source, position} = dragOperation;
+
+  if (
+    droppable instanceof SortableDroppable &&
+    source instanceof SortableDraggable &&
+    droppable.sortable !== source.sortable &&
+    droppable.group === source.group
+  ) {
+    const target = droppable.shape;
+    const current = source.sortable.droppable.shape;
+
+    if (
+      target &&
+      current &&
+      target.containsPoint(position.current) &&
+      !withinSwapArea(
+        position.current,
+        target.boundingRectangle,
+        current.boundingRectangle
+      )
+    ) {
+      return null;
+    }
+  }
+
+  return defaultCollisionDetection(input);
+};
+
+function withinSwapArea(
+  point: {x: number; y: number},
+  target: BoundingRectangle,
+  source: BoundingRectangle
+) {
+  return (
+    withinSwapSpan(point.x, target, source, 'left', 'width') &&
+    withinSwapSpan(point.y, target, source, 'top', 'height')
+  );
+}
+
+function withinSwapSpan(
+  value: number,
+  target: BoundingRectangle,
+  source: BoundingRectangle,
+  start: 'left' | 'top',
+  size: 'width' | 'height'
+) {
+  const targetCenter = target[start] + target[size] / 2;
+  const sourceCenter = source[start] + source[size] / 2;
+
+  if (targetCenter < sourceCenter) {
+    return value <= target[start] + source[size];
+  }
+
+  if (targetCenter > sourceCenter) {
+    return value >= target[start] + target[size] - source[size];
+  }
+
+  return true;
 }
