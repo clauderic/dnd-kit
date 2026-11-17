@@ -43,6 +43,17 @@ interface Options {
    * @default 500
    */
   debounce?: number;
+  /**
+   * The container element or ShadowRoot to append the accessibility plugin's
+   * screen reader instructions and live-region announcement elements to.
+   *
+   * @default document.body
+   */
+  container?:
+    | Element
+    | ShadowRoot
+    | null
+    | (() => Element | ShadowRoot | null | undefined);
 }
 
 const debouncedEvents = ['dragover', 'dragmove'];
@@ -60,6 +71,7 @@ export class Accessibility extends Plugin<DragDropManager> {
       announcements = defaultAnnouncements,
       screenReaderInstructions = defaultScreenReaderInstructions,
       debounce: debounceMs = 500,
+      container,
     } = options ?? {};
 
     const descriptionId = id
@@ -113,7 +125,10 @@ export class Accessibility extends Plugin<DragDropManager> {
     );
 
     const initialize = () => {
-      let elements = [];
+      const elements = [];
+      const targetContainer =
+        (typeof container === 'function' ? container() : container) ??
+        document.body;
 
       if (!hiddenTextElement?.isConnected) {
         hiddenTextElement = createHiddenText(
@@ -125,13 +140,15 @@ export class Accessibility extends Plugin<DragDropManager> {
 
       if (!liveRegionElement?.isConnected) {
         liveRegionElement = createLiveRegion(announcementId);
-        liveRegionTextNode = document.createTextNode('');
+        liveRegionTextNode = (
+          targetContainer?.ownerDocument ?? document
+        ).createTextNode('');
         liveRegionElement.appendChild(liveRegionTextNode);
         elements.push(liveRegionElement);
       }
 
       if (elements.length > 0) {
-        document.body.append(...elements);
+        targetContainer?.append(...elements);
       }
     };
 

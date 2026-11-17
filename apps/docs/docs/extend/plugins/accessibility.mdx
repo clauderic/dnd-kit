@@ -244,3 +244,7 @@ The default instructions read:
 
   Defaults to `{description: 'dnd-kit-description', announcement: 'dnd-kit-announcement'}`.
 </ParamField>
+
+<ParamField path="container" type="Element | ShadowRoot | null | (() => Element | ShadowRoot | null | undefined)" default="document.body">
+  The container element or `ShadowRoot` to append the hidden screen reader instructions and live-region announcement elements to. Useful when dragging inside a modal `<dialog>` or `ShadowRoot` where `document.body` is inert or inaccessible to screen readers.
+</ParamField>
