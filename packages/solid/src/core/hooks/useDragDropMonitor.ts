@@ -1,6 +1,6 @@
 import type {DragDropEventHandlers, Data} from '@dnd-kit/abstract';
 import type {Draggable, Droppable, DragDropManager} from '@dnd-kit/dom';
-import {createEffect, onCleanup} from 'solid-js';
+import {createEffect} from 'solid-js';
 import type {CleanupFunction} from '@dnd-kit/state';
 
 import {useDragDropManager} from './useDragDropManager.ts';
@@ -44,37 +44,40 @@ export function useDragDropMonitor<
 >(handlers: EventHandlers<T, U, V, W>): void {
   const manager = useDragDropManager();
 
-  createEffect(() => {
-    if (!manager) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.warn(
-          'useDragDropMonitor hook was called outside of a DragDropProvider. ' +
-            'Make sure your app is wrapped in a DragDropProvider component.'
-        );
-      }
-      return;
-    }
-
-    const cleanupFns = Object.entries(handlers).reduce<CleanupFunction[]>(
-      (acc, [handlerName, handler]) => {
-        if (handler) {
-          const eventName = handlerName
-            .replace(/^on/, '')
-            .toLowerCase() as keyof Events<T, U, V, W>;
-
-          const unsubscribe = manager.monitor.addEventListener(
-            eventName,
-            handler as any
+  createEffect(
+    () => ({manager: manager, handlers: Object.entries(handlers)}),
+    ({manager, handlers}) => {
+      if (!manager) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn(
+            'useDragDropMonitor hook was called outside of a DragDropProvider. ' +
+              'Make sure your app is wrapped in a DragDropProvider component.'
           );
-
-          acc.push(unsubscribe);
         }
+        return;
+      }
 
-        return acc;
-      },
-      []
-    );
+      const cleanupFns = handlers.reduce<CleanupFunction[]>(
+        (acc, [handlerName, handler]) => {
+          if (handler) {
+            const eventName = handlerName
+              .replace(/^on/, '')
+              .toLowerCase() as keyof Events<T, U, V, W>;
 
-    onCleanup(() => cleanupFns.forEach((cleanup) => cleanup()));
-  });
+            const unsubscribe = manager.monitor.addEventListener(
+              eventName,
+              handler as any
+            );
+
+            acc.push(unsubscribe);
+          }
+
+          return acc;
+        },
+        []
+      );
+
+      return () => cleanupFns.forEach((cleanup) => cleanup());
+    }
+  );
 }

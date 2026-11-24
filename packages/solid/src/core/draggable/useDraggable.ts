@@ -34,24 +34,34 @@ export function useDraggable<T extends Data = Data>(
   );
   const [handle, setHandle] = createSignal<Element | undefined>(input.handle);
 
-  createEffect(() => {
-    const el = element();
-    if (el) draggable.element = el;
+  createEffect(
+    () => ({
+      el: element(),
+      h: handle(),
+      id: input.id,
+      disabled: input.disabled,
+      alignment: input.alignment,
+      plugins: input.plugins,
+      modifiers: input.modifiers,
+      sensors: input.sensors,
+      data: input.data,
+    }),
+    ({el, h, id, disabled, alignment, plugins, modifiers, sensors, data}) => {
+      if (el) draggable.element = el;
+      if (h) draggable.handle = h;
 
-    const h = handle();
-    if (h) draggable.handle = h;
+      draggable.id = id;
+      draggable.disabled = disabled ?? false;
+      draggable.alignment = alignment;
+      draggable.plugins = plugins;
+      draggable.modifiers = modifiers;
+      draggable.sensors = sensors;
 
-    draggable.id = input.id;
-    draggable.disabled = input.disabled ?? false;
-    draggable.alignment = input.alignment;
-    draggable.plugins = input.plugins;
-    draggable.modifiers = input.modifiers;
-    draggable.sensors = input.sensors;
-
-    if (input.data) {
-      draggable.data = input.data;
+      if (data) {
+        draggable.data = data;
+      }
     }
-  });
+  );
 
   return {
     get draggable() {

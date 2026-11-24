@@ -1,4 +1,4 @@
-import {createEffect, createMemo, onCleanup, splitProps} from 'solid-js';
+import {createEffect, createMemo, onCleanup, omit} from 'solid-js';
 import {DragDropManager, defaultPreset, resolveCustomizable} from '@dnd-kit/dom';
 import {isSortable} from '@dnd-kit/dom/sortable';
 
@@ -31,7 +31,7 @@ export function DragDropProvider(props: DragDropProviderProps) {
   // constructor spreads its input (`{...input}`) which would otherwise invoke
   // Solid's `children` getter and synthesize an orphan component subtree on
   // every memo recomputation. See #2015.
-  const [, managerProps] = splitProps(props, ['children']);
+  const managerProps = omit(props, 'children');
   const manager = createMemo(
     () => props.manager ?? new DragDropManager(managerProps)
   );
@@ -42,78 +42,84 @@ export function DragDropProvider(props: DragDropProviderProps) {
     }
   });
 
-  createEffect(() => {
-    const _manager = manager();
+  createEffect(
+    () => ({
+      manager: manager(),
+      plugins: props.plugins,
+      sensors: props.sensors,
+      modifiers: props.modifiers,
+    }),
+    ({manager, plugins, sensors, modifiers}) => {
+      manager.renderer = renderer;
+      manager.plugins = resolveCustomizable(plugins, defaultPreset.plugins);
+      manager.sensors = resolveCustomizable(sensors, defaultPreset.sensors);
+      manager.modifiers = resolveCustomizable(
+        modifiers,
+        defaultPreset.modifiers
+      );
+    }
+  );
 
-    _manager.renderer = renderer;
-    _manager.plugins = resolveCustomizable(props.plugins, defaultPreset.plugins);
-    _manager.sensors = resolveCustomizable(props.sensors, defaultPreset.sensors);
-    _manager.modifiers = resolveCustomizable(props.modifiers, defaultPreset.modifiers);
-  });
+  createEffect(
+    () => manager().monitor,
+    (monitor) => {
+      const disposers: (() => void)[] = [];
 
-  createEffect(() => {
-    const disposers: (() => void)[] = [];
-    const monitor = manager().monitor;
-
-    disposers.push(
-      monitor.addEventListener('beforedragstart', (event, manager) => {
-        if (isSortable(event.operation.source)) {
-          savePosition(event.operation.source);
-        }
-
-        const callback = props.onBeforeDragStart;
-        if (callback) {
-          trackRendering(() => callback(event, manager));
-        }
-      }),
-      monitor.addEventListener('dragstart', (event, manager) => {
-        props.onDragStart?.(event, manager);
-      }),
-      monitor.addEventListener('dragover', (event, manager) => {
-        const callback = props.onDragOver;
-        if (callback) {
-          trackRendering(() => callback(event, manager));
-
-
-          // Update saved position to match what Solid just rendered.
+      disposers.push(
+        monitor.addEventListener('beforedragstart', (event, manager) => {
           if (isSortable(event.operation.source)) {
-            const source = event.operation.source;
-
-            queueMicrotask(() => savePosition(source));
+            savePosition(event.operation.source);
           }
-        }
-      }),
-      monitor.addEventListener('dragmove', (event, manager) => {
-        const callback = props.onDragMove;
-        if (callback) {
-          trackRendering(() => callback(event, manager));
-        }
-      }),
-      monitor.addEventListener('dragend', (event, manager) => {
-        if (isSortable(event.operation.source)) {
-          restorePosition(event.operation.source!.element!);
-        }
 
-        const callback = props.onDragEnd;
-        if (callback) {
-          trackRendering(() => callback(event, manager));
-        }
+          const callback = props.onBeforeDragStart;
+          if (callback) {
+            trackRendering(() => callback(event, manager));
+          }
+        }),
+        monitor.addEventListener('dragstart', (event, manager) => {
+          props.onDragStart?.(event, manager);
+        }),
+        monitor.addEventListener('dragover', (event, manager) => {
+          const callback = props.onDragOver;
+          if (callback) {
+            trackRendering(() => callback(event, manager));
 
-        clearPosition();
-      }),
-      monitor.addEventListener('collision', (event, manager) => {
-        props.onCollision?.(event, manager);
-      })
-    );
+            // Update saved position to match what Solid just rendered.
+            if (isSortable(event.operation.source)) {
+              const source = event.operation.source;
 
-    onCleanup(() => {
-      disposers.forEach((cleanup) => cleanup());
-    });
-  });
+              queueMicrotask(() => savePosition(source));
+            }
+          }
+        }),
+        monitor.addEventListener('dragmove', (event, manager) => {
+          const callback = props.onDragMove;
+          if (callback) {
+            trackRendering(() => callback(event, manager));
+          }
+        }),
+        monitor.addEventListener('dragend', (event, manager) => {
+          if (isSortable(event.operation.source)) {
+            restorePosition(event.operation.source!.element!);
+          }
+
+          const callback = props.onDragEnd;
+          if (callback) {
+            trackRendering(() => callback(event, manager));
+          }
+
+          clearPosition();
+        }),
+        monitor.addEventListener('collision', (event, manager) => {
+          props.onCollision?.(event, manager);
+        })
+      );
+
+      return () => disposers.forEach((cleanup) => cleanup());
+    }
+  );
 
   return (
-    <DragDropContext.Provider value={manager()}>
-      {props.children}
-    </DragDropContext.Provider>
+    <DragDropContext value={manager()}>{props.children}</DragDropContext>
   );
 }

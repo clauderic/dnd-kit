@@ -1,4 +1,4 @@
-import {batch, createEffect, createSignal, on} from 'solid-js';
+import {createEffect, createSignal} from 'solid-js';
 
 import type {DragDropManager} from '@dnd-kit/dom';
 
@@ -13,10 +13,11 @@ export function useRenderer(): {
   let resolver: (() => void) | null = null;
 
   createEffect(
-    on(transitionCount, () => {
+    () => transitionCount(),
+    () => {
       resolver?.();
       rendering = null;
-    })
+    }
   );
 
   return {
@@ -32,10 +33,8 @@ export function useRenderer(): {
         });
       }
 
-      batch(() => {
-        callback();
-        setTransitionCount((c) => c + 1);
-      });
+      callback();
+      setTransitionCount((c) => c + 1);
     },
   };
 }

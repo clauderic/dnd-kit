@@ -1,10 +1,8 @@
-import {effect, signal, untracked} from '@dnd-kit/state';
+import {effect, signal} from '@dnd-kit/state';
 import {
   createEffect,
   createMemo,
   createSignal,
-  onCleanup,
-  untrack,
   type Accessor,
 } from 'solid-js';
 
@@ -21,14 +19,14 @@ export function useDeepSignal<T extends object | null | undefined>(
     queued: false,
   }));
 
-  createEffect(() => {
-    const current = tracker();
-    const {target, tracked, propertyCount} = current;
-    if (!target) return;
+  createEffect(
+    () => tracker(),
+    (current) => {
+      const {target, tracked, propertyCount} = current;
+      if (!target) return;
 
-    current.active = true;
-    const dispose = effect(() =>
-      untrack(() => {
+      current.active = true;
+      const dispose = effect(() => {
         propertyCount.value;
         let stale = false;
 
@@ -41,16 +39,15 @@ export function useDeepSignal<T extends object | null | undefined>(
           }
         }
 
-        // Solid may render immediately; keep those reads out of this effect.
-        if (stale) untracked(() => setDirty((value) => value + 1));
-      })
-    );
+        if (stale) setDirty((value) => value + 1);
+      });
 
-    onCleanup(() => {
-      current.active = false;
-      dispose();
-    });
-  });
+      return () => {
+        current.active = false;
+        dispose();
+      };
+    }
+  );
 
   return () => {
     const current = tracker();

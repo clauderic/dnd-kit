@@ -2,7 +2,7 @@ import {type Data} from '@dnd-kit/abstract';
 import type {SortableInput} from '@dnd-kit/dom/sortable';
 import {resolveSortableTransition, Sortable} from '@dnd-kit/dom/sortable';
 import {batch} from '@dnd-kit/state';
-import {createEffect, createSignal, on} from 'solid-js';
+import {createEffect, createSignal} from 'solid-js';
 
 import {useDeepSignal} from '@dnd-kit/solid/hooks';
 import {useInstance} from '@dnd-kit/solid';
@@ -42,65 +42,91 @@ export function useSortable<T extends Data = Data>(
   const [source, setSource] = createSignal<Element | undefined>(input.source);
   const [target, setTarget] = createSignal<Element | undefined>(input.target);
 
-  createEffect(() => {
-    const el = element();
-    if (el) sortable.element = el;
+  createEffect(
+    () => ({
+      el: element(),
+      h: handle(),
+      s: source(),
+      t: target(),
+      id: input.id,
+      disabled: input.disabled,
+      alignment: input.alignment,
+      plugins: input.plugins,
+      modifiers: input.modifiers,
+      sensors: input.sensors,
+      accept: input.accept,
+      type: input.type,
+      collisionPriority: input.collisionPriority,
+      transition: input.transition,
+      collisionDetector: input.collisionDetector,
+      data: input.data,
+    }),
+    ({
+      el,
+      h,
+      s,
+      t,
+      id,
+      disabled,
+      alignment,
+      plugins,
+      modifiers,
+      sensors,
+      accept,
+      type,
+      collisionPriority,
+      transition,
+      collisionDetector,
+      data,
+    }) => {
+      if (el) sortable.element = el;
+      if (h) sortable.handle = h;
+      if (s) sortable.source = s;
+      if (t) sortable.target = t;
 
-    const h = handle();
-    if (h) sortable.handle = h;
+      sortable.id = id;
+      sortable.disabled = disabled ?? false;
+      sortable.alignment = alignment;
+      sortable.plugins = plugins;
+      sortable.modifiers = modifiers;
+      sortable.sensors = sensors;
+      sortable.accept = accept;
+      sortable.type = type;
+      sortable.collisionPriority = collisionPriority;
+      sortable.transition = resolveSortableTransition(transition);
 
-    const s = source();
-    if (s) sortable.source = s;
+      if (collisionDetector) {
+        sortable.collisionDetector = collisionDetector;
+      }
 
-    const t = target();
-    if (t) sortable.target = t;
-
-    sortable.id = input.id;
-    sortable.disabled = input.disabled ?? false;
-    sortable.alignment = input.alignment;
-    sortable.plugins = input.plugins;
-    sortable.modifiers = input.modifiers;
-    sortable.sensors = input.sensors;
-    sortable.accept = input.accept;
-    sortable.type = input.type;
-    sortable.collisionPriority = input.collisionPriority;
-    sortable.transition = resolveSortableTransition(input.transition);
-
-    if (input.collisionDetector) {
-      sortable.collisionDetector = input.collisionDetector;
+      if (data) {
+        sortable.data = data;
+      }
     }
-
-    if (input.data) {
-      sortable.data = input.data;
-    }
-  });
+  );
 
   // Batch group + index updates
   createEffect(
-    on(
-      () => [input.group, input.index],
-      () => {
-        batch(() => {
-          sortable.group = input.group;
-          sortable.index = input.index;
-        });
-      }
-    )
+    () => ({group: input.group, index: input.index}),
+    ({group, index}) => {
+      batch(() => {
+        sortable.group = group;
+        sortable.index = index;
+      });
+    }
   );
 
   // Refresh shape when index changes while idle
   createEffect(
-    on(
-      () => input.index,
-      () => {
-        if (
-          sortable.manager?.dragOperation.status.idle &&
-          sortable.transition?.idle
-        ) {
-          sortable.refreshShape();
-        }
+    () => input.index,
+    () => {
+      if (
+        sortable.manager?.dragOperation.status.idle &&
+        sortable.transition?.idle
+      ) {
+        sortable.refreshShape();
       }
-    )
+    }
   );
 
   return {

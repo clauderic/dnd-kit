@@ -1,6 +1,6 @@
 import type {DragDropManager} from '@dnd-kit/dom';
 import type {CleanupFunction} from '@dnd-kit/state';
-import {createEffect, onCleanup} from 'solid-js';
+import {createEffect} from 'solid-js';
 
 import {useDragDropManager} from './useDragDropManager.ts';
 
@@ -15,12 +15,15 @@ export function useInstance<T extends Instance>(
   const manager = useDragDropManager() ?? undefined;
   const instance = initializer(manager);
 
-  createEffect(() => {
-    instance.manager = manager;
-    const cleanup = instance.register();
+  createEffect(
+    () => manager,
+    (manager) => {
+      instance.manager = manager;
+      const cleanup = instance.register();
 
-    onCleanup(() => cleanup?.());
-  });
+      return () => cleanup?.();
+    }
+  );
 
   return instance;
 }
