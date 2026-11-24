@@ -8,7 +8,7 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "jsx": "preserve",
-    "jsxImportSource": "solid-js",
+    "jsxImportSource": "@solidjs/web",
     "importHelpers": true,
     "sourceMap": true
   }

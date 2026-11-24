@@ -69,13 +69,17 @@
     "tslib": "^2.6.2"
   },
   "peerDependencies": {
-    "solid-js": "^1.8.0"
+    "solid-js": "^2.0.3",
+    "@solidjs/web": "^2.0.3"
   },
   "devDependencies": {
-    "esbuild-plugin-solid": "^0.6.0",
+    "@babel/core": "8",
+    "@babel/preset-typescript": "8",
+    "@solidjs/babel-plugin": "2.0.2",
+    "@solidjs/web": "^2.0.3",
+    "solid-js": "^2.0.3",
     "tsup": "8.4.0",
-    "typescript": "^5.5.2",
-    "solid-js": "^1.9.0"
+    "typescript": "^5.5.2"
   },
   "publishConfig": {
     "access": "public"
