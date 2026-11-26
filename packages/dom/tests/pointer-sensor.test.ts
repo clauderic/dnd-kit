@@ -209,6 +209,63 @@ describe('PointerSensor', () => {
     return {manager, element, rendering, unbind};
   }
 
+  it('applies an unpainted pointer move before dispatching dragend', async () => {
+    const {manager, element, rendering, unbind} = setup(() => []);
+    const dragend = jest.fn();
+    const dragmove = jest.fn();
+    manager.monitor.addEventListener('dragend', dragend);
+    manager.monitor.addEventListener('dragmove', dragmove);
+
+    element.dispatchEvent(
+      new TestPointerEvent('pointerdown', {clientX: 10, clientY: 10})
+    );
+    rendering.resolve();
+    await flush();
+    expect(manager.dragOperation.status.dragging).toBe(true);
+
+    const descriptor = Object.getOwnPropertyDescriptor(
+      globalThis,
+      'requestAnimationFrame'
+    );
+    const frames: FrameRequestCallback[] = [];
+    Object.defineProperty(globalThis, 'requestAnimationFrame', {
+      configurable: true,
+      value: (callback: FrameRequestCallback) => frames.push(callback),
+    });
+
+    try {
+      document.dispatchEvent(
+        new TestPointerEvent('pointermove', {clientX: 50, clientY: 60})
+      );
+      expect(dragmove).not.toHaveBeenCalled();
+
+      document.dispatchEvent(
+        new TestPointerEvent('pointerup', {clientX: 50, clientY: 60})
+      );
+      await flush();
+
+      for (const callback of frames.splice(0)) callback(0);
+      expect(dragend).toHaveBeenCalledTimes(1);
+      const {operation, canceled} = dragend.mock.calls[0][0];
+      expect(canceled).toBe(false);
+      expect(operation.position.current).toMatchObject({
+        x: 50,
+        y: 60,
+      });
+
+      expect(dragmove).toHaveBeenCalledTimes(1);
+    } finally {
+      for (const callback of frames) callback(0);
+      if (descriptor) {
+        Object.defineProperty(globalThis, 'requestAnimationFrame', descriptor);
+      } else {
+        Reflect.deleteProperty(globalThis, 'requestAnimationFrame');
+      }
+      unbind();
+      manager.destroy();
+    }
+  });
+
   it('records pointer moves received while the drag operation is initializing', async () => {
     const {manager, element, rendering, unbind} = setup(() => []);
     const dragmove = jest.fn();
