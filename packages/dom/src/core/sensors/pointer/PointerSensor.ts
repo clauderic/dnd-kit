@@ -274,6 +274,8 @@ export class PointerSensor extends Sensor<
       return;
     }
 
+    this.latest.event = undefined;
+    this.latest.coordinates = undefined;
     this.manager.actions.move({event, to});
   };
 
@@ -305,7 +307,7 @@ export class PointerSensor extends Sensor<
 
   private handlePointerUp(event: PointerEvent) {
     // End the drag and drop operation
-    const {status} = this.manager.dragOperation;
+    const {controller, status} = this.manager.dragOperation;
 
     if (!status.idle) {
       // Prevent the default behaviour of the event
@@ -334,6 +336,18 @@ export class PointerSensor extends Sensor<
         ownerWindow.setTimeout(() => {
           ownerWindow.removeEventListener('click', suppressClick, true);
         }, 0);
+      }
+
+      if (status.dragging && this.latest.event) {
+        this.handleMove();
+        // The move action commits its coordinates in a microtask.
+        queueMicrotask(() => {
+          if (this.manager.dragOperation.controller === controller) {
+            this.manager.actions.stop({event, canceled});
+          }
+          this.cleanup();
+        });
+        return;
       }
 
       this.manager.actions.stop({event, canceled});
