@@ -87,7 +87,7 @@ export function createElementMutationObserver(
 
 export function createDocumentMutationObserver(
   element: Element,
-  placeholder: Element,
+  placeholder: Element | null,
   feedbackElement: Element
 ): MutationObserver {
   const observer = new MutationObserver((entries) => {
@@ -97,14 +97,17 @@ export function createDocumentMutationObserver(
       for (const node of Array.from(entry.addedNodes)) {
         if (
           node.contains(element) &&
-          element.nextElementSibling !== placeholder
+          (!placeholder || element.nextElementSibling !== placeholder)
         ) {
-          element.insertAdjacentElement('afterend', placeholder);
+          if (placeholder) {
+            element.insertAdjacentElement('afterend', placeholder);
+          }
           showPopover(feedbackElement);
           return;
         }
 
         if (
+          placeholder &&
           node.contains(placeholder) &&
           placeholder.previousElementSibling !== element
         ) {
@@ -120,6 +123,7 @@ export function createDocumentMutationObserver(
     // The addedNodes won't contain the element or placeholder, but
     // they may no longer be adjacent.
     if (
+      placeholder &&
       element.isConnected &&
       placeholder.isConnected &&
       element.nextElementSibling !== placeholder
