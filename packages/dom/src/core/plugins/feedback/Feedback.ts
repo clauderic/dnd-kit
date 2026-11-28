@@ -424,9 +424,17 @@ export class Feedback extends Plugin<DragDropManager, FeedbackOptions> {
         placeholder,
         clone
       );
+    }
+
+    if (
+      placeholder ||
+      (feedback === 'move' &&
+        feedbackElement === element &&
+        supportsPopover(feedbackElement))
+    ) {
       documentMutationObserver = createDocumentMutationObserver(
         element,
-        placeholder,
+        placeholder ?? null,
         feedbackElement
       );
     }
