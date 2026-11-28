@@ -19,9 +19,9 @@ Rules registered with `retain: true` stay injected in a root after the first dra
 
 ### Document Roots
 
-For `Document` roots, CSS is injected via a `<style>` element prepended to `<head>`. This ensures that any `@layer` declarations appear before layers from regular stylesheets, giving them the lowest cascade priority.
+For `Document` roots, the `StyleInjector` prepends a `<style>` element containing only `@layer dnd-kit;` to `<head>` to give that layer the lowest cascade priority. It appends the stylesheets that contain rules.
 
-A `MutationObserver` monitors the `<head>` to re-inject the `<style>` element if it is removed by other scripts during a drag operation.
+A `MutationObserver` restores either type of stylesheet to its insertion position if another script removes it while it is in use.
 
 ### Shadow DOM Roots
 

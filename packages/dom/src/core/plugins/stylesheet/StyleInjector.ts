@@ -29,7 +29,10 @@ export interface StyleRegistrationOptions {
 interface StyleRegistration {
   refCount: number;
   cleanup: CleanupFunction;
+  setNonce?: (nonce: string) => void;
 }
+
+const LAYER_ORDER = '@layer dnd-kit;';
 
 const styleRegistry = new Map<
   Document | ShadowRoot,
@@ -62,8 +65,14 @@ export class StyleInjector extends CorePlugin<
 
   #injections = new Map<Document | ShadowRoot, Map<string, CleanupFunction>>();
 
+  #earlyLayers = new Set<CleanupFunction>();
+
   constructor(manager: DragDropManager, options?: StyleInjectorOptions) {
     super(manager, options);
+
+    if (typeof document !== 'undefined' && document.head) {
+      this.#reserveLayer(document);
+    }
 
     this.registerEffect(this.#syncStyles);
   }
@@ -99,6 +108,9 @@ export class StyleInjector extends CorePlugin<
    * Returns a cleanup function that removes the root.
    */
   public addRoot(root: Document | ShadowRoot): CleanupFunction {
+    const releaseLayer =
+      isDocument(root) && root.head ? this.#reserveLayer(root) : undefined;
+
     untracked(() => {
       const roots = new Set(this.additionalRoots);
       roots.add(root);
@@ -111,7 +123,19 @@ export class StyleInjector extends CorePlugin<
         roots.delete(root);
         this.additionalRoots = roots;
       });
+      releaseLayer?.();
     };
+  }
+
+  #reserveLayer(root: Document): CleanupFunction {
+    const cleanup = this.#inject(root, LAYER_ORDER);
+    const release = () => {
+      cleanup();
+      this.#earlyLayers.delete(release);
+    };
+    this.#earlyLayers.add(release);
+
+    return release;
   }
 
   @derived
@@ -216,6 +240,10 @@ export class StyleInjector extends CorePlugin<
     this.#injections.clear();
     this.#retainedRoots.clear();
 
+    for (const release of this.#earlyLayers) {
+      release();
+    }
+
     super.destroy();
   }
 
@@ -242,6 +270,10 @@ export class StyleInjector extends CorePlugin<
       rootStyles.set(cssRules, registration);
     }
 
+    if (this.options?.nonce) {
+      registration.setNonce?.(this.options.nonce);
+    }
+
     registration.refCount++;
 
     let disposed = false;
@@ -259,45 +291,68 @@ export class StyleInjector extends CorePlugin<
   }
 
   /**
-   * For Document roots, prepend a <style> element to <head> so that any
-   * @layer declarations appear before layers from regular stylesheets,
-   * giving them the lowest cascade priority.
+   * Reserve the lowest cascade layer priority before appending the rules.
    */
   #injectStyleElement(
     root: Document,
     rootStyles: Map<string, StyleRegistration>,
     cssRules: string
   ): StyleRegistration | null {
+    const {head} = root;
+    if (!head) return null;
+
+    const isLayerOrder = cssRules === LAYER_ORDER;
+    const releaseLayer = isLayerOrder
+      ? undefined
+      : this.#inject(root, LAYER_ORDER);
     const style = root.createElement('style');
     const {nonce} = this.options ?? {};
+    const insert = () => {
+      if (isLayerOrder) {
+        head.prepend(style);
+      } else {
+        head.append(style);
+      }
+    };
 
     if (nonce) {
       style.setAttribute('nonce', nonce);
     }
 
     style.textContent = cssRules;
-    root.head.prepend(style);
+    insert();
 
     const observer = new MutationObserver((entries) => {
       for (const entry of entries) {
         for (const node of Array.from(entry.removedNodes)) {
           if (node === style) {
-            root.head.prepend(style);
+            insert();
             return;
           }
         }
       }
     });
 
-    observer.observe(root.head, {childList: true});
+    observer.observe(head, {childList: true});
 
     return {
       refCount: 0,
+      setNonce: isLayerOrder
+        ? (value) => {
+            if (!style.nonce) {
+              observer.disconnect();
+              style.setAttribute('nonce', value);
+              insert();
+              observer.observe(head, {childList: true});
+            }
+          }
+        : undefined,
       cleanup: () => {
         observer.disconnect();
         style.remove();
 
         rootStyles.delete(cssRules);
+        releaseLayer?.();
 
         if (rootStyles.size === 0) {
           styleRegistry.delete(root);
@@ -317,8 +372,7 @@ export class StyleInjector extends CorePlugin<
   ): StyleRegistration | null {
     if (
       !(
-        'adoptedStyleSheets' in root &&
-        Array.isArray(root.adoptedStyleSheets)
+        'adoptedStyleSheets' in root && Array.isArray(root.adoptedStyleSheets)
       ) &&
       process.env.NODE_ENV !== 'production'
     ) {
