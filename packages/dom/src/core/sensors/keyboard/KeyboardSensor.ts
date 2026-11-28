@@ -173,8 +173,6 @@ export class KeyboardSensor extends Sensor<
 
     if (controller.signal.aborted) return this.cleanup();
 
-    this.sideEffects();
-
     const sourceDocument = getDocument(element);
     const listeners = [
       this.listeners.bind(sourceDocument, [
@@ -185,9 +183,15 @@ export class KeyboardSensor extends Sensor<
           options: {capture: true},
         },
       ]),
+      this.listeners.bind(controller.signal, {
+        type: 'abort',
+        listener: () => this.cleanup(),
+        options: {once: true},
+      }),
     ];
 
     this.#cleanupFunctions.push(...listeners);
+    this.sideEffects();
   }
 
   protected handleKeyDown(
@@ -223,8 +227,6 @@ export class KeyboardSensor extends Sensor<
       event,
       canceled,
     });
-
-    this.cleanup();
   }
 
   protected handleMove(
@@ -276,11 +278,10 @@ export class KeyboardSensor extends Sensor<
     const autoScroller = this.manager.registry.plugins.get(AutoScroller as any);
 
     if (autoScroller?.disabled === false) {
-      autoScroller.disable();
-
       this.#cleanupFunctions.push(() => {
         autoScroller.enable();
       });
+      autoScroller.disable();
     }
   }
 
