@@ -61,6 +61,13 @@ export class CollisionNotifier extends CorePlugin {
 
             manager.actions.setDropTarget(firstCollision?.id).then(() => {
               collisionObserver.enable();
+
+              if (
+                collisionObserver.collisions[0]?.id !==
+                manager.dragOperation.target?.id
+              ) {
+                collisionObserver.forceUpdate();
+              }
             });
           }
         });
